@@ -1,0 +1,12 @@
+{
+  "name": "gymnasia",
+  "private": true,
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:mobile": "pnpm --filter mobile start",
+    "dev:api": "uvicorn app.main:app --reload --app-dir apps/api",
+    "lint:web": "pnpm --filter web lint",
+    "typecheck": "pnpm -r typecheck"
+  }
+}

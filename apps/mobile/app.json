@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Gymnasia",
+    "slug": "gymnasia",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {},
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

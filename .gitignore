@@ -1,0 +1,43 @@
+# Node
+node_modules/
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Build
+.next/
+out/
+dist/
+build/
+coverage/
+
+# Expo / React Native
+.expo/
+.expo-shared/
+*.jks
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Supabase local temp
+supabase/.temp/
+
+# Uploads/cache
+uploads/
+.tmp/
