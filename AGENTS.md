@@ -81,6 +81,11 @@ Guardar datos de entrenamiento, nutricion y medidas para analisis por LLM, con c
 - Imagen maquina: Google Nano Banana (hook preparado).
 - Video: Veo3 cuando exista acceso/API.
 
+## Arranque local
+- Comando unico recomendado: `make dev`
+- Script directo: `./scripts/dev-all.sh`
+- El script levanta API + Web + Mobile en paralelo y hace parada limpia con `Ctrl+C`.
+
 ## Reglas de trabajo Git (obligatorias)
 Despues de **cada cambio**:
 1. Revisar si se generaron archivos no trackeables y agregarlos a `.gitignore`.
@@ -107,6 +112,11 @@ Si la solucion es reutilizable, crear una skill local o actualizar una existente
   - Causa: triggers `updated_at` sin `drop trigger if exists` podian fallar al reaplicar.
   - Solucion: agregar `drop trigger if exists` antes de recrear triggers.
   - Impacto: migraciones idempotentes en entorno local/repetible.
+- 2026-02-11
+  - Problema: arranque manual de 3 servicios en local era repetitivo y propenso a dejar procesos colgados.
+  - Causa: ejecucion separada de API, web y mobile en terminales distintas sin gestion centralizada.
+  - Solucion: crear `scripts/dev-all.sh` y target `make dev` con arranque paralelo, prefijo de logs y limpieza en `Ctrl+C`.
+  - Impacto: bootstrap local consistente y mas rapido para iteracion diaria.
 
 ## Criterios de calidad minima
 - Sin secretos en git.

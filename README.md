@@ -45,14 +45,19 @@ Monorepo local para una app de gimnasio con entrenamiento, dieta, medidas y chat
    - `apps/web/.env.example` -> `apps/web/.env.local`
    - `apps/mobile/.env.example` -> `apps/mobile/.env`
 2. Crea esquema en Supabase ejecutando `infra/supabase/schema.sql`.
-3. API:
+3. Instala dependencias JS:
+   - `pnpm install`
+4. Arranque unico (recomendado):
+   - `make dev`
+   - (equivalente: `./scripts/dev-all.sh`)
+5. Arranque manual por servicio:
+   - API:
    - `cd /Users/macm1/Documents/proyectos/gymnasia`
    - `uvicorn app.main:app --reload --app-dir apps/api`
-4. Web:
-   - `pnpm install`
-   - `pnpm --filter web dev`
-5. Mobile:
-   - `pnpm --filter mobile start`
+   - Web:
+     - `pnpm --filter web dev`
+   - Mobile:
+     - `pnpm --filter mobile start`
 
 ## Notas
 
