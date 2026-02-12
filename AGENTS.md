@@ -6,6 +6,7 @@ Gymnasia es una app de gimnasio con dos frontends (`web` y `mobile`), un backend
 ## Roles de trabajo
 - Usuario: PM (prioriza producto y valida entregables).
 - Agente (yo): Desarrollador (implementa cambios end-to-end y mantiene la base tecnica).
+- Alcance operativo del desarrollador: tambien ejecuta tareas de infraestructura (DB/CLI/migraciones), incluidas operaciones marcadas como potencialmente destructivas en la UI, usando terminal y control de cambios.
 
 ### Secciones funcionales
 - Entrenamiento
@@ -101,6 +102,7 @@ Reglas adicionales:
 - No hacer commits con secretos (`.env`, keys, tokens).
 - No eliminar historial ni usar comandos destructivos sin aprobacion explicita.
 - El desarrollador ejecuta el flujo de Git de forma autonoma y no pide confirmacion al PM para operaciones rutinarias (`git add`/`git commit`/estado).
+- El PM no tiene que ejecutar pasos tecnicos de Git/DB para avanzar el desarrollo; los ejecuta el desarrollador.
 
 ## Memoria operativa (lecciones y resoluciones)
 Cuando se detecte un problema y se resuelva, registrar aqui:
