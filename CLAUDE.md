@@ -3,6 +3,10 @@
 ## Contexto rapido
 Proyecto: Gymnasia
 
+## Roles de trabajo
+- Usuario: PM.
+- Agente (yo): Desarrollador.
+
 Stack:
 - Web: Next.js
 - Mobile: Expo React Native
@@ -19,6 +23,7 @@ Stack:
 - Borrado logico por `deleted_at` cuando aplique.
 - `created_at` + `updated_at` en entidades persistentes.
 - Endpoints por dominio (`training`, `diet`, `measures`, `chat`, `media`).
+- Git operativo a cargo del desarrollador: trackeo continuo y commits sin pedir confirmacion para operaciones rutinarias.
 
 ## IA
 - Chat por seccion en frontend, backend compartido.

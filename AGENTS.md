@@ -3,6 +3,10 @@
 ## Descripcion del proyecto
 Gymnasia es una app de gimnasio con dos frontends (`web` y `mobile`), un backend `FastAPI` y base de datos en `Supabase`.
 
+## Roles de trabajo
+- Usuario: PM (prioriza producto y valida entregables).
+- Agente (yo): Desarrollador (implementa cambios end-to-end y mantiene la base tecnica).
+
 ### Secciones funcionales
 - Entrenamiento
 - Dieta
@@ -96,6 +100,7 @@ Despues de **cada cambio**:
 Reglas adicionales:
 - No hacer commits con secretos (`.env`, keys, tokens).
 - No eliminar historial ni usar comandos destructivos sin aprobacion explicita.
+- El desarrollador ejecuta el flujo de Git de forma autonoma y no pide confirmacion al PM para operaciones rutinarias (`git add`/`git commit`/estado).
 
 ## Memoria operativa (lecciones y resoluciones)
 Cuando se detecte un problema y se resuelva, registrar aqui:
@@ -123,6 +128,11 @@ Si la solucion es reutilizable, crear una skill local o actualizar una existente
   - Causa: el script usaba `uvicorn` global sin entorno Python de proyecto.
   - Solucion: migrar arranque API a `uv run --project apps/api --no-sync ...` y auto-setup con `uv sync --project apps/api` si faltan paquetes.
   - Impacto: arranque local mas robusto y reproducible en maquinas nuevas.
+- 2026-02-12
+  - Problema: ambiguedad de responsabilidades entre direccion de producto y ejecucion tecnica.
+  - Causa: no estaba explicitado en docs que el usuario actua como PM y el agente como desarrollador.
+  - Solucion: documentar roles en `AGENTS.md` y `CLAUDE.md`, y fijar politica de Git autonoma del desarrollador para operaciones rutinarias.
+  - Impacto: menos friccion operativa y mayor velocidad de entrega.
 
 ## Criterios de calidad minima
 - Sin secretos en git.
