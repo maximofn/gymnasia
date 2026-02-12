@@ -14,6 +14,17 @@ require_cmd() {
   fi
 }
 
+ensure_api_python_env() {
+  if ! uv run --project apps/api --no-sync python -c "import fastapi" >/dev/null 2>&1; then
+    echo "[INFO] Preparando entorno Python para API (uv sync)..."
+    if ! uv sync --project apps/api; then
+      echo "[ERROR] No se pudieron instalar dependencias de apps/api."
+      echo "[ERROR] Revisa red y ejecuta manualmente: uv sync --project apps/api"
+      exit 1
+    fi
+  fi
+}
+
 warn_missing_env() {
   local file_path="$1"
   local template_path="$2"
@@ -51,8 +62,10 @@ cleanup() {
 trap cleanup INT TERM EXIT
 
 require_cmd pnpm
-require_cmd uvicorn
+require_cmd uv
 require_cmd sed
+
+ensure_api_python_env
 
 warn_missing_env "apps/api/.env" "apps/api/.env.example"
 warn_missing_env "apps/web/.env.local" "apps/web/.env.example"
@@ -64,7 +77,7 @@ fi
 
 echo "[INFO] Iniciando API, Web y Mobile..."
 
-action_api=(uvicorn app.main:app --reload --app-dir apps/api)
+action_api=(uv run --project apps/api --no-sync uvicorn app.main:app --reload --app-dir apps/api)
 action_web=(pnpm --filter web dev)
 action_mobile=(pnpm --filter mobile start)
 

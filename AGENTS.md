@@ -85,6 +85,7 @@ Guardar datos de entrenamiento, nutricion y medidas para analisis por LLM, con c
 - Comando unico recomendado: `make dev`
 - Script directo: `./scripts/dev-all.sh`
 - El script levanta API + Web + Mobile en paralelo y hace parada limpia con `Ctrl+C`.
+- Dependencias API gestionadas con `uv` (`uv sync --project apps/api`).
 
 ## Reglas de trabajo Git (obligatorias)
 Despues de **cada cambio**:
@@ -117,6 +118,11 @@ Si la solucion es reutilizable, crear una skill local o actualizar una existente
   - Causa: ejecucion separada de API, web y mobile en terminales distintas sin gestion centralizada.
   - Solucion: crear `scripts/dev-all.sh` y target `make dev` con arranque paralelo, prefijo de logs y limpieza en `Ctrl+C`.
   - Impacto: bootstrap local consistente y mas rapido para iteracion diaria.
+- 2026-02-12
+  - Problema: `make dev` fallaba en API con `ModuleNotFoundError: fastapi`.
+  - Causa: el script usaba `uvicorn` global sin entorno Python de proyecto.
+  - Solucion: migrar arranque API a `uv run --project apps/api --no-sync ...` y auto-setup con `uv sync --project apps/api` si faltan paquetes.
+  - Impacto: arranque local mas robusto y reproducible en maquinas nuevas.
 
 ## Criterios de calidad minima
 - Sin secretos en git.
