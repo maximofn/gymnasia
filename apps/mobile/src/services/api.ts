@@ -1,5 +1,5 @@
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
-const DEV_USER_ID = "00000000-0000-0000-0000-000000000001";
+const DEV_USER_ID = process.env.EXPO_PUBLIC_DEV_USER_ID ?? "00000000-0000-0000-0000-000000000001";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {

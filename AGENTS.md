@@ -143,6 +143,11 @@ Si la solucion es reutilizable, crear una skill local o actualizar una existente
   - Causa: procesos antiguos de `make dev` quedaron vivos tras interrupciones.
   - Solucion: limpiar procesos colgados antes de reintentar y validar puertos en escucha tras el arranque.
   - Impacto: flujo de validacion local reproducible y sin bloqueos por conflictos de puerto.
+- 2026-02-12
+  - Problema: riesgo de error FK en escritura al usar UUID fijo de desarrollo en frontend.
+  - Causa: `x-user-id` hardcodeado podia no existir en `auth.users` de Supabase.
+  - Solucion: mover UUID de desarrollo a variables de entorno (`NEXT_PUBLIC_DEV_USER_ID` y `EXPO_PUBLIC_DEV_USER_ID`) y alinear con `DEFAULT_DEV_USER_ID` del backend.
+  - Impacto: pruebas locales coherentes con un usuario real de Supabase sin tocar codigo.
 
 ## Criterios de calidad minima
 - Sin secretos en git.

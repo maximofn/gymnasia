@@ -44,6 +44,10 @@ Monorepo local para una app de gimnasio con entrenamiento, dieta, medidas y chat
    - `apps/api/.env.example` -> `apps/api/.env`
    - `apps/web/.env.example` -> `apps/web/.env.local`
    - `apps/mobile/.env.example` -> `apps/mobile/.env`
+   - Define el mismo UUID real de usuario en:
+     - `apps/api/.env` -> `DEFAULT_DEV_USER_ID`
+     - `apps/web/.env.local` -> `NEXT_PUBLIC_DEV_USER_ID`
+     - `apps/mobile/.env` -> `EXPO_PUBLIC_DEV_USER_ID`
 2. Crea esquema en Supabase ejecutando `infra/supabase/schema.sql`.
 3. Instala dependencias API:
    - `uv sync --project apps/api`
