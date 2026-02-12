@@ -133,6 +133,16 @@ Si la solucion es reutilizable, crear una skill local o actualizar una existente
   - Causa: no estaba explicitado en docs que el usuario actua como PM y el agente como desarrollador.
   - Solucion: documentar roles en `AGENTS.md` y `CLAUDE.md`, y fijar politica de Git autonoma del desarrollador para operaciones rutinarias.
   - Impacto: menos friccion operativa y mayor velocidad de entrega.
+- 2026-02-12
+  - Problema: la API no arrancaba con SQLAlchemy (`InvalidRequestError: Attribute name 'metadata' is reserved`).
+  - Causa: en modelos ORM se usaba el atributo `metadata`, reservado por la Declarative API.
+  - Solucion: renombrar atributo Python a `meta` y mantener el nombre de columna SQL como `metadata`.
+  - Impacto: arranque estable de FastAPI sin romper compatibilidad con el esquema SQL existente.
+- 2026-02-12
+  - Problema: ejecuciones previas dejaron puertos ocupados (8000/3000/8081), causando fallos de arranque y prompts interactivos.
+  - Causa: procesos antiguos de `make dev` quedaron vivos tras interrupciones.
+  - Solucion: limpiar procesos colgados antes de reintentar y validar puertos en escucha tras el arranque.
+  - Impacto: flujo de validacion local reproducible y sin bloqueos por conflictos de puerto.
 
 ## Criterios de calidad minima
 - Sin secretos en git.
