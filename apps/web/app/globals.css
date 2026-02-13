@@ -164,6 +164,27 @@ button.danger {
   background: #fff;
 }
 
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  width: auto;
+  border-radius: 999px;
+  padding: 0.5rem 0.95rem;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.tab.is-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
+
 .kpi {
   font-family: var(--font-fraunces), serif;
   font-size: 1.4rem;

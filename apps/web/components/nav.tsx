@@ -6,7 +6,7 @@ const links = [
   { href: "/diet", label: "Dieta" },
   { href: "/measures", label: "Medidas" },
   { href: "/chat", label: "Chats" }
-];
+] as const;
 
 export function Navigation() {
   return (

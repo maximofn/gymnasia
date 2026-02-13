@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
 const cards = [
   {
@@ -21,18 +24,41 @@ const cards = [
     title: "Chats IA",
     description: "Conversacion libre por seccion + envio de audio."
   }
-];
+] as const;
 
 export default function HomePage() {
+  const [activeHref, setActiveHref] = useState<(typeof cards)[number]["href"]>(cards[0].href);
+  const activeCard = useMemo(() => cards.find((card) => card.href === activeHref) ?? cards[0], [activeHref]);
+
   return (
-    <section className="grid two">
-      {cards.map((card) => (
-        <Link href={card.href} key={card.href} className="panel" style={{ display: "grid", gap: ".6rem" }}>
-          <h2>{card.title}</h2>
-          <p>{card.description}</p>
-          <span className="pill">Abrir modulo</span>
-        </Link>
-      ))}
+    <section className="panel" style={{ display: "grid", gap: "1rem" }}>
+      <div className="tabs" role="tablist" aria-label="Secciones de Gymnasia">
+        {cards.map((card) => {
+          const isActive = card.href === activeCard.href;
+          return (
+            <button
+              key={card.href}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              className={`tab ${isActive ? "is-active" : ""}`}
+              onClick={() => setActiveHref(card.href)}
+            >
+              {card.title}
+            </button>
+          );
+        })}
+      </div>
+
+      <article role="tabpanel" className="panel" style={{ display: "grid", gap: ".7rem" }}>
+        <h2>{activeCard.title}</h2>
+        <p>{activeCard.description}</p>
+        <div>
+          <Link href={activeCard.href} className="pill">
+            Abrir modulo
+          </Link>
+        </div>
+      </article>
     </section>
   );
 }
