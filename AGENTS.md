@@ -150,6 +150,16 @@ Si la solucion es reutilizable, crear una skill local o actualizar una existente
   - Causa: `x-user-id` hardcodeado podia no existir en `auth.users` de Supabase.
   - Solucion: mover UUID de desarrollo a variables de entorno (`NEXT_PUBLIC_DEV_USER_ID` y `EXPO_PUBLIC_DEV_USER_ID`) y alinear con `DEFAULT_DEV_USER_ID` del backend.
   - Impacto: pruebas locales coherentes con un usuario real de Supabase sin tocar codigo.
+- 2026-02-13
+  - Problema: `psql` no podia aplicar `infra/supabase/schema.sql` al host remoto de Supabase.
+  - Causa: fallo de resolucion DNS para `db.<project-ref>.supabase.co` desde este entorno de terminal.
+  - Solucion: ejecutar el schema desde el SQL Editor de Supabase (Playwright) y confirmar el modal de `Query has destructive operation`.
+  - Impacto: migracion aplicada sin bloquear el flujo por conectividad de red local.
+- 2026-02-13
+  - Problema: no se disponia de password real para construir `DATABASE_URL` (aparecia `[YOUR-PASSWORD]` en Connect).
+  - Causa: Supabase enmascara la password y exige reset para obtener un valor utilizable.
+  - Solucion: resetear password en `Database > Settings`, actualizar `DATABASE_URL` local y conservar secretos solo en `.env` no trackeado.
+  - Impacto: configuracion local completa para que API y migraciones puedan autenticarse contra Supabase.
 
 ## Criterios de calidad minima
 - Sin secretos en git.
