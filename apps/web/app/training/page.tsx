@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
+import { SectionChat } from "@/components/section-chat";
 import { api, Exercise, TrainingPlan, TrainingSession } from "@/lib/api";
 
 const muscleGroups = ["pecho", "espalda", "hombro", "biceps", "triceps", "pierna", "core", "cardio"];
@@ -270,6 +271,8 @@ export default function TrainingPage() {
           </div>
         </div>
       </div>
+
+      <SectionChat section="training" />
     </section>
   );
 }

@@ -18,11 +18,6 @@ const cards = [
     href: "/measures",
     title: "Medidas",
     description: "Peso, contornos y fotos para seguimiento historico."
-  },
-  {
-    href: "/chat",
-    title: "Chats IA",
-    description: "Conversacion libre por seccion + envio de audio."
   }
 ] as const;
 

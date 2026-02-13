@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 
+import { SectionChat } from "@/components/section-chat";
 import { api, DailyDiet, FoodItem } from "@/lib/api";
 
 export default function DietPage() {
@@ -157,6 +158,8 @@ export default function DietPage() {
           </div>
         </div>
       </div>
+
+      <SectionChat section="diet" />
     </section>
   );
 }

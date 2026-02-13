@@ -4,8 +4,7 @@ const links = [
   { href: "/", label: "Inicio" },
   { href: "/training", label: "Entrenamiento" },
   { href: "/diet", label: "Dieta" },
-  { href: "/measures", label: "Medidas" },
-  { href: "/chat", label: "Chats" }
+  { href: "/measures", label: "Medidas" }
 ] as const;
 
 export function Navigation() {

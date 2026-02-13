@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 
+import { SectionChat } from "@/components/section-chat";
 import { api, BodyMeasurement } from "@/lib/api";
 
 export default function MeasuresPage() {
@@ -136,6 +137,8 @@ export default function MeasuresPage() {
           </div>
         </div>
       </div>
+
+      <SectionChat section="measures" />
     </section>
   );
 }
