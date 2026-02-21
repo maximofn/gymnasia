@@ -2,15 +2,30 @@
   "expo": {
     "name": "Gymnasia",
     "slug": "gymnasia",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "ios": {
-      "supportsTablet": false
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     },
-    "android": {},
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.maximofn.gymnasia",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.maximofn.gymnasia"
+    },
     "web": {
       "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "939caf71-3ed8-49a4-a3e9-d60c2a8da194"
+      }
     }
   }
 }
