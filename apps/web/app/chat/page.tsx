@@ -1,177 +1,314 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import { api, ChatMessage, ChatThread } from "@/lib/api";
-
-const sections = [
-  { id: "training", label: "Entrenamiento" },
-  { id: "diet", label: "Dieta" },
-  { id: "measures", label: "Medidas" }
-] as const;
-
-type SectionId = (typeof sections)[number]["id"];
+import { hasAuthToken } from "../../lib/api";
+import {
+  createChatThread,
+  deleteMemory,
+  listChatMessages,
+  listChatThreads,
+  listMemory,
+  sendChatMessage,
+  upsertMemory,
+  type ChatMessage,
+  type ChatThread,
+  type MemoryDomain,
+  type MemoryEntry,
+} from "../../lib/chat";
+import { hasAnyActiveAIKey, listAIKeys } from "../../lib/ai-keys";
 
 export default function ChatPage() {
-  const [section, setSection] = useState<SectionId>("training");
+  const searchParams = useSearchParams();
+  const forcedEnabledRaw = searchParams.get("enabled");
+  const forcedEnabled = forcedEnabledRaw === "1" ? true : forcedEnabledRaw === "0" ? false : null;
+
+  const [tokenAvailable, setTokenAvailable] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [enabledByKey, setEnabledByKey] = useState(false);
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [newThreadTitle, setNewThreadTitle] = useState("Conversacion nueva");
-  const [messageText, setMessageText] = useState("");
+  const [memoryEntries, setMemoryEntries] = useState<MemoryEntry[]>([]);
+  const [draftMessage, setDraftMessage] = useState("");
+  const [memoryKey, setMemoryKey] = useState("");
+  const [memoryValue, setMemoryValue] = useState("");
+  const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-  const activeThread = useMemo(() => threads.find((thread) => thread.id === activeThreadId) ?? null, [threads, activeThreadId]);
+  useEffect(() => {
+    setTokenAvailable(hasAuthToken());
+  }, []);
 
-  async function loadThreads(targetSection: SectionId) {
-    try {
-      const data = await api.listThreads(targetSection);
-      setThreads(data);
-      if (data.length > 0) {
-        setActiveThreadId(data[0].id);
-      } else {
-        setActiveThreadId(null);
-        setMessages([]);
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      if (forcedEnabled !== null) {
+        setEnabledByKey(forcedEnabled);
+        setLoading(false);
+        return;
       }
+
+      if (!tokenAvailable) {
+        setEnabledByKey(false);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
       setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudieron cargar hilos");
-    }
-  }
 
-  async function loadMessages(threadId: string) {
-    try {
-      const data = await api.listMessages(threadId);
-      setMessages(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudieron cargar mensajes");
+      try {
+        const keys = await listAIKeys();
+        const enabled = hasAnyActiveAIKey(keys);
+        if (!mounted) return;
+
+        setEnabledByKey(enabled);
+        if (!enabled) {
+          setLoading(false);
+          return;
+        }
+
+        let existingThreads = await listChatThreads();
+        if (!mounted) return;
+
+        if (existingThreads.length === 0) {
+          const created = await createChatThread("Coach principal");
+          existingThreads = [created];
+        }
+
+        setThreads(existingThreads);
+        setActiveThreadId(existingThreads[0].id);
+
+        const [threadMessages, memory] = await Promise.all([
+          listChatMessages(existingThreads[0].id, 300),
+          listMemory(),
+        ]);
+        if (!mounted) return;
+
+        setMessages(threadMessages);
+        setMemoryEntries(memory);
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "No se pudo cargar chat IA.");
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
     }
-  }
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [forcedEnabled, tokenAvailable]);
 
   useEffect(() => {
-    void loadThreads(section);
-  }, [section]);
+    if (!activeThreadId || !enabledByKey) return;
+    const threadId = activeThreadId;
 
-  useEffect(() => {
-    if (!activeThreadId) return;
-    void loadMessages(activeThreadId);
-  }, [activeThreadId]);
+    let mounted = true;
+    async function loadThreadMessages() {
+      try {
+        const threadMessages = await listChatMessages(threadId, 300);
+        if (mounted) setMessages(threadMessages);
+      } catch (err) {
+        if (mounted) setError(err instanceof Error ? err.message : "No se pudo cargar mensajes.");
+      }
+    }
 
-  async function handleCreateThread(event: FormEvent) {
+    loadThreadMessages();
+    return () => {
+      mounted = false;
+    };
+  }, [activeThreadId, enabledByKey]);
+
+  const enabled = useMemo(() => {
+    if (forcedEnabled !== null) return forcedEnabled;
+    return enabledByKey;
+  }, [forcedEnabled, enabledByKey]);
+
+  const sendMessage = async (event: FormEvent) => {
     event.preventDefault();
-    try {
-      const thread = await api.createThread(section, newThreadTitle || "Conversacion nueva");
-      await loadThreads(section);
-      setActiveThreadId(thread.id);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo crear el hilo");
-    }
-  }
+    if (!activeThreadId || !draftMessage.trim()) return;
 
-  async function handleSendMessage(event: FormEvent) {
-    event.preventDefault();
-    if (!activeThreadId || !messageText.trim()) return;
+    setSending(true);
+    setError(null);
+    setMessage(null);
 
     try {
-      const result = await api.sendMessage(activeThreadId, messageText.trim());
-      setMessages((prev) => [...prev, ...result]);
-      setMessageText("");
+      const created = await sendChatMessage(activeThreadId, draftMessage.trim());
+      setMessages((prev) => [...prev, ...created]);
+      setDraftMessage("");
+      const refreshed = await listChatThreads();
+      setThreads(refreshed);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo enviar mensaje");
+      setError(err instanceof Error ? err.message : "No se pudo enviar mensaje.");
+    } finally {
+      setSending(false);
     }
-  }
+  };
 
-  async function handleAudioSelected(event: ChangeEvent<HTMLInputElement>) {
-    if (!activeThreadId) return;
-    const audio = event.target.files?.[0];
-    if (!audio) return;
+  const saveMemory = async (domain: MemoryDomain = "global") => {
+    if (!memoryKey.trim() || !memoryValue.trim()) return;
+
+    setError(null);
+    setMessage(null);
 
     try {
-      const transcript = await api.sendAudio(activeThreadId, audio);
-      setMessageText(transcript.transcript);
-      await loadMessages(activeThreadId);
+      let parsed: Record<string, unknown>;
+      try {
+        parsed = JSON.parse(memoryValue) as Record<string, unknown>;
+      } catch {
+        parsed = { text: memoryValue };
+      }
+
+      const saved = await upsertMemory(domain, memoryKey.trim(), parsed);
+      setMemoryEntries((prev) => {
+        const rest = prev.filter((item) => !(item.domain === saved.domain && item.memory_key === saved.memory_key));
+        return [saved, ...rest];
+      });
+      setMemoryKey("");
+      setMemoryValue("");
+      setMessage("Memoria actualizada.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo transcribir audio");
+      setError(err instanceof Error ? err.message : "No se pudo guardar memoria.");
     }
-  }
+  };
+
+  const removeMemory = async (entry: MemoryEntry) => {
+    try {
+      await deleteMemory(entry.domain, entry.memory_key);
+      setMemoryEntries((prev) => prev.filter((item) => item.id !== entry.id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo borrar memoria.");
+    }
+  };
 
   return (
-    <section className="grid" style={{ gap: "1rem" }}>
-      <div className="panel" style={{ display: "grid", gap: ".6rem" }}>
-        <h2>Chat por seccion</h2>
-        <p>Backend unificado, contexto separado por Entrenamiento, Dieta y Medidas. Soporta texto y audio.</p>
-        {error && <p style={{ color: "#a53e2b" }}>{error}</p>}
-      </div>
+    <>
+      <p className="page-subtitle">Asistente</p>
+      <h1 className="page-title">Chat IA</h1>
 
-      <div className="panel" style={{ display: "grid", gap: ".7rem" }}>
-        <div className="row">
-          {sections.map((entry) => (
-            <button
-              key={entry.id}
-              className={entry.id === section ? "" : "secondary"}
-              onClick={() => setSection(entry.id)}
-            >
-              {entry.label}
-            </button>
-          ))}
-        </div>
+      {error ? <p className="status-message error">{error}</p> : null}
+      {message ? <p className="status-message ok">{message}</p> : null}
 
-        <form onSubmit={handleCreateThread} className="row">
-          <input value={newThreadTitle} onChange={(event) => setNewThreadTitle(event.target.value)} placeholder="Titulo" />
-          <button type="submit">Nuevo hilo</button>
-        </form>
+      {loading ? (
+        <section className="state-card">
+          <h3 className="state-title">Comprobando estado IA...</h3>
+          <div className="state-loading-list">
+            <div className="skeleton" />
+          </div>
+        </section>
+      ) : enabled ? (
+        <section className="chat-layout">
+          <aside className="chat-sidebar">
+            <div className="row">
+              <h3 className="info-title">Conversaciones</h3>
+              <button
+                className="action-pill"
+                onClick={async () => {
+                  try {
+                    const thread = await createChatThread("Nueva conversacion");
+                    setThreads((prev) => [thread, ...prev]);
+                    setActiveThreadId(thread.id);
+                    setMessages([]);
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : "No se pudo crear conversacion.");
+                  }
+                }}
+              >
+                +
+              </button>
+            </div>
 
-        <div className="row">
-          <div className="panel" style={{ flex: 1, minWidth: 220 }}>
-            <h3>Hilos</h3>
-            <div className="list" style={{ marginTop: ".6rem" }}>
-              {threads.length === 0 && <p>No hay hilos.</p>}
+            <div className="chat-thread-list">
               {threads.map((thread) => (
                 <button
                   key={thread.id}
-                  className={thread.id === activeThreadId ? "" : "secondary"}
+                  className={activeThreadId === thread.id ? "chat-thread-item active" : "chat-thread-item"}
                   onClick={() => setActiveThreadId(thread.id)}
-                  style={{ textAlign: "left" }}
                 >
-                  {thread.title}
+                  <p className="info-title">{thread.title ?? "Sin titulo"}</p>
+                  <p className="routine-meta">{thread.last_message_preview ?? "Sin mensajes"}</p>
                 </button>
               ))}
             </div>
+          </aside>
+
+          <div className="chat-main">
+            <div className="chat-message-list">
+              {messages.length === 0 ? (
+                <p className="state-text">Empieza una conversación con tu coach IA.</p>
+              ) : (
+                messages.map((entry) => (
+                  <article key={entry.id} className={entry.role === "assistant" ? "chat-msg assistant" : "chat-msg user"}>
+                    <p className="chat-msg-role">{entry.role === "assistant" ? "Coach IA" : "Tú"}</p>
+                    <p>{entry.content}</p>
+                  </article>
+                ))
+              )}
+            </div>
+
+            <form className="chat-input-row" onSubmit={sendMessage}>
+              <input
+                className="builder-input"
+                value={draftMessage}
+                onChange={(event) => setDraftMessage(event.target.value)}
+                placeholder="Pregunta sobre técnica, progresión o dieta..."
+              />
+              <button className="cta" disabled={sending}>
+                {sending ? "Enviando..." : "Enviar"}
+              </button>
+            </form>
           </div>
 
-          <div className="panel" style={{ flex: 2, minWidth: 280 }}>
-            <h3>{activeThread?.title ?? "Selecciona un hilo"}</h3>
-            <div className="chat-area" style={{ marginTop: ".6rem" }}>
-              {messages.map((message) => (
-                <article key={message.id} className={`message ${message.role === "user" ? "user" : "assistant"}`}>
-                  {message.content}
+          <aside className="chat-memory">
+            <h3 className="info-title">Memoria</h3>
+            <div className="chat-memory-list">
+              {memoryEntries.map((entry) => (
+                <article key={entry.id} className="chat-memory-item">
+                  <p className="info-title">{entry.domain}: {entry.memory_key}</p>
+                  <p className="routine-meta">{JSON.stringify(entry.memory_value)}</p>
+                  <button className="action-pill danger" onClick={() => removeMemory(entry)}>
+                    Borrar
+                  </button>
                 </article>
               ))}
             </div>
-            {activeThreadId && (
-              <form onSubmit={handleSendMessage} style={{ display: "grid", gap: ".5rem", marginTop: ".8rem" }}>
-                <textarea
-                  placeholder="Escribe tu mensaje..."
-                  value={messageText}
-                  onChange={(event) => setMessageText(event.target.value)}
-                />
-                <div className="row">
-                  <button type="submit">Enviar</button>
-                  <label className="secondary" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                    Microfono
-                    <input
-                      type="file"
-                      accept="audio/*"
-                      onChange={handleAudioSelected}
-                      style={{ display: "none" }}
-                    />
-                  </label>
-                </div>
-              </form>
-            )}
+
+            <div className="chat-memory-editor">
+              <input
+                className="set-input"
+                value={memoryKey}
+                onChange={(event) => setMemoryKey(event.target.value)}
+                placeholder="memory_key"
+              />
+              <input
+                className="set-input"
+                value={memoryValue}
+                onChange={(event) => setMemoryValue(event.target.value)}
+                placeholder='{"text":"prefiere rutina torso-pierna"}'
+              />
+              <button className="tag" onClick={() => saveMemory("global")}>Guardar memoria</button>
+            </div>
+          </aside>
+        </section>
+      ) : (
+        <section className="state-card">
+          <h3 className="state-title">IA deshabilitada</h3>
+          <p className="state-text">Configura tu API key en Ajustes BYOK para activar el chat.</p>
+          <div style={{ marginTop: "16px" }}>
+            <Link href="/settings/byok" className="cta cta-link">
+              Ir a BYOK
+            </Link>
           </div>
-        </div>
-      </div>
-    </section>
+        </section>
+      )}
+    </>
   );
 }

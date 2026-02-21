@@ -1,0 +1,55 @@
+:root {
+  --bg-app: #07090d;
+  --bg-canvas: #0b0f14;
+  --bg-surface: #141820;
+  --bg-surface-alt: #1a1f28;
+  --bg-elevated: #202634;
+
+  --text-primary: #f4f7fb;
+  --text-secondary: #a6afbc;
+  --text-muted: #788395;
+  --text-inverse: #06090d;
+
+  --brand-primary: #cbff1a;
+  --brand-primary-hover: #d7ff48;
+  --brand-primary-pressed: #b4e600;
+  --brand-primary-soft: #243000;
+
+  --state-success: #19c37d;
+  --state-warning: #f4b400;
+  --state-danger: #ff4d4f;
+  --state-info: #4ea1ff;
+
+  --border-subtle: #252b35;
+  --border-strong: #323b49;
+  --border-focus: #cbff1a;
+
+  --shadow-low: 0 2px 8px rgba(0, 0, 0, 0.28);
+  --shadow-mid: 0 8px 24px rgba(0, 0, 0, 0.32);
+  --shadow-high: 0 18px 40px rgba(0, 0, 0, 0.4);
+  --shadow-glow-brand: 0 0 0 1px rgba(203, 255, 26, 0.35), 0 8px 30px rgba(203, 255, 26, 0.2);
+
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  --font-sans: "Inter", "SF Pro Text", "Segoe UI", sans-serif;
+  --font-display: "Inter", "SF Pro Display", "Segoe UI", sans-serif;
+
+  --sidebar-width: 240px;
+  --mobile-tab-height: 64px;
+}

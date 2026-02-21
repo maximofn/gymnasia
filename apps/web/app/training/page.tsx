@@ -1,278 +1,322 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
-import { SectionChat } from "@/components/section-chat";
-import { api, Exercise, TrainingPlan, TrainingSession } from "@/lib/api";
+import {
+  ApiError,
+  cloneWorkoutTemplate,
+  createWorkoutTemplate,
+  deleteWorkoutTemplate,
+  listWorkoutTemplates,
+  reorderWorkoutTemplates,
+  type WorkoutTemplate,
+} from "../../lib/workouts";
+import { enqueueSyncOperation } from "../../lib/sync";
 
-const muscleGroups = ["pecho", "espalda", "hombro", "biceps", "triceps", "pierna", "core", "cardio"];
+type TrainingState = "ready" | "loading" | "empty" | "error";
+
+const localFallbackTemplates: WorkoutTemplate[] = [
+  {
+    id: "local-r1",
+    name: "Tren superior — fuerza",
+    notes: null,
+    position: 0,
+    is_archived: false,
+    exercises: [],
+  },
+  {
+    id: "local-r2",
+    name: "Pierna — hipertrofia",
+    notes: null,
+    position: 1,
+    is_archived: false,
+    exercises: [],
+  },
+  {
+    id: "local-r3",
+    name: "Empuje + core",
+    notes: null,
+    position: 2,
+    is_archived: false,
+    exercises: [],
+  },
+];
+
+function resolveState(value: string | null): TrainingState | null {
+  if (value === "ready" || value === "loading" || value === "empty" || value === "error") {
+    return value;
+  }
+  return null;
+}
+
+function sortedByPosition(templates: WorkoutTemplate[]): WorkoutTemplate[] {
+  return [...templates].sort((a, b) => a.position - b.position);
+}
+
+function templateMeta(template: WorkoutTemplate): string {
+  const exerciseCount = template.exercises.length;
+  const setCount = template.exercises.reduce((acc, exercise) => acc + exercise.sets.length, 0);
+  return `${exerciseCount} ejercicios • ${setCount} series`;
+}
+
+function StateLinks({ active }: { active: TrainingState }) {
+  return (
+    <div className="routines-toolbar" aria-label="Vista de estados">
+      <Link href="/training?state=ready" className={active === "ready" ? "tag active" : "tag"}>
+        Normal
+      </Link>
+      <Link href="/training?state=loading" className={active === "loading" ? "tag active" : "tag"}>
+        Cargando
+      </Link>
+      <Link href="/training?state=empty" className={active === "empty" ? "tag active" : "tag"}>
+        Vacio
+      </Link>
+      <Link href="/training?state=error" className={active === "error" ? "tag active" : "tag"}>
+        Error
+      </Link>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <section className="state-card">
+      <h3 className="state-title">Cargando rutinas...</h3>
+      <p className="state-text">Obteniendo entrenamientos guardados.</p>
+      <div className="state-loading-list">
+        <div className="skeleton" />
+        <div className="skeleton" />
+        <div className="skeleton" />
+      </div>
+    </section>
+  );
+}
+
+function EmptyState({ onCreate }: { onCreate: () => void }) {
+  return (
+    <section className="state-card">
+      <h3 className="state-title">No tienes rutinas creadas</h3>
+      <p className="state-text">Crea tu primera rutina para empezar a registrar sesiones.</p>
+      <div style={{ marginTop: "16px" }}>
+        <button className="cta" onClick={onCreate}>
+          Nueva rutina
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <section className="state-card state-error">
+      <h3 className="state-title">No pudimos cargar tus rutinas</h3>
+      <p className="state-text">Revisa tu conexion y vuelve a intentarlo.</p>
+      <div style={{ marginTop: "16px" }}>
+        <button className="cta" onClick={onRetry}>
+          Reintentar
+        </button>
+      </div>
+    </section>
+  );
+}
 
 export default function TrainingPage() {
-  const [plans, setPlans] = useState<TrainingPlan[]>([]);
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [templates, setTemplates] = useState<WorkoutTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeSession, setActiveSession] = useState<TrainingSession | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-  const [newPlanName, setNewPlanName] = useState("");
-  const [newPlanDescription, setNewPlanDescription] = useState("");
+  const forcedState = resolveState(searchParams.get("state"));
 
-  const [newExerciseName, setNewExerciseName] = useState("");
-  const [newExerciseMuscle, setNewExerciseMuscle] = useState("pecho");
-  const [newExerciseEquipment, setNewExerciseEquipment] = useState("maquina");
-  const [exerciseQuery, setExerciseQuery] = useState("");
-  const [exerciseFilterMuscle, setExerciseFilterMuscle] = useState("");
+  async function loadTemplates() {
+    setLoading(true);
+    setError(null);
 
-  const activePlanName = useMemo(() => {
-    if (!activeSession?.plan_id) {
-      return null;
-    }
-    return plans.find((plan) => plan.id === activeSession.plan_id)?.name ?? "Entrenamiento";
-  }, [activeSession, plans]);
-
-  async function loadData() {
     try {
-      setLoading(true);
-      const [plansResponse, exercisesResponse] = await Promise.all([api.listPlans(), api.listExercises()]);
-      setPlans(plansResponse);
-      setExercises(exercisesResponse);
-      setError(null);
+      const data = await listWorkoutTemplates();
+      setTemplates(sortedByPosition(data));
+      setMessage(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo cargar Entrenamiento");
+      if (err instanceof ApiError && err.status === 401) {
+        setTemplates(localFallbackTemplates);
+        setMessage("Modo local: inicia sesion para sincronizar rutinas con servidor.");
+      } else {
+        setError(err instanceof Error ? err.message : "No se pudieron cargar rutinas.");
+      }
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    void loadData();
+    loadTemplates();
   }, []);
 
-  async function handleCreatePlan(event: FormEvent) {
-    event.preventDefault();
-    if (!newPlanName.trim()) return;
+  const computedState = useMemo<TrainingState>(() => {
+    if (forcedState) return forcedState;
+    if (loading) return "loading";
+    if (error) return "error";
+    if (templates.length === 0) return "empty";
+    return "ready";
+  }, [forcedState, loading, error, templates.length]);
+
+  const createRoutine = async () => {
+    const name = window.prompt("Nombre de la rutina", "Nueva rutina");
+    if (!name || !name.trim()) return;
+
+    setError(null);
 
     try {
-      await api.createPlan(newPlanName.trim(), newPlanDescription.trim() || undefined);
-      setNewPlanName("");
-      setNewPlanDescription("");
-      await loadData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo crear entrenamiento");
-    }
-  }
-
-  async function handleClonePlan(planId: string) {
-    try {
-      await api.clonePlan(planId);
-      await loadData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo clonar entrenamiento");
-    }
-  }
-
-  async function handleDeletePlan(planId: string) {
-    try {
-      await api.deletePlan(planId);
-      await loadData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo borrar entrenamiento");
-    }
-  }
-
-  async function handleStartSession(planId: string) {
-    try {
-      const session = await api.startSession(planId);
-      setActiveSession(session);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo iniciar sesion");
-    }
-  }
-
-  async function handleFinishSession(updateTemplate: boolean) {
-    if (!activeSession) return;
-
-    try {
-      const session = await api.finishSession(activeSession.id, updateTemplate);
-      setActiveSession(session);
-      await loadData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo cerrar sesion");
-    }
-  }
-
-  async function handleCreateExercise(event: FormEvent) {
-    event.preventDefault();
-    if (!newExerciseName.trim()) return;
-
-    try {
-      await api.createExercise({
-        name: newExerciseName.trim(),
-        muscle_group: newExerciseMuscle,
-        equipment: newExerciseEquipment,
-        tags: []
+      const created = await createWorkoutTemplate({
+        name: name.trim(),
+        notes: undefined,
+        exercises: [],
       });
-      setNewExerciseName("");
-      await loadData();
+      enqueueSyncOperation({
+        entityType: "workout_template",
+        entityId: created.id,
+        opType: "upsert",
+        payload: { name: created.name },
+      });
+      router.push(`/training/${created.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo crear ejercicio");
+      if (err instanceof ApiError && err.status === 401) {
+        const fallbackId = `local-${Date.now()}`;
+        router.push(`/training/${fallbackId}`);
+      } else {
+        setError(err instanceof Error ? err.message : "No se pudo crear la rutina.");
+      }
     }
-  }
+  };
 
-  async function handleFilterExercises() {
+  const cloneRoutine = async (template: WorkoutTemplate) => {
+    setError(null);
+
     try {
-      const data = await api.listExercises(exerciseQuery || undefined, exerciseFilterMuscle || undefined);
-      setExercises(data);
+      const cloned = await cloneWorkoutTemplate(template.id);
+      router.push(`/training/${cloned.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo filtrar ejercicios");
+      if (err instanceof ApiError && err.status === 401) {
+        setMessage("Modo local: clonado disponible al conectar API.");
+      } else {
+        setError(err instanceof Error ? err.message : "No se pudo clonar rutina.");
+      }
     }
-  }
+  };
 
-  if (loading) {
-    return <div className="panel">Cargando modulo de entrenamiento...</div>;
-  }
+  const removeRoutine = async (template: WorkoutTemplate) => {
+    if (!window.confirm(`¿Eliminar la rutina \"${template.name}\"?`)) return;
+
+    setError(null);
+
+    try {
+      await deleteWorkoutTemplate(template.id);
+      enqueueSyncOperation({
+        entityType: "workout_template",
+        entityId: template.id,
+        opType: "delete",
+      });
+      setTemplates((prev) => prev.filter((item) => item.id !== template.id));
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        setMessage("Modo local: borrado disponible al conectar API.");
+      } else {
+        setError(err instanceof Error ? err.message : "No se pudo borrar rutina.");
+      }
+    }
+  };
+
+  const moveRoutine = async (templateIndex: number, direction: -1 | 1) => {
+    const target = templateIndex + direction;
+    if (target < 0 || target >= templates.length) return;
+
+    const next = [...templates];
+    const current = next[templateIndex];
+    next[templateIndex] = next[target];
+    next[target] = current;
+
+    const normalized = next.map((item, index) => ({ ...item, position: index }));
+    setTemplates(normalized);
+
+    try {
+      await reorderWorkoutTemplates(normalized.map((item) => item.id));
+      enqueueSyncOperation({
+        entityType: "workout_template_order",
+        opType: "upsert",
+        payload: { template_ids: normalized.map((item) => item.id) },
+      });
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        setMessage("Modo local: reordenado visual, sin sincronizacion.");
+        return;
+      }
+      setError(err instanceof Error ? err.message : "No se pudo reordenar.");
+      loadTemplates();
+    }
+  };
 
   return (
-    <section className="grid" style={{ gap: "1rem" }}>
-      <div className="panel" style={{ display: "grid", gap: ".6rem" }}>
-        <h2>Entrenamiento</h2>
-        <p>Plantillas + sesiones realizadas. Al cerrar sesion decides si actualizas la plantilla o solo guardas el dia.</p>
-        {error && <p style={{ color: "#a53e2b" }}>{error}</p>}
+    <>
+      <div className="row">
+        <div>
+          <p className="page-subtitle">Entrenamiento</p>
+          <h1 className="page-title">Rutinas</h1>
+        </div>
+        <button className="cta" onClick={createRoutine}>
+          Nueva rutina
+        </button>
       </div>
 
-      {activeSession && !activeSession.finished_at && (
-        <div className="panel" style={{ display: "grid", gap: ".7rem", borderColor: "#0f5f3f" }}>
-          <div className="row">
-            <div>
-              <h3>Sesion activa</h3>
-              <p>
-                {activePlanName ?? "Entrenamiento"} | Inicio {new Date(activeSession.started_at).toLocaleTimeString("es-ES")}
-              </p>
-            </div>
-            <div className="pill" style={{ width: "fit-content" }}>
-              Temporizador de descanso disponible en flujo de series
-            </div>
-          </div>
-          <div className="row">
-            <button onClick={() => void handleFinishSession(false)} className="secondary">
-              Guardar solo hoy
-            </button>
-            <button onClick={() => void handleFinishSession(true)}>Actualizar plantilla</button>
-          </div>
-        </div>
-      )}
+      {message ? <p className="status-message ok">{message}</p> : null}
+      {error && !forcedState ? <p className="status-message error">{error}</p> : null}
 
-      <div className="grid two">
-        <form className="panel" onSubmit={handleCreatePlan} style={{ display: "grid", gap: ".6rem" }}>
-          <h3>Nuevo entrenamiento</h3>
-          <input
-            placeholder="Nombre del entrenamiento"
-            value={newPlanName}
-            onChange={(event) => setNewPlanName(event.target.value)}
-            required
-          />
-          <textarea
-            placeholder="Descripcion opcional"
-            value={newPlanDescription}
-            onChange={(event) => setNewPlanDescription(event.target.value)}
-          />
-          <button type="submit">Crear entrenamiento</button>
-        </form>
+      <StateLinks active={computedState} />
 
-        <div className="panel" style={{ display: "grid", gap: ".6rem" }}>
-          <h3>Entrenamientos guardados</h3>
-          <div className="list">
-            {plans.length === 0 && <p>No hay entrenamientos todavia.</p>}
-            {plans.map((plan) => (
-              <article className="item" key={plan.id}>
-                <div className="row" style={{ alignItems: "center" }}>
-                  <div>
-                    <strong>{plan.name}</strong>
-                    <p style={{ margin: "0.2rem 0 0" }}>Version {plan.version}</p>
-                  </div>
-                  <div className="pill" style={{ width: "fit-content" }}>
-                    Posicion {plan.position}
-                  </div>
+      {computedState === "loading" ? <LoadingState /> : null}
+      {computedState === "error" ? <ErrorState onRetry={loadTemplates} /> : null}
+      {computedState === "empty" ? <EmptyState onCreate={createRoutine} /> : null}
+
+      {computedState === "ready" ? (
+        <div className="routine-list">
+          {templates.map((template, index) => (
+            <article key={template.id} className="routine-item">
+              <div className="row routine-row-wrap">
+                <div>
+                  <h3 className="routine-title">
+                    <Link href={`/training/${template.id}`}>{template.name}</Link>
+                  </h3>
+                  <p className="routine-meta">{templateMeta(template)}</p>
                 </div>
-                <div className="row" style={{ marginTop: ".5rem" }}>
-                  <button onClick={() => void handleStartSession(plan.id)}>Realizar</button>
-                  <button className="secondary" onClick={() => void handleClonePlan(plan.id)}>
+                <div className="routine-actions">
+                  <Link href={`/training/${template.id}`} className="action-pill">
+                    Abrir
+                  </Link>
+                  <button className="action-pill" onClick={() => router.push(`/training/${template.id}`)}>
+                    Editar
+                  </button>
+                  <button className="action-pill" onClick={() => cloneRoutine(template)}>
                     Clonar
                   </button>
-                  <button className="danger" onClick={() => void handleDeletePlan(plan.id)}>
+                  <button className="action-pill" onClick={() => moveRoutine(index, -1)}>
+                    ↑
+                  </button>
+                  <button className="action-pill" onClick={() => moveRoutine(index, 1)}>
+                    ↓
+                  </button>
+                  <button className="action-pill danger" onClick={() => removeRoutine(template)}>
                     Borrar
                   </button>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+            </article>
+          ))}
         </div>
-      </div>
-
-      <div className="grid two">
-        <form className="panel" onSubmit={handleCreateExercise} style={{ display: "grid", gap: ".6rem" }}>
-          <h3>Biblioteca de ejercicios</h3>
-          <input
-            placeholder="Nombre del ejercicio"
-            value={newExerciseName}
-            onChange={(event) => setNewExerciseName(event.target.value)}
-            required
-          />
-          <div className="row">
-            <select value={newExerciseMuscle} onChange={(event) => setNewExerciseMuscle(event.target.value)}>
-              {muscleGroups.map((group) => (
-                <option key={group} value={group}>
-                  {group}
-                </option>
-              ))}
-            </select>
-            <input
-              placeholder="Equipo (maquina, barra...)"
-              value={newExerciseEquipment}
-              onChange={(event) => setNewExerciseEquipment(event.target.value)}
-            />
-          </div>
-          <button type="submit">Crear ejercicio</button>
-        </form>
-
-        <div className="panel" style={{ display: "grid", gap: ".6rem" }}>
-          <h3>Buscar ejercicio</h3>
-          <div className="row">
-            <input
-              placeholder="Filtrar por nombre"
-              value={exerciseQuery}
-              onChange={(event) => setExerciseQuery(event.target.value)}
-            />
-            <select value={exerciseFilterMuscle} onChange={(event) => setExerciseFilterMuscle(event.target.value)}>
-              <option value="">Todos los grupos</option>
-              {muscleGroups.map((group) => (
-                <option key={group} value={group}>
-                  {group}
-                </option>
-              ))}
-            </select>
-            <button onClick={() => void handleFilterExercises()}>Filtrar</button>
-          </div>
-          <div className="list">
-            {exercises.map((exercise) => (
-              <article className="item" key={exercise.id}>
-                <strong>{exercise.name}</strong>
-                <p style={{ margin: "0.3rem 0" }}>
-                  {exercise.muscle_group} | {exercise.equipment}
-                </p>
-                <div className="row">
-                  <button className="secondary">Foto maquina</button>
-                  <button className="secondary">Generar imagen (nano banana)</button>
-                  <button className="secondary">Generar video (veo3)</button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <SectionChat section="training" />
-    </section>
+      ) : null}
+    </>
   );
 }

@@ -1,165 +1,489 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { SectionChat } from "@/components/section-chat";
-import { api, DailyDiet, FoodItem } from "@/lib/api";
+import { ApiError, hasAuthToken } from "../../lib/api";
+import {
+  defaultDietItem,
+  emptyDietDay,
+  getDietDay,
+  getTodayISODate,
+  sumDayCalories,
+  upsertDietDay,
+  type DietDay,
+  type DietItem,
+} from "../../lib/diet";
+import { createUploadIntent, estimateDietFromPhoto } from "../../lib/media";
+import { enqueueSyncOperation } from "../../lib/sync";
+
+const LOCAL_DIET_PREFIX = "gimnasia_diet_day_";
+
+function localDietKey(dayDate: string): string {
+  return `${LOCAL_DIET_PREFIX}${dayDate}`;
+}
+
+function parseNumberInput(value: string): number | null {
+  if (!value.trim()) return null;
+  const normalized = value.replace(",", ".");
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed)) return null;
+  return parsed;
+}
+
+function readLocalDay(dayDate: string): DietDay | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = localStorage.getItem(localDietKey(dayDate));
+    if (!raw) return null;
+    return JSON.parse(raw) as DietDay;
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalDay(dayDate: string, day: DietDay): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(localDietKey(dayDate), JSON.stringify(day));
+}
+
+function normalizeDay(day: DietDay): DietDay {
+  const withDefaultMeals = day.meals.length > 0 ? day.meals : emptyDietDay(day.day_date).meals;
+
+  return {
+    ...day,
+    meals: withDefaultMeals.map((meal) => ({
+      ...meal,
+      title: meal.title ?? null,
+      items: meal.items ?? [],
+    })),
+  };
+}
+
+function sumMacro(day: DietDay, macro: keyof Pick<DietItem, "protein_g" | "carbs_g" | "fat_g">): number {
+  return day.meals.reduce((mealAcc, meal) => {
+    return mealAcc + meal.items.reduce((itemAcc, item) => itemAcc + (item[macro] ?? 0), 0);
+  }, 0);
+}
 
 export default function DietPage() {
-  const [dailyDiets, setDailyDiets] = useState<DailyDiet[]>([]);
-  const [foods, setFoods] = useState<FoodItem[]>([]);
+  const [dayDate, setDayDate] = useState(getTodayISODate());
+  const [day, setDay] = useState<DietDay | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [estimatingMealType, setEstimatingMealType] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const [dietDate, setDietDate] = useState(new Date().toISOString().slice(0, 10));
-  const [dietName, setDietName] = useState("Dieta diaria");
-
-  const [foodName, setFoodName] = useState("");
-  const [foodProtein, setFoodProtein] = useState("0");
-  const [foodCarbs, setFoodCarbs] = useState("0");
-  const [foodFats, setFoodFats] = useState("0");
-  const [foodCalories, setFoodCalories] = useState("0");
-
-  async function loadData() {
-    try {
-      const [diets, foodsResponse] = await Promise.all([api.listDailyDiets(), api.listFoods()]);
-      setDailyDiets(diets);
-      setFoods(foodsResponse);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo cargar Dieta");
-    }
-  }
+  const [message, setMessage] = useState<string | null>(null);
+  const [tokenAvailable, setTokenAvailable] = useState(false);
 
   useEffect(() => {
-    void loadData();
+    setTokenAvailable(hasAuthToken());
   }, []);
 
-  async function handleCreateDiet(event: FormEvent) {
-    event.preventDefault();
-    try {
-      await api.createDailyDiet({
-        diet_date: dietDate,
-        name: dietName,
-        phase: "mantenimiento"
-      });
-      await loadData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo crear la dieta diaria");
-    }
-  }
+  useEffect(() => {
+    let mounted = true;
 
-  async function handleCreateFood(event: FormEvent) {
-    event.preventDefault();
-    try {
-      await api.createFood({
-        name: foodName,
-        unit: "g",
-        protein_per_100g: Number(foodProtein),
-        carbs_per_100g: Number(foodCarbs),
-        fats_per_100g: Number(foodFats),
-        calories_per_100g: Number(foodCalories)
-      });
-      setFoodName("");
-      await loadData();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo crear alimento");
+    async function loadDay() {
+      setLoading(true);
+      setError(null);
+      setMessage(null);
+
+      try {
+        const remoteDay = await getDietDay(dayDate);
+        if (mounted) {
+          if (remoteDay) {
+            setDay(normalizeDay(remoteDay));
+          } else {
+            const localDay = readLocalDay(dayDate);
+            setDay(localDay ? normalizeDay(localDay) : emptyDietDay(dayDate));
+          }
+        }
+      } catch (err) {
+        if (!mounted) return;
+
+        const localDay = readLocalDay(dayDate);
+        setDay(localDay ? normalizeDay(localDay) : emptyDietDay(dayDate));
+
+        if (err instanceof ApiError && err.status === 401) {
+          setMessage("Modo local: añade token para sincronizar dieta con servidor.");
+        } else {
+          setError(err instanceof Error ? err.message : "No se pudo cargar la dieta.");
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
     }
+
+    loadDay();
+
+    return () => {
+      mounted = false;
+    };
+  }, [dayDate]);
+
+  useEffect(() => {
+    if (!day) return;
+    writeLocalDay(dayDate, day);
+  }, [dayDate, day]);
+
+  const totals = useMemo(() => {
+    if (!day) {
+      return {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+      };
+    }
+
+    return {
+      calories: sumDayCalories(day),
+      protein: sumMacro(day, "protein_g"),
+      carbs: sumMacro(day, "carbs_g"),
+      fat: sumMacro(day, "fat_g"),
+    };
+  }, [day]);
+
+  const updateMealTitle = (mealIndex: number, title: string) => {
+    setDay((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        meals: prev.meals.map((meal, index) => {
+          if (index !== mealIndex) return meal;
+          return { ...meal, title };
+        }),
+      };
+    });
+  };
+
+  const addItem = (mealIndex: number) => {
+    setDay((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        meals: prev.meals.map((meal, index) => {
+          if (index !== mealIndex) return meal;
+          return {
+            ...meal,
+            items: [...meal.items, defaultDietItem()],
+          };
+        }),
+      };
+    });
+  };
+
+  const removeItem = (mealIndex: number, itemIndex: number) => {
+    setDay((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        meals: prev.meals.map((meal, index) => {
+          if (index !== mealIndex) return meal;
+          return {
+            ...meal,
+            items: meal.items.filter((_, idx) => idx !== itemIndex),
+          };
+        }),
+      };
+    });
+  };
+
+  const updateItem = (mealIndex: number, itemIndex: number, updater: (item: DietItem) => DietItem) => {
+    setDay((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        meals: prev.meals.map((meal, index) => {
+          if (index !== mealIndex) return meal;
+          return {
+            ...meal,
+            items: meal.items.map((item, idx) => {
+              if (idx !== itemIndex) return item;
+              return updater(item);
+            }),
+          };
+        }),
+      };
+    });
+  };
+
+  const saveDay = async () => {
+    if (!day) return;
+
+    setSaving(true);
+    setError(null);
+    setMessage(null);
+
+    try {
+      const saved = await upsertDietDay(dayDate, day);
+      setDay(normalizeDay(saved));
+      enqueueSyncOperation({
+        entityType: "diet_day",
+        entityId: dayDate,
+        opType: "upsert",
+        payload: { meals: day.meals.length },
+      });
+      setMessage("Dieta guardada.");
+    } catch (err) {
+      writeLocalDay(dayDate, day);
+      if (err instanceof ApiError && err.status === 401) {
+        setMessage("Sin token/API: cambios guardados solo en local.");
+      } else {
+        setError(err instanceof Error ? err.message : "No se pudo guardar la dieta.");
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const estimateMealFromPhoto = async (mealType: string) => {
+    if (!day) return;
+    setEstimatingMealType(mealType);
+    setError(null);
+    setMessage(null);
+
+    try {
+      const kind = "diet_photo";
+      const upload = await createUploadIntent(kind, `${mealType}-${dayDate}.jpg`);
+      const estimated = await estimateDietFromPhoto({
+        asset_id: upload.asset.id,
+        day_date: dayDate,
+        meal_type: mealType as "breakfast" | "lunch" | "snack" | "dinner" | "other",
+      });
+
+      setDay((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          meals: prev.meals.map((meal) => {
+            if (meal.meal_type !== mealType) return meal;
+            return {
+              ...meal,
+              items: [
+                ...meal.items,
+                {
+                  ...estimated.item,
+                },
+              ],
+            };
+          }),
+        };
+      });
+      enqueueSyncOperation({
+        entityType: "diet_photo_estimate",
+        entityId: estimated.item.id,
+        opType: "upsert",
+        payload: { day_date: dayDate, meal_type: mealType, confidence: estimated.confidence_percent },
+      });
+      setMessage(`Estimacion IA añadida (${estimated.confidence_percent.toFixed(1)}% confianza).`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo estimar por foto.");
+    } finally {
+      setEstimatingMealType(null);
+    }
+  };
+
+  if (loading || !day) {
+    return (
+      <>
+        <p className="page-subtitle">Nutricion</p>
+        <h1 className="page-title">Dieta del Dia</h1>
+        <section className="state-card">
+          <h3 className="state-title">Cargando dieta...</h3>
+          <div className="state-loading-list">
+            <div className="skeleton" />
+            <div className="skeleton" />
+          </div>
+        </section>
+      </>
+    );
   }
 
   return (
-    <section className="grid" style={{ gap: "1rem" }}>
-      <div className="panel" style={{ display: "grid", gap: ".6rem" }}>
-        <h2>Dieta</h2>
-        <p>
-          Registro por dia con calculo de macros y calorias. La base inicial de alimentos es manual y las recetas son
-          escalables por raciones.
-        </p>
-        {error && <p style={{ color: "#a53e2b" }}>{error}</p>}
-      </div>
-
-      <div className="grid two">
-        <form className="panel" onSubmit={handleCreateDiet} style={{ display: "grid", gap: ".6rem" }}>
-          <h3>Nueva dieta diaria</h3>
-          <input type="date" value={dietDate} onChange={(event) => setDietDate(event.target.value)} required />
-          <input value={dietName} onChange={(event) => setDietName(event.target.value)} required />
-          <button type="submit">Crear dia</button>
-        </form>
-
-        <div className="panel" style={{ display: "grid", gap: ".6rem" }}>
-          <h3>Dias guardados</h3>
-          <div className="list">
-            {dailyDiets.length === 0 && <p>No hay dietas todavia.</p>}
-            {dailyDiets.map((diet) => (
-              <article className="item" key={diet.id}>
-                <strong>{diet.name}</strong>
-                <p style={{ margin: "0.2rem 0" }}>{diet.diet_date}</p>
-                <div className="pill">Fase: {diet.phase ?? "sin definir"}</div>
-              </article>
-            ))}
-          </div>
+    <>
+      <div className="row page-heading-wrap">
+        <div>
+          <p className="page-subtitle">Nutricion</p>
+          <h1 className="page-title">Dieta del Dia</h1>
+        </div>
+        <div className="row page-controls">
+          <label className="inline-label" htmlFor="diet-day-date">
+            Fecha
+          </label>
+          <input
+            id="diet-day-date"
+            className="builder-input inline-date"
+            type="date"
+            value={dayDate}
+            onChange={(event) => setDayDate(event.target.value)}
+          />
+          <button className="cta" onClick={saveDay} disabled={saving}>
+            {saving ? "Guardando..." : "Guardar dia"}
+          </button>
         </div>
       </div>
 
-      <div className="grid two">
-        <form className="panel" onSubmit={handleCreateFood} style={{ display: "grid", gap: ".6rem" }}>
-          <h3>Nuevo alimento manual</h3>
-          <input placeholder="Nombre" value={foodName} onChange={(event) => setFoodName(event.target.value)} required />
-          <div className="row">
-            <input
-              type="number"
-              step="0.1"
-              placeholder="Proteina/100g"
-              value={foodProtein}
-              onChange={(event) => setFoodProtein(event.target.value)}
-            />
-            <input
-              type="number"
-              step="0.1"
-              placeholder="Carbs/100g"
-              value={foodCarbs}
-              onChange={(event) => setFoodCarbs(event.target.value)}
-            />
-          </div>
-          <div className="row">
-            <input
-              type="number"
-              step="0.1"
-              placeholder="Grasas/100g"
-              value={foodFats}
-              onChange={(event) => setFoodFats(event.target.value)}
-            />
-            <input
-              type="number"
-              step="0.1"
-              placeholder="Calorias/100g"
-              value={foodCalories}
-              onChange={(event) => setFoodCalories(event.target.value)}
-            />
-          </div>
-          <button type="submit">Guardar alimento</button>
-        </form>
+      {!tokenAvailable ? <p className="status-message ok">Modo local activo (sin sesion).</p> : null}
+      {message ? <p className="status-message ok">{message}</p> : null}
+      {error ? <p className="status-message error">{error}</p> : null}
 
-        <div className="panel" style={{ display: "grid", gap: ".6rem" }}>
-          <h3>Alimentos creados</h3>
-          <div className="list">
-            {foods.length === 0 && <p>No hay alimentos aun.</p>}
-            {foods.map((food) => (
-              <article className="item" key={food.id}>
-                <strong>{food.name}</strong>
-                <p style={{ margin: "0.2rem 0" }}>
-                  P:{food.protein_per_100g} C:{food.carbs_per_100g} G:{food.fats_per_100g} kcal:{food.calories_per_100g}
-                </p>
-                <div className="row">
-                  <button className="secondary">Foto plato para estimar</button>
-                  <button className="secondary">Usar en receta</button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </div>
+      <section className="grid-4 nutrition-kpi-grid">
+        <article className="stat-card">
+          <p className="stat-label">Calorias</p>
+          <p className="stat-value small">{totals.calories.toFixed(0)} kcal</p>
+        </article>
+        <article className="stat-card">
+          <p className="stat-label">Proteina</p>
+          <p className="stat-value small">{totals.protein.toFixed(1)} g</p>
+        </article>
+        <article className="stat-card">
+          <p className="stat-label">Carbohidratos</p>
+          <p className="stat-value small">{totals.carbs.toFixed(1)} g</p>
+        </article>
+        <article className="stat-card">
+          <p className="stat-label">Grasas</p>
+          <p className="stat-value small">{totals.fat.toFixed(1)} g</p>
+        </article>
+      </section>
 
-      <SectionChat section="diet" />
-    </section>
+      <section className="builder-list">
+        {day.meals.map((meal, mealIndex) => (
+          <article key={`${meal.meal_type}-${mealIndex}`} className="builder-exercise-card">
+            <div className="row meal-header">
+              <input
+                className="builder-input title"
+                value={meal.title ?? ""}
+                onChange={(event) => updateMealTitle(mealIndex, event.target.value)}
+                placeholder="Nombre de comida"
+              />
+              <div className="routine-actions">
+                <button className="tag" onClick={() => addItem(mealIndex)}>
+                  Añadir item
+                </button>
+                <button
+                  className="tag"
+                  onClick={() => estimateMealFromPhoto(meal.meal_type)}
+                  disabled={estimatingMealType === meal.meal_type}
+                >
+                  {estimatingMealType === meal.meal_type ? "Estimando..." : "Estimar por foto"}
+                </button>
+              </div>
+            </div>
+
+            <div className="diet-table">
+              <div className="diet-grid-head">
+                <span>Comida</span>
+                <span>Gr</span>
+                <span>Kcal</span>
+                <span>P</span>
+                <span>C</span>
+                <span>G</span>
+                <span />
+              </div>
+
+              {meal.items.length === 0 ? (
+                <p className="muted">Sin items todavía.</p>
+              ) : (
+                meal.items.map((item, itemIndex) => (
+                  <div key={`${meal.meal_type}-${itemIndex}`} className="diet-grid-row">
+                    <input
+                      className="set-input"
+                      value={item.name}
+                      onChange={(event) =>
+                        updateItem(mealIndex, itemIndex, (current) => ({
+                          ...current,
+                          name: event.target.value,
+                        }))
+                      }
+                      placeholder="Arroz, pollo, fruta..."
+                    />
+                    <input
+                      className="set-input"
+                      type="number"
+                      step="0.1"
+                      value={item.grams ?? ""}
+                      onChange={(event) =>
+                        updateItem(mealIndex, itemIndex, (current) => ({
+                          ...current,
+                          grams: parseNumberInput(event.target.value),
+                        }))
+                      }
+                    />
+                    <input
+                      className="set-input"
+                      type="number"
+                      step="0.1"
+                      value={item.calories_kcal ?? ""}
+                      onChange={(event) =>
+                        updateItem(mealIndex, itemIndex, (current) => ({
+                          ...current,
+                          calories_kcal: parseNumberInput(event.target.value),
+                        }))
+                      }
+                    />
+                    <input
+                      className="set-input"
+                      type="number"
+                      step="0.1"
+                      value={item.protein_g ?? ""}
+                      onChange={(event) =>
+                        updateItem(mealIndex, itemIndex, (current) => ({
+                          ...current,
+                          protein_g: parseNumberInput(event.target.value),
+                        }))
+                      }
+                    />
+                    <input
+                      className="set-input"
+                      type="number"
+                      step="0.1"
+                      value={item.carbs_g ?? ""}
+                      onChange={(event) =>
+                        updateItem(mealIndex, itemIndex, (current) => ({
+                          ...current,
+                          carbs_g: parseNumberInput(event.target.value),
+                        }))
+                      }
+                    />
+                    <input
+                      className="set-input"
+                      type="number"
+                      step="0.1"
+                      value={item.fat_g ?? ""}
+                      onChange={(event) =>
+                        updateItem(mealIndex, itemIndex, (current) => ({
+                          ...current,
+                          fat_g: parseNumberInput(event.target.value),
+                        }))
+                      }
+                    />
+                    <button className="action-pill danger" onClick={() => removeItem(mealIndex, itemIndex)}>
+                      Borrar
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="section-card">
+        <h3 className="info-title">Notas del dia</h3>
+        <textarea
+          className="text-area"
+          rows={4}
+          value={day.notes ?? ""}
+          onChange={(event) =>
+            setDay((prev) => {
+              if (!prev) return prev;
+              return { ...prev, notes: event.target.value };
+            })
+          }
+          placeholder="Sensaciones, hambre, adherencia, etc."
+        />
+      </section>
+    </>
   );
 }
