@@ -1,12 +1,20 @@
 {
   "name": "gymnasia",
   "private": true,
-  "packageManager": "pnpm@10.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "overrides": {
+    "expo": {
+      "react-native": "0.74.5"
+    },
+    "react-native": "0.74.5"
+  },
   "scripts": {
-    "dev:web": "pnpm --filter web dev",
-    "dev:mobile": "pnpm --filter mobile start",
-    "dev:api": "uvicorn app.main:app --reload --app-dir apps/api",
-    "lint:web": "pnpm --filter web lint",
-    "typecheck": "pnpm -r typecheck"
+    "dev:web": "npm --workspace apps/web run dev",
+    "dev:mobile": "npm --workspace apps/mobile run start",
+    "dev:api": "cd apps/api && uvicorn app.main:app --reload",
+    "build:web": "npm --workspace apps/web run build"
   }
 }
