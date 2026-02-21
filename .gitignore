@@ -1,44 +1,53 @@
 # Node
 node_modules/
+.npm/
 .pnpm-store/
+.yarn/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # Python
 __pycache__/
-*.py[cod]
-*.so
-*.egg-info/
+*.pyc
+*.pyo
+*.pyd
 .venv/
 venv/
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Env
+# Environment
 .env
 .env.*
 !.env.example
 
-# Build
-.next/
-out/
+# Build outputs
 dist/
 build/
+.next/
+out/
+.expo/
+.expo-shared/
 coverage/
 *.tsbuildinfo
 
-# Expo / React Native
-.expo/
-.expo-shared/
-*.jks
-
 # OS
 .DS_Store
+Thumbs.db
 
-# Logs
-*.log
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# Supabase local temp
-supabase/.temp/
-
-# Uploads/cache
-uploads/
-.tmp/
+# Local agent/tool state
+.claude/
