@@ -109,6 +109,145 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-02-23 - Diet foods now support edit/delete via three-dot action menu
+- Failure:
+  Foods already added in `Dieta` could not be edited or removed from the meal cards.
+- Root cause:
+  Food rows only rendered static nutrition text and kcal value, without per-item actions.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` meal item rows:
+     - added right-side `more-vertical` (three-dot) action trigger per food item.
+     - added contextual menu with `Editar` and `Eliminar`.
+  2. Added edit/delete logic in `apps/mobile/App.tsx`:
+     - `startEditDietItem(...)` pre-fills inline editor with selected item values.
+     - `addMeal()` now updates existing item when edit mode is active.
+     - `deleteDietItem(...)` removes selected item from its meal.
+  3. Updated inline editor controls:
+     - save button text switches to `Guardar cambios` when editing an existing item.
+     - cancel resets edit state and clears temporary inputs.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Estimator JSON now includes dish name and auto-fills title field
+- Failure:
+  `Devuelve json` responses only included nutrition metrics and did not include the dish name, so the food title field could not be reliably auto-filled from model output.
+- Root cause:
+  Estimator system prompt and JSON parser contract only required `calories_kcal`, `protein_g`, `carbs_g`, and `fat_g`.
+- Exact fix steps/commands:
+  1. Updated estimator system prompt in `apps/mobile/App.tsx`:
+     - JSON key contract now requires:
+       `dish_name`, `calories_kcal`, `protein_g`, `carbs_g`, `fat_g`.
+  2. Updated JSON parser in `apps/mobile/App.tsx`:
+     - parser now requires non-empty `dish_name` in addition to nutrition keys.
+  3. Updated meal auto-fill flow in `apps/mobile/App.tsx`:
+     - `Añadir alimento` from estimator now sets meal title from `dish_name`.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Estimator `Añadir alimento` now auto-fills meal form without showing raw JSON
+- Failure:
+  Pressing estimator `Añadir alimento` showed model JSON in chat instead of applying nutrition values to the inline meal form.
+- Root cause:
+  The action reused generic chat send flow (`Devuelve json`) and rendered assistant output as a normal message bubble.
+- Exact fix steps/commands:
+  1. Added JSON parser utility in `apps/mobile/App.tsx`:
+     - parses strict nutrition payload keys: `calories_kcal`, `protein_g`, `carbs_g`, `fat_g`.
+     - supports fenced payload fallback extraction.
+  2. Added dedicated action flow `addFoodFromEstimatorJSON()` in `apps/mobile/App.tsx`:
+     - requests model with `Devuelve json` in-memory.
+     - does not append model JSON to chat messages.
+     - fills inline meal inputs (`kcal`, `P`, `C`, `G`) directly from parsed JSON.
+     - auto-fills title with `Alimento estimado IA` when empty.
+  3. Updated estimator modal button behavior:
+     - `Añadir alimento` now triggers `addFoodFromEstimatorJSON()` instead of generic chat send.
+     - stays disabled until first LLM response and while no inline meal editor is open.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Removed duplicated provider mention from estimator chat intro
+- Failure:
+  Estimator chat intro still displayed provider context (`Proveedor activo: ...`) even though header already shows `Proveedor estimador: ...`.
+- Root cause:
+  `openFoodEstimatorModal()` initialized assistant message with redundant provider-specific text.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - replaced provider intro message with neutral guidance:
+       `Sube fotos o describe la comida para comenzar la estimación.`
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Estimator intro copy simplified (removed `Nueva conversación de estimación iniciada`)
+- Failure:
+  The estimator modal started with verbose assistant copy (`Nueva conversación de estimación iniciada. Proveedor activo: ...`) that was no longer desired.
+- Root cause:
+  Initial estimator message in `openFoodEstimatorModal()` used hardcoded verbose text.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - initial assistant copy now uses only `Proveedor activo: <Proveedor>.`
+     - removed prefix `Nueva conversación de estimación iniciada.`
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - API keys now persist in AsyncStorage when SecureStore is unavailable
+- Failure:
+  In environments without `SecureStore` (e.g., web), provider API keys were lost after reload and users had to re-enter them.
+- Root cause:
+  Store serialization always stripped `api_key` fields before writing to `AsyncStorage`, while secure key read/write short-circuited when `SecureStore` was unavailable.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` persistence strategy:
+     - added `serializeStoreForAsyncStorage(store, secureStoreAvailable)`.
+     - when `SecureStore` is available: keeps current secure behavior (keys stripped from AsyncStorage).
+     - when `SecureStore` is unavailable: preserves API keys in AsyncStorage fallback.
+  2. Applied serializer in both hydration and steady-state persistence flows.
+  3. Updated warning copy in `Proveedor IA`:
+     - now explicitly states keys are stored in local AsyncStorage without secure encryption.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Food estimator chat now includes gated `Añadir alimento` JSON action
+- Failure:
+  The estimator chat had no dedicated action to request structured nutrition output for adding food, and prompt behavior for JSON responses was undefined.
+- Root cause:
+  `apps/mobile/App.tsx` only exposed free-text send in estimator chat and system prompt did not specify a strict JSON-only response path.
+- Exact fix steps/commands:
+  1. Updated estimator system prompt in `apps/mobile/App.tsx`:
+     - when user sends `Devuelve json` or `Devuelve el json`, model must return JSON-only with keys:
+       `calories_kcal`, `protein_g`, `carbs_g`, `fat_g`.
+  2. Added estimator state gate in `apps/mobile/App.tsx`:
+     - `foodEstimatorHasLLMResponse` starts `false` on modal open.
+     - switches to `true` only after first successful LLM assistant response.
+  3. Added chat action button in estimator modal:
+     - new `Añadir alimento` button appears in chat action area.
+     - disabled until first LLM response.
+     - on press sends fixed message `Devuelve json`.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Inline meal editor now includes `Estimar con IA` between save and cancel actions
+- Failure:
+  In `Dieta > Añadir alimento` (inline editor), actions only showed `Guardar alimento` and `Cancelar`.
+- Root cause:
+  The inline action row did not include the AI estimator trigger required by the updated meal-entry workflow.
+- Exact fix steps/commands:
+  1. Updated inline editor action row in `apps/mobile/App.tsx`:
+     - inserted `Estimar con IA` button between `Guardar alimento` and `Cancelar`.
+     - wired button to `openFoodEstimatorModal`.
+     - adjusted action button widths to `flex: 1` for balanced layout.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Inline `Añadir alimento` macro fields no longer overflow card width
+- Failure:
+  In `Dieta`, when opening `Añadir alimento` inside a meal card, macro inputs (`P`, `C`, `G`) could exceed the visible width.
+- Root cause:
+  The inline macro inputs were rendered in a single horizontal row, which overflowed on constrained viewport widths.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` in the inline meal editor:
+     - changed macro inputs container from horizontal row to vertical stack.
+     - set each macro input to `width: 100%`.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-02-23 - Diet tab layout aligned to design reference with fixed meal categories
 - Failure:
   `Dieta` did not match `[Image #1]`: it used a generic form/list flow and allowed arbitrary meal titles instead of the required meal sections.

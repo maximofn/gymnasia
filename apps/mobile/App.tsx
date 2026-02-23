@@ -169,6 +169,8 @@ type FoodEstimatorImage = {
   base64: string;
   mime_type: string;
 };
+type DietItemMenuState = { meal_id: string; item_id: string } | null;
+type DietEditingItemState = { meal_id: string; item_id: string } | null;
 type TrainingFilter = "all" | "strength" | "hypertrophy" | "cardio" | "flexibility";
 type TrainingCategory = Exclude<TrainingFilter, "all">;
 type TemplateSeriesPointer = {
@@ -220,6 +222,8 @@ const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Tu tarea es estimar siempre: calorías totales (kcal), gramos de proteína, gramos de carbohidratos, gramos de grasas y peso total de la comida en gramos. " +
   "Si la información es incierta, indica rangos aproximados y explica supuestos breves. " +
   "Responde en español, de forma clara y práctica. " +
+  "Si el usuario pide 'Devuelve json' o 'Devuelve el json', responde únicamente con JSON válido y sin texto adicional, " +
+  "con estas claves exactas: dish_name, calories_kcal, protein_g, carbs_g, fat_g. " +
   "Cuando el usuario pregunte o debata, responde usando el contexto previo de la conversación y las fotos adjuntas.";
 const PROVIDER_UI_META: Record<
   Provider,
@@ -544,6 +548,14 @@ function stripSensitiveStoreData(store: LocalStore): LocalStore {
     ...store,
     keys: store.keys.map((item) => ({ ...item, api_key: "" })),
   };
+}
+
+function serializeStoreForAsyncStorage(
+  store: LocalStore,
+  secureStoreAvailable: boolean,
+): LocalStore {
+  if (!secureStoreAvailable) return store;
+  return stripSensitiveStoreData(store);
 }
 
 function mergeStoreWithSecureApiKeys(
@@ -1657,6 +1669,62 @@ function formatNutritionNumber(value: number): string {
   return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
 }
 
+function parseFoodEstimatorNutritionJSON(rawValue: string): {
+  dish_name: string;
+  calories_kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+} | null {
+  const normalized = rawValue.trim();
+  if (!normalized) return null;
+
+  const candidatePayloads: string[] = [normalized];
+  const withoutFences = normalized
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
+  if (withoutFences && withoutFences !== normalized) {
+    candidatePayloads.push(withoutFences);
+  }
+  const start = normalized.indexOf("{");
+  const end = normalized.lastIndexOf("}");
+  if (start >= 0 && end > start) {
+    const sliced = normalized.slice(start, end + 1).trim();
+    if (sliced) candidatePayloads.push(sliced);
+  }
+
+  for (const payload of candidatePayloads) {
+    try {
+      const parsed = JSON.parse(payload) as Record<string, unknown>;
+      const calories = normalizeDietNonNegativeNumber(parsed.calories_kcal);
+      const protein = normalizeDietNonNegativeNumber(parsed.protein_g);
+      const carbs = normalizeDietNonNegativeNumber(parsed.carbs_g);
+      const fat = normalizeDietNonNegativeNumber(parsed.fat_g);
+      const dishName = typeof parsed.dish_name === "string" ? parsed.dish_name.trim() : "";
+      const hasAllKeys =
+        Object.prototype.hasOwnProperty.call(parsed, "dish_name") &&
+        Object.prototype.hasOwnProperty.call(parsed, "calories_kcal") &&
+        Object.prototype.hasOwnProperty.call(parsed, "protein_g") &&
+        Object.prototype.hasOwnProperty.call(parsed, "carbs_g") &&
+        Object.prototype.hasOwnProperty.call(parsed, "fat_g");
+      if (!hasAllKeys || !dishName) continue;
+      return {
+        dish_name: dishName,
+        calories_kcal: calories,
+        protein_g: protein,
+        carbs_g: carbs,
+        fat_g: fat,
+      };
+    } catch {
+      // continue trying alternative payloads
+    }
+  }
+
+  return null;
+}
+
 function buildMeasurementHighlights(measurement: Measurement): string[] {
   const chips: string[] = [];
   if (measurement.weight_kg !== null) {
@@ -2195,6 +2263,8 @@ export default function App() {
   const [mealCarbsInput, setMealCarbsInput] = useState("");
   const [mealFatInput, setMealFatInput] = useState("");
   const [dietMealEditorCategory, setDietMealEditorCategory] = useState<DietMealCategory | null>(null);
+  const [dietItemMenu, setDietItemMenu] = useState<DietItemMenuState>(null);
+  const [dietEditingItem, setDietEditingItem] = useState<DietEditingItemState>(null);
   const [dietMealExpanded, setDietMealExpanded] = useState<Record<DietMealCategory, boolean>>(
     () => createDietMealExpandedState(),
   );
@@ -2204,6 +2274,7 @@ export default function App() {
   const [foodEstimatorMessages, setFoodEstimatorMessages] = useState<ChatMessage[]>([]);
   const [foodEstimatorInput, setFoodEstimatorInput] = useState("");
   const [foodEstimatorSending, setFoodEstimatorSending] = useState(false);
+  const [foodEstimatorHasLLMResponse, setFoodEstimatorHasLLMResponse] = useState(false);
   const [weightInput, setWeightInput] = useState("");
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
   const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
@@ -2805,7 +2876,10 @@ export default function App() {
           : null;
 
         await Promise.all([
-          AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(stripSensitiveStoreData(mergedStore))),
+          AsyncStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(serializeStoreForAsyncStorage(mergedStore, secureAvailable)),
+          ),
           writeProviderApiKeysToSecureStore(mergedStore.keys, secureAvailable),
         ]);
 
@@ -2841,7 +2915,10 @@ export default function App() {
     if (!isHydrated) return;
 
     Promise.all([
-      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(stripSensitiveStoreData(store))),
+      AsyncStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(serializeStoreForAsyncStorage(store, secureStoreAvailable)),
+      ),
       writeProviderApiKeysToSecureStore(store.keys, secureStoreAvailable),
     ]).catch(() => {
       setError("No se pudo guardar en almacenamiento local/seguro.");
@@ -3087,6 +3164,38 @@ export default function App() {
 
     setStore((prev) => {
       const currentDay = prev.dietByDate[today] ?? { day_date: today, meals: [] };
+      if (dietEditingItem) {
+        const meals = currentDay.meals
+          .map((meal) => {
+            if (meal.id !== dietEditingItem.meal_id) return meal;
+            return {
+              ...meal,
+              items: meal.items.map((item) =>
+                item.id === dietEditingItem.item_id
+                  ? {
+                      ...item,
+                      title: newItem.title,
+                      calories_kcal: newItem.calories_kcal,
+                      protein_g: newItem.protein_g,
+                      carbs_g: newItem.carbs_g,
+                      fat_g: newItem.fat_g,
+                    }
+                  : item,
+              ),
+            };
+          })
+          .filter((meal) => meal.items.length > 0);
+        return {
+          ...prev,
+          dietByDate: {
+            ...prev.dietByDate,
+            [today]: {
+              ...currentDay,
+              meals: sortDietMealsByCategory(meals),
+            },
+          },
+        };
+      }
       const existingMealIndex = currentDay.meals.findIndex(
         (meal) => meal.title === dietMealEditorCategory,
       );
@@ -3125,6 +3234,8 @@ export default function App() {
     setMealProteinInput("");
     setMealCarbsInput("");
     setMealFatInput("");
+    setDietEditingItem(null);
+    setDietItemMenu(null);
     setError(null);
   }
 
@@ -3134,11 +3245,15 @@ export default function App() {
       [category]: !prev[category],
     }));
     setDietMealEditorCategory((prev) => (prev === category ? null : prev));
+    setDietEditingItem(null);
+    setDietItemMenu(null);
   }
 
   function openDietMealEditor(category: DietMealCategory) {
     setDietMealExpanded((prev) => ({ ...prev, [category]: true }));
     setDietMealEditorCategory(category);
+    setDietEditingItem(null);
+    setDietItemMenu(null);
     setMealTitleInput("");
     setMealCaloriesInput("");
     setMealProteinInput("");
@@ -3147,18 +3262,87 @@ export default function App() {
     setError(null);
   }
 
+  function startEditDietItem(
+    category: DietMealCategory,
+    meal: DietMeal,
+    item: DietItem,
+  ) {
+    setDietMealExpanded((prev) => ({ ...prev, [category]: true }));
+    setDietMealEditorCategory(category);
+    setDietEditingItem({ meal_id: meal.id, item_id: item.id });
+    setDietItemMenu(null);
+    setMealTitleInput(item.title);
+    setMealCaloriesInput(formatNutritionNumber(item.calories_kcal));
+    setMealProteinInput(formatNutritionNumber(item.protein_g));
+    setMealCarbsInput(formatNutritionNumber(item.carbs_g));
+    setMealFatInput(formatNutritionNumber(item.fat_g));
+    setError(null);
+  }
+
+  function deleteDietItem(meal: DietMeal, item: DietItem) {
+    setStore((prev) => {
+      const currentDay = prev.dietByDate[today] ?? { day_date: today, meals: [] };
+      const meals = currentDay.meals
+        .map((currentMeal) => {
+          if (currentMeal.id !== meal.id) return currentMeal;
+          return {
+            ...currentMeal,
+            items: currentMeal.items.filter((currentItem) => currentItem.id !== item.id),
+          };
+        })
+        .filter((currentMeal) => currentMeal.items.length > 0);
+      return {
+        ...prev,
+        dietByDate: {
+          ...prev.dietByDate,
+          [today]: {
+            ...currentDay,
+            meals: sortDietMealsByCategory(meals),
+          },
+        },
+      };
+    });
+    if (dietEditingItem?.meal_id === meal.id && dietEditingItem?.item_id === item.id) {
+      setDietEditingItem(null);
+      setMealTitleInput("");
+      setMealCaloriesInput("");
+      setMealProteinInput("");
+      setMealCarbsInput("");
+      setMealFatInput("");
+    }
+    setDietItemMenu(null);
+    setError(null);
+  }
+
+  function resolveFoodEstimatorProviderFromState(): AIKey | null {
+    const selectedProviderFromStore =
+      foodEstimatorProvider &&
+      store.keys.find(
+        (item) => item.provider === foodEstimatorProvider.provider && item.api_key.trim().length > 0,
+      );
+    if (selectedProviderFromStore) {
+      return {
+        ...selectedProviderFromStore,
+        api_key: selectedProviderFromStore.api_key.trim(),
+        model: selectedProviderFromStore.model.trim() || DEFAULT_MODELS[selectedProviderFromStore.provider],
+      };
+    }
+    return resolveFoodEstimatorProvider(store.keys);
+  }
+
   function openFoodEstimatorModal() {
     const provider = resolveFoodEstimatorProvider(store.keys);
     setFoodEstimatorProvider(provider);
     setFoodEstimatorImages([]);
     setFoodEstimatorInput("");
     setFoodEstimatorSending(false);
+    setFoodEstimatorHasLLMResponse(false);
     setFoodEstimatorMessages([
       {
         id: uid("food_est_msg"),
         role: "assistant",
         content: provider
-          ? `Nueva conversación de estimación iniciada. Proveedor activo: ${PROVIDER_UI_META[provider.provider].label}.`
+          ? "Sube fotos o describe la comida para comenzar la estimación."
           : "No hay API key disponible para estimar. Configura Google, OpenAI o Anthropic en Configuración > Proveedor IA.",
         created_at: new Date().toISOString(),
       },
@@ -3260,27 +3444,15 @@ export default function App() {
     }
   }
 
-  async function sendFoodEstimatorMessage() {
+  async function sendFoodEstimatorMessage(forcedMessage?: string) {
     if (foodEstimatorSending) return;
-    const userInput = foodEstimatorInput.trim();
+    const userInput = (forcedMessage ?? foodEstimatorInput).trim();
     if (!userInput && foodEstimatorImages.length === 0) {
       setError("Escribe un mensaje o adjunta al menos una foto para estimar.");
       return;
     }
 
-    const selectedProviderFromStore =
-      foodEstimatorProvider &&
-      store.keys.find(
-        (item) => item.provider === foodEstimatorProvider.provider && item.api_key.trim().length > 0,
-      );
-    const resolvedProvider = selectedProviderFromStore
-      ? {
-          ...selectedProviderFromStore,
-          api_key: selectedProviderFromStore.api_key.trim(),
-          model:
-            selectedProviderFromStore.model.trim() || DEFAULT_MODELS[selectedProviderFromStore.provider],
-        }
-      : resolveFoodEstimatorProvider(store.keys);
+    const resolvedProvider = resolveFoodEstimatorProviderFromState();
 
     if (!resolvedProvider) {
       setError("Configura una API key en Proveedor IA (Google, OpenAI o Anthropic) para usar esta función.");
@@ -3296,7 +3468,9 @@ export default function App() {
     const nextMessages = [...foodEstimatorMessages, userMessage];
     setFoodEstimatorProvider(resolvedProvider);
     setFoodEstimatorMessages(nextMessages);
-    setFoodEstimatorInput("");
+    if (!forcedMessage) {
+      setFoodEstimatorInput("");
+    }
     setFoodEstimatorSending(true);
     setError(null);
 
@@ -3319,6 +3493,7 @@ export default function App() {
         content: assistantContent,
         created_at: new Date().toISOString(),
       };
+      setFoodEstimatorHasLLMResponse(true);
       setFoodEstimatorMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
       const message =
@@ -3335,6 +3510,58 @@ export default function App() {
           created_at: new Date().toISOString(),
         },
       ]);
+    } finally {
+      setFoodEstimatorSending(false);
+    }
+  }
+
+  async function addFoodFromEstimatorJSON() {
+    if (foodEstimatorSending) return;
+    if (!dietMealEditorCategory) {
+      setError("Abre primero 'Añadir alimento' en una comida para rellenar los campos.");
+      return;
+    }
+    const resolvedProvider = resolveFoodEstimatorProviderFromState();
+    if (!resolvedProvider) {
+      setError("Configura una API key en Proveedor IA (Google, OpenAI o Anthropic) para usar esta función.");
+      return;
+    }
+
+    setFoodEstimatorSending(true);
+    setError(null);
+    try {
+      const estimatorHistory: ChatInputMessage[] = [
+        { role: "system", content: FOOD_ESTIMATOR_SYSTEM_PROMPT },
+        ...foodEstimatorMessages.map<ChatInputMessage>((message) => ({
+          role: message.role === "assistant" ? "assistant" : "user",
+          content: message.content,
+        })),
+        { role: "user", content: "Devuelve json" },
+      ];
+      const assistantContent = await callFoodEstimatorAPI(
+        resolvedProvider,
+        estimatorHistory,
+        foodEstimatorImages,
+      );
+      const parsed = parseFoodEstimatorNutritionJSON(assistantContent);
+      if (!parsed) {
+        setError("No se pudo interpretar JSON del modelo. Repite la estimación y vuelve a intentar.");
+        return;
+      }
+
+      setMealCaloriesInput(formatNutritionNumber(parsed.calories_kcal));
+      setMealProteinInput(formatNutritionNumber(parsed.protein_g));
+      setMealCarbsInput(formatNutritionNumber(parsed.carbs_g));
+      setMealFatInput(formatNutritionNumber(parsed.fat_g));
+      setMealTitleInput(parsed.dish_name || "Alimento estimado IA");
+      setFoodEstimatorProvider(resolvedProvider);
+      closeFoodEstimatorModal();
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "No se pudo solicitar JSON al modelo para rellenar el alimento.";
+      setError(message);
     } finally {
       setFoodEstimatorSending(false);
     }
@@ -7015,6 +7242,7 @@ export default function App() {
                 const meta = DIET_MEAL_META[category];
                 const isExpanded = dietMealExpanded[category];
                 const isEditing = dietMealEditorCategory === category;
+                const isEditingExistingItem = isEditing && dietEditingItem?.meal_id === meal.id;
                 const mealCalories = meal.items.reduce((acc, item) => acc + item.calories_kcal, 0);
                 const mealProtein = meal.items.reduce((acc, item) => acc + item.protein_g, 0);
                 const mealCarbs = meal.items.reduce((acc, item) => acc + item.carbs_g, 0);
@@ -7088,41 +7316,114 @@ export default function App() {
                             Sin alimentos registrados.
                           </Text>
                         ) : (
-                          meal.items.map((item) => (
-                            <View
-                              key={item.id}
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "flex-start",
-                                gap: 10,
-                              }}
-                            >
-                              <View style={{ flexDirection: "row", gap: 8, flex: 1 }}>
-                                <View
-                                  style={{
-                                    width: 7,
-                                    height: 7,
-                                    borderRadius: 999,
-                                    backgroundColor: meta.dot,
-                                    marginTop: 8,
-                                  }}
-                                />
-                                <View style={{ flex: 1 }}>
-                                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
-                                    {item.title}
-                                  </Text>
-                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 1 }}>
-                                    P:{formatNutritionNumber(item.protein_g)} C:{formatNutritionNumber(item.carbs_g)} G:
-                                    {formatNutritionNumber(item.fat_g)}
-                                  </Text>
+                          meal.items.map((item) => {
+                            const isItemMenuOpen =
+                              dietItemMenu?.meal_id === meal.id && dietItemMenu?.item_id === item.id;
+                            return (
+                              <View
+                                key={item.id}
+                                style={{
+                                  flexDirection: "row",
+                                  justifyContent: "space-between",
+                                  alignItems: "flex-start",
+                                  gap: 10,
+                                }}
+                              >
+                                <View style={{ flexDirection: "row", gap: 8, flex: 1 }}>
+                                  <View
+                                    style={{
+                                      width: 7,
+                                      height: 7,
+                                      borderRadius: 999,
+                                      backgroundColor: meta.dot,
+                                      marginTop: 8,
+                                    }}
+                                  />
+                                  <View style={{ flex: 1 }}>
+                                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                                      {item.title}
+                                    </Text>
+                                    <Text
+                                      style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 1 }}
+                                    >
+                                      P:{formatNutritionNumber(item.protein_g)} C:{formatNutritionNumber(item.carbs_g)}{" "}
+                                      G:{formatNutritionNumber(item.fat_g)}
+                                    </Text>
+                                  </View>
+                                </View>
+                                <View style={{ alignItems: "flex-end", gap: 4 }}>
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+                                    <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>
+                                      {formatNutritionNumber(item.calories_kcal)} kcal
+                                    </Text>
+                                    <Pressable
+                                      onPress={() =>
+                                        setDietItemMenu((prev) =>
+                                          prev?.meal_id === meal.id && prev?.item_id === item.id
+                                            ? null
+                                            : { meal_id: meal.id, item_id: item.id },
+                                        )
+                                      }
+                                      style={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: 8,
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      <Feather
+                                        name="more-vertical"
+                                        size={14}
+                                        color={mobileTheme.color.textSecondary}
+                                      />
+                                    </Pressable>
+                                  </View>
+                                  {isItemMenuOpen ? (
+                                    <View
+                                      style={{
+                                        minWidth: 124,
+                                        borderWidth: 1,
+                                        borderColor: "rgba(255,255,255,0.09)",
+                                        borderRadius: 12,
+                                        backgroundColor: "rgba(12,14,19,0.96)",
+                                        paddingVertical: 4,
+                                      }}
+                                    >
+                                      <Pressable
+                                        onPress={() => startEditDietItem(category, meal, item)}
+                                        style={{
+                                          minHeight: 36,
+                                          paddingHorizontal: 12,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <Feather name="edit-3" size={13} color={mobileTheme.color.textPrimary} />
+                                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                                          Editar
+                                        </Text>
+                                      </Pressable>
+                                      <Pressable
+                                        onPress={() => deleteDietItem(meal, item)}
+                                        style={{
+                                          minHeight: 36,
+                                          paddingHorizontal: 12,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <Feather name="trash-2" size={13} color="#FF7B7B" />
+                                        <Text style={{ color: "#FF7B7B", fontWeight: "600" }}>Eliminar</Text>
+                                      </Pressable>
+                                    </View>
+                                  ) : null}
                                 </View>
                               </View>
-                              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>
-                                {formatNutritionNumber(item.calories_kcal)} kcal
-                              </Text>
-                            </View>
-                          ))
+                            );
+                          })
                         )}
 
                         {isEditing ? (
@@ -7158,10 +7459,10 @@ export default function App() {
                               placeholderTextColor={mobileTheme.color.textSecondary}
                               keyboardType="decimal-pad"
                             />
-                            <View style={{ flexDirection: "row", gap: 8 }}>
+                            <View style={{ gap: 8 }}>
                               <TextInput
                                 style={{
-                                  flex: 1,
+                                  width: "100%",
                                   minHeight: 42,
                                   borderRadius: mobileTheme.radius.md,
                                   borderWidth: 1,
@@ -7178,7 +7479,7 @@ export default function App() {
                               />
                               <TextInput
                                 style={{
-                                  flex: 1,
+                                  width: "100%",
                                   minHeight: 42,
                                   borderRadius: mobileTheme.radius.md,
                                   borderWidth: 1,
@@ -7195,7 +7496,7 @@ export default function App() {
                               />
                               <TextInput
                                 style={{
-                                  flex: 1,
+                                  width: "100%",
                                   minHeight: 42,
                                   borderRadius: mobileTheme.radius.md,
                                   borderWidth: 1,
@@ -7223,12 +7524,48 @@ export default function App() {
                                   justifyContent: "center",
                                 }}
                               >
-                                <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar alimento</Text>
+                                <Text style={{ color: "#06090D", fontWeight: "700" }}>
+                                  {isEditingExistingItem ? "Guardar cambios" : "Guardar alimento"}
+                                </Text>
                               </Pressable>
                               <Pressable
-                                onPress={() => setDietMealEditorCategory(null)}
+                                onPress={openFoodEstimatorModal}
                                 style={{
-                                  minWidth: 100,
+                                  flex: 1,
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: "rgba(203,255,26,0.45)",
+                                  backgroundColor: "rgba(203,255,26,0.12)",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  paddingHorizontal: 8,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    color: mobileTheme.color.brandPrimary,
+                                    fontWeight: "700",
+                                    fontSize: 12,
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Estimar con IA
+                                </Text>
+                              </Pressable>
+                              <Pressable
+                                onPress={() => {
+                                  setDietMealEditorCategory(null);
+                                  setDietEditingItem(null);
+                                  setDietItemMenu(null);
+                                  setMealTitleInput("");
+                                  setMealCaloriesInput("");
+                                  setMealProteinInput("");
+                                  setMealCarbsInput("");
+                                  setMealFatInput("");
+                                }}
+                                style={{
+                                  flex: 1,
                                   minHeight: 42,
                                   borderRadius: mobileTheme.radius.md,
                                   borderWidth: 1,
@@ -9067,7 +9404,8 @@ export default function App() {
                       }}
                     >
                       <Text style={{ color: "#ffd7a8", fontSize: 12 }}>
-                        SecureStore no disponible en este entorno. La API key no se persistirá de forma segura.
+                        SecureStore no disponible en este entorno. La API key se guardará en almacenamiento local
+                        (AsyncStorage), sin cifrado seguro.
                       </Text>
                     </View>
                   ) : null}
@@ -9399,7 +9737,9 @@ export default function App() {
                 multiline
               />
               <Pressable
-                onPress={sendFoodEstimatorMessage}
+                onPress={() => {
+                  void sendFoodEstimatorMessage();
+                }}
                 disabled={foodEstimatorSending}
                 style={{
                   minWidth: 92,
@@ -9416,6 +9756,46 @@ export default function App() {
                 </Text>
               </Pressable>
             </View>
+
+            <Pressable
+              onPress={() => {
+                void addFoodFromEstimatorJSON();
+              }}
+              disabled={!foodEstimatorHasLLMResponse || foodEstimatorSending || !dietMealEditorCategory}
+              style={{
+                minHeight: 42,
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: foodEstimatorHasLLMResponse && dietMealEditorCategory
+                  ? "rgba(203,255,26,0.45)"
+                  : mobileTheme.color.borderSubtle,
+                backgroundColor: foodEstimatorHasLLMResponse && dietMealEditorCategory
+                  ? "rgba(203,255,26,0.12)"
+                  : mobileTheme.color.bgApp,
+                alignItems: "center",
+                justifyContent: "center",
+                opacity:
+                  !foodEstimatorHasLLMResponse || foodEstimatorSending || !dietMealEditorCategory
+                    ? 0.65
+                    : 1,
+              }}
+            >
+              <Text
+                style={{
+                  color: foodEstimatorHasLLMResponse && dietMealEditorCategory
+                    ? mobileTheme.color.brandPrimary
+                    : mobileTheme.color.textSecondary,
+                  fontWeight: "700",
+                }}
+              >
+                Añadir alimento
+              </Text>
+            </Pressable>
+            {!dietMealEditorCategory ? (
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                Abre primero "Añadir alimento" en una comida para rellenar los campos desde IA.
+              </Text>
+            ) : null}
           </View>
         </View>
       ) : null}
