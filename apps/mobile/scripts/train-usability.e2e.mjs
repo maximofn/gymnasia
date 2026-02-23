@@ -175,12 +175,12 @@ async function runTrainUsabilityE2E(page, baseUrl) {
   await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
 
   logStep("Resetting local data");
-  await clickNavTab(page, "Cfg");
+  await clickNavTab(page, "Configuración");
   await expectBodyContains(page, "Restablecer datos locales");
   await page.locator("text=Restablecer datos locales").first().click({ timeout: STEP_TIMEOUT_MS });
 
-  logStep("Opening Train tab and validating empty state");
-  await clickNavTab(page, "Train");
+  logStep("Opening Entrenamiento tab and validating empty state");
+  await clickNavTab(page, "Entrenamiento");
   await expectBodyContains(page, "Sin rutinas aún");
 
   logStep("Creating first routine");
@@ -265,7 +265,7 @@ async function runTrainUsabilityE2E(page, baseUrl) {
   await expectBodyContains(page, "Entrenamiento descartado.");
   await expectBodyContains(page, "Mis Rutinas");
 
-  logStep("Train usability e2e completed successfully");
+  logStep("Entrenamiento usability e2e completed successfully");
 }
 
 async function main() {

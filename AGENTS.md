@@ -1541,3 +1541,43 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
      - non-target states keep neutral gray.
   2. Validated mobile TypeScript:
      `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `Train` tab renamed to `Entrenamiento`
+- Failure:
+  Bottom navigation tab still displayed `Train` instead of the requested Spanish label `Entrenamiento`.
+- Root cause:
+  `tabLabel()` mapping in `apps/mobile/App.tsx` had `training: "Train"`.
+- Exact fix steps/commands:
+  1. Updated tab label mapping in `apps/mobile/App.tsx`:
+     - `training: "Train"` -> `training: "Entrenamiento"`.
+  2. Updated mobile usability script selector in `apps/mobile/scripts/train-usability.e2e.mjs`:
+     - `clickNavTab(page, "Train")` -> `clickNavTab(page, "Entrenamiento")`.
+     - adjusted related log copy to match the new tab name.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `Stats` tab renamed to `Estadísticas`
+- Failure:
+  Bottom navigation tab still displayed `Stats` instead of the requested Spanish label `Estadísticas`.
+- Root cause:
+  `tabLabel()` mapping in `apps/mobile/App.tsx` had `measures: "Stats"`.
+- Exact fix steps/commands:
+  1. Updated tab label mapping in `apps/mobile/App.tsx`:
+     - `measures: "Stats"` -> `measures: "Estadísticas"`.
+  2. Searched mobile scripts for `Stats` references:
+     - no `apps/mobile/scripts` updates were required.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `Cfg` tab renamed to `Configuración`
+- Failure:
+  Bottom navigation tab still displayed `Cfg` instead of the requested Spanish label `Configuración`.
+- Root cause:
+  `tabLabel()` mapping in `apps/mobile/App.tsx` had `settings: "Cfg"`.
+- Exact fix steps/commands:
+  1. Updated tab label mapping in `apps/mobile/App.tsx`:
+     - `settings: "Cfg"` -> `settings: "Configuración"`.
+  2. Updated mobile usability script selector in `apps/mobile/scripts/train-usability.e2e.mjs`:
+     - `clickNavTab(page, "Cfg")` -> `clickNavTab(page, "Configuración")`.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
