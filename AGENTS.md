@@ -1004,3 +1004,161 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
      - active tab now highlighted in the top row with brand accent styles.
   3. Validated mobile TypeScript:
      `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Added diet goals and body-weight sections in Settings
+- Failure:
+  Settings only exposed provider chat configuration; users could not configure daily calories, macro distribution rules, or body weight directly from `Cfg`.
+- Root cause:
+  `apps/mobile/App.tsx` lacked a persisted nutrition-settings model and corresponding UI/actions for macro planning (manual kcal or protein by body-weight).
+- Exact fix steps/commands:
+  1. Extended local store model in `apps/mobile/App.tsx`:
+     - added `dietSettings` to `LocalStore`.
+     - added defaults and migration-safe normalization (`createDefaultDietSettings`, `normalizeDietSettings`).
+  2. Added nutrition planning logic in `apps/mobile/App.tsx`:
+     - manual mode (`manual_calories`) with per-macro kcal inputs and remaining-calories feedback.
+     - body-weight mode (`protein_by_weight`) with protein g/kg calculation and automatic split of remaining calories across carbs/fats.
+  3. Added new Settings UI sections in `apps/mobile/App.tsx`:
+     - `Plan de dieta` (calories + macro split modes).
+     - `Peso corporal` (save current body weight for g/kg calculations).
+  4. Kept chat provider configuration intact under the new sections.
+  5. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Simplified diet-mode chip labels in Settings
+- Failure:
+  Diet mode chips were shown as `Manual kcal` and `Proteína g/kg`, but product copy requested shorter labels.
+- Root cause:
+  `DIET_MACRO_MODE_OPTIONS` labels in `apps/mobile/App.tsx` used verbose text.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - `manual_calories` label -> `kcal`
+     - `protein_by_weight` label -> `g/kg`
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `g/kg` mode now accepts protein, carbs and fat grams
+- Failure:
+  In `g/kg` mode, settings only allowed entering protein grams-per-kg and split the remaining calories by percentage, so users could not directly enter carb and fat grams.
+- Root cause:
+  Diet settings model and UI in `apps/mobile/App.tsx` only had `protein_grams_per_kg` plus `remaining_carbs_percent`.
+- Exact fix steps/commands:
+  1. Updated nutrition settings model in `apps/mobile/App.tsx`:
+     - removed `remaining_carbs_percent`.
+     - added `carbs_grams_per_kg` and `fat_grams_per_kg`.
+     - adjusted defaults and normalization (`createDefaultDietSettings`, `normalizeDietSettings`).
+  2. Updated `g/kg` calculations:
+     - grams for P/C/G are now calculated from body weight and each per-kg input.
+     - macro calories are computed from those grams (`P*4`, `C*4`, `G*9`).
+     - remaining/excess calories are shown against daily target.
+  3. Updated `g/kg` settings UI:
+     - added inputs for `Carbohidratos (g por kg corporal)` and `Grasas (g por kg corporal)`.
+     - kept protein input and replaced percentage-based distribution copy with per-kg summary.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `g/kg` placeholders now show dynamic max grams
+- Failure:
+  In `g/kg` mode, users could enter per-kg grams but placeholders of the other macro inputs did not show how many grams still fit within daily calories.
+- Root cause:
+  Placeholder text in `apps/mobile/App.tsx` was static and not connected to macro-calorie calculations.
+- Exact fix steps/commands:
+  1. Added dynamic max-grams hint calculations in `apps/mobile/App.tsx`:
+     - computes per-macro max grams using daily calories and currently configured values of the other two macros.
+     - activates hints only when daily calories + body weight are available and at least one macro/kg value is set.
+  2. Updated placeholders in `g/kg` inputs:
+     - `Proteína (g por kg corporal) (x g max)`
+     - `Carbohidratos (g por kg corporal) (x g max)`
+     - `Grasas (g por kg corporal) (x g max)`
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `g/kg` placeholder limits switched from total grams to grams-per-kg
+- Failure:
+  Dynamic placeholders in `g/kg` mode were showing maximum total grams, but UX requirement was to show maximum grams-per-kg.
+- Root cause:
+  Max hint formulas in `apps/mobile/App.tsx` computed only total grams from calories and did not normalize by body weight.
+- Exact fix steps/commands:
+  1. Updated max-hint formulas in `apps/mobile/App.tsx`:
+     - divide each macro max-grams value by current body weight to get `g/kg` limits.
+  2. Updated placeholder copy:
+     - now displays `(... g/kg max)` for proteína, carbohidratos, y grasas.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `g/kg` mode now shows `Auto` button on the third macro
+- Failure:
+  When two macro values were entered in `g/kg` mode, users still had to manually compute and type the third one.
+- Root cause:
+  The `g/kg` UI in `apps/mobile/App.tsx` had no autocompletion trigger tied to calories target and body weight.
+- Exact fix steps/commands:
+  1. Added missing-macro detection in `apps/mobile/App.tsx`:
+     - detects when exactly two of `proteína/carbohidratos/grasas` are > 0.
+     - identifies the third macro as autocompletable.
+  2. Added autocompletion calculation + action:
+     - computes required `g/kg` for the missing macro from daily calories, weight, and the other two macros.
+     - new handler `autocompleteMissingGkgMacro()` writes the computed value into the missing field.
+  3. Updated `g/kg` inputs UI:
+     - each macro input is now a row.
+     - if that macro is the only missing one, shows a right-side `Auto` button.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Switching from `g/kg` to `kcal` now fills kcal equivalents
+- Failure:
+  After entering macro targets in `g/kg`, switching to `kcal` mode did not populate the calorie fields with equivalent macro calories.
+- Root cause:
+  `setDietMacroMode()` in `apps/mobile/App.tsx` only changed mode and did not map `g/kg` values to `manual_macro_calories`.
+- Exact fix steps/commands:
+  1. Updated `setDietMacroMode()` in `apps/mobile/App.tsx`:
+     - when switching from `protein_by_weight` to `manual_calories`, compute kcal from current body weight and per-kg inputs:
+       - proteína: `peso * g/kg * 4`
+       - carbohidratos: `peso * g/kg * 4`
+       - grasas: `peso * g/kg * 9`
+     - populate `manual_macro_calories` with the computed kcal values.
+     - keep previous behavior when weight is missing or no `g/kg` values are set.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Added nested tabs inside `Cfg` (`Medidas`, `Dieta`, `Gráficas`, `Proveedor IA`)
+- Failure:
+  The settings screen was a single long view and did not provide the requested internal tabbed navigation by area.
+- Root cause:
+  `tab === "settings"` in `apps/mobile/App.tsx` rendered all sections sequentially without a local stateful sub-navigation model.
+- Exact fix steps/commands:
+  1. Added settings sub-tab model in `apps/mobile/App.tsx`:
+     - new type: `SettingsTabKey`.
+     - new options: `SETTINGS_TAB_OPTIONS` with labels `Medidas`, `Dieta`, `Gráficas`, `Proveedor IA`.
+     - new local state: `settingsTab`.
+  2. Reworked `Cfg` UI into segmented sections:
+     - `Medidas`: weight capture + latest measurements list (prepared for adding more measurements later).
+     - `Dieta`: existing diet planning controls and macro workflows.
+     - `Gráficas`: placeholder dashboard block for future charting.
+     - `Proveedor IA`: existing provider/API-key configuration and local reset action.
+
+### 2026-02-23 - Fixed settings tab label typo (`Proveedor IA`)
+- Failure:
+  The settings provider tab label was shown as `Proovedor IA` instead of `Proveedor IA`.
+- Root cause:
+  Typo in tab option label and section heading text in `apps/mobile/App.tsx`, and mirrored typo in maintenance notes.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - `Proovedor IA` -> `Proveedor IA` in settings tab chip.
+     - `Proovedor IA` -> `Proveedor IA` in provider section heading.
+  2. Updated `AGENTS.md` historical entry text to keep terminology consistent.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+  3. Preserved existing diet/provider logic while relocating them under the new nested tabs.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Fixed settings tab label typo (`Gráficas`)
+- Failure:
+  The new settings sub-tab was labeled `Grçaficas` instead of `Gráficas`.
+- Root cause:
+  Typo in `SETTINGS_TAB_OPTIONS` and in the section heading text inside `apps/mobile/App.tsx`.
+- Exact fix steps/commands:
+  1. Updated labels in `apps/mobile/App.tsx`:
+     - `Grçaficas` -> `Gráficas` in the tab chip.
+     - `Grçaficas` -> `Gráficas` in the section title.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`

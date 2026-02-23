@@ -19,6 +19,7 @@ import {
 import { mobileTheme } from "./theme";
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
+type SettingsTabKey = "measures" | "diet" | "charts" | "provider";
 
 type ExerciseSeries = {
   id: string;
@@ -94,6 +95,20 @@ type DietItem = { id: string; title: string; calories_kcal: number };
 type DietMeal = { id: string; title: string; items: DietItem[] };
 type DietDay = { day_date: string; meals: DietMeal[] };
 type Measurement = { id: string; measured_at: string; weight_kg: number | null };
+type DietMacroMode = "manual_calories" | "protein_by_weight";
+type GkgMacroKey = "protein" | "carbs" | "fat";
+type DietSettings = {
+  daily_calories: string;
+  macro_mode: DietMacroMode;
+  manual_macro_calories: {
+    carbs: string;
+    protein: string;
+    fat: string;
+  };
+  protein_grams_per_kg: string;
+  carbs_grams_per_kg: string;
+  fat_grams_per_kg: string;
+};
 type ChatThread = { id: string; title: string | null };
 type ChatMessage = {
   id: string;
@@ -124,6 +139,7 @@ type Dashboard = {
 type LocalStore = {
   templates: WorkoutTemplate[];
   dietByDate: Record<string, DietDay>;
+  dietSettings: DietSettings;
   measurements: Measurement[];
   threads: ChatThread[];
   messagesByThread: Record<string, ChatMessage[]>;
@@ -186,6 +202,32 @@ const ENABLE_GLOBAL_SCREEN_LOAD_DELAY = false;
 const GLOBAL_SCREEN_LOAD_DELAY_MS = 1200;
 const TRAINING_LOADING_SKELETON_ROWS = 4;
 const TRAINING_EDITOR_LOADING_SKELETON_ROWS = 2;
+const DIET_MACRO_MODE_OPTIONS: Array<{ key: DietMacroMode; label: string }> = [
+  { key: "manual_calories", label: "kcal" },
+  { key: "protein_by_weight", label: "g/kg" },
+];
+const GKG_MACRO_KEYS: GkgMacroKey[] = ["protein", "carbs", "fat"];
+const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
+  { key: "measures", label: "Medidas" },
+  { key: "diet", label: "Dieta" },
+  { key: "charts", label: "Gráficas" },
+  { key: "provider", label: "Proveedor IA" },
+];
+
+function createDefaultDietSettings(): DietSettings {
+  return {
+    daily_calories: "",
+    macro_mode: "manual_calories",
+    manual_macro_calories: {
+      carbs: "",
+      protein: "",
+      fat: "",
+    },
+    protein_grams_per_kg: "1.5",
+    carbs_grams_per_kg: "",
+    fat_grams_per_kg: "",
+  };
+}
 
 function secureStoreKey(provider: Provider): string {
   return `${SECURE_STORE_API_KEY_PREFIX}.${provider}`;
@@ -547,6 +589,28 @@ function inferDurationFromText(rawValue: string | undefined): number | null {
   return Math.round(parsed);
 }
 
+function normalizeNumberInputText(rawValue: unknown): string {
+  if (typeof rawValue === "number" && Number.isFinite(rawValue)) {
+    return `${rawValue}`;
+  }
+  if (typeof rawValue === "string") {
+    return rawValue.trim().replace(",", ".");
+  }
+  return "";
+}
+
+function parseNonNegativeNumberInput(rawValue: string): number | null {
+  const normalized = rawValue.trim().replace(",", ".");
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed) || parsed < 0) return null;
+  return parsed;
+}
+
+function gkgMacroCaloriesPerGram(macro: GkgMacroKey): number {
+  return macro === "fat" ? 9 : 4;
+}
+
 function buildSeriesFromLegacyExercise(exercise: {
   sets?: number[];
   load_kg?: number | null;
@@ -838,12 +902,42 @@ function tabLabel(tab: TabKey): string {
   return map[tab];
 }
 
+function normalizeDietSettings(rawValue: unknown): DietSettings {
+  const defaults = createDefaultDietSettings();
+  if (!rawValue || typeof rawValue !== "object") return defaults;
+
+  const maybe = rawValue as Partial<DietSettings>;
+  const maybeManual = maybe.manual_macro_calories as
+    | Partial<DietSettings["manual_macro_calories"]>
+    | undefined;
+  const mode: DietMacroMode =
+    maybe.macro_mode === "protein_by_weight" ? "protein_by_weight" : "manual_calories";
+
+  const normalizedProteinPerKg = normalizeNumberInputText(maybe.protein_grams_per_kg);
+  const normalizedCarbsPerKg = normalizeNumberInputText(maybe.carbs_grams_per_kg);
+  const normalizedFatPerKg = normalizeNumberInputText(maybe.fat_grams_per_kg);
+
+  return {
+    daily_calories: normalizeNumberInputText(maybe.daily_calories),
+    macro_mode: mode,
+    manual_macro_calories: {
+      carbs: normalizeNumberInputText(maybeManual?.carbs),
+      protein: normalizeNumberInputText(maybeManual?.protein),
+      fat: normalizeNumberInputText(maybeManual?.fat),
+    },
+    protein_grams_per_kg: normalizedProteinPerKg || defaults.protein_grams_per_kg,
+    carbs_grams_per_kg: normalizedCarbsPerKg || defaults.carbs_grams_per_kg,
+    fat_grams_per_kg: normalizedFatPerKg || defaults.fat_grams_per_kg,
+  };
+}
+
 function createInitialStore(): LocalStore {
   const firstThreadId = uid("thread");
 
   return {
     templates: [],
     dietByDate: {},
+    dietSettings: createDefaultDietSettings(),
     measurements: [],
     threads: [{ id: firstThreadId, title: "Coach 1" }],
     messagesByThread: {
@@ -858,6 +952,7 @@ function createInitialStore(): LocalStore {
 }
 
 function normalizeStore(raw: LocalStore): LocalStore {
+  const normalizedDietSettings = normalizeDietSettings(raw.dietSettings);
   const rawByProvider = new Map<Provider, Partial<AIKey>>();
   (raw.keys ?? []).forEach((item) => {
     if (item?.provider === "openai" || item?.provider === "anthropic" || item?.provider === "google") {
@@ -926,6 +1021,7 @@ function normalizeStore(raw: LocalStore): LocalStore {
   return {
     templates,
     dietByDate: raw.dietByDate ?? {},
+    dietSettings: normalizedDietSettings,
     measurements: raw.measurements ?? [],
     threads: raw.threads ?? [],
     messagesByThread: raw.messagesByThread ?? {},
@@ -950,6 +1046,7 @@ export default function App() {
   const [mealTitleInput, setMealTitleInput] = useState("");
   const [mealCaloriesInput, setMealCaloriesInput] = useState("");
   const [weightInput, setWeightInput] = useState("");
+  const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("measures");
   const [trainingSearch, setTrainingSearch] = useState("");
   const [trainingFilter, setTrainingFilter] = useState<TrainingFilter>("all");
   const [isGlobalScreenLoading, setIsGlobalScreenLoading] = useState(false);
@@ -981,14 +1078,118 @@ export default function App() {
     () => store.keys.find((item) => item.is_active) ?? null,
     [store.keys],
   );
+  const latestWeightMeasurement = store.measurements[0] ?? null;
+  const latestBodyWeightKg = latestWeightMeasurement?.weight_kg ?? null;
+  const dietSettings = store.dietSettings;
+  const dietDailyCaloriesTarget = parseNonNegativeNumberInput(dietSettings.daily_calories) ?? 0;
+  const manualCarbsCalories =
+    parseNonNegativeNumberInput(dietSettings.manual_macro_calories.carbs) ?? 0;
+  const manualProteinCalories =
+    parseNonNegativeNumberInput(dietSettings.manual_macro_calories.protein) ?? 0;
+  const manualFatCalories =
+    parseNonNegativeNumberInput(dietSettings.manual_macro_calories.fat) ?? 0;
+  const manualAssignedCalories =
+    manualCarbsCalories + manualProteinCalories + manualFatCalories;
+  const manualRemainingCalories = dietDailyCaloriesTarget - manualAssignedCalories;
+  const manualCarbsGrams = manualCarbsCalories / 4;
+  const manualProteinGrams = manualProteinCalories / 4;
+  const manualFatGrams = manualFatCalories / 9;
+  const proteinGramsPerKgTarget =
+    parseNonNegativeNumberInput(dietSettings.protein_grams_per_kg) ?? 0;
+  const carbsGramsPerKgTarget =
+    parseNonNegativeNumberInput(dietSettings.carbs_grams_per_kg) ?? 0;
+  const fatGramsPerKgTarget =
+    parseNonNegativeNumberInput(dietSettings.fat_grams_per_kg) ?? 0;
+  const gkgMacroTargets: Record<GkgMacroKey, number> = {
+    protein: proteinGramsPerKgTarget,
+    carbs: carbsGramsPerKgTarget,
+    fat: fatGramsPerKgTarget,
+  };
+  const proteinGramsFromWeightPlan =
+    latestBodyWeightKg !== null ? latestBodyWeightKg * proteinGramsPerKgTarget : 0;
+  const carbsGramsFromWeightPlan =
+    latestBodyWeightKg !== null ? latestBodyWeightKg * carbsGramsPerKgTarget : 0;
+  const fatGramsFromWeightPlan =
+    latestBodyWeightKg !== null ? latestBodyWeightKg * fatGramsPerKgTarget : 0;
+  const proteinCaloriesFromWeightPlan = proteinGramsFromWeightPlan * 4;
+  const carbsCaloriesFromWeightPlan = carbsGramsFromWeightPlan * 4;
+  const fatCaloriesFromWeightPlan = fatGramsFromWeightPlan * 9;
+  const caloriesRemainingAfterWeightPlan =
+    dietDailyCaloriesTarget -
+    (proteinCaloriesFromWeightPlan + carbsCaloriesFromWeightPlan + fatCaloriesFromWeightPlan);
+  const hasWeightForGkgPlanning =
+    latestBodyWeightKg !== null && Number.isFinite(latestBodyWeightKg) && latestBodyWeightKg > 0;
+  const gkgConfiguredMacroCount = GKG_MACRO_KEYS.filter(
+    (macro) => gkgMacroTargets[macro] > 0,
+  ).length;
+  const autocompleteGkgMacroKey: GkgMacroKey | null =
+    gkgConfiguredMacroCount === 2
+      ? GKG_MACRO_KEYS.find((macro) => gkgMacroTargets[macro] <= 0) ?? null
+      : null;
+  const canAutocompleteGkgMacro =
+    autocompleteGkgMacroKey !== null && hasWeightForGkgPlanning && dietDailyCaloriesTarget > 0;
+  const autocompleteGkgMacroPerKgValue =
+    canAutocompleteGkgMacro && autocompleteGkgMacroKey
+      ? Math.max(
+          0,
+          (dietDailyCaloriesTarget -
+            GKG_MACRO_KEYS.reduce((acc, macro) => {
+              if (macro === autocompleteGkgMacroKey) return acc;
+              return (
+                acc +
+                gkgMacroTargets[macro] *
+                  (latestBodyWeightKg ?? 0) *
+                  gkgMacroCaloriesPerGram(macro)
+              );
+            }, 0)) /
+            (gkgMacroCaloriesPerGram(autocompleteGkgMacroKey) * (latestBodyWeightKg ?? 1)),
+        )
+      : null;
+  const autocompleteGkgMacroPerKgText =
+    autocompleteGkgMacroPerKgValue !== null && Number.isFinite(autocompleteGkgMacroPerKgValue)
+      ? autocompleteGkgMacroPerKgValue.toFixed(2).replace(/\.?0+$/, "")
+      : null;
+  const hasAnyGkgMacroConfigured =
+    proteinGramsPerKgTarget > 0 || carbsGramsPerKgTarget > 0 || fatGramsPerKgTarget > 0;
+  const shouldShowGkgMaxHints =
+    hasWeightForGkgPlanning && dietDailyCaloriesTarget > 0 && hasAnyGkgMacroConfigured;
+  const proteinMaxGramsPerKgHint = shouldShowGkgMaxHints
+    ? Math.max(0, (dietDailyCaloriesTarget - (carbsCaloriesFromWeightPlan + fatCaloriesFromWeightPlan)) / 4)
+        / (latestBodyWeightKg ?? 1)
+    : null;
+  const carbsMaxGramsPerKgHint = shouldShowGkgMaxHints
+    ? Math.max(0, (dietDailyCaloriesTarget - (proteinCaloriesFromWeightPlan + fatCaloriesFromWeightPlan)) / 4)
+        / (latestBodyWeightKg ?? 1)
+    : null;
+  const fatMaxGramsPerKgHint = shouldShowGkgMaxHints
+    ? Math.max(0, (dietDailyCaloriesTarget - (proteinCaloriesFromWeightPlan + carbsCaloriesFromWeightPlan)) / 9)
+        / (latestBodyWeightKg ?? 1)
+    : null;
+  const proteinGkgPlaceholder =
+    proteinMaxGramsPerKgHint !== null
+      ? `Proteína (g por kg corporal) (${proteinMaxGramsPerKgHint.toFixed(2)} g/kg max)`
+      : "Proteína (g por kg corporal)";
+  const carbsGkgPlaceholder =
+    carbsMaxGramsPerKgHint !== null
+      ? `Carbohidratos (g por kg corporal) (${carbsMaxGramsPerKgHint.toFixed(2)} g/kg max)`
+      : "Carbohidratos (g por kg corporal)";
+  const fatGkgPlaceholder =
+    fatMaxGramsPerKgHint !== null
+      ? `Grasas (g por kg corporal) (${fatMaxGramsPerKgHint.toFixed(2)} g/kg max)`
+      : "Grasas (g por kg corporal)";
+  const configuredMacroCaloriesTotal =
+    dietSettings.macro_mode === "manual_calories"
+      ? manualAssignedCalories
+      : proteinCaloriesFromWeightPlan + carbsCaloriesFromWeightPlan + fatCaloriesFromWeightPlan;
+  const configuredMacroCaloriesRemaining = dietDailyCaloriesTarget - configuredMacroCaloriesTotal;
 
   const dashboard = useMemo<Dashboard>(() => {
     return {
       calories: sumDayCalories(dietDay),
-      weight: store.measurements[0]?.weight_kg ?? null,
+      weight: latestBodyWeightKg,
       templates: store.templates.length,
     };
-  }, [dietDay, store.measurements, store.templates.length]);
+  }, [dietDay, latestBodyWeightKg, store.templates.length]);
 
   const filteredTrainingTemplates = useMemo(() => {
     const normalizedSearch = trainingSearch.trim().toLowerCase();
@@ -1599,6 +1800,114 @@ export default function App() {
       measurements: [measurement, ...prev.measurements].slice(0, 30),
     }));
     setWeightInput("");
+  }
+
+  function updateDietSettings(updater: (settings: DietSettings) => DietSettings) {
+    setStore((prev) => ({
+      ...prev,
+      dietSettings: updater(prev.dietSettings),
+    }));
+  }
+
+  function setDietMacroMode(mode: DietMacroMode) {
+    updateDietSettings((prev) => {
+      if (prev.macro_mode === mode) return prev;
+      if (mode !== "manual_calories" || prev.macro_mode !== "protein_by_weight") {
+        return {
+          ...prev,
+          macro_mode: mode,
+        };
+      }
+
+      const bodyWeightKg = latestBodyWeightKg;
+      if (bodyWeightKg === null || !Number.isFinite(bodyWeightKg) || bodyWeightKg <= 0) {
+        return {
+          ...prev,
+          macro_mode: mode,
+        };
+      }
+
+      const proteinPerKg = parseNonNegativeNumberInput(prev.protein_grams_per_kg) ?? 0;
+      const carbsPerKg = parseNonNegativeNumberInput(prev.carbs_grams_per_kg) ?? 0;
+      const fatPerKg = parseNonNegativeNumberInput(prev.fat_grams_per_kg) ?? 0;
+      const hasAnyGkgValue = proteinPerKg > 0 || carbsPerKg > 0 || fatPerKg > 0;
+      if (!hasAnyGkgValue) {
+        return {
+          ...prev,
+          macro_mode: mode,
+        };
+      }
+
+      const proteinCalories = Math.max(0, Math.round(bodyWeightKg * proteinPerKg * 4));
+      const carbsCalories = Math.max(0, Math.round(bodyWeightKg * carbsPerKg * 4));
+      const fatCalories = Math.max(0, Math.round(bodyWeightKg * fatPerKg * 9));
+
+      return {
+        ...prev,
+        macro_mode: mode,
+        manual_macro_calories: {
+          protein: `${proteinCalories}`,
+          carbs: `${carbsCalories}`,
+          fat: `${fatCalories}`,
+        },
+      };
+    });
+  }
+
+  function updateDietDailyCalories(value: string) {
+    updateDietSettings((prev) => ({
+      ...prev,
+      daily_calories: value,
+    }));
+  }
+
+  function updateManualMacroCalories(
+    macro: keyof DietSettings["manual_macro_calories"],
+    value: string,
+  ) {
+    updateDietSettings((prev) => ({
+      ...prev,
+      manual_macro_calories: {
+        ...prev.manual_macro_calories,
+        [macro]: value,
+      },
+    }));
+  }
+
+  function updateProteinGramsPerKg(value: string) {
+    updateDietSettings((prev) => ({
+      ...prev,
+      protein_grams_per_kg: value,
+    }));
+  }
+
+  function updateCarbsGramsPerKg(value: string) {
+    updateDietSettings((prev) => ({
+      ...prev,
+      carbs_grams_per_kg: value,
+    }));
+  }
+
+  function updateFatGramsPerKg(value: string) {
+    updateDietSettings((prev) => ({
+      ...prev,
+      fat_grams_per_kg: value,
+    }));
+  }
+
+  function autocompleteMissingGkgMacro() {
+    if (!canAutocompleteGkgMacro || !autocompleteGkgMacroKey || !autocompleteGkgMacroPerKgText) {
+      return;
+    }
+    updateDietSettings((prev) => {
+      if (autocompleteGkgMacroKey === "protein") {
+        return { ...prev, protein_grams_per_kg: autocompleteGkgMacroPerKgText };
+      }
+      if (autocompleteGkgMacroKey === "carbs") {
+        return { ...prev, carbs_grams_per_kg: autocompleteGkgMacroPerKgText };
+      }
+      return { ...prev, fat_grams_per_kg: autocompleteGkgMacroPerKgText };
+    });
   }
 
   function openTrainingTemplate(templateId: string) {
@@ -4676,60 +4985,133 @@ export default function App() {
           ) : null}
 
           {tab === "settings" ? (
-            <View style={{ gap: 10 }}>
-              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Configuración chat proveedor</Text>
-              <Text style={{ color: mobileTheme.color.textSecondary }}>
-                Sin backend: el chat llama directo a la API del proveedor activo (BYOK). Las API keys se guardan en almacenamiento seguro del dispositivo.
-              </Text>
-              {!secureStoreAvailable ? (
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "rgba(255,177,102,0.45)",
-                    borderRadius: mobileTheme.radius.md,
-                    backgroundColor: "rgba(255,177,102,0.08)",
-                    padding: 10,
-                  }}
-                >
-                  <Text style={{ color: "#ffd7a8", fontSize: 12 }}>
-                    SecureStore no disponible en este entorno. La API key no se persistirá de forma segura.
-                  </Text>
-                </View>
-              ) : null}
-              {store.keys.map((key) => (
-                <Pressable
-                  key={key.provider}
-                  onPress={() => setActiveProvider(key.provider)}
-                  style={{
-                    borderWidth: 1,
-                    borderColor: key.is_active ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                    borderRadius: mobileTheme.radius.lg,
-                    padding: 12,
-                    backgroundColor: key.is_active ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
-                  }}
-                >
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                    {key.provider.toUpperCase()}
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, marginTop: 4 }}>
-                    {key.is_active ? `Activo • ${maskApiKey(key.api_key)}` : `No activo • ${maskApiKey(key.api_key)}`}
-                  </Text>
-                </Pressable>
-              ))}
+            <View style={{ gap: 12 }}>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                {SETTINGS_TAB_OPTIONS.map((option) => {
+                  const isActive = settingsTab === option.key;
+                  return (
+                    <Pressable
+                      key={option.key}
+                      onPress={() => setSettingsTab(option.key)}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                        borderRadius: mobileTheme.radius.pill,
+                        paddingHorizontal: 12,
+                        minHeight: 34,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                        {option.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
 
-              {activeProvider ? (
+              {settingsTab === "measures" ? (
                 <View
                   style={{
                     borderWidth: 1,
                     borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgSurface,
                     borderRadius: mobileTheme.radius.lg,
                     padding: 12,
-                    backgroundColor: mobileTheme.color.bgSurface,
                     gap: 10,
                   }}
                 >
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                    Medidas
+                  </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary }}>
+                    Aquí irán peso corporal y otras medidas. Puedes registrar el peso desde esta subpestaña.
+                  </Text>
                   <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                    {activeProvider.provider.toUpperCase()} activo
+                    Peso actual: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(2)} kg` : "Sin registrar"}
+                  </Text>
+                  {latestWeightMeasurement ? (
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                      Última actualización: {new Date(latestWeightMeasurement.measured_at).toLocaleString()}
+                    </Text>
+                  ) : null}
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={weightInput}
+                    onChangeText={setWeightInput}
+                    placeholder="Peso corporal (kg)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
+                  <Pressable
+                    onPress={addWeight}
+                    style={{
+                      height: 44,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.brandPrimary,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar peso corporal</Text>
+                  </Pressable>
+
+                  {store.measurements.length === 0 ? (
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                      Sin medidas registradas todavía.
+                    </Text>
+                  ) : (
+                    <View style={{ gap: 8 }}>
+                      {store.measurements.slice(0, 10).map((measurement) => (
+                        <View
+                          key={measurement.id}
+                          style={{
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            borderRadius: mobileTheme.radius.md,
+                            backgroundColor: mobileTheme.color.bgApp,
+                            padding: 10,
+                          }}
+                        >
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                            {new Date(measurement.measured_at).toLocaleString()}
+                          </Text>
+                          <Text style={{ color: mobileTheme.color.textSecondary, marginTop: 4 }}>
+                            {measurement.weight_kg !== null ? `${measurement.weight_kg} kg` : "Sin peso"}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </View>
+              ) : null}
+
+              {settingsTab === "diet" ? (
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgSurface,
+                    borderRadius: mobileTheme.radius.lg,
+                    padding: 12,
+                    gap: 10,
+                  }}
+                >
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                    Plan de dieta
+                  </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary }}>
+                    Define calorías diarias y cómo repartirlas entre carbohidratos, proteínas y grasas.
                   </Text>
                   <TextInput
                     style={{
@@ -4741,54 +5123,457 @@ export default function App() {
                       color: mobileTheme.color.textPrimary,
                       paddingHorizontal: 12,
                     }}
-                    value={activeProvider.api_key}
-                    onChangeText={(value) =>
-                      updateProviderConfig(activeProvider.provider, { api_key: value.trim() })
-                    }
-                    placeholder={`API key ${activeProvider.provider}`}
+                    value={dietSettings.daily_calories}
+                    onChangeText={updateDietDailyCalories}
+                    placeholder="Calorías diarias objetivo (kcal)"
                     placeholderTextColor={mobileTheme.color.textSecondary}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    secureTextEntry
+                    keyboardType="decimal-pad"
                   />
-                  <TextInput
+
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                    {DIET_MACRO_MODE_OPTIONS.map((option) => {
+                      const isActive = dietSettings.macro_mode === option.key;
+                      return (
+                        <Pressable
+                          key={option.key}
+                          onPress={() => setDietMacroMode(option.key)}
+                          style={{
+                            borderWidth: 1,
+                            borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                            borderRadius: mobileTheme.radius.pill,
+                            paddingHorizontal: 12,
+                            minHeight: 34,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp,
+                          }}
+                        >
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
+                            {option.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
+                  {dietSettings.macro_mode === "manual_calories" ? (
+                    <View style={{ gap: 8 }}>
+                      <TextInput
+                        style={{
+                          minHeight: 42,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 12,
+                        }}
+                        value={dietSettings.manual_macro_calories.carbs}
+                        onChangeText={(value) => updateManualMacroCalories("carbs", value)}
+                        placeholder="Carbohidratos (kcal)"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        keyboardType="decimal-pad"
+                      />
+                      <TextInput
+                        style={{
+                          minHeight: 42,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 12,
+                        }}
+                        value={dietSettings.manual_macro_calories.protein}
+                        onChangeText={(value) => updateManualMacroCalories("protein", value)}
+                        placeholder="Proteínas (kcal)"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        keyboardType="decimal-pad"
+                      />
+                      <TextInput
+                        style={{
+                          minHeight: 42,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 12,
+                        }}
+                        value={dietSettings.manual_macro_calories.fat}
+                        onChangeText={(value) => updateManualMacroCalories("fat", value)}
+                        placeholder="Grasas (kcal)"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        keyboardType="decimal-pad"
+                      />
+                      <View
+                        style={{
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          borderRadius: mobileTheme.radius.md,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          padding: 10,
+                          gap: 4,
+                        }}
+                      >
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                          Asignadas: {manualAssignedCalories.toFixed(0)} kcal
+                        </Text>
+                        <Text
+                          style={{
+                            color: manualRemainingCalories < 0 ? "#FF8D8D" : mobileTheme.color.brandPrimary,
+                            fontWeight: "700",
+                          }}
+                        >
+                          {manualRemainingCalories >= 0
+                            ? `Restantes: ${manualRemainingCalories.toFixed(0)} kcal`
+                            : `Excedente: ${Math.abs(manualRemainingCalories).toFixed(0)} kcal`}
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                          Carbos: {manualCarbsGrams.toFixed(1)} g • Proteínas: {manualProteinGrams.toFixed(1)} g • Grasas: {manualFatGrams.toFixed(1)} g
+                        </Text>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={{ gap: 8 }}>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Peso actual usado: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(2)} kg` : "Sin definir"}
+                      </Text>
+                      {latestBodyWeightKg === null ? (
+                        <Text style={{ color: "#ffd7a8", fontSize: 12 }}>
+                          Guarda tu peso corporal para calcular macros por kg.
+                        </Text>
+                      ) : null}
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <TextInput
+                          style={{
+                            flex: 1,
+                            minHeight: 42,
+                            borderRadius: mobileTheme.radius.md,
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            backgroundColor: mobileTheme.color.bgApp,
+                            color: mobileTheme.color.textPrimary,
+                            paddingHorizontal: 12,
+                          }}
+                          value={dietSettings.protein_grams_per_kg}
+                          onChangeText={updateProteinGramsPerKg}
+                          placeholder={proteinGkgPlaceholder}
+                          placeholderTextColor={mobileTheme.color.textSecondary}
+                          keyboardType="decimal-pad"
+                        />
+                        {canAutocompleteGkgMacro && autocompleteGkgMacroKey === "protein" ? (
+                          <Pressable
+                            onPress={autocompleteMissingGkgMacro}
+                            style={{
+                              minWidth: 62,
+                              height: 42,
+                              borderRadius: mobileTheme.radius.md,
+                              borderWidth: 1,
+                              borderColor: "rgba(203,255,26,0.45)",
+                              backgroundColor: "rgba(203,255,26,0.12)",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              paddingHorizontal: 10,
+                            }}
+                          >
+                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
+                              Auto
+                            </Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <TextInput
+                          style={{
+                            flex: 1,
+                            minHeight: 42,
+                            borderRadius: mobileTheme.radius.md,
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            backgroundColor: mobileTheme.color.bgApp,
+                            color: mobileTheme.color.textPrimary,
+                            paddingHorizontal: 12,
+                          }}
+                          value={dietSettings.carbs_grams_per_kg}
+                          onChangeText={updateCarbsGramsPerKg}
+                          placeholder={carbsGkgPlaceholder}
+                          placeholderTextColor={mobileTheme.color.textSecondary}
+                          keyboardType="decimal-pad"
+                        />
+                        {canAutocompleteGkgMacro && autocompleteGkgMacroKey === "carbs" ? (
+                          <Pressable
+                            onPress={autocompleteMissingGkgMacro}
+                            style={{
+                              minWidth: 62,
+                              height: 42,
+                              borderRadius: mobileTheme.radius.md,
+                              borderWidth: 1,
+                              borderColor: "rgba(203,255,26,0.45)",
+                              backgroundColor: "rgba(203,255,26,0.12)",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              paddingHorizontal: 10,
+                            }}
+                          >
+                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
+                              Auto
+                            </Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <TextInput
+                          style={{
+                            flex: 1,
+                            minHeight: 42,
+                            borderRadius: mobileTheme.radius.md,
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            backgroundColor: mobileTheme.color.bgApp,
+                            color: mobileTheme.color.textPrimary,
+                            paddingHorizontal: 12,
+                          }}
+                          value={dietSettings.fat_grams_per_kg}
+                          onChangeText={updateFatGramsPerKg}
+                          placeholder={fatGkgPlaceholder}
+                          placeholderTextColor={mobileTheme.color.textSecondary}
+                          keyboardType="decimal-pad"
+                        />
+                        {canAutocompleteGkgMacro && autocompleteGkgMacroKey === "fat" ? (
+                          <Pressable
+                            onPress={autocompleteMissingGkgMacro}
+                            style={{
+                              minWidth: 62,
+                              height: 42,
+                              borderRadius: mobileTheme.radius.md,
+                              borderWidth: 1,
+                              borderColor: "rgba(203,255,26,0.45)",
+                              backgroundColor: "rgba(203,255,26,0.12)",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              paddingHorizontal: 10,
+                            }}
+                          >
+                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
+                              Auto
+                            </Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
+                      <View
+                        style={{
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          borderRadius: mobileTheme.radius.md,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          padding: 10,
+                          gap: 4,
+                        }}
+                      >
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                          Proteínas: {proteinCaloriesFromWeightPlan.toFixed(0)} kcal ({proteinGramsFromWeightPlan.toFixed(1)} g)
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                          Carbos: {carbsCaloriesFromWeightPlan.toFixed(0)} kcal ({carbsGramsFromWeightPlan.toFixed(1)} g)
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                          Grasas: {fatCaloriesFromWeightPlan.toFixed(0)} kcal ({fatGramsFromWeightPlan.toFixed(1)} g)
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                          Objetivo por kg: P {proteinGramsPerKgTarget.toFixed(2)} • C {carbsGramsPerKgTarget.toFixed(2)} • G {fatGramsPerKgTarget.toFixed(2)}
+                        </Text>
+                        <Text
+                          style={{
+                            color:
+                              caloriesRemainingAfterWeightPlan < 0 ? "#FF8D8D" : mobileTheme.color.brandPrimary,
+                            fontWeight: "700",
+                            fontSize: 12,
+                          }}
+                        >
+                          {caloriesRemainingAfterWeightPlan >= 0
+                            ? `Calorías por repartir: ${caloriesRemainingAfterWeightPlan.toFixed(0)} kcal`
+                            : `El plan excede el objetivo en ${Math.abs(caloriesRemainingAfterWeightPlan).toFixed(0)} kcal`}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+
+                  <Text
                     style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
+                      color: configuredMacroCaloriesRemaining < 0 ? "#FF8D8D" : mobileTheme.color.textSecondary,
+                      fontSize: 12,
                     }}
-                    value={activeProvider.model}
-                    onChangeText={(value) =>
-                      updateProviderConfig(activeProvider.provider, {
-                        model: value.trim() || DEFAULT_MODELS[activeProvider.provider],
-                      })
-                    }
-                    placeholder={`Modelo (default: ${DEFAULT_MODELS[activeProvider.provider]})`}
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
+                  >
+                    Resumen plan: {configuredMacroCaloriesTotal.toFixed(0)} kcal asignadas •{" "}
+                    {configuredMacroCaloriesRemaining >= 0
+                      ? `${configuredMacroCaloriesRemaining.toFixed(0)} kcal por repartir`
+                      : `${Math.abs(configuredMacroCaloriesRemaining).toFixed(0)} kcal excedidas`}
+                  </Text>
                 </View>
               ) : null}
 
-              <Pressable
-                onPress={resetLocalData}
-                style={{
-                  marginTop: 8,
-                  height: 44,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,100,100,0.4)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "#ffb5b5", fontWeight: "700" }}>Restablecer datos locales</Text>
-              </Pressable>
+              {settingsTab === "charts" ? (
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgSurface,
+                    borderRadius: mobileTheme.radius.lg,
+                    padding: 12,
+                    gap: 10,
+                  }}
+                >
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                    Gráficas
+                  </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary }}>
+                    Esta sección quedará preparada para gráficas de evolución de medidas y dieta.
+                  </Text>
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      padding: 10,
+                      gap: 6,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                      Vista previa
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                      Peso actual: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(2)} kg` : "Sin datos"}
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                      Calorías objetivo: {dietDailyCaloriesTarget > 0 ? `${dietDailyCaloriesTarget.toFixed(0)} kcal` : "Sin definir"}
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                      Calorías consumidas hoy: {dashboard.calories.toFixed(0)} kcal
+                    </Text>
+                  </View>
+                </View>
+              ) : null}
+
+              {settingsTab === "provider" ? (
+                <>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                    Proveedor IA
+                  </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary }}>
+                    Sin backend: el chat llama directo a la API del proveedor activo (BYOK). Las API keys se guardan en almacenamiento seguro del dispositivo.
+                  </Text>
+                  {!secureStoreAvailable ? (
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "rgba(255,177,102,0.45)",
+                        borderRadius: mobileTheme.radius.md,
+                        backgroundColor: "rgba(255,177,102,0.08)",
+                        padding: 10,
+                      }}
+                    >
+                      <Text style={{ color: "#ffd7a8", fontSize: 12 }}>
+                        SecureStore no disponible en este entorno. La API key no se persistirá de forma segura.
+                      </Text>
+                    </View>
+                  ) : null}
+                  {store.keys.map((key) => (
+                    <Pressable
+                      key={key.provider}
+                      onPress={() => setActiveProvider(key.provider)}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: key.is_active ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                        borderRadius: mobileTheme.radius.lg,
+                        padding: 12,
+                        backgroundColor: key.is_active ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                        {key.provider.toUpperCase()}
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, marginTop: 4 }}>
+                        {key.is_active ? `Activo • ${maskApiKey(key.api_key)}` : `No activo • ${maskApiKey(key.api_key)}`}
+                      </Text>
+                    </Pressable>
+                  ))}
+
+                  {activeProvider ? (
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        borderRadius: mobileTheme.radius.lg,
+                        padding: 12,
+                        backgroundColor: mobileTheme.color.bgSurface,
+                        gap: 10,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                        {activeProvider.provider.toUpperCase()} activo
+                      </Text>
+                      <TextInput
+                        style={{
+                          minHeight: 42,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 12,
+                        }}
+                        value={activeProvider.api_key}
+                        onChangeText={(value) =>
+                          updateProviderConfig(activeProvider.provider, { api_key: value.trim() })
+                        }
+                        placeholder={`API key ${activeProvider.provider}`}
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        secureTextEntry
+                      />
+                      <TextInput
+                        style={{
+                          minHeight: 42,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 12,
+                        }}
+                        value={activeProvider.model}
+                        onChangeText={(value) =>
+                          updateProviderConfig(activeProvider.provider, {
+                            model: value.trim() || DEFAULT_MODELS[activeProvider.provider],
+                          })
+                        }
+                        placeholder={`Modelo (default: ${DEFAULT_MODELS[activeProvider.provider]})`}
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                      />
+                    </View>
+                  ) : null}
+
+                  <Pressable
+                    onPress={resetLocalData}
+                    style={{
+                      marginTop: 8,
+                      height: 44,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,100,100,0.4)",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ color: "#ffb5b5", fontWeight: "700" }}>Restablecer datos locales</Text>
+                  </Pressable>
+                </>
+              ) : null}
             </View>
           ) : null}
         </ScrollView>
