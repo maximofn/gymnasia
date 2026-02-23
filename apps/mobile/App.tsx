@@ -3,10 +3,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
+import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import {
   ActivityIndicator,
   Alert,
+  Image,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -94,7 +100,20 @@ type WorkoutCompletionModalState = {
 type DietItem = { id: string; title: string; calories_kcal: number };
 type DietMeal = { id: string; title: string; items: DietItem[] };
 type DietDay = { day_date: string; meals: DietMeal[] };
-type Measurement = { id: string; measured_at: string; weight_kg: number | null };
+type Measurement = {
+  id: string;
+  measured_at: string;
+  weight_kg: number | null;
+  photo_uri: string | null;
+  neck_cm: number | null;
+  chest_cm: number | null;
+  waist_cm: number | null;
+  hips_cm: number | null;
+  biceps_cm: number | null;
+  quadriceps_cm: number | null;
+  calf_cm: number | null;
+  height_cm: number | null;
+};
 type DietMacroMode = "manual_calories" | "protein_by_weight";
 type GkgMacroKey = "protein" | "carbs" | "fat";
 type DietSettings = {
@@ -118,6 +137,10 @@ type ChatMessage = {
 };
 type Provider = "anthropic" | "openai" | "google";
 type AIKey = { provider: Provider; is_active: boolean; api_key: string; model: string };
+type ProviderDraft = { api_key: string; model: string };
+type ProviderConnectionState = "connected" | "disconnected" | "checking" | "unknown";
+type ProviderConnectionStatus = { state: ProviderConnectionState; detail: string };
+type ProviderConnectionCheckResult = { ok: boolean; message: string };
 type ChatInputMessage = { role: "user" | "assistant" | "system"; content: string };
 type TrainingFilter = "all" | "strength" | "hypertrophy" | "cardio" | "flexibility";
 type TrainingCategory = Exclude<TrainingFilter, "all">;
@@ -163,6 +186,119 @@ const DEFAULT_MODELS: Record<Provider, string> = {
   google: "gemini-1.5-flash",
 };
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
+const PROVIDER_UI_META: Record<
+  Provider,
+  {
+    label: string;
+    models_hint: string;
+    avatar_bg: string;
+    avatar_text: string;
+  }
+> = {
+  anthropic: {
+    label: "Anthropic",
+    models_hint: "Claude Sonnet 4.5, Opus 4",
+    avatar_bg: "#CFA06D",
+    avatar_text: "#F8F0E5",
+  },
+  openai: {
+    label: "OpenAI",
+    models_hint: "GPT-4o, o1, o3",
+    avatar_bg: "#18B894",
+    avatar_text: "#E9FFF9",
+  },
+  google: {
+    label: "Google",
+    models_hint: "Gemini 2.5 Pro, Flash",
+    avatar_bg: "#4D84FF",
+    avatar_text: "#EFF4FF",
+  },
+};
+
+function createDefaultProviderKeys(): AIKey[] {
+  return [
+    { provider: "openai", is_active: true, api_key: "", model: DEFAULT_MODELS.openai },
+    { provider: "anthropic", is_active: false, api_key: "", model: DEFAULT_MODELS.anthropic },
+    { provider: "google", is_active: false, api_key: "", model: DEFAULT_MODELS.google },
+  ];
+}
+
+function createProviderDraftMap(keys: AIKey[]): Record<Provider, ProviderDraft> {
+  const byProvider = new Map<Provider, AIKey>();
+  keys.forEach((item) => {
+    byProvider.set(item.provider, item);
+  });
+  return PROVIDERS.reduce((acc, provider) => {
+    const current = byProvider.get(provider);
+    acc[provider] = {
+      api_key: current?.api_key ?? "",
+      model: current?.model ?? DEFAULT_MODELS[provider],
+    };
+    return acc;
+  }, {} as Record<Provider, ProviderDraft>);
+}
+
+function createProviderConnectionStatusMap(
+  keys: AIKey[],
+): Record<Provider, ProviderConnectionStatus> {
+  const byProvider = new Map<Provider, AIKey>();
+  keys.forEach((item) => {
+    byProvider.set(item.provider, item);
+  });
+
+  return PROVIDERS.reduce((acc, provider) => {
+    const hasApiKey = !!(byProvider.get(provider)?.api_key ?? "").trim();
+    acc[provider] = hasApiKey
+      ? { state: "unknown", detail: "Pendiente de verificación. Pulsa Guardar." }
+      : { state: "disconnected", detail: "Sin API key guardada." };
+    return acc;
+  }, {} as Record<Provider, ProviderConnectionStatus>);
+}
+
+function createProviderBooleanMap(defaultValue: boolean): Record<Provider, boolean> {
+  return PROVIDERS.reduce((acc, provider) => {
+    acc[provider] = defaultValue;
+    return acc;
+  }, {} as Record<Provider, boolean>);
+}
+
+function providerConnectionBadge(status: ProviderConnectionStatus): {
+  text: string;
+  backgroundColor: string;
+  dotColor: string;
+  textColor: string;
+} {
+  if (status.state === "connected") {
+    return {
+      text: "Conectado",
+      backgroundColor: "rgba(16,185,129,0.18)",
+      dotColor: "#24D68B",
+      textColor: "#24D68B",
+    };
+  }
+  if (status.state === "checking") {
+    return {
+      text: "Comprobando",
+      backgroundColor: "rgba(69,141,255,0.2)",
+      dotColor: "#77A8FF",
+      textColor: "#77A8FF",
+    };
+  }
+  if (status.state === "unknown") {
+    return {
+      text: "Sin verificar",
+      backgroundColor: "rgba(255,177,102,0.2)",
+      dotColor: "#FFB166",
+      textColor: "#FFD8A8",
+    };
+  }
+  return {
+    text: "No conectado",
+    backgroundColor: "rgba(89,100,114,0.26)",
+    dotColor: "#616B79",
+    textColor: "#798392",
+  };
+}
 const TRAINING_FILTER_OPTIONS: Array<{ key: TrainingFilter; label: string }> = [
   { key: "all", label: "Todos" },
   { key: "strength", label: "Fuerza" },
@@ -327,6 +463,60 @@ function extractErrorMessage(payload: unknown, fallback: string): string {
     message?: string;
   };
   return candidate.error?.message ?? candidate.detail ?? candidate.message ?? fallback;
+}
+
+async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnectionCheckResult> {
+  const apiKey = provider.api_key.trim();
+  if (!apiKey) {
+    return { ok: false, message: "API key vacía." };
+  }
+
+  const model = provider.model.trim() || DEFAULT_MODELS[provider.provider];
+  try {
+    let response: Response;
+    if (provider.provider === "openai") {
+      response = await fetch("https://api.openai.com/v1/models", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      });
+    } else if (provider.provider === "anthropic") {
+      response = await fetch("https://api.anthropic.com/v1/models", {
+        method: "GET",
+        headers: {
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+      });
+    } else {
+      response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}?key=${encodeURIComponent(apiKey)}`,
+        { method: "GET" },
+      );
+    }
+
+    let payload: unknown = null;
+    try {
+      payload = await response.json();
+    } catch {
+      // ignore json parse errors
+    }
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: extractErrorMessage(payload, `Error de conexión (${response.status})`),
+      };
+    }
+
+    return { ok: true, message: "Conexión verificada." };
+  } catch (err) {
+    return {
+      ok: false,
+      message: err instanceof Error ? err.message : "No se pudo comprobar la conexión.",
+    };
+  }
 }
 
 function parseOpenAIContent(payload: unknown): string | null {
@@ -605,6 +795,124 @@ function parseNonNegativeNumberInput(rawValue: string): number | null {
   const parsed = Number(normalized);
   if (!Number.isFinite(parsed) || parsed < 0) return null;
   return parsed;
+}
+
+function parsePositiveNumberInput(rawValue: string): number | null {
+  const normalized = rawValue.trim().replace(",", ".");
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+  return Math.round(parsed * 100) / 100;
+}
+
+function parseOptionalPositiveMetricInput(rawValue: string): {
+  value: number | null;
+  invalid: boolean;
+} {
+  const trimmed = rawValue.trim();
+  if (!trimmed) return { value: null, invalid: false };
+  const parsed = parsePositiveNumberInput(trimmed);
+  return {
+    value: parsed,
+    invalid: parsed === null,
+  };
+}
+
+function normalizePositiveNumber(rawValue: unknown): number | null {
+  if (typeof rawValue === "number" && Number.isFinite(rawValue) && rawValue > 0) {
+    return Math.round(rawValue * 100) / 100;
+  }
+  if (typeof rawValue === "string") {
+    return parsePositiveNumberInput(rawValue);
+  }
+  return null;
+}
+
+function normalizeMeasuredAt(rawValue: unknown): string {
+  if (typeof rawValue === "string") {
+    const parsed = new Date(rawValue);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toISOString();
+    }
+  }
+  return new Date().toISOString();
+}
+
+function normalizeMeasurement(rawValue: unknown, index: number): Measurement {
+  const maybe = rawValue && typeof rawValue === "object" ? (rawValue as Partial<Measurement>) : {};
+  const parsedDate = normalizeMeasuredAt(maybe.measured_at);
+  return {
+    id: typeof maybe.id === "string" && maybe.id ? maybe.id : uid(`measurement_${index}`),
+    measured_at: parsedDate,
+    weight_kg: normalizePositiveNumber(maybe.weight_kg),
+    photo_uri:
+      typeof maybe.photo_uri === "string" && maybe.photo_uri.trim() ? maybe.photo_uri.trim() : null,
+    neck_cm: normalizePositiveNumber(maybe.neck_cm),
+    chest_cm: normalizePositiveNumber(maybe.chest_cm),
+    waist_cm: normalizePositiveNumber(maybe.waist_cm),
+    hips_cm: normalizePositiveNumber(maybe.hips_cm),
+    biceps_cm: normalizePositiveNumber(maybe.biceps_cm),
+    quadriceps_cm: normalizePositiveNumber(maybe.quadriceps_cm),
+    calf_cm: normalizePositiveNumber(maybe.calf_cm),
+    height_cm: normalizePositiveNumber(maybe.height_cm),
+  };
+}
+
+function sortMeasurementsDesc(measurements: Measurement[]): Measurement[] {
+  return [...measurements].sort((a, b) => {
+    const aTime = new Date(a.measured_at).getTime();
+    const bTime = new Date(b.measured_at).getTime();
+    return bTime - aTime;
+  });
+}
+
+function measurementDateFromSelection(date: Date): Date {
+  const normalized = new Date(date);
+  normalized.setHours(12, 0, 0, 0);
+  return normalized;
+}
+
+function formatMeasurementDate(rawValue: string): string {
+  const parsed = new Date(rawValue);
+  if (Number.isNaN(parsed.getTime())) return "Fecha inválida";
+  return parsed.toLocaleDateString();
+}
+
+function formatMeasurementNumber(value: number): string {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
+}
+
+function buildMeasurementHighlights(measurement: Measurement): string[] {
+  const chips: string[] = [];
+  if (measurement.weight_kg !== null) {
+    chips.push(`Peso ${formatMeasurementNumber(measurement.weight_kg)} kg`);
+  }
+  if (measurement.neck_cm !== null) {
+    chips.push(`Cuello ${formatMeasurementNumber(measurement.neck_cm)} cm`);
+  }
+  if (measurement.chest_cm !== null) {
+    chips.push(`Pecho ${formatMeasurementNumber(measurement.chest_cm)} cm`);
+  }
+  if (measurement.waist_cm !== null) {
+    chips.push(`Cintura ${formatMeasurementNumber(measurement.waist_cm)} cm`);
+  }
+  if (measurement.hips_cm !== null) {
+    chips.push(`Cadera ${formatMeasurementNumber(measurement.hips_cm)} cm`);
+  }
+  if (measurement.biceps_cm !== null) {
+    chips.push(`Bíceps ${formatMeasurementNumber(measurement.biceps_cm)} cm`);
+  }
+  if (measurement.quadriceps_cm !== null) {
+    chips.push(`Cuádriceps ${formatMeasurementNumber(measurement.quadriceps_cm)} cm`);
+  }
+  if (measurement.calf_cm !== null) {
+    chips.push(`Gemelo ${formatMeasurementNumber(measurement.calf_cm)} cm`);
+  }
+  if (measurement.height_cm !== null) {
+    chips.push(`Altura ${formatMeasurementNumber(measurement.height_cm)} cm`);
+  }
+  return chips;
 }
 
 function gkgMacroCaloriesPerGram(macro: GkgMacroKey): number {
@@ -943,11 +1251,7 @@ function createInitialStore(): LocalStore {
     messagesByThread: {
       [firstThreadId]: [],
     },
-    keys: [
-      { provider: "openai", is_active: true, api_key: "", model: DEFAULT_MODELS.openai },
-      { provider: "anthropic", is_active: false, api_key: "", model: DEFAULT_MODELS.anthropic },
-      { provider: "google", is_active: false, api_key: "", model: DEFAULT_MODELS.google },
-    ],
+    keys: createDefaultProviderKeys(),
   };
 }
 
@@ -1018,11 +1322,17 @@ function normalizeStore(raw: LocalStore): LocalStore {
     };
   });
 
+  const normalizedMeasurements = sortMeasurementsDesc(
+    (Array.isArray(raw.measurements) ? raw.measurements : []).map((measurement, index) =>
+      normalizeMeasurement(measurement, index),
+    ),
+  ).slice(0, 60);
+
   return {
     templates,
     dietByDate: raw.dietByDate ?? {},
     dietSettings: normalizedDietSettings,
-    measurements: raw.measurements ?? [],
+    measurements: normalizedMeasurements,
     threads: raw.threads ?? [],
     messagesByThread: raw.messagesByThread ?? {},
     keys,
@@ -1046,7 +1356,30 @@ export default function App() {
   const [mealTitleInput, setMealTitleInput] = useState("");
   const [mealCaloriesInput, setMealCaloriesInput] = useState("");
   const [weightInput, setWeightInput] = useState("");
+  const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
+  const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
+  const [showMeasurementDatePicker, setShowMeasurementDatePicker] = useState(false);
+  const [heightInput, setHeightInput] = useState("");
+  const [neckInput, setNeckInput] = useState("");
+  const [chestInput, setChestInput] = useState("");
+  const [waistInput, setWaistInput] = useState("");
+  const [hipsInput, setHipsInput] = useState("");
+  const [bicepsInput, setBicepsInput] = useState("");
+  const [quadricepsInput, setQuadricepsInput] = useState("");
+  const [calfInput, setCalfInput] = useState("");
   const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("measures");
+  const [providerKeyVisibility, setProviderKeyVisibility] = useState<Record<Provider, boolean>>(() =>
+    createProviderBooleanMap(false),
+  );
+  const [providerDraftByProvider, setProviderDraftByProvider] = useState<
+    Record<Provider, ProviderDraft>
+  >(() => createProviderDraftMap(createDefaultProviderKeys()));
+  const [providerConnectionStatus, setProviderConnectionStatus] = useState<
+    Record<Provider, ProviderConnectionStatus>
+  >(() => createProviderConnectionStatusMap(createDefaultProviderKeys()));
+  const [providerSaveLoading, setProviderSaveLoading] = useState<Record<Provider, boolean>>(() =>
+    createProviderBooleanMap(false),
+  );
   const [trainingSearch, setTrainingSearch] = useState("");
   const [trainingFilter, setTrainingFilter] = useState<TrainingFilter>("all");
   const [isGlobalScreenLoading, setIsGlobalScreenLoading] = useState(false);
@@ -1071,6 +1404,7 @@ export default function App() {
   });
   const manualRestSkipRef = useRef(false);
   const restAlertLockRef = useRef(false);
+  const providerSettingsInitializedRef = useRef(false);
 
   const today = todayISO();
   const dietDay = store.dietByDate[today] ?? { day_date: today, meals: [] };
@@ -1078,8 +1412,23 @@ export default function App() {
     () => store.keys.find((item) => item.is_active) ?? null,
     [store.keys],
   );
-  const latestWeightMeasurement = store.measurements[0] ?? null;
+  const orderedProviderKeys = useMemo(
+    () =>
+      (["anthropic", "openai", "google"] as Provider[])
+        .map((provider) => store.keys.find((item) => item.provider === provider))
+        .filter((item): item is AIKey => !!item),
+    [store.keys],
+  );
+  const latestWeightMeasurement = useMemo(
+    () => store.measurements.find((measurement) => measurement.weight_kg !== null) ?? null,
+    [store.measurements],
+  );
+  const latestHeightMeasurement = useMemo(
+    () => store.measurements.find((measurement) => measurement.height_cm !== null) ?? null,
+    [store.measurements],
+  );
   const latestBodyWeightKg = latestWeightMeasurement?.weight_kg ?? null;
+  const latestBodyHeightCm = latestHeightMeasurement?.height_cm ?? null;
   const dietSettings = store.dietSettings;
   const dietDailyCaloriesTarget = parseNonNegativeNumberInput(dietSettings.daily_calories) ?? 0;
   const manualCarbsCalories =
@@ -1345,6 +1694,12 @@ export default function App() {
     isTrainingEditorOpen &&
     (isTrainingEditorLoading || showGlobalScreenLoading);
 
+  useEffect(() => {
+    if (heightInput.trim()) return;
+    if (!latestHeightMeasurement || latestHeightMeasurement.height_cm === null) return;
+    setHeightInput(formatMeasurementNumber(latestHeightMeasurement.height_cm));
+  }, [heightInput, latestHeightMeasurement]);
+
   const playRestFinishedAlert = useCallback(async () => {
     if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
@@ -1532,6 +1887,13 @@ export default function App() {
       ignore = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!isHydrated || providerSettingsInitializedRef.current) return;
+    setProviderDraftByProvider(createProviderDraftMap(store.keys));
+    setProviderConnectionStatus(createProviderConnectionStatusMap(store.keys));
+    providerSettingsInitializedRef.current = true;
+  }, [isHydrated, store.keys]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -1783,23 +2145,174 @@ export default function App() {
   }
 
   function addWeight() {
-    const value = Number(weightInput.replace(",", "."));
-    if (!Number.isFinite(value) || value <= 0) {
+    const value = parsePositiveNumberInput(weightInput);
+    if (value === null) {
       setError("Introduce un peso válido.");
       return;
     }
 
     const measurement: Measurement = {
       id: uid("measurement"),
-      measured_at: new Date().toISOString(),
+      measured_at: measurementDateFromSelection(new Date()).toISOString(),
       weight_kg: value,
+      photo_uri: null,
+      neck_cm: null,
+      chest_cm: null,
+      waist_cm: null,
+      hips_cm: null,
+      biceps_cm: null,
+      quadriceps_cm: null,
+      calf_cm: null,
+      height_cm: null,
     };
 
-    setStore((prev) => ({
-      ...prev,
-      measurements: [measurement, ...prev.measurements].slice(0, 30),
-    }));
+    setStore((prev) => {
+      const nextMeasurements = sortMeasurementsDesc([measurement, ...prev.measurements]).slice(0, 60);
+      return {
+        ...prev,
+        measurements: nextMeasurements,
+      };
+    });
     setWeightInput("");
+    setError(null);
+  }
+
+  async function pickMeasurementPhoto() {
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        setError("Necesitas permitir acceso a fotos para adjuntar una imagen.");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.8,
+      });
+      if (result.canceled) return;
+
+      const asset = result.assets?.[0];
+      if (!asset?.uri) {
+        setError("No se pudo leer la foto seleccionada.");
+        return;
+      }
+      setMeasurementPhotoUri(asset.uri);
+      setError(null);
+    } catch {
+      setError("No se pudo abrir la galería para seleccionar foto.");
+    }
+  }
+
+  function onMeasurementDateChange(event: DateTimePickerEvent, selectedDate?: Date) {
+    if (Platform.OS === "android") {
+      setShowMeasurementDatePicker(false);
+    }
+    if (event.type === "dismissed" || !selectedDate) return;
+    setMeasurementDate(measurementDateFromSelection(selectedDate));
+  }
+
+  function resetMeasurementForm() {
+    setWeightInput("");
+    setMeasurementPhotoUri(null);
+    setNeckInput("");
+    setChestInput("");
+    setWaistInput("");
+    setHipsInput("");
+    setBicepsInput("");
+    setQuadricepsInput("");
+    setCalfInput("");
+    setMeasurementDate(measurementDateFromSelection(new Date()));
+  }
+
+  function addMeasurementFromSettings() {
+    const weightResult = parseOptionalPositiveMetricInput(weightInput);
+    if (weightResult.invalid) {
+      setError("Introduce un valor válido para peso.");
+      return;
+    }
+    const neckResult = parseOptionalPositiveMetricInput(neckInput);
+    if (neckResult.invalid) {
+      setError("Introduce un valor válido para contorno de cuello.");
+      return;
+    }
+    const chestResult = parseOptionalPositiveMetricInput(chestInput);
+    if (chestResult.invalid) {
+      setError("Introduce un valor válido para contorno de pecho.");
+      return;
+    }
+    const waistResult = parseOptionalPositiveMetricInput(waistInput);
+    if (waistResult.invalid) {
+      setError("Introduce un valor válido para contorno de cintura.");
+      return;
+    }
+    const hipsResult = parseOptionalPositiveMetricInput(hipsInput);
+    if (hipsResult.invalid) {
+      setError("Introduce un valor válido para contorno de cadera.");
+      return;
+    }
+    const bicepsResult = parseOptionalPositiveMetricInput(bicepsInput);
+    if (bicepsResult.invalid) {
+      setError("Introduce un valor válido para bíceps.");
+      return;
+    }
+    const quadricepsResult = parseOptionalPositiveMetricInput(quadricepsInput);
+    if (quadricepsResult.invalid) {
+      setError("Introduce un valor válido para cuádriceps.");
+      return;
+    }
+    const calfResult = parseOptionalPositiveMetricInput(calfInput);
+    if (calfResult.invalid) {
+      setError("Introduce un valor válido para gemelo.");
+      return;
+    }
+    const heightResult = parseOptionalPositiveMetricInput(heightInput);
+    if (heightResult.invalid) {
+      setError("Introduce un valor válido para altura.");
+      return;
+    }
+
+    const hasAnyMetric =
+      weightResult.value !== null ||
+      neckResult.value !== null ||
+      chestResult.value !== null ||
+      waistResult.value !== null ||
+      hipsResult.value !== null ||
+      bicepsResult.value !== null ||
+      quadricepsResult.value !== null ||
+      calfResult.value !== null ||
+      heightResult.value !== null ||
+      !!measurementPhotoUri;
+
+    if (!hasAnyMetric) {
+      setError("Añade al menos un dato de medida o una foto.");
+      return;
+    }
+
+    const measurement: Measurement = {
+      id: uid("measurement"),
+      measured_at: measurementDateFromSelection(measurementDate).toISOString(),
+      weight_kg: weightResult.value,
+      photo_uri: measurementPhotoUri,
+      neck_cm: neckResult.value,
+      chest_cm: chestResult.value,
+      waist_cm: waistResult.value,
+      hips_cm: hipsResult.value,
+      biceps_cm: bicepsResult.value,
+      quadriceps_cm: quadricepsResult.value,
+      calf_cm: calfResult.value,
+      height_cm: heightResult.value,
+    };
+
+    setStore((prev) => {
+      const nextMeasurements = sortMeasurementsDesc([measurement, ...prev.measurements]).slice(0, 60);
+      return {
+        ...prev,
+        measurements: nextMeasurements,
+      };
+    });
+
+    resetMeasurementForm();
+    setError(null);
   }
 
   function updateDietSettings(updater: (settings: DietSettings) => DietSettings) {
@@ -2594,6 +3107,7 @@ export default function App() {
         item.provider === provider ? { ...item, is_active: true } : { ...item, is_active: false },
       ),
     }));
+    setError(null);
   }
 
   function updateProviderConfig(provider: Provider, updates: Partial<Pick<AIKey, "api_key" | "model">>) {
@@ -2605,9 +3119,153 @@ export default function App() {
     }));
   }
 
+  function setProviderKeyVisible(provider: Provider, visible: boolean) {
+    setProviderKeyVisibility((prev) => ({
+      ...prev,
+      [provider]: visible,
+    }));
+  }
+
+  function toggleProviderKeyVisibility(provider: Provider) {
+    setProviderKeyVisibility((prev) => ({
+      ...prev,
+      [provider]: !prev[provider],
+    }));
+  }
+
+  function updateProviderDraft(
+    provider: Provider,
+    updates: Partial<ProviderDraft>,
+    options: { markPending?: boolean } = { markPending: true },
+  ) {
+    const currentDraft = providerDraftByProvider[provider] ?? {
+      api_key: "",
+      model: DEFAULT_MODELS[provider],
+    };
+    const nextDraft: ProviderDraft = {
+      api_key: updates.api_key ?? currentDraft.api_key,
+      model: updates.model ?? currentDraft.model,
+    };
+
+    setProviderDraftByProvider((prev) => ({
+      ...prev,
+      [provider]: nextDraft,
+    }));
+
+    if (options.markPending) {
+      setProviderConnectionStatus((prev) => ({
+        ...prev,
+        [provider]: nextDraft.api_key.trim()
+          ? { state: "unknown", detail: "Cambios pendientes. Pulsa Guardar para verificar." }
+          : { state: "disconnected", detail: "Sin API key guardada." },
+      }));
+    }
+  }
+
+  async function saveProviderApiKey(provider: Provider) {
+    const draft = providerDraftByProvider[provider];
+    if (!draft) return;
+
+    const normalizedApiKey = draft.api_key.trim();
+    const normalizedModel = draft.model.trim() || DEFAULT_MODELS[provider];
+
+    setActiveProvider(provider);
+    setError(null);
+    setProviderSaveLoading((prev) => ({ ...prev, [provider]: true }));
+
+    if (!normalizedApiKey) {
+      updateProviderConfig(provider, {
+        api_key: "",
+        model: normalizedModel,
+      });
+      updateProviderDraft(
+        provider,
+        {
+          api_key: "",
+          model: normalizedModel,
+        },
+        { markPending: false },
+      );
+      setProviderConnectionStatus((prev) => ({
+        ...prev,
+        [provider]: { state: "disconnected", detail: "Sin API key guardada." },
+      }));
+      setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
+      setProviderKeyVisible(provider, false);
+      return;
+    }
+
+    setProviderConnectionStatus((prev) => ({
+      ...prev,
+      [provider]: { state: "checking", detail: "Comprobando conexión..." },
+    }));
+
+    const check = await verifyProviderConnection({
+      provider,
+      is_active: true,
+      api_key: normalizedApiKey,
+      model: normalizedModel,
+    });
+
+    updateProviderConfig(provider, {
+      api_key: normalizedApiKey,
+      model: normalizedModel,
+    });
+    updateProviderDraft(
+      provider,
+      {
+        api_key: normalizedApiKey,
+        model: normalizedModel,
+      },
+      { markPending: false },
+    );
+    setProviderConnectionStatus((prev) => ({
+      ...prev,
+      [provider]: check.ok
+        ? { state: "connected", detail: "Conexión verificada." }
+        : { state: "disconnected", detail: check.message },
+    }));
+    setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
+    setProviderKeyVisible(provider, false);
+    if (!check.ok) {
+      setError(`No se pudo conectar con ${PROVIDER_UI_META[provider].label}: ${check.message}`);
+      return;
+    }
+    setError(null);
+  }
+
+  function deleteProviderApiKey(provider: Provider) {
+    Alert.alert(
+      "Eliminar key",
+      `Se borrará la API key guardada para ${PROVIDER_UI_META[provider].label}.`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: () => {
+            updateProviderConfig(provider, { api_key: "" });
+            updateProviderDraft(provider, { api_key: "" }, { markPending: false });
+            setProviderConnectionStatus((prev) => ({
+              ...prev,
+              [provider]: { state: "disconnected", detail: "Sin API key guardada." },
+            }));
+            setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
+            setProviderKeyVisible(provider, false);
+            setError(null);
+          },
+        },
+      ],
+    );
+  }
+
   function resetLocalData() {
     const initial = createInitialStore();
     setStore(initial);
+    setProviderKeyVisibility(createProviderBooleanMap(false));
+    setProviderDraftByProvider(createProviderDraftMap(initial.keys));
+    setProviderConnectionStatus(createProviderConnectionStatusMap(initial.keys));
+    setProviderSaveLoading(createProviderBooleanMap(false));
     setTab("home");
     setActiveThreadId(initial.threads[0]?.id ?? null);
     setActiveWorkoutSession(null);
@@ -5020,23 +5678,161 @@ export default function App() {
                     backgroundColor: mobileTheme.color.bgSurface,
                     borderRadius: mobileTheme.radius.lg,
                     padding: 12,
-                    gap: 10,
+                    gap: 12,
                   }}
                 >
                   <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
                     Medidas
                   </Text>
                   <Text style={{ color: mobileTheme.color.textSecondary }}>
-                    Aquí irán peso corporal y otras medidas. Puedes registrar el peso desde esta subpestaña.
+                    Registra peso, foto y contornos con fecha editable desde calendario. La fecha por defecto es hoy.
                   </Text>
                   <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
                     Peso actual: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(2)} kg` : "Sin registrar"}
                   </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                    Altura base:{" "}
+                    {latestBodyHeightCm !== null
+                      ? `${formatMeasurementNumber(latestBodyHeightCm)} cm`
+                      : "Sin registrar"}
+                  </Text>
                   {latestWeightMeasurement ? (
                     <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                      Última actualización: {new Date(latestWeightMeasurement.measured_at).toLocaleString()}
+                      Última actualización: {formatMeasurementDate(latestWeightMeasurement.measured_at)}
                     </Text>
                   ) : null}
+
+                  <Pressable
+                    onPress={() => setShowMeasurementDatePicker(true)}
+                    style={{
+                      minHeight: 44,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      paddingHorizontal: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                      Fecha: {formatMeasurementDate(measurementDate.toISOString())}
+                    </Text>
+                    <Ionicons name="calendar-outline" size={18} color={mobileTheme.color.textSecondary} />
+                  </Pressable>
+
+                  {showMeasurementDatePicker ? (
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        borderRadius: mobileTheme.radius.md,
+                        backgroundColor: mobileTheme.color.bgApp,
+                        padding: 8,
+                        gap: 8,
+                      }}
+                    >
+                      <DateTimePicker
+                        value={measurementDate}
+                        mode="date"
+                        maximumDate={new Date()}
+                        display={Platform.OS === "ios" ? "inline" : "default"}
+                        onChange={onMeasurementDateChange}
+                      />
+                      {Platform.OS === "ios" ? (
+                        <Pressable
+                          onPress={() => setShowMeasurementDatePicker(false)}
+                          style={{
+                            height: 38,
+                            borderRadius: mobileTheme.radius.md,
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            backgroundColor: mobileTheme.color.bgSurface,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                            Cerrar calendario
+                          </Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                      Foto de progreso
+                    </Text>
+                    {measurementPhotoUri ? (
+                      <Image
+                        source={{ uri: measurementPhotoUri }}
+                        style={{
+                          width: "100%",
+                          height: 180,
+                          borderRadius: mobileTheme.radius.md,
+                          backgroundColor: mobileTheme.color.bgApp,
+                        }}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          minHeight: 92,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          paddingHorizontal: 12,
+                        }}
+                      >
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                          Sin foto seleccionada
+                        </Text>
+                      </View>
+                    )}
+                    <View style={{ flexDirection: "row", gap: 8 }}>
+                      <Pressable
+                        onPress={pickMeasurementPhoto}
+                        style={{
+                          flex: 1,
+                          height: 40,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                          Seleccionar foto
+                        </Text>
+                      </Pressable>
+                      {measurementPhotoUri ? (
+                        <Pressable
+                          onPress={() => setMeasurementPhotoUri(null)}
+                          style={{
+                            height: 40,
+                            borderRadius: mobileTheme.radius.md,
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            backgroundColor: mobileTheme.color.bgApp,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            paddingHorizontal: 12,
+                          }}
+                        >
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>
+                            Quitar
+                          </Text>
+                        </Pressable>
+                      ) : null}
+                    </View>
+                  </View>
+
                   <TextInput
                     style={{
                       minHeight: 42,
@@ -5053,8 +5849,136 @@ export default function App() {
                     placeholderTextColor={mobileTheme.color.textSecondary}
                     keyboardType="decimal-pad"
                   />
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={neckInput}
+                    onChangeText={setNeckInput}
+                    placeholder="Contorno cuello (cm)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={chestInput}
+                    onChangeText={setChestInput}
+                    placeholder="Contorno pecho (cm)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={waistInput}
+                    onChangeText={setWaistInput}
+                    placeholder="Contorno cintura (cm)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={hipsInput}
+                    onChangeText={setHipsInput}
+                    placeholder="Contorno cadera (cm)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={bicepsInput}
+                    onChangeText={setBicepsInput}
+                    placeholder="Contorno bíceps (cm)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={quadricepsInput}
+                    onChangeText={setQuadricepsInput}
+                    placeholder="Contorno cuádriceps (cm)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={calfInput}
+                    onChangeText={setCalfInput}
+                    placeholder="Contorno gemelo (cm)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={heightInput}
+                    onChangeText={setHeightInput}
+                    placeholder="Altura (cm)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
                   <Pressable
-                    onPress={addWeight}
+                    onPress={addMeasurementFromSettings}
                     style={{
                       height: 44,
                       borderRadius: mobileTheme.radius.md,
@@ -5063,7 +5987,7 @@ export default function App() {
                       justifyContent: "center",
                     }}
                   >
-                    <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar peso corporal</Text>
+                    <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar medidas</Text>
                   </Pressable>
 
                   {store.measurements.length === 0 ? (
@@ -5072,25 +5996,64 @@ export default function App() {
                     </Text>
                   ) : (
                     <View style={{ gap: 8 }}>
-                      {store.measurements.slice(0, 10).map((measurement) => (
-                        <View
-                          key={measurement.id}
-                          style={{
-                            borderWidth: 1,
-                            borderColor: mobileTheme.color.borderSubtle,
-                            borderRadius: mobileTheme.radius.md,
-                            backgroundColor: mobileTheme.color.bgApp,
-                            padding: 10,
-                          }}
-                        >
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                            {new Date(measurement.measured_at).toLocaleString()}
-                          </Text>
-                          <Text style={{ color: mobileTheme.color.textSecondary, marginTop: 4 }}>
-                            {measurement.weight_kg !== null ? `${measurement.weight_kg} kg` : "Sin peso"}
-                          </Text>
-                        </View>
-                      ))}
+                      {store.measurements.slice(0, 10).map((measurement) => {
+                        const highlights = buildMeasurementHighlights(measurement);
+                        return (
+                          <View
+                            key={measurement.id}
+                            style={{
+                              borderWidth: 1,
+                              borderColor: mobileTheme.color.borderSubtle,
+                              borderRadius: mobileTheme.radius.md,
+                              backgroundColor: mobileTheme.color.bgApp,
+                              padding: 10,
+                              gap: 8,
+                            }}
+                          >
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                              {formatMeasurementDate(measurement.measured_at)}
+                            </Text>
+                            {measurement.photo_uri ? (
+                              <Image
+                                source={{ uri: measurement.photo_uri }}
+                                style={{
+                                  width: "100%",
+                                  height: 140,
+                                  borderRadius: mobileTheme.radius.md,
+                                  backgroundColor: mobileTheme.color.bgSurface,
+                                }}
+                              />
+                            ) : null}
+                            {highlights.length > 0 ? (
+                              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                                {highlights.map((highlight, highlightIndex) => (
+                                  <View
+                                    key={`${measurement.id}_${highlightIndex}`}
+                                    style={{
+                                      borderRadius: mobileTheme.radius.pill,
+                                      borderWidth: 1,
+                                      borderColor: mobileTheme.color.borderSubtle,
+                                      backgroundColor: mobileTheme.color.bgSurface,
+                                      paddingHorizontal: 10,
+                                      minHeight: 28,
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                    }}
+                                  >
+                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12 }}>
+                                      {highlight}
+                                    </Text>
+                                  </View>
+                                ))}
+                              </View>
+                            ) : (
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                Sin valores numéricos en este registro.
+                              </Text>
+                            )}
+                          </View>
+                        );
+                      })}
                     </View>
                   )}
                 </View>
@@ -5457,13 +6420,259 @@ export default function App() {
               ) : null}
 
               {settingsTab === "provider" ? (
-                <>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                    Proveedor IA
+                <View style={{ gap: 12 }}>
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "rgba(69,141,255,0.45)",
+                      borderRadius: mobileTheme.radius.lg,
+                      backgroundColor: "rgba(17,58,130,0.24)",
+                      padding: 12,
+                      flexDirection: "row",
+                      gap: 10,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 24,
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        paddingTop: 1,
+                      }}
+                    >
+                      <Feather name="shield" size={16} color="#77A8FF" />
+                    </View>
+                    <Text style={{ color: "#77A8FF", flex: 1, lineHeight: 19 }}>
+                      Tus API Keys se almacenan cifradas localmente en tu dispositivo. GYMNASIA nunca las envía a nuestros servidores.
+                    </Text>
+                  </View>
+
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 26 }}>
+                    API Keys (BYOK)
                   </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary }}>
-                    Sin backend: el chat llama directo a la API del proveedor activo (BYOK). Las API keys se guardan en almacenamiento seguro del dispositivo.
+                  <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -4 }}>
+                    Configura tus propias claves para usar el asistente IA. Cada proveedor ofrece diferentes modelos y capacidades.
                   </Text>
+
+                  {orderedProviderKeys.map((key) => {
+                    const providerMeta = PROVIDER_UI_META[key.provider];
+                    const draft = providerDraftByProvider[key.provider] ?? {
+                      api_key: key.api_key,
+                      model: key.model,
+                    };
+                    const hasDraftApiKey = !!draft.api_key.trim();
+                    const keyVisible = providerKeyVisibility[key.provider];
+                    const connectionStatus = providerConnectionStatus[key.provider] ?? {
+                      state: hasDraftApiKey ? "unknown" : "disconnected",
+                      detail: hasDraftApiKey
+                        ? "Pendiente de verificación. Pulsa Guardar."
+                        : "Sin API key guardada.",
+                    };
+                    const statusMeta = providerConnectionBadge(connectionStatus);
+                    const isSavingProvider = providerSaveLoading[key.provider];
+                    const providerUsageHint = key.is_active
+                      ? "Proveedor activo para el chat."
+                      : "Toca el encabezado para usar este proveedor en el chat.";
+                    const providerUsageHintColor = key.is_active ? "#24D68B" : "#656E7B";
+                    const providerConnectionDetailColor = connectionStatus.detail.includes(
+                      "Sin API key guardada",
+                    )
+                      ? "#FF8D8D"
+                      : "#656E7B";
+                    return (
+                      <View
+                        key={key.provider}
+                        style={{
+                          borderWidth: 1,
+                          borderColor: key.is_active ? "rgba(69,141,255,0.45)" : mobileTheme.color.borderSubtle,
+                          borderRadius: mobileTheme.radius.lg,
+                          backgroundColor: mobileTheme.color.bgSurface,
+                          padding: 12,
+                          gap: 10,
+                        }}
+                      >
+                        <Pressable
+                          onPress={() => setActiveProvider(key.provider)}
+                          style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}
+                        >
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+                            <View
+                              style={{
+                                width: 42,
+                                height: 42,
+                                borderRadius: 12,
+                                backgroundColor: providerMeta.avatar_bg,
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text style={{ color: providerMeta.avatar_text, fontSize: 22, fontWeight: "700" }}>
+                                {providerMeta.label.charAt(0)}
+                              </Text>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 29 }}>
+                                {providerMeta.label}
+                              </Text>
+                              <Text
+                                numberOfLines={1}
+                                style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}
+                              >
+                                {draft.model.trim() || providerMeta.models_hint}
+                              </Text>
+                            </View>
+                          </View>
+                          <View
+                            style={{
+                              borderRadius: mobileTheme.radius.pill,
+                              paddingHorizontal: 10,
+                              minHeight: 28,
+                              backgroundColor: statusMeta.backgroundColor,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexDirection: "row",
+                              gap: 6,
+                            }}
+                          >
+                            <View
+                              style={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: 99,
+                                backgroundColor: statusMeta.dotColor,
+                              }}
+                            />
+                            <Text
+                              style={{
+                                color: statusMeta.textColor,
+                                fontWeight: "700",
+                                fontSize: 12,
+                              }}
+                            >
+                              {statusMeta.text}
+                            </Text>
+                          </View>
+                        </Pressable>
+
+                        <View
+                          style={{
+                            minHeight: 48,
+                            borderRadius: mobileTheme.radius.md,
+                            borderWidth: 1,
+                            borderColor: "rgba(61,70,82,0.9)",
+                            backgroundColor: "#1A1E25",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            paddingLeft: 12,
+                            paddingRight: 8,
+                            gap: 8,
+                          }}
+                        >
+                          <Feather name="key" size={14} color="#778091" />
+                          <TextInput
+                            style={{
+                              flex: 1,
+                              minHeight: 40,
+                              color: hasDraftApiKey ? mobileTheme.color.textSecondary : "#7E8795",
+                              paddingHorizontal: 0,
+                            }}
+                            value={draft.api_key}
+                            onFocus={() => setActiveProvider(key.provider)}
+                            onChangeText={(value) => updateProviderDraft(key.provider, { api_key: value })}
+                            placeholder="Añade tu API Key"
+                            placeholderTextColor={mobileTheme.color.textSecondary}
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            secureTextEntry={!keyVisible}
+                          />
+                          <Pressable
+                            onPress={() => {
+                              setActiveProvider(key.provider);
+                              toggleProviderKeyVisibility(key.provider);
+                            }}
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: 10,
+                              backgroundColor: "#222833",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Feather
+                              name={keyVisible ? "eye-off" : "eye"}
+                              size={16}
+                              color={mobileTheme.color.textSecondary}
+                            />
+                          </Pressable>
+                        </View>
+
+                        <View style={{ flexDirection: "row", gap: 8 }}>
+                          <Pressable
+                            onPress={() => saveProviderApiKey(key.provider)}
+                            disabled={isSavingProvider}
+                            style={{
+                              flex: 1,
+                              height: 44,
+                              borderRadius: mobileTheme.radius.md,
+                              backgroundColor: mobileTheme.color.brandPrimary,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              opacity: isSavingProvider ? 0.7 : 1,
+                            }}
+                          >
+                            <Text style={{ color: "#06090D", fontWeight: "700" }}>
+                              {isSavingProvider ? "Guardando..." : "Guardar"}
+                            </Text>
+                          </Pressable>
+                          <Pressable
+                            onPress={() => deleteProviderApiKey(key.provider)}
+                            style={{
+                              flex: 1,
+                              height: 44,
+                              borderRadius: mobileTheme.radius.md,
+                              backgroundColor: "#FF4D4F",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexDirection: "row",
+                              gap: 8,
+                            }}
+                          >
+                            <Feather name="trash-2" size={14} color="#FFDDE0" />
+                            <Text style={{ color: "#FFE8EB", fontWeight: "700" }}>Eliminar</Text>
+                          </Pressable>
+                        </View>
+
+                        <Text style={{ color: providerUsageHintColor, fontSize: 12 }}>
+                          {providerUsageHint}
+                        </Text>
+                        <Text style={{ color: providerConnectionDetailColor, fontSize: 12 }}>
+                          {connectionStatus.detail}
+                        </Text>
+
+                        {key.is_active ? (
+                          <TextInput
+                            style={{
+                              minHeight: 42,
+                              borderRadius: mobileTheme.radius.md,
+                              borderWidth: 1,
+                              borderColor: mobileTheme.color.borderSubtle,
+                              backgroundColor: mobileTheme.color.bgApp,
+                              color: mobileTheme.color.textPrimary,
+                              paddingHorizontal: 12,
+                            }}
+                            value={draft.model}
+                            onChangeText={(value) => updateProviderDraft(key.provider, { model: value })}
+                            placeholder={`Modelo (default: ${DEFAULT_MODELS[key.provider]})`}
+                            placeholderTextColor={mobileTheme.color.textSecondary}
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                          />
+                        ) : null}
+                      </View>
+                    );
+                  })}
+
                   {!secureStoreAvailable ? (
                     <View
                       style={{
@@ -5479,89 +6688,11 @@ export default function App() {
                       </Text>
                     </View>
                   ) : null}
-                  {store.keys.map((key) => (
-                    <Pressable
-                      key={key.provider}
-                      onPress={() => setActiveProvider(key.provider)}
-                      style={{
-                        borderWidth: 1,
-                        borderColor: key.is_active ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                        borderRadius: mobileTheme.radius.lg,
-                        padding: 12,
-                        backgroundColor: key.is_active ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                        {key.provider.toUpperCase()}
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, marginTop: 4 }}>
-                        {key.is_active ? `Activo • ${maskApiKey(key.api_key)}` : `No activo • ${maskApiKey(key.api_key)}`}
-                      </Text>
-                    </Pressable>
-                  ))}
-
-                  {activeProvider ? (
-                    <View
-                      style={{
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        borderRadius: mobileTheme.radius.lg,
-                        padding: 12,
-                        backgroundColor: mobileTheme.color.bgSurface,
-                        gap: 10,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                        {activeProvider.provider.toUpperCase()} activo
-                      </Text>
-                      <TextInput
-                        style={{
-                          minHeight: 42,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 12,
-                        }}
-                        value={activeProvider.api_key}
-                        onChangeText={(value) =>
-                          updateProviderConfig(activeProvider.provider, { api_key: value.trim() })
-                        }
-                        placeholder={`API key ${activeProvider.provider}`}
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        secureTextEntry
-                      />
-                      <TextInput
-                        style={{
-                          minHeight: 42,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 12,
-                        }}
-                        value={activeProvider.model}
-                        onChangeText={(value) =>
-                          updateProviderConfig(activeProvider.provider, {
-                            model: value.trim() || DEFAULT_MODELS[activeProvider.provider],
-                          })
-                        }
-                        placeholder={`Modelo (default: ${DEFAULT_MODELS[activeProvider.provider]})`}
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                      />
-                    </View>
-                  ) : null}
 
                   <Pressable
                     onPress={resetLocalData}
                     style={{
-                      marginTop: 8,
+                      marginTop: 4,
                       height: 44,
                       borderRadius: mobileTheme.radius.md,
                       borderWidth: 1,
@@ -5572,7 +6703,7 @@ export default function App() {
                   >
                     <Text style={{ color: "#ffb5b5", fontWeight: "700" }}>Restablecer datos locales</Text>
                   </Pressable>
-                </>
+                </View>
               ) : null}
             </View>
           ) : null}

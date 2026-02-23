@@ -1162,3 +1162,144 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
      - `Grçaficas` -> `Gráficas` in the section title.
   2. Validated mobile TypeScript:
      `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Settings `Medidas` now supports full body measurements, photo and calendar date
+- Failure:
+  In `Cfg > Medidas`, users could only save body weight with an automatic timestamp and could not register photo, editable date, height or body circumference fields.
+- Root cause:
+  `Measurement` model and UI in `apps/mobile/App.tsx` only contained `weight_kg`, plus a basic save flow (`addWeight`) without media picker or date picker.
+- Exact fix steps/commands:
+  1. Extended `Measurement` model in `apps/mobile/App.tsx` to include:
+     - `photo_uri`
+     - `height_cm`
+     - `neck_cm`, `chest_cm`, `waist_cm`, `hips_cm`, `biceps_cm`, `quadriceps_cm`, `calf_cm`
+  2. Added backward-compatible normalization/migration:
+     - new helpers to parse/normalize legacy measurement entries
+     - date-safe sorting by `measured_at`
+  3. Rebuilt `Cfg > Medidas` UI:
+     - date selector with calendar (`DateTimePicker`) defaulting to current day
+     - photo picker (`expo-image-picker`) with preview and remove action
+     - inputs for peso, contornos, and altura (placed at the end)
+     - new save action `Guardar medidas` with per-field validation and record list rendering
+  4. Added new dependencies for Expo SDK 54:
+     `npm --workspace apps/mobile exec expo install expo-image-picker @react-native-community/datetimepicker`
+  5. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Removed helper copy under height field in settings measurements
+- Failure:
+  In `Cfg > Medidas`, helper copy under the height input (`Altura al final porque normalmente no cambia`) was no longer desired.
+- Root cause:
+  Static UX copy remained in the measurements form after the new fields rollout.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - removed the helper `Text` node below `Altura (cm)` input in `settingsTab === "measures"`.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `Proveedor IA` tab redesigned to match settings reference cards
+- Failure:
+  The `Cfg > Proveedor IA` section used a plain list/input layout and did not match the target visual hierarchy from the design reference (`API Keys (BYOK)` cards with status pills, masked key row, and action buttons).
+- Root cause:
+  The existing provider UI in `apps/mobile/App.tsx` was optimized for basic configuration, not for the card-based design language used in `[Image #1]`.
+- Exact fix steps/commands:
+  1. Added provider UI metadata in `apps/mobile/App.tsx`:
+     - labels/models/avatar color map (`PROVIDER_UI_META`).
+  2. Added provider tab UI state/actions:
+     - key visibility state per provider (`providerKeyVisibility`).
+     - actions `toggleProviderKeyVisibility`, `rotateProviderApiKey`, `deleteProviderApiKey`.
+  3. Replaced `settingsTab === "provider"` UI block:
+     - top encrypted-storage info banner (blue card with shield icon).
+     - title/description (`API Keys (BYOK)`).
+     - ordered provider cards (`Anthropic`, `OpenAI`, `Google`) with:
+       - provider avatar + model subtitle
+       - connected/not-connected status pill
+       - masked key row with show/hide toggle
+       - `Rotar Key` + `Eliminar` actions
+       - active-provider hint + active model editable input
+     - preserved local reset button and SecureStore warning.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+  5. Verified Expo web bundling:
+     `cd apps/mobile && npx expo export --platform web --dev`
+
+### 2026-02-23 - Provider key input now editable while hidden
+- Failure:
+  In `Cfg > Proveedor IA`, users could only type API keys after pressing the eye button (visible mode). Hidden mode did not allow direct editing.
+- Root cause:
+  The key row conditionally rendered a non-editable `Text` when hidden, and only rendered `TextInput` when visible.
+- Exact fix steps/commands:
+  1. Updated provider key row in `apps/mobile/App.tsx`:
+     - replaced conditional `Text`/`TextInput` rendering with a single always-editable `TextInput`.
+     - applied `secureTextEntry={!keyVisible}` so hidden mode shows masked characters while still allowing typing.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `Rotar Key` replaced with `Guardar` in `Cfg > Proveedor IA`
+- Failure:
+  In `Cfg > Proveedor IA`, the primary secondary action button still showed `Rotar Key`, but the requested behavior/copy was to use `Guardar`.
+- Root cause:
+  The provider card action was still wired to `rotateProviderApiKey()` (destructive key reset flow) and rendered `Rotar Key` with a refresh icon.
+- Exact fix steps/commands:
+  1. Updated provider save action in `apps/mobile/App.tsx`:
+     - replaced `rotateProviderApiKey()` with `saveProviderApiKey()`.
+     - new handler trims and persists current `api_key`/`model`, keeps local-first persistence flow, and no longer clears the key.
+  2. Updated provider card button UI:
+     - changed icon `refresh-cw` -> `save`.
+     - changed label `Rotar Key` -> `Guardar`.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Provider API key now saves only on `Guardar` and `Conectado` requires verification
+- Failure:
+  In `Cfg > Proveedor IA`, editing the API key field changed persisted provider config immediately, and status showed `Conectado` for any non-empty text even without validating provider access.
+- Root cause:
+  The key input wrote directly to `store.keys` on each keystroke, and connection badge logic was `hasApiKey ? "Conectado" : "No conectado"` instead of using a real connectivity check.
+- Exact fix steps/commands:
+  1. Added draft-only editing state in `apps/mobile/App.tsx`:
+     - `providerDraftByProvider` now holds `api_key`/`model` while typing.
+     - provider config persistence (`store.keys` + SecureStore effect) now updates only from `saveProviderApiKey()`.
+  2. Added explicit provider verification on save:
+     - new helper `verifyProviderConnection()` checks each provider endpoint (OpenAI/Anthropic/Google) on `Guardar`.
+     - save flow now sets status to `Comprobando` and updates to `Conectado` only when verification succeeds.
+  3. Reworked provider status model/UI:
+     - added `providerConnectionStatus` states: `connected`, `disconnected`, `checking`, `unknown`.
+     - badge no longer depends on mere key presence.
+     - draft edits mark provider as `Sin verificar` until `Guardar`.
+  4. Added per-provider save loading state:
+     - disable save button while verifying and show `Guardando...`.
+  5. Kept delete/reset coherent with new flow:
+     - deleting key clears draft + persisted key and sets status `No conectado`.
+     - reset local data now resets provider drafts/status/loading state.
+  6. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `Guardar` in `Proveedor IA` now matches `Guardar medidas` button style
+- Failure:
+  The `Guardar` button in `Cfg > Proveedor IA` had a dark secondary style, while the requested design was to match the primary style used by `Guardar medidas` in `Cfg > Medidas`.
+- Root cause:
+  Provider save button styles used custom dark background/border plus icon layout, instead of the shared primary CTA styling.
+- Exact fix steps/commands:
+  1. Updated provider save button styles in `apps/mobile/App.tsx`:
+     - `backgroundColor` set to `mobileTheme.color.brandPrimary`.
+     - removed dark border styling and icon/spinner row treatment.
+     - text style aligned to `Guardar medidas`: `color: "#06090D"`, `fontWeight: "700"`.
+  2. Preserved existing save/verify behavior:
+     - still shows `Guardando...` during provider connection validation.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Provider helper/status copy color updated in `Cfg > Proveedor IA`
+- Failure:
+  Requested visual emphasis was missing for provider helper/status copy in the provider card:
+  - `Proveedor activo para el chat.` should be green.
+  - `Sin API key guardada.` should be red.
+- Root cause:
+  Both texts were rendered with the same neutral gray color.
+- Exact fix steps/commands:
+  1. Updated provider card text styles in `apps/mobile/App.tsx`:
+     - active provider hint now uses green (`#24D68B`).
+     - connection detail now uses red (`#FF8D8D`) when message contains `Sin API key guardada`.
+     - non-target states keep neutral gray.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
