@@ -97,7 +97,14 @@ type WorkoutCompletionModalState = {
   has_template_changes: boolean;
   original_template: WorkoutTemplate | null;
 };
-type DietItem = { id: string; title: string; calories_kcal: number };
+type DietItem = {
+  id: string;
+  title: string;
+  calories_kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+};
 type DietMeal = { id: string; title: string; items: DietItem[] };
 type DietDay = { day_date: string; meals: DietMeal[] };
 type Measurement = {
@@ -116,6 +123,7 @@ type Measurement = {
 };
 type DietMacroMode = "manual_calories" | "protein_by_weight";
 type GkgMacroKey = "protein" | "carbs" | "fat";
+type DietMealCategory = "Desayuno" | "Almuerzo" | "Comida" | "Merienda" | "Cena";
 type DietSettings = {
   daily_calories: string;
   macro_mode: DietMacroMode;
@@ -155,6 +163,12 @@ type ProviderConnectionCheckResult = {
 };
 type ProviderDeleteModalState = { provider: Provider; maskedApiKey: string };
 type ChatInputMessage = { role: "user" | "assistant" | "system"; content: string };
+type FoodEstimatorImage = {
+  id: string;
+  uri: string;
+  base64: string;
+  mime_type: string;
+};
 type TrainingFilter = "all" | "strength" | "hypertrophy" | "cardio" | "flexibility";
 type TrainingCategory = Exclude<TrainingFilter, "all">;
 type TemplateSeriesPointer = {
@@ -199,6 +213,14 @@ const DEFAULT_MODELS: Record<Provider, string> = {
   google: "gemini-1.5-flash",
 };
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
+const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
+const FOOD_ESTIMATOR_MAX_IMAGES = 6;
+const FOOD_ESTIMATOR_SYSTEM_PROMPT =
+  "Eres Gymnasia Food Estimator, un nutricionista experto en estimación visual de comidas. " +
+  "Tu tarea es estimar siempre: calorías totales (kcal), gramos de proteína, gramos de carbohidratos, gramos de grasas y peso total de la comida en gramos. " +
+  "Si la información es incierta, indica rangos aproximados y explica supuestos breves. " +
+  "Responde en español, de forma clara y práctica. " +
+  "Cuando el usuario pregunte o debata, responde usando el contexto previo de la conversación y las fotos adjuntas.";
 const PROVIDER_UI_META: Record<
   Provider,
   {
@@ -250,6 +272,21 @@ function resolveWebApiBaseUrl(): string {
 
 function buildWebProxyUrl(path: string): string {
   return `${resolveWebApiBaseUrl()}${path}`;
+}
+
+function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
+  for (const provider of FOOD_ESTIMATOR_PROVIDER_PRIORITY) {
+    const configured = keys.find((item) => item.provider === provider);
+    if (!configured) continue;
+    const apiKey = configured.api_key.trim();
+    if (!apiKey) continue;
+    return {
+      ...configured,
+      api_key: apiKey,
+      model: configured.model.trim() || DEFAULT_MODELS[provider],
+    };
+  }
+  return null;
 }
 
 function createDefaultProviderKeys(): AIKey[] {
@@ -430,6 +467,23 @@ const DIET_MACRO_MODE_OPTIONS: Array<{ key: DietMacroMode; label: string }> = [
   { key: "manual_calories", label: "kcal" },
   { key: "protein_by_weight", label: "g/kg" },
 ];
+const DIET_MEAL_CATEGORIES: DietMealCategory[] = [
+  "Desayuno",
+  "Almuerzo",
+  "Comida",
+  "Merienda",
+  "Cena",
+];
+const DIET_MEAL_META: Record<
+  DietMealCategory,
+  { icon: keyof typeof Feather.glyphMap; accent: string; dot: string }
+> = {
+  Desayuno: { icon: "sunrise", accent: "#F7A547", dot: "#FF6E6E" },
+  Almuerzo: { icon: "sun", accent: "#FFD84D", dot: "#FF8D8D" },
+  Comida: { icon: "sun", accent: "#CBFF1A", dot: "#FF6E6E" },
+  Merienda: { icon: "coffee", accent: "#4D84FF", dot: "#6E8DFF" },
+  Cena: { icon: "moon", accent: "#7D6DFF", dot: "#9C8DFF" },
+};
 const GKG_MACRO_KEYS: GkgMacroKey[] = ["protein", "carbs", "fat"];
 const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "measures", label: "Medidas" },
@@ -451,6 +505,30 @@ function createDefaultDietSettings(): DietSettings {
     carbs_grams_per_kg: "",
     fat_grams_per_kg: "",
   };
+}
+
+function isDietMealCategory(value: string): value is DietMealCategory {
+  return DIET_MEAL_CATEGORIES.includes(value as DietMealCategory);
+}
+
+function createDietMealExpandedState(): Record<DietMealCategory, boolean> {
+  return {
+    Desayuno: true,
+    Almuerzo: false,
+    Comida: false,
+    Merienda: false,
+    Cena: false,
+  };
+}
+
+function sortDietMealsByCategory(meals: DietMeal[]): DietMeal[] {
+  const order = new Map(DIET_MEAL_CATEGORIES.map((category, index) => [category, index]));
+  return [...meals].sort((a, b) => {
+    const aOrder = isDietMealCategory(a.title) ? (order.get(a.title) ?? 999) : 999;
+    const bOrder = isDietMealCategory(b.title) ? (order.get(b.title) ?? 999) : 999;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+    return a.title.localeCompare(b.title);
+  });
 }
 
 function secureStoreKey(provider: Provider): string {
@@ -1143,6 +1221,219 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
   return content;
 }
 
+async function callFoodEstimatorAPI(
+  provider: AIKey,
+  messages: ChatInputMessage[],
+  images: FoodEstimatorImage[],
+): Promise<string> {
+  const model = provider.model.trim() || DEFAULT_MODELS[provider.provider];
+  const normalizedImages = images
+    .filter((image) => image.base64.trim().length > 0)
+    .map((image) => ({
+      ...image,
+      mime_type: image.mime_type.trim() || "image/jpeg",
+    }));
+  const lastUserMessageIndex = (() => {
+    for (let index = messages.length - 1; index >= 0; index -= 1) {
+      if (messages[index].role === "user") return index;
+    }
+    return -1;
+  })();
+  const nonSystemMessages = messages.filter((msg) => msg.role !== "system");
+  const lastNonSystemUserMessageIndex = (() => {
+    for (let index = nonSystemMessages.length - 1; index >= 0; index -= 1) {
+      if (nonSystemMessages[index].role === "user") return index;
+    }
+    return -1;
+  })();
+
+  if (provider.provider === "openai") {
+    const openAIMessages = messages.map((msg, index) => {
+      if (msg.role === "system") return { role: "system", content: msg.content };
+      if (msg.role === "assistant") return { role: "assistant", content: msg.content };
+      const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
+      if (index !== lastUserMessageIndex || normalizedImages.length === 0) {
+        return { role: "user", content: textContent };
+      }
+      return {
+        role: "user",
+        content: [
+          { type: "text", text: textContent },
+          ...normalizedImages.map((image) => ({
+            type: "image_url",
+            image_url: {
+              url: `data:${image.mime_type};base64,${image.base64}`,
+            },
+          })),
+        ],
+      };
+    });
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${provider.api_key}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: openAIMessages,
+        temperature: 0.2,
+      }),
+    });
+
+    let payload: unknown = null;
+    try {
+      payload = await response.json();
+    } catch {
+      // ignore json parse errors
+    }
+
+    if (!response.ok) {
+      throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
+    }
+
+    const content = parseOpenAIContent(payload);
+    if (!content) throw new Error("OpenAI no devolvio contenido.");
+    return content;
+  }
+
+  if (provider.provider === "anthropic") {
+    if (Platform.OS === "web" && normalizedImages.length > 0) {
+      throw new Error(
+        "Anthropic en web no admite envío de imágenes en este flujo. Usa Google u OpenAI, o abre la app en dispositivo móvil.",
+      );
+    }
+
+    const anthropicMessages = nonSystemMessages.map((msg, index) => {
+      if (msg.role === "assistant") {
+        return {
+          role: "assistant",
+          content: msg.content.trim() || "Entendido.",
+        };
+      }
+      const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
+      if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
+        return {
+          role: "user",
+          content: textContent,
+        };
+      }
+      return {
+        role: "user",
+        content: [
+          { type: "text", text: textContent },
+          ...normalizedImages.map((image) => ({
+            type: "image",
+            source: {
+              type: "base64",
+              media_type: image.mime_type,
+              data: image.base64,
+            },
+          })),
+        ],
+      };
+    });
+
+    if (Platform.OS === "web") {
+      const textOnlyMessages = nonSystemMessages.map((msg) => ({
+        role: msg.role === "assistant" ? "assistant" : "user",
+        content: msg.content.trim() || "Analiza esta comida y estima los valores solicitados.",
+      })) as Array<{ role: "assistant" | "user"; content: string }>;
+      return callAnthropicViaWebProxy(provider, FOOD_ESTIMATOR_SYSTEM_PROMPT, textOnlyMessages);
+    }
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": provider.api_key,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 900,
+        system: FOOD_ESTIMATOR_SYSTEM_PROMPT,
+        messages: anthropicMessages,
+      }),
+    });
+
+    let payload: unknown = null;
+    try {
+      payload = await response.json();
+    } catch {
+      // ignore json parse errors
+    }
+
+    if (!response.ok) {
+      throw new Error(extractErrorMessage(payload, `Anthropic error (${response.status})`));
+    }
+
+    const content = parseAnthropicContent(payload);
+    if (!content) throw new Error("Anthropic no devolvio contenido.");
+    return content;
+  }
+
+  const googleContents = nonSystemMessages.map((msg, index) => {
+    if (msg.role === "assistant") {
+      return {
+        role: "model",
+        parts: [{ text: msg.content.trim() || "Entendido." }],
+      };
+    }
+    const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
+    if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
+      return {
+        role: "user",
+        parts: [{ text: textContent }],
+      };
+    }
+    return {
+      role: "user",
+      parts: [
+        { text: textContent },
+        ...normalizedImages.map((image) => ({
+          inline_data: {
+            mime_type: image.mime_type,
+            data: image.base64,
+          },
+        })),
+      ],
+    };
+  });
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(provider.api_key)}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: googleContents,
+        systemInstruction: {
+          parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }],
+        },
+      }),
+    },
+  );
+
+  let payload: unknown = null;
+  try {
+    payload = await response.json();
+  } catch {
+    // ignore json parse errors
+  }
+
+  if (!response.ok) {
+    throw new Error(extractErrorMessage(payload, `Google AI error (${response.status})`));
+  }
+
+  const content = parseGoogleContent(payload);
+  if (!content) throw new Error("Google AI no devolvio contenido.");
+  return content;
+}
+
 function uid(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -1159,6 +1450,13 @@ function sumDayCalories(day: DietDay | null): number {
   if (!day) return 0;
   return day.meals.reduce((mealAcc, meal) => {
     return mealAcc + meal.items.reduce((itemAcc, item) => itemAcc + item.calories_kcal, 0);
+  }, 0);
+}
+
+function sumDayMacroGrams(day: DietDay | null, macro: "protein_g" | "carbs_g" | "fat_g"): number {
+  if (!day) return 0;
+  return day.meals.reduce((mealAcc, meal) => {
+    return mealAcc + meal.items.reduce((itemAcc, item) => itemAcc + item[macro], 0);
   }, 0);
 }
 
@@ -1351,6 +1649,11 @@ function formatMeasurementDate(rawValue: string): string {
 
 function formatMeasurementNumber(value: number): string {
   const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
+}
+
+function formatNutritionNumber(value: number): string {
+  const rounded = Math.round(Math.max(0, value) * 10) / 10;
   return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
 }
 
@@ -1710,6 +2013,68 @@ function normalizeDietSettings(rawValue: unknown): DietSettings {
   };
 }
 
+function normalizeDietNonNegativeNumber(rawValue: unknown): number {
+  if (typeof rawValue === "number" && Number.isFinite(rawValue)) {
+    return Math.max(0, Math.round(rawValue * 10) / 10);
+  }
+  if (typeof rawValue === "string") {
+    const parsed = parseNonNegativeNumberInput(rawValue);
+    return parsed === null ? 0 : Math.round(parsed * 10) / 10;
+  }
+  return 0;
+}
+
+function normalizeDietByDate(rawValue: unknown): Record<string, DietDay> {
+  if (!rawValue || typeof rawValue !== "object") return {};
+
+  const normalized: Record<string, DietDay> = {};
+  Object.entries(rawValue as Record<string, unknown>).forEach(([dayKey, dayValue], dayIndex) => {
+    const maybeDay = dayValue && typeof dayValue === "object" ? (dayValue as Partial<DietDay>) : {};
+    const dayDate =
+      typeof maybeDay.day_date === "string" && maybeDay.day_date.trim() ? maybeDay.day_date : dayKey;
+    const meals: DietMeal[] = (Array.isArray(maybeDay.meals) ? maybeDay.meals : []).map(
+      (mealRaw, mealIndex) => {
+        const maybeMeal = mealRaw && typeof mealRaw === "object" ? (mealRaw as Partial<DietMeal>) : {};
+        const items: DietItem[] = (Array.isArray(maybeMeal.items) ? maybeMeal.items : []).map(
+          (itemRaw, itemIndex) => {
+            const maybeItem = itemRaw && typeof itemRaw === "object" ? (itemRaw as Partial<DietItem>) : {};
+            return {
+              id:
+                typeof maybeItem.id === "string" && maybeItem.id
+                  ? maybeItem.id
+                  : uid(`food_${dayIndex}_${mealIndex}_${itemIndex}`),
+              title:
+                typeof maybeItem.title === "string" && maybeItem.title.trim()
+                  ? maybeItem.title.trim()
+                  : "Comida",
+              calories_kcal: normalizeDietNonNegativeNumber(maybeItem.calories_kcal),
+              protein_g: normalizeDietNonNegativeNumber(maybeItem.protein_g),
+              carbs_g: normalizeDietNonNegativeNumber(maybeItem.carbs_g),
+              fat_g: normalizeDietNonNegativeNumber(maybeItem.fat_g),
+            };
+          },
+        );
+
+        return {
+          id:
+            typeof maybeMeal.id === "string" && maybeMeal.id
+              ? maybeMeal.id
+              : uid(`meal_${dayIndex}_${mealIndex}`),
+          title:
+            typeof maybeMeal.title === "string" && maybeMeal.title.trim()
+              ? maybeMeal.title.trim()
+              : `Comida ${mealIndex + 1}`,
+          items,
+        };
+      },
+    );
+
+    normalized[dayDate] = { day_date: dayDate, meals };
+  });
+
+  return normalized;
+}
+
 function createInitialStore(): LocalStore {
   const firstThreadId = uid("thread");
 
@@ -1801,7 +2166,7 @@ function normalizeStore(raw: LocalStore): LocalStore {
 
   return {
     templates,
-    dietByDate: raw.dietByDate ?? {},
+    dietByDate: normalizeDietByDate(raw.dietByDate),
     dietSettings: normalizedDietSettings,
     measurements: normalizedMeasurements,
     threads: raw.threads ?? [],
@@ -1826,6 +2191,19 @@ export default function App() {
 
   const [mealTitleInput, setMealTitleInput] = useState("");
   const [mealCaloriesInput, setMealCaloriesInput] = useState("");
+  const [mealProteinInput, setMealProteinInput] = useState("");
+  const [mealCarbsInput, setMealCarbsInput] = useState("");
+  const [mealFatInput, setMealFatInput] = useState("");
+  const [dietMealEditorCategory, setDietMealEditorCategory] = useState<DietMealCategory | null>(null);
+  const [dietMealExpanded, setDietMealExpanded] = useState<Record<DietMealCategory, boolean>>(
+    () => createDietMealExpandedState(),
+  );
+  const [foodEstimatorModalOpen, setFoodEstimatorModalOpen] = useState(false);
+  const [foodEstimatorProvider, setFoodEstimatorProvider] = useState<AIKey | null>(null);
+  const [foodEstimatorImages, setFoodEstimatorImages] = useState<FoodEstimatorImage[]>([]);
+  const [foodEstimatorMessages, setFoodEstimatorMessages] = useState<ChatMessage[]>([]);
+  const [foodEstimatorInput, setFoodEstimatorInput] = useState("");
+  const [foodEstimatorSending, setFoodEstimatorSending] = useState(false);
   const [weightInput, setWeightInput] = useState("");
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
   const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
@@ -2048,14 +2426,61 @@ export default function App() {
       ? manualAssignedCalories
       : proteinCaloriesFromWeightPlan + carbsCaloriesFromWeightPlan + fatCaloriesFromWeightPlan;
   const configuredMacroCaloriesRemaining = dietDailyCaloriesTarget - configuredMacroCaloriesTotal;
+  const dayCaloriesConsumed = sumDayCalories(dietDay);
+  const dayProteinConsumed = sumDayMacroGrams(dietDay, "protein_g");
+  const dayCarbsConsumed = sumDayMacroGrams(dietDay, "carbs_g");
+  const dayFatConsumed = sumDayMacroGrams(dietDay, "fat_g");
+  const proteinDailyTargetGrams =
+    dietSettings.macro_mode === "manual_calories" ? manualProteinGrams : proteinGramsFromWeightPlan;
+  const carbsDailyTargetGrams =
+    dietSettings.macro_mode === "manual_calories" ? manualCarbsGrams : carbsGramsFromWeightPlan;
+  const fatDailyTargetGrams =
+    dietSettings.macro_mode === "manual_calories" ? manualFatGrams : fatGramsFromWeightPlan;
+  const dayCaloriesProgress =
+    dietDailyCaloriesTarget > 0 ? Math.min(dayCaloriesConsumed / dietDailyCaloriesTarget, 1) : 0;
+  const dayCaloriesPercent =
+    dietDailyCaloriesTarget > 0 ? Math.round(Math.min((dayCaloriesConsumed / dietDailyCaloriesTarget) * 100, 999)) : 0;
+  const dietMacroOverview = [
+    {
+      key: "protein",
+      label: "Proteína",
+      consumed: dayProteinConsumed,
+      total: proteinDailyTargetGrams,
+      accent: "#FF6E6E",
+    },
+    {
+      key: "carbs",
+      label: "Carbos",
+      consumed: dayCarbsConsumed,
+      total: carbsDailyTargetGrams,
+      accent: mobileTheme.color.brandPrimary,
+    },
+    {
+      key: "fat",
+      label: "Grasa",
+      consumed: dayFatConsumed,
+      total: fatDailyTargetGrams,
+      accent: "#4D84FF",
+    },
+  ];
+  const orderedDietMeals = DIET_MEAL_CATEGORIES.map((category) => {
+    const existing = dietDay.meals.find((meal) => meal.title === category);
+    return (
+      existing ?? {
+        id: `meal_virtual_${today}_${category.toLowerCase()}`,
+        title: category,
+        items: [],
+      }
+    );
+  });
 
   const dashboard = useMemo<Dashboard>(() => {
     return {
-      calories: sumDayCalories(dietDay),
+      calories: dayCaloriesConsumed,
       weight: latestBodyWeightKg,
       templates: store.templates.length,
     };
-  }, [dietDay, latestBodyWeightKg, store.templates.length]);
+  }, [dayCaloriesConsumed, latestBodyWeightKg, store.templates.length]);
 
   const filteredTrainingTemplates = useMemo(() => {
     const normalizedSearch = trainingSearch.trim().toLowerCase();
@@ -2629,29 +3054,67 @@ export default function App() {
   }
 
   function addMeal() {
-    const title = mealTitleInput.trim() || "Comida";
-    const calories = Number(mealCaloriesInput.replace(",", "."));
+    if (!dietMealEditorCategory) {
+      setError("Selecciona una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).");
+      return;
+    }
+    const title = mealTitleInput.trim() || "Alimento";
+    const calories = parsePositiveNumberInput(mealCaloriesInput);
+    const hasProteinInput = mealProteinInput.trim().length > 0;
+    const hasCarbsInput = mealCarbsInput.trim().length > 0;
+    const hasFatInput = mealFatInput.trim().length > 0;
+    const protein = parseNonNegativeNumberInput(mealProteinInput);
+    const carbs = parseNonNegativeNumberInput(mealCarbsInput);
+    const fat = parseNonNegativeNumberInput(mealFatInput);
 
-    if (!Number.isFinite(calories) || calories <= 0) {
+    if (calories === null) {
       setError("Introduce calorías válidas para guardar la comida.");
       return;
     }
+    if ((hasProteinInput && protein === null) || (hasCarbsInput && carbs === null) || (hasFatInput && fat === null)) {
+      setError("Introduce macros válidos (0 o mayor) para guardar la comida.");
+      return;
+    }
 
-    const meal: DietMeal = {
-      id: uid("meal"),
+    const newItem: DietItem = {
+      id: uid("food"),
       title,
-      items: [{ id: uid("food"), title, calories_kcal: calories }],
+      calories_kcal: calories,
+      protein_g: protein ?? 0,
+      carbs_g: carbs ?? 0,
+      fat_g: fat ?? 0,
     };
 
     setStore((prev) => {
       const currentDay = prev.dietByDate[today] ?? { day_date: today, meals: [] };
+      const existingMealIndex = currentDay.meals.findIndex(
+        (meal) => meal.title === dietMealEditorCategory,
+      );
+      const meals =
+        existingMealIndex >= 0
+          ? currentDay.meals.map((meal, index) =>
+              index === existingMealIndex
+                ? {
+                    ...meal,
+                    items: [...meal.items, newItem],
+                  }
+                : meal,
+            )
+          : [
+              ...currentDay.meals,
+              {
+                id: uid("meal"),
+                title: dietMealEditorCategory,
+                items: [newItem],
+              },
+            ];
       return {
         ...prev,
         dietByDate: {
           ...prev.dietByDate,
           [today]: {
             ...currentDay,
-            meals: [...currentDay.meals, meal],
+            meals: sortDietMealsByCategory(meals),
           },
         },
       };
@@ -2659,6 +3122,222 @@ export default function App() {
 
     setMealTitleInput("");
     setMealCaloriesInput("");
+    setMealProteinInput("");
+    setMealCarbsInput("");
+    setMealFatInput("");
+    setError(null);
+  }
+
+  function toggleDietMealCategory(category: DietMealCategory) {
+    setDietMealExpanded((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+    setDietMealEditorCategory((prev) => (prev === category ? null : prev));
+  }
+
+  function openDietMealEditor(category: DietMealCategory) {
+    setDietMealExpanded((prev) => ({ ...prev, [category]: true }));
+    setDietMealEditorCategory(category);
+    setMealTitleInput("");
+    setMealCaloriesInput("");
+    setMealProteinInput("");
+    setMealCarbsInput("");
+    setMealFatInput("");
+    setError(null);
+  }
+
+  function openFoodEstimatorModal() {
+    const provider = resolveFoodEstimatorProvider(store.keys);
+    setFoodEstimatorProvider(provider);
+    setFoodEstimatorImages([]);
+    setFoodEstimatorInput("");
+    setFoodEstimatorSending(false);
+    setFoodEstimatorMessages([
+      {
+        id: uid("food_est_msg"),
+        role: "assistant",
+        content: provider
+          ? `Nueva conversación de estimación iniciada. Proveedor activo: ${PROVIDER_UI_META[provider.provider].label}.`
+          : "No hay API key disponible para estimar. Configura Google, OpenAI o Anthropic en Configuración > Proveedor IA.",
+        created_at: new Date().toISOString(),
+      },
+    ]);
+    setFoodEstimatorModalOpen(true);
+    setError(null);
+  }
+
+  function closeFoodEstimatorModal() {
+    setFoodEstimatorModalOpen(false);
+    setFoodEstimatorSending(false);
+  }
+
+  function removeFoodEstimatorImage(imageId: string) {
+    setFoodEstimatorImages((prev) => prev.filter((image) => image.id !== imageId));
+  }
+
+  async function addFoodEstimatorImageFromLibrary() {
+    if (foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES) {
+      setError(`Puedes adjuntar hasta ${FOOD_ESTIMATOR_MAX_IMAGES} fotos por estimación.`);
+      return;
+    }
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        setError("Necesitas permitir acceso a la galería para adjuntar fotos.");
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.7,
+        base64: true,
+      });
+      if (result.canceled) return;
+      const asset = result.assets?.[0];
+      if (!asset?.uri || !asset.base64) {
+        setError("No se pudo leer la foto seleccionada.");
+        return;
+      }
+      const base64 = asset.base64;
+      const mimeType = asset.mimeType?.trim() || "image/jpeg";
+      setFoodEstimatorImages((prev) => {
+        if (prev.length >= FOOD_ESTIMATOR_MAX_IMAGES) return prev;
+        return [
+          ...prev,
+          {
+            id: uid("food_est_img"),
+            uri: asset.uri,
+            base64,
+            mime_type: mimeType,
+          },
+        ];
+      });
+      setError(null);
+    } catch {
+      setError("No se pudo abrir la galería para adjuntar foto.");
+    }
+  }
+
+  async function addFoodEstimatorImageFromCamera() {
+    if (foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES) {
+      setError(`Puedes adjuntar hasta ${FOOD_ESTIMATOR_MAX_IMAGES} fotos por estimación.`);
+      return;
+    }
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        setError("Necesitas permitir acceso a la cámara para capturar fotos.");
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.7,
+        base64: true,
+      });
+      if (result.canceled) return;
+      const asset = result.assets?.[0];
+      if (!asset?.uri || !asset.base64) {
+        setError("No se pudo leer la foto capturada.");
+        return;
+      }
+      const base64 = asset.base64;
+      const mimeType = asset.mimeType?.trim() || "image/jpeg";
+      setFoodEstimatorImages((prev) => {
+        if (prev.length >= FOOD_ESTIMATOR_MAX_IMAGES) return prev;
+        return [
+          ...prev,
+          {
+            id: uid("food_est_img"),
+            uri: asset.uri,
+            base64,
+            mime_type: mimeType,
+          },
+        ];
+      });
+      setError(null);
+    } catch {
+      setError("No se pudo abrir la cámara.");
+    }
+  }
+
+  async function sendFoodEstimatorMessage() {
+    if (foodEstimatorSending) return;
+    const userInput = foodEstimatorInput.trim();
+    if (!userInput && foodEstimatorImages.length === 0) {
+      setError("Escribe un mensaje o adjunta al menos una foto para estimar.");
+      return;
+    }
+
+    const selectedProviderFromStore =
+      foodEstimatorProvider &&
+      store.keys.find(
+        (item) => item.provider === foodEstimatorProvider.provider && item.api_key.trim().length > 0,
+      );
+    const resolvedProvider = selectedProviderFromStore
+      ? {
+          ...selectedProviderFromStore,
+          api_key: selectedProviderFromStore.api_key.trim(),
+          model:
+            selectedProviderFromStore.model.trim() || DEFAULT_MODELS[selectedProviderFromStore.provider],
+        }
+      : resolveFoodEstimatorProvider(store.keys);
+
+    if (!resolvedProvider) {
+      setError("Configura una API key en Proveedor IA (Google, OpenAI o Anthropic) para usar esta función.");
+      return;
+    }
+
+    const userMessage: ChatMessage = {
+      id: uid("food_est_msg"),
+      role: "user",
+      content: userInput || "Analiza las fotos y dame una estimación nutricional.",
+      created_at: new Date().toISOString(),
+    };
+    const nextMessages = [...foodEstimatorMessages, userMessage];
+    setFoodEstimatorProvider(resolvedProvider);
+    setFoodEstimatorMessages(nextMessages);
+    setFoodEstimatorInput("");
+    setFoodEstimatorSending(true);
+    setError(null);
+
+    try {
+      const estimatorHistory: ChatInputMessage[] = [
+        { role: "system", content: FOOD_ESTIMATOR_SYSTEM_PROMPT },
+        ...nextMessages.map<ChatInputMessage>((message) => ({
+          role: message.role === "assistant" ? "assistant" : "user",
+          content: message.content,
+        })),
+      ];
+      const assistantContent = await callFoodEstimatorAPI(
+        resolvedProvider,
+        estimatorHistory,
+        foodEstimatorImages,
+      );
+      const assistantMessage: ChatMessage = {
+        id: uid("food_est_msg"),
+        role: "assistant",
+        content: assistantContent,
+        created_at: new Date().toISOString(),
+      };
+      setFoodEstimatorMessages((prev) => [...prev, assistantMessage]);
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "No se pudo estimar la comida con IA. Revisa tu API key y vuelve a intentarlo.";
+      setError(message);
+      setFoodEstimatorMessages((prev) => [
+        ...prev,
+        {
+          id: uid("food_est_msg"),
+          role: "assistant",
+          content: `Error de estimación: ${message}`,
+          created_at: new Date().toISOString(),
+        },
+      ]);
+    } finally {
+      setFoodEstimatorSending(false);
+    }
   }
 
   function addWeight() {
@@ -6244,61 +6923,354 @@ export default function App() {
           ) : null}
 
           {tab === "diet" ? (
-            <View style={{ gap: 10 }}>
-              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Día {dietDay.day_date}</Text>
-              {dietDay.meals.map((meal) => (
-                <View key={meal.id} style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>{meal.title}</Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, marginTop: 4 }}>{meal.items.length} items</Text>
+            <View style={{ gap: 12, paddingBottom: 86 }}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgSurface,
+                  borderRadius: 18,
+                  paddingHorizontal: 14,
+                  paddingVertical: 14,
+                  gap: 10,
+                }}
+              >
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <View>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 39, fontWeight: "800" }}>
+                      {formatNutritionNumber(dayCaloriesConsumed)}/{formatNutritionNumber(dietDailyCaloriesTarget)}
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}>
+                      kcal consumidas
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: 999,
+                      backgroundColor: "rgba(203,255,26,0.2)",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "800", fontSize: 14 }}>
+                      {dayCaloriesPercent}%
+                    </Text>
+                  </View>
                 </View>
-              ))}
 
-              <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>Añadir comida local</Text>
-                <TextInput
+                <View
                   style={{
-                    minHeight: 42,
-                    borderRadius: mobileTheme.radius.md,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgApp,
-                    color: mobileTheme.color.textPrimary,
-                    paddingHorizontal: 12,
-                  }}
-                  value={mealTitleInput}
-                  onChangeText={setMealTitleInput}
-                  placeholder="Título (ej: Cena)"
-                  placeholderTextColor={mobileTheme.color.textSecondary}
-                />
-                <TextInput
-                  style={{
-                    minHeight: 42,
-                    borderRadius: mobileTheme.radius.md,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgApp,
-                    color: mobileTheme.color.textPrimary,
-                    paddingHorizontal: 12,
-                  }}
-                  value={mealCaloriesInput}
-                  onChangeText={setMealCaloriesInput}
-                  placeholder="Calorías"
-                  placeholderTextColor={mobileTheme.color.textSecondary}
-                  keyboardType="decimal-pad"
-                />
-                <Pressable
-                  onPress={addMeal}
-                  style={{
-                    height: 44,
-                    borderRadius: mobileTheme.radius.md,
-                    backgroundColor: mobileTheme.color.brandPrimary,
-                    alignItems: "center",
-                    justifyContent: "center",
+                    height: 8,
+                    borderRadius: mobileTheme.radius.pill,
+                    backgroundColor: "rgba(255,255,255,0.09)",
+                    overflow: "hidden",
                   }}
                 >
-                  <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar comida</Text>
-                </Pressable>
+                  <View
+                    style={{
+                      height: "100%",
+                      width: `${Math.max(0, Math.min(dayCaloriesProgress * 100, 100))}%`,
+                      backgroundColor: mobileTheme.color.brandPrimary,
+                      borderRadius: mobileTheme.radius.pill,
+                    }}
+                  />
+                </View>
+
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  {dietMacroOverview.map((macro) => {
+                    const progress =
+                      macro.total > 0 ? Math.max(0, Math.min(macro.consumed / macro.total, 1)) : 0;
+                    return (
+                      <View key={macro.key} style={{ flex: 1, gap: 3 }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 32, fontWeight: "800" }}>
+                          {formatNutritionNumber(macro.consumed)}g
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{macro.label}</Text>
+                        <View
+                          style={{
+                            height: 5,
+                            borderRadius: mobileTheme.radius.pill,
+                            backgroundColor: "rgba(255,255,255,0.09)",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <View
+                            style={{
+                              height: "100%",
+                              width: `${Math.max(0, Math.min(progress * 100, 100))}%`,
+                              backgroundColor: macro.accent,
+                            }}
+                          />
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
               </View>
+
+              {orderedDietMeals.map((meal) => {
+                const category = meal.title as DietMealCategory;
+                const meta = DIET_MEAL_META[category];
+                const isExpanded = dietMealExpanded[category];
+                const isEditing = dietMealEditorCategory === category;
+                const mealCalories = meal.items.reduce((acc, item) => acc + item.calories_kcal, 0);
+                const mealProtein = meal.items.reduce((acc, item) => acc + item.protein_g, 0);
+                const mealCarbs = meal.items.reduce((acc, item) => acc + item.carbs_g, 0);
+                const mealFat = meal.items.reduce((acc, item) => acc + item.fat_g, 0);
+                return (
+                  <View
+                    key={meal.id}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: 18,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Pressable
+                      onPress={() => toggleDietMealCategory(category)}
+                      style={{
+                        paddingHorizontal: 14,
+                        paddingVertical: 12,
+                        gap: 4,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                          <View
+                            style={{
+                              width: 30,
+                              height: 30,
+                              borderRadius: 999,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              backgroundColor: `${meta.accent}22`,
+                            }}
+                          >
+                            <Feather name={meta.icon} size={15} color={meta.accent} />
+                          </View>
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 30, fontWeight: "800" }}>
+                            {category}
+                          </Text>
+                        </View>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                            P:{formatNutritionNumber(mealProtein)} C:{formatNutritionNumber(mealCarbs)} G:
+                            {formatNutritionNumber(mealFat)}
+                          </Text>
+                          <Feather
+                            name={isExpanded ? "chevron-up" : "chevron-down"}
+                            size={16}
+                            color={mobileTheme.color.textSecondary}
+                          />
+                        </View>
+                      </View>
+                      <Text style={{ color: mobileTheme.color.textSecondary }}>
+                        {formatNutritionNumber(mealCalories)} kcal · {meal.items.length} {meal.items.length === 1 ? "item" : "items"}
+                      </Text>
+                    </Pressable>
+
+                    {isExpanded ? (
+                      <View
+                        style={{
+                          borderTopWidth: 1,
+                          borderTopColor: mobileTheme.color.borderSubtle,
+                          paddingHorizontal: 14,
+                          paddingVertical: 10,
+                          gap: 10,
+                        }}
+                      >
+                        {meal.items.length === 0 ? (
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                            Sin alimentos registrados.
+                          </Text>
+                        ) : (
+                          meal.items.map((item) => (
+                            <View
+                              key={item.id}
+                              style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                                gap: 10,
+                              }}
+                            >
+                              <View style={{ flexDirection: "row", gap: 8, flex: 1 }}>
+                                <View
+                                  style={{
+                                    width: 7,
+                                    height: 7,
+                                    borderRadius: 999,
+                                    backgroundColor: meta.dot,
+                                    marginTop: 8,
+                                  }}
+                                />
+                                <View style={{ flex: 1 }}>
+                                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                                    {item.title}
+                                  </Text>
+                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 1 }}>
+                                    P:{formatNutritionNumber(item.protein_g)} C:{formatNutritionNumber(item.carbs_g)} G:
+                                    {formatNutritionNumber(item.fat_g)}
+                                  </Text>
+                                </View>
+                              </View>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>
+                                {formatNutritionNumber(item.calories_kcal)} kcal
+                              </Text>
+                            </View>
+                          ))
+                        )}
+
+                        {isEditing ? (
+                          <View style={{ gap: 8 }}>
+                            <TextInput
+                              style={{
+                                minHeight: 42,
+                                borderRadius: mobileTheme.radius.md,
+                                borderWidth: 1,
+                                borderColor: mobileTheme.color.borderSubtle,
+                                backgroundColor: mobileTheme.color.bgApp,
+                                color: mobileTheme.color.textPrimary,
+                                paddingHorizontal: 12,
+                              }}
+                              value={mealTitleInput}
+                              onChangeText={setMealTitleInput}
+                              placeholder="Nombre del alimento"
+                              placeholderTextColor={mobileTheme.color.textSecondary}
+                            />
+                            <TextInput
+                              style={{
+                                minHeight: 42,
+                                borderRadius: mobileTheme.radius.md,
+                                borderWidth: 1,
+                                borderColor: mobileTheme.color.borderSubtle,
+                                backgroundColor: mobileTheme.color.bgApp,
+                                color: mobileTheme.color.textPrimary,
+                                paddingHorizontal: 12,
+                              }}
+                              value={mealCaloriesInput}
+                              onChangeText={setMealCaloriesInput}
+                              placeholder="Calorías"
+                              placeholderTextColor={mobileTheme.color.textSecondary}
+                              keyboardType="decimal-pad"
+                            />
+                            <View style={{ flexDirection: "row", gap: 8 }}>
+                              <TextInput
+                                style={{
+                                  flex: 1,
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 12,
+                                }}
+                                value={mealProteinInput}
+                                onChangeText={setMealProteinInput}
+                                placeholder="P (g)"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                keyboardType="decimal-pad"
+                              />
+                              <TextInput
+                                style={{
+                                  flex: 1,
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 12,
+                                }}
+                                value={mealCarbsInput}
+                                onChangeText={setMealCarbsInput}
+                                placeholder="C (g)"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                keyboardType="decimal-pad"
+                              />
+                              <TextInput
+                                style={{
+                                  flex: 1,
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 12,
+                                }}
+                                value={mealFatInput}
+                                onChangeText={setMealFatInput}
+                                placeholder="G (g)"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                keyboardType="decimal-pad"
+                              />
+                            </View>
+                            <View style={{ flexDirection: "row", gap: 8 }}>
+                              <Pressable
+                                onPress={addMeal}
+                                style={{
+                                  flex: 1,
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  backgroundColor: mobileTheme.color.brandPrimary,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar alimento</Text>
+                              </Pressable>
+                              <Pressable
+                                onPress={() => setDietMealEditorCategory(null)}
+                                style={{
+                                  minWidth: 100,
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  paddingHorizontal: 12,
+                                }}
+                              >
+                                <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>
+                                  Cancelar
+                                </Text>
+                              </Pressable>
+                            </View>
+                          </View>
+                        ) : null}
+
+                        <Pressable
+                          onPress={() => openDietMealEditor(category)}
+                          style={{
+                            minHeight: 38,
+                            borderRadius: mobileTheme.radius.md,
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexDirection: "row",
+                            gap: 6,
+                            backgroundColor: mobileTheme.color.bgApp,
+                          }}
+                        >
+                          <Feather name="plus-circle" size={14} color={mobileTheme.color.textSecondary} />
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>
+                            Añadir alimento
+                          </Text>
+                        </Pressable>
+                      </View>
+                    ) : null}
+                  </View>
+                );
+              })}
             </View>
           ) : null}
 
@@ -8121,6 +9093,35 @@ export default function App() {
         </ScrollView>
       )}
 
+      {tab === "diet" ? (
+        <View
+          style={{
+            position: "absolute",
+            right: 20,
+            bottom: 86,
+          }}
+        >
+          <Pressable
+            onPress={openFoodEstimatorModal}
+            style={{
+              width: 66,
+              height: 66,
+              borderRadius: 999,
+              backgroundColor: mobileTheme.color.brandPrimary,
+              alignItems: "center",
+              justifyContent: "center",
+              shadowColor: mobileTheme.color.brandPrimary,
+              shadowOpacity: 0.35,
+              shadowRadius: 10,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 9,
+            }}
+          >
+            <Ionicons name="camera-outline" size={30} color="#06090D" />
+          </Pressable>
+        </View>
+      ) : null}
+
       {tab === "training" &&
       !activeTrainingTemplate &&
       !activeWorkoutSession &&
@@ -8155,6 +9156,267 @@ export default function App() {
             <Text style={{ color: "#06090D", fontSize: 24, fontWeight: "700", lineHeight: 26 }}>+</Text>
             <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>Nueva rutina</Text>
           </Pressable>
+        </View>
+      ) : null}
+
+      {foodEstimatorModalOpen ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.76)",
+            paddingHorizontal: 14,
+            paddingVertical: 18,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 610,
+            elevation: 61,
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              maxWidth: 620,
+              maxHeight: "95%",
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.08)",
+              backgroundColor: "#12151C",
+              paddingHorizontal: 12,
+              paddingTop: 12,
+              paddingBottom: 10,
+              gap: 10,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
+                Estimar con IA
+              </Text>
+              <Pressable
+                onPress={closeFoodEstimatorModal}
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
+              </Pressable>
+            </View>
+
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+                borderRadius: mobileTheme.radius.md,
+                backgroundColor: mobileTheme.color.bgApp,
+                padding: 10,
+                gap: 4,
+              }}
+            >
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                Proveedor estimador:{" "}
+                {foodEstimatorProvider
+                  ? PROVIDER_UI_META[foodEstimatorProvider.provider].label
+                  : "Sin API key disponible"}
+              </Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                Cada vez que abres este panel se inicia una conversación nueva.
+              </Text>
+            </View>
+
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Pressable
+                onPress={addFoodEstimatorImageFromLibrary}
+                disabled={foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES}
+                style={{
+                  flex: 1,
+                  minHeight: 40,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "row",
+                  gap: 6,
+                  opacity: foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES ? 0.6 : 1,
+                }}
+              >
+                <Ionicons name="image-outline" size={16} color={mobileTheme.color.textPrimary} />
+                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>Subir foto</Text>
+              </Pressable>
+              <Pressable
+                onPress={addFoodEstimatorImageFromCamera}
+                disabled={foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES}
+                style={{
+                  flex: 1,
+                  minHeight: 40,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "row",
+                  gap: 6,
+                  opacity: foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES ? 0.6 : 1,
+                }}
+              >
+                <Ionicons name="camera-outline" size={16} color={mobileTheme.color.textPrimary} />
+                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>Cámara</Text>
+              </Pressable>
+            </View>
+
+            <View style={{ gap: 6 }}>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                Fotos adjuntas: {foodEstimatorImages.length}/{FOOD_ESTIMATOR_MAX_IMAGES}
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                {foodEstimatorImages.length === 0 ? (
+                  <View
+                    style={{
+                      minHeight: 74,
+                      minWidth: 210,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingHorizontal: 12,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                      Añade fotos para mejorar la estimación.
+                    </Text>
+                  </View>
+                ) : (
+                  foodEstimatorImages.map((image) => (
+                    <View
+                      key={image.id}
+                      style={{
+                        width: 78,
+                        height: 78,
+                        borderRadius: 12,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        overflow: "hidden",
+                        backgroundColor: mobileTheme.color.bgApp,
+                      }}
+                    >
+                      <Image source={{ uri: image.uri }} style={{ width: "100%", height: "100%" }} />
+                      <Pressable
+                        onPress={() => removeFoodEstimatorImage(image.id)}
+                        style={{
+                          position: "absolute",
+                          top: 4,
+                          right: 4,
+                          width: 20,
+                          height: 20,
+                          borderRadius: 999,
+                          backgroundColor: "rgba(0,0,0,0.65)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Feather name="x" size={11} color="#FFFFFF" />
+                      </Pressable>
+                    </View>
+                  ))
+                )}
+              </ScrollView>
+            </View>
+
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+                borderRadius: mobileTheme.radius.md,
+                backgroundColor: mobileTheme.color.bgApp,
+                minHeight: 180,
+                maxHeight: 260,
+                padding: 8,
+              }}
+            >
+              <ScrollView contentContainerStyle={{ gap: 8, paddingBottom: 6 }}>
+                {foodEstimatorMessages.map((msg) => {
+                  const isAssistant = msg.role === "assistant";
+                  return (
+                    <View
+                      key={msg.id}
+                      style={{
+                        alignSelf: isAssistant ? "flex-start" : "flex-end",
+                        maxWidth: "92%",
+                        borderWidth: 1,
+                        borderColor: isAssistant
+                          ? mobileTheme.color.borderSubtle
+                          : "rgba(203,255,26,0.45)",
+                        backgroundColor: isAssistant
+                          ? mobileTheme.color.bgSurface
+                          : "rgba(203,255,26,0.08)",
+                        borderRadius: 12,
+                        paddingHorizontal: 10,
+                        paddingVertical: 8,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, lineHeight: 19 }}>
+                        {msg.content}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
+              <TextInput
+                style={{
+                  flex: 1,
+                  minHeight: 44,
+                  maxHeight: 120,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                }}
+                value={foodEstimatorInput}
+                onChangeText={setFoodEstimatorInput}
+                placeholder="Describe la comida o pide ajustes..."
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                multiline
+              />
+              <Pressable
+                onPress={sendFoodEstimatorMessage}
+                disabled={foodEstimatorSending}
+                style={{
+                  minWidth: 92,
+                  height: 44,
+                  borderRadius: mobileTheme.radius.md,
+                  backgroundColor: mobileTheme.color.brandPrimary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: foodEstimatorSending ? 0.7 : 1,
+                }}
+              >
+                <Text style={{ color: "#06090D", fontWeight: "800" }}>
+                  {foodEstimatorSending ? "Enviando..." : "Enviar"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
         </View>
       ) : null}
 

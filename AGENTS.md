@@ -109,6 +109,80 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-02-23 - Diet tab layout aligned to design reference with fixed meal categories
+- Failure:
+  `Dieta` did not match `[Image #1]`: it used a generic form/list flow and allowed arbitrary meal titles instead of the required meal sections.
+- Root cause:
+  The UI rendered a generic daily progress block plus free-form meal creation (`Título`) and did not enforce the product meal taxonomy.
+- Exact fix steps/commands:
+  1. Reworked `apps/mobile/App.tsx` diet screen structure to mirror the reference:
+     - top nutrition summary card with consumed/target kcal, percent badge, progress bar, and macro mini-bars.
+     - meal cards styled as sections (`Desayuno`, `Almuerzo`, `Comida`, `Merienda`, `Cena`) with collapse/expand behavior.
+  2. Enforced fixed meal categories in logic:
+     - added `DietMealCategory` + ordered category constants.
+     - `addMeal()` now appends food items only into those categories.
+     - removed free meal-title flow for category creation.
+  3. Updated food-add interaction:
+     - each meal card now has `Añadir alimento` and inline fields (`alimento`, kcal, P/C/G) for that meal.
+  4. Moved `Estimar con IA` entry point to floating camera button in `Dieta` to match visual hierarchy.
+  5. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Diet tab now includes AI estimator modal with photos, camera and dedicated chat
+- Failure:
+  The meal form only allowed manual entry and had no AI-assisted flow to estimate calories/macros from food photos or discuss adjustments in a dedicated conversation.
+- Root cause:
+  `apps/mobile/App.tsx` had no UI/action next to `Guardar comida` for AI estimation, no per-session estimator chat state, and no multimodal provider call path (text + image) for diet estimation.
+- Exact fix steps/commands:
+  1. Added `Estimar con IA` action in `apps/mobile/App.tsx`:
+     - placed next to `Guardar comida` inside `Dieta > Añadir comida local`.
+  2. Added estimator modal/screen flow in `apps/mobile/App.tsx`:
+     - supports adding photos from gallery and camera.
+     - supports removing attached photos and shows count limit.
+     - includes dedicated chat panel and input.
+     - conversation is reset each time the modal opens (new session per open).
+  3. Added provider fallback priority for estimator:
+     - default provider order: `Google -> OpenAI -> Anthropic`.
+     - resolves first provider with saved API key.
+  4. Added dedicated estimator system prompt:
+     - instructs LLM to estimate calorías, proteína, carbohidratos, grasas y peso en gramos.
+  5. Added multimodal provider call path in `apps/mobile/App.tsx`:
+     - OpenAI: chat completions with `image_url` data URLs.
+     - Google: Gemini `inline_data` image parts.
+     - Anthropic: native messages API with base64 image blocks (web path keeps current proxy constraints).
+  6. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Diet macros inputs no longer overflow screen width
+- Failure:
+  In `Dieta`, the row with `Proteínas / Carbos / Grasas` inputs could overflow horizontally on web preview (`http://localhost:8081/`).
+- Root cause:
+  The three macro inputs were rendered in a single horizontal row, which could exceed available width on narrower viewports.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` in `Añadir comida local`:
+     - changed macro inputs container from horizontal row to vertical stack.
+     - set each macro input width to `100%` to ensure full-width fit.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Diet tab now shows daily progress bars for calories and macros
+- Failure:
+  The `Dieta` tab only showed meals and calories, without daily consumed/remaining/total visibility for calories and each macro.
+- Root cause:
+  `DietItem` stored only `calories_kcal`, so the app could not compute consumed protein/carbs/fat, and the diet screen had no progress UI for targets.
+- Exact fix steps/commands:
+  1. Extended diet data model in `apps/mobile/App.tsx`:
+     - `DietItem` now includes `protein_g`, `carbs_g`, and `fat_g`.
+     - added hydration normalization (`normalizeDietByDate`) to keep compatibility with legacy saved entries.
+  2. Updated meal creation flow in `apps/mobile/App.tsx`:
+     - `Añadir comida local` now captures calories + proteína + carbos + grasas.
+     - `addMeal()` validates non-negative macro inputs and persists them per item.
+  3. Added daily diet progress visualization in `apps/mobile/App.tsx`:
+     - shows bars for calorías, proteínas, carbohidratos y grasas.
+     - each row displays consumed in the bar and `X/Y` on the right (`restante/total`), plus exceeded state when applicable.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-02-23 - Model dropdowns now support text filtering in all providers
 - Failure:
   Model selection lists lacked an in-list search box, making it slow to find a model when many entries are returned.
