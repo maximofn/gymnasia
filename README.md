@@ -11,15 +11,18 @@
 - `packages/shared`: tipos compartidos TypeScript
 - `supabase/migrations`: SQL de migraciones
 
+## Enfoque actual (2026-02-22)
+- Desarrollo centrado en `apps/mobile`.
+- La app movil funciona en modo local y persiste en el dispositivo.
+- No hay llamadas obligatorias al backend ni dependencia activa de Supabase para la experiencia base.
+
 ## Arranque rapido
-1. Configura variables de entorno en `apps/api/.env` usando `apps/api/.env.example`.
-2. Levanta backend:
-   - `cd apps/api`
-   - `python -m venv .venv && source .venv/bin/activate`
-   - `pip install -r requirements.txt`
-   - `uvicorn app.main:app --reload`
-3. Levanta web:
+1. Instala dependencias:
    - `npm install`
-   - `npm run dev:web`
-4. Levanta mobile:
+2. Levanta mobile:
    - `npm run dev:mobile`
+3. Type-check mobile:
+   - `npm --workspace apps/mobile exec tsc --noEmit`
+
+Notas:
+- `apps/api`, `apps/web` y `supabase/migrations` permanecen en el repo como referencia/evolucion futura.
