@@ -1794,3 +1794,28 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
      - `clickNavTab(page, "Cfg")` -> `clickNavTab(page, "Configuración")`.
   3. Validated mobile TypeScript:
      `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Diet tab now supports day selector with arrows and calendar picker
+- Failure:
+  In `Dieta`, users could only edit foods for the current day and had no control to switch to previous/next days or jump to a specific date.
+- Root cause:
+  Diet state and CRUD flow in `apps/mobile/App.tsx` were hard-wired to `todayISO()` and the UI had no day selector above the calorie summary card.
+- Exact fix steps/commands:
+  1. Added diet date navigation state in `apps/mobile/App.tsx`:
+     - `selectedDietDate` (active diet day key).
+     - `showDietDatePicker` (calendar visibility).
+  2. Added date helpers in `apps/mobile/App.tsx`:
+     - ISO conversion/parsing helpers.
+     - day shift helper for arrow navigation.
+     - formatted labels for header date (`Viernes, 20 Feb`) and context (`Hoy`, `Ayer`, `Mañana`).
+  3. Added Diet day selector UI in `apps/mobile/App.tsx`:
+     - left/right arrows to move one day back/forward.
+     - calendar icon to open `DateTimePicker` and select an exact day.
+     - placed below tabs and above the calories summary card.
+  4. Updated diet data flow to use selected day in `apps/mobile/App.tsx`:
+     - `dietDay`, meal virtual ids, add/edit/delete item logic now read/write `store.dietByDate[selectedDietDate]`.
+     - entering `Dieta` resets the active day to current date by default.
+  5. Preserved "hoy" semantics outside Diet:
+     - dashboard calories now read from `todayISO()` explicitly, independent of selected diet day.
+  6. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`

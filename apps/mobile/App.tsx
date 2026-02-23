@@ -488,6 +488,29 @@ const DIET_MEAL_META: Record<
   Merienda: { icon: "coffee", accent: "#4D84FF", dot: "#6E8DFF" },
   Cena: { icon: "moon", accent: "#7D6DFF", dot: "#9C8DFF" },
 };
+const DIET_WEEKDAY_LABELS = [
+  "Domingo",
+  "Lunes",
+  "Martes",
+  "Miércoles",
+  "Jueves",
+  "Viernes",
+  "Sábado",
+];
+const DIET_MONTH_LABELS_SHORT = [
+  "Ene",
+  "Feb",
+  "Mar",
+  "Abr",
+  "May",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dic",
+];
 const GKG_MACRO_KEYS: GkgMacroKey[] = ["protein", "carbs", "fat"];
 const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "measures", label: "Medidas" },
@@ -1450,12 +1473,50 @@ function uid(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function todayISO(): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = `${now.getMonth() + 1}`.padStart(2, "0");
-  const d = `${now.getDate()}`.padStart(2, "0");
+function isoDateFromDate(date: Date): string {
+  const y = date.getFullYear();
+  const m = `${date.getMonth() + 1}`.padStart(2, "0");
+  const d = `${date.getDate()}`.padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+function todayISO(): string {
+  return isoDateFromDate(new Date());
+}
+
+function dateFromISO(isoDate: string): Date {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate);
+  if (!match) return measurementDateFromSelection(new Date());
+  return measurementDateFromSelection(
+    new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])),
+  );
+}
+
+function shiftISODateByDays(isoDate: string, days: number): string {
+  const next = dateFromISO(isoDate);
+  next.setDate(next.getDate() + days);
+  return isoDateFromDate(next);
+}
+
+function formatDietDayHeader(isoDate: string): string {
+  const parsed = dateFromISO(isoDate);
+  return `${DIET_WEEKDAY_LABELS[parsed.getDay()]}, ${parsed.getDate()} ${DIET_MONTH_LABELS_SHORT[parsed.getMonth()]}`;
+}
+
+function formatDietDayContext(isoDate: string, referenceIsoDate: string): string {
+  const selected = dateFromISO(isoDate);
+  const reference = dateFromISO(referenceIsoDate);
+  const diffInDays = Math.round((selected.getTime() - reference.getTime()) / 86400000);
+  if (diffInDays === 0) return "Hoy";
+  if (diffInDays === -1) return "Ayer";
+  if (diffInDays === 1) return "Mañana";
+  return selected
+    .toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
+    .replace(/\./g, "");
 }
 
 function sumDayCalories(day: DietDay | null): number {
@@ -2262,6 +2323,8 @@ export default function App() {
   const [mealProteinInput, setMealProteinInput] = useState("");
   const [mealCarbsInput, setMealCarbsInput] = useState("");
   const [mealFatInput, setMealFatInput] = useState("");
+  const [selectedDietDate, setSelectedDietDate] = useState<string>(() => todayISO());
+  const [showDietDatePicker, setShowDietDatePicker] = useState(false);
   const [dietMealEditorCategory, setDietMealEditorCategory] = useState<DietMealCategory | null>(null);
   const [dietItemMenu, setDietItemMenu] = useState<DietItemMenuState>(null);
   const [dietEditingItem, setDietEditingItem] = useState<DietEditingItemState>(null);
@@ -2352,7 +2415,10 @@ export default function App() {
   const providerSettingsInitializedRef = useRef(false);
 
   const today = todayISO();
-  const dietDay = store.dietByDate[today] ?? { day_date: today, meals: [] };
+  const dietDateLabel = formatDietDayHeader(selectedDietDate);
+  const dietDateContextLabel = formatDietDayContext(selectedDietDate, today);
+  const todayDietDay = store.dietByDate[today] ?? { day_date: today, meals: [] };
+  const dietDay = store.dietByDate[selectedDietDate] ?? { day_date: selectedDietDate, meals: [] };
   const activeProvider = useMemo(
     () => store.keys.find((item) => item.is_active) ?? null,
     [store.keys],
@@ -2538,20 +2604,21 @@ export default function App() {
     const existing = dietDay.meals.find((meal) => meal.title === category);
     return (
       existing ?? {
-        id: `meal_virtual_${today}_${category.toLowerCase()}`,
+        id: `meal_virtual_${selectedDietDate}_${category.toLowerCase()}`,
         title: category,
         items: [],
       }
     );
   });
 
+  const todayCaloriesConsumed = sumDayCalories(todayDietDay);
   const dashboard = useMemo<Dashboard>(() => {
     return {
-      calories: dayCaloriesConsumed,
+      calories: todayCaloriesConsumed,
       weight: latestBodyWeightKg,
       templates: store.templates.length,
     };
-  }, [dayCaloriesConsumed, latestBodyWeightKg, store.templates.length]);
+  }, [latestBodyWeightKg, store.templates.length, todayCaloriesConsumed]);
 
   const filteredTrainingTemplates = useMemo(() => {
     const normalizedSearch = trainingSearch.trim().toLowerCase();
@@ -2712,6 +2779,13 @@ export default function App() {
     if (!latestHeightMeasurement || latestHeightMeasurement.height_cm === null) return;
     setHeightInput(formatMeasurementNumber(latestHeightMeasurement.height_cm));
   }, [heightInput, latestHeightMeasurement]);
+
+  useEffect(() => {
+    if (tab !== "diet") return;
+    setSelectedDietDate(todayISO());
+    setShowDietDatePicker(false);
+    resetDietMealEditorState();
+  }, [tab]);
 
   const playRestFinishedAlert = useCallback(async () => {
     if (restAlertLockRef.current) return;
@@ -3130,6 +3204,34 @@ export default function App() {
     }
   }
 
+  function resetDietMealEditorState() {
+    setDietMealEditorCategory(null);
+    setDietEditingItem(null);
+    setDietItemMenu(null);
+    setMealTitleInput("");
+    setMealCaloriesInput("");
+    setMealProteinInput("");
+    setMealCarbsInput("");
+    setMealFatInput("");
+  }
+
+  function changeDietDateBy(days: number) {
+    setShowDietDatePicker(false);
+    resetDietMealEditorState();
+    setSelectedDietDate((prev) => shiftISODateByDays(prev, days));
+    setError(null);
+  }
+
+  function onDietDateChange(event: DateTimePickerEvent, selectedDate?: Date) {
+    if (Platform.OS === "android") {
+      setShowDietDatePicker(false);
+    }
+    if (event.type === "dismissed" || !selectedDate) return;
+    resetDietMealEditorState();
+    setSelectedDietDate(isoDateFromDate(selectedDate));
+    setError(null);
+  }
+
   function addMeal() {
     if (!dietMealEditorCategory) {
       setError("Selecciona una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).");
@@ -3162,8 +3264,9 @@ export default function App() {
       fat_g: fat ?? 0,
     };
 
+    const activeDietDate = selectedDietDate;
     setStore((prev) => {
-      const currentDay = prev.dietByDate[today] ?? { day_date: today, meals: [] };
+      const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
       if (dietEditingItem) {
         const meals = currentDay.meals
           .map((meal) => {
@@ -3189,7 +3292,7 @@ export default function App() {
           ...prev,
           dietByDate: {
             ...prev.dietByDate,
-            [today]: {
+            [activeDietDate]: {
               ...currentDay,
               meals: sortDietMealsByCategory(meals),
             },
@@ -3221,7 +3324,7 @@ export default function App() {
         ...prev,
         dietByDate: {
           ...prev.dietByDate,
-          [today]: {
+          [activeDietDate]: {
             ...currentDay,
             meals: sortDietMealsByCategory(meals),
           },
@@ -3280,8 +3383,9 @@ export default function App() {
   }
 
   function deleteDietItem(meal: DietMeal, item: DietItem) {
+    const activeDietDate = selectedDietDate;
     setStore((prev) => {
-      const currentDay = prev.dietByDate[today] ?? { day_date: today, meals: [] };
+      const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
       const meals = currentDay.meals
         .map((currentMeal) => {
           if (currentMeal.id !== meal.id) return currentMeal;
@@ -3295,7 +3399,7 @@ export default function App() {
         ...prev,
         dietByDate: {
           ...prev.dietByDate,
-          [today]: {
+          [activeDietDate]: {
             ...currentDay,
             meals: sortDietMealsByCategory(meals),
           },
@@ -7151,6 +7255,97 @@ export default function App() {
 
           {tab === "diet" ? (
             <View style={{ gap: 12, paddingBottom: 86 }}>
+              <View style={{ gap: 8 }}>
+                <View style={{ minHeight: 56, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Pressable
+                    onPress={() => changeDietDateBy(-1)}
+                    style={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: 999,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Feather name="chevron-left" size={20} color={mobileTheme.color.textSecondary} />
+                  </Pressable>
+
+                  <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "700" }}>
+                      {dietDateLabel}
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700" }}>
+                      {dietDateContextLabel}
+                    </Text>
+                  </View>
+
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                    <Pressable
+                      onPress={() => changeDietDateBy(1)}
+                      style={{
+                        width: 34,
+                        height: 34,
+                        borderRadius: 999,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Feather name="chevron-right" size={20} color={mobileTheme.color.textSecondary} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => setShowDietDatePicker((prev) => !prev)}
+                      style={{
+                        width: 34,
+                        height: 34,
+                        borderRadius: 999,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Ionicons name="calendar-outline" size={18} color={mobileTheme.color.textSecondary} />
+                    </Pressable>
+                  </View>
+                </View>
+
+                {showDietDatePicker ? (
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      padding: 8,
+                      gap: 8,
+                    }}
+                  >
+                    <DateTimePicker
+                      value={dateFromISO(selectedDietDate)}
+                      mode="date"
+                      display={Platform.OS === "ios" ? "inline" : "default"}
+                      onChange={onDietDateChange}
+                    />
+                    {Platform.OS === "ios" ? (
+                      <Pressable
+                        onPress={() => setShowDietDatePicker(false)}
+                        style={{
+                          height: 38,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                          Cerrar calendario
+                        </Text>
+                      </Pressable>
+                    ) : null}
+                  </View>
+                ) : null}
+              </View>
+
               <View
                 style={{
                   borderWidth: 1,
