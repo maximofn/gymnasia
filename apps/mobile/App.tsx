@@ -2308,7 +2308,14 @@ export default function App() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: mobileTheme.color.bgApp }}>
-      <View style={{ paddingHorizontal: mobileTheme.spacing[4], paddingTop: mobileTheme.spacing[4], paddingBottom: 10 }}>
+      <View
+        style={{
+          paddingHorizontal: mobileTheme.spacing[4],
+          paddingTop: mobileTheme.spacing[4],
+          paddingBottom: 10,
+          gap: 12,
+        }}
+      >
         {tab === "training" && (isTrainingEditorOpen || activeWorkoutSession) ? null : tab === "training" ? (
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: headerTitleSize, fontWeight: "700" }}>
@@ -2336,6 +2343,48 @@ export default function App() {
             {headerTitle}
           </Text>
         )}
+        <View
+          style={{
+            minHeight: 54,
+            borderRadius: 14,
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+            backgroundColor: mobileTheme.color.bgSurface,
+            flexDirection: "row",
+            padding: 4,
+            gap: 4,
+          }}
+        >
+          {(["home", "training", "diet", "measures", "chat", "settings"] as TabKey[]).map((key) => {
+            const isActiveTab = tab === key;
+            return (
+              <Pressable
+                key={key}
+                onPress={() => setTab(key)}
+                style={{
+                  flex: 1,
+                  minHeight: 44,
+                  borderRadius: 10,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: isActiveTab ? "rgba(203,255,26,0.14)" : "transparent",
+                  borderWidth: isActiveTab ? 1 : 0,
+                  borderColor: isActiveTab ? "rgba(203,255,26,0.5)" : "transparent",
+                }}
+              >
+                <Text
+                  style={{
+                    color: isActiveTab ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary,
+                    fontWeight: "700",
+                    fontSize: 12,
+                  }}
+                >
+                  {tabLabel(key)}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       {loading ? (
@@ -4781,28 +4830,6 @@ export default function App() {
           </Pressable>
         </View>
       ) : null}
-
-      <View style={{
-        position: "absolute",
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: 64,
-        borderTopWidth: 1,
-        borderTopColor: mobileTheme.color.borderSubtle,
-        backgroundColor: mobileTheme.color.bgSurface,
-        flexDirection: "row",
-      }}>
-        {(["home", "training", "diet", "measures", "chat", "settings"] as TabKey[]).map((key) => (
-          <Pressable
-            key={key}
-            onPress={() => setTab(key)}
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Text style={{ color: tab === key ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontWeight: "700", fontSize: 12 }}>{tabLabel(key)}</Text>
-          </Pressable>
-        ))}
-      </View>
 
       {workoutCompletionModal ? (
         <View

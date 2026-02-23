@@ -989,3 +989,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
      - APK URL: `https://expo.dev/artifacts/eas/4AxfCaMu5NSMtJVwvJRMjx.apk`
   5. Optional local download for direct install:
      - `curl -L "https://expo.dev/artifacts/eas/4AxfCaMu5NSMtJVwvJRMjx.apk" -o /tmp/gymnasia-preview-1d1df6c6.apk`
+
+### 2026-02-23 - Moved primary tab selector from bottom overlay to top header area
+- Failure:
+  On Android devices with system navigation buttons at the bottom, the app tabs (`Home`, `Train`, `Dieta`, `Stats`, `Chat`, `Cfg`) could be visually/interaction-overlapped by OS controls.
+- Root cause:
+  The tab selector was implemented as an absolute bottom bar (`position: absolute; bottom: 0; height: 64`) inside `apps/mobile/App.tsx`.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` layout:
+     - removed the fixed bottom tab bar block.
+     - added a top tab selector row directly below the header/title area.
+  2. Preserved behavior and labels:
+     - kept same six tabs and `setTab(...)` interactions.
+     - active tab now highlighted in the top row with brand accent styles.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
