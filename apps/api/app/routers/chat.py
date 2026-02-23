@@ -1,4 +1,7 @@
+import json
 from datetime import UTC, datetime, timedelta
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -17,12 +20,21 @@ from app.models import (
     UserAISettings,
 )
 from app.schemas import (
+    AnthropicProxyModelsRequest,
+    AnthropicProxyModelsResponse,
+    AnthropicProxyMessagesRequest,
+    AnthropicProxyModelItem,
+    AnthropicProxyVerifyRequest,
+    AnthropicProxyVerifyResponse,
     AgentMemoryResponse,
     AgentMemoryUpsertRequest,
     ChatMessageCreateRequest,
     ChatMessageResponse,
     ChatThreadCreateRequest,
     ChatThreadResponse,
+    OpenAIProxyModelItem,
+    OpenAIProxyModelsRequest,
+    OpenAIProxyModelsResponse,
 )
 from app.services.ai_runtime import detect_safety_flags, generate_chat_reply, pick_active_provider
 
@@ -73,6 +85,229 @@ def _to_memory_response(row: AgentMemoryEntry) -> AgentMemoryResponse:
         updated_at=row.updated_at,
         deleted_at=row.deleted_at,
     )
+
+
+def _extract_provider_error(payload: dict | None, fallback: str) -> str:
+    if not isinstance(payload, dict):
+        return fallback
+
+    error = payload.get("error")
+    if isinstance(error, dict):
+        error_message = error.get("message")
+        if isinstance(error_message, str) and error_message.strip():
+            return error_message.strip()
+
+    for key in ("detail", "message", "type"):
+        candidate = payload.get(key)
+        if isinstance(candidate, str) and candidate.strip():
+            return candidate.strip()
+
+    return fallback
+
+
+def _parse_json_bytes(raw_bytes: bytes) -> dict | None:
+    if not raw_bytes:
+        return None
+    try:
+        decoded = json.loads(raw_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    return decoded if isinstance(decoded, dict) else None
+
+
+def _anthropic_messages_request(api_key: str, payload: dict) -> tuple[int, dict | None]:
+    request_payload = json.dumps(payload).encode("utf-8")
+    req = Request(
+        url="https://api.anthropic.com/v1/messages",
+        data=request_payload,
+        method="POST",
+        headers={
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+    )
+
+    try:
+        with urlopen(req, timeout=20) as provider_response:
+            status_code = int(provider_response.status)
+            provider_payload = _parse_json_bytes(provider_response.read()) or {}
+            return status_code, provider_payload
+    except HTTPError as exc:
+        status_code = int(exc.code)
+        provider_payload = _parse_json_bytes(exc.read())
+        return status_code, provider_payload
+    except URLError as exc:
+        reason = str(getattr(exc, "reason", exc))
+        raise HTTPException(status_code=502, detail=f"No se pudo conectar con Anthropic: {reason}") from exc
+
+
+def _anthropic_models_request(api_key: str) -> tuple[int, dict | None]:
+    req = Request(
+        url="https://api.anthropic.com/v1/models",
+        method="GET",
+        headers={
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+    )
+
+    try:
+        with urlopen(req, timeout=20) as provider_response:
+            status_code = int(provider_response.status)
+            provider_payload = _parse_json_bytes(provider_response.read()) or {}
+            return status_code, provider_payload
+    except HTTPError as exc:
+        status_code = int(exc.code)
+        provider_payload = _parse_json_bytes(exc.read())
+        return status_code, provider_payload
+    except URLError as exc:
+        reason = str(getattr(exc, "reason", exc))
+        raise HTTPException(status_code=502, detail=f"No se pudo conectar con Anthropic: {reason}") from exc
+
+
+def _openai_models_request(api_key: str) -> tuple[int, dict | None]:
+    req = Request(
+        url="https://api.openai.com/v1/models",
+        method="GET",
+        headers={
+            "authorization": f"Bearer {api_key}",
+            "content-type": "application/json",
+        },
+    )
+
+    try:
+        with urlopen(req, timeout=20) as provider_response:
+            status_code = int(provider_response.status)
+            provider_payload = _parse_json_bytes(provider_response.read()) or {}
+            return status_code, provider_payload
+    except HTTPError as exc:
+        status_code = int(exc.code)
+        provider_payload = _parse_json_bytes(exc.read())
+        return status_code, provider_payload
+    except URLError as exc:
+        reason = str(getattr(exc, "reason", exc))
+        raise HTTPException(status_code=502, detail=f"No se pudo conectar con OpenAI: {reason}") from exc
+
+
+@router.post("/providers/anthropic/verify", response_model=AnthropicProxyVerifyResponse)
+def verify_anthropic_proxy(payload: AnthropicProxyVerifyRequest) -> AnthropicProxyVerifyResponse:
+    status_code, provider_payload = _anthropic_messages_request(
+        payload.api_key,
+        {
+            "model": payload.model,
+            "max_tokens": 1,
+            "messages": [{"role": "user", "content": "Ping de verificación."}],
+        },
+    )
+
+    if 200 <= status_code < 300:
+        return AnthropicProxyVerifyResponse(ok=True, message="Conexión verificada.")
+
+    if status_code == 404:
+        return AnthropicProxyVerifyResponse(
+            ok=True,
+            message=f"API key verificada. Modelo no disponible: {payload.model}.",
+        )
+
+    return AnthropicProxyVerifyResponse(
+        ok=False,
+        message=_extract_provider_error(provider_payload, f"Anthropic error ({status_code})"),
+    )
+
+
+@router.post("/providers/anthropic/models", response_model=AnthropicProxyModelsResponse)
+def list_anthropic_models_proxy(payload: AnthropicProxyModelsRequest) -> AnthropicProxyModelsResponse:
+    status_code, provider_payload = _anthropic_models_request(payload.api_key)
+
+    if not (200 <= status_code < 300):
+        raise HTTPException(
+            status_code=status_code,
+            detail=_extract_provider_error(provider_payload, f"Anthropic error ({status_code})"),
+        )
+
+    if not isinstance(provider_payload, dict):
+        raise HTTPException(status_code=502, detail="Anthropic devolvió una respuesta inválida.")
+
+    raw_items = provider_payload.get("data")
+    if not isinstance(raw_items, list):
+        return AnthropicProxyModelsResponse(models=[])
+
+    models: list[AnthropicProxyModelItem] = []
+    for item in raw_items:
+        if not isinstance(item, dict):
+            continue
+        model_id = item.get("id")
+        if not isinstance(model_id, str) or not model_id.strip():
+            continue
+        display_name = item.get("display_name")
+        models.append(
+            AnthropicProxyModelItem(
+                id=model_id.strip(),
+                display_name=display_name.strip() if isinstance(display_name, str) and display_name.strip() else None,
+            )
+        )
+
+    return AnthropicProxyModelsResponse(models=models)
+
+
+@router.post("/providers/openai/models", response_model=OpenAIProxyModelsResponse)
+def list_openai_models_proxy(payload: OpenAIProxyModelsRequest) -> OpenAIProxyModelsResponse:
+    status_code, provider_payload = _openai_models_request(payload.api_key)
+
+    if not (200 <= status_code < 300):
+        raise HTTPException(
+            status_code=status_code,
+            detail=_extract_provider_error(provider_payload, f"OpenAI error ({status_code})"),
+        )
+
+    if not isinstance(provider_payload, dict):
+        raise HTTPException(status_code=502, detail="OpenAI devolvió una respuesta inválida.")
+
+    raw_items = provider_payload.get("data")
+    if not isinstance(raw_items, list):
+        return OpenAIProxyModelsResponse(models=[])
+
+    models: list[OpenAIProxyModelItem] = []
+    for item in raw_items:
+        if not isinstance(item, dict):
+            continue
+        model_id = item.get("id")
+        if not isinstance(model_id, str) or not model_id.strip():
+            continue
+        owned_by = item.get("owned_by")
+        models.append(
+            OpenAIProxyModelItem(
+                id=model_id.strip(),
+                owned_by=owned_by.strip() if isinstance(owned_by, str) and owned_by.strip() else None,
+            )
+        )
+
+    return OpenAIProxyModelsResponse(models=models)
+
+
+@router.post("/providers/anthropic/messages", response_model=dict)
+def proxy_anthropic_messages(payload: AnthropicProxyMessagesRequest) -> dict:
+    request_body = {
+        "model": payload.model,
+        "max_tokens": payload.max_tokens,
+        "messages": [item.model_dump() for item in payload.messages],
+    }
+    if payload.system:
+        request_body["system"] = payload.system
+
+    status_code, provider_payload = _anthropic_messages_request(payload.api_key, request_body)
+    if not (200 <= status_code < 300):
+        raise HTTPException(
+            status_code=status_code,
+            detail=_extract_provider_error(provider_payload, f"Anthropic error ({status_code})"),
+        )
+
+    if not isinstance(provider_payload, dict):
+        raise HTTPException(status_code=502, detail="Anthropic devolvió una respuesta inválida.")
+
+    return provider_payload
 
 
 @router.get("/threads", response_model=list[ChatThreadResponse])

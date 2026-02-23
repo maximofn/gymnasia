@@ -109,6 +109,244 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-02-23 - Model dropdowns now support text filtering in all providers
+- Failure:
+  Model selection lists lacked an in-list search box, making it slow to find a model when many entries are returned.
+- Root cause:
+  Provider settings UI in `apps/mobile/App.tsx` rendered plain model lists for Anthropic/OpenAI and text input for Google, without unified filterable dropdown behavior.
+- Exact fix steps/commands:
+  1. Added filter inputs for model lists in `apps/mobile/App.tsx`:
+     - Anthropic dropdown now includes `Filtrar modelos...` and filters by `id` + `display_name`.
+     - OpenAI dropdown now includes `Filtrar modelos...` and filters by `id` + `owned_by`.
+     - Google now uses dropdown + refresh + `Filtrar modelos...` with filtered list.
+  2. Added Google model discovery in `apps/mobile/App.tsx`:
+     - fetches `GET https://generativelanguage.googleapis.com/v1beta/models?key=...`
+     - normalizes `models/<id>` to `<id>` and keeps only models supporting `generateContent`.
+  3. Added provider-specific filter/dropdown state resets:
+     - on API key change, save, selection, delete, and local reset to avoid stale filtered results.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - OpenAI model field replaced with API-driven dropdown (`/v1/models`)
+- Failure:
+  OpenAI model selection was a manual text input, so users could not pick from the real model list available for their API key.
+- Root cause:
+  `apps/mobile/App.tsx` only implemented API-driven model discovery/dropdown for Anthropic, and backend proxy endpoints only covered Anthropic models.
+- Exact fix steps/commands:
+  1. Added OpenAI models proxy in `apps/api`:
+     - new endpoint: `POST /chat/providers/openai/models` in `apps/api/app/routers/chat.py`
+     - proxies `GET https://api.openai.com/v1/models` with `Authorization: Bearer <api_key>`
+     - added request/response schemas in `apps/api/app/schemas.py`.
+  2. Updated mobile provider settings in `apps/mobile/App.tsx`:
+     - added OpenAI model options loading (direct on native, proxy on web).
+     - replaced OpenAI model text input with dropdown + refresh action (same UX pattern as Anthropic).
+     - added OpenAI model state cleanup on API key change/delete and save flow.
+  3. Updated OpenAI key verification on web:
+     - `verifyProviderConnection()` now uses proxy for OpenAI in web context to avoid direct browser CORS issues.
+  4. Validated:
+     - `python3 -m compileall apps/api/app`
+     - `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Provider status copy simplified for severity messages
+- Failure:
+  Provider status strings included extra wording (`Todo bien`, `Atención media`, `Error grave`) and did not match the product copy requested for connection states.
+- Root cause:
+  `PROVIDER_STATUS_COPY` in `apps/mobile/App.tsx` still used the previous verbose text set.
+- Exact fix steps/commands:
+  1. Updated `PROVIDER_STATUS_COPY` in `apps/mobile/App.tsx`:
+     - `success` -> `Conexión verificada.`
+     - warning messages now use `Atención: ...`
+     - fallback error now uses `Error: ...`
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Unsaved provider API keys no longer enable delete and are not persisted on failed validation
+- Failure:
+  Typing an API key without pressing `Guardar` enabled `Eliminar`, and failed validation attempts could still end up persisting invalid key values.
+- Root cause:
+  Delete CTA availability considered draft input values, and `saveProviderApiKey()` wrote provider key config before checking validation result.
+- Exact fix steps/commands:
+  1. Updated delete eligibility in `apps/mobile/App.tsx`:
+     - `Eliminar` now depends only on persisted key (`store.keys`), not draft input.
+     - modal opener now guards on persisted key only.
+  2. Updated save flow in `apps/mobile/App.tsx`:
+     - provider key is persisted only when `verifyProviderConnection()` returns `ok`.
+     - on failed validation, draft remains local and unsaved.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Provider `Eliminar` button is disabled when no API key exists
+- Failure:
+  The `Eliminar` button remained interactive even when a provider had no API key, allowing a meaningless delete action.
+- Root cause:
+  Delete CTA availability was not tied to actual key presence (draft/saved), and modal opener did not guard against empty key state.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` provider card logic:
+     - computed `hasAnyProviderApiKey` from draft or persisted key value.
+     - set `disabled` on `Eliminar` when no key exists.
+     - added disabled visual treatment (muted color/opacity).
+  2. Added no-op guard in modal opener:
+     - `openDeleteProviderApiKeyModal()` now returns immediately if key is empty.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Provider delete action now uses in-app confirmation modal and clears API key from memory
+- Failure:
+  Pressing `Eliminar` in provider settings used native `Alert` and did not follow the custom modal UX required by the design reference.
+- Root cause:
+  `deleteProviderApiKey()` in `apps/mobile/App.tsx` was implemented with `Alert.alert(...)` instead of an in-app modal component.
+- Exact fix steps/commands:
+  1. Replaced delete flow in `apps/mobile/App.tsx`:
+     - added modal state (`providerDeleteModal`) with provider + masked key preview.
+     - `Eliminar` now opens a custom overlay modal.
+  2. Implemented modal actions:
+     - `Sí, eliminar clave` clears API key from in-memory store/draft and updates provider status to disconnected.
+     - `Cancelar` closes the modal without changes.
+  3. Added modal UI matching `[Image #1]` style:
+     - warning icon, title, irreversible action copy, red warning box, masked key row, primary destructive button, and cancel button.
+  4. Preserved related cleanup for Anthropic state:
+     - closes model dropdown and clears loaded model options/messages after deletion.
+  5. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Anthropic model field replaced with API-driven dropdown in mobile settings
+- Failure:
+  Anthropic model was a free text input (`claude-3-5-sonnet-latest`) and users had to type model IDs manually without seeing available models from their API key.
+- Root cause:
+  `apps/mobile/App.tsx` had no model discovery flow for Anthropic and no endpoint to proxy `/v1/models` for web context.
+- Exact fix steps/commands:
+  1. Added Anthropic models proxy endpoint in `apps/api/app/routers/chat.py`:
+     - `POST /chat/providers/anthropic/models`
+     - forwards request to `GET https://api.anthropic.com/v1/models` with `x-api-key` + `anthropic-version`.
+  2. Added API schemas in `apps/api/app/schemas.py`:
+     - `AnthropicProxyModelsRequest`
+     - `AnthropicProxyModelItem`
+     - `AnthropicProxyModelsResponse`
+  3. Reworked Anthropic model UI in `apps/mobile/App.tsx`:
+     - replaced text input with dropdown selector for active Anthropic provider.
+     - dropdown fetches and shows model list (id + display name) from API.
+     - added `Actualizar modelos` action and loading/error handling.
+     - selecting a model updates draft config and marks provider settings as pending save.
+  4. Preserved platform behavior:
+     - web uses backend proxy endpoint.
+     - native uses direct Anthropic API call.
+  5. Validated backend syntax:
+     `python3 -m compileall apps/api/app`
+  6. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Provider status UI now uses severity levels (green/yellow/red) with unified copy
+- Failure:
+  Provider connection detail color depended on specific text matches (e.g. `Failed to fetch`), and warning cases like `API key verificada. Modelo no disponible...` did not have a stable medium-severity visual treatment.
+- Root cause:
+  `ProviderConnectionStatus` stored only `state` + `detail`; severity was inferred from string contents in UI instead of explicit semantic status.
+- Exact fix steps/commands:
+  1. Refactored provider status model in `apps/mobile/App.tsx`:
+     - added `severity` (`success`, `warning`, `error`, `info`) to `ProviderConnectionStatus`.
+     - extended `ProviderConnectionCheckResult` with severity.
+  2. Unified status copy for provider panel:
+     - success: `Todo bien: conexión verificada.`
+     - medium/warning: `Atención media: ...`
+     - severe/error: `Error grave: ...`
+  3. Applied semantic color mapping in UI:
+     - success -> green
+     - warning -> yellow
+     - error -> red
+     - removed text-fragile color checks based on literal message content.
+  4. Updated Anthropic verify warning path:
+     - `modelo no disponible` now remains connected with warning severity and yellow detail text.
+  5. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - `npm run dev:api` now uses project virtualenv instead of global uvicorn
+- Failure:
+  Running `npm run dev:api` crashed with `ModuleNotFoundError: No module named 'fastapi'`.
+- Root cause:
+  Root script `dev:api` invoked global `uvicorn`, which used system Python instead of `apps/api/.venv` where backend dependencies are installed.
+- Exact fix steps/commands:
+  1. Updated root script in `package.json`:
+     - `dev:api` from `cd apps/api && uvicorn app.main:app --reload`
+     - to `cd apps/api && .venv/bin/uvicorn app.main:app --reload`
+  2. Confirmed app import resolves FastAPI in venv:
+     `cd apps/api && .venv/bin/python -c "from app.main import app; print(app.title)"`
+
+### 2026-02-23 - API CORS defaults expanded for Expo web origin on port 8081
+- Failure:
+  Anthropic web proxy calls could still fail from browser due to backend CORS if Expo web served from `http://localhost:8081`.
+- Root cause:
+  Default `CORS_ORIGINS` only included ports `3000` and `19006`, missing Expo web origin `8081`.
+- Exact fix steps/commands:
+  1. Updated API settings default in `apps/api/app/config.py`:
+     - added `http://localhost:8081` and `http://127.0.0.1:8081` to `cors_origins`.
+  2. Updated sample env in `apps/api/.env.example` with the same origins.
+  3. Validated backend syntax:
+     `python3 -m compileall apps/api/app`
+  4. Re-validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Anthropic works on web via backend proxy (no direct browser CORS call)
+- Failure:
+  In web preview, saving or using Anthropic from `apps/mobile` failed with `Failed to fetch` even when the API key was valid in terminal `curl`.
+- Root cause:
+  Browser execution path called Anthropic directly from frontend, which is blocked by CORS/network policy in this context.
+- Exact fix steps/commands:
+  1. Added API proxy endpoints in `apps/api/app/routers/chat.py`:
+     - `POST /chat/providers/anthropic/verify`
+     - `POST /chat/providers/anthropic/messages`
+     - both forward requests to Anthropic with required headers (`x-api-key`, `anthropic-version`, `content-type`) and return parsed provider errors.
+  2. Added request/response schemas in `apps/api/app/schemas.py` for Anthropic proxy payloads.
+  3. Updated `apps/mobile/App.tsx`:
+     - in `web` + Anthropic, use backend proxy endpoints instead of direct provider calls for both key verification and chat messages.
+     - resolve proxy base URL from `EXPO_PUBLIC_API_BASE_URL` with fallback `http://127.0.0.1:8000`.
+     - show actionable error if proxy API is unreachable.
+     - updated initial chat helper copy to mention Anthropic web proxy behavior.
+  4. Validated backend syntax:
+     `python3 -m compileall apps/api/app`
+  5. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Anthropic key check now mirrors `curl /v1/messages` and surfaces web CORS cause
+- Failure:
+  Users could validate Anthropic keys via terminal `curl` to `/v1/messages`, but app-side save sometimes failed with `Failed to fetch`, creating confusion about whether the API key was invalid.
+- Root cause:
+  Anthropic provider verification in-app used a different endpoint flow and network-level failures in browser context surfaced as generic fetch errors.
+- Exact fix steps/commands:
+  1. Updated Anthropic verification in `apps/mobile/App.tsx`:
+     - use `POST https://api.anthropic.com/v1/messages` with minimal payload (`max_tokens: 1`) to validate the key using the same path as production chat calls.
+     - keep `x-api-key`, `anthropic-version`, and `Content-Type` headers.
+  2. Added clearer web failure diagnosis:
+     - if provider is Anthropic, platform is web, and error is `Failed to fetch`, show explicit message about likely browser CORS blocking direct provider calls and suggest Expo Go/proxy backend.
+  3. Preserved UX behavior:
+     - if endpoint returns `404` (model not available), keep provider as connected with warning detail about model availability.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Provider status now shows `Failed to fetch` in red
+- Failure:
+  When provider connection checks failed with `Failed to fetch`, the detail text was rendered in neutral gray, reducing error visibility.
+- Root cause:
+  The color rule for provider connection detail only treated `Sin API key guardada` as an error-styled message.
+- Exact fix steps/commands:
+  1. Updated provider detail color logic in `apps/mobile/App.tsx`:
+     - treat `connectionStatus.detail` containing `failed to fetch` (case-insensitive) as error state.
+     - keep `Sin API key guardada` as error state.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-23 - Anthropic API key verification aligned with official models endpoints
+- Failure:
+  Saving an Anthropic API key did not consistently communicate a reliable connected/disconnected state tied to Anthropic's documented auth check flow.
+- Root cause:
+  Provider verification used a basic Anthropic models request without explicit model-availability feedback and the UI always forced a generic connected detail string, losing verification context.
+- Exact fix steps/commands:
+  1. Updated Anthropic verification flow in `apps/mobile/App.tsx`:
+     - verify key with `GET https://api.anthropic.com/v1/models` using `x-api-key`, `anthropic-version`, and `Content-Type`.
+     - added a second check to `GET /v1/models/{model}` to confirm configured model availability.
+  2. Improved save status detail handling:
+     - connected state now shows `check.message` instead of a fixed string, so Anthropic verification context is visible after save.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-02-22 - Removed seeded initial data (empty first-run state)
 - Failure:
   The app started with preloaded demo values (calories, weight, routines, etc.), but product requirement is an empty initial state.

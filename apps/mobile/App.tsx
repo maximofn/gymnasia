@@ -138,9 +138,22 @@ type ChatMessage = {
 type Provider = "anthropic" | "openai" | "google";
 type AIKey = { provider: Provider; is_active: boolean; api_key: string; model: string };
 type ProviderDraft = { api_key: string; model: string };
+type AnthropicModelOption = { id: string; display_name: string | null };
+type OpenAIModelOption = { id: string; owned_by: string | null };
+type GoogleModelOption = { id: string; display_name: string | null };
 type ProviderConnectionState = "connected" | "disconnected" | "checking" | "unknown";
-type ProviderConnectionStatus = { state: ProviderConnectionState; detail: string };
-type ProviderConnectionCheckResult = { ok: boolean; message: string };
+type ProviderStatusSeverity = "success" | "warning" | "error" | "info";
+type ProviderConnectionStatus = {
+  state: ProviderConnectionState;
+  detail: string;
+  severity: ProviderStatusSeverity;
+};
+type ProviderConnectionCheckResult = {
+  ok: boolean;
+  message: string;
+  severity: Exclude<ProviderStatusSeverity, "info">;
+};
+type ProviderDeleteModalState = { provider: Provider; maskedApiKey: string };
 type ChatInputMessage = { role: "user" | "assistant" | "system"; content: string };
 type TrainingFilter = "all" | "strength" | "hypertrophy" | "cardio" | "flexibility";
 type TrainingCategory = Exclude<TrainingFilter, "all">;
@@ -214,6 +227,30 @@ const PROVIDER_UI_META: Record<
     avatar_text: "#EFF4FF",
   },
 };
+const DEFAULT_WEB_API_BASE_URL = "http://127.0.0.1:8000";
+const PROVIDER_STATUS_COPY = {
+  success: "Conexión verificada.",
+  warningNoKey: "Atención: guarda una API key para conectar el proveedor.",
+  warningPending: "Atención: pendiente de verificación. Pulsa Guardar.",
+  warningChecking: "Atención: comprobando conexión...",
+  warningModelUnavailablePrefix: "Atención: API key verificada. Modelo no disponible: ",
+  warningModelsUnavailable: "Atención: no se pudieron cargar los modelos de Anthropic.",
+  errorFallback: "Error: no se pudo comprobar la conexión.",
+};
+
+function resolveWebApiBaseUrl(): string {
+  const maybeProcess = globalThis as {
+    process?: {
+      env?: Record<string, string | undefined>;
+    };
+  };
+  const configured = maybeProcess.process?.env?.EXPO_PUBLIC_API_BASE_URL?.trim() ?? "";
+  return (configured || DEFAULT_WEB_API_BASE_URL).replace(/\/+$/, "");
+}
+
+function buildWebProxyUrl(path: string): string {
+  return `${resolveWebApiBaseUrl()}${path}`;
+}
 
 function createDefaultProviderKeys(): AIKey[] {
   return [
@@ -249,8 +286,16 @@ function createProviderConnectionStatusMap(
   return PROVIDERS.reduce((acc, provider) => {
     const hasApiKey = !!(byProvider.get(provider)?.api_key ?? "").trim();
     acc[provider] = hasApiKey
-      ? { state: "unknown", detail: "Pendiente de verificación. Pulsa Guardar." }
-      : { state: "disconnected", detail: "Sin API key guardada." };
+      ? {
+          state: "unknown",
+          detail: PROVIDER_STATUS_COPY.warningPending,
+          severity: "warning",
+        }
+      : {
+          state: "disconnected",
+          detail: PROVIDER_STATUS_COPY.warningNoKey,
+          severity: "warning",
+        };
     return acc;
   }, {} as Record<Provider, ProviderConnectionStatus>);
 }
@@ -262,41 +307,84 @@ function createProviderBooleanMap(defaultValue: boolean): Record<Provider, boole
   }, {} as Record<Provider, boolean>);
 }
 
+function providerStatusPalette(
+  severity: ProviderStatusSeverity,
+): { backgroundColor: string; dotColor: string; textColor: string } {
+  if (severity === "success") {
+    return {
+      backgroundColor: "rgba(16,185,129,0.18)",
+      dotColor: "#24D68B",
+      textColor: "#24D68B",
+    };
+  }
+  if (severity === "warning") {
+    return {
+      backgroundColor: "rgba(255,205,77,0.2)",
+      dotColor: "#FFCD4D",
+      textColor: "#FFCD4D",
+    };
+  }
+  if (severity === "error") {
+    return {
+      backgroundColor: "rgba(255,110,110,0.2)",
+      dotColor: "#FF6E6E",
+      textColor: "#FF6E6E",
+    };
+  }
+  return {
+    backgroundColor: "rgba(69,141,255,0.2)",
+    dotColor: "#77A8FF",
+    textColor: "#77A8FF",
+  };
+}
+
+function providerDetailColorBySeverity(severity: ProviderStatusSeverity): string {
+  if (severity === "success") return "#24D68B";
+  if (severity === "warning") return "#FFCD4D";
+  if (severity === "error") return "#FF6E6E";
+  return "#77A8FF";
+}
+
+function toSevereProviderDetail(message: string): string {
+  const trimmed = message.trim();
+  if (!trimmed) return PROVIDER_STATUS_COPY.errorFallback;
+  if (trimmed.toLowerCase().startsWith("error grave:")) return trimmed;
+  return `Error grave: ${trimmed}`;
+}
+
+function toMediumProviderDetail(message: string): string {
+  const trimmed = message.trim();
+  if (!trimmed) return "Atención media: revisa la configuración del proveedor.";
+  if (trimmed.toLowerCase().startsWith("atención media:")) return trimmed;
+  return `Atención media: ${trimmed}`;
+}
+
+function providerDeleteWarningText(provider: Provider): string {
+  if (provider === "anthropic") {
+    return "El asistente IA dejará de funcionar con modelos de Anthropic hasta que añadas una nueva clave.";
+  }
+  return `El asistente IA dejará de funcionar con ${PROVIDER_UI_META[provider].label} hasta que añadas una nueva clave.`;
+}
+
 function providerConnectionBadge(status: ProviderConnectionStatus): {
   text: string;
   backgroundColor: string;
   dotColor: string;
   textColor: string;
 } {
-  if (status.state === "connected") {
-    return {
-      text: "Conectado",
-      backgroundColor: "rgba(16,185,129,0.18)",
-      dotColor: "#24D68B",
-      textColor: "#24D68B",
-    };
-  }
-  if (status.state === "checking") {
-    return {
-      text: "Comprobando",
-      backgroundColor: "rgba(69,141,255,0.2)",
-      dotColor: "#77A8FF",
-      textColor: "#77A8FF",
-    };
-  }
-  if (status.state === "unknown") {
-    return {
-      text: "Sin verificar",
-      backgroundColor: "rgba(255,177,102,0.2)",
-      dotColor: "#FFB166",
-      textColor: "#FFD8A8",
-    };
-  }
+  const palette = providerStatusPalette(status.severity);
+  let text = "Sin estado";
+  if (status.state === "checking") text = "Comprobando";
+  else if (status.severity === "success") text = "Conectado";
+  else if (status.severity === "warning") text = "Atención";
+  else if (status.severity === "error") text = "Error";
+  else if (status.state === "unknown") text = "Sin verificar";
+  else text = "No conectado";
   return {
-    text: "No conectado",
-    backgroundColor: "rgba(89,100,114,0.26)",
-    dotColor: "#616B79",
-    textColor: "#798392",
+    text,
+    backgroundColor: palette.backgroundColor,
+    dotColor: palette.dotColor,
+    textColor: palette.textColor,
   };
 }
 const TRAINING_FILTER_OPTIONS: Array<{ key: TrainingFilter; label: string }> = [
@@ -465,16 +553,353 @@ function extractErrorMessage(payload: unknown, fallback: string): string {
   return candidate.error?.message ?? candidate.detail ?? candidate.message ?? fallback;
 }
 
+function parseAnthropicModelOptions(payload: unknown): AnthropicModelOption[] {
+  if (!payload || typeof payload !== "object") return [];
+
+  const maybeDirect = payload as {
+    data?: Array<{ id?: string; display_name?: string }>;
+    models?: Array<{ id?: string; display_name?: string }>;
+  };
+  const rawItems = Array.isArray(maybeDirect.models)
+    ? maybeDirect.models
+    : Array.isArray(maybeDirect.data)
+      ? maybeDirect.data
+      : [];
+
+  const dedup = new Map<string, AnthropicModelOption>();
+  rawItems.forEach((item) => {
+    const modelId = item?.id?.trim();
+    if (!modelId) return;
+    dedup.set(modelId, {
+      id: modelId,
+      display_name: item?.display_name?.trim() || null,
+    });
+  });
+  return Array.from(dedup.values());
+}
+
+function parseOpenAIModelOptions(payload: unknown): OpenAIModelOption[] {
+  if (!payload || typeof payload !== "object") return [];
+
+  const maybeDirect = payload as {
+    data?: Array<{ id?: string; owned_by?: string }>;
+    models?: Array<{ id?: string; owned_by?: string }>;
+  };
+  const rawItems = Array.isArray(maybeDirect.models)
+    ? maybeDirect.models
+    : Array.isArray(maybeDirect.data)
+      ? maybeDirect.data
+      : [];
+
+  const dedup = new Map<string, OpenAIModelOption>();
+  rawItems.forEach((item) => {
+    const modelId = item?.id?.trim();
+    if (!modelId) return;
+    dedup.set(modelId, {
+      id: modelId,
+      owned_by: item?.owned_by?.trim() || null,
+    });
+  });
+  return Array.from(dedup.values()).sort((a, b) => a.id.localeCompare(b.id));
+}
+
+function parseGoogleModelOptions(payload: unknown): GoogleModelOption[] {
+  if (!payload || typeof payload !== "object") return [];
+
+  const maybeDirect = payload as {
+    models?: Array<{
+      name?: string;
+      displayName?: string;
+      display_name?: string;
+      supportedGenerationMethods?: string[];
+    }>;
+  };
+  const rawItems = Array.isArray(maybeDirect.models) ? maybeDirect.models : [];
+
+  const dedup = new Map<string, GoogleModelOption>();
+  rawItems.forEach((item) => {
+    const rawName = item?.name?.trim();
+    if (!rawName) return;
+    const modelId = rawName.replace(/^models\//, "").trim();
+    if (!modelId) return;
+
+    const methods = Array.isArray(item?.supportedGenerationMethods)
+      ? item.supportedGenerationMethods
+      : null;
+    if (methods && methods.length > 0 && !methods.includes("generateContent")) return;
+
+    const displayName = item?.displayName?.trim() || item?.display_name?.trim() || null;
+    dedup.set(modelId, {
+      id: modelId,
+      display_name: displayName,
+    });
+  });
+
+  return Array.from(dedup.values()).sort((a, b) => a.id.localeCompare(b.id));
+}
+
+async function fetchAnthropicModelsViaWebProxy(apiKey: string): Promise<AnthropicModelOption[]> {
+  const response = await fetch(buildWebProxyUrl("/chat/providers/anthropic/models"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      api_key: apiKey,
+    }),
+  });
+
+  let payload: unknown = null;
+  try {
+    payload = await response.json();
+  } catch {
+    // ignore json parse errors
+  }
+
+  if (!response.ok) {
+    throw new Error(extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`));
+  }
+
+  return parseAnthropicModelOptions(payload);
+}
+
+async function fetchOpenAIModelsViaWebProxy(apiKey: string): Promise<OpenAIModelOption[]> {
+  const response = await fetch(buildWebProxyUrl("/chat/providers/openai/models"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      api_key: apiKey,
+    }),
+  });
+
+  let payload: unknown = null;
+  try {
+    payload = await response.json();
+  } catch {
+    // ignore json parse errors
+  }
+
+  if (!response.ok) {
+    throw new Error(extractErrorMessage(payload, `Proxy OpenAI error (${response.status})`));
+  }
+
+  return parseOpenAIModelOptions(payload);
+}
+
+async function fetchAnthropicModelsDirect(apiKey: string): Promise<AnthropicModelOption[]> {
+  const response = await fetch("https://api.anthropic.com/v1/models", {
+    method: "GET",
+    headers: {
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "Content-Type": "application/json",
+    },
+  });
+
+  let payload: unknown = null;
+  try {
+    payload = await response.json();
+  } catch {
+    // ignore json parse errors
+  }
+
+  if (!response.ok) {
+    throw new Error(extractErrorMessage(payload, `Anthropic error (${response.status})`));
+  }
+
+  return parseAnthropicModelOptions(payload);
+}
+
+async function fetchOpenAIModelsDirect(apiKey: string): Promise<OpenAIModelOption[]> {
+  const response = await fetch("https://api.openai.com/v1/models", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+
+  let payload: unknown = null;
+  try {
+    payload = await response.json();
+  } catch {
+    // ignore json parse errors
+  }
+
+  if (!response.ok) {
+    throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
+  }
+
+  return parseOpenAIModelOptions(payload);
+}
+
+async function fetchGoogleModelsDirect(apiKey: string): Promise<GoogleModelOption[]> {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`,
+    {
+      method: "GET",
+    },
+  );
+
+  let payload: unknown = null;
+  try {
+    payload = await response.json();
+  } catch {
+    // ignore json parse errors
+  }
+
+  if (!response.ok) {
+    throw new Error(extractErrorMessage(payload, `Google AI error (${response.status})`));
+  }
+
+  return parseGoogleModelOptions(payload);
+}
+
+async function verifyAnthropicViaWebProxy(
+  apiKey: string,
+  model: string,
+): Promise<ProviderConnectionCheckResult> {
+  const proxyUrl = buildWebProxyUrl("/chat/providers/anthropic/verify");
+  try {
+    const response = await fetch(proxyUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        api_key: apiKey,
+        model,
+      }),
+    });
+
+    let payload: unknown = null;
+    try {
+      payload = await response.json();
+    } catch {
+      // ignore json parse errors
+    }
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        severity: "error",
+        message: toSevereProviderDetail(
+          extractErrorMessage(payload, `Proxy API error (${response.status})`),
+        ),
+      };
+    }
+
+    if (!payload || typeof payload !== "object") {
+      return {
+        ok: false,
+        severity: "error",
+        message: toSevereProviderDetail("Respuesta inválida del proxy API."),
+      };
+    }
+
+    const candidate = payload as { ok?: boolean; message?: string };
+    const normalizedMessage = (candidate.message ?? "").trim();
+    const isModelWarning = normalizedMessage.toLowerCase().includes("modelo no disponible");
+    if (candidate.ok === false) {
+      return {
+        ok: false,
+        severity: "error",
+        message: toSevereProviderDetail(normalizedMessage || "No se pudo verificar la conexión."),
+      };
+    }
+    return {
+      ok: true,
+      severity: isModelWarning ? "warning" : "success",
+      message: isModelWarning
+        ? toMediumProviderDetail(normalizedMessage)
+        : PROVIDER_STATUS_COPY.success,
+    };
+  } catch (err) {
+    const hint = `No se pudo conectar con proxy API (${resolveWebApiBaseUrl()}). Inicia 'npm run dev:api' o define EXPO_PUBLIC_API_BASE_URL.`;
+    if (err instanceof Error && err.message.trim()) {
+      return { ok: false, severity: "error", message: toSevereProviderDetail(`${err.message}. ${hint}`) };
+    }
+    return { ok: false, severity: "error", message: toSevereProviderDetail(hint) };
+  }
+}
+
+async function verifyOpenAIViaWebProxy(apiKey: string): Promise<ProviderConnectionCheckResult> {
+  try {
+    await fetchOpenAIModelsViaWebProxy(apiKey);
+    return { ok: true, severity: "success", message: PROVIDER_STATUS_COPY.success };
+  } catch (err) {
+    const hint = `No se pudo conectar con proxy API (${resolveWebApiBaseUrl()}). Inicia 'npm run dev:api' o define EXPO_PUBLIC_API_BASE_URL.`;
+    if (err instanceof Error && err.message.trim()) {
+      const lowered = err.message.toLowerCase();
+      if (lowered.includes("failed to fetch")) {
+        return { ok: false, severity: "error", message: toSevereProviderDetail(hint) };
+      }
+      return { ok: false, severity: "error", message: toSevereProviderDetail(err.message) };
+    }
+    return { ok: false, severity: "error", message: toSevereProviderDetail(hint) };
+  }
+}
+
+async function callAnthropicViaWebProxy(
+  provider: AIKey,
+  systemPrompt: string,
+  messages: Array<{ role: "assistant" | "user"; content: string }>,
+): Promise<string> {
+  const proxyUrl = buildWebProxyUrl("/chat/providers/anthropic/messages");
+  try {
+    const response = await fetch(proxyUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        api_key: provider.api_key,
+        model: provider.model || DEFAULT_MODELS.anthropic,
+        max_tokens: 700,
+        system: systemPrompt,
+        messages,
+      }),
+    });
+
+    let payload: unknown = null;
+    try {
+      payload = await response.json();
+    } catch {
+      // ignore json parse errors
+    }
+
+    if (!response.ok) {
+      throw new Error(extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`));
+    }
+
+    const content = parseAnthropicContent(payload);
+    if (!content) throw new Error("Anthropic no devolvio contenido.");
+    return content;
+  } catch (err) {
+    const rawMessage = err instanceof Error ? err.message : "No se pudo conectar con Anthropic.";
+    if (rawMessage.toLowerCase().includes("failed to fetch")) {
+      throw new Error(
+        `No se pudo conectar con proxy API (${resolveWebApiBaseUrl()}). Inicia 'npm run dev:api' o define EXPO_PUBLIC_API_BASE_URL.`,
+      );
+    }
+    throw new Error(rawMessage);
+  }
+}
+
 async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnectionCheckResult> {
   const apiKey = provider.api_key.trim();
   if (!apiKey) {
-    return { ok: false, message: "API key vacía." };
+    return { ok: false, severity: "warning", message: PROVIDER_STATUS_COPY.warningNoKey };
   }
 
   const model = provider.model.trim() || DEFAULT_MODELS[provider.provider];
   try {
     let response: Response;
     if (provider.provider === "openai") {
+      if (Platform.OS === "web") {
+        return verifyOpenAIViaWebProxy(apiKey);
+      }
       response = await fetch("https://api.openai.com/v1/models", {
         method: "GET",
         headers: {
@@ -482,13 +907,49 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
         },
       });
     } else if (provider.provider === "anthropic") {
-      response = await fetch("https://api.anthropic.com/v1/models", {
-        method: "GET",
-        headers: {
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-        },
+      if (Platform.OS === "web") {
+        return verifyAnthropicViaWebProxy(apiKey, model);
+      }
+      const anthropicHeaders = {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "Content-Type": "application/json",
+      };
+      response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: anthropicHeaders,
+        body: JSON.stringify({
+          model,
+          max_tokens: 1,
+          messages: [{ role: "user", content: "Ping de verificación." }],
+        }),
       });
+
+      let verifyPayload: unknown = null;
+      try {
+        verifyPayload = await response.json();
+      } catch {
+        // ignore json parse errors
+      }
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return {
+            ok: true,
+            severity: "warning",
+            message: `${PROVIDER_STATUS_COPY.warningModelUnavailablePrefix}${model}.`,
+          };
+        }
+        return {
+          ok: false,
+          severity: "error",
+          message: toSevereProviderDetail(
+            extractErrorMessage(verifyPayload, `Error de conexión (${response.status})`),
+          ),
+        };
+      }
+
+      return { ok: true, severity: "success", message: PROVIDER_STATUS_COPY.success };
     } else {
       response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}?key=${encodeURIComponent(apiKey)}`,
@@ -506,15 +967,21 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
     if (!response.ok) {
       return {
         ok: false,
-        message: extractErrorMessage(payload, `Error de conexión (${response.status})`),
+        severity: "error",
+        message: toSevereProviderDetail(
+          extractErrorMessage(payload, `Error de conexión (${response.status})`),
+        ),
       };
     }
 
-    return { ok: true, message: "Conexión verificada." };
+    return { ok: true, severity: "success", message: PROVIDER_STATUS_COPY.success };
   } catch (err) {
     return {
       ok: false,
-      message: err instanceof Error ? err.message : "No se pudo comprobar la conexión.",
+      severity: "error",
+      message: toSevereProviderDetail(
+        err instanceof Error ? err.message : "No se pudo comprobar la conexión.",
+      ),
     };
   }
 }
@@ -597,12 +1064,16 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
   }
 
   if (provider.provider === "anthropic") {
-    const nonSystemMessages = messages
+    const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
       .filter((msg) => msg.role !== "system")
       .map((msg) => ({
         role: msg.role === "assistant" ? "assistant" : "user",
         content: msg.content,
       }));
+
+    if (Platform.OS === "web") {
+      return callAnthropicViaWebProxy(provider, systemPrompt, nonSystemMessages);
+    }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -1380,6 +1851,31 @@ export default function App() {
   const [providerSaveLoading, setProviderSaveLoading] = useState<Record<Provider, boolean>>(() =>
     createProviderBooleanMap(false),
   );
+  const [anthropicModelDropdownOpen, setAnthropicModelDropdownOpen] = useState(false);
+  const [anthropicModelOptions, setAnthropicModelOptions] = useState<AnthropicModelOption[]>([]);
+  const [anthropicModelOptionsLoading, setAnthropicModelOptionsLoading] = useState(false);
+  const [anthropicModelOptionsMessage, setAnthropicModelOptionsMessage] = useState<{
+    text: string;
+    severity: ProviderStatusSeverity;
+  } | null>(null);
+  const [anthropicModelFilter, setAnthropicModelFilter] = useState("");
+  const [openAIModelDropdownOpen, setOpenAIModelDropdownOpen] = useState(false);
+  const [openAIModelOptions, setOpenAIModelOptions] = useState<OpenAIModelOption[]>([]);
+  const [openAIModelOptionsLoading, setOpenAIModelOptionsLoading] = useState(false);
+  const [openAIModelOptionsMessage, setOpenAIModelOptionsMessage] = useState<{
+    text: string;
+    severity: ProviderStatusSeverity;
+  } | null>(null);
+  const [openAIModelFilter, setOpenAIModelFilter] = useState("");
+  const [googleModelDropdownOpen, setGoogleModelDropdownOpen] = useState(false);
+  const [googleModelOptions, setGoogleModelOptions] = useState<GoogleModelOption[]>([]);
+  const [googleModelOptionsLoading, setGoogleModelOptionsLoading] = useState(false);
+  const [googleModelOptionsMessage, setGoogleModelOptionsMessage] = useState<{
+    text: string;
+    severity: ProviderStatusSeverity;
+  } | null>(null);
+  const [googleModelFilter, setGoogleModelFilter] = useState("");
+  const [providerDeleteModal, setProviderDeleteModal] = useState<ProviderDeleteModalState | null>(null);
   const [trainingSearch, setTrainingSearch] = useState("");
   const [trainingFilter, setTrainingFilter] = useState<TrainingFilter>("all");
   const [isGlobalScreenLoading, setIsGlobalScreenLoading] = useState(false);
@@ -1419,6 +1915,27 @@ export default function App() {
         .filter((item): item is AIKey => !!item),
     [store.keys],
   );
+  const filteredAnthropicModelOptions = useMemo(() => {
+    const query = anthropicModelFilter.trim().toLowerCase();
+    if (!query) return anthropicModelOptions;
+    return anthropicModelOptions.filter((option) =>
+      `${option.id} ${option.display_name ?? ""}`.toLowerCase().includes(query),
+    );
+  }, [anthropicModelFilter, anthropicModelOptions]);
+  const filteredOpenAIModelOptions = useMemo(() => {
+    const query = openAIModelFilter.trim().toLowerCase();
+    if (!query) return openAIModelOptions;
+    return openAIModelOptions.filter((option) =>
+      `${option.id} ${option.owned_by ?? ""}`.toLowerCase().includes(query),
+    );
+  }, [openAIModelFilter, openAIModelOptions]);
+  const filteredGoogleModelOptions = useMemo(() => {
+    const query = googleModelFilter.trim().toLowerCase();
+    if (!query) return googleModelOptions;
+    return googleModelOptions.filter((option) =>
+      `${option.id} ${option.display_name ?? ""}`.toLowerCase().includes(query),
+    );
+  }, [googleModelFilter, googleModelOptions]);
   const latestWeightMeasurement = useMemo(
     () => store.measurements.find((measurement) => measurement.weight_kg !== null) ?? null,
     [store.measurements],
@@ -3085,7 +3602,8 @@ export default function App() {
     const firstMessage: ChatMessage = {
       id: uid("msg"),
       role: "assistant",
-      content: "Nuevo hilo creado. Este chat usa llamada directa a la API del proveedor activo.",
+      content:
+        "Nuevo hilo creado. Este chat usa el proveedor activo; en web con Anthropic se usa proxy API local.",
       created_at: new Date().toISOString(),
     };
 
@@ -3152,14 +3670,213 @@ export default function App() {
       [provider]: nextDraft,
     }));
 
+    if (provider === "anthropic" && updates.api_key !== undefined) {
+      setAnthropicModelDropdownOpen(false);
+      setAnthropicModelOptions([]);
+      setAnthropicModelOptionsMessage(null);
+      setAnthropicModelFilter("");
+    }
+    if (provider === "openai" && updates.api_key !== undefined) {
+      setOpenAIModelDropdownOpen(false);
+      setOpenAIModelOptions([]);
+      setOpenAIModelOptionsMessage(null);
+      setOpenAIModelFilter("");
+    }
+    if (provider === "google" && updates.api_key !== undefined) {
+      setGoogleModelDropdownOpen(false);
+      setGoogleModelOptions([]);
+      setGoogleModelOptionsMessage(null);
+      setGoogleModelFilter("");
+    }
+
     if (options.markPending) {
       setProviderConnectionStatus((prev) => ({
         ...prev,
         [provider]: nextDraft.api_key.trim()
-          ? { state: "unknown", detail: "Cambios pendientes. Pulsa Guardar para verificar." }
-          : { state: "disconnected", detail: "Sin API key guardada." },
+          ? {
+              state: "unknown",
+              detail: PROVIDER_STATUS_COPY.warningPending,
+              severity: "warning",
+            }
+          : {
+              state: "disconnected",
+              detail: PROVIDER_STATUS_COPY.warningNoKey,
+              severity: "warning",
+            },
       }));
     }
+  }
+
+  async function loadAnthropicModelOptions(apiKey: string) {
+    setAnthropicModelOptionsLoading(true);
+    setAnthropicModelOptionsMessage(null);
+    try {
+      const options =
+        Platform.OS === "web"
+          ? await fetchAnthropicModelsViaWebProxy(apiKey)
+          : await fetchAnthropicModelsDirect(apiKey);
+
+      setAnthropicModelOptions(options);
+      if (options.length === 0) {
+        setAnthropicModelOptionsMessage({
+          text: toMediumProviderDetail("No hay modelos disponibles para esta API key."),
+          severity: "warning",
+        });
+      }
+    } catch (err) {
+      const rawMessage =
+        err instanceof Error ? err.message : PROVIDER_STATUS_COPY.warningModelsUnavailable;
+      setAnthropicModelOptions([]);
+      setAnthropicModelOptionsMessage({
+        text: toSevereProviderDetail(rawMessage),
+        severity: "error",
+      });
+    } finally {
+      setAnthropicModelOptionsLoading(false);
+    }
+  }
+
+  async function loadOpenAIModelOptions(apiKey: string) {
+    setOpenAIModelOptionsLoading(true);
+    setOpenAIModelOptionsMessage(null);
+    try {
+      const options =
+        Platform.OS === "web"
+          ? await fetchOpenAIModelsViaWebProxy(apiKey)
+          : await fetchOpenAIModelsDirect(apiKey);
+
+      setOpenAIModelOptions(options);
+      if (options.length === 0) {
+        setOpenAIModelOptionsMessage({
+          text: toMediumProviderDetail("No hay modelos disponibles para esta API key."),
+          severity: "warning",
+        });
+      }
+    } catch (err) {
+      const rawMessage = err instanceof Error ? err.message : "No se pudieron cargar los modelos de OpenAI.";
+      setOpenAIModelOptions([]);
+      setOpenAIModelOptionsMessage({
+        text: toSevereProviderDetail(rawMessage),
+        severity: "error",
+      });
+    } finally {
+      setOpenAIModelOptionsLoading(false);
+    }
+  }
+
+  async function loadGoogleModelOptions(apiKey: string) {
+    setGoogleModelOptionsLoading(true);
+    setGoogleModelOptionsMessage(null);
+    try {
+      const options = await fetchGoogleModelsDirect(apiKey);
+
+      setGoogleModelOptions(options);
+      if (options.length === 0) {
+        setGoogleModelOptionsMessage({
+          text: toMediumProviderDetail("No hay modelos disponibles para esta API key."),
+          severity: "warning",
+        });
+      }
+    } catch (err) {
+      const rawMessage = err instanceof Error ? err.message : "No se pudieron cargar los modelos de Google.";
+      setGoogleModelOptions([]);
+      setGoogleModelOptionsMessage({
+        text: toSevereProviderDetail(rawMessage),
+        severity: "error",
+      });
+    } finally {
+      setGoogleModelOptionsLoading(false);
+    }
+  }
+
+  async function toggleAnthropicModelDropdown() {
+    const nextOpen = !anthropicModelDropdownOpen;
+    setAnthropicModelDropdownOpen(nextOpen);
+    if (!nextOpen) return;
+    setAnthropicModelFilter("");
+
+    const draft = providerDraftByProvider.anthropic ?? {
+      api_key: "",
+      model: DEFAULT_MODELS.anthropic,
+    };
+    const apiKey = draft.api_key.trim();
+    if (!apiKey) {
+      setAnthropicModelOptions([]);
+      setAnthropicModelOptionsMessage({
+        text: PROVIDER_STATUS_COPY.warningNoKey,
+        severity: "warning",
+      });
+      return;
+    }
+
+    await loadAnthropicModelOptions(apiKey);
+  }
+
+  async function toggleOpenAIModelDropdown() {
+    const nextOpen = !openAIModelDropdownOpen;
+    setOpenAIModelDropdownOpen(nextOpen);
+    if (!nextOpen) return;
+    setOpenAIModelFilter("");
+
+    const draft = providerDraftByProvider.openai ?? {
+      api_key: "",
+      model: DEFAULT_MODELS.openai,
+    };
+    const apiKey = draft.api_key.trim();
+    if (!apiKey) {
+      setOpenAIModelOptions([]);
+      setOpenAIModelOptionsMessage({
+        text: PROVIDER_STATUS_COPY.warningNoKey,
+        severity: "warning",
+      });
+      return;
+    }
+
+    await loadOpenAIModelOptions(apiKey);
+  }
+
+  async function toggleGoogleModelDropdown() {
+    const nextOpen = !googleModelDropdownOpen;
+    setGoogleModelDropdownOpen(nextOpen);
+    if (!nextOpen) return;
+    setGoogleModelFilter("");
+
+    const draft = providerDraftByProvider.google ?? {
+      api_key: "",
+      model: DEFAULT_MODELS.google,
+    };
+    const apiKey = draft.api_key.trim();
+    if (!apiKey) {
+      setGoogleModelOptions([]);
+      setGoogleModelOptionsMessage({
+        text: PROVIDER_STATUS_COPY.warningNoKey,
+        severity: "warning",
+      });
+      return;
+    }
+
+    await loadGoogleModelOptions(apiKey);
+  }
+
+  function selectAnthropicModel(modelId: string) {
+    updateProviderDraft("anthropic", { model: modelId });
+    setAnthropicModelDropdownOpen(false);
+    setAnthropicModelOptionsMessage(null);
+    setAnthropicModelFilter("");
+  }
+
+  function selectOpenAIModel(modelId: string) {
+    updateProviderDraft("openai", { model: modelId });
+    setOpenAIModelDropdownOpen(false);
+    setOpenAIModelOptionsMessage(null);
+    setOpenAIModelFilter("");
+  }
+
+  function selectGoogleModel(modelId: string) {
+    updateProviderDraft("google", { model: modelId });
+    setGoogleModelDropdownOpen(false);
+    setGoogleModelOptionsMessage(null);
+    setGoogleModelFilter("");
   }
 
   async function saveProviderApiKey(provider: Provider) {
@@ -3172,6 +3889,21 @@ export default function App() {
     setActiveProvider(provider);
     setError(null);
     setProviderSaveLoading((prev) => ({ ...prev, [provider]: true }));
+    if (provider === "anthropic") {
+      setAnthropicModelDropdownOpen(false);
+      setAnthropicModelOptionsMessage(null);
+      setAnthropicModelFilter("");
+    }
+    if (provider === "openai") {
+      setOpenAIModelDropdownOpen(false);
+      setOpenAIModelOptionsMessage(null);
+      setOpenAIModelFilter("");
+    }
+    if (provider === "google") {
+      setGoogleModelDropdownOpen(false);
+      setGoogleModelOptionsMessage(null);
+      setGoogleModelFilter("");
+    }
 
     if (!normalizedApiKey) {
       updateProviderConfig(provider, {
@@ -3188,16 +3920,33 @@ export default function App() {
       );
       setProviderConnectionStatus((prev) => ({
         ...prev,
-        [provider]: { state: "disconnected", detail: "Sin API key guardada." },
+        [provider]: {
+          state: "disconnected",
+          detail: PROVIDER_STATUS_COPY.warningNoKey,
+          severity: "warning",
+        },
       }));
       setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
       setProviderKeyVisible(provider, false);
+      if (provider === "anthropic") {
+        setAnthropicModelOptions([]);
+      }
+      if (provider === "openai") {
+        setOpenAIModelOptions([]);
+      }
+      if (provider === "google") {
+        setGoogleModelOptions([]);
+      }
       return;
     }
 
     setProviderConnectionStatus((prev) => ({
       ...prev,
-      [provider]: { state: "checking", detail: "Comprobando conexión..." },
+      [provider]: {
+        state: "checking",
+        detail: PROVIDER_STATUS_COPY.warningChecking,
+        severity: "warning",
+      },
     }));
 
     const check = await verifyProviderConnection({
@@ -3207,23 +3956,34 @@ export default function App() {
       model: normalizedModel,
     });
 
-    updateProviderConfig(provider, {
-      api_key: normalizedApiKey,
-      model: normalizedModel,
-    });
-    updateProviderDraft(
-      provider,
-      {
+    if (check.ok) {
+      updateProviderConfig(provider, {
         api_key: normalizedApiKey,
         model: normalizedModel,
-      },
-      { markPending: false },
-    );
+      });
+      updateProviderDraft(
+        provider,
+        {
+          api_key: normalizedApiKey,
+          model: normalizedModel,
+        },
+        { markPending: false },
+      );
+    } else {
+      updateProviderDraft(
+        provider,
+        {
+          api_key: draft.api_key,
+          model: normalizedModel,
+        },
+        { markPending: false },
+      );
+    }
     setProviderConnectionStatus((prev) => ({
       ...prev,
       [provider]: check.ok
-        ? { state: "connected", detail: "Conexión verificada." }
-        : { state: "disconnected", detail: check.message },
+        ? { state: "connected", detail: check.message, severity: check.severity }
+        : { state: "disconnected", detail: check.message, severity: check.severity },
     }));
     setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
     setProviderKeyVisible(provider, false);
@@ -3234,29 +3994,55 @@ export default function App() {
     setError(null);
   }
 
-  function deleteProviderApiKey(provider: Provider) {
-    Alert.alert(
-      "Eliminar key",
-      `Se borrará la API key guardada para ${PROVIDER_UI_META[provider].label}.`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: () => {
-            updateProviderConfig(provider, { api_key: "" });
-            updateProviderDraft(provider, { api_key: "" }, { markPending: false });
-            setProviderConnectionStatus((prev) => ({
-              ...prev,
-              [provider]: { state: "disconnected", detail: "Sin API key guardada." },
-            }));
-            setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
-            setProviderKeyVisible(provider, false);
-            setError(null);
-          },
-        },
-      ],
-    );
+  function openDeleteProviderApiKeyModal(provider: Provider) {
+    const persisted = store.keys.find((item) => item.provider === provider)?.api_key ?? "";
+    const persistedApiKey = persisted.trim();
+    if (!persistedApiKey) return;
+    const maskedApiKey = maskApiKey(persistedApiKey);
+    setProviderDeleteModal({ provider, maskedApiKey });
+  }
+
+  function confirmDeleteProviderApiKey() {
+    const modal = providerDeleteModal;
+    if (!modal) return;
+    const provider = modal.provider;
+
+    updateProviderConfig(provider, { api_key: "" });
+    updateProviderDraft(provider, { api_key: "" }, { markPending: false });
+    setProviderConnectionStatus((prev) => ({
+      ...prev,
+      [provider]: {
+        state: "disconnected",
+        detail: PROVIDER_STATUS_COPY.warningNoKey,
+        severity: "warning",
+      },
+    }));
+    setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
+    setProviderKeyVisible(provider, false);
+    if (provider === "anthropic") {
+      setAnthropicModelDropdownOpen(false);
+      setAnthropicModelOptions([]);
+      setAnthropicModelOptionsMessage(null);
+      setAnthropicModelFilter("");
+    }
+    if (provider === "openai") {
+      setOpenAIModelDropdownOpen(false);
+      setOpenAIModelOptions([]);
+      setOpenAIModelOptionsMessage(null);
+      setOpenAIModelFilter("");
+    }
+    if (provider === "google") {
+      setGoogleModelDropdownOpen(false);
+      setGoogleModelOptions([]);
+      setGoogleModelOptionsMessage(null);
+      setGoogleModelFilter("");
+    }
+    setProviderDeleteModal(null);
+    setError(null);
+  }
+
+  function closeProviderDeleteModal() {
+    setProviderDeleteModal(null);
   }
 
   function resetLocalData() {
@@ -3266,6 +4052,19 @@ export default function App() {
     setProviderDraftByProvider(createProviderDraftMap(initial.keys));
     setProviderConnectionStatus(createProviderConnectionStatusMap(initial.keys));
     setProviderSaveLoading(createProviderBooleanMap(false));
+    setAnthropicModelDropdownOpen(false);
+    setAnthropicModelOptions([]);
+    setAnthropicModelOptionsMessage(null);
+    setAnthropicModelFilter("");
+    setOpenAIModelDropdownOpen(false);
+    setOpenAIModelOptions([]);
+    setOpenAIModelOptionsMessage(null);
+    setOpenAIModelFilter("");
+    setGoogleModelDropdownOpen(false);
+    setGoogleModelOptions([]);
+    setGoogleModelOptionsMessage(null);
+    setGoogleModelFilter("");
+    setProviderDeleteModal(null);
     setTab("home");
     setActiveThreadId(initial.threads[0]?.id ?? null);
     setActiveWorkoutSession(null);
@@ -6461,12 +7260,14 @@ export default function App() {
                       model: key.model,
                     };
                     const hasDraftApiKey = !!draft.api_key.trim();
+                    const hasPersistedProviderApiKey = !!key.api_key.trim();
                     const keyVisible = providerKeyVisibility[key.provider];
                     const connectionStatus = providerConnectionStatus[key.provider] ?? {
                       state: hasDraftApiKey ? "unknown" : "disconnected",
                       detail: hasDraftApiKey
-                        ? "Pendiente de verificación. Pulsa Guardar."
-                        : "Sin API key guardada.",
+                        ? PROVIDER_STATUS_COPY.warningPending
+                        : PROVIDER_STATUS_COPY.warningNoKey,
+                      severity: "warning",
                     };
                     const statusMeta = providerConnectionBadge(connectionStatus);
                     const isSavingProvider = providerSaveLoading[key.provider];
@@ -6474,11 +7275,9 @@ export default function App() {
                       ? "Proveedor activo para el chat."
                       : "Toca el encabezado para usar este proveedor en el chat.";
                     const providerUsageHintColor = key.is_active ? "#24D68B" : "#656E7B";
-                    const providerConnectionDetailColor = connectionStatus.detail.includes(
-                      "Sin API key guardada",
-                    )
-                      ? "#FF8D8D"
-                      : "#656E7B";
+                    const providerConnectionDetailColor = providerDetailColorBySeverity(
+                      connectionStatus.severity,
+                    );
                     return (
                       <View
                         key={key.provider}
@@ -6626,20 +7425,36 @@ export default function App() {
                             </Text>
                           </Pressable>
                           <Pressable
-                            onPress={() => deleteProviderApiKey(key.provider)}
+                            onPress={() => {
+                              if (!hasPersistedProviderApiKey) return;
+                              openDeleteProviderApiKeyModal(key.provider);
+                            }}
+                            disabled={!hasPersistedProviderApiKey}
                             style={{
                               flex: 1,
                               height: 44,
                               borderRadius: mobileTheme.radius.md,
-                              backgroundColor: "#FF4D4F",
+                              backgroundColor: hasPersistedProviderApiKey ? "#FF4D4F" : "#2F3440",
                               alignItems: "center",
                               justifyContent: "center",
                               flexDirection: "row",
                               gap: 8,
+                              opacity: hasPersistedProviderApiKey ? 1 : 0.6,
                             }}
                           >
-                            <Feather name="trash-2" size={14} color="#FFDDE0" />
-                            <Text style={{ color: "#FFE8EB", fontWeight: "700" }}>Eliminar</Text>
+                            <Feather
+                              name="trash-2"
+                              size={14}
+                              color={hasPersistedProviderApiKey ? "#FFDDE0" : "#9AA2AE"}
+                            />
+                            <Text
+                              style={{
+                                color: hasPersistedProviderApiKey ? "#FFE8EB" : "#9AA2AE",
+                                fontWeight: "700",
+                              }}
+                            >
+                              Eliminar
+                            </Text>
                           </Pressable>
                         </View>
 
@@ -6651,23 +7466,619 @@ export default function App() {
                         </Text>
 
                         {key.is_active ? (
-                          <TextInput
-                            style={{
-                              minHeight: 42,
-                              borderRadius: mobileTheme.radius.md,
-                              borderWidth: 1,
-                              borderColor: mobileTheme.color.borderSubtle,
-                              backgroundColor: mobileTheme.color.bgApp,
-                              color: mobileTheme.color.textPrimary,
-                              paddingHorizontal: 12,
-                            }}
-                            value={draft.model}
-                            onChangeText={(value) => updateProviderDraft(key.provider, { model: value })}
-                            placeholder={`Modelo (default: ${DEFAULT_MODELS[key.provider]})`}
-                            placeholderTextColor={mobileTheme.color.textSecondary}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                          />
+                          key.provider === "anthropic" ? (
+                            <View style={{ gap: 8 }}>
+                              <Pressable
+                                onPress={() => {
+                                  setActiveProvider(key.provider);
+                                  toggleAnthropicModelDropdown();
+                                }}
+                                style={{
+                                  minHeight: 44,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  paddingHorizontal: 12,
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  gap: 10,
+                                }}
+                              >
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                                  <Feather name="list" size={14} color={mobileTheme.color.textSecondary} />
+                                  <Text
+                                    numberOfLines={1}
+                                    style={{ color: mobileTheme.color.textPrimary, flex: 1 }}
+                                  >
+                                    {draft.model.trim() || DEFAULT_MODELS.anthropic}
+                                  </Text>
+                                </View>
+                                {anthropicModelOptionsLoading && anthropicModelDropdownOpen ? (
+                                  <ActivityIndicator size="small" color="#77A8FF" />
+                                ) : (
+                                  <Feather
+                                    name={anthropicModelDropdownOpen ? "chevron-up" : "chevron-down"}
+                                    size={16}
+                                    color={mobileTheme.color.textSecondary}
+                                  />
+                                )}
+                              </Pressable>
+
+                              <Pressable
+                                onPress={() => {
+                                  setActiveProvider(key.provider);
+                                  const anthropicApiKey = draft.api_key.trim();
+                                  if (!anthropicApiKey) {
+                                    setAnthropicModelOptionsMessage({
+                                      text: PROVIDER_STATUS_COPY.warningNoKey,
+                                      severity: "warning",
+                                    });
+                                    return;
+                                  }
+                                  loadAnthropicModelOptions(anthropicApiKey);
+                                }}
+                                style={{
+                                  minHeight: 34,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: "rgba(69,141,255,0.35)",
+                                  backgroundColor: "rgba(69,141,255,0.12)",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  flexDirection: "row",
+                                  gap: 6,
+                                  paddingHorizontal: 10,
+                                  alignSelf: "flex-start",
+                                }}
+                              >
+                                {anthropicModelOptionsLoading ? (
+                                  <ActivityIndicator size="small" color="#77A8FF" />
+                                ) : (
+                                  <Feather name="refresh-cw" size={12} color="#77A8FF" />
+                                )}
+                                <Text style={{ color: "#77A8FF", fontSize: 12, fontWeight: "700" }}>
+                                  Actualizar modelos
+                                </Text>
+                              </Pressable>
+
+                              {anthropicModelDropdownOpen ? (
+                                <View
+                                  style={{
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    borderRadius: mobileTheme.radius.md,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    maxHeight: 210,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      paddingHorizontal: 10,
+                                      paddingTop: 10,
+                                      paddingBottom: 8,
+                                      borderBottomWidth: 1,
+                                      borderBottomColor: "rgba(61,70,82,0.5)",
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        minHeight: 36,
+                                        borderRadius: mobileTheme.radius.md,
+                                        borderWidth: 1,
+                                        borderColor: "rgba(61,70,82,0.8)",
+                                        backgroundColor: "#1A1E25",
+                                        paddingHorizontal: 10,
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 8,
+                                      }}
+                                    >
+                                      <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
+                                      <TextInput
+                                        style={{
+                                          flex: 1,
+                                          minHeight: 34,
+                                          color: mobileTheme.color.textPrimary,
+                                          paddingHorizontal: 0,
+                                          fontSize: 12,
+                                        }}
+                                        value={anthropicModelFilter}
+                                        onChangeText={setAnthropicModelFilter}
+                                        placeholder="Filtrar modelos..."
+                                        placeholderTextColor={mobileTheme.color.textSecondary}
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                      />
+                                    </View>
+                                  </View>
+                                  {anthropicModelOptionsLoading ? (
+                                    <View
+                                      style={{
+                                        minHeight: 64,
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: 8,
+                                      }}
+                                    >
+                                      <ActivityIndicator size="small" color="#77A8FF" />
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                        Cargando modelos de Anthropic...
+                                      </Text>
+                                    </View>
+                                  ) : filteredAnthropicModelOptions.length === 0 ? (
+                                    <View style={{ padding: 12 }}>
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                        No hay modelos disponibles para mostrar.
+                                      </Text>
+                                    </View>
+                                  ) : (
+                                    <ScrollView nestedScrollEnabled>
+                                      {filteredAnthropicModelOptions.map((modelOption) => {
+                                        const selected = modelOption.id === draft.model.trim();
+                                        return (
+                                          <Pressable
+                                            key={modelOption.id}
+                                            onPress={() => {
+                                              setActiveProvider(key.provider);
+                                              selectAnthropicModel(modelOption.id);
+                                            }}
+                                            style={{
+                                              minHeight: 46,
+                                              paddingHorizontal: 12,
+                                              paddingVertical: 8,
+                                              borderBottomWidth: 1,
+                                              borderBottomColor: "rgba(61,70,82,0.5)",
+                                              backgroundColor: selected ? "rgba(69,141,255,0.16)" : "transparent",
+                                              justifyContent: "center",
+                                            }}
+                                          >
+                                            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                                              {modelOption.id}
+                                            </Text>
+                                            {modelOption.display_name ? (
+                                              <Text
+                                                numberOfLines={1}
+                                                style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}
+                                              >
+                                                {modelOption.display_name}
+                                              </Text>
+                                            ) : null}
+                                          </Pressable>
+                                        );
+                                      })}
+                                    </ScrollView>
+                                  )}
+                                </View>
+                              ) : null}
+
+                              {anthropicModelOptionsMessage ? (
+                                <Text
+                                  style={{
+                                    color: providerDetailColorBySeverity(anthropicModelOptionsMessage.severity),
+                                    fontSize: 12,
+                                  }}
+                                >
+                                  {anthropicModelOptionsMessage.text}
+                                </Text>
+                              ) : null}
+                            </View>
+                          ) : key.provider === "openai" ? (
+                            <View style={{ gap: 8 }}>
+                              <Pressable
+                                onPress={() => {
+                                  setActiveProvider(key.provider);
+                                  toggleOpenAIModelDropdown();
+                                }}
+                                style={{
+                                  minHeight: 44,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  paddingHorizontal: 12,
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  gap: 10,
+                                }}
+                              >
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                                  <Feather name="list" size={14} color={mobileTheme.color.textSecondary} />
+                                  <Text
+                                    numberOfLines={1}
+                                    style={{ color: mobileTheme.color.textPrimary, flex: 1 }}
+                                  >
+                                    {draft.model.trim() || DEFAULT_MODELS.openai}
+                                  </Text>
+                                </View>
+                                {openAIModelOptionsLoading && openAIModelDropdownOpen ? (
+                                  <ActivityIndicator size="small" color="#77A8FF" />
+                                ) : (
+                                  <Feather
+                                    name={openAIModelDropdownOpen ? "chevron-up" : "chevron-down"}
+                                    size={16}
+                                    color={mobileTheme.color.textSecondary}
+                                  />
+                                )}
+                              </Pressable>
+
+                              <Pressable
+                                onPress={() => {
+                                  setActiveProvider(key.provider);
+                                  const openAIApiKey = draft.api_key.trim();
+                                  if (!openAIApiKey) {
+                                    setOpenAIModelOptionsMessage({
+                                      text: PROVIDER_STATUS_COPY.warningNoKey,
+                                      severity: "warning",
+                                    });
+                                    return;
+                                  }
+                                  loadOpenAIModelOptions(openAIApiKey);
+                                }}
+                                style={{
+                                  minHeight: 34,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: "rgba(69,141,255,0.35)",
+                                  backgroundColor: "rgba(69,141,255,0.12)",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  flexDirection: "row",
+                                  gap: 6,
+                                  paddingHorizontal: 10,
+                                  alignSelf: "flex-start",
+                                }}
+                              >
+                                {openAIModelOptionsLoading ? (
+                                  <ActivityIndicator size="small" color="#77A8FF" />
+                                ) : (
+                                  <Feather name="refresh-cw" size={12} color="#77A8FF" />
+                                )}
+                                <Text style={{ color: "#77A8FF", fontSize: 12, fontWeight: "700" }}>
+                                  Actualizar modelos
+                                </Text>
+                              </Pressable>
+
+                              {openAIModelDropdownOpen ? (
+                                <View
+                                  style={{
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    borderRadius: mobileTheme.radius.md,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    maxHeight: 210,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      paddingHorizontal: 10,
+                                      paddingTop: 10,
+                                      paddingBottom: 8,
+                                      borderBottomWidth: 1,
+                                      borderBottomColor: "rgba(61,70,82,0.5)",
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        minHeight: 36,
+                                        borderRadius: mobileTheme.radius.md,
+                                        borderWidth: 1,
+                                        borderColor: "rgba(61,70,82,0.8)",
+                                        backgroundColor: "#1A1E25",
+                                        paddingHorizontal: 10,
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 8,
+                                      }}
+                                    >
+                                      <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
+                                      <TextInput
+                                        style={{
+                                          flex: 1,
+                                          minHeight: 34,
+                                          color: mobileTheme.color.textPrimary,
+                                          paddingHorizontal: 0,
+                                          fontSize: 12,
+                                        }}
+                                        value={openAIModelFilter}
+                                        onChangeText={setOpenAIModelFilter}
+                                        placeholder="Filtrar modelos..."
+                                        placeholderTextColor={mobileTheme.color.textSecondary}
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                      />
+                                    </View>
+                                  </View>
+                                  {openAIModelOptionsLoading ? (
+                                    <View
+                                      style={{
+                                        minHeight: 64,
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: 8,
+                                      }}
+                                    >
+                                      <ActivityIndicator size="small" color="#77A8FF" />
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                        Cargando modelos de OpenAI...
+                                      </Text>
+                                    </View>
+                                  ) : filteredOpenAIModelOptions.length === 0 ? (
+                                    <View style={{ padding: 12 }}>
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                        No hay modelos disponibles para mostrar.
+                                      </Text>
+                                    </View>
+                                  ) : (
+                                    <ScrollView nestedScrollEnabled>
+                                      {filteredOpenAIModelOptions.map((modelOption) => {
+                                        const selected = modelOption.id === draft.model.trim();
+                                        return (
+                                          <Pressable
+                                            key={modelOption.id}
+                                            onPress={() => {
+                                              setActiveProvider(key.provider);
+                                              selectOpenAIModel(modelOption.id);
+                                            }}
+                                            style={{
+                                              minHeight: 46,
+                                              paddingHorizontal: 12,
+                                              paddingVertical: 8,
+                                              borderBottomWidth: 1,
+                                              borderBottomColor: "rgba(61,70,82,0.5)",
+                                              backgroundColor: selected ? "rgba(69,141,255,0.16)" : "transparent",
+                                              justifyContent: "center",
+                                            }}
+                                          >
+                                            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                                              {modelOption.id}
+                                            </Text>
+                                            {modelOption.owned_by ? (
+                                              <Text
+                                                numberOfLines={1}
+                                                style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}
+                                              >
+                                                {modelOption.owned_by}
+                                              </Text>
+                                            ) : null}
+                                          </Pressable>
+                                        );
+                                      })}
+                                    </ScrollView>
+                                  )}
+                                </View>
+                              ) : null}
+
+                              {openAIModelOptionsMessage ? (
+                                <Text
+                                  style={{
+                                    color: providerDetailColorBySeverity(openAIModelOptionsMessage.severity),
+                                    fontSize: 12,
+                                  }}
+                                >
+                                  {openAIModelOptionsMessage.text}
+                                </Text>
+                              ) : null}
+                            </View>
+                          ) : key.provider === "google" ? (
+                            <View style={{ gap: 8 }}>
+                              <Pressable
+                                onPress={() => {
+                                  setActiveProvider(key.provider);
+                                  toggleGoogleModelDropdown();
+                                }}
+                                style={{
+                                  minHeight: 44,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  paddingHorizontal: 12,
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  gap: 10,
+                                }}
+                              >
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                                  <Feather name="list" size={14} color={mobileTheme.color.textSecondary} />
+                                  <Text
+                                    numberOfLines={1}
+                                    style={{ color: mobileTheme.color.textPrimary, flex: 1 }}
+                                  >
+                                    {draft.model.trim() || DEFAULT_MODELS.google}
+                                  </Text>
+                                </View>
+                                {googleModelOptionsLoading && googleModelDropdownOpen ? (
+                                  <ActivityIndicator size="small" color="#77A8FF" />
+                                ) : (
+                                  <Feather
+                                    name={googleModelDropdownOpen ? "chevron-up" : "chevron-down"}
+                                    size={16}
+                                    color={mobileTheme.color.textSecondary}
+                                  />
+                                )}
+                              </Pressable>
+
+                              <Pressable
+                                onPress={() => {
+                                  setActiveProvider(key.provider);
+                                  const googleApiKey = draft.api_key.trim();
+                                  if (!googleApiKey) {
+                                    setGoogleModelOptionsMessage({
+                                      text: PROVIDER_STATUS_COPY.warningNoKey,
+                                      severity: "warning",
+                                    });
+                                    return;
+                                  }
+                                  loadGoogleModelOptions(googleApiKey);
+                                }}
+                                style={{
+                                  minHeight: 34,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: "rgba(69,141,255,0.35)",
+                                  backgroundColor: "rgba(69,141,255,0.12)",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  flexDirection: "row",
+                                  gap: 6,
+                                  paddingHorizontal: 10,
+                                  alignSelf: "flex-start",
+                                }}
+                              >
+                                {googleModelOptionsLoading ? (
+                                  <ActivityIndicator size="small" color="#77A8FF" />
+                                ) : (
+                                  <Feather name="refresh-cw" size={12} color="#77A8FF" />
+                                )}
+                                <Text style={{ color: "#77A8FF", fontSize: 12, fontWeight: "700" }}>
+                                  Actualizar modelos
+                                </Text>
+                              </Pressable>
+
+                              {googleModelDropdownOpen ? (
+                                <View
+                                  style={{
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    borderRadius: mobileTheme.radius.md,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    maxHeight: 210,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      paddingHorizontal: 10,
+                                      paddingTop: 10,
+                                      paddingBottom: 8,
+                                      borderBottomWidth: 1,
+                                      borderBottomColor: "rgba(61,70,82,0.5)",
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        minHeight: 36,
+                                        borderRadius: mobileTheme.radius.md,
+                                        borderWidth: 1,
+                                        borderColor: "rgba(61,70,82,0.8)",
+                                        backgroundColor: "#1A1E25",
+                                        paddingHorizontal: 10,
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 8,
+                                      }}
+                                    >
+                                      <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
+                                      <TextInput
+                                        style={{
+                                          flex: 1,
+                                          minHeight: 34,
+                                          color: mobileTheme.color.textPrimary,
+                                          paddingHorizontal: 0,
+                                          fontSize: 12,
+                                        }}
+                                        value={googleModelFilter}
+                                        onChangeText={setGoogleModelFilter}
+                                        placeholder="Filtrar modelos..."
+                                        placeholderTextColor={mobileTheme.color.textSecondary}
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                      />
+                                    </View>
+                                  </View>
+                                  {googleModelOptionsLoading ? (
+                                    <View
+                                      style={{
+                                        minHeight: 64,
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: 8,
+                                      }}
+                                    >
+                                      <ActivityIndicator size="small" color="#77A8FF" />
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                        Cargando modelos de Google...
+                                      </Text>
+                                    </View>
+                                  ) : filteredGoogleModelOptions.length === 0 ? (
+                                    <View style={{ padding: 12 }}>
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                        No hay modelos disponibles para mostrar.
+                                      </Text>
+                                    </View>
+                                  ) : (
+                                    <ScrollView nestedScrollEnabled>
+                                      {filteredGoogleModelOptions.map((modelOption) => {
+                                        const selected = modelOption.id === draft.model.trim();
+                                        return (
+                                          <Pressable
+                                            key={modelOption.id}
+                                            onPress={() => {
+                                              setActiveProvider(key.provider);
+                                              selectGoogleModel(modelOption.id);
+                                            }}
+                                            style={{
+                                              minHeight: 46,
+                                              paddingHorizontal: 12,
+                                              paddingVertical: 8,
+                                              borderBottomWidth: 1,
+                                              borderBottomColor: "rgba(61,70,82,0.5)",
+                                              backgroundColor: selected ? "rgba(69,141,255,0.16)" : "transparent",
+                                              justifyContent: "center",
+                                            }}
+                                          >
+                                            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                                              {modelOption.id}
+                                            </Text>
+                                            {modelOption.display_name ? (
+                                              <Text
+                                                numberOfLines={1}
+                                                style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}
+                                              >
+                                                {modelOption.display_name}
+                                              </Text>
+                                            ) : null}
+                                          </Pressable>
+                                        );
+                                      })}
+                                    </ScrollView>
+                                  )}
+                                </View>
+                              ) : null}
+
+                              {googleModelOptionsMessage ? (
+                                <Text
+                                  style={{
+                                    color: providerDetailColorBySeverity(googleModelOptionsMessage.severity),
+                                    fontSize: 12,
+                                  }}
+                                >
+                                  {googleModelOptionsMessage.text}
+                                </Text>
+                              ) : null}
+                            </View>
+                          ) : (
+                            <TextInput
+                              style={{
+                                minHeight: 42,
+                                borderRadius: mobileTheme.radius.md,
+                                borderWidth: 1,
+                                borderColor: mobileTheme.color.borderSubtle,
+                                backgroundColor: mobileTheme.color.bgApp,
+                                color: mobileTheme.color.textPrimary,
+                                paddingHorizontal: 12,
+                              }}
+                              value={draft.model}
+                              onChangeText={(value) => updateProviderDraft(key.provider, { model: value })}
+                              placeholder={`Modelo (default: ${DEFAULT_MODELS[key.provider]})`}
+                              placeholderTextColor={mobileTheme.color.textSecondary}
+                              autoCapitalize="none"
+                              autoCorrect={false}
+                            />
+                          )
                         ) : null}
                       </View>
                     );
@@ -6744,6 +8155,158 @@ export default function App() {
             <Text style={{ color: "#06090D", fontSize: 24, fontWeight: "700", lineHeight: 26 }}>+</Text>
             <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>Nueva rutina</Text>
           </Pressable>
+        </View>
+      ) : null}
+
+      {providerDeleteModal ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.78)",
+            paddingHorizontal: 24,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 620,
+            elevation: 62,
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              maxWidth: 360,
+              borderRadius: 24,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.06)",
+              backgroundColor: "#12151C",
+              paddingHorizontal: 18,
+              paddingTop: 18,
+              paddingBottom: 16,
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <View
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                backgroundColor: "rgba(255,77,79,0.2)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Feather name="alert-triangle" size={22} color="#FF4D4F" />
+            </View>
+
+            <Text
+              style={{
+                color: mobileTheme.color.textPrimary,
+                fontSize: 40,
+                fontWeight: "800",
+                textAlign: "center",
+              }}
+            >
+              ¿Eliminar API Key?
+            </Text>
+
+            <Text
+              style={{
+                color: "#A1AAB8",
+                fontSize: 14,
+                lineHeight: 21,
+                textAlign: "center",
+              }}
+            >
+              Estás a punto de eliminar la API Key de {PROVIDER_UI_META[providerDeleteModal.provider].label}. Esta
+              acción no se puede deshacer.
+            </Text>
+
+            <View
+              style={{
+                width: "100%",
+                borderWidth: 1,
+                borderColor: "rgba(255,77,79,0.45)",
+                borderRadius: 12,
+                backgroundColor: "rgba(255,77,79,0.14)",
+                paddingHorizontal: 12,
+                paddingVertical: 10,
+                flexDirection: "row",
+                alignItems: "flex-start",
+                gap: 8,
+              }}
+            >
+              <Feather name="alert-circle" size={14} color="#FF6E6E" style={{ marginTop: 2 }} />
+              <Text
+                style={{
+                  flex: 1,
+                  color: "#FF6E6E",
+                  fontSize: 12,
+                  lineHeight: 18,
+                }}
+              >
+                {providerDeleteWarningText(providerDeleteModal.provider)}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "100%",
+                minHeight: 38,
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: "rgba(61,70,82,0.9)",
+                backgroundColor: "#1A1E25",
+                paddingHorizontal: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <Feather name="key" size={13} color="#778091" />
+              <Text style={{ color: "#9EA7B6", fontSize: 13, fontWeight: "600" }}>
+                {providerDeleteModal.maskedApiKey}
+              </Text>
+            </View>
+
+            <Pressable
+              onPress={confirmDeleteProviderApiKey}
+              style={{
+                width: "100%",
+                minHeight: 46,
+                borderRadius: 14,
+                backgroundColor: "#FF4D4F",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "row",
+                gap: 8,
+              }}
+            >
+              <Feather name="trash-2" size={14} color="#FFE8EB" />
+              <Text style={{ color: "#FFE8EB", fontWeight: "800", fontSize: 16 }}>
+                Sí, eliminar clave
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={closeProviderDeleteModal}
+              style={{
+                width: "100%",
+                minHeight: 44,
+                borderRadius: 14,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.06)",
+                backgroundColor: "#1B1F27",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#E7EBF3", fontSize: 16, fontWeight: "700" }}>Cancelar</Text>
+            </Pressable>
+          </View>
         </View>
       ) : null}
 

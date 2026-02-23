@@ -18,7 +18,7 @@
   "scripts": {
     "dev:web": "npm --workspace apps/web run dev",
     "dev:mobile": "npm --workspace apps/mobile run start",
-    "dev:api": "cd apps/api && uvicorn app.main:app --reload",
+    "dev:api": "cd apps/api && .venv/bin/uvicorn app.main:app --reload",
     "build:web": "npm --workspace apps/web run build",
     "test:train:e2e": "node apps/mobile/scripts/train-usability.e2e.mjs",
     "test:train:e2e:headed": "TRAIN_E2E_HEADLESS=0 npm run test:train:e2e"

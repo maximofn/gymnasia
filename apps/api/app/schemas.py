@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
@@ -397,6 +398,55 @@ class ChatMessageResponse(BaseModel):
     completion_tokens: int | None
     safety_flags: dict | None
     created_at: datetime
+
+
+class AnthropicProxyMessageInput(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=6000)
+
+
+class AnthropicProxyMessagesRequest(BaseModel):
+    api_key: str = Field(min_length=10)
+    model: str = Field(min_length=1, max_length=120)
+    max_tokens: int = Field(default=700, ge=1, le=4096)
+    system: str | None = Field(default=None, max_length=4000)
+    messages: list[AnthropicProxyMessageInput] = Field(min_length=1, max_length=40)
+
+
+class AnthropicProxyVerifyRequest(BaseModel):
+    api_key: str = Field(min_length=10)
+    model: str = Field(min_length=1, max_length=120)
+
+
+class AnthropicProxyVerifyResponse(BaseModel):
+    ok: bool
+    message: str
+
+
+class AnthropicProxyModelsRequest(BaseModel):
+    api_key: str = Field(min_length=10)
+
+
+class AnthropicProxyModelItem(BaseModel):
+    id: str
+    display_name: str | None = None
+
+
+class AnthropicProxyModelsResponse(BaseModel):
+    models: list[AnthropicProxyModelItem]
+
+
+class OpenAIProxyModelsRequest(BaseModel):
+    api_key: str = Field(min_length=10)
+
+
+class OpenAIProxyModelItem(BaseModel):
+    id: str
+    owned_by: str | None = None
+
+
+class OpenAIProxyModelsResponse(BaseModel):
+    models: list[OpenAIProxyModelItem]
 
 
 class AgentMemoryUpsertRequest(BaseModel):
