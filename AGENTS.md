@@ -109,6 +109,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Unfinished workout series reps input no longer uses completed highlight styling
+- Failure:
+  After making all workout series editable during execution, unfinished series showed the `reps` input with the same yellow text and yellow border used for completed series.
+- Root cause:
+  The shared `reps` `TextInput` style in `apps/mobile/App.tsx` kept the highlighted border/text colors unconditionally after the row render was unified for every series.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - made the `reps` input border, background, and text colors conditional on `seriesState.isCompleted`.
+     - unfinished series now use the neutral input styling while completed series keep the highlight accent.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Active workout series highlight now applies only to completed series
 - Failure:
   During routine execution, the active series row showed the yellow highlight background, while completed series rows did not.

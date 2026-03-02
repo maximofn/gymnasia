@@ -5814,9 +5814,15 @@ export default function App() {
                                       minHeight: 34,
                                       borderRadius: 8,
                                       borderWidth: 1,
-                                      borderColor: "rgba(203,255,26,0.8)",
-                                      backgroundColor: "rgba(6,9,13,0.32)",
-                                      color: mobileTheme.color.brandPrimary,
+                                      borderColor: seriesState.isCompleted
+                                        ? "rgba(203,255,26,0.8)"
+                                        : "rgba(255,255,255,0.16)",
+                                      backgroundColor: seriesState.isCompleted
+                                        ? "rgba(6,9,13,0.32)"
+                                        : "rgba(10,13,18,0.5)",
+                                      color: seriesState.isCompleted
+                                        ? mobileTheme.color.brandPrimary
+                                        : "#C7CED9",
                                       fontSize: 22,
                                       fontWeight: "700",
                                       textAlign: "center",
