@@ -5554,7 +5554,7 @@ export default function App() {
                       </Text>
                     </View>
                     <Text
-                      style={{ color: mobileTheme.color.textPrimary, fontSize: 30, fontWeight: "700" }}
+                      style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "700" }}
                       numberOfLines={2}
                     >
                       {activeWorkoutSession.template_name}
@@ -5688,7 +5688,7 @@ export default function App() {
                           </View>
                           <View style={{ flex: 1, gap: 2 }}>
                             <Text
-                              style={{ color: mobileTheme.color.textPrimary, fontSize: 24, fontWeight: "700" }}
+                              style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "700" }}
                               numberOfLines={1}
                             >
                               {sessionExercise.exercise.name || `Ejercicio ${sessionExercise.exerciseIndex + 1}`}
@@ -5696,7 +5696,7 @@ export default function App() {
                             <Text
                               style={{
                                 color: sessionExercise.isCompletedExercise ? "#00C66B" : "#8B94A3",
-                                fontSize: 17,
+                                fontSize: 15,
                               }}
                             >
                               {sessionExercise.muscle} • {sessionExercise.completedSeriesCount}/
@@ -5720,16 +5720,16 @@ export default function App() {
                                 paddingHorizontal: 12,
                               }}
                             >
-                              <Text style={{ width: 42, color: "#7D8798", fontSize: 12, fontWeight: "700" }}>
+                              <Text style={{ width: 42, color: "#7D8798", fontSize: 11, fontWeight: "700" }}>
                                 SET
                               </Text>
-                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 12, fontWeight: "700" }}>
+                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 11, fontWeight: "700" }}>
                                 REPS
                               </Text>
-                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 12, fontWeight: "700" }}>
+                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 11, fontWeight: "700" }}>
                                 PESO
                               </Text>
-                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 12, fontWeight: "700" }}>
+                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 11, fontWeight: "700" }}>
                                 DESCANSO
                               </Text>
                             </View>
@@ -5823,7 +5823,7 @@ export default function App() {
                                       color: seriesState.isCompleted
                                         ? mobileTheme.color.brandPrimary
                                         : "#C7CED9",
-                                      fontSize: 19,
+                                      fontSize: 17,
                                       fontWeight: "700",
                                       textAlign: "center",
                                     }}
@@ -5850,7 +5850,7 @@ export default function App() {
                                       borderColor: "rgba(255,255,255,0.16)",
                                       backgroundColor: "rgba(10,13,18,0.5)",
                                       color: "#C7CED9",
-                                      fontSize: 19,
+                                      fontSize: 17,
                                       fontWeight: "600",
                                       textAlign: "center",
                                     }}
@@ -5877,7 +5877,7 @@ export default function App() {
                                       borderColor: "rgba(255,255,255,0.16)",
                                       backgroundColor: "rgba(10,13,18,0.5)",
                                       color: "#C7CED9",
-                                      fontSize: 19,
+                                      fontSize: 17,
                                       fontWeight: "600",
                                       textAlign: "center",
                                     }}

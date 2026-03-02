@@ -109,6 +109,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Workout execution text sizes reduced a bit further
+- Failure:
+  After the first typography reduction, the routine title, exercise titles, exercise subtitle, and series table text in the workout execution screen still looked slightly larger than desired.
+- Root cause:
+  The initial size cut in `apps/mobile/App.tsx` was conservative and still left those text elements visually heavier than requested for the screen density.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - reduced the active routine title a bit more.
+     - reduced the exercise title and its subtitle a bit more.
+     - reduced the series table header labels and the input text for `reps`, `peso`, and `descanso` a bit more.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Workout execution titles and table text are slightly smaller
 - Failure:
   In the workout execution screen, the routine title, exercise titles, exercise subtitle text, and the series table text were rendering larger than desired.
