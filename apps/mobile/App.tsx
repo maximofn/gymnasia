@@ -58,6 +58,7 @@ type WorkoutTemplate = {
   exercises: Array<{
     id: string;
     name?: string;
+    image_uri?: string | null;
     sets: number[];
     series?: ExerciseSeries[];
     muscle?: string;
@@ -1957,6 +1958,118 @@ function inferExerciseMuscle(exerciseName: string, category: TrainingCategory): 
   return "Pecho";
 }
 
+function normalizeExerciseImageUri(rawValue: string | null | undefined): string | null {
+  if (typeof rawValue !== "string") return null;
+  const trimmed = rawValue.trim();
+  return trimmed ? trimmed : null;
+}
+
+function resolveExercisePreviewMeta(
+  exerciseName: string,
+  muscle: string,
+  category: TrainingCategory,
+): {
+  backgroundColor: string;
+  accentColor: string;
+  label: string;
+  icon: RoutineIconName;
+} {
+  const normalized = `${exerciseName} ${muscle}`.trim().toLowerCase();
+
+  if (
+    normalized.includes("pierna") ||
+    normalized.includes("squat") ||
+    normalized.includes("sentadilla") ||
+    normalized.includes("zancada") ||
+    normalized.includes("lunge")
+  ) {
+    return {
+      backgroundColor: "#232A17",
+      accentColor: "#CBFF1A",
+      label: "Piernas",
+      icon: "shield",
+    };
+  }
+
+  if (
+    normalized.includes("espalda") ||
+    normalized.includes("remo") ||
+    normalized.includes("jalon") ||
+    normalized.includes("jalón") ||
+    normalized.includes("pull")
+  ) {
+    return {
+      backgroundColor: "#162331",
+      accentColor: "#76A9FF",
+      label: "Espalda",
+      icon: "wind",
+    };
+  }
+
+  if (
+    normalized.includes("hombro") ||
+    normalized.includes("militar") ||
+    normalized.includes("lateral") ||
+    normalized.includes("press")
+  ) {
+    return {
+      backgroundColor: "#2A2116",
+      accentColor: "#FFB166",
+      label: "Hombros",
+      icon: "target",
+    };
+  }
+
+  if (
+    normalized.includes("tricep") ||
+    normalized.includes("trícep") ||
+    normalized.includes("fondo") ||
+    normalized.includes("pecho") ||
+    normalized.includes("push")
+  ) {
+    return {
+      backgroundColor: "#2A1C1C",
+      accentColor: "#FF8D8D",
+      label: "Pecho",
+      icon: "award",
+    };
+  }
+
+  if (normalized.includes("core") || normalized.includes("abdominal") || normalized.includes("planch")) {
+    return {
+      backgroundColor: "#182824",
+      accentColor: "#55D6BE",
+      label: "Core",
+      icon: "crosshair",
+    };
+  }
+
+  if (category === "cardio") {
+    return {
+      backgroundColor: "#2A2015",
+      accentColor: "#FF9F4D",
+      label: "Cardio",
+      icon: "heart",
+    };
+  }
+
+  if (category === "flexibility") {
+    return {
+      backgroundColor: "#16272A",
+      accentColor: "#74D7F7",
+      label: "Movilidad",
+      icon: "compass",
+    };
+  }
+
+  return {
+    backgroundColor: "#1D2430",
+    accentColor: "#A5B0C2",
+    label: "General",
+    icon: "activity",
+  };
+}
+
 function defaultTemplateName(category: TrainingCategory, index: number): string {
   if (category === "hypertrophy") return `Hipertrofia — Volumen ${index}`;
   if (category === "cardio") return `Cardio — Resistencia ${index}`;
@@ -2259,6 +2372,7 @@ function normalizeStore(raw: LocalStore): LocalStore {
       return {
         ...exercise,
         name: exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`,
+        image_uri: normalizeExerciseImageUri(exercise.image_uri),
         series: normalizedSeries,
         sets: nextSets,
         load_kg:
@@ -4136,6 +4250,7 @@ export default function App() {
             {
               id: exerciseId,
               name: exerciseName,
+              image_uri: null,
               sets: seriesToLegacySets([firstSeries]),
               series: [firstSeries],
               muscle: inferExerciseMuscle(exerciseName, category),
@@ -5637,6 +5752,11 @@ export default function App() {
                 ) : (
                   activeSessionExercises.map((sessionExercise) => {
                     const isExpanded = sessionExercise.isCurrentExercise;
+                    const exercisePreview = resolveExercisePreviewMeta(
+                      sessionExercise.exercise.name ?? "",
+                      sessionExercise.muscle,
+                      activeWorkoutSession.category,
+                    );
                     return (
                       <Pressable
                         key={sessionExercise.exercise.id}
@@ -5656,35 +5776,85 @@ export default function App() {
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
                           <View
                             style={{
-                              width: 28,
-                              height: 28,
-                              borderRadius: 999,
-                              borderWidth: sessionExercise.isCompletedExercise ? 0 : 1,
-                              borderColor: "#3B4351",
-                              backgroundColor: sessionExercise.isCompletedExercise
-                                ? "#00A75A"
-                                : isExpanded
-                                  ? mobileTheme.color.brandPrimary
-                                  : "#222834",
-                              alignItems: "center",
-                              justifyContent: "center",
+                              width: 58,
+                              height: 58,
+                              borderRadius: 16,
+                              overflow: "hidden",
+                              borderWidth: 1,
+                              borderColor: sessionExercise.isCompletedExercise
+                                ? "rgba(0,198,107,0.3)"
+                                : "rgba(255,255,255,0.08)",
+                              backgroundColor: exercisePreview.backgroundColor,
+                              position: "relative",
+                              flexShrink: 0,
                             }}
                           >
-                            <Text
+                            {sessionExercise.exercise.image_uri ? (
+                              <Image
+                                source={{ uri: sessionExercise.exercise.image_uri }}
+                                style={{ width: "100%", height: "100%" }}
+                                resizeMode="cover"
+                              />
+                            ) : (
+                              <View
+                                style={{
+                                  flex: 1,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  gap: 4,
+                                  paddingHorizontal: 4,
+                                  backgroundColor: exercisePreview.backgroundColor,
+                                }}
+                              >
+                                <Feather name={exercisePreview.icon} size={18} color={exercisePreview.accentColor} />
+                                <Text
+                                  style={{
+                                    color: "#E8EDF5",
+                                    fontSize: 9,
+                                    fontWeight: "700",
+                                    textAlign: "center",
+                                  }}
+                                  numberOfLines={1}
+                                >
+                                  {exercisePreview.label}
+                                </Text>
+                              </View>
+                            )}
+                            <View
                               style={{
-                                color: sessionExercise.isCompletedExercise
-                                  ? "#FFFFFF"
+                                position: "absolute",
+                                top: 5,
+                                right: 5,
+                                width: 20,
+                                height: 20,
+                                borderRadius: 999,
+                                borderWidth: sessionExercise.isCompletedExercise ? 0 : 1,
+                                borderColor: "rgba(255,255,255,0.12)",
+                                backgroundColor: sessionExercise.isCompletedExercise
+                                  ? "#00A75A"
                                   : isExpanded
-                                    ? "#06090D"
-                                    : "#9FA7B5",
-                                fontSize: 14,
-                                fontWeight: "800",
+                                    ? mobileTheme.color.brandPrimary
+                                    : "#222834",
+                                alignItems: "center",
+                                justifyContent: "center",
                               }}
                             >
-                              {sessionExercise.isCompletedExercise
-                                ? "✓"
-                                : `${sessionExercise.exerciseIndex + 1}`}
-                            </Text>
+                              <Text
+                                style={{
+                                  color: sessionExercise.isCompletedExercise
+                                    ? "#FFFFFF"
+                                    : isExpanded
+                                      ? "#06090D"
+                                      : "#9FA7B5",
+                                  fontSize: 10,
+                                  fontWeight: "800",
+                                }}
+                              >
+                                {sessionExercise.isCompletedExercise
+                                  ? "✓"
+                                  : `${sessionExercise.exerciseIndex + 1}`}
+                              </Text>
+                            </View>
                           </View>
                           <View style={{ flex: 1, gap: 2 }}>
                             <Text

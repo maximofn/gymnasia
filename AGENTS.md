@@ -109,6 +109,21 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Active workout exercises now show a thumbnail to the left of the title with a default fallback
+- Failure:
+  In the active workout session view, each exercise title lacked a left-side thumbnail, so there was no exercise image and no default visual fallback.
+- Root cause:
+  The exercise model in `apps/mobile/App.tsx` had no `image_uri` support and the active-session exercise header only rendered a circular index/status badge plus text.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - added optional `image_uri` support for workout exercises and normalized it in store hydration.
+     - new exercises now initialize `image_uri` as `null`.
+     - added a thumbnail block to the left of each exercise title in the active session view.
+     - when `image_uri` exists, the real image is shown; otherwise a default thumbnail with icon and label is rendered based on the exercise type/category.
+     - moved the series index/completed badge into a small overlay on the thumbnail.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Workout execution text was reduced slightly again across the active session view
 - Failure:
   After the previous typography tweaks, the visible text in the active workout session still looked a bit larger than desired.
