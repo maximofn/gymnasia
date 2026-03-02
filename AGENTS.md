@@ -109,6 +109,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Bottom workout navigation buttons replaced with a second `Finalizar` button
+- Failure:
+  While executing a workout, the bottom action area still showed `Anterior` and `Siguiente`, but the desired control was a second `Finalizar` button matching the one at the top.
+- Root cause:
+  `apps/mobile/App.tsx` still rendered the old bottom navigation row with the previous/next session pointer controls.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - removed the bottom `Anterior` and `Siguiente` buttons from the active workout session view.
+     - added a bottom `Finalizar` button with the same visual style and action as the top finish button.
+     - used a dedicated bottom `testID` to avoid duplicating the top button identifier.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Workout execution text sizes reduced a bit further
 - Failure:
   After the first typography reduction, the routine title, exercise titles, exercise subtitle, and series table text in the workout execution screen still looked slightly larger than desired.

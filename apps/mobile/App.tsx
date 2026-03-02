@@ -6015,46 +6015,23 @@ export default function App() {
                   })
                 )}
 
-                <View style={{ flexDirection: "row", gap: 8 }}>
-                  <Pressable
-                    onPress={() => moveWorkoutSessionPointer(-1)}
-                    testID="training-session-prev"
-                    disabled={activeWorkoutSession.is_resting}
-                    style={{
-                      flex: 1,
-                      minHeight: 40,
-                      borderRadius: 10,
-                      borderWidth: 1,
-                      borderColor: activeWorkoutSession.is_resting
-                        ? "rgba(255,255,255,0.08)"
-                        : "rgba(255,255,255,0.12)",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      opacity: activeWorkoutSession.is_resting ? 0.45 : 1,
-                    }}
-                  >
-                    <Text style={{ color: "#8F98A7", fontSize: 13, fontWeight: "700" }}>Anterior</Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => moveWorkoutSessionPointer(1)}
-                    testID="training-session-next"
-                    disabled={activeWorkoutSession.is_resting}
-                    style={{
-                      flex: 1,
-                      minHeight: 40,
-                      borderRadius: 10,
-                      borderWidth: 1,
-                      borderColor: activeWorkoutSession.is_resting
-                        ? "rgba(255,255,255,0.08)"
-                        : "rgba(255,255,255,0.12)",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      opacity: activeWorkoutSession.is_resting ? 0.45 : 1,
-                    }}
-                  >
-                    <Text style={{ color: "#8F98A7", fontSize: 13, fontWeight: "700" }}>Siguiente</Text>
-                  </Pressable>
-                </View>
+                <Pressable
+                  onPress={finishActiveWorkoutSession}
+                  testID="training-session-finish-bottom"
+                  style={{
+                    minHeight: 44,
+                    borderRadius: 14,
+                    backgroundColor: "#FF4B4B",
+                    paddingHorizontal: 18,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                  }}
+                >
+                  <Feather name="flag" size={14} color="#FFFFFF" />
+                  <Text style={{ color: "#FFFFFF", fontSize: 15, fontWeight: "800" }}>Finalizar</Text>
+                </Pressable>
               </View>
             ) : activeTrainingTemplate ? (
               <View style={{ gap: 12, paddingBottom: 110 }}>
