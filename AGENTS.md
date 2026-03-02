@@ -109,6 +109,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Workout execution titles and table text are slightly smaller
+- Failure:
+  In the workout execution screen, the routine title, exercise titles, exercise subtitle text, and the series table text were rendering larger than desired.
+- Root cause:
+  `apps/mobile/App.tsx` used oversized font values in the active workout session header and exercise cards (`34`, `28`, `20`, `22`, and `14`) for this screen density.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - reduced the active routine title font size.
+     - reduced each exercise title and the subtitle text below it.
+     - reduced the series table header labels and the `reps`, `peso`, and `descanso` input text sizes.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Workout execution no longer shows the `Marcar serie hecha`, `Pausar`, and `Abandonar` action buttons
 - Failure:
   The workout execution screen still rendered the footer action buttons `Marcar serie hecha`, `Pausar`, and `Abandonar`, even though those controls should not be shown.
