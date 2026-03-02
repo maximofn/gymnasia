@@ -174,6 +174,7 @@ type DietItemMenuState = { meal_id: string; item_id: string } | null;
 type DietEditingItemState = { meal_id: string; item_id: string } | null;
 type TrainingFilter = "all" | "strength" | "hypertrophy" | "cardio" | "flexibility";
 type TrainingCategory = Exclude<TrainingFilter, "all">;
+type TrainingTemplateScreenMode = "detail" | "edit";
 type TemplateSeriesPointer = {
   exerciseIndex: number;
   seriesIndex: number;
@@ -2110,15 +2111,33 @@ function buildTemplateSeriesSignature(template: WorkoutTemplate): string {
   );
 }
 
-function estimateWorkoutCalories(session: WorkoutSession): number {
-  const minutes = Math.max(1, session.elapsed_seconds / 60);
+function estimateTrainingCalories(minutes: number, category: TrainingCategory): number {
+  const safeMinutes = Math.max(1, minutes);
   const burnRateByCategory: Record<TrainingCategory, number> = {
     strength: 8.8,
     hypertrophy: 9.2,
     cardio: 10.5,
     flexibility: 4.5,
   };
-  return Math.max(1, Math.round(minutes * burnRateByCategory[session.category]));
+  return Math.max(1, Math.round(safeMinutes * burnRateByCategory[category]));
+}
+
+function estimateWorkoutCalories(session: WorkoutSession): number {
+  return estimateTrainingCalories(session.elapsed_seconds / 60, session.category);
+}
+
+function estimateTemplateCalories(template: WorkoutTemplate): number {
+  return estimateTrainingCalories(
+    inferTemplateDurationMinutes(template),
+    resolveTrainingCategory(template),
+  );
+}
+
+function formatSpanishList(items: string[]): string {
+  if (items.length === 0) return "";
+  if (items.length === 1) return items[0];
+  if (items.length === 2) return `${items[0]} y ${items[1]}`;
+  return `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}`;
 }
 
 function formatClock(seconds: number): string {
@@ -2507,6 +2526,9 @@ export default function App() {
   const [isGlobalScreenLoading, setIsGlobalScreenLoading] = useState(false);
   const [isTrainingEditorLoading, setIsTrainingEditorLoading] = useState(false);
   const [activeTrainingTemplateId, setActiveTrainingTemplateId] = useState<string | null>(null);
+  const [activeTrainingTemplateMode, setActiveTrainingTemplateMode] =
+    useState<TrainingTemplateScreenMode>("detail");
+  const [trainingDetailMuscleFilter, setTrainingDetailMuscleFilter] = useState("all");
   const [trainingMenuTemplateId, setTrainingMenuTemplateId] = useState<string | null>(null);
   const [activeExerciseMenuId, setActiveExerciseMenuId] = useState<string | null>(null);
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
@@ -2769,6 +2791,61 @@ export default function App() {
     () => (activeTrainingTemplate ? totalSeriesCount(activeTrainingTemplate) : 0),
     [activeTrainingTemplate],
   );
+  const activeTrainingPreviewExercises = useMemo(() => {
+    if (!activeTrainingTemplate || !activeTrainingCategory) return [];
+    return activeTrainingTemplate.exercises.map((exercise, exerciseIndex) => {
+      const exerciseName = exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`;
+      const seriesItems = exercise.series ?? [];
+      const muscle =
+        exercise.muscle?.trim() ||
+        inferExerciseMuscle(exerciseName, activeTrainingCategory);
+      const firstSeries = seriesItems[0] ?? null;
+      const firstWeight =
+        seriesItems.find((seriesItem) => seriesItem.weight_kg.trim())?.weight_kg.trim() ?? "";
+      const repsLabel = firstSeries?.reps.trim() || "--";
+      return {
+        exercise,
+        exerciseIndex,
+        exerciseName,
+        imageUri: normalizeExerciseImageUri(exercise.image_uri),
+        muscle,
+        previewMeta: resolveExercisePreviewMeta(exerciseName, muscle, activeTrainingCategory),
+        volumeLabel:
+          seriesItems.length > 0
+            ? `${seriesItems.length} x ${repsLabel} reps${firstWeight ? ` • ${firstWeight}kg` : ""}`
+            : "Sin series configuradas",
+      };
+    });
+  }, [activeTrainingCategory, activeTrainingTemplate]);
+  const activeTrainingMuscleFilters = useMemo(
+    () => Array.from(new Set(activeTrainingPreviewExercises.map((exercise) => exercise.muscle))),
+    [activeTrainingPreviewExercises],
+  );
+  const activeTrainingDetailExercises = useMemo(
+    () =>
+      activeTrainingPreviewExercises.filter(
+        (exercise) =>
+          trainingDetailMuscleFilter === "all" || exercise.muscle === trainingDetailMuscleFilter,
+      ),
+    [activeTrainingPreviewExercises, trainingDetailMuscleFilter],
+  );
+  const activeTrainingPreviewImageUri = useMemo(
+    () => activeTrainingPreviewExercises.find((exercise) => exercise.imageUri)?.imageUri ?? null,
+    [activeTrainingPreviewExercises],
+  );
+  const activeTrainingEstimatedCalories = useMemo(
+    () => (activeTrainingTemplate ? estimateTemplateCalories(activeTrainingTemplate) : 0),
+    [activeTrainingTemplate],
+  );
+  const activeTrainingSummary = useMemo(() => {
+    if (activeTrainingMuscleFilters.length === 0) {
+      return "Configura los ejercicios y prepara tu próxima sesión.";
+    }
+    const focus = formatSpanishList(
+      activeTrainingMuscleFilters.slice(0, 3).map((muscle) => muscle.toLowerCase()),
+    );
+    return `Trabaja ${focus} con una sesión estructurada y lista para empezar.`;
+  }, [activeTrainingMuscleFilters]);
   const activeSessionTemplate = useMemo(() => {
     if (!activeWorkoutSession) return null;
     return store.templates.find((template) => template.id === activeWorkoutSession.template_id) ?? null;
@@ -2873,19 +2950,26 @@ export default function App() {
       ? activeWorkoutSession
         ? "Sesión Activa"
         : activeTrainingTemplate
-          ? "Editar Rutina"
+          ? activeTrainingTemplateMode === "edit"
+            ? "Editar Rutina"
+            : "Detalle Rutina"
           : "Mis Rutinas"
       : tabLabel(tab);
   const headerTitleSize = tab === "training" ? 34 : 28;
   const showGlobalScreenLoading = ENABLE_GLOBAL_SCREEN_LOAD_DELAY && isGlobalScreenLoading;
-  const isTrainingEditorOpen = tab === "training" && !activeWorkoutSession && !!activeTrainingTemplateId;
+  const isTrainingTemplateScreenOpen =
+    tab === "training" && !activeWorkoutSession && !!activeTrainingTemplateId;
+  const isTrainingDetailOpen =
+    isTrainingTemplateScreenOpen && activeTrainingTemplateMode === "detail";
+  const isTrainingEditorOpen =
+    isTrainingTemplateScreenOpen && activeTrainingTemplateMode === "edit";
   const showTrainingListSkeleton =
     tab === "training" &&
     !activeTrainingTemplate &&
     !activeWorkoutSession &&
     showGlobalScreenLoading;
   const showTrainingEditorSkeleton =
-    isTrainingEditorOpen &&
+    isTrainingTemplateScreenOpen &&
     (isTrainingEditorLoading || showGlobalScreenLoading);
 
   useEffect(() => {
@@ -2997,6 +3081,8 @@ export default function App() {
     if (!activeTrainingTemplateId) return;
     if (store.templates.some((template) => template.id === activeTrainingTemplateId)) return;
     setActiveTrainingTemplateId(null);
+    setActiveTrainingTemplateMode("detail");
+    setTrainingDetailMuscleFilter("all");
   }, [activeTrainingTemplateId, store.templates]);
 
   useEffect(() => {
@@ -3004,6 +3090,12 @@ export default function App() {
     if (store.templates.some((template) => template.id === trainingMenuTemplateId)) return;
     setTrainingMenuTemplateId(null);
   }, [store.templates, trainingMenuTemplateId]);
+
+  useEffect(() => {
+    if (trainingDetailMuscleFilter === "all") return;
+    if (activeTrainingMuscleFilters.includes(trainingDetailMuscleFilter)) return;
+    setTrainingDetailMuscleFilter("all");
+  }, [activeTrainingMuscleFilters, trainingDetailMuscleFilter]);
 
   useEffect(() => {
     if (!activeTrainingTemplate) {
@@ -4067,17 +4159,40 @@ export default function App() {
   function openTrainingTemplate(templateId: string) {
     setTrainingMenuTemplateId(null);
     setActiveTrainingTemplateId(templateId);
+    setActiveTrainingTemplateMode("detail");
+    setTrainingDetailMuscleFilter("all");
+    setExpandedExerciseId(null);
+    setActiveExerciseMenuId(null);
+    setError(null);
+  }
+
+  function openTrainingTemplateEditor(templateId: string) {
+    setTrainingMenuTemplateId(null);
+    setActiveTrainingTemplateId(templateId);
+    setActiveTrainingTemplateMode("edit");
+    setTrainingDetailMuscleFilter("all");
     const template = store.templates.find((item) => item.id === templateId);
     setExpandedExerciseId(template?.exercises[0]?.id ?? null);
     setActiveExerciseMenuId(null);
     setError(null);
   }
 
-  function closeTrainingTemplateEditor() {
+  function closeTrainingTemplateDetails() {
     setActiveTrainingTemplateId(null);
+    setActiveTrainingTemplateMode("detail");
+    setTrainingDetailMuscleFilter("all");
     setTrainingMenuTemplateId(null);
     setExpandedExerciseId(null);
     setActiveExerciseMenuId(null);
+    setError(null);
+  }
+
+  function closeTrainingTemplateEditor() {
+    setActiveTrainingTemplateMode("detail");
+    setTrainingMenuTemplateId(null);
+    setExpandedExerciseId(null);
+    setActiveExerciseMenuId(null);
+    setError(null);
   }
 
   function updateActiveTrainingTemplate(
@@ -4214,7 +4329,7 @@ export default function App() {
     setTrainingMenuTemplateId(null);
     setTrainingSearch("");
     setTrainingFilter("all");
-    openTrainingTemplate(templateId);
+    openTrainingTemplateEditor(templateId);
   }
 
   function addExerciseToActiveTemplate() {
@@ -4423,6 +4538,8 @@ export default function App() {
     }));
     if (activeTrainingTemplateId === templateId) {
       setActiveTrainingTemplateId(null);
+      setActiveTrainingTemplateMode("detail");
+      setTrainingDetailMuscleFilter("all");
     }
     setTrainingMenuTemplateId(null);
   }
@@ -4514,6 +4631,8 @@ export default function App() {
     };
     setActiveWorkoutSession(session);
     setActiveTrainingTemplateId(null);
+    setActiveTrainingTemplateMode("detail");
+    setTrainingDetailMuscleFilter("all");
     setTrainingMenuTemplateId(null);
     setActiveExerciseMenuId(null);
     setExpandedExerciseId(null);
@@ -5268,7 +5387,7 @@ export default function App() {
           gap: 12,
         }}
       >
-        {tab === "training" && (isTrainingEditorOpen || activeWorkoutSession) ? null : tab === "training" ? (
+        {tab === "training" && (isTrainingTemplateScreenOpen || activeWorkoutSession) ? null : tab === "training" ? (
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: headerTitleSize, fontWeight: "700" }}>
               {headerTitle}
@@ -6203,6 +6322,476 @@ export default function App() {
                   <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
                 </Pressable>
               </View>
+            ) : isTrainingDetailOpen && activeTrainingTemplate ? (
+              <View style={{ gap: 16, paddingBottom: 110 }}>
+                <View
+                  style={{
+                    height: 228,
+                    borderRadius: 26,
+                    overflow: "hidden",
+                    backgroundColor: "#0F141B",
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.05)",
+                  }}
+                >
+                  {activeTrainingPreviewImageUri ? (
+                    <Image
+                      source={{ uri: activeTrainingPreviewImageUri }}
+                      style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
+                        backgroundColor: "#10161F",
+                        justifyContent: "flex-end",
+                        padding: 20,
+                      }}
+                    >
+                      <View
+                        style={{
+                          position: "absolute",
+                          top: 26,
+                          right: 24,
+                          width: 84,
+                          height: 84,
+                          borderRadius: 999,
+                          backgroundColor:
+                            activeTrainingCategoryMeta?.iconBg ?? "rgba(203,255,26,0.12)",
+                        }}
+                      />
+                      <View
+                        style={{
+                          position: "absolute",
+                          top: 58,
+                          left: 24,
+                          width: 120,
+                          height: 120,
+                          borderRadius: 30,
+                          borderWidth: 1,
+                          borderColor: "rgba(255,255,255,0.05)",
+                          backgroundColor: "rgba(255,255,255,0.03)",
+                          transform: [{ rotate: "-12deg" }],
+                        }}
+                      />
+                      <View
+                        style={{
+                          width: 82,
+                          height: 82,
+                          borderRadius: 24,
+                          backgroundColor:
+                            activeTrainingCategoryMeta?.iconBg ?? "rgba(203,255,26,0.12)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Feather
+                          name={activeTrainingIcon ?? "activity"}
+                          size={34}
+                          color={activeTrainingCategoryMeta?.color ?? mobileTheme.color.brandPrimary}
+                        />
+                      </View>
+                    </View>
+                  )}
+
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      bottom: 0,
+                      left: 0,
+                      backgroundColor: activeTrainingPreviewImageUri
+                        ? "rgba(6,9,13,0.42)"
+                        : "rgba(6,9,13,0.18)",
+                    }}
+                  />
+
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 14,
+                      left: 14,
+                      right: 14,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Pressable
+                      onPress={closeTrainingTemplateDetails}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 999,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.14)",
+                        backgroundColor: "rgba(8,11,16,0.48)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Feather name="arrow-left" size={18} color="#FFFFFF" />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => openTrainingTemplateEditor(activeTrainingTemplate.id)}
+                      testID="training-detail-edit"
+                      style={{
+                        minHeight: 40,
+                        borderRadius: 999,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.14)",
+                        backgroundColor: "rgba(8,11,16,0.48)",
+                        paddingHorizontal: 14,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <Feather name="edit-2" size={14} color="#FFFFFF" />
+                      <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "700" }}>
+                        Editar
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  <View
+                    style={{
+                      position: "absolute",
+                      left: 16,
+                      right: 16,
+                      bottom: 16,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 10,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 42,
+                        height: 42,
+                        borderRadius: 14,
+                        backgroundColor:
+                          activeTrainingCategoryMeta?.iconBg ?? "rgba(203,255,26,0.14)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Feather
+                        name={activeTrainingIcon ?? "activity"}
+                        size={18}
+                        color={activeTrainingCategoryMeta?.color ?? mobileTheme.color.brandPrimary}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        minHeight: 34,
+                        borderRadius: 999,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.12)",
+                        backgroundColor: "rgba(8,11,16,0.46)",
+                        paddingHorizontal: 12,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>
+                        {activeTrainingCategoryMeta?.label ?? "Rutina"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={{ gap: 8 }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 34, fontWeight: "700" }}>
+                    {activeTrainingTemplate.name}
+                  </Text>
+                  <Text style={{ color: "#8B94A3", fontSize: 16, lineHeight: 22 }}>
+                    {activeTrainingSummary}
+                  </Text>
+                </View>
+
+                <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                  <View
+                    style={{
+                      minHeight: 44,
+                      borderRadius: 14,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.06)",
+                      backgroundColor: "#171B23",
+                      paddingHorizontal: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <Feather name="clock" size={14} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: "#E8EDF5", fontSize: 14, fontWeight: "700" }}>
+                      {activeTrainingDurationMinutes > 0 ? `${activeTrainingDurationMinutes} min` : "-- min"}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      minHeight: 44,
+                      borderRadius: 14,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.06)",
+                      backgroundColor: "#171B23",
+                      paddingHorizontal: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <Feather name="repeat" size={14} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: "#E8EDF5", fontSize: 14, fontWeight: "700" }}>
+                      {activeTrainingTemplate.exercises.length} ejercicios
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      minHeight: 44,
+                      borderRadius: 14,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.06)",
+                      backgroundColor: "#171B23",
+                      paddingHorizontal: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <Feather name="zap" size={14} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: "#E8EDF5", fontSize: 14, fontWeight: "700" }}>
+                      ~{activeTrainingEstimatedCalories} kcal
+                    </Text>
+                  </View>
+                </View>
+
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 8, paddingRight: 12 }}
+                >
+                  <Pressable
+                    onPress={() => setTrainingDetailMuscleFilter("all")}
+                    style={{
+                      minHeight: 38,
+                      borderRadius: mobileTheme.radius.pill,
+                      borderWidth: 1,
+                      borderColor:
+                        trainingDetailMuscleFilter === "all"
+                          ? "rgba(203,255,26,0.82)"
+                          : mobileTheme.color.borderSubtle,
+                      backgroundColor:
+                        trainingDetailMuscleFilter === "all"
+                          ? "rgba(160,204,0,0.12)"
+                          : "#0D1117",
+                      paddingHorizontal: 16,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color:
+                          trainingDetailMuscleFilter === "all"
+                            ? mobileTheme.color.brandPrimary
+                            : "#9EA6B3",
+                        fontSize: 14,
+                        fontWeight: "700",
+                      }}
+                    >
+                      Todas
+                    </Text>
+                  </Pressable>
+                  {activeTrainingMuscleFilters.map((muscle) => {
+                    const isActive = trainingDetailMuscleFilter === muscle;
+                    return (
+                      <Pressable
+                        key={muscle}
+                        onPress={() => setTrainingDetailMuscleFilter(muscle)}
+                        style={{
+                          minHeight: 38,
+                          borderRadius: mobileTheme.radius.pill,
+                          borderWidth: 1,
+                          borderColor: isActive
+                            ? "rgba(203,255,26,0.82)"
+                            : mobileTheme.color.borderSubtle,
+                          backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                          paddingHorizontal: 16,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
+                            fontSize: 14,
+                            fontWeight: "700",
+                          }}
+                        >
+                          {muscle}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </ScrollView>
+
+                <View style={{ gap: 10 }}>
+                  {activeTrainingDetailExercises.length === 0 ? (
+                    <View
+                      style={{
+                        minHeight: 140,
+                        borderRadius: 20,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: "#171B23",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingHorizontal: 18,
+                      }}
+                    >
+                      <Text style={{ color: "#8B94A3", fontSize: 16, textAlign: "center", lineHeight: 22 }}>
+                        No hay ejercicios para este grupo muscular en la rutina.
+                      </Text>
+                    </View>
+                  ) : (
+                    activeTrainingDetailExercises.map((exercise) => (
+                      <View
+                        key={exercise.exercise.id}
+                        style={{
+                          borderWidth: 1,
+                          borderColor: "rgba(255,255,255,0.06)",
+                          backgroundColor: "#171B23",
+                          borderRadius: 20,
+                          padding: 12,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 12,
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 58,
+                            height: 58,
+                            borderRadius: 16,
+                            overflow: "hidden",
+                            borderWidth: 1,
+                            borderColor: "rgba(255,255,255,0.08)",
+                            backgroundColor: exercise.previewMeta.backgroundColor,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {exercise.imageUri ? (
+                            <Image
+                              source={{ uri: exercise.imageUri }}
+                              style={{ width: "100%", height: "100%" }}
+                              resizeMode="cover"
+                            />
+                          ) : (
+                            <View
+                              style={{
+                                flex: 1,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 4,
+                                paddingHorizontal: 4,
+                              }}
+                            >
+                              <Feather
+                                name={exercise.previewMeta.icon}
+                                size={18}
+                                color={exercise.previewMeta.accentColor}
+                              />
+                              <Text
+                                style={{
+                                  color: "#E8EDF5",
+                                  fontSize: 9,
+                                  fontWeight: "700",
+                                  textAlign: "center",
+                                }}
+                                numberOfLines={1}
+                              >
+                                {exercise.previewMeta.label}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                        <View style={{ flex: 1, gap: 3 }}>
+                          <Text
+                            style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700" }}
+                            numberOfLines={1}
+                          >
+                            {exercise.exerciseName}
+                          </Text>
+                          <Text style={{ color: "#8B94A3", fontSize: 13 }}>
+                            {exercise.volumeLabel}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 999,
+                            backgroundColor: mobileTheme.color.brandPrimary,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Feather name="play" size={16} color="#06090D" />
+                        </View>
+                      </View>
+                    ))
+                  )}
+                </View>
+
+                <Pressable
+                  onPress={() => startTrainingSession(activeTrainingTemplate.id)}
+                  disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
+                  testID="training-detail-start-session"
+                  style={{
+                    minHeight: 58,
+                    borderRadius: 18,
+                    borderWidth: 1,
+                    borderColor: templateHasRunnableSeries(activeTrainingTemplate)
+                      ? "rgba(203,255,26,0.75)"
+                      : "rgba(255,255,255,0.08)",
+                    backgroundColor: templateHasRunnableSeries(activeTrainingTemplate)
+                      ? mobileTheme.color.brandPrimary
+                      : "rgba(255,255,255,0.04)",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 10,
+                  }}
+                >
+                  <Feather
+                    name="play"
+                    size={16}
+                    color={
+                      templateHasRunnableSeries(activeTrainingTemplate) ? "#06090D" : "#7F8896"
+                    }
+                  />
+                  <Text
+                    style={{
+                      color: templateHasRunnableSeries(activeTrainingTemplate)
+                        ? "#06090D"
+                        : "#7F8896",
+                      fontSize: 18,
+                      fontWeight: "800",
+                    }}
+                  >
+                    Empezar rutina
+                  </Text>
+                </Pressable>
+              </View>
             ) : activeTrainingTemplate ? (
               <View style={{ gap: 12, paddingBottom: 110 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
@@ -6215,7 +6804,7 @@ export default function App() {
                     }}
                   >
                     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "600" }}>
-                      ← Rutinas
+                      ← Detalles
                     </Text>
                   </Pressable>
                   <Pressable
@@ -7359,7 +7948,7 @@ export default function App() {
                                 </Text>
                               </Pressable>
                               <Pressable
-                                onPress={() => openTrainingTemplate(tpl.id)}
+                                onPress={() => openTrainingTemplateEditor(tpl.id)}
                                 testID={`training-template-edit-${tpl.id}`}
                                 style={{
                                   minHeight: 40,

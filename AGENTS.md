@@ -110,6 +110,20 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Training routine tap now opens a detail screen instead of the editor
+- Failure:
+  In `Entrenamiento`, tapping a routine card opened the edit screen directly, but the desired flow was to show a routine detail screen similar to `[Image #1]`.
+- Root cause:
+  The selected routine state in `apps/mobile/App.tsx` only supported the edit flow, and the card tap handler was wired straight to that editor state without an intermediate detail mode.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - added a dedicated training template screen mode to separate `detail` and `edit`.
+     - routine card taps now open a new detail screen instead of the editor.
+     - the new detail screen includes hero media/fallback artwork, summary text, stat chips, muscle filter pills, exercise preview cards, and a bottom `Empezar rutina` CTA aligned to the visual structure of `[Image #1]`.
+     - editing remains available from the detail screen and the routine menu.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Training routines now require tapping `Empezar rutina` to start execution
 - Failure:
   In `Entrenamiento`, tapping a routine card started the workout session immediately, so users could trigger execution when they only meant to open or inspect the routine.
