@@ -92,6 +92,8 @@ type WorkoutSessionSummary = {
   completed_series_count: number;
   total_series_count: number;
   estimated_calories: number;
+  total_volume_kg: number;
+  total_reps: number;
 };
 type WorkoutCompletionModalState = {
   summary: WorkoutSessionSummary;
@@ -175,6 +177,8 @@ type DietEditingItemState = { meal_id: string; item_id: string } | null;
 type TrainingFilter = "all" | "strength" | "hypertrophy" | "cardio" | "flexibility";
 type TrainingCategory = Exclude<TrainingFilter, "all">;
 type TrainingTemplateScreenMode = "detail" | "edit";
+type TrainingStatsPeriodKey = "3m" | "6m" | "12m" | "all";
+type TrainingStatsMetricKey = "volume" | "reps" | "duration";
 type TemplateSeriesPointer = {
   exerciseIndex: number;
   seriesIndex: number;
@@ -192,6 +196,7 @@ type Dashboard = {
 
 type LocalStore = {
   templates: WorkoutTemplate[];
+  workoutHistory: WorkoutSessionSummary[];
   dietByDate: Record<string, DietDay>;
   dietSettings: DietSettings;
   measurements: Measurement[];
@@ -443,6 +448,21 @@ const TRAINING_CATEGORY_EDIT_OPTIONS: Array<{ key: TrainingCategory; label: stri
   { key: "cardio", label: "Cardio" },
   { key: "flexibility", label: "Flexibilidad" },
 ];
+const TRAINING_STATS_PERIOD_OPTIONS: Array<{ key: TrainingStatsPeriodKey; label: string }> = [
+  { key: "3m", label: "3M" },
+  { key: "6m", label: "6M" },
+  { key: "12m", label: "1A" },
+  { key: "all", label: "Todo" },
+];
+const TRAINING_STATS_METRIC_OPTIONS: Array<{
+  key: TrainingStatsMetricKey;
+  label: string;
+  shortLabel: string;
+}> = [
+  { key: "volume", label: "Volumen", shortLabel: "kg" },
+  { key: "reps", label: "Repeticiones", shortLabel: "reps" },
+  { key: "duration", label: "Duración", shortLabel: "min" },
+];
 const ROUTINE_ICON_OPTIONS: RoutineIconName[] = [
   "activity",
   "heart",
@@ -469,6 +489,7 @@ const ENABLE_GLOBAL_SCREEN_LOAD_DELAY = false;
 const GLOBAL_SCREEN_LOAD_DELAY_MS = 1200;
 const TRAINING_LOADING_SKELETON_ROWS = 4;
 const TRAINING_EDITOR_LOADING_SKELETON_ROWS = 2;
+const MAX_WORKOUT_HISTORY_ITEMS = 180;
 const DIET_MACRO_MODE_OPTIONS: Array<{ key: DietMacroMode; label: string }> = [
   { key: "manual_calories", label: "kcal" },
   { key: "protein_by_weight", label: "g/kg" },
@@ -1682,6 +1703,39 @@ function normalizeMeasuredAt(rawValue: unknown): string {
   return new Date().toISOString();
 }
 
+function normalizeWorkoutSessionSummary(rawValue: unknown, index: number): WorkoutSessionSummary {
+  const maybe =
+    rawValue && typeof rawValue === "object" ? (rawValue as Partial<WorkoutSessionSummary>) : {};
+  return {
+    id:
+      typeof maybe.id === "string" && maybe.id ? maybe.id : uid(`session_summary_${index}`),
+    template_id:
+      typeof maybe.template_id === "string" && maybe.template_id.trim()
+        ? maybe.template_id.trim()
+        : "",
+    template_name:
+      typeof maybe.template_name === "string" && maybe.template_name.trim()
+        ? maybe.template_name.trim()
+        : "Rutina",
+    finished_at: normalizeMeasuredAt(maybe.finished_at),
+    elapsed_seconds: Math.max(0, Math.round(normalizeDietNonNegativeNumber(maybe.elapsed_seconds))),
+    completed_series_count: Math.max(
+      0,
+      Math.round(normalizeDietNonNegativeNumber(maybe.completed_series_count)),
+    ),
+    total_series_count: Math.max(
+      0,
+      Math.round(normalizeDietNonNegativeNumber(maybe.total_series_count)),
+    ),
+    estimated_calories: Math.max(
+      0,
+      Math.round(normalizeDietNonNegativeNumber(maybe.estimated_calories)),
+    ),
+    total_volume_kg: normalizeDietNonNegativeNumber(maybe.total_volume_kg),
+    total_reps: Math.max(0, Math.round(normalizeDietNonNegativeNumber(maybe.total_reps))),
+  };
+}
+
 function normalizeMeasurement(rawValue: unknown, index: number): Measurement {
   const maybe = rawValue && typeof rawValue === "object" ? (rawValue as Partial<Measurement>) : {};
   const parsedDate = normalizeMeasuredAt(maybe.measured_at);
@@ -1706,6 +1760,14 @@ function sortMeasurementsDesc(measurements: Measurement[]): Measurement[] {
   return [...measurements].sort((a, b) => {
     const aTime = new Date(a.measured_at).getTime();
     const bTime = new Date(b.measured_at).getTime();
+    return bTime - aTime;
+  });
+}
+
+function sortWorkoutHistoryDesc(summaries: WorkoutSessionSummary[]): WorkoutSessionSummary[] {
+  return [...summaries].sort((a, b) => {
+    const aTime = new Date(a.finished_at).getTime();
+    const bTime = new Date(b.finished_at).getTime();
     return bTime - aTime;
   });
 }
@@ -2147,6 +2209,64 @@ function formatClock(seconds: number): string {
   return `${minutes}:${`${remainder}`.padStart(2, "0")}`;
 }
 
+function summarizeWorkoutSessionPerformance(
+  session: WorkoutSession,
+  template: WorkoutTemplate | null,
+): { totalVolumeKg: number; totalReps: number } {
+  if (!template) {
+    return { totalVolumeKg: 0, totalReps: 0 };
+  }
+
+  const completedKeys = new Set(session.completed_series_keys);
+  let totalVolumeKg = 0;
+  let totalReps = 0;
+
+  template.exercises.forEach((exercise) => {
+    (exercise.series ?? []).forEach((seriesItem) => {
+      if (!completedKeys.has(`${exercise.id}:${seriesItem.id}`)) return;
+      const reps = Math.max(0, Math.round(parseNonNegativeNumberInput(seriesItem.reps) ?? 0));
+      const weightKg = Math.max(0, parseNonNegativeNumberInput(seriesItem.weight_kg) ?? 0);
+      totalReps += reps;
+      totalVolumeKg += reps * weightKg;
+    });
+  });
+
+  return {
+    totalVolumeKg: Math.round(totalVolumeKg * 10) / 10,
+    totalReps,
+  };
+}
+
+function resolveTrainingStatsPeriodStart(period: TrainingStatsPeriodKey): number | null {
+  if (period === "all") return null;
+  const cutoff = new Date();
+  cutoff.setHours(0, 0, 0, 0);
+  if (period === "12m") {
+    cutoff.setFullYear(cutoff.getFullYear() - 1);
+    return cutoff.getTime();
+  }
+  cutoff.setMonth(cutoff.getMonth() - (period === "6m" ? 6 : 3));
+  return cutoff.getTime();
+}
+
+function formatTrainingStatsHistoryLabel(rawValue: string): string {
+  const parsed = new Date(rawValue);
+  if (Number.isNaN(parsed.getTime())) return "--";
+  return parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+function formatTrainingStatsMetricValue(metric: TrainingStatsMetricKey, value: number): string {
+  if (metric === "duration") {
+    const rounded = Math.round(value * 10) / 10;
+    return Number.isInteger(rounded) ? `${rounded} min` : `${rounded.toFixed(1)} min`;
+  }
+  if (metric === "volume") {
+    const rounded = Math.round(value * 10) / 10;
+    return Number.isInteger(rounded) ? `${rounded} kg` : `${rounded.toFixed(1)} kg`;
+  }
+  return `${Math.round(value)} reps`;
+}
+
 function templateHasRunnableSeries(template: WorkoutTemplate): boolean {
   return template.exercises.some((exercise) => (exercise.series ?? []).length > 0);
 }
@@ -2341,6 +2461,7 @@ function createInitialStore(): LocalStore {
 
   return {
     templates: [],
+    workoutHistory: [],
     dietByDate: {},
     dietSettings: createDefaultDietSettings(),
     measurements: [],
@@ -2425,9 +2546,15 @@ function normalizeStore(raw: LocalStore): LocalStore {
       normalizeMeasurement(measurement, index),
     ),
   ).slice(0, 60);
+  const normalizedWorkoutHistory = sortWorkoutHistoryDesc(
+    (Array.isArray(raw.workoutHistory) ? raw.workoutHistory : []).map((summary, index) =>
+      normalizeWorkoutSessionSummary(summary, index),
+    ),
+  ).slice(0, MAX_WORKOUT_HISTORY_ITEMS);
 
   return {
     templates,
+    workoutHistory: normalizedWorkoutHistory,
     dietByDate: normalizeDietByDate(raw.dietByDate),
     dietSettings: normalizedDietSettings,
     measurements: normalizedMeasurements,
@@ -2529,6 +2656,8 @@ export default function App() {
   const [activeTrainingTemplateMode, setActiveTrainingTemplateMode] =
     useState<TrainingTemplateScreenMode>("detail");
   const [trainingDetailMuscleFilter, setTrainingDetailMuscleFilter] = useState("all");
+  const [trainingStatsPeriod, setTrainingStatsPeriod] = useState<TrainingStatsPeriodKey>("3m");
+  const [trainingStatsMetric, setTrainingStatsMetric] = useState<TrainingStatsMetricKey>("volume");
   const [trainingMenuTemplateId, setTrainingMenuTemplateId] = useState<string | null>(null);
   const [activeExerciseMenuId, setActiveExerciseMenuId] = useState<string | null>(null);
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
@@ -2846,6 +2975,55 @@ export default function App() {
     );
     return `Trabaja ${focus} con una sesión estructurada y lista para empezar.`;
   }, [activeTrainingMuscleFilters]);
+  const activeTrainingStatsMetricMeta = useMemo(
+    () =>
+      TRAINING_STATS_METRIC_OPTIONS.find((option) => option.key === trainingStatsMetric) ??
+      TRAINING_STATS_METRIC_OPTIONS[0],
+    [trainingStatsMetric],
+  );
+  const activeTrainingHistory = useMemo(() => {
+    if (!activeTrainingTemplate) return [];
+    return [...store.workoutHistory]
+      .filter((summary) => summary.template_id === activeTrainingTemplate.id)
+      .sort((a, b) => new Date(a.finished_at).getTime() - new Date(b.finished_at).getTime());
+  }, [activeTrainingTemplate, store.workoutHistory]);
+  const activeTrainingFilteredHistory = useMemo(() => {
+    const cutoff = resolveTrainingStatsPeriodStart(trainingStatsPeriod);
+    if (cutoff === null) return activeTrainingHistory;
+    return activeTrainingHistory.filter(
+      (summary) => new Date(summary.finished_at).getTime() >= cutoff,
+    );
+  }, [activeTrainingHistory, trainingStatsPeriod]);
+  const activeTrainingChartBars = useMemo(() => {
+    const points = activeTrainingFilteredHistory.map((summary) => {
+      const metricValue =
+        trainingStatsMetric === "volume"
+          ? summary.total_volume_kg
+          : trainingStatsMetric === "reps"
+            ? summary.total_reps
+            : Math.round((summary.elapsed_seconds / 60) * 10) / 10;
+      return {
+        id: summary.id,
+        label: formatTrainingStatsHistoryLabel(summary.finished_at),
+        metricValue,
+        metricValueLabel: formatTrainingStatsMetricValue(trainingStatsMetric, metricValue),
+      };
+    });
+
+    const maxValue = points.reduce((acc, point) => Math.max(acc, point.metricValue), 0);
+    return points.map((point, index) => ({
+      ...point,
+      isLatest: index === points.length - 1,
+      heightPercent: maxValue > 0 ? Math.max(10, (point.metricValue / maxValue) * 100) : 10,
+    }));
+  }, [activeTrainingFilteredHistory, trainingStatsMetric]);
+  const activeTrainingLatestChartBar = useMemo(
+    () =>
+      activeTrainingChartBars.length > 0
+        ? activeTrainingChartBars[activeTrainingChartBars.length - 1]
+        : null,
+    [activeTrainingChartBars],
+  );
   const activeSessionTemplate = useMemo(() => {
     if (!activeWorkoutSession) return null;
     return store.templates.find((template) => template.id === activeWorkoutSession.template_id) ?? null;
@@ -3083,6 +3261,8 @@ export default function App() {
     setActiveTrainingTemplateId(null);
     setActiveTrainingTemplateMode("detail");
     setTrainingDetailMuscleFilter("all");
+    setTrainingStatsPeriod("3m");
+    setTrainingStatsMetric("volume");
   }, [activeTrainingTemplateId, store.templates]);
 
   useEffect(() => {
@@ -4161,6 +4341,8 @@ export default function App() {
     setActiveTrainingTemplateId(templateId);
     setActiveTrainingTemplateMode("detail");
     setTrainingDetailMuscleFilter("all");
+    setTrainingStatsPeriod("3m");
+    setTrainingStatsMetric("volume");
     setExpandedExerciseId(null);
     setActiveExerciseMenuId(null);
     setError(null);
@@ -4181,6 +4363,8 @@ export default function App() {
     setActiveTrainingTemplateId(null);
     setActiveTrainingTemplateMode("detail");
     setTrainingDetailMuscleFilter("all");
+    setTrainingStatsPeriod("3m");
+    setTrainingStatsMetric("volume");
     setTrainingMenuTemplateId(null);
     setExpandedExerciseId(null);
     setActiveExerciseMenuId(null);
@@ -4540,6 +4724,8 @@ export default function App() {
       setActiveTrainingTemplateId(null);
       setActiveTrainingTemplateMode("detail");
       setTrainingDetailMuscleFilter("all");
+      setTrainingStatsPeriod("3m");
+      setTrainingStatsMetric("volume");
     }
     setTrainingMenuTemplateId(null);
   }
@@ -4572,6 +4758,7 @@ export default function App() {
       originalTemplate &&
       buildTemplateSeriesSignature(currentTemplate) !== buildTemplateSeriesSignature(originalTemplate)
     );
+    const sessionPerformance = summarizeWorkoutSessionPerformance(session, currentTemplate);
     const summary: WorkoutSessionSummary = {
       id: uid("session_summary"),
       template_id: session.template_id,
@@ -4581,7 +4768,13 @@ export default function App() {
       completed_series_count: session.completed_series_count,
       total_series_count: session.total_series_count,
       estimated_calories: estimateWorkoutCalories(session),
+      total_volume_kg: sessionPerformance.totalVolumeKg,
+      total_reps: sessionPerformance.totalReps,
     };
+    setStore((prev) => ({
+      ...prev,
+      workoutHistory: [summary, ...prev.workoutHistory].slice(0, MAX_WORKOUT_HISTORY_ITEMS),
+    }));
     setLastWorkoutSessionSummary(summary);
     setWorkoutCompletionModal({
       summary,
@@ -4633,6 +4826,8 @@ export default function App() {
     setActiveTrainingTemplateId(null);
     setActiveTrainingTemplateMode("detail");
     setTrainingDetailMuscleFilter("all");
+    setTrainingStatsPeriod("3m");
+    setTrainingStatsMetric("volume");
     setTrainingMenuTemplateId(null);
     setActiveExerciseMenuId(null);
     setExpandedExerciseId(null);
@@ -6515,6 +6710,214 @@ export default function App() {
                   <Text style={{ color: "#8B94A3", fontSize: 16, lineHeight: 22 }}>
                     {activeTrainingSummary}
                   </Text>
+                </View>
+
+                <View
+                  style={{
+                    borderRadius: 22,
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.06)",
+                    backgroundColor: "#171B23",
+                    padding: 14,
+                    gap: 14,
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      gap: 12,
+                    }}
+                  >
+                    <View style={{ flex: 1, gap: 4 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>
+                        Estadísticas
+                      </Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 12 }}>
+                        {activeTrainingLatestChartBar
+                          ? `${activeTrainingStatsMetricMeta.label}: ${activeTrainingLatestChartBar.metricValueLabel}`
+                          : activeTrainingHistory.length > 0
+                            ? "No hay registros en el periodo seleccionado."
+                            : "Completa la rutina para empezar a ver progreso."}
+                      </Text>
+                    </View>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ gap: 6, paddingLeft: 8 }}
+                    >
+                      {TRAINING_STATS_PERIOD_OPTIONS.map((option) => {
+                        const isActive = trainingStatsPeriod === option.key;
+                        return (
+                          <Pressable
+                            key={option.key}
+                            onPress={() => setTrainingStatsPeriod(option.key)}
+                            style={{
+                              minHeight: 30,
+                              borderRadius: 999,
+                              borderWidth: 1,
+                              borderColor: isActive
+                                ? "rgba(203,255,26,0.78)"
+                                : "rgba(255,255,255,0.08)",
+                              backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#10151D",
+                              paddingHorizontal: 10,
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
+                                fontSize: 11,
+                                fontWeight: "700",
+                              }}
+                            >
+                              {option.label}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </ScrollView>
+                  </View>
+
+                  <View
+                    style={{
+                      minHeight: 196,
+                      borderRadius: 18,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.04)",
+                      backgroundColor: "#121720",
+                      paddingHorizontal: 12,
+                      paddingVertical: 12,
+                    }}
+                  >
+                    {activeTrainingChartBars.length === 0 ? (
+                      <View
+                        style={{
+                          flex: 1,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          paddingHorizontal: 10,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "#8B94A3",
+                            fontSize: 14,
+                            textAlign: "center",
+                            lineHeight: 20,
+                          }}
+                        >
+                          {activeTrainingHistory.length > 0
+                            ? "No hay sesiones de esta rutina en el periodo seleccionado."
+                            : "Todavía no hay ejecuciones guardadas de esta rutina."}
+                        </Text>
+                      </View>
+                    ) : (
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{
+                          gap: 12,
+                          alignItems: "flex-end",
+                          paddingRight: 10,
+                          minHeight: 172,
+                        }}
+                      >
+                        {activeTrainingChartBars.map((bar) => (
+                          <View
+                            key={bar.id}
+                            style={{
+                              width: 42,
+                              alignItems: "center",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: bar.isLatest ? mobileTheme.color.brandPrimary : "#8B94A3",
+                                fontSize: 10,
+                                fontWeight: "700",
+                                textAlign: "center",
+                                minHeight: 28,
+                              }}
+                              numberOfLines={2}
+                            >
+                              {bar.metricValueLabel}
+                            </Text>
+                            <View
+                              style={{
+                                marginTop: 6,
+                                width: "100%",
+                                height: 108,
+                                justifyContent: "flex-end",
+                                alignItems: "center",
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 18,
+                                  height: `${bar.heightPercent}%`,
+                                  minHeight: 10,
+                                  borderRadius: 999,
+                                  backgroundColor: bar.isLatest
+                                    ? mobileTheme.color.brandPrimary
+                                    : "rgba(203,255,26,0.38)",
+                                }}
+                              />
+                            </View>
+                            <Text
+                              style={{
+                                marginTop: 8,
+                                color: "#8B94A3",
+                                fontSize: 10,
+                                fontWeight: bar.isLatest ? "700" : "500",
+                                textAlign: "center",
+                              }}
+                              numberOfLines={1}
+                            >
+                              {bar.label}
+                            </Text>
+                          </View>
+                        ))}
+                      </ScrollView>
+                    )}
+                  </View>
+
+                  <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                    {TRAINING_STATS_METRIC_OPTIONS.map((option) => {
+                      const isActive = trainingStatsMetric === option.key;
+                      return (
+                        <Pressable
+                          key={option.key}
+                          onPress={() => setTrainingStatsMetric(option.key)}
+                          style={{
+                            minHeight: 38,
+                            borderRadius: mobileTheme.radius.pill,
+                            borderWidth: 1,
+                            borderColor: isActive
+                              ? "rgba(203,255,26,0.82)"
+                              : mobileTheme.color.borderSubtle,
+                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                            paddingHorizontal: 14,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
+                              fontSize: 14,
+                              fontWeight: "700",
+                            }}
+                          >
+                            {option.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
                 </View>
 
                 <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>

@@ -110,6 +110,20 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Training detail screen now includes a routine stats chart with period and metric selectors
+- Failure:
+  The training routine detail screen showed summary text and stat chips, but it had no chart to visualize progress history for that routine.
+- Root cause:
+  `apps/mobile/App.tsx` did not persist workout execution history in the local store, and the routine detail UI had no chart state or rendering for per-routine metrics over time.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - added persistent `workoutHistory` to the local store and normalization for historical workout summaries.
+     - enriched workout session summaries with `total_volume_kg` and `total_reps`, computed from completed series when finishing a session.
+     - added period selectors (`3M`, `6M`, `1A`, `Todo`) and metric selectors (`Volumen`, `Repeticiones`, `Duración`) to the training detail screen.
+     - inserted a native bar-chart card between the routine subtitle and the stat chips, showing routine history filtered by selected period and metric.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Training routine tap now opens a detail screen instead of the editor
 - Failure:
   In `Entrenamiento`, tapping a routine card opened the edit screen directly, but the desired flow was to show a routine detail screen similar to `[Image #1]`.
