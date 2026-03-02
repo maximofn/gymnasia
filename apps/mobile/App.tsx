@@ -179,6 +179,7 @@ type TrainingCategory = Exclude<TrainingFilter, "all">;
 type TrainingTemplateScreenMode = "detail" | "edit";
 type TrainingStatsPeriodKey = "3m" | "6m" | "12m" | "all";
 type TrainingStatsMetricKey = "volume" | "reps" | "duration";
+type MeasuresDashboardPeriodKey = "1m" | "3m" | "6m" | "all";
 type TemplateSeriesPointer = {
   exerciseIndex: number;
   seriesIndex: number;
@@ -453,6 +454,16 @@ const TRAINING_STATS_PERIOD_OPTIONS: Array<{ key: TrainingStatsPeriodKey; label:
   { key: "6m", label: "6M" },
   { key: "12m", label: "1A" },
   { key: "all", label: "Todo" },
+];
+const MEASURES_DASHBOARD_PERIOD_OPTIONS: Array<{
+  key: MeasuresDashboardPeriodKey;
+  label: string;
+  days: number | null;
+}> = [
+  { key: "1m", label: "1 mes", days: 30 },
+  { key: "3m", label: "3 meses", days: 90 },
+  { key: "6m", label: "6 meses", days: 180 },
+  { key: "all", label: "Todo", days: null },
 ];
 const TRAINING_STATS_METRIC_OPTIONS: Array<{
   key: TrainingStatsMetricKey;
@@ -1784,9 +1795,64 @@ function formatMeasurementDate(rawValue: string): string {
   return parsed.toLocaleDateString();
 }
 
+function formatMeasurementHistoryDate(rawValue: string): string {
+  const parsed = new Date(rawValue);
+  if (Number.isNaN(parsed.getTime())) return "Fecha inválida";
+  return `${parsed.getDate()} ${DIET_MONTH_LABELS_SHORT[parsed.getMonth()]} ${parsed.getFullYear()}`;
+}
+
 function formatMeasurementNumber(value: number): string {
   const rounded = Math.round(value * 10) / 10;
   return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
+}
+
+function estimateMeasurementBodyFatPercentage(
+  measurement: Measurement,
+  fallbackHeightCm: number | null,
+): number | null {
+  const heightCm = measurement.height_cm ?? fallbackHeightCm;
+  if (heightCm === null || measurement.waist_cm === null || measurement.neck_cm === null) {
+    return null;
+  }
+
+  const waistMinusNeckCm = measurement.waist_cm - measurement.neck_cm;
+  if (!(waistMinusNeckCm > 0)) return null;
+
+  const waistMinusNeckIn = waistMinusNeckCm / 2.54;
+  const heightIn = heightCm / 2.54;
+  const estimate =
+    86.01 * Math.log10(waistMinusNeckIn) - 70.041 * Math.log10(heightIn) + 36.76;
+  if (!Number.isFinite(estimate)) return null;
+
+  return Math.max(3, Math.min(60, Math.round(estimate * 10) / 10));
+}
+
+function buildMeasurementHistorySummary(
+  measurement: Measurement,
+  fallbackHeightCm: number | null,
+): string {
+  const summaryParts: string[] = [];
+
+  if (measurement.weight_kg !== null) {
+    summaryParts.push(`${formatMeasurementNumber(measurement.weight_kg)} kg`);
+  }
+
+  const bodyFatPercentage = estimateMeasurementBodyFatPercentage(measurement, fallbackHeightCm);
+  if (bodyFatPercentage !== null) {
+    summaryParts.push(`${formatMeasurementNumber(bodyFatPercentage)}% grasa`);
+  }
+
+  if (measurement.waist_cm !== null) {
+    summaryParts.push(`Cintura ${formatMeasurementNumber(measurement.waist_cm)} cm`);
+  } else if (measurement.chest_cm !== null) {
+    summaryParts.push(`Pecho ${formatMeasurementNumber(measurement.chest_cm)} cm`);
+  } else if (measurement.biceps_cm !== null) {
+    summaryParts.push(`Brazo ${formatMeasurementNumber(measurement.biceps_cm)} cm`);
+  } else if (measurement.photo_uri) {
+    summaryParts.push("Foto de progreso");
+  }
+
+  return summaryParts.join(" · ") || "Sin medidas numéricas";
 }
 
 function formatNutritionNumber(value: number): string {
@@ -2602,6 +2668,9 @@ export default function App() {
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
   const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
   const [showMeasurementDatePicker, setShowMeasurementDatePicker] = useState(false);
+  const [measuresDashboardPeriod, setMeasuresDashboardPeriod] =
+    useState<MeasuresDashboardPeriodKey>("3m");
+  const [showAllMeasurementsHistory, setShowAllMeasurementsHistory] = useState(false);
   const [heightInput, setHeightInput] = useState("");
   const [neckInput, setNeckInput] = useState("");
   const [chestInput, setChestInput] = useState("");
@@ -2726,7 +2795,221 @@ export default function App() {
   );
   const latestBodyWeightKg = latestWeightMeasurement?.weight_kg ?? null;
   const latestBodyHeightCm = latestHeightMeasurement?.height_cm ?? null;
+  const measuresDashboardPeriodMeta = useMemo(
+    () =>
+      MEASURES_DASHBOARD_PERIOD_OPTIONS.find((option) => option.key === measuresDashboardPeriod) ??
+      MEASURES_DASHBOARD_PERIOD_OPTIONS[1],
+    [measuresDashboardPeriod],
+  );
+  const canExpandMeasurementHistory = store.measurements.length > 4;
   const dietSettings = store.dietSettings;
+
+  function resolveMeasurementMetricPair(
+    selector: (measurement: Measurement) => number | null,
+  ): { latest: number | null; previous: number | null } {
+    let latest: number | null = null;
+    let previous: number | null = null;
+
+    for (const measurement of store.measurements) {
+      const value = selector(measurement);
+      if (value === null || !Number.isFinite(value)) continue;
+      if (latest === null) {
+        latest = value;
+        continue;
+      }
+      previous = value;
+      break;
+    }
+
+    return { latest, previous };
+  }
+
+  function buildMeasurementStatCard(
+    label: string,
+    latest: number | null,
+    previous: number | null,
+    formatValue: (value: number) => string,
+    unitLabel: string,
+    prefersDecrease: boolean,
+  ): {
+    label: string;
+    valueText: string;
+    changeText: string;
+    changeColor: string;
+    changeIcon: keyof typeof Feather.glyphMap;
+  } {
+    if (latest === null) {
+      return {
+        label,
+        valueText: "Sin datos",
+        changeText: "Registra tu primera medición",
+        changeColor: "#6F7785",
+        changeIcon: "minus",
+      };
+    }
+
+    if (previous === null) {
+      return {
+        label,
+        valueText: formatValue(latest),
+        changeText: "Primer registro",
+        changeColor: "#19C37D",
+        changeIcon: "arrow-right",
+      };
+    }
+
+    const delta = Math.round((latest - previous) * 10) / 10;
+    if (Math.abs(delta) < 0.05) {
+      return {
+        label,
+        valueText: formatValue(latest),
+        changeText: "Sin cambio",
+        changeColor: "#6F7785",
+        changeIcon: "minus",
+      };
+    }
+
+    const improved = prefersDecrease ? delta < 0 : delta > 0;
+    const signedValue = `${delta > 0 ? "+" : "-"}${formatMeasurementNumber(Math.abs(delta))}`;
+    return {
+      label,
+      valueText: formatValue(latest),
+      changeText: `${signedValue} ${unitLabel} vs registro ant.`,
+      changeColor: improved ? "#19C37D" : mobileTheme.color.brandPrimary,
+      changeIcon: delta < 0 ? "trending-down" : "trending-up",
+    };
+  }
+
+  const weightMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.weight_kg);
+  const bodyFatMeasurementPair = resolveMeasurementMetricPair((measurement) =>
+    estimateMeasurementBodyFatPercentage(measurement, latestBodyHeightCm),
+  );
+  const waistMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.waist_cm);
+  const chestMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.chest_cm);
+  const armMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.biceps_cm);
+  const measuresPrimaryStatCards = [
+    buildMeasurementStatCard(
+      "Peso actual",
+      weightMeasurementPair.latest,
+      weightMeasurementPair.previous,
+      (value) => `${formatMeasurementNumber(value)} kg`,
+      "kg",
+      true,
+    ),
+    buildMeasurementStatCard(
+      "% Grasa",
+      bodyFatMeasurementPair.latest,
+      bodyFatMeasurementPair.previous,
+      (value) => `${formatMeasurementNumber(value)}%`,
+      "%",
+      true,
+    ),
+  ];
+  const measuresSecondaryStatCards = [
+    buildMeasurementStatCard(
+      "Cintura",
+      waistMeasurementPair.latest,
+      waistMeasurementPair.previous,
+      (value) => `${formatMeasurementNumber(value)} cm`,
+      "cm",
+      true,
+    ),
+    buildMeasurementStatCard(
+      "Pecho",
+      chestMeasurementPair.latest,
+      chestMeasurementPair.previous,
+      (value) => `${formatMeasurementNumber(value)} cm`,
+      "cm",
+      false,
+    ),
+    buildMeasurementStatCard(
+      "Brazo",
+      armMeasurementPair.latest,
+      armMeasurementPair.previous,
+      (value) => `${formatMeasurementNumber(value)} cm`,
+      "cm",
+      false,
+    ),
+  ];
+  const measuresDashboardChartPoints = useMemo(() => {
+    const cutoffTime =
+      measuresDashboardPeriodMeta.days === null
+        ? null
+        : Date.now() - measuresDashboardPeriodMeta.days * 24 * 60 * 60 * 1000;
+    const monthBuckets = new Map<
+      string,
+      { key: string; label: string; value: number; timestamp: number }
+    >();
+
+    const filteredWeightMeasurements = [...store.measurements]
+      .filter((measurement) => measurement.weight_kg !== null)
+      .filter((measurement) => {
+        const measurementTime = new Date(measurement.measured_at).getTime();
+        if (Number.isNaN(measurementTime)) return false;
+        if (cutoffTime === null) return true;
+        return measurementTime >= cutoffTime;
+      })
+      .sort(
+        (a, b) =>
+          new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime(),
+      );
+
+    filteredWeightMeasurements.forEach((measurement) => {
+      const measurementTime = new Date(measurement.measured_at).getTime();
+      if (Number.isNaN(measurementTime) || measurement.weight_kg === null) return;
+      const parsedDate = new Date(measurementTime);
+      const bucketKey = `${parsedDate.getFullYear()}-${parsedDate.getMonth()}`;
+      monthBuckets.set(bucketKey, {
+        key: bucketKey,
+        label: DIET_MONTH_LABELS_SHORT[parsedDate.getMonth()],
+        value: measurement.weight_kg,
+        timestamp: measurementTime,
+      });
+    });
+
+    const points = Array.from(monthBuckets.values())
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .slice(-6);
+    if (points.length === 0) return [];
+
+    const values = points.map((point) => point.value);
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    const range = Math.max(0.4, maxValue - minValue);
+
+    return points.map((point, index) => ({
+      ...point,
+      heightPercent: 24 + ((point.value - minValue) / range) * 64,
+      isLatest: index === points.length - 1,
+    }));
+  }, [measuresDashboardPeriodMeta.days, store.measurements]);
+  const measuresDashboardScaleLabels = useMemo(() => {
+    if (measuresDashboardChartPoints.length === 0) {
+      return { top: null, mid: null, bottom: null };
+    }
+
+    const values = measuresDashboardChartPoints.map((point) => point.value);
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    const middleValue = minValue + (maxValue - minValue) / 2;
+
+    return {
+      top: formatMeasurementNumber(maxValue),
+      mid: formatMeasurementNumber(middleValue),
+      bottom: formatMeasurementNumber(minValue),
+    };
+  }, [measuresDashboardChartPoints]);
+  const measurementHistoryEntries = useMemo(
+    () =>
+      (showAllMeasurementsHistory
+        ? store.measurements
+        : store.measurements.slice(0, 4)
+      ).map((measurement, sourceIndex) => ({
+        measurement,
+        sourceIndex,
+      })),
+    [showAllMeasurementsHistory, store.measurements],
+  );
   const dietDailyCaloriesTarget = parseNonNegativeNumberInput(dietSettings.daily_calories) ?? 0;
   const manualCarbsCalories =
     parseNonNegativeNumberInput(dietSettings.manual_macro_calories.carbs) ?? 0;
@@ -4057,37 +4340,24 @@ export default function App() {
     }
   }
 
-  function addWeight() {
-    const value = parsePositiveNumberInput(weightInput);
-    if (value === null) {
-      setError("Introduce un peso válido.");
-      return;
-    }
-
-    const measurement: Measurement = {
-      id: uid("measurement"),
-      measured_at: measurementDateFromSelection(new Date()).toISOString(),
-      weight_kg: value,
-      photo_uri: null,
-      neck_cm: null,
-      chest_cm: null,
-      waist_cm: null,
-      hips_cm: null,
-      biceps_cm: null,
-      quadriceps_cm: null,
-      calf_cm: null,
-      height_cm: null,
-    };
-
-    setStore((prev) => {
-      const nextMeasurements = sortMeasurementsDesc([measurement, ...prev.measurements]).slice(0, 60);
-      return {
-        ...prev,
-        measurements: nextMeasurements,
-      };
-    });
-    setWeightInput("");
+  function openMeasuresRegistration() {
+    setShowMeasurementDatePicker(false);
+    setSettingsTab("measures");
+    setTab("settings");
     setError(null);
+  }
+
+  function cycleMeasuresDashboardPeriod() {
+    setMeasuresDashboardPeriod((current) => {
+      const currentIndex = MEASURES_DASHBOARD_PERIOD_OPTIONS.findIndex(
+        (option) => option.key === current,
+      );
+      const nextIndex =
+        currentIndex >= 0
+          ? (currentIndex + 1) % MEASURES_DASHBOARD_PERIOD_OPTIONS.length
+          : 1;
+      return MEASURES_DASHBOARD_PERIOD_OPTIONS[nextIndex]?.key ?? "3m";
+    });
   }
 
   async function pickMeasurementPhoto() {
@@ -8993,45 +9263,435 @@ export default function App() {
           ) : null}
 
           {tab === "measures" ? (
-            <View style={{ gap: 10 }}>
-              <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>Añadir peso</Text>
-                <TextInput
-                  style={{
-                    minHeight: 42,
-                    borderRadius: mobileTheme.radius.md,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgApp,
-                    color: mobileTheme.color.textPrimary,
-                    paddingHorizontal: 12,
-                  }}
-                  value={weightInput}
-                  onChangeText={setWeightInput}
-                  placeholder="Peso (kg)"
-                  placeholderTextColor={mobileTheme.color.textSecondary}
-                  keyboardType="decimal-pad"
-                />
+            <View style={{ gap: 14 }}>
+              <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
                 <Pressable
-                  onPress={addWeight}
+                  onPress={openMeasuresRegistration}
                   style={{
-                    height: 44,
-                    borderRadius: mobileTheme.radius.md,
+                    minHeight: 44,
+                    borderRadius: 14,
                     backgroundColor: mobileTheme.color.brandPrimary,
+                    paddingHorizontal: 16,
+                    flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
+                    gap: 8,
                   }}
                 >
-                  <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar peso</Text>
+                  <Ionicons name="add-circle-outline" size={18} color="#06090D" />
+                  <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 14 }}>
+                    Registrar
+                  </Text>
                 </Pressable>
               </View>
 
-              {store.measurements.map((m) => (
-                <View key={m.id} style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>{new Date(m.measured_at).toLocaleString()}</Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, marginTop: 4 }}>{m.weight_kg !== null ? `${m.weight_kg} kg` : "Sin peso"}</Text>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                {measuresPrimaryStatCards.map((card) => (
+                  <View
+                    key={card.label}
+                    style={{
+                      flex: 1,
+                      minHeight: 118,
+                      borderRadius: 18,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.04)",
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      padding: 14,
+                      gap: 6,
+                    }}
+                  >
+                    <Text style={{ color: "#7F8795", fontSize: 12, fontWeight: "600" }}>
+                      {card.label}
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800" }}>
+                      {card.valueText}
+                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: "auto" }}>
+                      <Feather name={card.changeIcon} size={12} color={card.changeColor} />
+                      <Text
+                        style={{
+                          color: card.changeColor,
+                          fontSize: 12,
+                          fontWeight: "700",
+                          flex: 1,
+                        }}
+                        numberOfLines={1}
+                      >
+                        {card.changeText}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                {measuresSecondaryStatCards.map((card) => (
+                  <View
+                    key={card.label}
+                    style={{
+                      flex: 1,
+                      minHeight: 94,
+                      borderRadius: 18,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.04)",
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      padding: 12,
+                      gap: 4,
+                    }}
+                  >
+                    <Text style={{ color: "#7F8795", fontSize: 12, fontWeight: "600" }}>
+                      {card.label}
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
+                      {card.valueText}
+                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginTop: "auto" }}>
+                      <Feather name={card.changeIcon} size={11} color={card.changeColor} />
+                      <Text
+                        style={{
+                          color: card.changeColor,
+                          fontSize: 11,
+                          fontWeight: "700",
+                          flex: 1,
+                        }}
+                        numberOfLines={1}
+                      >
+                        {card.changeText}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+
+              <View
+                style={{
+                  borderRadius: 22,
+                  borderWidth: 1,
+                  borderColor: "rgba(255,255,255,0.04)",
+                  backgroundColor: mobileTheme.color.bgSurface,
+                  padding: 14,
+                  gap: 14,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 12,
+                  }}
+                >
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
+                    Evolución de peso
+                  </Text>
+                  <Pressable
+                    onPress={cycleMeasuresDashboardPeriod}
+                    style={{
+                      minHeight: 34,
+                      borderRadius: mobileTheme.radius.pill,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.06)",
+                      backgroundColor: "#1B2029",
+                      paddingHorizontal: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "700" }}>
+                      {measuresDashboardPeriodMeta.label}
+                    </Text>
+                    <Ionicons name="chevron-down" size={14} color="#6F7785" />
+                  </Pressable>
                 </View>
-              ))}
+
+                <View
+                  style={{
+                    minHeight: 214,
+                    borderRadius: 18,
+                    backgroundColor: "#11161E",
+                    paddingVertical: 12,
+                    paddingHorizontal: 10,
+                    flexDirection: "row",
+                    gap: 10,
+                  }}
+                >
+                  {measuresDashboardChartPoints.length === 0 ? (
+                    <View
+                      style={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingHorizontal: 14,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#8B94A3",
+                          fontSize: 13,
+                          lineHeight: 18,
+                          textAlign: "center",
+                        }}
+                      >
+                        {store.measurements.some((measurement) => measurement.weight_kg !== null)
+                          ? "No hay registros de peso suficientes para este periodo."
+                          : "Registra tu peso para empezar a ver la evolución."}
+                      </Text>
+                    </View>
+                  ) : (
+                    <>
+                      <View
+                        style={{
+                          width: 28,
+                          justifyContent: "space-between",
+                          paddingVertical: 4,
+                        }}
+                      >
+                        <Text style={{ color: "#4E5665", fontSize: 11 }}>
+                          {measuresDashboardScaleLabels.top}
+                        </Text>
+                        <Text style={{ color: "#4E5665", fontSize: 11 }}>
+                          {measuresDashboardScaleLabels.mid}
+                        </Text>
+                        <Text style={{ color: "#4E5665", fontSize: 11 }}>
+                          {measuresDashboardScaleLabels.bottom}
+                        </Text>
+                      </View>
+
+                      <View
+                        style={{
+                          flex: 1,
+                          minHeight: 190,
+                          borderRadius: 16,
+                          overflow: "hidden",
+                          paddingTop: 6,
+                        }}
+                      >
+                        {[0, 1, 2, 3].map((lineIndex) => (
+                          <View
+                            key={`measure-chart-line-${lineIndex}`}
+                            style={{
+                              position: "absolute",
+                              left: 0,
+                              right: 0,
+                              top: `${lineIndex * 28}%`,
+                              borderTopWidth: 1,
+                              borderTopColor: "rgba(255,255,255,0.05)",
+                            }}
+                          />
+                        ))}
+
+                        <View
+                          style={{
+                            flex: 1,
+                            flexDirection: "row",
+                            alignItems: "flex-end",
+                            gap: 8,
+                          }}
+                        >
+                          {measuresDashboardChartPoints.map((point) => (
+                            <View
+                              key={point.key}
+                              style={{
+                                flex: 1,
+                                minWidth: 34,
+                                height: "100%",
+                                justifyContent: "flex-end",
+                                alignItems: "center",
+                                gap: 8,
+                              }}
+                            >
+                              <View
+                                style={{
+                                  flex: 1,
+                                  width: "100%",
+                                  justifyContent: "flex-end",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    width: "72%",
+                                    height: `${point.heightPercent}%`,
+                                    minHeight: 22,
+                                    borderRadius: 999,
+                                    borderWidth: 1,
+                                    borderColor: point.isLatest
+                                      ? "rgba(203,255,26,0.42)"
+                                      : "rgba(203,255,26,0.12)",
+                                    backgroundColor: point.isLatest
+                                      ? "rgba(203,255,26,0.16)"
+                                      : "rgba(203,255,26,0.08)",
+                                    justifyContent: "flex-start",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      width: 8,
+                                      height: 8,
+                                      borderRadius: 999,
+                                      backgroundColor: mobileTheme.color.brandPrimary,
+                                      marginTop: -4,
+                                    }}
+                                  />
+                                </View>
+                              </View>
+
+                              <Text
+                                style={{
+                                  color: point.isLatest ? mobileTheme.color.brandPrimary : "#7F8795",
+                                  fontSize: 11,
+                                  fontWeight: point.isLatest ? "800" : "600",
+                                }}
+                              >
+                                {point.label}
+                              </Text>
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                    </>
+                  )}
+                </View>
+              </View>
+
+              <View style={{ gap: 10 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 12,
+                  }}
+                >
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
+                    Historial de registros
+                  </Text>
+                  {canExpandMeasurementHistory ? (
+                    <Pressable
+                      onPress={() => setShowAllMeasurementsHistory((current) => !current)}
+                    >
+                      <Text
+                        style={{
+                          color: mobileTheme.color.brandPrimary,
+                          fontSize: 13,
+                          fontWeight: "800",
+                        }}
+                      >
+                        {showAllMeasurementsHistory ? "Ver menos" : "Ver todo"}
+                      </Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+
+                {measurementHistoryEntries.length === 0 ? (
+                  <View
+                    style={{
+                      borderRadius: 18,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.04)",
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      padding: 14,
+                      gap: 8,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                      Todavía no hay registros
+                    </Text>
+                    <Text style={{ color: "#8B94A3", fontSize: 13, lineHeight: 18 }}>
+                      Usa `Registrar` para guardar tu primer peso, foto o perímetro corporal.
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={{ gap: 10 }}>
+                    {measurementHistoryEntries.map(({ measurement, sourceIndex }) => {
+                      const previousWeightMeasurement =
+                        measurement.weight_kg === null
+                          ? null
+                          : store.measurements
+                              .slice(sourceIndex + 1)
+                              .find((entry) => entry.weight_kg !== null) ?? null;
+                      const previousWeightValue = previousWeightMeasurement?.weight_kg ?? null;
+                      const weightDelta =
+                        measurement.weight_kg !== null && previousWeightValue !== null
+                          ? Math.round(
+                              (measurement.weight_kg - previousWeightValue) * 10,
+                            ) / 10
+                          : null;
+                      const changeIsDecrease = weightDelta !== null && weightDelta < 0;
+                      const changeBadgeColor =
+                        weightDelta === null
+                          ? "#6F7785"
+                          : changeIsDecrease
+                            ? "#19C37D"
+                            : mobileTheme.color.brandPrimary;
+                      const changeBadgeBackground =
+                        weightDelta === null
+                          ? "rgba(127,135,149,0.14)"
+                          : changeIsDecrease
+                            ? "rgba(25,195,125,0.14)"
+                            : "rgba(203,255,26,0.12)";
+
+                      return (
+                        <Pressable
+                          key={measurement.id}
+                          onPress={openMeasuresRegistration}
+                          style={{
+                            borderRadius: 18,
+                            borderWidth: 1,
+                            borderColor: "rgba(255,255,255,0.04)",
+                            backgroundColor: mobileTheme.color.bgSurface,
+                            padding: 14,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 12,
+                          }}
+                        >
+                          <View style={{ flex: 1, gap: 4 }}>
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}>
+                              {formatMeasurementHistoryDate(measurement.measured_at)}
+                            </Text>
+                            <Text
+                              style={{ color: "#7F8795", fontSize: 12, lineHeight: 17 }}
+                              numberOfLines={1}
+                            >
+                              {buildMeasurementHistorySummary(measurement, latestBodyHeightCm)}
+                            </Text>
+                          </View>
+
+                          {weightDelta !== null ? (
+                            <View
+                              style={{
+                                minHeight: 30,
+                                borderRadius: mobileTheme.radius.pill,
+                                backgroundColor: changeBadgeBackground,
+                                paddingHorizontal: 10,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 6,
+                              }}
+                            >
+                              <Feather
+                                name={changeIsDecrease ? "trending-down" : "trending-up"}
+                                size={11}
+                                color={changeBadgeColor}
+                              />
+                              <Text style={{ color: changeBadgeColor, fontSize: 12, fontWeight: "800" }}>
+                                {formatMeasurementNumber(Math.abs(weightDelta))}
+                              </Text>
+                            </View>
+                          ) : null}
+
+                          <Ionicons name="chevron-forward" size={18} color="#5D6675" />
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                )}
+              </View>
             </View>
           ) : null}
 

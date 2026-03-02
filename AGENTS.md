@@ -110,6 +110,22 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - `Medidas` tab restored to the dashboard layout from `[Image #1]`
+- Failure:
+  The `Medidas` tab only showed a basic `Añadir peso` form and raw records, so it did not match the dashboard structure required by `[Image #1]`.
+- Root cause:
+  `tab === "measures"` in `apps/mobile/App.tsx` had regressed to a minimal placeholder implementation and no longer reused the richer measurement data already available in the local store.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - replaced the minimal `Medidas` tab with a dashboard layout matching the reference structure.
+     - added the top `Registrar` CTA, wired to `Configuración > Medidas` for full data entry.
+     - added summary cards for `Peso actual`, `% Grasa`, `Cintura`, `Pecho`, and `Brazo`, including trend deltas vs the previous available record.
+     - added a weight evolution card with a period selector pill and compact chart.
+     - added a styled `Historial de registros` list with `Ver todo` expansion and per-row summaries.
+     - added measurement helpers for short date formatting, body-fat estimation from stored measurements, and history summary text.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Bottom `Medidas` tab label restored from `Estadísticas`
 - Failure:
   The bottom navigation tab for `measures` was showing `Estadísticas`, but the requested label is `Medidas`.
