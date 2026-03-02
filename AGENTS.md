@@ -110,6 +110,21 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Bottom `Configuración` tab now uses a gear icon instead of text
+- Failure:
+  The bottom navigation still rendered the full `Configuración` label, but the requested UI was an icon-only gear tab.
+- Root cause:
+  `apps/mobile/App.tsx` rendered every bottom tab as text via `tabLabel(key)`, and the E2E helper in `apps/mobile/scripts/train-usability.e2e.mjs` depended on that visible label to click the settings tab.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - kept `Configuración` as the screen title/accessibility label.
+     - changed only the bottom `settings` tab content to render an `Ionicons` gear icon.
+     - added stable `testID`s (`nav-tab-*`) to the bottom navigation buttons.
+  2. Updated `apps/mobile/scripts/train-usability.e2e.mjs`:
+     - changed `clickNavTab(...)` to use the new `nav-tab-*` test IDs, so the settings tab still works without visible text.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Training detail screen now includes a routine stats chart with period and metric selectors
 - Failure:
   The training routine detail screen showed summary text and stat chips, but it had no chart to visualize progress history for that routine.

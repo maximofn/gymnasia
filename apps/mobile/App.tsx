@@ -5623,10 +5623,16 @@ export default function App() {
         >
           {(["home", "training", "diet", "measures", "chat", "settings"] as TabKey[]).map((key) => {
             const isActiveTab = tab === key;
+            const tabTextColor = isActiveTab
+              ? mobileTheme.color.brandPrimary
+              : mobileTheme.color.textSecondary;
             return (
               <Pressable
                 key={key}
                 onPress={() => setTab(key)}
+                testID={`nav-tab-${key}`}
+                accessibilityLabel={tabLabel(key)}
+                accessibilityRole="button"
                 style={{
                   flex: 1,
                   minHeight: 44,
@@ -5638,15 +5644,19 @@ export default function App() {
                   borderColor: isActiveTab ? "rgba(203,255,26,0.5)" : "transparent",
                 }}
               >
-                <Text
-                  style={{
-                    color: isActiveTab ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary,
-                    fontWeight: "700",
-                    fontSize: 12,
-                  }}
-                >
-                  {tabLabel(key)}
-                </Text>
+                {key === "settings" ? (
+                  <Ionicons color={tabTextColor} name="settings-sharp" size={18} />
+                ) : (
+                  <Text
+                    style={{
+                      color: tabTextColor,
+                      fontWeight: "700",
+                      fontSize: 12,
+                    }}
+                  >
+                    {tabLabel(key)}
+                  </Text>
+                )}
               </Pressable>
             );
           })}

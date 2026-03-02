@@ -129,6 +129,19 @@ async function expectBodyContains(page, expected, timeout = STEP_TIMEOUT_MS) {
 }
 
 async function clickNavTab(page, label) {
+  const labelToTabKey = {
+    Home: "home",
+    Entrenamiento: "training",
+    Dieta: "diet",
+    Estadísticas: "measures",
+    Chat: "chat",
+    Configuración: "settings",
+  };
+  const tabKey = labelToTabKey[label];
+  if (tabKey) {
+    await page.locator(`[data-testid="nav-tab-${tabKey}"]`).click({ timeout: STEP_TIMEOUT_MS });
+    return;
+  }
   await page.locator(`text=${label}`).last().click({ timeout: STEP_TIMEOUT_MS });
 }
 
