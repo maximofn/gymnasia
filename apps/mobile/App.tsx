@@ -11242,6 +11242,39 @@ export default function App() {
                 <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
               </Pressable>
             </View>
+
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Pressable
+                onPress={closeMeasurementEntryScreen}
+                style={{
+                  flex: 1,
+                  minHeight: 44,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>
+                  Cancelar
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={addMeasurementFromSettings}
+                style={{
+                  flex: 1,
+                  minHeight: 44,
+                  borderRadius: mobileTheme.radius.md,
+                  backgroundColor: mobileTheme.color.brandPrimary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar medidas</Text>
+              </Pressable>
+            </View>
           </View>
 
           <ScrollView

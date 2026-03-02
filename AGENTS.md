@@ -110,6 +110,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - `Registrar medidas` now duplicates `Cancelar` and `Guardar` actions in the top header
+- Failure:
+  The dedicated `Registrar medidas` screen only showed `Cancelar` and `Guardar medidas` at the bottom of the form, but the same actions were also needed at the top for faster access.
+- Root cause:
+  The new measurement entry overlay in `apps/mobile/App.tsx` only rendered header title/close controls and kept the primary form actions exclusively in the footer row.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - added a second action row directly under the header title.
+     - reused the same `Cancelar` and `Guardar medidas` actions as the footer buttons.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - `Registrar` in `Medidas` now opens a dedicated entry screen again and `Medidas` was removed from `Configuración`
 - Failure:
   Pressing `Registrar` in `Medidas` still routed users into `Configuración > Medidas`, but the desired flow is a dedicated measurement-entry screen and no `Medidas` sub-tab inside settings.
