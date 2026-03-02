@@ -9372,6 +9372,8 @@ export default function App() {
                   borderWidth: 1,
                   borderColor: "rgba(255,255,255,0.04)",
                   backgroundColor: mobileTheme.color.bgSurface,
+                  position: "relative",
+                  overflow: "visible",
                   padding: 14,
                   gap: 14,
                 }}
@@ -9382,6 +9384,7 @@ export default function App() {
                     alignItems: "center",
                     justifyContent: "space-between",
                     gap: 12,
+                    zIndex: 2,
                   }}
                 >
                   <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
@@ -9414,7 +9417,15 @@ export default function App() {
                 </View>
 
                 {measuresDashboardPeriodDropdownOpen ? (
-                  <View style={{ alignItems: "flex-end" }}>
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 56,
+                      right: 14,
+                      zIndex: 20,
+                      elevation: 12,
+                    }}
+                  >
                     <View
                       style={{
                         minWidth: 128,
@@ -9422,6 +9433,10 @@ export default function App() {
                         borderWidth: 1,
                         borderColor: "rgba(255,255,255,0.06)",
                         backgroundColor: "#1B2029",
+                        shadowColor: "#000000",
+                        shadowOpacity: 0.28,
+                        shadowRadius: 14,
+                        shadowOffset: { width: 0, height: 8 },
                         padding: 6,
                         gap: 4,
                       }}
@@ -9466,6 +9481,7 @@ export default function App() {
                     minHeight: 214,
                     borderRadius: 18,
                     backgroundColor: "#11161E",
+                    zIndex: 1,
                     paddingVertical: 12,
                     paddingHorizontal: 10,
                     flexDirection: "row",

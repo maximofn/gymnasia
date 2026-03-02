@@ -110,6 +110,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - `Medidas` period dropdown now overlays the chart instead of shifting it
+- Failure:
+  Opening the period dropdown in `Medidas` pushed the chart downward because the menu was taking vertical space in the normal layout flow.
+- Root cause:
+  The dropdown container in `apps/mobile/App.tsx` was rendered as a regular block between the chart header and the chart body, so the card grew in height when the menu opened.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - made the chart card a positioned container for overlays.
+     - moved the period dropdown to absolute positioning anchored near the selector pill.
+     - added stacking/shadow styling so the dropdown renders above the chart content.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - `Medidas` chart period pill now opens a dropdown instead of cycling automatically
 - Failure:
   Tapping the `3 meses` pill in the `Medidas` chart changed the period immediately to the next value (`6 meses`) instead of letting the user choose from a menu.
