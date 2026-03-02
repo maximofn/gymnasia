@@ -110,6 +110,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - `Configuración` no longer shows the `Gráficas` sub-tab
+- Failure:
+  The `Configuración` section still exposed a `Gráficas` sub-tab, but that section should no longer be available.
+- Root cause:
+  `apps/mobile/App.tsx` still modeled `charts` inside `SettingsTabKey`, rendered it in `SETTINGS_TAB_OPTIONS`, and kept a placeholder `settingsTab === "charts"` panel.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - removed `charts` from `SettingsTabKey`.
+     - removed the `Gráficas` option from `SETTINGS_TAB_OPTIONS`.
+     - deleted the obsolete `Gráficas` placeholder panel from `Configuración`.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Bottom `Entrenamiento` tab label now shows `Rutinas`
 - Failure:
   The top navigation tab for the training section was still showing `Entrenamiento`, but the requested visible label was `Rutinas`.

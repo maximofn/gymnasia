@@ -25,7 +25,7 @@ import {
 import { mobileTheme } from "./theme";
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "charts" | "provider";
+type SettingsTabKey = "diet" | "provider";
 
 type ExerciseSeries = {
   id: string;
@@ -547,7 +547,6 @@ const DIET_MONTH_LABELS_SHORT = [
 const GKG_MACRO_KEYS: GkgMacroKey[] = ["protein", "carbs", "fat"];
 const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "diet", label: "Dieta" },
-  { key: "charts", label: "Gráficas" },
   { key: "provider", label: "Proveedor IA" },
 ];
 
@@ -10835,49 +10834,6 @@ export default function App() {
                       ? `${configuredMacroCaloriesRemaining.toFixed(0)} kcal por repartir`
                       : `${Math.abs(configuredMacroCaloriesRemaining).toFixed(0)} kcal excedidas`}
                   </Text>
-                </View>
-              ) : null}
-
-              {settingsTab === "charts" ? (
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgSurface,
-                    borderRadius: mobileTheme.radius.lg,
-                    padding: 12,
-                    gap: 10,
-                  }}
-                >
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                    Gráficas
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary }}>
-                    Esta sección quedará preparada para gráficas de evolución de medidas y dieta.
-                  </Text>
-                  <View
-                    style={{
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      padding: 10,
-                      gap: 6,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                      Vista previa
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                      Peso actual: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(2)} kg` : "Sin datos"}
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                      Calorías objetivo: {dietDailyCaloriesTarget > 0 ? `${dietDailyCaloriesTarget.toFixed(0)} kcal` : "Sin definir"}
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                      Calorías consumidas hoy: {dashboard.calories.toFixed(0)} kcal
-                    </Text>
-                  </View>
                 </View>
               ) : null}
 
