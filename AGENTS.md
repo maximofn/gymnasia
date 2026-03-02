@@ -110,6 +110,20 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - `Home` now matches the dashboard style from `[Image #1]` without duplicating quick-access cards
+- Failure:
+  The mobile `Home` screen was still a minimal three-card summary, so it did not match the dashboard hierarchy and visual treatment from `[Image #1]`.
+- Root cause:
+  `apps/mobile/App.tsx` only rendered basic KPI cards for `tab === "home"` and reused the generic `Home` header, with no hero section, weekly progress, or daily exercise list.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - replaced the `Home` title row with a greeting header, notification shortcut, and profile shortcut.
+     - rebuilt the `Home` content as a dashboard-style layout with a featured training hero, primary CTA, three summary cards, weekly progress tracker, and `Ejercicios de hoy`.
+     - intentionally omitted the quick-access card section because that navigation already exists in the top tab bar.
+     - added local helpers for weekly activity, streak calculation, and home exercise summaries.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - `Registrar medidas` header no longer shows the redundant `X` close button
 - Failure:
   The dedicated `Registrar medidas` screen still showed an `X` icon on the right side of the header title, even though the same header already exposed `Cancelar`.

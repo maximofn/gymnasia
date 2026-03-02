@@ -192,7 +192,6 @@ type TemplateSeriesPointer = {
 type Dashboard = {
   calories: number;
   weight: number | null;
-  templates: number;
 };
 
 type LocalStore = {
@@ -2242,6 +2241,79 @@ function formatClock(seconds: number): string {
   return `${minutes}:${`${remainder}`.padStart(2, "0")}`;
 }
 
+function startOfLocalDay(date: Date): Date {
+  const copy = new Date(date);
+  copy.setHours(0, 0, 0, 0);
+  return copy;
+}
+
+function calculateWorkoutStreak(summaries: WorkoutSessionSummary[]): number {
+  const completedDayKeys = new Set(
+    summaries
+      .map((summary) => {
+        const parsed = new Date(summary.finished_at);
+        if (Number.isNaN(parsed.getTime())) return null;
+        return isoDateFromDate(startOfLocalDay(parsed));
+      })
+      .filter((value): value is string => value !== null),
+  );
+  if (completedDayKeys.size === 0) return 0;
+
+  const cursor = startOfLocalDay(new Date());
+  if (!completedDayKeys.has(isoDateFromDate(cursor))) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  let streak = 0;
+  while (completedDayKeys.has(isoDateFromDate(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  return streak;
+}
+
+function buildHomeWeekProgress(
+  summaries: WorkoutSessionSummary[],
+): Array<{ key: string; label: string; completed: boolean; isToday: boolean }> {
+  const weekdayLabels = ["L", "M", "X", "J", "V", "S", "D"];
+  const today = startOfLocalDay(new Date());
+  const monday = new Date(today);
+  const dayIndex = today.getDay();
+  const daysSinceMonday = dayIndex === 0 ? 6 : dayIndex - 1;
+  monday.setDate(monday.getDate() - daysSinceMonday);
+
+  const completedDayKeys = new Set(
+    summaries
+      .map((summary) => {
+        const parsed = new Date(summary.finished_at);
+        if (Number.isNaN(parsed.getTime())) return null;
+        return isoDateFromDate(startOfLocalDay(parsed));
+      })
+      .filter((value): value is string => value !== null),
+  );
+  const todayKey = isoDateFromDate(today);
+
+  return weekdayLabels.map((label, index) => {
+    const current = new Date(monday);
+    current.setDate(monday.getDate() + index);
+    const key = isoDateFromDate(current);
+    return {
+      key,
+      label,
+      completed: completedDayKeys.has(key),
+      isToday: key === todayKey,
+    };
+  });
+}
+
+function formatHomeExerciseVolume(series: ExerciseSeries[]): string {
+  if (series.length === 0) return "Sin series configuradas";
+  const repsLabel = series.find((item) => item.reps.trim())?.reps.trim() || "--";
+  const weightLabel = series.find((item) => item.weight_kg.trim())?.weight_kg.trim() || "";
+  return `${series.length} x ${repsLabel} reps${weightLabel ? ` • ${weightLabel} kg` : ""}`;
+}
+
 function summarizeWorkoutSessionPerformance(
   session: WorkoutSession,
   template: WorkoutTemplate | null,
@@ -3133,9 +3205,90 @@ export default function App() {
     return {
       calories: todayCaloriesConsumed,
       weight: latestBodyWeightKg,
-      templates: store.templates.length,
     };
-  }, [latestBodyWeightKg, store.templates.length, todayCaloriesConsumed]);
+  }, [latestBodyWeightKg, todayCaloriesConsumed]);
+  const homeFeaturedTemplate = useMemo(() => {
+    if (activeWorkoutSession) {
+      const activeTemplate =
+        store.templates.find((template) => template.id === activeWorkoutSession.template_id) ?? null;
+      if (activeTemplate) return activeTemplate;
+    }
+    return store.templates.find((template) => templateHasRunnableSeries(template)) ?? store.templates[0] ?? null;
+  }, [activeWorkoutSession, store.templates]);
+  const homeFeaturedCategory = useMemo(
+    () => (homeFeaturedTemplate ? resolveTrainingCategory(homeFeaturedTemplate) : null),
+    [homeFeaturedTemplate],
+  );
+  const homeFeaturedCategoryMeta = useMemo(
+    () => (homeFeaturedCategory ? trainingCategoryMeta(homeFeaturedCategory) : null),
+    [homeFeaturedCategory],
+  );
+  const homeFeaturedIcon = useMemo(() => {
+    if (!homeFeaturedTemplate || !homeFeaturedCategory) return null;
+    const templateIndex = Math.max(
+      0,
+      store.templates.findIndex((template) => template.id === homeFeaturedTemplate.id),
+    );
+    return normalizeTemplateIcon(homeFeaturedTemplate.icon, homeFeaturedCategory, templateIndex);
+  }, [homeFeaturedCategory, homeFeaturedTemplate, store.templates]);
+  const homeFeaturedDurationMinutes = useMemo(
+    () => (homeFeaturedTemplate ? inferTemplateDurationMinutes(homeFeaturedTemplate) : 0),
+    [homeFeaturedTemplate],
+  );
+  const homeFeaturedExercises = useMemo(() => {
+    if (!homeFeaturedTemplate || !homeFeaturedCategory) return [];
+    return homeFeaturedTemplate.exercises.slice(0, 3).map((exercise, exerciseIndex) => {
+      const exerciseName = exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`;
+      const muscle =
+        exercise.muscle?.trim() ||
+        inferExerciseMuscle(exerciseName, homeFeaturedCategory);
+      return {
+        id: exercise.id,
+        exerciseName,
+        imageUri: normalizeExerciseImageUri(exercise.image_uri),
+        volumeLabel: formatHomeExerciseVolume(exercise.series ?? []),
+        previewMeta: resolveExercisePreviewMeta(exerciseName, muscle, homeFeaturedCategory),
+      };
+    });
+  }, [homeFeaturedCategory, homeFeaturedTemplate]);
+  const homeFeaturedHeroImageUri = useMemo(
+    () => homeFeaturedExercises.find((exercise) => exercise.imageUri)?.imageUri ?? null,
+    [homeFeaturedExercises],
+  );
+  const homeWorkoutStreak = useMemo(
+    () => calculateWorkoutStreak(store.workoutHistory),
+    [store.workoutHistory],
+  );
+  const homeWeekProgress = useMemo(
+    () => buildHomeWeekProgress(store.workoutHistory),
+    [store.workoutHistory],
+  );
+  const homeWeekCompletedCount = useMemo(
+    () => homeWeekProgress.filter((day) => day.completed).length,
+    [homeWeekProgress],
+  );
+  const homeWeightChangeText = useMemo(() => {
+    if (weightMeasurementPair.latest === null || weightMeasurementPair.previous === null) {
+      return "Sin histórico";
+    }
+    const delta = Math.round((weightMeasurementPair.latest - weightMeasurementPair.previous) * 10) / 10;
+    if (Math.abs(delta) < 0.05) return "Sin cambios";
+    return `${delta > 0 ? "+" : "-"}${formatMeasurementNumber(Math.abs(delta))} kg`;
+  }, [weightMeasurementPair.latest, weightMeasurementPair.previous]);
+  const homeCurrentHour = new Date().getHours();
+  const homeGreetingLabel =
+    homeCurrentHour < 12
+      ? "Buenos días"
+      : homeCurrentHour < 20
+        ? "Buenas tardes"
+        : "Buenas noches";
+  const canStartHomeFeaturedTemplate =
+    !!homeFeaturedTemplate && templateHasRunnableSeries(homeFeaturedTemplate);
+  const homePrimaryActionLabel = activeWorkoutSession
+    ? "Continuar entrenamiento"
+    : canStartHomeFeaturedTemplate
+      ? "Iniciar entrenamiento"
+      : "Crear rutina";
 
   const filteredTrainingTemplates = useMemo(() => {
     const normalizedSearch = trainingSearch.trim().toLowerCase();
@@ -5828,7 +5981,48 @@ export default function App() {
           gap: 12,
         }}
       >
-        {tab === "training" && (isTrainingTemplateScreenOpen || activeWorkoutSession) ? null : tab === "training" ? (
+        {tab === "home" ? (
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={{ color: "#8B94A3", fontSize: 13, fontWeight: "600" }}>
+                {homeGreetingLabel}
+              </Text>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 30, fontWeight: "700" }}>
+                Gymnasia
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+              <Pressable
+                onPress={() => setTab("chat")}
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 14,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgSurface,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Feather name="bell" size={18} color={mobileTheme.color.textPrimary} />
+              </Pressable>
+              <Pressable
+                onPress={() => setTab("settings")}
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 999,
+                  backgroundColor: mobileTheme.color.brandPrimary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>G</Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : tab === "training" && (isTrainingTemplateScreenOpen || activeWorkoutSession) ? null : tab === "training" ? (
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: headerTitleSize, fontWeight: "700" }}>
               {headerTitle}
@@ -5926,11 +6120,11 @@ export default function App() {
                 width: tab === "chat" ? "72%" : "48%",
               }}
             />
-            {Array.from({ length: tab === "chat" ? 5 : tab === "home" ? 3 : 4 }).map((_, index) => (
+            {Array.from({ length: tab === "chat" ? 5 : tab === "home" ? 5 : 4 }).map((_, index) => (
               <View
                 key={`screen_skeleton_${tab}_${index}`}
                 style={{
-                  minHeight: tab === "chat" ? 72 : 92,
+                  minHeight: tab === "chat" ? 72 : tab === "home" ? 116 : 92,
                   borderRadius: 18,
                   borderWidth: 1,
                   borderColor: "rgba(255,255,255,0.04)",
@@ -5966,20 +6160,484 @@ export default function App() {
           {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
 
           {tab === "home" ? (
-            <View style={{ gap: 12 }}>
-              <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 14 }}>
-                <Text style={{ color: mobileTheme.color.textSecondary }}>Calorías</Text>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700", marginTop: 4 }}>{dashboard.calories.toFixed(0)} kcal</Text>
+            <View style={{ gap: 16, paddingBottom: 8 }}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: "#10151D",
+                  borderRadius: 28,
+                  padding: 14,
+                  gap: 14,
+                  overflow: "hidden",
+                }}
+              >
+                <View
+                  style={{
+                    height: 196,
+                    borderRadius: 24,
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.06)",
+                    backgroundColor: "#091219",
+                    overflow: "hidden",
+                    position: "relative",
+                  }}
+                >
+                  {homeFeaturedHeroImageUri ? (
+                    <Image
+                      source={{ uri: homeFeaturedHeroImageUri }}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
+                        opacity: 0.18,
+                      }}
+                      resizeMode="cover"
+                    />
+                  ) : null}
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: -46,
+                      right: -18,
+                      width: 170,
+                      height: 170,
+                      borderRadius: 999,
+                      backgroundColor: "rgba(54,132,121,0.22)",
+                    }}
+                  />
+                  <View
+                    style={{
+                      position: "absolute",
+                      bottom: -34,
+                      left: -12,
+                      width: 140,
+                      height: 140,
+                      borderRadius: 999,
+                      backgroundColor: "rgba(8,84,101,0.22)",
+                    }}
+                  />
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 22,
+                      right: 22,
+                      width: 88,
+                      height: 88,
+                      borderRadius: 24,
+                      borderWidth: 1,
+                      borderColor: "rgba(203,255,26,0.22)",
+                      backgroundColor: "rgba(8,14,20,0.78)",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Feather
+                      name={homeFeaturedIcon ?? "activity"}
+                      size={32}
+                      color={mobileTheme.color.brandPrimary}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 16,
+                      left: 16,
+                      right: 122,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {homeFeaturedCategoryMeta ? (
+                      <View
+                        style={{
+                          minHeight: 30,
+                          borderRadius: mobileTheme.radius.pill,
+                          backgroundColor: "rgba(6,9,13,0.5)",
+                          paddingHorizontal: 10,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 999,
+                            backgroundColor: homeFeaturedCategoryMeta.color,
+                          }}
+                        />
+                        <Text
+                          style={{
+                            color: "#E8EDF5",
+                            fontSize: 12,
+                            fontWeight: "700",
+                          }}
+                        >
+                          {homeFeaturedCategoryMeta.label}
+                        </Text>
+                      </View>
+                    ) : null}
+                    {homeFeaturedDurationMinutes > 0 ? (
+                      <View
+                        style={{
+                          minHeight: 30,
+                          borderRadius: mobileTheme.radius.pill,
+                          backgroundColor: "rgba(6,9,13,0.5)",
+                          paddingHorizontal: 10,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={{ color: "#BFC8D6", fontSize: 12, fontWeight: "600" }}>
+                          {homeFeaturedDurationMinutes} min
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                  <View
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      bottom: 0,
+                      left: 0,
+                      paddingHorizontal: 16,
+                      paddingVertical: 16,
+                      backgroundColor: "rgba(6,9,13,0.58)",
+                      gap: 6,
+                    }}
+                  >
+                    <Text
+                      style={{ color: "#F4F7FB", fontSize: 24, fontWeight: "700" }}
+                      numberOfLines={2}
+                    >
+                      {homeFeaturedTemplate?.name ?? "Prepara tu próximo entrenamiento"}
+                    </Text>
+                    <Text style={{ color: "#B9C3D1", fontSize: 13, lineHeight: 18 }}>
+                      {homeFeaturedTemplate
+                        ? `${homeFeaturedExercises.length} ejercicios listos para hoy${homeFeaturedDurationMinutes > 0 ? ` • ${homeFeaturedDurationMinutes} min aprox.` : ""}`
+                        : "Crea tu primera rutina para tener un inicio rápido desde la Home."}
+                    </Text>
+                  </View>
+                </View>
+
+                <Pressable
+                  onPress={() => {
+                    if (activeWorkoutSession) {
+                      setTab("training");
+                      return;
+                    }
+                    if (canStartHomeFeaturedTemplate && homeFeaturedTemplate) {
+                      startTrainingSession(homeFeaturedTemplate.id);
+                      return;
+                    }
+                    setTab("training");
+                  }}
+                  testID="home-primary-training-action"
+                  style={{
+                    minHeight: 54,
+                    borderRadius: 16,
+                    backgroundColor: mobileTheme.color.brandPrimary,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 10,
+                  }}
+                >
+                  <Feather name="play" size={16} color="#06090D" />
+                  <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>
+                    {homePrimaryActionLabel}
+                  </Text>
+                </Pressable>
               </View>
-              <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 14 }}>
-                <Text style={{ color: mobileTheme.color.textSecondary }}>Peso</Text>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700", marginTop: 4 }}>
-                  {dashboard.weight !== null ? `${dashboard.weight.toFixed(2)} kg` : "-"}
-                </Text>
+
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                <View
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgSurface,
+                    borderRadius: 20,
+                    padding: 12,
+                    gap: 6,
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <Feather name="zap" size={14} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
+                      Calorías
+                    </Text>
+                  </View>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}>
+                    {Math.round(dashboard.calories).toLocaleString("es-ES")}
+                  </Text>
+                  <Text style={{ color: "#7F8896", fontSize: 11 }}>
+                    {dietDailyCaloriesTarget > 0
+                      ? `${Math.round(dashboard.calories)}/${Math.round(dietDailyCaloriesTarget)} kcal`
+                      : "Consumidas hoy"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgSurface,
+                    borderRadius: 20,
+                    padding: 12,
+                    gap: 6,
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <Feather name="activity" size={14} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
+                      Peso
+                    </Text>
+                  </View>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}>
+                    {dashboard.weight !== null ? formatMeasurementNumber(dashboard.weight) : "--"}
+                  </Text>
+                  <Text style={{ color: "#19C37D", fontSize: 11, fontWeight: "600" }}>
+                    {dashboard.weight !== null ? homeWeightChangeText : "Sin registro"}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgSurface,
+                    borderRadius: 20,
+                    padding: 12,
+                    gap: 6,
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <Feather name="award" size={14} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
+                      Racha
+                    </Text>
+                  </View>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}>
+                    {homeWorkoutStreak}
+                  </Text>
+                  <Text style={{ color: "#7F8896", fontSize: 11 }}>
+                    {homeWorkoutStreak === 1 ? "día seguido" : "días seguidos"}
+                  </Text>
+                </View>
               </View>
-              <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 14 }}>
-                <Text style={{ color: mobileTheme.color.textSecondary }}>Rutinas</Text>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700", marginTop: 4 }}>{dashboard.templates}</Text>
+
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgSurface,
+                  borderRadius: 24,
+                  padding: 14,
+                  gap: 14,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>
+                    Progreso semanal
+                  </Text>
+                  <Text style={{ color: "#7F8896", fontSize: 13, fontWeight: "700" }}>
+                    {homeWeekCompletedCount}/7
+                  </Text>
+                </View>
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  {homeWeekProgress.map((day) => (
+                    <View key={day.key} style={{ flex: 1, alignItems: "center", gap: 8 }}>
+                      <Text
+                        style={{
+                          color: day.isToday ? mobileTheme.color.brandPrimary : "#8B94A3",
+                          fontSize: 12,
+                          fontWeight: day.isToday ? "800" : "700",
+                        }}
+                      >
+                        {day.label}
+                      </Text>
+                      <View
+                        style={{
+                          width: "100%",
+                          minHeight: 40,
+                          borderRadius: 12,
+                          borderWidth: 1,
+                          borderColor: day.isToday
+                            ? "rgba(203,255,26,0.42)"
+                            : day.completed
+                              ? "rgba(203,255,26,0.2)"
+                              : "rgba(255,255,255,0.06)",
+                          backgroundColor: day.isToday
+                            ? "rgba(203,255,26,0.12)"
+                            : day.completed
+                              ? "rgba(203,255,26,0.06)"
+                              : "#11161D",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: day.completed ? 10 : 7,
+                            height: day.completed ? 10 : 7,
+                            borderRadius: 999,
+                            backgroundColor: day.completed
+                              ? mobileTheme.color.brandPrimary
+                              : "rgba(255,255,255,0.18)",
+                          }}
+                        />
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              <View style={{ gap: 12 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                  <View style={{ flex: 1, paddingRight: 12 }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>
+                      Ejercicios de hoy
+                    </Text>
+                    <Text
+                      style={{ color: "#7F8896", fontSize: 12, marginTop: 2 }}
+                      numberOfLines={1}
+                    >
+                      {homeFeaturedTemplate?.name ?? "Sin rutina seleccionada"}
+                    </Text>
+                  </View>
+                  <Pressable onPress={() => setTab("training")}>
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
+                      Ver todo
+                    </Text>
+                  </Pressable>
+                </View>
+
+                {homeFeaturedExercises.length === 0 ? (
+                  <View
+                    style={{
+                      minHeight: 128,
+                      borderRadius: 20,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingHorizontal: 20,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#8B94A3",
+                        fontSize: 14,
+                        textAlign: "center",
+                        lineHeight: 20,
+                      }}
+                    >
+                      Añade una rutina en Entrenamiento para ver tu selección del día aquí.
+                    </Text>
+                  </View>
+                ) : (
+                  homeFeaturedExercises.map((exercise) => (
+                    <View
+                      key={exercise.id}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgSurface,
+                        borderRadius: 18,
+                        padding: 12,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 12,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 58,
+                          height: 58,
+                          borderRadius: 16,
+                          overflow: "hidden",
+                          backgroundColor: exercise.previewMeta.backgroundColor,
+                          borderWidth: 1,
+                          borderColor: "rgba(255,255,255,0.08)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {exercise.imageUri ? (
+                          <Image
+                            source={{ uri: exercise.imageUri }}
+                            style={{ width: "100%", height: "100%" }}
+                            resizeMode="cover"
+                          />
+                        ) : (
+                          <View style={{ alignItems: "center", justifyContent: "center", gap: 4 }}>
+                            <Feather
+                              name={exercise.previewMeta.icon}
+                              size={16}
+                              color={exercise.previewMeta.accentColor}
+                            />
+                            <Text
+                              style={{
+                                color: "#E8EDF5",
+                                fontSize: 9,
+                                fontWeight: "700",
+                              }}
+                            >
+                              {exercise.previewMeta.label}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                      <View style={{ flex: 1, gap: 4 }}>
+                        <Text
+                          style={{
+                            color: mobileTheme.color.textPrimary,
+                            fontSize: 16,
+                            fontWeight: "700",
+                          }}
+                          numberOfLines={1}
+                        >
+                          {exercise.exerciseName}
+                        </Text>
+                        <Text style={{ color: "#8B94A3", fontSize: 12 }} numberOfLines={1}>
+                          {exercise.volumeLabel}
+                        </Text>
+                      </View>
+                      <Pressable
+                        onPress={() => {
+                          if (activeWorkoutSession) {
+                            setTab("training");
+                            return;
+                          }
+                          if (canStartHomeFeaturedTemplate && homeFeaturedTemplate) {
+                            startTrainingSession(homeFeaturedTemplate.id);
+                            return;
+                          }
+                          setTab("training");
+                        }}
+                        testID={`home-exercise-start-${exercise.id}`}
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 999,
+                          backgroundColor: mobileTheme.color.brandPrimary,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Feather name="play" size={15} color="#06090D" />
+                      </Pressable>
+                    </View>
+                  ))
+                )}
               </View>
             </View>
           ) : null}
