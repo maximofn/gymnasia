@@ -2358,7 +2358,7 @@ function tabLabel(tab: TabKey): string {
     home: "Home",
     training: "Entrenamiento",
     diet: "Dieta",
-    measures: "Estadísticas",
+    measures: "Medidas",
     chat: "Chat",
     settings: "Configuración",
   };

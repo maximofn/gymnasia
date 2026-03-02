@@ -110,6 +110,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Bottom `Medidas` tab label restored from `Estadísticas`
+- Failure:
+  The bottom navigation tab for `measures` was showing `Estadísticas`, but the requested label is `Medidas`.
+- Root cause:
+  `tabLabel()` in `apps/mobile/App.tsx` had regressed to `measures: "Estadísticas"` even though the repo log already documented `Medidas` as the intended label.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - restored the bottom tab label mapping to `measures: "Medidas"`.
+  2. Updated `apps/mobile/scripts/train-usability.e2e.mjs`:
+     - added `Medidas` to the `clickNavTab(...)` label map while keeping `Estadísticas` compatibility.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Bottom `Configuración` tab now uses a gear icon instead of text
 - Failure:
   The bottom navigation still rendered the full `Configuración` label, but the requested UI was an icon-only gear tab.

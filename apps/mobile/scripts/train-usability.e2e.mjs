@@ -133,6 +133,7 @@ async function clickNavTab(page, label) {
     Home: "home",
     Entrenamiento: "training",
     Dieta: "diet",
+    Medidas: "measures",
     Estadísticas: "measures",
     Chat: "chat",
     Configuración: "settings",
