@@ -110,6 +110,22 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - `Registrar` in `Medidas` now opens a dedicated entry screen again and `Medidas` was removed from `Configuración`
+- Failure:
+  Pressing `Registrar` in `Medidas` still routed users into `Configuración > Medidas`, but the desired flow is a dedicated measurement-entry screen and no `Medidas` sub-tab inside settings.
+- Root cause:
+  `apps/mobile/App.tsx` had regressed to keep the full measurement form under `settingsTab === "measures"`, and the `Registrar` handler was still navigating to that settings state instead of opening a standalone screen.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - removed `Medidas` from `SettingsTabKey` and `SETTINGS_TAB_OPTIONS`.
+     - changed settings to default to the remaining tabs.
+     - replaced the old `Registrar` navigation handler with a dedicated measurement-entry screen state.
+     - added a full-screen `Registrar medidas` overlay with the measurement form, close action, and save/cancel controls.
+     - saving a measurement now closes the dedicated entry screen and resets the form.
+     - removed the obsolete `Medidas` settings section and the now-unused measurement highlight helper.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - `Medidas` period dropdown now overlays the chart instead of shifting it
 - Failure:
   Opening the period dropdown in `Medidas` pushed the chart downward because the menu was taking vertical space in the normal layout flow.

@@ -25,7 +25,7 @@ import {
 import { mobileTheme } from "./theme";
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "measures" | "diet" | "charts" | "provider";
+type SettingsTabKey = "diet" | "charts" | "provider";
 
 type ExerciseSeries = {
   id: string;
@@ -547,7 +547,6 @@ const DIET_MONTH_LABELS_SHORT = [
 ];
 const GKG_MACRO_KEYS: GkgMacroKey[] = ["protein", "carbs", "fat"];
 const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
-  { key: "measures", label: "Medidas" },
   { key: "diet", label: "Dieta" },
   { key: "charts", label: "Gráficas" },
   { key: "provider", label: "Proveedor IA" },
@@ -1916,38 +1915,6 @@ function parseFoodEstimatorNutritionJSON(rawValue: string): {
   return null;
 }
 
-function buildMeasurementHighlights(measurement: Measurement): string[] {
-  const chips: string[] = [];
-  if (measurement.weight_kg !== null) {
-    chips.push(`Peso ${formatMeasurementNumber(measurement.weight_kg)} kg`);
-  }
-  if (measurement.neck_cm !== null) {
-    chips.push(`Cuello ${formatMeasurementNumber(measurement.neck_cm)} cm`);
-  }
-  if (measurement.chest_cm !== null) {
-    chips.push(`Pecho ${formatMeasurementNumber(measurement.chest_cm)} cm`);
-  }
-  if (measurement.waist_cm !== null) {
-    chips.push(`Cintura ${formatMeasurementNumber(measurement.waist_cm)} cm`);
-  }
-  if (measurement.hips_cm !== null) {
-    chips.push(`Cadera ${formatMeasurementNumber(measurement.hips_cm)} cm`);
-  }
-  if (measurement.biceps_cm !== null) {
-    chips.push(`Bíceps ${formatMeasurementNumber(measurement.biceps_cm)} cm`);
-  }
-  if (measurement.quadriceps_cm !== null) {
-    chips.push(`Cuádriceps ${formatMeasurementNumber(measurement.quadriceps_cm)} cm`);
-  }
-  if (measurement.calf_cm !== null) {
-    chips.push(`Gemelo ${formatMeasurementNumber(measurement.calf_cm)} cm`);
-  }
-  if (measurement.height_cm !== null) {
-    chips.push(`Altura ${formatMeasurementNumber(measurement.height_cm)} cm`);
-  }
-  return chips;
-}
-
 function gkgMacroCaloriesPerGram(macro: GkgMacroKey): number {
   return macro === "fat" ? 9 : 4;
 }
@@ -2668,6 +2635,7 @@ export default function App() {
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
   const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
   const [showMeasurementDatePicker, setShowMeasurementDatePicker] = useState(false);
+  const [measurementEntryScreenOpen, setMeasurementEntryScreenOpen] = useState(false);
   const [measuresDashboardPeriod, setMeasuresDashboardPeriod] =
     useState<MeasuresDashboardPeriodKey>("3m");
   const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
@@ -2680,7 +2648,7 @@ export default function App() {
   const [bicepsInput, setBicepsInput] = useState("");
   const [quadricepsInput, setQuadricepsInput] = useState("");
   const [calfInput, setCalfInput] = useState("");
-  const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("measures");
+  const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("diet");
   const [providerKeyVisibility, setProviderKeyVisibility] = useState<Record<Provider, boolean>>(() =>
     createProviderBooleanMap(false),
   );
@@ -4346,11 +4314,17 @@ export default function App() {
     }
   }
 
-  function openMeasuresRegistration() {
+  function openMeasurementEntryScreen() {
     setShowMeasurementDatePicker(false);
     setMeasuresDashboardPeriodDropdownOpen(false);
-    setSettingsTab("measures");
-    setTab("settings");
+    setMeasurementEntryScreenOpen(true);
+    setError(null);
+  }
+
+  function closeMeasurementEntryScreen() {
+    setShowMeasurementDatePicker(false);
+    setMeasurementEntryScreenOpen(false);
+    resetMeasurementForm();
     setError(null);
   }
 
@@ -4400,6 +4374,7 @@ export default function App() {
   function resetMeasurementForm() {
     setWeightInput("");
     setMeasurementPhotoUri(null);
+    setHeightInput("");
     setNeckInput("");
     setChestInput("");
     setWaistInput("");
@@ -4496,9 +4471,7 @@ export default function App() {
         measurements: nextMeasurements,
       };
     });
-
-    resetMeasurementForm();
-    setError(null);
+    closeMeasurementEntryScreen();
   }
 
   function updateDietSettings(updater: (settings: DietSettings) => DietSettings) {
@@ -9269,7 +9242,7 @@ export default function App() {
             <View style={{ gap: 14 }}>
               <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
                 <Pressable
-                  onPress={openMeasuresRegistration}
+                  onPress={openMeasurementEntryScreen}
                   style={{
                     minHeight: 44,
                     borderRadius: 14,
@@ -9708,7 +9681,7 @@ export default function App() {
                       return (
                         <Pressable
                           key={measurement.id}
-                          onPress={openMeasuresRegistration}
+                          onPress={openMeasurementEntryScreen}
                           style={{
                             borderRadius: 18,
                             borderWidth: 1,
@@ -9889,395 +9862,6 @@ export default function App() {
                   );
                 })}
               </View>
-
-              {settingsTab === "measures" ? (
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgSurface,
-                    borderRadius: mobileTheme.radius.lg,
-                    padding: 12,
-                    gap: 12,
-                  }}
-                >
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                    Medidas
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary }}>
-                    Registra peso, foto y contornos con fecha editable desde calendario. La fecha por defecto es hoy.
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                    Peso actual: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(2)} kg` : "Sin registrar"}
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                    Altura base:{" "}
-                    {latestBodyHeightCm !== null
-                      ? `${formatMeasurementNumber(latestBodyHeightCm)} cm`
-                      : "Sin registrar"}
-                  </Text>
-                  {latestWeightMeasurement ? (
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                      Última actualización: {formatMeasurementDate(latestWeightMeasurement.measured_at)}
-                    </Text>
-                  ) : null}
-
-                  <Pressable
-                    onPress={() => setShowMeasurementDatePicker(true)}
-                    style={{
-                      minHeight: 44,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      paddingHorizontal: 12,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
-                      Fecha: {formatMeasurementDate(measurementDate.toISOString())}
-                    </Text>
-                    <Ionicons name="calendar-outline" size={18} color={mobileTheme.color.textSecondary} />
-                  </Pressable>
-
-                  {showMeasurementDatePicker ? (
-                    <View
-                      style={{
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        borderRadius: mobileTheme.radius.md,
-                        backgroundColor: mobileTheme.color.bgApp,
-                        padding: 8,
-                        gap: 8,
-                      }}
-                    >
-                      <DateTimePicker
-                        value={measurementDate}
-                        mode="date"
-                        maximumDate={new Date()}
-                        display={Platform.OS === "ios" ? "inline" : "default"}
-                        onChange={onMeasurementDateChange}
-                      />
-                      {Platform.OS === "ios" ? (
-                        <Pressable
-                          onPress={() => setShowMeasurementDatePicker(false)}
-                          style={{
-                            height: 38,
-                            borderRadius: mobileTheme.radius.md,
-                            borderWidth: 1,
-                            borderColor: mobileTheme.color.borderSubtle,
-                            backgroundColor: mobileTheme.color.bgSurface,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
-                            Cerrar calendario
-                          </Text>
-                        </Pressable>
-                      ) : null}
-                    </View>
-                  ) : null}
-
-                  <View style={{ gap: 8 }}>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                      Foto de progreso
-                    </Text>
-                    {measurementPhotoUri ? (
-                      <Image
-                        source={{ uri: measurementPhotoUri }}
-                        style={{
-                          width: "100%",
-                          height: 180,
-                          borderRadius: mobileTheme.radius.md,
-                          backgroundColor: mobileTheme.color.bgApp,
-                        }}
-                      />
-                    ) : (
-                      <View
-                        style={{
-                          minHeight: 92,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          paddingHorizontal: 12,
-                        }}
-                      >
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                          Sin foto seleccionada
-                        </Text>
-                      </View>
-                    )}
-                    <View style={{ flexDirection: "row", gap: 8 }}>
-                      <Pressable
-                        onPress={pickMeasurementPhoto}
-                        style={{
-                          flex: 1,
-                          height: 40,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
-                          Seleccionar foto
-                        </Text>
-                      </Pressable>
-                      {measurementPhotoUri ? (
-                        <Pressable
-                          onPress={() => setMeasurementPhotoUri(null)}
-                          style={{
-                            height: 40,
-                            borderRadius: mobileTheme.radius.md,
-                            borderWidth: 1,
-                            borderColor: mobileTheme.color.borderSubtle,
-                            backgroundColor: mobileTheme.color.bgApp,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            paddingHorizontal: 12,
-                          }}
-                        >
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>
-                            Quitar
-                          </Text>
-                        </Pressable>
-                      ) : null}
-                    </View>
-                  </View>
-
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={weightInput}
-                    onChangeText={setWeightInput}
-                    placeholder="Peso corporal (kg)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={neckInput}
-                    onChangeText={setNeckInput}
-                    placeholder="Contorno cuello (cm)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={chestInput}
-                    onChangeText={setChestInput}
-                    placeholder="Contorno pecho (cm)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={waistInput}
-                    onChangeText={setWaistInput}
-                    placeholder="Contorno cintura (cm)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={hipsInput}
-                    onChangeText={setHipsInput}
-                    placeholder="Contorno cadera (cm)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={bicepsInput}
-                    onChangeText={setBicepsInput}
-                    placeholder="Contorno bíceps (cm)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={quadricepsInput}
-                    onChangeText={setQuadricepsInput}
-                    placeholder="Contorno cuádriceps (cm)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={calfInput}
-                    onChangeText={setCalfInput}
-                    placeholder="Contorno gemelo (cm)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={heightInput}
-                    onChangeText={setHeightInput}
-                    placeholder="Altura (cm)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
-                  <Pressable
-                    onPress={addMeasurementFromSettings}
-                    style={{
-                      height: 44,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.brandPrimary,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar medidas</Text>
-                  </Pressable>
-
-                  {store.measurements.length === 0 ? (
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                      Sin medidas registradas todavía.
-                    </Text>
-                  ) : (
-                    <View style={{ gap: 8 }}>
-                      {store.measurements.slice(0, 10).map((measurement) => {
-                        const highlights = buildMeasurementHighlights(measurement);
-                        return (
-                          <View
-                            key={measurement.id}
-                            style={{
-                              borderWidth: 1,
-                              borderColor: mobileTheme.color.borderSubtle,
-                              borderRadius: mobileTheme.radius.md,
-                              backgroundColor: mobileTheme.color.bgApp,
-                              padding: 10,
-                              gap: 8,
-                            }}
-                          >
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                              {formatMeasurementDate(measurement.measured_at)}
-                            </Text>
-                            {measurement.photo_uri ? (
-                              <Image
-                                source={{ uri: measurement.photo_uri }}
-                                style={{
-                                  width: "100%",
-                                  height: 140,
-                                  borderRadius: mobileTheme.radius.md,
-                                  backgroundColor: mobileTheme.color.bgSurface,
-                                }}
-                              />
-                            ) : null}
-                            {highlights.length > 0 ? (
-                              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-                                {highlights.map((highlight, highlightIndex) => (
-                                  <View
-                                    key={`${measurement.id}_${highlightIndex}`}
-                                    style={{
-                                      borderRadius: mobileTheme.radius.pill,
-                                      borderWidth: 1,
-                                      borderColor: mobileTheme.color.borderSubtle,
-                                      backgroundColor: mobileTheme.color.bgSurface,
-                                      paddingHorizontal: 10,
-                                      minHeight: 28,
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                    }}
-                                  >
-                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12 }}>
-                                      {highlight}
-                                    </Text>
-                                  </View>
-                                ))}
-                              </View>
-                            ) : (
-                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                                Sin valores numéricos en este registro.
-                              </Text>
-                            )}
-                          </View>
-                        );
-                      })}
-                    </View>
-                  )}
-                </View>
-              ) : null}
 
               {settingsTab === "diet" ? (
                 <View
@@ -11606,6 +11190,406 @@ export default function App() {
             <Text style={{ color: "#06090D", fontSize: 24, fontWeight: "700", lineHeight: 26 }}>+</Text>
             <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>Nueva rutina</Text>
           </Pressable>
+        </View>
+      ) : null}
+
+      {measurementEntryScreenOpen ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: mobileTheme.color.bgApp,
+            zIndex: 520,
+            elevation: 52,
+          }}
+        >
+          <View
+            style={{
+              paddingHorizontal: mobileTheme.spacing[4],
+              paddingTop: mobileTheme.spacing[4],
+              paddingBottom: 12,
+              gap: 8,
+              borderBottomWidth: 1,
+              borderBottomColor: mobileTheme.color.borderSubtle,
+              backgroundColor: mobileTheme.color.bgApp,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <View style={{ flex: 1, gap: 4 }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
+                  Registrar medidas
+                </Text>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                  Guarda peso, foto y contornos sin salir de la pestaña `Medidas`.
+                </Text>
+              </View>
+              <Pressable
+                onPress={closeMeasurementEntryScreen}
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgSurface,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
+              </Pressable>
+            </View>
+          </View>
+
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              paddingHorizontal: mobileTheme.spacing[4],
+              paddingTop: 14,
+              paddingBottom: 36,
+              gap: 12,
+            }}
+          >
+            {error ? <Text style={{ color: "#ff8a8a" }}>{error}</Text> : null}
+
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+                backgroundColor: mobileTheme.color.bgSurface,
+                borderRadius: mobileTheme.radius.lg,
+                padding: 12,
+                gap: 12,
+              }}
+            >
+              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                Peso actual: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(2)} kg` : "Sin registrar"}
+              </Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                Altura base:{" "}
+                {latestBodyHeightCm !== null
+                  ? `${formatMeasurementNumber(latestBodyHeightCm)} cm`
+                  : "Sin registrar"}
+              </Text>
+              {latestWeightMeasurement ? (
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                  Última actualización: {formatMeasurementDate(latestWeightMeasurement.measured_at)}
+                </Text>
+              ) : null}
+
+              <Pressable
+                onPress={() => setShowMeasurementDatePicker(true)}
+                style={{
+                  minHeight: 44,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  borderRadius: mobileTheme.radius.md,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  paddingHorizontal: 12,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                  Fecha: {formatMeasurementDate(measurementDate.toISOString())}
+                </Text>
+                <Ionicons name="calendar-outline" size={18} color={mobileTheme.color.textSecondary} />
+              </Pressable>
+
+              {showMeasurementDatePicker ? (
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    borderRadius: mobileTheme.radius.md,
+                    backgroundColor: mobileTheme.color.bgApp,
+                    padding: 8,
+                    gap: 8,
+                  }}
+                >
+                  <DateTimePicker
+                    value={measurementDate}
+                    mode="date"
+                    maximumDate={new Date()}
+                    display={Platform.OS === "ios" ? "inline" : "default"}
+                    onChange={onMeasurementDateChange}
+                  />
+                  {Platform.OS === "ios" ? (
+                    <Pressable
+                      onPress={() => setShowMeasurementDatePicker(false)}
+                      style={{
+                        height: 38,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgSurface,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                        Cerrar calendario
+                      </Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              ) : null}
+
+              <View style={{ gap: 8 }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                  Foto de progreso
+                </Text>
+                {measurementPhotoUri ? (
+                  <Image
+                    source={{ uri: measurementPhotoUri }}
+                    style={{
+                      width: "100%",
+                      height: 180,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.bgApp,
+                    }}
+                  />
+                ) : (
+                  <View
+                    style={{
+                      minHeight: 92,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingHorizontal: 12,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                      Sin foto seleccionada
+                    </Text>
+                  </View>
+                )}
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  <Pressable
+                    onPress={pickMeasurementPhoto}
+                    style={{
+                      flex: 1,
+                      height: 40,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                      Seleccionar foto
+                    </Text>
+                  </Pressable>
+                  {measurementPhotoUri ? (
+                    <Pressable
+                      onPress={() => setMeasurementPhotoUri(null)}
+                      style={{
+                        height: 40,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgApp,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingHorizontal: 12,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>
+                        Quitar
+                      </Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              </View>
+
+              <TextInput
+                style={{
+                  minHeight: 42,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                }}
+                value={weightInput}
+                onChangeText={setWeightInput}
+                placeholder="Peso corporal (kg)"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType="decimal-pad"
+              />
+              <TextInput
+                style={{
+                  minHeight: 42,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                }}
+                value={neckInput}
+                onChangeText={setNeckInput}
+                placeholder="Contorno cuello (cm)"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType="decimal-pad"
+              />
+              <TextInput
+                style={{
+                  minHeight: 42,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                }}
+                value={chestInput}
+                onChangeText={setChestInput}
+                placeholder="Contorno pecho (cm)"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType="decimal-pad"
+              />
+              <TextInput
+                style={{
+                  minHeight: 42,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                }}
+                value={waistInput}
+                onChangeText={setWaistInput}
+                placeholder="Contorno cintura (cm)"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType="decimal-pad"
+              />
+              <TextInput
+                style={{
+                  minHeight: 42,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                }}
+                value={hipsInput}
+                onChangeText={setHipsInput}
+                placeholder="Contorno cadera (cm)"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType="decimal-pad"
+              />
+              <TextInput
+                style={{
+                  minHeight: 42,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                }}
+                value={bicepsInput}
+                onChangeText={setBicepsInput}
+                placeholder="Contorno bíceps (cm)"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType="decimal-pad"
+              />
+              <TextInput
+                style={{
+                  minHeight: 42,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                }}
+                value={quadricepsInput}
+                onChangeText={setQuadricepsInput}
+                placeholder="Contorno cuádriceps (cm)"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType="decimal-pad"
+              />
+              <TextInput
+                style={{
+                  minHeight: 42,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                }}
+                value={calfInput}
+                onChangeText={setCalfInput}
+                placeholder="Contorno gemelo (cm)"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType="decimal-pad"
+              />
+              <TextInput
+                style={{
+                  minHeight: 42,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgApp,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                }}
+                value={heightInput}
+                onChangeText={setHeightInput}
+                placeholder="Altura (cm)"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType="decimal-pad"
+              />
+
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <Pressable
+                  onPress={closeMeasurementEntryScreen}
+                  style={{
+                    flex: 1,
+                    minHeight: 44,
+                    borderRadius: mobileTheme.radius.md,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgApp,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>
+                    Cancelar
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={addMeasurementFromSettings}
+                  style={{
+                    flex: 1,
+                    minHeight: 44,
+                    borderRadius: mobileTheme.radius.md,
+                    backgroundColor: mobileTheme.color.brandPrimary,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar medidas</Text>
+                </Pressable>
+              </View>
+            </View>
+          </ScrollView>
         </View>
       ) : null}
 
