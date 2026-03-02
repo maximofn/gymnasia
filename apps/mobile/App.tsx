@@ -207,6 +207,7 @@ type LocalStore = {
 
 const STORAGE_KEY = "gymnasia.mobile.local.v3";
 const SESSION_STORAGE_KEY = "gymnasia.mobile.training.session.v1";
+const CHAT_SYSTEM_PROMPT_CACHE_KEY = "gymnasia.mobile.chat.system_prompt.v1";
 const SECURE_STORE_API_KEY_PREFIX = "gymnasia.mobile.v3.provider.api_key";
 const LEGACY_STORAGE_KEYS = [
   "gymnasia.mobile.local.v1",
@@ -224,6 +225,13 @@ const DEFAULT_MODELS: Record<Provider, string> = {
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
+const CHAT_SYSTEM_PROMPT_URL =
+  "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md";
+const DEFAULT_CHAT_SYSTEM_PROMPT =
+  "Eres Gymnasia Coach, un asistente de gimnasio y entrenador personal. " +
+  "Tu trabajo es ayudar con entrenamiento, nutricion, habitos y progreso fisico. " +
+  "Responde siempre en espanol. Responde de forma breve, clara, practica y accionable. " +
+  "Prioriza consejos seguros, realistas y faciles de aplicar.";
 const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Eres Gymnasia Food Estimator, un nutricionista experto en estimación visual de comidas. " +
   "Tu tarea es estimar siempre: calorías totales (kcal), gramos de proteína, gramos de carbohidratos, gramos de grasas y peso total de la comida en gramos. " +
@@ -283,6 +291,32 @@ function resolveWebApiBaseUrl(): string {
 
 function buildWebProxyUrl(path: string): string {
   return `${resolveWebApiBaseUrl()}${path}`;
+}
+
+function normalizeChatSystemPrompt(value: string | null | undefined): string {
+  const normalized = value?.trim() ?? "";
+  return normalized || DEFAULT_CHAT_SYSTEM_PROMPT;
+}
+
+async function loadChatSystemPrompt(): Promise<string> {
+  try {
+    const response = await fetch(`${CHAT_SYSTEM_PROMPT_URL}?ts=${Date.now()}`);
+    if (!response.ok) {
+      throw new Error(`GitHub prompt error (${response.status})`);
+    }
+    const remotePrompt = normalizeChatSystemPrompt(await response.text());
+    AsyncStorage.setItem(CHAT_SYSTEM_PROMPT_CACHE_KEY, remotePrompt).catch(() => {
+      // ignore cache write errors
+    });
+    return remotePrompt;
+  } catch {
+    try {
+      const cachedPrompt = await AsyncStorage.getItem(CHAT_SYSTEM_PROMPT_CACHE_KEY);
+      return normalizeChatSystemPrompt(cachedPrompt);
+    } catch {
+      return DEFAULT_CHAT_SYSTEM_PROMPT;
+    }
+  }
 }
 
 function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
@@ -1174,10 +1208,21 @@ function parseGoogleContent(payload: unknown): string | null {
 }
 
 async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]): Promise<string> {
-  const systemPrompt =
-    "Eres Gymnasia Coach. Responde en espanol de forma breve, practica y orientada a entrenamiento, dieta y habitos.";
+  const systemPrompt = normalizeChatSystemPrompt(
+    messages
+      .filter((msg) => msg.role === "system")
+      .map((msg) => msg.content)
+      .join("\n\n"),
+  );
+  const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
+    .filter((msg) => msg.role !== "system")
+    .map((msg) => ({
+      role: msg.role === "assistant" ? "assistant" : "user",
+      content: msg.content,
+    }));
 
   if (provider.provider === "openai") {
+    const openAIMessages = [{ role: "system" as const, content: systemPrompt }, ...nonSystemMessages];
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -1186,7 +1231,7 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
       },
       body: JSON.stringify({
         model: provider.model || DEFAULT_MODELS.openai,
-        messages,
+        messages: openAIMessages,
         temperature: 0.7,
       }),
     });
@@ -1208,13 +1253,6 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
   }
 
   if (provider.provider === "anthropic") {
-    const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
-      .filter((msg) => msg.role !== "system")
-      .map((msg) => ({
-        role: msg.role === "assistant" ? "assistant" : "user",
-        content: msg.content,
-      }));
-
     if (Platform.OS === "web") {
       return callAnthropicViaWebProxy(provider, systemPrompt, nonSystemMessages);
     }
@@ -1250,12 +1288,10 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
     return content;
   }
 
-  const nonSystemMessages = messages
-    .filter((msg) => msg.role !== "system")
-    .map((msg) => ({
-      role: msg.role === "assistant" ? "model" : "user",
-      parts: [{ text: msg.content }],
-    }));
+  const googleMessages = nonSystemMessages.map((msg) => ({
+    role: msg.role === "assistant" ? "model" : "user",
+    parts: [{ text: msg.content }],
+  }));
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(provider.model || DEFAULT_MODELS.google)}:generateContent?key=${encodeURIComponent(provider.api_key)}`,
@@ -1265,7 +1301,7 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        contents: nonSystemMessages,
+        contents: googleMessages,
         systemInstruction: { parts: [{ text: systemPrompt }] },
       }),
     },
@@ -3949,11 +3985,11 @@ export default function App() {
       const history = [...threadMessages, userMessage]
         .slice(-20)
         .map((msg) => ({ role: msg.role, content: msg.content }));
+      const systemPrompt = await loadChatSystemPrompt();
       const assistantContent = await callProviderChatAPI(activeProvider, [
         {
           role: "system",
-          content:
-            "Eres Gymnasia Coach. Responde en espanol, con consejos utiles y accionables para entrenamiento y nutricion.",
+          content: systemPrompt,
         },
         ...history,
       ]);
@@ -5514,6 +5550,7 @@ export default function App() {
       },
     }));
     setActiveThreadId(id);
+    void loadChatSystemPrompt();
   }
 
   function setActiveProvider(provider: Provider) {

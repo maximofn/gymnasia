@@ -110,6 +110,23 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Mobile chat now loads its shared system prompt from GitHub
+- Failure:
+  The mobile chat used hardcoded inline system prompts, so changing the shared coach instructions would require editing `apps/mobile/App.tsx` and shipping a new hardcoded prompt copy.
+- Root cause:
+  `apps/mobile/App.tsx` duplicated the coach system prompt in multiple places and had no remote source of truth for the chat instructions.
+- Exact fix steps/commands:
+  1. Added `prompts/AGENTS.md` as the source file for the shared chat prompt.
+  2. Committed and pushed the prompt file so it is available at GitHub raw content.
+  3. Updated `apps/mobile/App.tsx`:
+     - added a GitHub raw URL for `prompts/AGENTS.md`.
+     - added AsyncStorage caching plus local fallback for the prompt.
+     - made `sendMessage()` load the remote prompt before calling the active LLM provider.
+     - unified provider handling so OpenAI, Anthropic, and Google all use the same resolved system prompt.
+     - preloaded the prompt cache when creating a new chat thread.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - `Configuración` no longer shows the `Gráficas` sub-tab
 - Failure:
   The `Configuración` section still exposed a `Gráficas` sub-tab, but that section should no longer be available.
