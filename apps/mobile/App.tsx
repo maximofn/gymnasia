@@ -5554,19 +5554,19 @@ export default function App() {
                       </Text>
                     </View>
                     <Text
-                      style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "700" }}
+                      style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}
                       numberOfLines={2}
                     >
                       {activeWorkoutSession.template_name}
                     </Text>
-                    <Text style={{ color: "#8892A2", fontSize: 14 }}>
+                    <Text style={{ color: "#8892A2", fontSize: 13 }}>
                       Estado {activeWorkoutSession.status === "running" ? "Activo" : "Pausado"}
                     </Text>
 	                  </View>
 	                  <View style={{ alignItems: "flex-end", gap: 10 }}>
 	                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
 	                      <Ionicons name="timer-outline" size={20} color="#F2F5FA" />
-	                      <Text style={{ color: "#F2F5FA", fontSize: 28, fontWeight: "700" }}>
+	                      <Text style={{ color: "#F2F5FA", fontSize: 26, fontWeight: "700" }}>
 	                        {formatClock(activeWorkoutSession.elapsed_seconds)}
 	                      </Text>
 	                    </View>
@@ -5585,7 +5585,7 @@ export default function App() {
 	                      }}
 	                    >
 	                      <Feather name="flag" size={14} color="#FFFFFF" />
-	                      <Text style={{ color: "#FFFFFF", fontSize: 15, fontWeight: "800" }}>Finalizar</Text>
+	                      <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
 	                    </Pressable>
 	                  </View>
 	                </View>
@@ -5608,10 +5608,10 @@ export default function App() {
                     />
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                    <Text style={{ color: "#8B94A3", fontSize: 13, fontWeight: "600" }}>
+                    <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
                       {activeWorkoutSession.completed_series_count}/{activeWorkoutSession.total_series_count} series
                     </Text>
-                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
                       {activeSessionProgressPercent}%
                     </Text>
                   </View>
@@ -5630,7 +5630,7 @@ export default function App() {
                       paddingHorizontal: 18,
                     }}
                   >
-                    <Text style={{ color: "#8B94A3", fontSize: 18, textAlign: "center" }}>
+                    <Text style={{ color: "#8B94A3", fontSize: 16, textAlign: "center" }}>
                       No hay una serie activa disponible.
                     </Text>
                   </View>
@@ -5688,7 +5688,7 @@ export default function App() {
                           </View>
                           <View style={{ flex: 1, gap: 2 }}>
                             <Text
-                              style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "700" }}
+                              style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700" }}
                               numberOfLines={1}
                             >
                               {sessionExercise.exercise.name || `Ejercicio ${sessionExercise.exerciseIndex + 1}`}
@@ -5696,7 +5696,7 @@ export default function App() {
                             <Text
                               style={{
                                 color: sessionExercise.isCompletedExercise ? "#00C66B" : "#8B94A3",
-                                fontSize: 15,
+                                fontSize: 14,
                               }}
                             >
                               {sessionExercise.muscle} • {sessionExercise.completedSeriesCount}/
@@ -5720,16 +5720,16 @@ export default function App() {
                                 paddingHorizontal: 12,
                               }}
                             >
-                              <Text style={{ width: 42, color: "#7D8798", fontSize: 11, fontWeight: "700" }}>
+                              <Text style={{ width: 42, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
                                 SET
                               </Text>
-                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 11, fontWeight: "700" }}>
+                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
                                 REPS
                               </Text>
-                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 11, fontWeight: "700" }}>
+                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
                                 PESO
                               </Text>
-                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 11, fontWeight: "700" }}>
+                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
                                 DESCANSO
                               </Text>
                             </View>
@@ -5823,7 +5823,7 @@ export default function App() {
                                       color: seriesState.isCompleted
                                         ? mobileTheme.color.brandPrimary
                                         : "#C7CED9",
-                                      fontSize: 17,
+                                      fontSize: 16,
                                       fontWeight: "700",
                                       textAlign: "center",
                                     }}
@@ -5850,7 +5850,7 @@ export default function App() {
                                       borderColor: "rgba(255,255,255,0.16)",
                                       backgroundColor: "rgba(10,13,18,0.5)",
                                       color: "#C7CED9",
-                                      fontSize: 17,
+                                      fontSize: 16,
                                       fontWeight: "600",
                                       textAlign: "center",
                                     }}
@@ -5877,7 +5877,7 @@ export default function App() {
                                       borderColor: "rgba(255,255,255,0.16)",
                                       backgroundColor: "rgba(10,13,18,0.5)",
                                       color: "#C7CED9",
-                                      fontSize: 17,
+                                      fontSize: 16,
                                       fontWeight: "600",
                                       textAlign: "center",
                                     }}
@@ -5938,7 +5938,7 @@ export default function App() {
                                     gap: 10,
                                   }}
                                 >
-                                  <Text style={{ color: "#76A9FF", fontSize: 15, fontWeight: "700" }}>
+                                  <Text style={{ color: "#76A9FF", fontSize: 14, fontWeight: "700" }}>
                                     Descanso {formatClock(activeWorkoutSession.rest_seconds_left)}/
                                     {formatClock(activeSessionRestTargetSeconds)}
                                   </Text>
@@ -6030,7 +6030,7 @@ export default function App() {
                   }}
                 >
                   <Feather name="flag" size={14} color="#FFFFFF" />
-                  <Text style={{ color: "#FFFFFF", fontSize: 15, fontWeight: "800" }}>Finalizar</Text>
+                  <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
                 </Pressable>
               </View>
             ) : activeTrainingTemplate ? (

@@ -109,6 +109,20 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Workout execution text was reduced slightly again across the active session view
+- Failure:
+  After the previous typography tweaks, the visible text in the active workout session still looked a bit larger than desired.
+- Root cause:
+  The active session header, progress labels, exercise cards, table headers, series inputs, rest label, and `Finalizar` buttons in `apps/mobile/App.tsx` were still using font sizes that felt slightly too large for the requested density.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - reduced the active routine title, status text, timer, progress labels, and empty-state text slightly.
+     - reduced both `Finalizar` button labels slightly.
+     - reduced the exercise title and subtitle slightly.
+     - reduced the series table headers, `reps`/`peso`/`descanso` input text, and the rest banner text slightly.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Bottom workout navigation buttons replaced with a second `Finalizar` button
 - Failure:
   While executing a workout, the bottom action area still showed `Anterior` and `Siguiente`, but the desired control was a second `Finalizar` button matching the one at the top.
