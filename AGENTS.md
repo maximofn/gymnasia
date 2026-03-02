@@ -2139,3 +2139,13 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
      - kept the existing `training-session-finish`, `training-session-skip-rest`, and `training-session-rest-toggle-pause` controls unchanged.
   2. Validated mobile TypeScript:
      `npm --workspace apps/mobile exec tsc --noEmit`
+
+## Post-Modification Workflow
+After each modification, always commit and push changes:
+
+
+## Post-Modification Workflow
+After each modification, always commit and push changes:
+```bash
+git add -A && git commit -m '<description>' && git push
+```
