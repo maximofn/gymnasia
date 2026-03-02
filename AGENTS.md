@@ -109,6 +109,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Workout execution no longer shows the `Marcar serie hecha`, `Pausar`, and `Abandonar` action buttons
+- Failure:
+  The workout execution screen still rendered the footer action buttons `Marcar serie hecha`, `Pausar`, and `Abandonar`, even though those controls should not be shown.
+- Root cause:
+  `apps/mobile/App.tsx` still included a dedicated action row under the series list with those three `Pressable` controls.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - removed the footer action row that rendered `Marcar serie hecha`, `Pausar`, and `Abandonar`.
+     - kept the per-series check controls, rest controls, and the `Finalizar` button unchanged.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Unfinished workout series reps input no longer uses completed highlight styling
 - Failure:
   After making all workout series editable during execution, unfinished series showed the `reps` input with the same yellow text and yellow border used for completed series.
