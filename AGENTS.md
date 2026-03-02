@@ -98,6 +98,7 @@ When adding non-trivial logic, include tests in the same PR when possible (e.g.,
 ## Commit & Pull Request Guidelines
 History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ...`, `chore(scope): ...`, `docs: ...`.
 - Keep commit subjects imperative and scoped (e.g., `fix(mobile): pin Metro module resolution for monorepo`).
+- After each modification, create a commit and push it to the remote before closing the task.
 - Keep PRs focused by app/module.
 - PR description should include: summary, impacted paths, migration/env changes, commands executed, and screenshots for UI updates.
 
@@ -109,6 +110,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Training routines now require tapping `Empezar rutina` to start execution
+- Failure:
+  In `Entrenamiento`, tapping a routine card started the workout session immediately, so users could trigger execution when they only meant to open or inspect the routine.
+- Root cause:
+  The routine card `Pressable` in `apps/mobile/App.tsx` was wired directly to `startTrainingSession(...)`, and there was no dedicated inline start button on each routine card.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - changed the routine card tap action to open the routine editor via `openTrainingTemplate(...)`.
+     - added a dedicated inline button labeled `Empezar rutina` on each routine card.
+     - the new button is the only inline control that starts `startTrainingSession(...)`.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Active workout exercises now show a thumbnail to the left of the title with a default fallback
 - Failure:
   In the active workout session view, each exercise title lacked a left-side thumbnail, so there was no exercise image and no default visual fallback.

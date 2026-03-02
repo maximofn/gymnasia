@@ -7147,6 +7147,7 @@ export default function App() {
                       const categoryMeta = trainingCategoryMeta(category);
                       const routineIcon = normalizeTemplateIcon(tpl.icon, category, tplIndex);
                       const durationMinutes = inferTemplateDurationMinutes(tpl);
+                      const canStartTemplate = templateHasRunnableSeries(tpl);
                       const isMenuOpen = trainingMenuTemplateId === tpl.id;
                       return (
                         <View
@@ -7157,8 +7158,7 @@ export default function App() {
                             elevation: isMenuOpen ? 22 : 0,
                           }}
                         >
-                          <Pressable
-                            onPress={() => startTrainingSession(tpl.id)}
+                          <View
                             style={{
                               borderWidth: 1,
                               borderColor: isMenuOpen
@@ -7166,89 +7166,131 @@ export default function App() {
                                 : mobileTheme.color.borderSubtle,
                               backgroundColor: "#171B23",
                               borderRadius: 18,
-                              minHeight: 92,
-                              paddingLeft: 14,
-                              paddingRight: 56,
-                              paddingVertical: 14,
-                              flexDirection: "row",
-                              alignItems: "center",
-                              gap: 12,
                             }}
                           >
-                            <View style={{ width: 10, alignItems: "center", justifyContent: "center", gap: 2 }}>
-                              {Array.from({ length: 3 }).map((_, rowIndex) => (
-                                <View
-                                  key={`${tpl.id}_dot_row_${rowIndex}`}
-                                  style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
-                                >
-                                  <View
-                                    style={{
-                                      width: 2,
-                                      height: 2,
-                                      borderRadius: 999,
-                                      backgroundColor: "#707887",
-                                    }}
-                                  />
-                                  <View
-                                    style={{
-                                      width: 2,
-                                      height: 2,
-                                      borderRadius: 999,
-                                      backgroundColor: "#707887",
-                                    }}
-                                  />
-                                </View>
-                              ))}
-                            </View>
-                            <View
+                            <Pressable
+                              onPress={() => openTrainingTemplate(tpl.id)}
+                              testID={`training-template-open-${tpl.id}`}
                               style={{
-                                width: 48,
-                                height: 48,
-                                borderRadius: 12,
-                                backgroundColor: categoryMeta.iconBg,
+                                minHeight: 92,
+                                paddingLeft: 14,
+                                paddingRight: 56,
+                                paddingTop: 14,
+                                flexDirection: "row",
                                 alignItems: "center",
-                                justifyContent: "center",
+                                gap: 12,
                               }}
                             >
-                              <Feather name={routineIcon} size={20} color={mobileTheme.color.brandPrimary} />
-                            </View>
-                            <View style={{ flex: 1, gap: 4 }}>
-                              <Text
-                                style={{ color: mobileTheme.color.textPrimary, fontSize: 24, fontWeight: "700" }}
-                                numberOfLines={1}
-                              >
-                                {tpl.name}
-                              </Text>
-                              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                              <View style={{ width: 10, alignItems: "center", justifyContent: "center", gap: 2 }}>
+                                {Array.from({ length: 3 }).map((_, rowIndex) => (
                                   <View
-                                    style={{
-                                      width: 8,
-                                      height: 8,
-                                      borderRadius: 999,
-                                      backgroundColor: categoryMeta.color,
-                                    }}
-                                  />
-                                  <Text style={{ color: categoryMeta.color, fontSize: 15, fontWeight: "700" }}>
-                                    {categoryMeta.label}
+                                    key={`${tpl.id}_dot_row_${rowIndex}`}
+                                    style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+                                  >
+                                    <View
+                                      style={{
+                                        width: 2,
+                                        height: 2,
+                                        borderRadius: 999,
+                                        backgroundColor: "#707887",
+                                      }}
+                                    />
+                                    <View
+                                      style={{
+                                        width: 2,
+                                        height: 2,
+                                        borderRadius: 999,
+                                        backgroundColor: "#707887",
+                                      }}
+                                    />
+                                  </View>
+                                ))}
+                              </View>
+                              <View
+                                style={{
+                                  width: 48,
+                                  height: 48,
+                                  borderRadius: 12,
+                                  backgroundColor: categoryMeta.iconBg,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Feather name={routineIcon} size={20} color={mobileTheme.color.brandPrimary} />
+                              </View>
+                              <View style={{ flex: 1, gap: 4 }}>
+                                <Text
+                                  style={{ color: mobileTheme.color.textPrimary, fontSize: 24, fontWeight: "700" }}
+                                  numberOfLines={1}
+                                >
+                                  {tpl.name}
+                                </Text>
+                                <View
+                                  style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}
+                                >
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                                    <View
+                                      style={{
+                                        width: 8,
+                                        height: 8,
+                                        borderRadius: 999,
+                                        backgroundColor: categoryMeta.color,
+                                      }}
+                                    />
+                                    <Text style={{ color: categoryMeta.color, fontSize: 15, fontWeight: "700" }}>
+                                      {categoryMeta.label}
+                                    </Text>
+                                  </View>
+                                  <Text style={{ color: "#8892A2", fontSize: 15 }}>
+                                    {durationMinutes > 0 ? `${durationMinutes} min` : "-- min"}
+                                  </Text>
+                                  <Text style={{ color: "#8892A2", fontSize: 15 }}>
+                                    {tpl.exercises.length} ejercicios
                                   </Text>
                                 </View>
-                                <Text style={{ color: "#8892A2", fontSize: 15 }}>
-                                  {durationMinutes > 0 ? `${durationMinutes} min` : "-- min"}
-                                </Text>
-                                <Text style={{ color: "#8892A2", fontSize: 15 }}>
-                                  {tpl.exercises.length} ejercicios
-                                </Text>
                               </View>
-                            </View>
-                          </Pressable>
+                            </Pressable>
 
-                            <Pressable
-                              onPress={() =>
-                                setTrainingMenuTemplateId((prev) => (prev === tpl.id ? null : tpl.id))
-                              }
-                              testID={`training-template-menu-${tpl.id}`}
-                              style={{
+                            <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 14 }}>
+                              <Pressable
+                                onPress={() => startTrainingSession(tpl.id)}
+                                disabled={!canStartTemplate}
+                                testID={`training-template-inline-start-${tpl.id}`}
+                                style={{
+                                  minHeight: 44,
+                                  borderRadius: 14,
+                                  borderWidth: 1,
+                                  borderColor: canStartTemplate
+                                    ? "rgba(203,255,26,0.55)"
+                                    : "rgba(255,255,255,0.1)",
+                                  backgroundColor: canStartTemplate
+                                    ? "rgba(203,255,26,0.1)"
+                                    : "rgba(255,255,255,0.04)",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    color: canStartTemplate
+                                      ? mobileTheme.color.brandPrimary
+                                      : "#7F8896",
+                                    fontSize: 16,
+                                    fontWeight: "800",
+                                  }}
+                                >
+                                  Empezar rutina
+                                </Text>
+                              </Pressable>
+                            </View>
+                          </View>
+
+                          <Pressable
+                            onPress={() =>
+                              setTrainingMenuTemplateId((prev) => (prev === tpl.id ? null : tpl.id))
+                            }
+                            testID={`training-template-menu-${tpl.id}`}
+                            style={{
                               position: "absolute",
                               right: 14,
                               top: 14,
