@@ -110,6 +110,20 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Mobile web chat no longer suggests running a local API for no-backend provider flows
+- Failure:
+  In browser mode, the mobile chat showed `No se pudo conectar con proxy API (http://127.0.0.1:8000). Inicia 'npm run dev:api'...`, which was misleading for the intended no-backend architecture.
+- Root cause:
+  `apps/mobile/App.tsx` still routed some web provider checks through legacy proxy helpers and hardcoded local API guidance, especially for OpenAI verification/model loading and Anthropic web fallback errors.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - removed the web proxy dependency for OpenAI verification and model loading, using direct OpenAI API requests instead.
+     - replaced the old local-API error copy with a clear Anthropic web limitation message explaining that browser use requires a custom proxy because of CORS.
+     - updated Anthropic web model loading and chat send errors to use that same message.
+     - updated the new-thread assistant hint so it no longer mentions a local proxy.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - Mobile chat now loads its shared system prompt from GitHub
 - Failure:
   The mobile chat used hardcoded inline system prompts, so changing the shared coach instructions would require editing `apps/mobile/App.tsx` and shipping a new hardcoded prompt copy.

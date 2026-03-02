@@ -232,6 +232,10 @@ const DEFAULT_CHAT_SYSTEM_PROMPT =
   "Tu trabajo es ayudar con entrenamiento, nutricion, habitos y progreso fisico. " +
   "Responde siempre en espanol. Responde de forma breve, clara, practica y accionable. " +
   "Prioriza consejos seguros, realistas y faciles de aplicar.";
+const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
+  "Anthropic en navegador necesita un proxy HTTP por CORS. " +
+  "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
+  "o abre la app en el movil.";
 const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Eres Gymnasia Food Estimator, un nutricionista experto en estimación visual de comidas. " +
   "Tu tarea es estimar siempre: calorías totales (kcal), gramos de proteína, gramos de carbohidratos, gramos de grasas y peso total de la comida en gramos. " +
@@ -817,53 +821,36 @@ function parseGoogleModelOptions(payload: unknown): GoogleModelOption[] {
 }
 
 async function fetchAnthropicModelsViaWebProxy(apiKey: string): Promise<AnthropicModelOption[]> {
-  const response = await fetch(buildWebProxyUrl("/chat/providers/anthropic/models"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      api_key: apiKey,
-    }),
-  });
-
-  let payload: unknown = null;
   try {
-    payload = await response.json();
-  } catch {
-    // ignore json parse errors
+    const response = await fetch(buildWebProxyUrl("/chat/providers/anthropic/models"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        api_key: apiKey,
+      }),
+    });
+
+    let payload: unknown = null;
+    try {
+      payload = await response.json();
+    } catch {
+      // ignore json parse errors
+    }
+
+    if (!response.ok) {
+      throw new Error(extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`));
+    }
+
+    return parseAnthropicModelOptions(payload);
+  } catch (err) {
+    const rawMessage = err instanceof Error ? err.message.trim() : "";
+    if (rawMessage.toLowerCase().includes("failed to fetch")) {
+      throw new Error(ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE);
+    }
+    throw new Error(rawMessage || ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE);
   }
-
-  if (!response.ok) {
-    throw new Error(extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`));
-  }
-
-  return parseAnthropicModelOptions(payload);
-}
-
-async function fetchOpenAIModelsViaWebProxy(apiKey: string): Promise<OpenAIModelOption[]> {
-  const response = await fetch(buildWebProxyUrl("/chat/providers/openai/models"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      api_key: apiKey,
-    }),
-  });
-
-  let payload: unknown = null;
-  try {
-    payload = await response.json();
-  } catch {
-    // ignore json parse errors
-  }
-
-  if (!response.ok) {
-    throw new Error(extractErrorMessage(payload, `Proxy OpenAI error (${response.status})`));
-  }
-
-  return parseOpenAIModelOptions(payload);
 }
 
 async function fetchAnthropicModelsDirect(apiKey: string): Promise<AnthropicModelOption[]> {
@@ -994,28 +981,17 @@ async function verifyAnthropicViaWebProxy(
         : PROVIDER_STATUS_COPY.success,
     };
   } catch (err) {
-    const hint = `No se pudo conectar con proxy API (${resolveWebApiBaseUrl()}). Inicia 'npm run dev:api' o define EXPO_PUBLIC_API_BASE_URL.`;
     if (err instanceof Error && err.message.trim()) {
-      return { ok: false, severity: "error", message: toSevereProviderDetail(`${err.message}. ${hint}`) };
+      const normalized = err.message.toLowerCase().includes("failed to fetch")
+        ? ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE
+        : err.message;
+      return { ok: false, severity: "error", message: toSevereProviderDetail(normalized) };
     }
-    return { ok: false, severity: "error", message: toSevereProviderDetail(hint) };
-  }
-}
-
-async function verifyOpenAIViaWebProxy(apiKey: string): Promise<ProviderConnectionCheckResult> {
-  try {
-    await fetchOpenAIModelsViaWebProxy(apiKey);
-    return { ok: true, severity: "success", message: PROVIDER_STATUS_COPY.success };
-  } catch (err) {
-    const hint = `No se pudo conectar con proxy API (${resolveWebApiBaseUrl()}). Inicia 'npm run dev:api' o define EXPO_PUBLIC_API_BASE_URL.`;
-    if (err instanceof Error && err.message.trim()) {
-      const lowered = err.message.toLowerCase();
-      if (lowered.includes("failed to fetch")) {
-        return { ok: false, severity: "error", message: toSevereProviderDetail(hint) };
-      }
-      return { ok: false, severity: "error", message: toSevereProviderDetail(err.message) };
-    }
-    return { ok: false, severity: "error", message: toSevereProviderDetail(hint) };
+    return {
+      ok: false,
+      severity: "error",
+      message: toSevereProviderDetail(ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE),
+    };
   }
 }
 
@@ -1057,9 +1033,7 @@ async function callAnthropicViaWebProxy(
   } catch (err) {
     const rawMessage = err instanceof Error ? err.message : "No se pudo conectar con Anthropic.";
     if (rawMessage.toLowerCase().includes("failed to fetch")) {
-      throw new Error(
-        `No se pudo conectar con proxy API (${resolveWebApiBaseUrl()}). Inicia 'npm run dev:api' o define EXPO_PUBLIC_API_BASE_URL.`,
-      );
+      throw new Error(ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE);
     }
     throw new Error(rawMessage);
   }
@@ -1075,9 +1049,6 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
   try {
     let response: Response;
     if (provider.provider === "openai") {
-      if (Platform.OS === "web") {
-        return verifyOpenAIViaWebProxy(apiKey);
-      }
       response = await fetch("https://api.openai.com/v1/models", {
         method: "GET",
         headers: {
@@ -5537,7 +5508,7 @@ export default function App() {
       id: uid("msg"),
       role: "assistant",
       content:
-        "Nuevo hilo creado. Este chat usa el proveedor activo; en web con Anthropic se usa proxy API local.",
+        "Nuevo hilo creado. Este chat usa el proveedor activo; en web, Anthropic requiere un proxy propio y OpenAI/Google pueden usarse directos.",
       created_at: new Date().toISOString(),
     };
 
@@ -5675,10 +5646,7 @@ export default function App() {
     setOpenAIModelOptionsLoading(true);
     setOpenAIModelOptionsMessage(null);
     try {
-      const options =
-        Platform.OS === "web"
-          ? await fetchOpenAIModelsViaWebProxy(apiKey)
-          : await fetchOpenAIModelsDirect(apiKey);
+      const options = await fetchOpenAIModelsDirect(apiKey);
 
       setOpenAIModelOptions(options);
       if (options.length === 0) {
