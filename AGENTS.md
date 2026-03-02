@@ -109,6 +109,20 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Active workout series highlight now applies only to completed series
+- Failure:
+  During routine execution, the active series row showed the yellow highlight background, while completed series rows did not.
+- Root cause:
+  The workout execution UI in `apps/mobile/App.tsx` was coupling two separate concerns: active-set state controlled the visual emphasis, and row editability was restricted by a conditional branch instead of allowing per-series edits across the table.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - changed the workout execution series row highlight condition from `seriesState.isCurrent` to `seriesState.isCompleted`.
+     - removed the brand-colored number badge state from the active series so unfinished rows keep the neutral styling.
+     - replaced the conditional row content render with always-visible `TextInput` fields, so completed and non-completed series can both be edited during execution.
+     - removed two stale `clock_last_tick_ms` assignments in session updates that were not part of the `WorkoutSession` type and were breaking TypeScript validation.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-01 - Workout series tick now starts the rest timer
 - Failure:
   Marking a workout series as done with the per-series tick updated completion state, but it did not start the configured rest timer for that set.

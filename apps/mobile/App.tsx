@@ -4537,7 +4537,6 @@ export default function App() {
         current_series_index: targetPointer.seriesIndex,
         is_resting: restSeconds > 0,
         rest_seconds_left: restSeconds,
-        clock_last_tick_ms: Date.now(),
       });
       return;
     }
@@ -4560,7 +4559,6 @@ export default function App() {
       current_series_index: nextPointer.seriesIndex,
       is_resting: restSeconds > 0,
       rest_seconds_left: restSeconds,
-      clock_last_tick_ms: Date.now(),
     });
     setConfirmDiscardSession(false);
     setError(null);
@@ -5742,11 +5740,11 @@ export default function App() {
                                 style={{
                                   minHeight: 42,
                                   borderRadius: 10,
-                                  backgroundColor: seriesState.isCurrent
+                                  backgroundColor: seriesState.isCompleted
                                     ? "rgba(203,255,26,0.16)"
                                     : "transparent",
-                                  borderWidth: seriesState.isCurrent ? 1 : 0,
-                                  borderColor: seriesState.isCurrent
+                                  borderWidth: seriesState.isCompleted ? 1 : 0,
+                                  borderColor: seriesState.isCompleted
                                     ? "rgba(203,255,26,0.6)"
                                     : "transparent",
                                   flexDirection: "row",
@@ -5777,9 +5775,7 @@ export default function App() {
                                     borderRadius: 999,
                                     backgroundColor: seriesState.isCompleted
                                       ? "#0AAE63"
-                                      : seriesState.isCurrent
-                                        ? mobileTheme.color.brandPrimary
-                                        : "#2A3240",
+                                      : "#2A3240",
                                     alignItems: "center",
                                     justifyContent: "center",
                                     marginRight: 10,
@@ -5790,9 +5786,7 @@ export default function App() {
                                     style={{
                                       color: seriesState.isCompleted
                                         ? "#FFFFFF"
-                                        : seriesState.isCurrent
-                                          ? "#06090D"
-                                          : "#9AA4B4",
+                                        : "#9AA4B4",
                                       fontSize: 12,
                                       fontWeight: "800",
                                     }}
@@ -5800,132 +5794,89 @@ export default function App() {
                                     {seriesState.isCompleted ? "✓" : `${seriesState.seriesIndex + 1}`}
                                   </Text>
                                 </Pressable>
-                                {seriesState.isCurrent ? (
-                                  <>
-                                    <TextInput
-                                      value={seriesState.series.reps}
-                                      onChangeText={(value) =>
-                                        updateExerciseSeriesFieldInActiveSession(
-                                          sessionExercise.exercise.id,
-                                          seriesState.series.id,
-                                          "reps",
-                                          value,
-                                        )
-                                      }
-                                      placeholder="-"
-                                      placeholderTextColor="#8C95A4"
-                                      keyboardType="number-pad"
-                                      style={{
-                                        flex: 1,
-                                        minWidth: 0,
-                                        minHeight: 34,
-                                        borderRadius: 8,
-                                        borderWidth: 1,
-                                        borderColor: "rgba(203,255,26,0.8)",
-                                        backgroundColor: "rgba(6,9,13,0.32)",
-                                        color: mobileTheme.color.brandPrimary,
-                                        fontSize: 22,
-                                        fontWeight: "700",
-                                        textAlign: "center",
-                                      }}
-                                    />
-                                    <TextInput
-                                      value={seriesState.series.weight_kg}
-                                      onChangeText={(value) =>
-                                        updateExerciseSeriesFieldInActiveSession(
-                                          sessionExercise.exercise.id,
-                                          seriesState.series.id,
-                                          "weight_kg",
-                                          value,
-                                        )
-                                      }
-                                      placeholder="-"
-                                      placeholderTextColor="#8C95A4"
-                                      keyboardType="numbers-and-punctuation"
-                                      style={{
-                                        flex: 1,
-                                        minWidth: 0,
-                                        minHeight: 34,
-                                        borderRadius: 8,
-                                        borderWidth: 1,
-                                        borderColor: "rgba(255,255,255,0.16)",
-                                        backgroundColor: "rgba(10,13,18,0.5)",
-                                        color: "#C7CED9",
-                                        fontSize: 22,
-                                        fontWeight: "600",
-                                        textAlign: "center",
-                                      }}
-                                    />
-                                    <TextInput
-                                      value={seriesState.series.rest_seconds}
-                                      onChangeText={(value) =>
-                                        updateExerciseSeriesFieldInActiveSession(
-                                          sessionExercise.exercise.id,
-                                          seriesState.series.id,
-                                          "rest_seconds",
-                                          value,
-                                        )
-                                      }
-                                      placeholder="-"
-                                      placeholderTextColor="#8C95A4"
-                                      keyboardType="numbers-and-punctuation"
-                                      style={{
-                                        flex: 1,
-                                        minWidth: 0,
-                                        minHeight: 34,
-                                        borderRadius: 8,
-                                        borderWidth: 1,
-                                        borderColor: "rgba(255,255,255,0.16)",
-                                        backgroundColor: "rgba(10,13,18,0.5)",
-                                        color: "#C7CED9",
-                                        fontSize: 22,
-                                        fontWeight: "600",
-                                        textAlign: "center",
-                                      }}
-                                    />
-                                  </>
-                                ) : (
-                                  <>
-                                    <Text
-                                      style={{
-                                        flex: 1,
-                                        minWidth: 0,
-                                        color: "#C7CED9",
-                                        fontSize: 22,
-                                        fontWeight: "700",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {seriesState.series.reps || "-"}
-                                    </Text>
-                                    <Text
-                                      style={{
-                                        flex: 1,
-                                        minWidth: 0,
-                                        color: "#C7CED9",
-                                        fontSize: 22,
-                                        fontWeight: "600",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {seriesState.series.weight_kg?.trim()
-                                        ? `${seriesState.series.weight_kg} kg`
-                                        : "-"}
-                                    </Text>
-                                    <Text
-                                      style={{
-                                        flex: 1,
-                                        minWidth: 0,
-                                        color: "#8C95A4",
-                                        fontSize: 22,
-                                        fontWeight: "600",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {seriesState.series.rest_seconds || "-"}
-                                    </Text>
-                                  </>
-                                )}
+                                <>
+                                  <TextInput
+                                    value={seriesState.series.reps}
+                                    onChangeText={(value) =>
+                                      updateExerciseSeriesFieldInActiveSession(
+                                        sessionExercise.exercise.id,
+                                        seriesState.series.id,
+                                        "reps",
+                                        value,
+                                      )
+                                    }
+                                    placeholder="-"
+                                    placeholderTextColor="#8C95A4"
+                                    keyboardType="number-pad"
+                                    style={{
+                                      flex: 1,
+                                      minWidth: 0,
+                                      minHeight: 34,
+                                      borderRadius: 8,
+                                      borderWidth: 1,
+                                      borderColor: "rgba(203,255,26,0.8)",
+                                      backgroundColor: "rgba(6,9,13,0.32)",
+                                      color: mobileTheme.color.brandPrimary,
+                                      fontSize: 22,
+                                      fontWeight: "700",
+                                      textAlign: "center",
+                                    }}
+                                  />
+                                  <TextInput
+                                    value={seriesState.series.weight_kg}
+                                    onChangeText={(value) =>
+                                      updateExerciseSeriesFieldInActiveSession(
+                                        sessionExercise.exercise.id,
+                                        seriesState.series.id,
+                                        "weight_kg",
+                                        value,
+                                      )
+                                    }
+                                    placeholder="-"
+                                    placeholderTextColor="#8C95A4"
+                                    keyboardType="numbers-and-punctuation"
+                                    style={{
+                                      flex: 1,
+                                      minWidth: 0,
+                                      minHeight: 34,
+                                      borderRadius: 8,
+                                      borderWidth: 1,
+                                      borderColor: "rgba(255,255,255,0.16)",
+                                      backgroundColor: "rgba(10,13,18,0.5)",
+                                      color: "#C7CED9",
+                                      fontSize: 22,
+                                      fontWeight: "600",
+                                      textAlign: "center",
+                                    }}
+                                  />
+                                  <TextInput
+                                    value={seriesState.series.rest_seconds}
+                                    onChangeText={(value) =>
+                                      updateExerciseSeriesFieldInActiveSession(
+                                        sessionExercise.exercise.id,
+                                        seriesState.series.id,
+                                        "rest_seconds",
+                                        value,
+                                      )
+                                    }
+                                    placeholder="-"
+                                    placeholderTextColor="#8C95A4"
+                                    keyboardType="numbers-and-punctuation"
+                                    style={{
+                                      flex: 1,
+                                      minWidth: 0,
+                                      minHeight: 34,
+                                      borderRadius: 8,
+                                      borderWidth: 1,
+                                      borderColor: "rgba(255,255,255,0.16)",
+                                      backgroundColor: "rgba(10,13,18,0.5)",
+                                      color: "#C7CED9",
+                                      fontSize: 22,
+                                      fontWeight: "600",
+                                      textAlign: "center",
+                                    }}
+                                  />
+                                </>
                                 <Pressable
                                   onPress={(event) => {
                                     event.stopPropagation();
