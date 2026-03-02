@@ -109,6 +109,166 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-01 - Workout series tick now starts the rest timer
+- Failure:
+  Marking a workout series as done with the per-series tick updated completion state, but it did not start the configured rest timer for that set.
+- Root cause:
+  `markSessionSeriesAsDone(...)` in `apps/mobile/App.tsx` always reset `is_resting` to `false` and `rest_seconds_left` to `0`, unlike `completeCurrentSessionSeries(...)` which derives rest state from the completed series.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - `markSessionSeriesAsDone(...)` now parses `targetPointer.series.rest_seconds`.
+     - it now sets `is_resting` / `rest_seconds_left` from that series when marking it done.
+     - manual rest-skip state now only stays set when the action interrupts an active rest without starting a new one.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-03-01 - Rest timer completion no longer shows end-of-rest modal
+- Failure:
+  When the rest timer finished between workout sets, the app showed a blocking modal saying the rest time had ended.
+- Root cause:
+  The rest-finished handler in `apps/mobile/App.tsx` called `Alert.alert(...)` after vibrating and playing the completion sound.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - removed the `Alert` import from React Native.
+     - removed the `Alert.alert("Descanso terminado", "Empieza la siguiente serie.")` call from the rest-finished handler.
+     - kept vibration and completion sound behavior intact.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - Body fat now uses military formula by sex and `Configuración` moves to `Perfil` (removes `Medidas` sub-tab)
+- Failure:
+  Body fat percentage was calculated with a fixed formula regardless of sex, and `Configuración` still contained a `Medidas` sub-tab that is no longer part of the flow.
+- Root cause:
+  The store had no profile sex field, `% grasa` computation used a single hardcoded path, and settings tabs were still modeled as `measures/diet/provider`.
+- Exact fix steps/commands:
+  1. Updated profile/store model in `apps/mobile/App.tsx`:
+     - added `ProfileSex` + `ProfileSettings`.
+     - added `profile` to `LocalStore` with migration-safe normalization.
+     - default profile now sets sex to `male`.
+  2. Updated military body fat formula in `apps/mobile/App.tsx`:
+     - `estimateBodyFatPercentage(...)` now uses sex-specific equations:
+       - male: neck/waist/height
+       - female: neck/waist/hip/height
+     - uses cm→in conversion for formula consistency.
+  3. Wired sex-aware body fat across UI:
+     - trends, chart metric `% grasa`, and history summaries now use `store.profile.sex`.
+     - when a measurement has no `height_cm`, body fat estimation reuses latest recorded height as fallback.
+  4. Updated `Configuración` tabs:
+     - removed `Medidas` sub-tab.
+     - added new `Perfil` sub-tab with selectable `Hombre` / `Mujer`.
+     - added `updateProfileSex(...)` action to persist selection in local store.
+  5. Removed obsolete settings `Medidas` block from `apps/mobile/App.tsx`.
+  6. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - `Medidas` chart no longer shows false "faltan datos" message when data exists
+- Failure:
+  In `Medidas`, with `Peso` and `3 meses` selected, the chart showed "Registra al menos dos valores..." even when multiple weight records existed.
+- Root cause:
+  The empty-state condition depended on rendered chart points (`measuresChartSeriesRenderData`), which require a measured chart width. Since the empty state rendered first, width stayed `0` and the chart never mounted.
+- Exact fix steps/commands:
+  1. Updated chart readiness condition in `apps/mobile/App.tsx`:
+     - changed `canRenderMeasuresChart` to depend on source series records (`measuresChartSeries`) instead of rendered points.
+     - this allows chart container to mount and compute width via `onLayout`.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - `Medidas` chart now supports multi-select measure menu from a dedicated pill
+- Failure:
+  Users could not choose which body measures to show in the chart; only a fixed chart line was rendered.
+- Root cause:
+  The chart UI only had a period selector and no metric selector state/model for multi-series rendering.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` chart metric model:
+     - added `MeasuresChartMetricKey` and `MEASURES_CHART_METRIC_OPTIONS`.
+     - added helper `resolveMeasuresChartMetricValue(...)`.
+  2. Added selector state in `apps/mobile/App.tsx`:
+     - `selectedMeasuresChartMetrics` (multi-select).
+     - `measuresChartMetricsDropdownOpen`.
+  3. Added second pill in `Medidas > Evolución de medidas`:
+     - opens metrics dropdown menu with selectable options.
+     - selecting/deselecting an option keeps the menu open.
+     - preserves at least one selected metric to avoid empty chart state.
+  4. Added outside-close behavior:
+     - dropdown menus close when tapping outside or toggling pills.
+     - selection taps do not close the metrics menu.
+  5. Upgraded chart rendering:
+     - now computes series for all selected metrics and draws multiple colored lines/points.
+     - added selected-metric legend chips above the plot.
+  6. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - `Medidas` period/metrics dropdowns now render above chart and stay clickable
+- Failure:
+  Dropdown menus in `Medidas` were appearing behind chart layers, preventing option selection.
+- Root cause:
+  The chart card and dropdown containers lacked enough stacking control (`zIndex`/`elevation`) for cross-platform overlay priority.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` chart card layering:
+     - set explicit `position`, `zIndex`, and `elevation` on chart card and header containers while menus are open.
+  2. Updated dropdown containers:
+     - added higher `zIndex`/`elevation` and shadow on dropdown menus to ensure visual/touch priority.
+  3. Added card-level outside press layer:
+     - closes open dropdowns when tapping outside menu content.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - `Medidas` chart period pill now opens a real selector and updates the chart range
+- Failure:
+  In `Medidas`, tapping the period pill (`3 meses`) did nothing, so users could not change the chart period.
+- Root cause:
+  The pill was a static `View` with fixed text and icon, without interactive state or period filtering logic.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` chart period model:
+     - added `MeasuresChartPeriodKey` and `MEASURES_CHART_PERIOD_OPTIONS` (`1m`, `3m`, `6m`, `12m`, `Todo`).
+  2. Added period selector state in `apps/mobile/App.tsx`:
+     - `measuresChartPeriod` and `measuresChartPeriodDropdownOpen`.
+  3. Replaced static period chip with interactive dropdown in `apps/mobile/App.tsx`:
+     - tapping the pill now opens/closes options and selecting one updates active period.
+  4. Connected period to chart data source:
+     - `weightChartRecords` now filters measurements by the selected period before rendering the graph.
+  5. Added small UX behavior:
+     - closes dropdown when leaving `Medidas` tab or opening `Registrar`.
+  6. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - Calendar button in `Medidas` entry screen now opens date picker correctly
+- Failure:
+  In `Medidas > Registrar`, pressing the calendar button did not open a date picker, so users could not select measurement date from calendar.
+- Root cause:
+  The flow relied on inline `DateTimePicker` rendering, which is unreliable in web preview and some Android contexts when used from this screen.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` date picker handling:
+     - imported `DateTimePickerAndroid` and added `openMeasurementDatePicker()`.
+     - Android now opens picker imperatively with `DateTimePickerAndroid.open(...)`.
+  2. Added web fallback in `apps/mobile/App.tsx`:
+     - implemented `openWebNativeDatePicker(...)` using hidden native browser `<input type="date">`.
+  3. Updated both measurement date buttons:
+     - replaced direct `setShowMeasurementDatePicker(true)` with `openMeasurementDatePicker()`.
+  4. Added small UX cleanup:
+     - clear error on successful date selection (`setError(null)`).
+  5. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - `Registrar` in `Medidas` now opens dedicated entry screen instead of navigating to `Configuración`
+- Failure:
+  Pressing `Registrar` in the `Medidas` tab redirected users to `Configuración > Medidas` instead of opening a dedicated data-entry screen.
+- Root cause:
+  The button handler directly called `setSettingsTab("measures")` and `setTab("settings")`, coupling the action to settings navigation.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx` state and handlers:
+     - added `measurementEntryScreenOpen` boolean state.
+     - added `openMeasurementEntryScreen()` and `closeMeasurementEntryScreen()` helpers.
+  2. Updated `Registrar` button in `Medidas`:
+     - replaced settings navigation with `openMeasurementEntryScreen()`.
+  3. Added full-screen `Registrar medidas` entry overlay in `apps/mobile/App.tsx`:
+     - includes date picker, progress photo selector, metric inputs, and `Guardar medidas` / `Cancelar` actions.
+     - reused existing save validation via `addMeasurementFromSettings`.
+  4. Updated save behavior:
+     - on successful save, closes the dedicated entry screen and date picker.
+  5. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-02-23 - Diet foods now support edit/delete via three-dot action menu
 - Failure:
   Foods already added in `Dieta` could not be edited or removed from the meal cards.
@@ -1818,4 +1978,164 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   5. Preserved "hoy" semantics outside Diet:
      - dashboard calories now read from `todayISO()` explicitly, independent of selected diet day.
   6. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - Training routines now start only from explicit `Empezar rutina` button
+- Failure:
+  In `Entrenamiento`, touching any area of a routine card started the training session immediately, causing accidental routine starts.
+- Root cause:
+  The routine card container itself was a `Pressable` wired directly to `startTrainingSession(tpl.id)`, and the overflow menu also exposed a separate start action.
+- Exact fix steps/commands:
+  1. Updated routine list cards in `apps/mobile/App.tsx`:
+     - replaced card-level `Pressable` start behavior with a non-clickable container.
+     - added a dedicated per-routine button labeled `Empezar rutina` that calls `startTrainingSession(tpl.id)`.
+     - disabled the new button when the routine has no runnable series (`templateHasRunnableSeries`).
+  2. Restricted start path from routine list UI:
+     - removed `Iniciar entrenamiento` action from the routine overflow menu, so list-based session start is only possible through `Empezar rutina`.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - Training routine card now opens workout detail screen (Image #1 style) on card tap
+- Failure:
+  After restricting routine start to `Empezar rutina`, tapping the rest of the routine card did nothing, and users could not preview a routine detail view before starting.
+- Root cause:
+  The routine list UI had no dedicated detail state/screen flow; cards were rendered as static containers plus actions.
+- Exact fix steps/commands:
+  1. Added routine detail state/flow in `apps/mobile/App.tsx`:
+     - introduced `trainingDetailTemplateId` + `trainingDetailMuscleFilter` state.
+     - added open/close handlers for detail (`openTrainingTemplateDetail`, `closeTrainingTemplateDetail`).
+     - ensured detail state resets when leaving `Entrenamiento`, resetting local data, deleting templates, or starting a session.
+  2. Updated routine list card interaction in `apps/mobile/App.tsx`:
+     - card itself is now pressable to open routine detail.
+     - `Empezar rutina` remains a separate button and stops event propagation.
+     - overflow menu actions stop propagation to avoid unintended detail opens.
+  3. Implemented full routine detail overlay in `apps/mobile/App.tsx` (aligned to `[Image #1]`):
+     - hero image header with back button and category badge.
+     - title + routine description.
+     - metric chips (minutes, exercises, estimated kcal).
+     - muscle filter chips (`All` + detected muscles).
+     - exercise list cards with thumbnail, summary (`sets x reps • weight`) and play affordance.
+     - bottom CTA `BEGIN WORKOUT` wired to `startTrainingSession(...)`.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - Workout detail CTA text localized to `Empezar rutina`
+- Failure:
+  In routine detail view, the primary CTA still displayed `BEGIN WORKOUT` in English.
+- Root cause:
+  The detail screen button label remained hardcoded with English copy.
+- Exact fix steps/commands:
+  1. Updated CTA label in `apps/mobile/App.tsx`:
+     - changed detail CTA text from `BEGIN WORKOUT` to `Empezar rutina`.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - Workout timer now keeps progressing across app background/lock transitions
+- Failure:
+  During an active workout, if the app went to background or the device screen was locked, session timer/rest countdown stopped and resumed from stale values on return.
+- Root cause:
+  Session time progression depended on a foreground `setInterval` that incremented `elapsed_seconds` by 1 each tick; when JS timers paused in background, no elapsed compensation was applied.
+- Exact fix steps/commands:
+  1. Added real-time clock tracking to workout session in `apps/mobile/App.tsx`:
+     - extended `WorkoutSession` with `clock_last_tick_ms`.
+     - added normalization + recovery for legacy sessions without the new field.
+  2. Reworked timer progression to wall-clock sync:
+     - introduced `syncWorkoutSessionClock(...)` helper to compute elapsed/rest deltas from real time.
+     - updated interval loop to apply this sync instead of fixed `+1` increments.
+     - applied sync on critical actions (`complete`, `pause`, `resume`, `skip rest`, `finish`) so values stay accurate even right after returning from background.
+  3. Added AppState foreground/background handling:
+     - when leaving active state, persist current tick timestamp.
+     - when returning to active, immediately sync elapsed/rest with wall-clock delta.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - Statistics tab label renamed from `Estadísticas` to `Medidas`
+- Failure:
+  The bottom navigation tab for `measures` still displayed `Estadísticas` instead of the requested label `Medidas`.
+- Root cause:
+  `tabLabel()` mapping in `apps/mobile/App.tsx` had `measures: "Estadísticas"`.
+- Exact fix steps/commands:
+  1. Updated tab label mapping in `apps/mobile/App.tsx`:
+     - `measures: "Estadísticas"` -> `measures: "Medidas"`.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - `Medidas` tab redesigned to match dashboard layout reference (Image #1)
+- Failure:
+  The `Medidas` tab only showed a basic add-weight form plus raw list items, and did not match the requested dashboard-style layout from the design reference.
+- Root cause:
+  `tab === "measures"` render path in `apps/mobile/App.tsx` had no composed KPI cards, trend chart, or structured history design.
+- Exact fix steps/commands:
+  1. Added measurement analytics helpers in `apps/mobile/App.tsx`:
+     - body-fat estimation from saved anthropometrics (`estimateBodyFatPercentage`).
+     - metric trend resolver with week-aware fallback (`resolveMeasurementMetricTrend`).
+     - display formatters for KPI values, deltas, history rows, and trend colors.
+  2. Added derived state for the new dashboard UI in `apps/mobile/App.tsx`:
+     - primary/secondary KPI card data (`peso`, `% grasa`, `cintura`, `pecho`, `brazo`).
+     - 3-month weight chart dataset + axis labels + month labels.
+     - chart geometry points/segments using dynamic layout width (`measuresChartWidth`).
+     - history rows with summary + weight delta badges and `Ver todo / Ver menos`.
+  3. Replaced `tab === "measures"` layout in `apps/mobile/App.tsx`:
+     - top action row with `Registrar` button (opens `Configuración > Medidas`).
+     - KPI cards arranged like the reference hierarchy.
+     - styled weight evolution panel with pseudo-line chart and period pill.
+     - structured history list cards with date, summary and trend chip.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-02-25 - Removed `Gráficas` sub-tab from `Configuración`
+- Failure:
+  `Configuración` still showed a `Gráficas` chip/section that should no longer be part of the settings navigation.
+- Root cause:
+  `SettingsTabKey`, `SETTINGS_TAB_OPTIONS`, and a dedicated `settingsTab === "charts"` render block still included the legacy charts placeholder.
+- Exact fix steps/commands:
+  1. Updated settings tab model in `apps/mobile/App.tsx`:
+     - removed `charts` from `SettingsTabKey`.
+  2. Updated settings chips in `apps/mobile/App.tsx`:
+     - removed `{ key: "charts", label: "Gráficas" }` from `SETTINGS_TAB_OPTIONS`.
+  3. Removed charts placeholder section in `apps/mobile/App.tsx`:
+     - deleted the `settingsTab === "charts"` render block under `Configuración`.
+  4. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-03-01 - Workout series checks now toggle any set regardless of current order
+- Failure:
+  In the active workout UI, the per-series check button was disabled for any set that was not the current one, so only the current set could be marked done from that control.
+- Root cause:
+  The series check `onPress` only called `completeCurrentSessionSeries()` when `seriesState.isCurrent && !activeWorkoutSession.is_resting`, and `disabled` blocked all other incomplete sets.
+- Exact fix steps/commands:
+  1. Updated workout session actions in `apps/mobile/App.tsx`:
+     - added `markSessionSeriesAsDone(exerciseId, seriesId)` to mark any target set as completed directly.
+     - manual toggles now clear rest state, preserve current pointer when possible, and finish the session if the last remaining set is marked done.
+  2. Updated both per-series pressables in `apps/mobile/App.tsx`:
+     - incomplete sets now call `markSessionSeriesAsDone(...)`.
+     - completed sets still call `markSessionSeriesAsNotDone(...)`.
+     - removed the current-set-only `disabled` gating so any set can be toggled.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-03-01 - Workout series styling now keeps incomplete sets uniform and highlights completed sets in yellow
+- Failure:
+  In the training UI, the current incomplete set had a special green/yellow highlight, so incomplete sets did not share the same appearance and completed sets were still using a green completion fill.
+- Root cause:
+  The series row and both check controls in `apps/mobile/App.tsx` mapped `seriesState.isCurrent` to the highlight styles, while `seriesState.isCompleted` still used the old green fill.
+- Exact fix steps/commands:
+  1. Updated workout series row styles in `apps/mobile/App.tsx`:
+     - moved the yellow row background/border highlight from `seriesState.isCurrent` to `seriesState.isCompleted`.
+  2. Updated both per-series check controls in `apps/mobile/App.tsx`:
+     - removed the special current-set fill/border colors so all incomplete sets now share the same neutral styling.
+     - changed completed-state fill/border colors to `mobileTheme.color.brandPrimary` and switched completed icon/text color to dark for contrast.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
+### 2026-03-01 - Active workout actions now hide complete, pause and discard buttons in the expanded card
+- Failure:
+  The expanded active workout card still rendered secondary action buttons for completing a series, pausing/resuming the session, and discarding the session, even though that surface should only expose finish and rest controls.
+- Root cause:
+  `apps/mobile/App.tsx` still included a bottom action row with `training-session-complete-series`, `training-session-toggle-pause`, and `training-session-discard` pressables inside the expanded session card JSX.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - removed the action row that rendered `training-session-complete-series`, `training-session-toggle-pause`, and `training-session-discard`.
+     - kept the existing `training-session-finish`, `training-session-skip-rest`, and `training-session-rest-toggle-pause` controls unchanged.
+  2. Validated mobile TypeScript:
      `npm --workspace apps/mobile exec tsc --noEmit`

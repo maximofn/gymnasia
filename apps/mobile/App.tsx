@@ -4503,6 +4503,69 @@ export default function App() {
     setError(null);
   }
 
+  function markSessionSeriesAsDone(exerciseId: string, seriesId: string) {
+    if (!activeWorkoutSession) return;
+    const session = activeWorkoutSession;
+    const runtime = resolveSessionRuntime(session);
+    if (!runtime) {
+      setError("No se pudo actualizar la sesión activa.");
+      return;
+    }
+    const targetPointer = runtime.pointers.find(
+      (item) => item.exerciseId === exerciseId && item.seriesId === seriesId,
+    );
+    if (!targetPointer) return;
+
+    const targetKey = pointerKey(targetPointer);
+    if (session.completed_series_keys.includes(targetKey)) return;
+
+    const restSeconds = parseRestSecondsInput(targetPointer.series.rest_seconds);
+    manualRestSkipRef.current = session.is_resting && restSeconds <= 0;
+
+    const completedSeriesKeys = [...session.completed_series_keys, targetKey];
+    const completedSeriesCount = Math.min(
+      session.total_series_count,
+      completedSeriesKeys.length,
+    );
+
+    if (completedSeriesCount >= session.total_series_count) {
+      finishWorkoutSession({
+        ...session,
+        completed_series_keys: completedSeriesKeys,
+        completed_series_count: completedSeriesCount,
+        current_exercise_index: targetPointer.exerciseIndex,
+        current_series_index: targetPointer.seriesIndex,
+        is_resting: restSeconds > 0,
+        rest_seconds_left: restSeconds,
+        clock_last_tick_ms: Date.now(),
+      });
+      return;
+    }
+
+    const currentKey = pointerKey(runtime.currentPointer);
+    const nextPointer =
+      !completedSeriesKeys.includes(currentKey)
+        ? runtime.currentPointer
+        : runtime.pointers
+            .slice(runtime.currentIndex + 1)
+            .find((item) => !completedSeriesKeys.includes(pointerKey(item))) ??
+          runtime.pointers.find((item) => !completedSeriesKeys.includes(pointerKey(item)));
+    if (!nextPointer) return;
+
+    setActiveWorkoutSession({
+      ...session,
+      completed_series_keys: completedSeriesKeys,
+      completed_series_count: completedSeriesCount,
+      current_exercise_index: nextPointer.exerciseIndex,
+      current_series_index: nextPointer.seriesIndex,
+      is_resting: restSeconds > 0,
+      rest_seconds_left: restSeconds,
+      clock_last_tick_ms: Date.now(),
+    });
+    setConfirmDiscardSession(false);
+    setError(null);
+  }
+
   function markSessionSeriesAsNotDone(exerciseId: string, seriesId: string) {
     if (!activeWorkoutSession) return;
     const runtime = resolveSessionRuntime(activeWorkoutSession);
@@ -5694,12 +5757,19 @@ export default function App() {
                                 <Pressable
                                   onPress={(event) => {
                                     event.stopPropagation();
-                                    markSessionSeriesAsNotDone(
+                                    if (seriesState.isCompleted) {
+                                      markSessionSeriesAsNotDone(
+                                        sessionExercise.exercise.id,
+                                        seriesState.series.id,
+                                      );
+                                      return;
+                                    }
+                                    markSessionSeriesAsDone(
                                       sessionExercise.exercise.id,
                                       seriesState.series.id,
                                     );
                                   }}
-                                  disabled={!seriesState.isCompleted}
+                                  disabled={false}
                                   hitSlop={6}
                                   style={{
                                     width: 22,
@@ -5856,6 +5926,38 @@ export default function App() {
                                     </Text>
                                   </>
                                 )}
+                                <Pressable
+                                  onPress={(event) => {
+                                    event.stopPropagation();
+                                    if (seriesState.isCompleted) {
+                                      markSessionSeriesAsNotDone(
+                                        sessionExercise.exercise.id,
+                                        seriesState.series.id,
+                                      );
+                                      return;
+                                    }
+                                    markSessionSeriesAsDone(
+                                      sessionExercise.exercise.id,
+                                      seriesState.series.id,
+                                    );
+                                  }}
+                                  disabled={false}
+                                  style={{
+                                    width: 30,
+                                    height: 30,
+                                    borderRadius: 999,
+                                    backgroundColor: seriesState.isCompleted ? mobileTheme.color.brandPrimary : "#202630",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginLeft: 10,
+                                  }}
+                                >
+                                  <Feather
+                                    name="check"
+                                    size={16}
+                                    color={seriesState.isCompleted ? "#06090D" : "#6E7787"}
+                                  />
+                                </Pressable>
                               </View>
                             ))}
 
