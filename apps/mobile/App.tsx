@@ -11217,30 +11217,13 @@ export default function App() {
               backgroundColor: mobileTheme.color.bgApp,
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <View style={{ flex: 1, gap: 4 }}>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
-                  Registrar medidas
-                </Text>
-                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                  Guarda peso, foto y contornos sin salir de la pestaña `Medidas`.
-                </Text>
-              </View>
-              <Pressable
-                onPress={closeMeasurementEntryScreen}
-                style={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgSurface,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
-              </Pressable>
+            <View style={{ gap: 4 }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
+                Registrar medidas
+              </Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                Guarda peso, foto y contornos sin salir de la pestaña `Medidas`.
+              </Text>
             </View>
 
             <View style={{ flexDirection: "row", gap: 8 }}>

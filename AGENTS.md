@@ -110,6 +110,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - `Registrar medidas` header no longer shows the redundant `X` close button
+- Failure:
+  The dedicated `Registrar medidas` screen still showed an `X` icon on the right side of the header title, even though the same header already exposed `Cancelar`.
+- Root cause:
+  After duplicating the top `Cancelar` / `Guardar medidas` actions, the original close `Pressable` stayed in the title row, leaving an unnecessary second dismiss control.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - removed the right-side `X` close button from the `Registrar medidas` overlay header.
+     - simplified the title row layout so it no longer reserves space for that obsolete control.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - `Registrar medidas` now duplicates `Cancelar` and `Guardar` actions in the top header
 - Failure:
   The dedicated `Registrar medidas` screen only showed `Cancelar` and `Guardar medidas` at the bottom of the form, but the same actions were also needed at the top for faster access.
