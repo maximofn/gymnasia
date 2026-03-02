@@ -2670,6 +2670,7 @@ export default function App() {
   const [showMeasurementDatePicker, setShowMeasurementDatePicker] = useState(false);
   const [measuresDashboardPeriod, setMeasuresDashboardPeriod] =
     useState<MeasuresDashboardPeriodKey>("3m");
+  const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
   const [showAllMeasurementsHistory, setShowAllMeasurementsHistory] = useState(false);
   const [heightInput, setHeightInput] = useState("");
   const [neckInput, setNeckInput] = useState("");
@@ -3780,6 +3781,11 @@ export default function App() {
     setMessages(store.messagesByThread[activeThreadId] ?? []);
   }, [activeThreadId, store.messagesByThread]);
 
+  useEffect(() => {
+    if (tab === "measures") return;
+    setMeasuresDashboardPeriodDropdownOpen(false);
+  }, [tab]);
+
   async function sendMessage() {
     if (!activeThreadId || !chatInput.trim()) {
       return;
@@ -4342,22 +4348,19 @@ export default function App() {
 
   function openMeasuresRegistration() {
     setShowMeasurementDatePicker(false);
+    setMeasuresDashboardPeriodDropdownOpen(false);
     setSettingsTab("measures");
     setTab("settings");
     setError(null);
   }
 
-  function cycleMeasuresDashboardPeriod() {
-    setMeasuresDashboardPeriod((current) => {
-      const currentIndex = MEASURES_DASHBOARD_PERIOD_OPTIONS.findIndex(
-        (option) => option.key === current,
-      );
-      const nextIndex =
-        currentIndex >= 0
-          ? (currentIndex + 1) % MEASURES_DASHBOARD_PERIOD_OPTIONS.length
-          : 1;
-      return MEASURES_DASHBOARD_PERIOD_OPTIONS[nextIndex]?.key ?? "3m";
-    });
+  function toggleMeasuresDashboardPeriodDropdown() {
+    setMeasuresDashboardPeriodDropdownOpen((current) => !current);
+  }
+
+  function selectMeasuresDashboardPeriod(periodKey: MeasuresDashboardPeriodKey) {
+    setMeasuresDashboardPeriod(periodKey);
+    setMeasuresDashboardPeriodDropdownOpen(false);
   }
 
   async function pickMeasurementPhoto() {
@@ -9385,7 +9388,7 @@ export default function App() {
                     Evolución de peso
                   </Text>
                   <Pressable
-                    onPress={cycleMeasuresDashboardPeriod}
+                    onPress={toggleMeasuresDashboardPeriodDropdown}
                     style={{
                       minHeight: 34,
                       borderRadius: mobileTheme.radius.pill,
@@ -9402,9 +9405,61 @@ export default function App() {
                     <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "700" }}>
                       {measuresDashboardPeriodMeta.label}
                     </Text>
-                    <Ionicons name="chevron-down" size={14} color="#6F7785" />
+                    <Ionicons
+                      name={measuresDashboardPeriodDropdownOpen ? "chevron-up" : "chevron-down"}
+                      size={14}
+                      color="#6F7785"
+                    />
                   </Pressable>
                 </View>
+
+                {measuresDashboardPeriodDropdownOpen ? (
+                  <View style={{ alignItems: "flex-end" }}>
+                    <View
+                      style={{
+                        minWidth: 128,
+                        borderRadius: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.06)",
+                        backgroundColor: "#1B2029",
+                        padding: 6,
+                        gap: 4,
+                      }}
+                    >
+                      {MEASURES_DASHBOARD_PERIOD_OPTIONS.map((option) => {
+                        const isActive = measuresDashboardPeriod === option.key;
+                        return (
+                          <Pressable
+                            key={option.key}
+                            onPress={() => selectMeasuresDashboardPeriod(option.key)}
+                            style={{
+                              minHeight: 34,
+                              borderRadius: 10,
+                              paddingHorizontal: 10,
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              backgroundColor: isActive ? "rgba(203,255,26,0.12)" : "transparent",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary,
+                                fontSize: 12,
+                                fontWeight: "700",
+                              }}
+                            >
+                              {option.label}
+                            </Text>
+                            {isActive ? (
+                              <Ionicons name="checkmark" size={14} color={mobileTheme.color.brandPrimary} />
+                            ) : null}
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </View>
+                ) : null}
 
                 <View
                   style={{

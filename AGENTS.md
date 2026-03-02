@@ -110,6 +110,20 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - `Medidas` chart period pill now opens a dropdown instead of cycling automatically
+- Failure:
+  Tapping the `3 meses` pill in the `Medidas` chart changed the period immediately to the next value (`6 meses`) instead of letting the user choose from a menu.
+- Root cause:
+  The period control in `apps/mobile/App.tsx` was wired to a `cycleMeasuresDashboardPeriod()` handler that rotated through the options sequentially on each tap.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - replaced the cycle handler with explicit dropdown state for the `Medidas` chart period selector.
+     - tapping the pill now opens/closes a dropdown menu with the available periods.
+     - selecting an option updates the period and closes the dropdown.
+     - the dropdown also closes automatically when leaving the `Medidas` tab or opening `Registrar`.
+  2. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - `Medidas` tab restored to the dashboard layout from `[Image #1]`
 - Failure:
   The `Medidas` tab only showed a basic `Añadir peso` form and raw records, so it did not match the dashboard structure required by `[Image #1]`.
