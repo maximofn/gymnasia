@@ -2461,7 +2461,7 @@ function normalizeWorkoutSession(
 function tabLabel(tab: TabKey): string {
   const map: Record<TabKey, string> = {
     home: "Home",
-    training: "Entrenamiento",
+    training: "Rutinas",
     diet: "Dieta",
     measures: "Medidas",
     chat: "Chat",

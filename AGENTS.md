@@ -110,6 +110,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-03-02 - Bottom `Entrenamiento` tab label now shows `Rutinas`
+- Failure:
+  The top navigation tab for the training section was still showing `Entrenamiento`, but the requested visible label was `Rutinas`.
+- Root cause:
+  `tabLabel()` in `apps/mobile/App.tsx` still mapped `training` to `Entrenamiento`, and the E2E nav helper only recognized the old visible label.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - changed the `training` tab label mapping from `Entrenamiento` to `Rutinas`.
+  2. Updated `apps/mobile/scripts/train-usability.e2e.mjs`:
+     - added `Rutinas` to the nav label map while keeping `Entrenamiento` compatibility.
+  3. Validated mobile TypeScript:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+
 ### 2026-03-02 - `Home` now matches the dashboard style from `[Image #1]` without duplicating quick-access cards
 - Failure:
   The mobile `Home` screen was still a minimal three-card summary, so it did not match the dashboard hierarchy and visual treatment from `[Image #1]`.

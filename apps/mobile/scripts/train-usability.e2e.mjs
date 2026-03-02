@@ -131,6 +131,8 @@ async function expectBodyContains(page, expected, timeout = STEP_TIMEOUT_MS) {
 async function clickNavTab(page, label) {
   const labelToTabKey = {
     Home: "home",
+    Rutinas: "training",
+    Rutnias: "training",
     Entrenamiento: "training",
     Dieta: "diet",
     Medidas: "measures",
