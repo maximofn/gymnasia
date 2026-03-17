@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
@@ -12,6 +13,8 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
   Platform,
   Pressable,
   SafeAreaView,
@@ -25,7 +28,7 @@ import {
 import { mobileTheme } from "./theme";
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider";
+type SettingsTabKey = "diet" | "provider" | "memory";
 
 type ExerciseSeries = {
   id: string;
@@ -208,6 +211,7 @@ type LocalStore = {
 const STORAGE_KEY = "gymnasia.mobile.local.v3";
 const SESSION_STORAGE_KEY = "gymnasia.mobile.training.session.v1";
 const CHAT_SYSTEM_PROMPT_CACHE_KEY = "gymnasia.mobile.chat.system_prompt.v1";
+const PERSONAL_DATA_STORAGE_KEY = "gymnasia.mobile.personal_data.v1";
 const SECURE_STORE_API_KEY_PREFIX = "gymnasia.mobile.v3.provider.api_key";
 const LEGACY_STORAGE_KEYS = [
   "gymnasia.mobile.local.v1",
@@ -231,7 +235,15 @@ const DEFAULT_CHAT_SYSTEM_PROMPT =
   "Eres Gymnasia Coach, un asistente de gimnasio y entrenador personal. " +
   "Tu trabajo es ayudar con entrenamiento, nutricion, habitos y progreso fisico. " +
   "Responde siempre en espanol. Responde de forma breve, clara, practica y accionable. " +
-  "Prioriza consejos seguros, realistas y faciles de aplicar.";
+  "Prioriza consejos seguros, realistas y faciles de aplicar.\n\n" +
+  "## Herramientas de memoria\n\n" +
+  "Tienes acceso a dos herramientas: read_personal_data y save_personal_data.\n" +
+  "- read_personal_data: devuelve un array JSON con objetos {key, description, value}.\n" +
+  "- save_personal_data: recibe un array JSON completo con todos los datos del usuario ({key, description, value}).\n" +
+  "- Cuando el usuario te salude, SIEMPRE usa read_personal_data primero. Si tiene nombre guardado, saluda usando su nombre.\n" +
+  "- Cuando el usuario comparta datos personales, usa primero read_personal_data, luego save_personal_data con el array completo actualizado.\n" +
+  "- Cada campo debe tener una description clara que explique para que sirve.\n" +
+  "- No menciones las herramientas al usuario.";
 const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
   "Anthropic en navegador necesita un proxy HTTP por CORS. " +
   "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
@@ -321,6 +333,73 @@ async function loadChatSystemPrompt(): Promise<string> {
       return DEFAULT_CHAT_SYSTEM_PROMPT;
     }
   }
+}
+
+type PersonalDataField = { key: string; description: string; value: string };
+
+async function loadPersonalData(): Promise<PersonalDataField[]> {
+  try {
+    const raw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+async function savePersonalData(fields: PersonalDataField[]): Promise<void> {
+  await AsyncStorage.setItem(PERSONAL_DATA_STORAGE_KEY, JSON.stringify(fields));
+}
+
+function personalDataToJson(fields: PersonalDataField[]): string {
+  return JSON.stringify(fields, null, 2);
+}
+
+function parsePersonalDataInput(input: unknown): PersonalDataField[] {
+  if (typeof input === "string") {
+    try {
+      const parsed = JSON.parse(input);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      return [];
+    }
+  }
+  if (Array.isArray(input)) return input;
+  return [];
+}
+
+const SAVE_PERSONAL_DATA_TOOL = "save_personal_data";
+const SAVE_PERSONAL_DATA_DESC =
+  "Guarda o actualiza los datos personales del usuario. " +
+  "Usa esta herramienta SIEMPRE que el usuario comparta informacion personal como nombre, edad, peso, altura, objetivos de fitness, lesiones, experiencia, etc. " +
+  "El campo personal_data debe contener TODOS los datos personales conocidos del usuario como un array JSON completo, no solo los nuevos. " +
+  'Cada elemento del array tiene: key (nombre del campo), description (para que sirve este campo), value (el valor). ' +
+  'Ejemplo: [{"key":"Nombre","description":"Nombre real del usuario","value":"Juan"}]';
+const SAVE_PERSONAL_DATA_PARAM_DESC =
+  'Array JSON completo con todos los datos personales. Cada objeto tiene key, description y value. ' +
+  'Ejemplo: [{"key":"Nombre","description":"Nombre real del usuario","value":"Juan"},{"key":"Objetivo","description":"Objetivo principal de fitness","value":"Ganar masa muscular"}]';
+
+const READ_PERSONAL_DATA_TOOL = "read_personal_data";
+const READ_PERSONAL_DATA_DESC =
+  "Lee los datos personales guardados del usuario. " +
+  "Devuelve un array JSON donde cada objeto tiene key, description y value. " +
+  "Usa esta herramienta cuando necesites conocer informacion personal del usuario, " +
+  "por ejemplo al saludar para llamarle por su nombre, o para personalizar recomendaciones.";
+
+async function handleToolCall(name: string, args: Record<string, unknown>): Promise<string> {
+  if (name === SAVE_PERSONAL_DATA_TOOL) {
+    const fields = parsePersonalDataInput(args.personal_data);
+    await savePersonalData(fields);
+    return "Datos personales guardados correctamente.";
+  }
+  if (name === READ_PERSONAL_DATA_TOOL) {
+    const fields = await loadPersonalData();
+    if (fields.length === 0) return "No hay datos personales guardados.";
+    return personalDataToJson(fields);
+  }
+  return "Herramienta no reconocida.";
 }
 
 function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
@@ -586,6 +665,7 @@ const GKG_MACRO_KEYS: GkgMacroKey[] = ["protein", "carbs", "fat"];
 const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "diet", label: "Dieta" },
   { key: "provider", label: "Proveedor IA" },
+  { key: "memory", label: "Memoria" },
 ];
 
 function createDefaultDietSettings(): DietSettings {
@@ -1287,6 +1367,245 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
 
   if (!response.ok) {
     throw new Error(extractErrorMessage(payload, `Google AI error (${response.status})`));
+  }
+
+  const content = parseGoogleContent(payload);
+  if (!content) throw new Error("Google AI no devolvio contenido.");
+  return content;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInputMessage[]): Promise<string> {
+  const systemPrompt = normalizeChatSystemPrompt(
+    messages
+      .filter((msg) => msg.role === "system")
+      .map((msg) => msg.content)
+      .join("\n\n"),
+  );
+  const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
+    .filter((msg) => msg.role !== "system")
+    .map((msg) => ({
+      role: msg.role === "assistant" ? "assistant" : "user",
+      content: msg.content,
+    }));
+
+  const chatTools = {
+    openai: [
+      {
+        type: "function",
+        function: {
+          name: SAVE_PERSONAL_DATA_TOOL,
+          description: SAVE_PERSONAL_DATA_DESC,
+          parameters: {
+            type: "object",
+            properties: { personal_data: { type: "string", description: SAVE_PERSONAL_DATA_PARAM_DESC } },
+            required: ["personal_data"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: READ_PERSONAL_DATA_TOOL,
+          description: READ_PERSONAL_DATA_DESC,
+          parameters: { type: "object", properties: {}, required: [] },
+        },
+      },
+    ],
+    anthropic: [
+      {
+        name: SAVE_PERSONAL_DATA_TOOL,
+        description: SAVE_PERSONAL_DATA_DESC,
+        input_schema: {
+          type: "object",
+          properties: { personal_data: { type: "string", description: SAVE_PERSONAL_DATA_PARAM_DESC } },
+          required: ["personal_data"],
+        },
+      },
+      {
+        name: READ_PERSONAL_DATA_TOOL,
+        description: READ_PERSONAL_DATA_DESC,
+        input_schema: { type: "object", properties: {} },
+      },
+    ],
+    google: [
+      {
+        functionDeclarations: [
+          {
+            name: SAVE_PERSONAL_DATA_TOOL,
+            description: SAVE_PERSONAL_DATA_DESC,
+            parameters: {
+              type: "object",
+              properties: { personal_data: { type: "string", description: SAVE_PERSONAL_DATA_PARAM_DESC } },
+              required: ["personal_data"],
+            },
+          },
+          {
+            name: READ_PERSONAL_DATA_TOOL,
+            description: READ_PERSONAL_DATA_DESC,
+            parameters: { type: "object", properties: {} },
+          },
+        ],
+      },
+    ],
+  };
+
+  // --- OPENAI ---
+  if (provider.provider === "openai") {
+    const openAIMessages: any[] = [{ role: "system", content: systemPrompt }, ...nonSystemMessages];
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
+      body: JSON.stringify({ model: provider.model || DEFAULT_MODELS.openai, messages: openAIMessages, temperature: 0.7, tools: chatTools.openai }),
+    });
+    let payload: any = null;
+    try { payload = await response.json(); } catch {}
+    if (!response.ok) throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
+
+    const choice = payload?.choices?.[0];
+    const toolCalls = choice?.message?.tool_calls;
+    if (toolCalls?.length) {
+      const tc = toolCalls[0];
+      const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
+      const toolResult = await handleToolCall(tc.function?.name, args);
+
+      openAIMessages.push(choice.message);
+      openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: toolResult });
+
+      const followUp = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
+        body: JSON.stringify({ model: provider.model || DEFAULT_MODELS.openai, messages: openAIMessages, temperature: 0.7, tools: chatTools.openai }),
+      });
+      let followUpPayload: any = null;
+      try { followUpPayload = await followUp.json(); } catch {}
+      if (!followUp.ok) throw new Error(extractErrorMessage(followUpPayload, `OpenAI error (${followUp.status})`));
+
+      // Handle second tool call (e.g. read then save)
+      const followUpChoice = followUpPayload?.choices?.[0];
+      const followUpToolCalls = followUpChoice?.message?.tool_calls;
+      if (followUpToolCalls?.length) {
+        const tc2 = followUpToolCalls[0];
+        const args2 = tc2.function?.arguments ? JSON.parse(tc2.function.arguments) : {};
+        const toolResult2 = await handleToolCall(tc2.function?.name, args2);
+
+        openAIMessages.push(followUpChoice.message);
+        openAIMessages.push({ role: "tool", tool_call_id: tc2.id, content: toolResult2 });
+
+        const finalResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
+          body: JSON.stringify({ model: provider.model || DEFAULT_MODELS.openai, messages: openAIMessages, temperature: 0.7 }),
+        });
+        let finalPayload: any = null;
+        try { finalPayload = await finalResponse.json(); } catch {}
+        if (!finalResponse.ok) throw new Error(extractErrorMessage(finalPayload, `OpenAI error (${finalResponse.status})`));
+        return parseOpenAIContent(finalPayload) || "Listo.";
+      }
+
+      return parseOpenAIContent(followUpPayload) || "Listo.";
+    }
+
+    const content = parseOpenAIContent(payload);
+    if (!content) throw new Error("OpenAI no devolvio contenido.");
+    return content;
+  }
+
+  // --- ANTHROPIC ---
+  if (provider.provider === "anthropic") {
+    if (Platform.OS === "web") {
+      return callAnthropicViaWebProxy(provider, systemPrompt, nonSystemMessages);
+    }
+
+    const anthropicHeaders = {
+      "Content-Type": "application/json",
+      "x-api-key": provider.api_key,
+      "anthropic-version": "2023-06-01",
+    };
+
+    const makeAnthropicRequest = async (msgs: any[], includeTools: boolean) => {
+      const body: any = {
+        model: provider.model || DEFAULT_MODELS.anthropic,
+        max_tokens: 700,
+        system: systemPrompt,
+        messages: msgs,
+      };
+      if (includeTools) body.tools = chatTools.anthropic;
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: anthropicHeaders,
+        body: JSON.stringify(body),
+      });
+      let p: any = null;
+      try { p = await res.json(); } catch {}
+      if (!res.ok) throw new Error(extractErrorMessage(p, `Anthropic error (${res.status})`));
+      return p;
+    };
+
+    let currentMessages: any[] = [...nonSystemMessages];
+    let payload = await makeAnthropicRequest(currentMessages, true);
+
+    // Tool call loop (max 2 rounds)
+    for (let round = 0; round < 2; round++) {
+      const contentBlocks = payload?.content as any[] | undefined;
+      const toolUseBlock = contentBlocks?.find((b: any) => b.type === "tool_use");
+      if (!toolUseBlock) break;
+
+      const toolResult = await handleToolCall(toolUseBlock.name, toolUseBlock.input ?? {});
+      currentMessages = [
+        ...currentMessages,
+        { role: "assistant", content: contentBlocks },
+        { role: "user", content: [{ type: "tool_result", tool_use_id: toolUseBlock.id, content: toolResult }] },
+      ];
+      payload = await makeAnthropicRequest(currentMessages, round < 1);
+    }
+
+    const content = parseAnthropicContent(payload);
+    if (!content) throw new Error("Anthropic no devolvio contenido.");
+    return content;
+  }
+
+  // --- GOOGLE ---
+  const googleMessages: any[] = nonSystemMessages.map((msg) => ({
+    role: msg.role === "assistant" ? "model" : "user",
+    parts: [{ text: msg.content }],
+  }));
+
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(provider.model || DEFAULT_MODELS.google)}:generateContent?key=${encodeURIComponent(provider.api_key)}`;
+
+  const makeGoogleRequest = async (msgs: any[], includeTools: boolean) => {
+    const body: any = {
+      contents: msgs,
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+    };
+    if (includeTools) body.tools = chatTools.google;
+    const res = await fetch(googleUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    let p: any = null;
+    try { p = await res.json(); } catch {}
+    if (!res.ok) throw new Error(extractErrorMessage(p, `Google AI error (${res.status})`));
+    return p;
+  };
+
+  let payload = await makeGoogleRequest(googleMessages, true);
+
+  // Tool call loop (max 2 rounds)
+  for (let round = 0; round < 2; round++) {
+    const parts = payload?.candidates?.[0]?.content?.parts as any[] | undefined;
+    const functionCall = parts?.find((p: any) => p.functionCall);
+    if (!functionCall) break;
+
+    const toolResult = await handleToolCall(functionCall.functionCall.name, functionCall.functionCall.args ?? {});
+    googleMessages.push({ role: "model", parts: [{ functionCall: functionCall.functionCall }] });
+    googleMessages.push({
+      role: "user",
+      parts: [{ functionResponse: { name: functionCall.functionCall.name, response: { result: toolResult } } }],
+    });
+    payload = await makeGoogleRequest(googleMessages, round < 1);
   }
 
   const content = parseGoogleContent(payload);
@@ -2688,6 +3007,8 @@ export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [sendingChat, setSendingChat] = useState(false);
+  const chatScrollRef = useRef<ScrollView>(null);
+  const mainScrollRef = useRef<ScrollView>(null);
 
   const [mealTitleInput, setMealTitleInput] = useState("");
   const [mealCaloriesInput, setMealCaloriesInput] = useState("");
@@ -2727,6 +3048,11 @@ export default function App() {
   const [quadricepsInput, setQuadricepsInput] = useState("");
   const [calfInput, setCalfInput] = useState("");
   const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("diet");
+  const [memoryFields, setMemoryFields] = useState<PersonalDataField[]>([]);
+  const [memoryNewKey, setMemoryNewKey] = useState("");
+  const [memoryNewDesc, setMemoryNewDesc] = useState("");
+  const [memoryNewValue, setMemoryNewValue] = useState("");
+  const [memoryLoaded, setMemoryLoaded] = useState(false);
   const [providerKeyVisibility, setProviderKeyVisibility] = useState<Record<Provider, boolean>>(() =>
     createProviderBooleanMap(false),
   );
@@ -3562,6 +3888,23 @@ export default function App() {
     (isTrainingEditorLoading || showGlobalScreenLoading);
 
   useEffect(() => {
+    if (tab !== "chat") return;
+    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        mainScrollRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    });
+    return () => sub.remove();
+  }, [tab]);
+
+  useEffect(() => {
+    if (settingsTab === "memory" && !memoryLoaded) {
+      loadMemoryFields();
+    }
+  }, [settingsTab, memoryLoaded]);
+
+  useEffect(() => {
     if (heightInput.trim()) return;
     if (!latestHeightMeasurement || latestHeightMeasurement.height_cm === null) return;
     setHeightInput(formatMeasurementNumber(latestHeightMeasurement.height_cm));
@@ -3845,7 +4188,40 @@ export default function App() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [activeWorkoutSession?.id, activeWorkoutSession?.status]);
+  }, [activeWorkoutSession?.id, activeWorkoutSession?.status]);  // AppState effect: recalculate timer when app comes to foreground
+  const appStateLastActiveRef = useRef<string | null>(null);
+  const backgroundTimestampRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState === "active" && backgroundTimestampRef.current) {
+        const elapsedSeconds = Math.floor((Date.now() - backgroundTimestampRef.current) / 1000);
+        backgroundTimestampRef.current = null;
+        setActiveWorkoutSession((prev) => {
+          if (!prev || prev.status !== "running") return prev;
+          const nextElapsed = prev.elapsed_seconds + elapsedSeconds;
+          if (!prev.is_resting || prev.rest_seconds_left <= 0) {
+            return { ...prev, elapsed_seconds: nextElapsed };
+          }
+          const nextRest = Math.max(0, prev.rest_seconds_left - elapsedSeconds);
+          return {
+            ...prev,
+            elapsed_seconds: nextElapsed,
+            rest_seconds_left: nextRest,
+            is_resting: nextRest > 0,
+          };
+        });
+      }
+      if (/inactive|background/.test(nextAppState)) {
+        backgroundTimestampRef.current = Date.now();
+      }
+      appStateLastActiveRef.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -3913,6 +4289,41 @@ export default function App() {
     setMeasuresDashboardPeriodDropdownOpen(false);
   }, [tab]);
 
+  async function loadMemoryFields() {
+    const fields = await loadPersonalData();
+    setMemoryFields(fields);
+    setMemoryLoaded(true);
+  }
+
+  async function saveMemoryFields(fields: PersonalDataField[]) {
+    setMemoryFields(fields);
+    await savePersonalData(fields);
+  }
+
+  function updateMemoryField(index: number, field: "key" | "description" | "value", text: string) {
+    const updated = [...memoryFields];
+    updated[index] = { ...updated[index], [field]: text };
+    setMemoryFields(updated);
+  }
+
+  async function commitMemoryField() {
+    await savePersonalData(memoryFields);
+  }
+
+  async function deleteMemoryField(index: number) {
+    const updated = memoryFields.filter((_, i) => i !== index);
+    await saveMemoryFields(updated);
+  }
+
+  async function addMemoryField() {
+    if (!memoryNewKey.trim()) return;
+    const updated = [...memoryFields, { key: memoryNewKey.trim(), description: memoryNewDesc.trim(), value: memoryNewValue.trim() }];
+    await saveMemoryFields(updated);
+    setMemoryNewKey("");
+    setMemoryNewDesc("");
+    setMemoryNewValue("");
+  }
+
   async function sendMessage() {
     if (!activeThreadId || !chatInput.trim()) {
       return;
@@ -3957,7 +4368,7 @@ export default function App() {
         .slice(-20)
         .map((msg) => ({ role: msg.role, content: msg.content }));
       const systemPrompt = await loadChatSystemPrompt();
-      const assistantContent = await callProviderChatAPI(activeProvider, [
+      const assistantContent = await callProviderChatAPIWithTools(activeProvider, [
         {
           role: "system",
           content: systemPrompt,
@@ -6160,7 +6571,8 @@ export default function App() {
           </View>
         </ScrollView>
       ) : (
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90 }}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
+        <ScrollView ref={mainScrollRef} style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90 }} keyboardShouldPersistTaps="handled">
           {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
 
           {tab === "home" ? (
@@ -10441,7 +10853,13 @@ export default function App() {
                 </Pressable>
               </View>
 
-              <View style={{ maxHeight: 360, gap: 8 }}>
+              <ScrollView
+                ref={chatScrollRef}
+                style={{ maxHeight: 360 }}
+                contentContainerStyle={{ gap: 8 }}
+                nestedScrollEnabled
+                onContentSizeChange={() => chatScrollRef.current?.scrollToEnd({ animated: true })}
+              >
                 {messages.map((msg) => (
                   <View
                     key={msg.id}
@@ -10463,7 +10881,7 @@ export default function App() {
                     <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
                   </View>
                 ))}
-              </View>
+              </ScrollView>
 
               <TextInput
                 style={{
@@ -11741,9 +12159,212 @@ export default function App() {
                   </Pressable>
                 </View>
               ) : null}
+
+              {settingsTab === "memory" ? (
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgSurface,
+                    borderRadius: mobileTheme.radius.lg,
+                    padding: 12,
+                    gap: 12,
+                  }}
+                >
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                    Memoria del coach
+                  </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                    Datos personales que el coach recuerda entre conversaciones. Puedes editarlos o dejar que el coach los guarde cuando le compartas información.
+                  </Text>
+
+                  {memoryFields.map((field, index) => (
+                    <View
+                      key={`mem_${index}`}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgApp,
+                        borderRadius: mobileTheme.radius.md,
+                        padding: 10,
+                        gap: 8,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                        <TextInput
+                          style={{
+                            flex: 1,
+                            minHeight: 36,
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            backgroundColor: mobileTheme.color.bgSurface,
+                            color: mobileTheme.color.textPrimary,
+                            paddingHorizontal: 10,
+                            fontSize: 13,
+                            fontWeight: "700",
+                          }}
+                          value={field.key}
+                          onChangeText={(text) => updateMemoryField(index, "key", text)}
+                          onBlur={commitMemoryField}
+                          placeholder="Campo"
+                          placeholderTextColor={mobileTheme.color.textSecondary}
+                        />
+                        <Pressable
+                          onPress={() => deleteMemoryField(index)}
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 8,
+                            backgroundColor: "rgba(255,77,79,0.15)",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Feather name="trash-2" size={13} color="#FF4D4F" />
+                        </Pressable>
+                      </View>
+                      <TextInput
+                        style={{
+                          minHeight: 36,
+                          borderRadius: 8,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgSurface,
+                          color: mobileTheme.color.textSecondary,
+                          paddingHorizontal: 10,
+                          fontSize: 12,
+                        }}
+                        value={field.description}
+                        onChangeText={(text) => updateMemoryField(index, "description", text)}
+                        onBlur={commitMemoryField}
+                        placeholder="Descripción (para qué sirve este campo)"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                      />
+                      <TextInput
+                        style={{
+                          minHeight: 36,
+                          borderRadius: 8,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgSurface,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 10,
+                          fontSize: 13,
+                        }}
+                        value={field.value}
+                        onChangeText={(text) => updateMemoryField(index, "value", text)}
+                        onBlur={commitMemoryField}
+                        placeholder="Valor"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                      />
+                    </View>
+                  ))}
+
+                  <View style={{ borderTopWidth: 1, borderTopColor: mobileTheme.color.borderSubtle, paddingTop: 12, gap: 8 }}>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+                      Añadir campo
+                    </Text>
+                    <TextInput
+                      style={{
+                        minHeight: 40,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgApp,
+                        color: mobileTheme.color.textPrimary,
+                        paddingHorizontal: 10,
+                        fontSize: 13,
+                        fontWeight: "700",
+                      }}
+                      value={memoryNewKey}
+                      onChangeText={setMemoryNewKey}
+                      placeholder="Campo (ej: Nombre)"
+                      placeholderTextColor={mobileTheme.color.textSecondary}
+                    />
+                    <TextInput
+                      style={{
+                        minHeight: 40,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgApp,
+                        color: mobileTheme.color.textSecondary,
+                        paddingHorizontal: 10,
+                        fontSize: 12,
+                      }}
+                      value={memoryNewDesc}
+                      onChangeText={setMemoryNewDesc}
+                      placeholder="Descripción (ej: Nombre real del usuario)"
+                      placeholderTextColor={mobileTheme.color.textSecondary}
+                    />
+                    <TextInput
+                      style={{
+                        minHeight: 40,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgApp,
+                        color: mobileTheme.color.textPrimary,
+                        paddingHorizontal: 10,
+                        fontSize: 13,
+                      }}
+                      value={memoryNewValue}
+                      onChangeText={setMemoryNewValue}
+                      placeholder="Valor (ej: Juan)"
+                      placeholderTextColor={mobileTheme.color.textSecondary}
+                    />
+                    <Pressable
+                      onPress={addMemoryField}
+                      disabled={!memoryNewKey.trim()}
+                      style={{
+                        height: 44,
+                        borderRadius: mobileTheme.radius.md,
+                        backgroundColor: memoryNewKey.trim() ? mobileTheme.color.brandPrimary : "#2F3440",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        opacity: memoryNewKey.trim() ? 1 : 0.5,
+                      }}
+                    >
+                      <Text style={{ color: memoryNewKey.trim() ? "#06090D" : "#9AA2AE", fontWeight: "700" }}>
+                        Añadir
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {memoryFields.length > 0 ? (
+                    <Pressable
+                      onPress={() => {
+                        Alert.alert("Borrar memoria", "¿Seguro que quieres eliminar todos los datos personales?", [
+                          { text: "Cancelar", style: "cancel" },
+                          {
+                            text: "Eliminar todo",
+                            style: "destructive",
+                            onPress: async () => {
+                              await saveMemoryFields([]);
+                            },
+                          },
+                        ]);
+                      }}
+                      style={{
+                        marginTop: 4,
+                        height: 44,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,100,100,0.4)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: "#ffb5b5", fontWeight: "700" }}>Borrar toda la memoria</Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              ) : null}
             </View>
           ) : null}
         </ScrollView>
+        </KeyboardAvoidingView>
       )}
 
       {tab === "diet" ? (
