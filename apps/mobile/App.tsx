@@ -237,13 +237,11 @@ const DEFAULT_CHAT_SYSTEM_PROMPT =
   "Responde siempre en espanol. Responde de forma breve, clara, practica y accionable. " +
   "Prioriza consejos seguros, realistas y faciles de aplicar.\n\n" +
   "## Herramientas de memoria\n\n" +
-  "Tienes acceso a dos herramientas: read_personal_data y save_personal_data.\n" +
-  "- read_personal_data: devuelve un array JSON con objetos {key, description, value}.\n" +
-  "- save_personal_data: recibe un array JSON completo con todos los datos del usuario ({key, description, value}).\n" +
-  "- Cuando el usuario te salude, SIEMPRE usa read_personal_data primero. Si tiene nombre guardado, saluda usando su nombre.\n" +
-  "- Cuando el usuario comparta datos personales, usa primero read_personal_data, luego save_personal_data con el array completo actualizado.\n" +
-  "- Cada campo debe tener una description clara que explique para que sirve.\n" +
-  "- No menciones las herramientas al usuario.";
+  "Tienes 4 herramientas: list_personal_data_keys, read_field_description(key), read_field_value(key), save_personal_data(personal_data).\n" +
+  "- Al saludar: 1) list_personal_data_keys, 2) read_field_description de keys candidatas, 3) read_field_value del campo correcto, 4) saluda con su nombre.\n" +
+  "- Al guardar datos: 1) list keys existentes, 2) lee datos actuales, 3) save_personal_data con array completo [{key,description,value}].\n" +
+  "- Tras saludar, anade seccion '---' con el proceso de busqueda (keys, descripciones, campo elegido, valor) para depuracion.\n" +
+  "- No menciones las herramientas al usuario (excepto la seccion de depuracion).";
 const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
   "Anthropic en navegador necesita un proxy HTTP por CORS. " +
   "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
@@ -381,12 +379,24 @@ const SAVE_PERSONAL_DATA_PARAM_DESC =
   'Array JSON completo con todos los datos personales. Cada objeto tiene key, description y value. ' +
   'Ejemplo: [{"key":"Nombre","description":"Nombre real del usuario","value":"Juan"},{"key":"Objetivo","description":"Objetivo principal de fitness","value":"Ganar masa muscular"}]';
 
-const READ_PERSONAL_DATA_TOOL = "read_personal_data";
-const READ_PERSONAL_DATA_DESC =
-  "Lee los datos personales guardados del usuario. " +
-  "Devuelve un array JSON donde cada objeto tiene key, description y value. " +
-  "Usa esta herramienta cuando necesites conocer informacion personal del usuario, " +
-  "por ejemplo al saludar para llamarle por su nombre, o para personalizar recomendaciones.";
+const LIST_KEYS_TOOL = "list_personal_data_keys";
+const LIST_KEYS_DESC =
+  "Devuelve la lista de todos los campos (keys) guardados en la memoria personal del usuario. " +
+  "Usa esta herramienta como primer paso para descubrir que datos hay guardados.";
+
+const READ_DESCRIPTION_TOOL = "read_field_description";
+const READ_DESCRIPTION_DESC =
+  "Lee la descripcion de un campo especifico de la memoria personal. " +
+  "Recibe el key del campo y devuelve su description, que explica para que sirve ese campo. " +
+  "Usa esta herramienta para identificar en que campo esta la informacion que buscas.";
+const READ_DESCRIPTION_PARAM_DESC = "El key (nombre) del campo cuya descripcion quieres leer";
+
+const READ_VALUE_TOOL = "read_field_value";
+const READ_VALUE_DESC =
+  "Lee el valor de un campo especifico de la memoria personal. " +
+  "Recibe el key del campo y devuelve su value. " +
+  "Usa esta herramienta una vez que hayas identificado el campo correcto mediante su description.";
+const READ_VALUE_PARAM_DESC = "El key (nombre) del campo cuyo valor quieres leer";
 
 async function handleToolCall(name: string, args: Record<string, unknown>): Promise<string> {
   if (name === SAVE_PERSONAL_DATA_TOOL) {
@@ -394,10 +404,24 @@ async function handleToolCall(name: string, args: Record<string, unknown>): Prom
     await savePersonalData(fields);
     return "Datos personales guardados correctamente.";
   }
-  if (name === READ_PERSONAL_DATA_TOOL) {
+  if (name === LIST_KEYS_TOOL) {
     const fields = await loadPersonalData();
-    if (fields.length === 0) return "No hay datos personales guardados.";
-    return personalDataToJson(fields);
+    if (fields.length === 0) return "No hay campos guardados.";
+    return JSON.stringify(fields.map((f) => f.key));
+  }
+  if (name === READ_DESCRIPTION_TOOL) {
+    const key = (args.key as string) ?? "";
+    const fields = await loadPersonalData();
+    const field = fields.find((f) => f.key === key);
+    if (!field) return `Campo "${key}" no encontrado.`;
+    return field.description || "(sin descripcion)";
+  }
+  if (name === READ_VALUE_TOOL) {
+    const key = (args.key as string) ?? "";
+    const fields = await loadPersonalData();
+    const field = fields.find((f) => f.key === key);
+    if (!field) return `Campo "${key}" no encontrado.`;
+    return field.value || "(sin valor)";
   }
   return "Herramienta no reconocida.";
 }
@@ -1389,6 +1413,9 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
       content: msg.content,
     }));
 
+  const keyParam = { key: { type: "string" as const } };
+  const keyRequired = ["key"];
+
   const chatTools = {
     openai: [
       {
@@ -1406,9 +1433,25 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
       {
         type: "function",
         function: {
-          name: READ_PERSONAL_DATA_TOOL,
-          description: READ_PERSONAL_DATA_DESC,
+          name: LIST_KEYS_TOOL,
+          description: LIST_KEYS_DESC,
           parameters: { type: "object", properties: {}, required: [] },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: READ_DESCRIPTION_TOOL,
+          description: READ_DESCRIPTION_DESC,
+          parameters: { type: "object", properties: { key: { type: "string", description: READ_DESCRIPTION_PARAM_DESC } }, required: keyRequired },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: READ_VALUE_TOOL,
+          description: READ_VALUE_DESC,
+          parameters: { type: "object", properties: { key: { type: "string", description: READ_VALUE_PARAM_DESC } }, required: keyRequired },
         },
       },
     ],
@@ -1423,9 +1466,19 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
         },
       },
       {
-        name: READ_PERSONAL_DATA_TOOL,
-        description: READ_PERSONAL_DATA_DESC,
+        name: LIST_KEYS_TOOL,
+        description: LIST_KEYS_DESC,
         input_schema: { type: "object", properties: {} },
+      },
+      {
+        name: READ_DESCRIPTION_TOOL,
+        description: READ_DESCRIPTION_DESC,
+        input_schema: { type: "object", properties: keyParam, required: keyRequired },
+      },
+      {
+        name: READ_VALUE_TOOL,
+        description: READ_VALUE_DESC,
+        input_schema: { type: "object", properties: keyParam, required: keyRequired },
       },
     ],
     google: [
@@ -1441,9 +1494,19 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
             },
           },
           {
-            name: READ_PERSONAL_DATA_TOOL,
-            description: READ_PERSONAL_DATA_DESC,
+            name: LIST_KEYS_TOOL,
+            description: LIST_KEYS_DESC,
             parameters: { type: "object", properties: {} },
+          },
+          {
+            name: READ_DESCRIPTION_TOOL,
+            description: READ_DESCRIPTION_DESC,
+            parameters: { type: "object", properties: keyParam, required: keyRequired },
+          },
+          {
+            name: READ_VALUE_TOOL,
+            description: READ_VALUE_DESC,
+            parameters: { type: "object", properties: keyParam, required: keyRequired },
           },
         ],
       },
@@ -1454,57 +1517,34 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
   if (provider.provider === "openai") {
     const openAIMessages: any[] = [{ role: "system", content: systemPrompt }, ...nonSystemMessages];
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
-      body: JSON.stringify({ model: provider.model || DEFAULT_MODELS.openai, messages: openAIMessages, temperature: 0.7, tools: chatTools.openai }),
-    });
-    let payload: any = null;
-    try { payload = await response.json(); } catch {}
-    if (!response.ok) throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
+    const makeOpenAIRequest = async (includeTools: boolean) => {
+      const body: any = { model: provider.model || DEFAULT_MODELS.openai, messages: openAIMessages, temperature: 0.7 };
+      if (includeTools) body.tools = chatTools.openai;
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
+        body: JSON.stringify(body),
+      });
+      let p: any = null;
+      try { p = await res.json(); } catch {}
+      if (!res.ok) throw new Error(extractErrorMessage(p, `OpenAI error (${res.status})`));
+      return p;
+    };
 
-    const choice = payload?.choices?.[0];
-    const toolCalls = choice?.message?.tool_calls;
-    if (toolCalls?.length) {
+    let payload = await makeOpenAIRequest(true);
+
+    for (let round = 0; round < 6; round++) {
+      const choice = payload?.choices?.[0];
+      const toolCalls = choice?.message?.tool_calls;
+      if (!toolCalls?.length) break;
+
       const tc = toolCalls[0];
       const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
       const toolResult = await handleToolCall(tc.function?.name, args);
 
       openAIMessages.push(choice.message);
       openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: toolResult });
-
-      const followUp = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
-        body: JSON.stringify({ model: provider.model || DEFAULT_MODELS.openai, messages: openAIMessages, temperature: 0.7, tools: chatTools.openai }),
-      });
-      let followUpPayload: any = null;
-      try { followUpPayload = await followUp.json(); } catch {}
-      if (!followUp.ok) throw new Error(extractErrorMessage(followUpPayload, `OpenAI error (${followUp.status})`));
-
-      // Handle second tool call (e.g. read then save)
-      const followUpChoice = followUpPayload?.choices?.[0];
-      const followUpToolCalls = followUpChoice?.message?.tool_calls;
-      if (followUpToolCalls?.length) {
-        const tc2 = followUpToolCalls[0];
-        const args2 = tc2.function?.arguments ? JSON.parse(tc2.function.arguments) : {};
-        const toolResult2 = await handleToolCall(tc2.function?.name, args2);
-
-        openAIMessages.push(followUpChoice.message);
-        openAIMessages.push({ role: "tool", tool_call_id: tc2.id, content: toolResult2 });
-
-        const finalResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
-          body: JSON.stringify({ model: provider.model || DEFAULT_MODELS.openai, messages: openAIMessages, temperature: 0.7 }),
-        });
-        let finalPayload: any = null;
-        try { finalPayload = await finalResponse.json(); } catch {}
-        if (!finalResponse.ok) throw new Error(extractErrorMessage(finalPayload, `OpenAI error (${finalResponse.status})`));
-        return parseOpenAIContent(finalPayload) || "Listo.";
-      }
-
-      return parseOpenAIContent(followUpPayload) || "Listo.";
+      payload = await makeOpenAIRequest(round < 5);
     }
 
     const content = parseOpenAIContent(payload);
@@ -1547,7 +1587,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
     let payload = await makeAnthropicRequest(currentMessages, true);
 
     // Tool call loop (max 2 rounds)
-    for (let round = 0; round < 2; round++) {
+    for (let round = 0; round < 6; round++) {
       const contentBlocks = payload?.content as any[] | undefined;
       const toolUseBlock = contentBlocks?.find((b: any) => b.type === "tool_use");
       if (!toolUseBlock) break;
@@ -1594,7 +1634,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
   let payload = await makeGoogleRequest(googleMessages, true);
 
   // Tool call loop (max 2 rounds)
-  for (let round = 0; round < 2; round++) {
+  for (let round = 0; round < 6; round++) {
     const parts = payload?.candidates?.[0]?.content?.parts as any[] | undefined;
     const functionCall = parts?.find((p: any) => p.functionCall);
     if (!functionCall) break;
