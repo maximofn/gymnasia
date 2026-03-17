@@ -240,8 +240,7 @@ const DEFAULT_CHAT_SYSTEM_PROMPT =
   "Tienes 4 herramientas: list_personal_data_keys, read_field_description(key), read_field_value(key), save_personal_data(personal_data).\n" +
   "- Al saludar: 1) list_personal_data_keys, 2) read_field_description de keys candidatas, 3) read_field_value del campo correcto, 4) saluda con su nombre.\n" +
   "- Al guardar datos: 1) list keys existentes, 2) lee datos actuales, 3) save_personal_data con array completo [{key,description,value}].\n" +
-  "- Tras saludar, anade seccion '---' con el proceso de busqueda (keys, descripciones, campo elegido, valor) para depuracion.\n" +
-  "- No menciones las herramientas al usuario (excepto la seccion de depuracion).";
+  "- No menciones las herramientas al usuario.";
 const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
   "Anthropic en navegador necesita un proxy HTTP por CORS. " +
   "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
@@ -1533,18 +1532,18 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
 
     let payload = await makeOpenAIRequest(true);
 
-    for (let round = 0; round < 6; round++) {
+    for (let round = 0; round < 10; round++) {
       const choice = payload?.choices?.[0];
       const toolCalls = choice?.message?.tool_calls;
       if (!toolCalls?.length) break;
 
-      const tc = toolCalls[0];
-      const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
-      const toolResult = await handleToolCall(tc.function?.name, args);
-
       openAIMessages.push(choice.message);
-      openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: toolResult });
-      payload = await makeOpenAIRequest(round < 5);
+      for (const tc of toolCalls) {
+        const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
+        const toolResult = await handleToolCall(tc.function?.name, args);
+        openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: toolResult });
+      }
+      payload = await makeOpenAIRequest(true);
     }
 
     const content = parseOpenAIContent(payload);
@@ -1567,7 +1566,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
     const makeAnthropicRequest = async (msgs: any[], includeTools: boolean) => {
       const body: any = {
         model: provider.model || DEFAULT_MODELS.anthropic,
-        max_tokens: 700,
+        max_tokens: 2048,
         system: systemPrompt,
         messages: msgs,
       };
@@ -1586,19 +1585,22 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
     let currentMessages: any[] = [...nonSystemMessages];
     let payload = await makeAnthropicRequest(currentMessages, true);
 
-    // Tool call loop (max 2 rounds)
-    for (let round = 0; round < 6; round++) {
+    for (let round = 0; round < 10; round++) {
       const contentBlocks = payload?.content as any[] | undefined;
-      const toolUseBlock = contentBlocks?.find((b: any) => b.type === "tool_use");
-      if (!toolUseBlock) break;
+      const toolUseBlocks = contentBlocks?.filter((b: any) => b.type === "tool_use") ?? [];
+      if (toolUseBlocks.length === 0) break;
 
-      const toolResult = await handleToolCall(toolUseBlock.name, toolUseBlock.input ?? {});
+      const toolResults: any[] = [];
+      for (const block of toolUseBlocks) {
+        const result = await handleToolCall(block.name, block.input ?? {});
+        toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
+      }
       currentMessages = [
         ...currentMessages,
         { role: "assistant", content: contentBlocks },
-        { role: "user", content: [{ type: "tool_result", tool_use_id: toolUseBlock.id, content: toolResult }] },
+        { role: "user", content: toolResults },
       ];
-      payload = await makeAnthropicRequest(currentMessages, round < 1);
+      payload = await makeAnthropicRequest(currentMessages, true);
     }
 
     const content = parseAnthropicContent(payload);
@@ -1633,19 +1635,20 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
 
   let payload = await makeGoogleRequest(googleMessages, true);
 
-  // Tool call loop (max 2 rounds)
-  for (let round = 0; round < 6; round++) {
+  for (let round = 0; round < 10; round++) {
     const parts = payload?.candidates?.[0]?.content?.parts as any[] | undefined;
-    const functionCall = parts?.find((p: any) => p.functionCall);
-    if (!functionCall) break;
+    const functionCalls = parts?.filter((p: any) => p.functionCall) ?? [];
+    if (functionCalls.length === 0) break;
 
-    const toolResult = await handleToolCall(functionCall.functionCall.name, functionCall.functionCall.args ?? {});
-    googleMessages.push({ role: "model", parts: [{ functionCall: functionCall.functionCall }] });
-    googleMessages.push({
-      role: "user",
-      parts: [{ functionResponse: { name: functionCall.functionCall.name, response: { result: toolResult } } }],
-    });
-    payload = await makeGoogleRequest(googleMessages, round < 1);
+    const modelParts = functionCalls.map((fc: any) => ({ functionCall: fc.functionCall }));
+    const responseParts: any[] = [];
+    for (const fc of functionCalls) {
+      const toolResult = await handleToolCall(fc.functionCall.name, fc.functionCall.args ?? {});
+      responseParts.push({ functionResponse: { name: fc.functionCall.name, response: { result: toolResult } } });
+    }
+    googleMessages.push({ role: "model", parts: modelParts });
+    googleMessages.push({ role: "user", parts: responseParts });
+    payload = await makeGoogleRequest(googleMessages, true);
   }
 
   const content = parseGoogleContent(payload);
@@ -4407,11 +4410,15 @@ export default function App() {
       const history = [...threadMessages, userMessage]
         .slice(-20)
         .map((msg) => ({ role: msg.role, content: msg.content }));
-      const systemPrompt = await loadChatSystemPrompt();
+      const [systemPrompt, personalDataFields] = await Promise.all([loadChatSystemPrompt(), loadPersonalData()]);
+      const debugField = personalDataFields.find((f) => f.key === "debug");
+      const fullSystemPrompt = debugField?.value
+        ? `${systemPrompt}\n\n## Instrucciones de depuracion\n\n${debugField.value}`
+        : systemPrompt;
       const assistantContent = await callProviderChatAPIWithTools(activeProvider, [
         {
           role: "system",
-          content: systemPrompt,
+          content: fullSystemPrompt,
         },
         ...history,
       ]);
