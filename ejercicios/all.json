@@ -1,11 +1,27 @@
 [
   {
+    "id": "aperturas-mancuernas",
+    "name": "Aperturas con mancuernas",
+    "image_male": "images/aperturas-mancuernas-male.webp",
+    "image_female": "images/aperturas-mancuernas-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombro anterior"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Acuéstate en un banco plano con una mancuerna en cada mano y los brazos extendidos sobre el pecho. Con los codos ligeramente flexionados, abre los brazos hacia los lados en arco hasta sentir el estiramiento en el pecho y vuelve a la posición inicial."
+  },
+  {
     "id": "press-banca",
     "name": "Press de banca",
     "image_male": "images/press-banca-male.webp",
     "image_female": "images/press-banca-female.webp",
     "muscle_group": "pecho",
-    "secondary_muscles": ["tríceps", "hombro anterior"],
+    "secondary_muscles": [
+      "tríceps",
+      "hombro anterior"
+    ],
     "equipment": "barra",
     "difficulty": "intermediate",
     "instructions": "Acuéstate en un banco plano con los pies firmes en el suelo. Agarra la barra con las manos algo más abiertas que el ancho de los hombros. Baja la barra de forma controlada hasta el pecho y empuja hacia arriba hasta extender los brazos."
@@ -16,7 +32,10 @@
     "image_male": "images/press-mancuernas-male.webp",
     "image_female": "images/press-mancuernas-female.webp",
     "muscle_group": "pecho",
-    "secondary_muscles": ["tríceps", "hombro anterior"],
+    "secondary_muscles": [
+      "tríceps",
+      "hombro anterior"
+    ],
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Acuéstate en un banco plano con una mancuerna en cada mano a la altura del pecho. Empuja las mancuernas hacia arriba hasta extender los brazos y bájalas de forma controlada."
