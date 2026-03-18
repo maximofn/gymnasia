@@ -1,0 +1,11 @@
+{
+  "id": "extensiones-triceps-barra",
+  "name": "Extensiones de tríceps con barra",
+  "image_male": "images/extensiones-triceps-barra-male.webp",
+  "image_female": "images/extensiones-triceps-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "De pie frente a una polea alta, agarra la barra recta con ambas manos en pronación. Con los codos pegados al cuerpo, extiende los brazos hacia abajo hasta bloquear. Vuelve de forma controlada sin mover los codos."
+}
