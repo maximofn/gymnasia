@@ -39,5 +39,19 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Acuéstate en un banco plano con una mancuerna en cada mano a la altura del pecho. Empuja las mancuernas hacia arriba hasta extender los brazos y bájalas de forma controlada."
+  },
+  {
+    "id": "press-unilateral-maquina",
+    "name": "Press plano unilateral sentado en máquina",
+    "image_male": "images/press-unilateral-maquina-male.webp",
+    "image_female": "images/press-unilateral-maquina-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombro anterior"
+    ],
+    "equipment": "máquina",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en la máquina de press con la espalda apoyada. Agarra una de las asas con una mano y empuja hacia delante hasta extender el brazo. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
   }
 ]
