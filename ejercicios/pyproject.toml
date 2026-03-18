@@ -1,0 +1,11 @@
+[project]
+name = "ejercicios"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "gradio-client>=2.3.0",
+    "httpx>=0.28.1",
+    "python-dotenv>=1.2.2",
+    "websockets>=16.0",
+]

@@ -7,6 +7,7 @@ This repo is an npm workspace monorepo.
 - `apps/mobile`: Expo React Native app (`App.tsx`, `theme.ts`).
 - `packages/shared`: shared TypeScript tokens/types (`src/design-tokens.ts`).
 - `docs`: product, backend, and design references.
+- `ejercicios/`: repositorio de ejercicios (JSONs + imágenes generadas). Ver skill `.claude/skills/generate-exercise-images.md` para generar imágenes.
 - `supabase/migrations`: SQL migrations for Supabase environments.
 
 Keep feature changes aligned across API + web/mobile when contracts change.

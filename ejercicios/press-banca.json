@@ -1,0 +1,11 @@
+{
+  "id": "press-banca",
+  "name": "Press de banca",
+  "image_male": "images/press-banca-male.webp",
+  "image_female": "images/press-banca-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Acuéstate en un banco plano con los pies firmes en el suelo. Agarra la barra con las manos algo más abiertas que el ancho de los hombros. Baja la barra de forma controlada hasta el pecho y empuja hacia arriba hasta extender los brazos."
+}

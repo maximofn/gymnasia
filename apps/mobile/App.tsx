@@ -229,6 +229,10 @@ const DEFAULT_MODELS: Record<Provider, string> = {
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
+const EXERCISES_REPO_BASE_URL =
+  "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
+const EXERCISES_INDEX_URL = `${EXERCISES_REPO_BASE_URL}/index.json`;
+const EXERCISES_CACHE_KEY = "gymnasia.mobile.exercises_repo.v1";
 const CHAT_SYSTEM_PROMPT_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md";
 const DEFAULT_CHAT_SYSTEM_PROMPT =
@@ -330,6 +334,51 @@ async function loadChatSystemPrompt(): Promise<string> {
       return DEFAULT_CHAT_SYSTEM_PROMPT;
     }
   }
+}
+
+type ExerciseRepoEntry = {
+  id: string;
+  name: string;
+  image_male: string;
+  image_female: string;
+  muscle_group: string;
+  secondary_muscles: string[];
+  equipment: string;
+  difficulty: string;
+  instructions: string;
+};
+
+async function loadExercisesRepo(): Promise<ExerciseRepoEntry[]> {
+  try {
+    const indexResponse = await fetch(`${EXERCISES_INDEX_URL}?ts=${Date.now()}`);
+    if (!indexResponse.ok) throw new Error(`Index fetch error (${indexResponse.status})`);
+    const ids: string[] = await indexResponse.json();
+
+    const exercises = await Promise.all(
+      ids.map(async (id) => {
+        const res = await fetch(`${EXERCISES_REPO_BASE_URL}/${id}.json?ts=${Date.now()}`);
+        if (!res.ok) return null;
+        return res.json() as Promise<ExerciseRepoEntry>;
+      }),
+    );
+
+    const valid = exercises.filter((e): e is ExerciseRepoEntry => e !== null);
+    AsyncStorage.setItem(EXERCISES_CACHE_KEY, JSON.stringify(valid)).catch(() => {});
+    return valid;
+  } catch {
+    try {
+      const cached = await AsyncStorage.getItem(EXERCISES_CACHE_KEY);
+      if (cached) return JSON.parse(cached);
+      return [];
+    } catch {
+      return [];
+    }
+  }
+}
+
+function getExerciseImageUrl(entry: ExerciseRepoEntry, gender: "male" | "female"): string {
+  const imagePath = gender === "female" ? entry.image_female : entry.image_male;
+  return `${EXERCISES_REPO_BASE_URL}/${imagePath}`;
 }
 
 type PersonalDataField = { key: string; description: string; value: string };
@@ -3091,6 +3140,10 @@ export default function App() {
   const [quadricepsInput, setQuadricepsInput] = useState("");
   const [calfInput, setCalfInput] = useState("");
   const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("diet");
+  const [exercisesRepo, setExercisesRepo] = useState<ExerciseRepoEntry[]>([]);
+  const [exercisePickerOpen, setExercisePickerOpen] = useState(false);
+  const [exercisePickerSearch, setExercisePickerSearch] = useState("");
+  const [exercisePickerMuscleFilter, setExercisePickerMuscleFilter] = useState("all");
   const [memoryFields, setMemoryFields] = useState<PersonalDataField[]>([]);
   const [memoryNewKey, setMemoryNewKey] = useState("");
   const [memoryNewDesc, setMemoryNewDesc] = useState("");
@@ -3738,6 +3791,19 @@ export default function App() {
       ),
     [activeTrainingPreviewExercises, trainingDetailMuscleFilter],
   );
+  const exercisePickerMuscleGroups = useMemo(
+    () => Array.from(new Set(exercisesRepo.map((e) => e.muscle_group))),
+    [exercisesRepo],
+  );
+  const filteredExercisePickerEntries = useMemo(() => {
+    const search = exercisePickerSearch.trim().toLowerCase();
+    return exercisesRepo.filter((entry) => {
+      const matchesSearch = !search || entry.name.toLowerCase().includes(search) || entry.muscle_group.toLowerCase().includes(search);
+      const matchesMuscle = exercisePickerMuscleFilter === "all" || entry.muscle_group === exercisePickerMuscleFilter;
+      return matchesSearch && matchesMuscle;
+    });
+  }, [exercisesRepo, exercisePickerSearch, exercisePickerMuscleFilter]);
+
   const activeTrainingPreviewImageUri = useMemo(
     () => activeTrainingPreviewExercises.find((exercise) => exercise.imageUri)?.imageUri ?? null,
     [activeTrainingPreviewExercises],
@@ -4160,6 +4226,11 @@ export default function App() {
       ignore = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    loadExercisesRepo().then(setExercisesRepo);
+  }, [isHydrated]);
 
   useEffect(() => {
     if (!isHydrated || providerSettingsInitializedRef.current) return;
@@ -5379,7 +5450,55 @@ export default function App() {
     openTrainingTemplateEditor(templateId);
   }
 
-  function addExerciseToActiveTemplate() {
+  function openExercisePicker() {
+    setExercisePickerSearch("");
+    setExercisePickerMuscleFilter("all");
+    setExercisePickerOpen(true);
+  }
+
+  function addExerciseFromRepo(entry: ExerciseRepoEntry) {
+    if (!activeTrainingTemplateId) return;
+
+    const exerciseId = uid("exercise");
+    const category = activeTrainingCategory ?? "strength";
+    const isLoadFocusedCategory = category === "strength" || category === "hypertrophy";
+    const imageUri = getExerciseImageUrl(entry, "male");
+    const firstSeries: ExerciseSeries = {
+      id: uid("set"),
+      reps: category === "cardio" ? "12" : "10",
+      weight_kg: isLoadFocusedCategory ? "20" : "",
+      rest_seconds: isLoadFocusedCategory ? "120" : "75",
+    };
+
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((template) => {
+        if (template.id !== activeTrainingTemplateId) return template;
+        return {
+          ...template,
+          exercises: [
+            ...template.exercises,
+            {
+              id: exerciseId,
+              name: entry.name,
+              image_uri: imageUri,
+              sets: seriesToLegacySets([firstSeries]),
+              series: [firstSeries],
+              muscle: entry.muscle_group,
+              load_kg: isLoadFocusedCategory ? 20 : null,
+              rest_seconds: isLoadFocusedCategory ? 120 : 75,
+            },
+          ],
+        };
+      }),
+    }));
+    setExpandedExerciseId(exerciseId);
+    setActiveExerciseMenuId(null);
+    setExercisePickerOpen(false);
+    setError(null);
+  }
+
+  function addBlankExerciseToActiveTemplate() {
     if (!activeTrainingTemplateId) return;
 
     const exerciseId = uid("exercise");
@@ -5425,6 +5544,7 @@ export default function App() {
     }));
     setExpandedExerciseId(exerciseId);
     setActiveExerciseMenuId(null);
+    setExercisePickerOpen(false);
     setError(null);
   }
 
@@ -8786,7 +8906,7 @@ export default function App() {
                 </Pressable>
 
                 <Pressable
-                  onPress={addExerciseToActiveTemplate}
+                  onPress={openExercisePicker}
                   testID="training-editor-add-exercise"
                   style={{
                     minHeight: 54,
@@ -9254,7 +9374,7 @@ export default function App() {
                 }))} 
 
                 <Pressable
-                  onPress={addExerciseToActiveTemplate}
+                  onPress={openExercisePicker}
                   testID="training-editor-add-exercise-bottom"
                   style={{
                     marginTop: 6,
@@ -13516,6 +13636,168 @@ export default function App() {
               </>
             )}
           </View>
+        </View>
+      ) : null}
+
+      {exercisePickerOpen ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "#0D1117",
+            zIndex: 700,
+            elevation: 70,
+          }}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
+              <Pressable onPress={() => setExercisePickerOpen(false)} style={{ padding: 6 }}>
+                <Feather name="arrow-left" size={24} color={mobileTheme.color.textPrimary} />
+              </Pressable>
+              <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
+                Seleccionar ejercicio
+              </Text>
+            </View>
+
+            <View style={{ paddingHorizontal: 14, marginBottom: 8 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: "#171B23",
+                  borderRadius: 14,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  paddingHorizontal: 12,
+                  minHeight: 44,
+                  gap: 8,
+                }}
+              >
+                <Feather name="search" size={16} color="#778091" />
+                <TextInput
+                  style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 16 }}
+                  placeholder="Buscar ejercicio..."
+                  placeholderTextColor="#5A6270"
+                  value={exercisePickerSearch}
+                  onChangeText={setExercisePickerSearch}
+                  autoCapitalize="none"
+                />
+                {exercisePickerSearch ? (
+                  <Pressable onPress={() => setExercisePickerSearch("")}>
+                    <Feather name="x" size={16} color="#778091" />
+                  </Pressable>
+                ) : null}
+              </View>
+            </View>
+
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 42, marginBottom: 8, paddingHorizontal: 14 }} contentContainerStyle={{ gap: 8, alignItems: "center" }}>
+              <Pressable
+                onPress={() => setExercisePickerMuscleFilter("all")}
+                style={{
+                  paddingHorizontal: 14,
+                  paddingVertical: 7,
+                  borderRadius: mobileTheme.radius.pill,
+                  borderWidth: 1,
+                  borderColor: exercisePickerMuscleFilter === "all" ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
+                  backgroundColor: exercisePickerMuscleFilter === "all" ? "rgba(160,204,0,0.12)" : "#0D1117",
+                }}
+              >
+                <Text style={{ color: exercisePickerMuscleFilter === "all" ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
+                  Todos
+                </Text>
+              </Pressable>
+              {exercisePickerMuscleGroups.map((muscle) => {
+                const isActive = exercisePickerMuscleFilter === muscle;
+                return (
+                  <Pressable
+                    key={muscle}
+                    onPress={() => setExercisePickerMuscleFilter(isActive ? "all" : muscle)}
+                    style={{
+                      paddingHorizontal: 14,
+                      paddingVertical: 7,
+                      borderRadius: mobileTheme.radius.pill,
+                      borderWidth: 1,
+                      borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
+                      backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                    }}
+                  >
+                    <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600", textTransform: "capitalize" }}>
+                      {muscle}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+
+            <ScrollView style={{ flex: 1, paddingHorizontal: 14 }} contentContainerStyle={{ gap: 10, paddingBottom: 20 }}>
+              {filteredExercisePickerEntries.map((entry) => (
+                <Pressable
+                  key={entry.id}
+                  onPress={() => addExerciseFromRepo(entry)}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: "#171B23",
+                    borderRadius: 16,
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.06)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <Image
+                    source={{ uri: getExerciseImageUrl(entry, "male") }}
+                    style={{ width: 90, height: 70, backgroundColor: "#091219" }}
+                    resizeMode="cover"
+                  />
+                  <View style={{ flex: 1, paddingHorizontal: 12, paddingVertical: 10, gap: 2 }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                      {entry.name}
+                    </Text>
+                    <Text style={{ color: "#778091", fontSize: 13, textTransform: "capitalize" }}>
+                      {entry.muscle_group}{entry.equipment ? ` · ${entry.equipment}` : ""}
+                    </Text>
+                  </View>
+                  <Feather name="plus" size={20} color={mobileTheme.color.brandPrimary} style={{ marginRight: 14 }} />
+                </Pressable>
+              ))}
+
+              {filteredExercisePickerEntries.length === 0 && exercisesRepo.length > 0 ? (
+                <View style={{ alignItems: "center", paddingVertical: 30 }}>
+                  <Text style={{ color: "#5A6270", fontSize: 15 }}>No se encontraron ejercicios</Text>
+                </View>
+              ) : null}
+
+              {exercisesRepo.length === 0 ? (
+                <View style={{ alignItems: "center", paddingVertical: 30 }}>
+                  <ActivityIndicator color={mobileTheme.color.brandPrimary} size="small" />
+                  <Text style={{ color: "#5A6270", fontSize: 14, marginTop: 8 }}>Cargando ejercicios...</Text>
+                </View>
+              ) : null}
+
+              <Pressable
+                onPress={addBlankExerciseToActiveTemplate}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "rgba(203,255,26,0.08)",
+                  borderRadius: 16,
+                  borderWidth: 1,
+                  borderColor: "rgba(203,255,26,0.3)",
+                  minHeight: 54,
+                  gap: 8,
+                }}
+              >
+                <Feather name="edit-3" size={18} color={mobileTheme.color.brandPrimary} />
+                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 16, fontWeight: "700" }}>
+                  Crear ejercicio personalizado
+                </Text>
+              </Pressable>
+            </ScrollView>
+          </SafeAreaView>
         </View>
       ) : null}
 
