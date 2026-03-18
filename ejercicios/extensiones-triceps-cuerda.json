@@ -1,0 +1,11 @@
+{
+  "id": "extensiones-triceps-cuerda",
+  "name": "Extensiones de tríceps con cuerda",
+  "image_male": "images/extensiones-triceps-cuerda-male.webp",
+  "image_female": "images/extensiones-triceps-cuerda-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "De pie frente a una polea alta, agarra la cuerda con ambas manos. Con los codos pegados al cuerpo, extiende los brazos hacia abajo separando los extremos de la cuerda al final del movimiento. Vuelve de forma controlada."
+}
