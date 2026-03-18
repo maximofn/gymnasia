@@ -41,6 +41,7 @@ PROMPT_TEMPLATE = (
 # Map exercise id -> (english description, view angle)
 EXERCISE_PROMPTS = {
     "press-banca": ("a barbell bench press lying on a flat bench", "3/4 diagonal view"),
+    "press-mancuernas": ("a dumbbell bench press lying on a flat bench, one dumbbell in each hand", "3/4 diagonal view"),
 }
 
 
@@ -93,7 +94,7 @@ def main():
 
     # Find exercise JSONs
     json_files = sorted(EXERCISES_DIR.glob("*.json"))
-    json_files = [f for f in json_files if f.name != "package.json"]
+    json_files = [f for f in json_files if f.name not in ("package.json", "index.json")]
 
     if not json_files:
         print("No exercise JSON files found.")
