@@ -94,7 +94,7 @@ def main():
 
     # Find exercise JSONs
     json_files = sorted(EXERCISES_DIR.glob("*.json"))
-    json_files = [f for f in json_files if f.name not in ("package.json", "index.json")]
+    json_files = [f for f in json_files if f.name not in ("package.json", "index.json", "all.json")]
 
     if not json_files:
         print("No exercise JSON files found.")
@@ -126,6 +126,22 @@ def main():
             )
             output_path = IMAGES_DIR / f"{exercise_id}-{label}.webp"
             generate_image(client, token, prompt, output_path)
+
+    # Rebuild all.json and index.json from individual exercise files
+    all_exercises = []
+    all_ids = []
+    for jp in sorted(EXERCISES_DIR.glob("*.json")):
+        if jp.name in ("package.json", "index.json", "all.json"):
+            continue
+        with open(jp) as f:
+            all_exercises.append(json.load(f))
+        all_ids.append(jp.stem)
+
+    with open(EXERCISES_DIR / "all.json", "w") as f:
+        json.dump(all_exercises, f, indent=2, ensure_ascii=False)
+    with open(EXERCISES_DIR / "index.json", "w") as f:
+        json.dump(all_ids, f, ensure_ascii=False)
+    print(f"\nUpdated all.json ({len(all_exercises)} exercises) and index.json")
 
     print("\nDone!")
 

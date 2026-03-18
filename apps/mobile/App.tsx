@@ -231,8 +231,8 @@ const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthr
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
 const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
-const EXERCISES_INDEX_URL = `${EXERCISES_REPO_BASE_URL}/index.json`;
-const EXERCISES_CACHE_KEY = "gymnasia.mobile.exercises_repo.v1";
+const EXERCISES_ALL_URL = `${EXERCISES_REPO_BASE_URL}/all.json`;
+const EXERCISES_CACHE_KEY = "gymnasia.mobile.exercises_repo.v2";
 const CHAT_SYSTEM_PROMPT_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md";
 const DEFAULT_CHAT_SYSTEM_PROMPT =
@@ -350,21 +350,11 @@ type ExerciseRepoEntry = {
 
 async function loadExercisesRepo(): Promise<ExerciseRepoEntry[]> {
   try {
-    const indexResponse = await fetch(`${EXERCISES_INDEX_URL}?ts=${Date.now()}`);
-    if (!indexResponse.ok) throw new Error(`Index fetch error (${indexResponse.status})`);
-    const ids: string[] = await indexResponse.json();
-
-    const exercises = await Promise.all(
-      ids.map(async (id) => {
-        const res = await fetch(`${EXERCISES_REPO_BASE_URL}/${id}.json?ts=${Date.now()}`);
-        if (!res.ok) return null;
-        return res.json() as Promise<ExerciseRepoEntry>;
-      }),
-    );
-
-    const valid = exercises.filter((e): e is ExerciseRepoEntry => e !== null);
-    AsyncStorage.setItem(EXERCISES_CACHE_KEY, JSON.stringify(valid)).catch(() => {});
-    return valid;
+    const response = await fetch(`${EXERCISES_ALL_URL}?ts=${Date.now()}`);
+    if (!response.ok) throw new Error(`Exercises fetch error (${response.status})`);
+    const exercises: ExerciseRepoEntry[] = await response.json();
+    AsyncStorage.setItem(EXERCISES_CACHE_KEY, JSON.stringify(exercises)).catch(() => {});
+    return exercises;
   } catch {
     try {
       const cached = await AsyncStorage.getItem(EXERCISES_CACHE_KEY);
