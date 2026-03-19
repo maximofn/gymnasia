@@ -8149,8 +8149,8 @@ export default function App() {
                       }}
                     >
                       <Feather name="edit-2" size={14} color="#FFFFFF" />
-                      <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "700" }}>
-                        Editar
+                      <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "700", textAlign: "center" }}>
+                        {"Editar\nrutina"}
                       </Text>
                     </Pressable>
                   </View>
@@ -8782,15 +8782,20 @@ export default function App() {
                   <Pressable
                     onPress={saveTrainingTemplateChanges}
                     style={{
-                      height: 50,
-                      borderRadius: 16,
+                      minHeight: 46,
+                      borderRadius: 14,
+                      borderWidth: 1,
+                      borderColor: "rgba(203,255,26,0.75)",
                       backgroundColor: mobileTheme.color.brandPrimary,
                       paddingHorizontal: 18,
+                      flexDirection: "row",
                       alignItems: "center",
                       justifyContent: "center",
+                      gap: 8,
                     }}
                   >
-                    <Text style={{ color: "#06090D", fontSize: 31, fontWeight: "800" }}>Guardar</Text>
+                    <Feather name="check" size={14} color="#06090D" />
+                    <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>Guardar</Text>
                   </Pressable>
                 </View>
 
@@ -8802,9 +8807,9 @@ export default function App() {
                   style={{
                     marginTop: 4,
                     color: mobileTheme.color.textPrimary,
-                    fontSize: 40,
+                    fontSize: 28,
                     fontWeight: "700",
-                    minHeight: 56,
+                    minHeight: 42,
                     borderBottomWidth: 1,
                     borderBottomColor: "rgba(255,255,255,0.12)",
                     paddingBottom: 6,
@@ -8815,9 +8820,9 @@ export default function App() {
                   {activeTrainingIcon ? (
                     <View
                       style={{
-                        width: 34,
-                        height: 34,
-                        borderRadius: 10,
+                        width: 28,
+                        height: 28,
+                        borderRadius: 8,
                         backgroundColor: activeTrainingCategoryMeta?.iconBg ?? "rgba(203,255,26,0.2)",
                         alignItems: "center",
                         justifyContent: "center",
@@ -8830,8 +8835,8 @@ export default function App() {
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                       <View
                         style={{
-                          width: 9,
-                          height: 9,
+                          width: 7,
+                          height: 7,
                           borderRadius: 999,
                           backgroundColor: activeTrainingCategoryMeta.color,
                         }}
@@ -8839,7 +8844,7 @@ export default function App() {
                       <Text
                         style={{
                           color: activeTrainingCategoryMeta.color,
-                          fontSize: 25,
+                          fontSize: 17,
                           fontWeight: "700",
                         }}
                       >
@@ -8847,7 +8852,7 @@ export default function App() {
                       </Text>
                     </View>
                   ) : null}
-                  <Text style={{ color: "#8B94A3", fontSize: 25 }}>
+                  <Text style={{ color: "#8B94A3", fontSize: 15 }}>
                     {activeTrainingTemplate.exercises.length} ejercicios
                   </Text>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
@@ -8858,21 +8863,21 @@ export default function App() {
                       placeholderTextColor="#8B94A3"
                       keyboardType="number-pad"
                       style={{
-                        minWidth: 56,
-                        minHeight: 34,
-                        borderRadius: 10,
+                        minWidth: 44,
+                        minHeight: 30,
+                        borderRadius: 8,
                         borderWidth: 1,
                         borderColor: "rgba(255,255,255,0.14)",
                         paddingHorizontal: 10,
                         color: mobileTheme.color.textPrimary,
-                        fontSize: 20,
+                        fontSize: 15,
                         fontWeight: "600",
                         textAlign: "center",
                       }}
                     />
-                    <Text style={{ color: "#8B94A3", fontSize: 22 }}>min</Text>
+                    <Text style={{ color: "#8B94A3", fontSize: 15 }}>min</Text>
                   </View>
-                  <Text style={{ color: "#8B94A3", fontSize: 25 }}>
+                  <Text style={{ color: "#8B94A3", fontSize: 15 }}>
                     {activeTrainingSeriesTotal} series
                   </Text>
                 </View>
@@ -8951,29 +8956,38 @@ export default function App() {
                   disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
                   testID="training-editor-start-session"
                   style={{
-                    minHeight: 54,
-                    borderRadius: 16,
+                    minHeight: 46,
+                    borderRadius: 14,
                     borderWidth: 1,
                     borderColor: templateHasRunnableSeries(activeTrainingTemplate)
-                      ? "rgba(203,255,26,0.65)"
-                      : "rgba(255,255,255,0.12)",
+                      ? "rgba(203,255,26,0.75)"
+                      : "rgba(255,255,255,0.08)",
                     backgroundColor: templateHasRunnableSeries(activeTrainingTemplate)
-                      ? "rgba(203,255,26,0.14)"
+                      ? mobileTheme.color.brandPrimary
                       : "rgba(255,255,255,0.04)",
+                    flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
+                    gap: 10,
                   }}
                 >
+                  <Feather
+                    name="play"
+                    size={14}
+                    color={
+                      templateHasRunnableSeries(activeTrainingTemplate) ? "#06090D" : "#7F8896"
+                    }
+                  />
                   <Text
                     style={{
                       color: templateHasRunnableSeries(activeTrainingTemplate)
-                        ? mobileTheme.color.brandPrimary
+                        ? "#06090D"
                         : "#7F8896",
-                      fontSize: 23,
+                      fontSize: 16,
                       fontWeight: "800",
                     }}
                   >
-                    Iniciar entrenamiento
+                    Empezar rutina
                   </Text>
                 </Pressable>
 
@@ -8981,17 +8995,20 @@ export default function App() {
                   onPress={openExercisePicker}
                   testID="training-editor-add-exercise"
                   style={{
-                    minHeight: 54,
-                    borderRadius: 16,
-                    borderWidth: 1.5,
+                    minHeight: 46,
+                    borderRadius: 14,
+                    borderWidth: 1,
                     borderColor: "rgba(203,255,26,0.75)",
-                    backgroundColor: "rgba(203,255,26,0.1)",
+                    backgroundColor: "transparent",
+                    flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
+                    gap: 10,
                   }}
                 >
-                  <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 25, fontWeight: "800" }}>
-                    + Agregar ejercicio
+                  <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
+                  <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 16, fontWeight: "800" }}>
+                    Agregar ejercicio
                   </Text>
                 </Pressable>
 
@@ -9063,19 +9080,19 @@ export default function App() {
                           </View>
                           <View
                             style={{
-                              width: 34,
-                              height: 34,
-                              borderRadius: 10,
+                              width: 28,
+                              height: 28,
+                              borderRadius: 8,
                               backgroundColor: mobileTheme.color.brandPrimary,
                               alignItems: "center",
                               justifyContent: "center",
                             }}
                           >
-                            <Text style={{ color: "#06090D", fontSize: 20, fontWeight: "800" }}>
+                            <Text style={{ color: "#06090D", fontSize: 14, fontWeight: "800" }}>
                               {index + 1}
                             </Text>
                           </View>
-                          <View style={{ flex: 1, gap: 2 }}>
+                          <View style={{ flex: 1, gap: 1 }}>
                             <TextInput
                               value={exercise.name ?? ""}
                               onChangeText={(value) => updateExerciseNameInActiveTemplate(exercise.id, value)}
@@ -9083,12 +9100,12 @@ export default function App() {
                               placeholderTextColor="#8B94A3"
                               style={{
                                 color: mobileTheme.color.textPrimary,
-                                fontSize: 34,
+                                fontSize: 18,
                                 fontWeight: "700",
-                                minHeight: 42,
+                                minHeight: 30,
                               }}
                             />
-                            <Text style={{ color: "#8B94A3", fontSize: 24 }}>
+                            <Text style={{ color: "#8B94A3", fontSize: 13 }}>
                               {exerciseMuscle} • {exerciseSeries.length} series
                               {firstWeight ? ` • ${firstWeight} kg` : ""}
                             </Text>
@@ -9124,20 +9141,20 @@ export default function App() {
                         <View style={{ gap: 0 }}>
                             <View
                               style={{
-                                minHeight: 36,
-                                borderRadius: 10,
+                                minHeight: 28,
+                                borderRadius: 8,
                                 backgroundColor: "#202630",
                                 flexDirection: "row",
                                 alignItems: "center",
-                                paddingHorizontal: 12,
-                                gap: 8,
+                                paddingHorizontal: 10,
+                                gap: 6,
                               }}
                             >
                               <Text
                                 style={{
-                                  width: 30,
+                                  width: 24,
                                   color: "#7D8798",
-                                  fontSize: 15,
+                                  fontSize: 11,
                                   fontWeight: "700",
                                   textAlign: "center",
                                 }}
@@ -9149,7 +9166,7 @@ export default function App() {
                                   flex: 1,
                                   minWidth: 0,
                                   color: "#7D8798",
-                                  fontSize: 15,
+                                  fontSize: 11,
                                   fontWeight: "700",
                                   textAlign: "center",
                                 }}
@@ -9161,7 +9178,7 @@ export default function App() {
                                   flex: 1,
                                   minWidth: 0,
                                   color: "#7D8798",
-                                  fontSize: 15,
+                                  fontSize: 11,
                                   fontWeight: "700",
                                   textAlign: "center",
                                 }}
@@ -9173,7 +9190,7 @@ export default function App() {
                                   flex: 1,
                                   minWidth: 0,
                                   color: "#7D8798",
-                                  fontSize: 15,
+                                  fontSize: 11,
                                   fontWeight: "700",
                                   textAlign: "center",
                                 }}
@@ -9188,21 +9205,21 @@ export default function App() {
                                 <View
                                   key={seriesItem.id}
                                   style={{
-                                    minHeight: 50,
+                                    minHeight: 36,
                                     borderBottomWidth:
                                       setIndex === exerciseSeries.length - 1 ? 0 : 1,
                                     borderBottomColor: "rgba(255,255,255,0.08)",
                                     flexDirection: "row",
                                     alignItems: "center",
-                                    paddingHorizontal: 12,
-                                    gap: 8,
+                                    paddingHorizontal: 10,
+                                    gap: 6,
                                   }}
                                 >
                                   <Text
                                     style={{
-                                      width: 30,
+                                      width: 24,
                                       color: "#8C95A4",
-                                      fontSize: 18,
+                                      fontSize: 13,
                                       fontWeight: "700",
                                       textAlign: "center",
                                     }}
@@ -9225,7 +9242,7 @@ export default function App() {
                                       flex: 1,
                                       minWidth: 0,
                                       color: mobileTheme.color.textPrimary,
-                                      fontSize: 18,
+                                      fontSize: 13,
                                       fontWeight: "700",
                                       paddingVertical: 0,
                                       paddingHorizontal: 0,
@@ -9249,7 +9266,7 @@ export default function App() {
                                       flex: 1,
                                       minWidth: 0,
                                       color: mobileTheme.color.textPrimary,
-                                      fontSize: 18,
+                                      fontSize: 13,
                                       fontWeight: "600",
                                       paddingVertical: 0,
                                       paddingHorizontal: 0,
@@ -9273,7 +9290,7 @@ export default function App() {
                                       flex: 1,
                                       minWidth: 0,
                                       color: "#8C95A4",
-                                      fontSize: 18,
+                                      fontSize: 13,
                                       fontWeight: "600",
                                       paddingVertical: 0,
                                       paddingHorizontal: 0,
@@ -9312,18 +9329,21 @@ export default function App() {
                             <Pressable
                               onPress={() => addSeriesToExercise(exercise.id)}
                               style={{
-                                marginTop: 8,
-                                minHeight: 42,
-                                borderRadius: 12,
+                                marginTop: 6,
+                                minHeight: 36,
+                                borderRadius: 14,
                                 borderWidth: 1,
                                 borderColor: "rgba(255,255,255,0.08)",
                                 backgroundColor: "#171B23",
+                                flexDirection: "row",
                                 alignItems: "center",
                                 justifyContent: "center",
+                                gap: 8,
                               }}
                             >
-                              <Text style={{ color: "#7F8896", fontSize: 24, fontWeight: "600" }}>
-                                + Añadir serie
+                              <Feather name="plus" size={13} color="#7F8896" />
+                              <Text style={{ color: "#7F8896", fontSize: 14, fontWeight: "700" }}>
+                                Añadir serie
                               </Text>
                             </Pressable>
                           </View>
@@ -9449,14 +9469,19 @@ export default function App() {
                   onPress={saveTrainingTemplateChanges}
                   style={{
                     marginTop: 6,
-                    minHeight: 58,
-                    borderRadius: 16,
+                    minHeight: 46,
+                    borderRadius: 14,
+                    borderWidth: 1,
+                    borderColor: "rgba(203,255,26,0.75)",
                     backgroundColor: mobileTheme.color.brandPrimary,
+                    flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
+                    gap: 8,
                   }}
                 >
-                  <Text style={{ color: "#06090D", fontSize: 31, fontWeight: "800" }}>
+                  <Feather name="check" size={14} color="#06090D" />
+                  <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>
                     Guardar cambios
                   </Text>
                 </Pressable>
