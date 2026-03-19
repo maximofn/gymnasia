@@ -9092,6 +9092,19 @@ export default function App() {
                               {index + 1}
                             </Text>
                           </View>
+                          {exercise.image_uri ? (
+                            <Image
+                              source={{ uri: normalizeExerciseImageUri(exercise.image_uri) ?? undefined }}
+                              style={{
+                                width: 44,
+                                height: 44,
+                                borderRadius: 12,
+                                borderWidth: 1,
+                                borderColor: "rgba(255,255,255,0.08)",
+                              }}
+                              resizeMode="cover"
+                            />
+                          ) : null}
                           <View style={{ flex: 1, gap: 1 }}>
                             <TextInput
                               value={exercise.name ?? ""}
