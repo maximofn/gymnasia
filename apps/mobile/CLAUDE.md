@@ -8,4 +8,10 @@
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
 | #1499 | 3:53 PM | 🔴 | Fixed workout rest timer background tracking | ~337 |
+
+### Mar 19, 2026
+
+| ID | Time | T | Title | Read |
+|----|------|---|-------|------|
+| #1878 | 5:54 PM | ✅ | Exercise series table now always visible in training detail | ~283 |
 </claude-mem-context>

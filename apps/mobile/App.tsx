@@ -3189,6 +3189,7 @@ export default function App() {
   const [trainingMenuTemplateId, setTrainingMenuTemplateId] = useState<string | null>(null);
   const [activeExerciseMenuId, setActiveExerciseMenuId] = useState<string | null>(null);
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
+  const [exerciseDetailIndex, setExerciseDetailIndex] = useState<number | null>(null);
   const [activeWorkoutSession, setActiveWorkoutSession] = useState<WorkoutSession | null>(null);
   const [lastWorkoutSessionSummary, setLastWorkoutSessionSummary] =
     useState<WorkoutSessionSummary | null>(null);
@@ -3755,6 +3756,11 @@ export default function App() {
       const firstWeight =
         seriesItems.find((seriesItem) => seriesItem.weight_kg.trim())?.weight_kg.trim() ?? "";
       const repsLabel = firstSeries?.reps.trim() || "--";
+      const firstRest =
+        seriesItems.find((seriesItem) => seriesItem.rest_seconds.trim())?.rest_seconds.trim() ?? "";
+      const repoMatch = exercisesRepo.find(
+        (r) => r.name.toLowerCase() === exerciseName.toLowerCase(),
+      );
       return {
         exercise,
         exerciseIndex,
@@ -3762,13 +3768,19 @@ export default function App() {
         imageUri: normalizeExerciseImageUri(exercise.image_uri),
         muscle,
         previewMeta: resolveExercisePreviewMeta(exerciseName, muscle, activeTrainingCategory),
+        instructions: repoMatch?.instructions ?? "",
+        seriesItems,
+        setsCount: seriesItems.length,
+        repsLabel,
+        weightLabel: firstWeight,
+        restLabel: firstRest,
         volumeLabel:
           seriesItems.length > 0
             ? `${seriesItems.length} x ${repsLabel} reps${firstWeight ? ` • ${firstWeight}kg` : ""}`
             : "Sin series configuradas",
       };
     });
-  }, [activeTrainingCategory, activeTrainingTemplate]);
+  }, [activeTrainingCategory, activeTrainingTemplate, exercisesRepo]);
   const activeTrainingMuscleFilters = useMemo(
     () => Array.from(new Set(activeTrainingPreviewExercises.map((exercise) => exercise.muscle))),
     [activeTrainingPreviewExercises],
@@ -8199,6 +8211,45 @@ export default function App() {
                   </Text>
                 </View>
 
+                <Pressable
+                  onPress={() => startTrainingSession(activeTrainingTemplate.id)}
+                  disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
+                  style={{
+                    minHeight: 46,
+                    borderRadius: 14,
+                    borderWidth: 1,
+                    borderColor: templateHasRunnableSeries(activeTrainingTemplate)
+                      ? "rgba(203,255,26,0.75)"
+                      : "rgba(255,255,255,0.08)",
+                    backgroundColor: templateHasRunnableSeries(activeTrainingTemplate)
+                      ? mobileTheme.color.brandPrimary
+                      : "rgba(255,255,255,0.04)",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 10,
+                  }}
+                >
+                  <Feather
+                    name="play"
+                    size={14}
+                    color={
+                      templateHasRunnableSeries(activeTrainingTemplate) ? "#06090D" : "#7F8896"
+                    }
+                  />
+                  <Text
+                    style={{
+                      color: templateHasRunnableSeries(activeTrainingTemplate)
+                        ? "#06090D"
+                        : "#7F8896",
+                      fontSize: 16,
+                      fontWeight: "800",
+                    }}
+                  >
+                    Empezar rutina
+                  </Text>
+                </Pressable>
+
                 <View
                   style={{
                     borderRadius: 22,
@@ -8553,91 +8604,122 @@ export default function App() {
                       </Text>
                     </View>
                   ) : (
-                    activeTrainingDetailExercises.map((exercise) => (
-                      <View
+                    activeTrainingDetailExercises.map((exercise, cardIndex) => (
+                      <Pressable
                         key={exercise.exercise.id}
+                        onPress={() => setExerciseDetailIndex(cardIndex)}
                         style={{
                           borderWidth: 1,
                           borderColor: "rgba(255,255,255,0.06)",
                           backgroundColor: "#171B23",
                           borderRadius: 20,
                           padding: 12,
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 12,
+                          gap: 8,
                         }}
                       >
-                        <View
-                          style={{
-                            width: 58,
-                            height: 58,
-                            borderRadius: 16,
-                            overflow: "hidden",
-                            borderWidth: 1,
-                            borderColor: "rgba(255,255,255,0.08)",
-                            backgroundColor: exercise.previewMeta.backgroundColor,
-                            flexShrink: 0,
-                          }}
-                        >
-                          {exercise.imageUri ? (
-                            <Image
-                              source={{ uri: exercise.imageUri }}
-                              style={{ width: "100%", height: "100%" }}
-                              resizeMode="cover"
-                            />
-                          ) : (
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                          <View
+                            style={{
+                              width: 58,
+                              height: 58,
+                              borderRadius: 16,
+                              overflow: "hidden",
+                              borderWidth: 1,
+                              borderColor: "rgba(255,255,255,0.08)",
+                              backgroundColor: exercise.previewMeta.backgroundColor,
+                              flexShrink: 0,
+                            }}
+                          >
+                            {exercise.imageUri ? (
+                              <Image
+                                source={{ uri: exercise.imageUri }}
+                                style={{ width: "100%", height: "100%" }}
+                                resizeMode="cover"
+                              />
+                            ) : (
+                              <View
+                                style={{
+                                  flex: 1,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  gap: 4,
+                                  paddingHorizontal: 4,
+                                }}
+                              >
+                                <Feather
+                                  name={exercise.previewMeta.icon}
+                                  size={18}
+                                  color={exercise.previewMeta.accentColor}
+                                />
+                                <Text
+                                  style={{
+                                    color: "#E8EDF5",
+                                    fontSize: 9,
+                                    fontWeight: "700",
+                                    textAlign: "center",
+                                  }}
+                                  numberOfLines={1}
+                                >
+                                  {exercise.previewMeta.label}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                          <View style={{ flex: 1 }}>
+                            <Text
+                              style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700" }}
+                              numberOfLines={1}
+                            >
+                              {exercise.exerciseName}
+                            </Text>
+                            <Text style={{ color: "#8B94A3", fontSize: 13, marginTop: 2 }}>
+                              {exercise.volumeLabel}
+                            </Text>
+                          </View>
+                          <Feather name="chevron-right" size={18} color="#636B78" />
+                        </View>
+                        {exercise.seriesItems.length > 0 && (
+                          <View style={{ gap: 0 }}>
                             <View
                               style={{
-                                flex: 1,
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: 4,
-                                paddingHorizontal: 4,
+                                flexDirection: "row",
+                                paddingVertical: 4,
+                                borderBottomWidth: 1,
+                                borderBottomColor: "rgba(255,255,255,0.06)",
                               }}
                             >
-                              <Feather
-                                name={exercise.previewMeta.icon}
-                                size={18}
-                                color={exercise.previewMeta.accentColor}
-                              />
-                              <Text
-                                style={{
-                                  color: "#E8EDF5",
-                                  fontSize: 9,
-                                  fontWeight: "700",
-                                  textAlign: "center",
-                                }}
-                                numberOfLines={1}
-                              >
-                                {exercise.previewMeta.label}
-                              </Text>
+                              <Text style={{ color: "#636B78", fontSize: 11, fontWeight: "700", width: 40, textAlign: "center" }}>Serie</Text>
+                              <Text style={{ color: "#636B78", fontSize: 11, fontWeight: "700", flex: 1, textAlign: "center" }}>Reps</Text>
+                              <Text style={{ color: "#636B78", fontSize: 11, fontWeight: "700", flex: 1, textAlign: "center" }}>Peso</Text>
+                              <Text style={{ color: "#636B78", fontSize: 11, fontWeight: "700", flex: 1, textAlign: "center" }}>Descanso</Text>
                             </View>
-                          )}
-                        </View>
-                        <View style={{ flex: 1, gap: 3 }}>
-                          <Text
-                            style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700" }}
-                            numberOfLines={1}
-                          >
-                            {exercise.exerciseName}
-                          </Text>
-                          <Text style={{ color: "#8B94A3", fontSize: 13 }}>
-                            {exercise.volumeLabel}
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 999,
-                            backgroundColor: mobileTheme.color.brandPrimary,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Feather name="play" size={16} color="#06090D" />
-                        </View>
-                      </View>
+                            {exercise.seriesItems.map((s: ExerciseSeries, sIdx: number) => (
+                              <View
+                                key={s.id}
+                                style={{
+                                  flexDirection: "row",
+                                  paddingVertical: 4,
+                                  borderBottomWidth: sIdx < exercise.seriesItems.length - 1 ? 1 : 0,
+                                  borderBottomColor: "rgba(255,255,255,0.04)",
+                                }}
+                              >
+                                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700", width: 40, textAlign: "center" }}>
+                                  {sIdx + 1}
+                                </Text>
+                                <Text style={{ color: "#8B94A3", fontSize: 12, flex: 1, textAlign: "center" }}>
+                                  {s.reps.trim() || "--"}
+                                </Text>
+                                <Text style={{ color: "#8B94A3", fontSize: 12, flex: 1, textAlign: "center" }}>
+                                  {s.weight_kg.trim() ? `${s.weight_kg.trim()} kg` : "--"}
+                                </Text>
+                                <Text style={{ color: "#8B94A3", fontSize: 12, flex: 1, textAlign: "center" }}>
+                                  {s.rest_seconds.trim() ? `${s.rest_seconds.trim()}s` : "--"}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        )}
+                      </Pressable>
                     ))
                   )}
                 </View>
@@ -8647,8 +8729,8 @@ export default function App() {
                   disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
                   testID="training-detail-start-session"
                   style={{
-                    minHeight: 58,
-                    borderRadius: 18,
+                    minHeight: 46,
+                    borderRadius: 14,
                     borderWidth: 1,
                     borderColor: templateHasRunnableSeries(activeTrainingTemplate)
                       ? "rgba(203,255,26,0.75)"
@@ -8664,7 +8746,7 @@ export default function App() {
                 >
                   <Feather
                     name="play"
-                    size={16}
+                    size={14}
                     color={
                       templateHasRunnableSeries(activeTrainingTemplate) ? "#06090D" : "#7F8896"
                     }
@@ -8674,7 +8756,7 @@ export default function App() {
                       color: templateHasRunnableSeries(activeTrainingTemplate)
                         ? "#06090D"
                         : "#7F8896",
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: "800",
                     }}
                   >
@@ -8954,10 +9036,8 @@ export default function App() {
                     >
                       <View
                         style={{
-                          borderWidth: isExpanded ? 2 : 1,
-                          borderColor: isExpanded
-                            ? "rgba(203,255,26,0.85)"
-                            : mobileTheme.color.borderSubtle,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
                           backgroundColor: "#171B23",
                           borderRadius: 20,
                           paddingHorizontal: 12,
@@ -9015,21 +9095,6 @@ export default function App() {
                           </View>
                           <Pressable
                             onPress={() =>
-                              setExpandedExerciseId((prev) => (prev === exercise.id ? null : exercise.id))
-                            }
-                            style={{
-                              width: 28,
-                              height: 28,
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Text style={{ color: "#8B94A3", fontSize: 20, fontWeight: "700" }}>
-                              {isExpanded ? "˅" : "˃"}
-                            </Text>
-                          </Pressable>
-                          <Pressable
-                            onPress={() =>
                               setActiveExerciseMenuId((prev) => (prev === exercise.id ? null : exercise.id))
                             }
                             testID={`training-exercise-menu-${exercise.id}`}
@@ -9056,8 +9121,7 @@ export default function App() {
                           </Pressable>
                         </View>
 
-                        {isExpanded ? (
-                          <View style={{ gap: 0 }}>
+                        <View style={{ gap: 0 }}>
                             <View
                               style={{
                                 minHeight: 36,
@@ -9263,7 +9327,6 @@ export default function App() {
                               </Text>
                             </Pressable>
                           </View>
-                        ) : null}
                       </View>
 
                       {isMenuOpen ? (
@@ -13628,6 +13691,166 @@ export default function App() {
           </View>
         </View>
       ) : null}
+
+      {exerciseDetailIndex !== null && (() => {
+        const ex = activeTrainingDetailExercises[exerciseDetailIndex];
+        if (!ex) return null;
+        return (
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "#06090D",
+              zIndex: 200,
+            }}
+          >
+            <SafeAreaView style={{ flex: 1 }}>
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingBottom: 40 }}
+                showsVerticalScrollIndicator={false}
+              >
+                <View style={{ position: "relative" }}>
+                  {ex.imageUri ? (
+                    <Image
+                      source={{ uri: ex.imageUri }}
+                      style={{ width: "100%", aspectRatio: 16 / 10 }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View
+                      style={{
+                        width: "100%",
+                        aspectRatio: 16 / 10,
+                        backgroundColor: ex.previewMeta.backgroundColor,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Feather name={ex.previewMeta.icon} size={64} color={ex.previewMeta.accentColor} />
+                    </View>
+                  )}
+                  <Pressable
+                    onPress={() => setExerciseDetailIndex(null)}
+                    style={{
+                      position: "absolute",
+                      top: 14,
+                      left: 14,
+                      width: 40,
+                      height: 40,
+                      borderRadius: 999,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.14)",
+                      backgroundColor: "rgba(8,11,16,0.48)",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Feather name="arrow-left" size={18} color="#FFFFFF" />
+                  </Pressable>
+                </View>
+                <View style={{ padding: 20, gap: 16 }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "700" }}>
+                    {ex.exerciseName}
+                  </Text>
+                  {ex.muscle ? (
+                    <View style={{ flexDirection: "row" }}>
+                      <View
+                        style={{
+                          minHeight: 44,
+                          borderRadius: 14,
+                          borderWidth: 1,
+                          borderColor: "rgba(255,255,255,0.06)",
+                          backgroundColor: "#171B23",
+                          paddingHorizontal: 12,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <Feather name="target" size={14} color={mobileTheme.color.brandPrimary} />
+                        <Text style={{ color: "#E8EDF5", fontSize: 14, fontWeight: "700" }}>
+                          {ex.muscle}
+                        </Text>
+                      </View>
+                    </View>
+                  ) : null}
+                  {ex.instructions ? (
+                    <View style={{ gap: 8 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>
+                        Instrucciones
+                      </Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 15, lineHeight: 22 }}>
+                        {ex.instructions}
+                      </Text>
+                    </View>
+                  ) : null}
+                  {ex.seriesItems.length > 0 && (
+                    <View style={{ gap: 8 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>
+                        Series
+                      </Text>
+                      <View
+                        style={{
+                          borderRadius: 14,
+                          borderWidth: 1,
+                          borderColor: "rgba(255,255,255,0.06)",
+                          backgroundColor: "#171B23",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            paddingVertical: 8,
+                            paddingHorizontal: 12,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "rgba(255,255,255,0.06)",
+                            backgroundColor: "#1C212A",
+                          }}
+                        >
+                          <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", width: 40, textAlign: "center" }}>#</Text>
+                          <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", flex: 1, textAlign: "center" }}>Reps</Text>
+                          <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", flex: 1, textAlign: "center" }}>Peso</Text>
+                          <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", flex: 1, textAlign: "center" }}>Descanso</Text>
+                        </View>
+                        {ex.seriesItems.map((s: ExerciseSeries, sIdx: number) => (
+                          <View
+                            key={s.id}
+                            style={{
+                              flexDirection: "row",
+                              paddingVertical: 10,
+                              paddingHorizontal: 12,
+                              borderBottomWidth: sIdx < ex.seriesItems.length - 1 ? 1 : 0,
+                              borderBottomColor: "rgba(255,255,255,0.04)",
+                            }}
+                          >
+                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700", width: 40, textAlign: "center" }}>
+                              {sIdx + 1}
+                            </Text>
+                            <Text style={{ color: "#8B94A3", fontSize: 14, flex: 1, textAlign: "center" }}>
+                              {s.reps.trim() || "--"}
+                            </Text>
+                            <Text style={{ color: "#8B94A3", fontSize: 14, flex: 1, textAlign: "center" }}>
+                              {s.weight_kg.trim() ? `${s.weight_kg.trim()} kg` : "--"}
+                            </Text>
+                            <Text style={{ color: "#8B94A3", fontSize: 14, flex: 1, textAlign: "center" }}>
+                              {s.rest_seconds.trim() ? `${s.rest_seconds.trim()}s` : "--"}
+                            </Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                </View>
+              </ScrollView>
+            </SafeAreaView>
+          </View>
+        );
+      })()}
 
       {exercisePickerOpen ? (
         <View
