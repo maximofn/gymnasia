@@ -1,5 +1,5 @@
 {
-  "version": "2.8",
+  "version": "2.9",
   "children": [
     {
       "type": "frame",
@@ -39,7 +39,8 @@
               "fill": "$--gim-text-secondary",
               "content": "Design System — Premium Fitness App",
               "fontFamily": "$--gim-font-body",
-              "fontSize": 16
+              "fontSize": 16,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -77,7 +78,8 @@
               "fill": "$--gim-text-tertiary",
               "content": "Primary, Secondary, Outline, Ghost, Destructive — Default + Disabled states",
               "fontFamily": "Inter",
-              "fontSize": 13
+              "fontSize": 13,
+              "fontWeight": "normal"
             },
             {
               "type": "frame",
@@ -296,12 +298,16 @@
                   "ref": "Wc6bH",
                   "opacity": 0.4,
                   "name": "btnPDisabled",
+                  "width": "fit_content",
+                  "x": 70,
                   "descendants": {
                     "QKtcE": {
                       "enabled": false
                     },
                     "5TiZu": {
-                      "content": "Disabled"
+                      "content": "Disabled",
+                      "x": 24,
+                      "y": 14.5
                     }
                   }
                 },
@@ -311,12 +317,16 @@
                   "ref": "j9zVR",
                   "opacity": 0.4,
                   "name": "btnSDisabled",
+                  "width": "fit_content",
+                  "x": 196,
                   "descendants": {
                     "6V2Pk": {
                       "enabled": false
                     },
                     "kx8UC": {
-                      "content": "Disabled"
+                      "content": "Disabled",
+                      "x": 24,
+                      "y": 14.5
                     }
                   }
                 },
@@ -326,12 +336,16 @@
                   "ref": "YhnSg",
                   "opacity": 0.4,
                   "name": "btnODisabled",
+                  "width": "fit_content",
+                  "x": 320,
                   "descendants": {
                     "xIzSL": {
                       "enabled": false
                     },
                     "5uxtS": {
-                      "content": "Disabled"
+                      "content": "Disabled",
+                      "x": 24,
+                      "y": 14.5
                     }
                   }
                 }
@@ -361,9 +375,16 @@
                   "ref": "Wc6bH",
                   "width": "fill_container",
                   "name": "btnFullWidth",
+                  "x": 77,
                   "descendants": {
+                    "QKtcE": {
+                      "x": 928,
+                      "y": 15
+                    },
                     "5TiZu": {
-                      "content": "BEGIN TRAINING"
+                      "content": "BEGIN TRAINING",
+                      "x": 954,
+                      "y": 14.5
                     }
                   }
                 }
@@ -471,7 +492,8 @@
                           "fill": "$--gim-text-tertiary",
                           "content": "you@example.com",
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -533,7 +555,8 @@
                           "fill": "$--gim-text-primary",
                           "content": "85",
                           "fontFamily": "Inter",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -607,7 +630,8 @@
                       "fill": "$--gim-error",
                       "content": "Password must be at least 8 characters",
                       "fontFamily": "Inter",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -895,12 +919,18 @@
                           "ref": "Wc6bH",
                           "width": "fill_container",
                           "name": "wcCta",
+                          "x": 20,
+                          "y": 102,
                           "descendants": {
                             "QKtcE": {
-                              "iconFontName": "play"
+                              "iconFontName": "play",
+                              "x": 113.5,
+                              "y": 15
                             },
                             "5TiZu": {
-                              "content": "START"
+                              "content": "START",
+                              "x": 139.5,
+                              "y": 14.5
                             }
                           }
                         }
@@ -961,7 +991,8 @@
                       "fill": "$--gim-text-secondary",
                       "content": "Calories Burned",
                       "fontFamily": "Inter",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -1187,9 +1218,14 @@
                   "type": "ref",
                   "ref": "jZWxr",
                   "name": "tab1",
+                  "width": "fit_content",
+                  "x": 4,
+                  "y": 4,
                   "descendants": {
                     "fHn3I": {
-                      "content": "All"
+                      "content": "All",
+                      "x": 20,
+                      "y": 11
                     }
                   }
                 },
@@ -1198,9 +1234,14 @@
                   "type": "ref",
                   "ref": "sLDcy",
                   "name": "tab2",
+                  "width": "fit_content",
+                  "x": 66,
+                  "y": 4,
                   "descendants": {
                     "1A58p": {
-                      "content": "Strength"
+                      "content": "Strength",
+                      "x": 20,
+                      "y": 11
                     }
                   }
                 },
@@ -1209,9 +1250,14 @@
                   "type": "ref",
                   "ref": "sLDcy",
                   "name": "tab3",
+                  "width": "fit_content",
+                  "x": 165,
+                  "y": 4,
                   "descendants": {
                     "1A58p": {
-                      "content": "Cardio"
+                      "content": "Cardio",
+                      "x": 20,
+                      "y": 11
                     }
                   }
                 },
@@ -1220,9 +1266,14 @@
                   "type": "ref",
                   "ref": "sLDcy",
                   "name": "tab4",
+                  "width": "fit_content",
+                  "x": 252,
+                  "y": 4,
                   "descendants": {
                     "1A58p": {
-                      "content": "Flexibility"
+                      "content": "Flexibility",
+                      "x": 20,
+                      "y": 11
                     }
                   }
                 }
@@ -1313,9 +1364,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "chip3",
+                  "width": "fit_content",
+                  "x": 176,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Legs"
+                      "content": "Legs",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -1324,9 +1379,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "chip4",
+                  "width": "fit_content",
+                  "x": 251,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Arms"
+                      "content": "Arms",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -1335,9 +1394,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "chip5",
+                  "width": "fit_content",
+                  "x": 328,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Core"
+                      "content": "Core",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -1346,9 +1409,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "chip6",
+                  "width": "fit_content",
+                  "x": 402,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Shoulders"
+                      "content": "Shoulders",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 }
@@ -1502,12 +1569,24 @@
                   "type": "ref",
                   "ref": "wIRJF",
                   "name": "bnHome",
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 16,
+                  "y": 0,
                   "descendants": {
                     "utIoo": {
-                      "iconFontName": "home"
+                      "iconFontName": "home",
+                      "x": 33.75,
+                      "y": 8
                     },
                     "5mXnE": {
-                      "content": "Home"
+                      "content": "Home",
+                      "x": 29.75,
+                      "y": 34
+                    },
+                    "WWCet": {
+                      "x": 42.75,
+                      "y": 52
                     }
                   }
                 },
@@ -1516,12 +1595,20 @@
                   "type": "ref",
                   "ref": "6cZUB",
                   "name": "bnWorkout",
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 105.5,
+                  "y": 4,
                   "descendants": {
                     "untM6": {
-                      "iconFontName": "dumbbell"
+                      "iconFontName": "dumbbell",
+                      "x": 33.75,
+                      "y": 8
                     },
                     "ENUOf": {
-                      "content": "Train"
+                      "content": "Train",
+                      "x": 31.75,
+                      "y": 34
                     }
                   }
                 },
@@ -1530,12 +1617,20 @@
                   "type": "ref",
                   "ref": "6cZUB",
                   "name": "bnStats",
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 195,
+                  "y": 4,
                   "descendants": {
                     "untM6": {
-                      "iconFontName": "bar-chart-2"
+                      "iconFontName": "bar-chart-2",
+                      "x": 33.75,
+                      "y": 8
                     },
                     "ENUOf": {
-                      "content": "Stats"
+                      "content": "Stats",
+                      "x": 31.75,
+                      "y": 34
                     }
                   }
                 },
@@ -1544,12 +1639,20 @@
                   "type": "ref",
                   "ref": "6cZUB",
                   "name": "bnProfile",
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 284.5,
+                  "y": 4,
                   "descendants": {
                     "untM6": {
-                      "iconFontName": "user"
+                      "iconFontName": "user",
+                      "x": 33.75,
+                      "y": 8
                     },
                     "ENUOf": {
-                      "content": "Profile"
+                      "content": "Profile",
+                      "x": 28.75,
+                      "y": 34
                     }
                   }
                 }
@@ -1703,12 +1806,17 @@
                           "ref": "Wc6bH",
                           "width": "fill_container",
                           "name": "modalPrimary",
+                          "x": 24,
                           "descendants": {
                             "QKtcE": {
-                              "iconFontName": "share-2"
+                              "iconFontName": "share-2",
+                              "x": 15.5,
+                              "y": 15
                             },
                             "5TiZu": {
-                              "content": "Share Results"
+                              "content": "Share Results",
+                              "x": 41.5,
+                              "y": 14.5
                             }
                           }
                         },
@@ -1718,12 +1826,15 @@
                           "ref": "j9zVR",
                           "width": "fill_container",
                           "name": "modalSecondary",
+                          "x": 186,
                           "descendants": {
                             "6V2Pk": {
                               "enabled": false
                             },
                             "kx8UC": {
-                              "content": "Done"
+                              "content": "Done",
+                              "x": 56.5,
+                              "y": 14.5
                             }
                           }
                         }
@@ -2067,7 +2178,8 @@
                       "fill": "$--gim-text-secondary",
                       "content": "Good Morning",
                       "fontFamily": "Inter",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -2152,18 +2264,39 @@
                   "ref": "UZnvl",
                   "width": "fill_container",
                   "name": "stat1",
+                  "height": "fit_content",
                   "descendants": {
+                    "gv4kh": {
+                      "x": 20,
+                      "y": 20
+                    },
                     "KVEKH": {
-                      "iconFontName": "flame"
+                      "iconFontName": "flame",
+                      "x": 10,
+                      "y": 10
                     },
                     "BG1PE": {
-                      "content": "847"
+                      "content": "847",
+                      "x": 20,
+                      "y": 68
                     },
                     "TX57B": {
-                      "content": "kcal burned"
+                      "content": "kcal burned",
+                      "x": 20,
+                      "y": 116
+                    },
+                    "XZWda": {
+                      "width": "fit_content",
+                      "height": "fit_content",
+                      "x": 20,
+                      "y": 140
+                    },
+                    "30N2Z": {
+                      "y": 0.5
                     },
                     "GQuxE": {
-                      "content": "+12%"
+                      "content": "+12%",
+                      "x": 18
                     }
                   }
                 },
@@ -2330,12 +2463,32 @@
                       "ref": "jQvNn",
                       "width": "fill_container",
                       "name": "ex1",
+                      "height": "fit_content",
                       "descendants": {
+                        "kX9DM": {
+                          "x": 16,
+                          "y": 16
+                        },
+                        "G0aJT": {
+                          "width": "fill_container",
+                          "height": "fit_content",
+                          "x": 88,
+                          "y": 24
+                        },
                         "xAHtX": {
                           "content": "Bench Press"
                         },
                         "hOFqC": {
-                          "content": "4 × 12 reps • 60kg"
+                          "content": "4 × 12 reps • 60kg",
+                          "y": 24
+                        },
+                        "5Rx0N": {
+                          "x": 298,
+                          "y": 26
+                        },
+                        "iHgqe": {
+                          "x": 10,
+                          "y": 10
                         }
                       }
                     },
@@ -2345,12 +2498,33 @@
                       "ref": "jQvNn",
                       "width": "fill_container",
                       "name": "ex2",
+                      "height": "fit_content",
+                      "y": 98,
                       "descendants": {
+                        "kX9DM": {
+                          "x": 16,
+                          "y": 16
+                        },
+                        "G0aJT": {
+                          "width": "fill_container",
+                          "height": "fit_content",
+                          "x": 88,
+                          "y": 24
+                        },
                         "xAHtX": {
                           "content": "Incline Dumbbell"
                         },
                         "hOFqC": {
-                          "content": "3 × 10 reps • 24kg"
+                          "content": "3 × 10 reps • 24kg",
+                          "y": 24
+                        },
+                        "5Rx0N": {
+                          "x": 298,
+                          "y": 26
+                        },
+                        "iHgqe": {
+                          "x": 10,
+                          "y": 10
                         }
                       }
                     },
@@ -2360,12 +2534,33 @@
                       "ref": "jQvNn",
                       "width": "fill_container",
                       "name": "ex3",
+                      "height": "fit_content",
+                      "y": 196,
                       "descendants": {
+                        "kX9DM": {
+                          "x": 16,
+                          "y": 16
+                        },
+                        "G0aJT": {
+                          "width": "fill_container",
+                          "height": "fit_content",
+                          "x": 88,
+                          "y": 24
+                        },
                         "xAHtX": {
                           "content": "Cable Fly"
                         },
                         "hOFqC": {
-                          "content": "3 × 15 reps • 20kg"
+                          "content": "3 × 15 reps • 20kg",
+                          "y": 24
+                        },
+                        "5Rx0N": {
+                          "x": 298,
+                          "y": 26
+                        },
+                        "iHgqe": {
+                          "x": 10,
+                          "y": 10
                         }
                       }
                     }
@@ -2517,7 +2712,70 @@
           "type": "ref",
           "ref": "NIwwl",
           "width": "fill_container",
-          "name": "bottomNavInstance"
+          "name": "bottomNavInstance",
+          "y": 892,
+          "descendants": {
+            "zxWDW": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 16,
+              "y": 0
+            },
+            "zxWDW/utIoo": {
+              "x": 33.75,
+              "y": 8
+            },
+            "zxWDW/5mXnE": {
+              "x": 29.75,
+              "y": 34
+            },
+            "zxWDW/WWCet": {
+              "x": 42.75,
+              "y": 52
+            },
+            "cKTV9": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 105.5,
+              "y": 4
+            },
+            "cKTV9/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "cKTV9/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "Mb3eT": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 195,
+              "y": 4
+            },
+            "Mb3eT/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "Mb3eT/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "SgKBV": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 284.5,
+              "y": 4
+            },
+            "SgKBV/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "SgKBV/ENUOf": {
+              "x": 28.75,
+              "y": 34
+            }
+          }
         }
       ]
     },
@@ -2802,12 +3060,15 @@
                   "type": "ref",
                   "ref": "LjFYt",
                   "name": "cf1",
+                  "width": "fit_content",
                   "descendants": {
                     "AAKgC": {
                       "enabled": false
                     },
                     "0Ws6v": {
-                      "content": "All"
+                      "content": "All",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -2816,9 +3077,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "cf2",
+                  "width": "fit_content",
+                  "x": 57,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Chest"
+                      "content": "Chest",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -2827,9 +3092,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "cf3",
+                  "width": "fit_content",
+                  "x": 134,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Shoulders"
+                      "content": "Shoulders",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -2838,9 +3107,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "cf4",
+                  "width": "fit_content",
+                  "x": 237,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Triceps"
+                      "content": "Triceps",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 }
@@ -2860,12 +3133,32 @@
                   "ref": "jQvNn",
                   "width": "fill_container",
                   "name": "exD1",
+                  "height": "fit_content",
                   "descendants": {
+                    "kX9DM": {
+                      "x": 16,
+                      "y": 16
+                    },
+                    "G0aJT": {
+                      "width": "fill_container",
+                      "height": "fit_content",
+                      "x": 88,
+                      "y": 24
+                    },
                     "xAHtX": {
                       "content": "Barbell Bench Press"
                     },
                     "hOFqC": {
-                      "content": "4 × 10 reps • 80kg"
+                      "content": "4 × 10 reps • 80kg",
+                      "y": 24
+                    },
+                    "5Rx0N": {
+                      "x": 298,
+                      "y": 26
+                    },
+                    "iHgqe": {
+                      "x": 10,
+                      "y": 10
                     }
                   }
                 },
@@ -2875,12 +3168,33 @@
                   "ref": "jQvNn",
                   "width": "fill_container",
                   "name": "exD2",
+                  "height": "fit_content",
+                  "y": 98,
                   "descendants": {
+                    "kX9DM": {
+                      "x": 16,
+                      "y": 16
+                    },
+                    "G0aJT": {
+                      "width": "fill_container",
+                      "height": "fit_content",
+                      "x": 88,
+                      "y": 24
+                    },
                     "xAHtX": {
                       "content": "Overhead Press"
                     },
                     "hOFqC": {
-                      "content": "3 × 12 reps • 40kg"
+                      "content": "3 × 12 reps • 40kg",
+                      "y": 24
+                    },
+                    "5Rx0N": {
+                      "x": 298,
+                      "y": 26
+                    },
+                    "iHgqe": {
+                      "x": 10,
+                      "y": 10
                     }
                   }
                 },
@@ -2890,12 +3204,33 @@
                   "ref": "jQvNn",
                   "width": "fill_container",
                   "name": "exD3",
+                  "height": "fit_content",
+                  "y": 196,
                   "descendants": {
+                    "kX9DM": {
+                      "x": 16,
+                      "y": 16
+                    },
+                    "G0aJT": {
+                      "width": "fill_container",
+                      "height": "fit_content",
+                      "x": 88,
+                      "y": 24
+                    },
                     "xAHtX": {
                       "content": "Lateral Raise"
                     },
                     "hOFqC": {
-                      "content": "3 × 15 reps • 12kg"
+                      "content": "3 × 15 reps • 12kg",
+                      "y": 24
+                    },
+                    "5Rx0N": {
+                      "x": 298,
+                      "y": 26
+                    },
+                    "iHgqe": {
+                      "x": 10,
+                      "y": 10
                     }
                   }
                 },
@@ -2905,12 +3240,33 @@
                   "ref": "jQvNn",
                   "width": "fill_container",
                   "name": "exD4",
+                  "height": "fit_content",
+                  "y": 294,
                   "descendants": {
+                    "kX9DM": {
+                      "x": 16,
+                      "y": 16
+                    },
+                    "G0aJT": {
+                      "width": "fill_container",
+                      "height": "fit_content",
+                      "x": 88,
+                      "y": 24
+                    },
                     "xAHtX": {
                       "content": "Tricep Dips"
                     },
                     "hOFqC": {
-                      "content": "3 × 12 reps • BW"
+                      "content": "3 × 12 reps • BW",
+                      "y": 24
+                    },
+                    "5Rx0N": {
+                      "x": 298,
+                      "y": 26
+                    },
+                    "iHgqe": {
+                      "x": 10,
+                      "y": 10
                     }
                   }
                 }
@@ -2933,12 +3289,17 @@
                   "width": "fill_container",
                   "height": 56,
                   "name": "startBtn",
+                  "y": 8,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "play"
+                      "iconFontName": "play",
+                      "x": 98.5,
+                      "y": 19
                     },
                     "5TiZu": {
-                      "content": "BEGIN WORKOUT"
+                      "content": "BEGIN WORKOUT",
+                      "x": 124.5,
+                      "y": 18.5
                     }
                   }
                 }
@@ -3061,7 +3422,8 @@
                       "fill": "$--gim-text-secondary",
                       "content": "Buenos días",
                       "fontFamily": "Inter",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -3354,14 +3716,20 @@
               "width": "fill_container",
               "height": 52,
               "name": "ctaBtn",
+              "x": 20,
+              "y": 296,
               "descendants": {
                 "QKtcE": {
-                  "iconFontName": "play"
+                  "iconFontName": "play",
+                  "x": 64,
+                  "y": 17
                 },
                 "5TiZu": {
                   "content": "INICIAR ENTRENAMIENTO",
                   "fontSize": 14,
-                  "letterSpacing": 1
+                  "letterSpacing": 1,
+                  "x": 90,
+                  "y": 17
                 }
               }
             },
@@ -3433,7 +3801,8 @@
                       "fill": "$--gim-text-tertiary",
                       "content": "/ 2,400 kcal",
                       "fontFamily": "Inter",
-                      "fontSize": 10
+                      "fontSize": 10,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -3583,7 +3952,8 @@
                       "fill": "$--gim-text-tertiary",
                       "content": "días seguidos",
                       "fontFamily": "Inter",
-                      "fontSize": 10
+                      "fontSize": 10,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -3937,7 +4307,8 @@
                               "fill": "#0A0A0A88",
                               "content": "6 ejercicios hoy",
                               "fontFamily": "Inter",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -3992,7 +4363,8 @@
                               "fill": "$--gim-text-tertiary",
                               "content": "1,847 / 2,400 kcal",
                               "fontFamily": "Inter",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -4056,7 +4428,8 @@
                               "fill": "$--gim-text-tertiary",
                               "content": "Act. hace 3 días",
                               "fontFamily": "Inter",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -4116,7 +4489,8 @@
                               "fill": "$--gim-text-tertiary",
                               "content": "Pregunta lo que sea",
                               "fontFamily": "Inter",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
@@ -4202,12 +4576,32 @@
                       "ref": "jQvNn",
                       "width": "fill_container",
                       "name": "e1",
+                      "height": "fit_content",
                       "descendants": {
+                        "kX9DM": {
+                          "x": 16,
+                          "y": 16
+                        },
+                        "G0aJT": {
+                          "width": "fill_container",
+                          "height": "fit_content",
+                          "x": 88,
+                          "y": 24
+                        },
                         "xAHtX": {
                           "content": "Press Banca"
                         },
                         "hOFqC": {
-                          "content": "4 × 10 reps • 80kg"
+                          "content": "4 × 10 reps • 80kg",
+                          "y": 24
+                        },
+                        "5Rx0N": {
+                          "x": 298,
+                          "y": 26
+                        },
+                        "iHgqe": {
+                          "x": 10,
+                          "y": 10
                         }
                       }
                     },
@@ -4217,12 +4611,33 @@
                       "ref": "jQvNn",
                       "width": "fill_container",
                       "name": "e2",
+                      "height": "fit_content",
+                      "y": 96,
                       "descendants": {
+                        "kX9DM": {
+                          "x": 16,
+                          "y": 16
+                        },
+                        "G0aJT": {
+                          "width": "fill_container",
+                          "height": "fit_content",
+                          "x": 88,
+                          "y": 24
+                        },
                         "xAHtX": {
                           "content": "Press Militar"
                         },
                         "hOFqC": {
-                          "content": "3 × 12 reps • 40kg"
+                          "content": "3 × 12 reps • 40kg",
+                          "y": 24
+                        },
+                        "5Rx0N": {
+                          "x": 298,
+                          "y": 26
+                        },
+                        "iHgqe": {
+                          "x": 10,
+                          "y": 10
                         }
                       }
                     },
@@ -4232,12 +4647,33 @@
                       "ref": "jQvNn",
                       "width": "fill_container",
                       "name": "e3",
+                      "height": "fit_content",
+                      "y": 192,
                       "descendants": {
+                        "kX9DM": {
+                          "x": 16,
+                          "y": 16
+                        },
+                        "G0aJT": {
+                          "width": "fill_container",
+                          "height": "fit_content",
+                          "x": 88,
+                          "y": 24
+                        },
                         "xAHtX": {
                           "content": "Elevaciones Laterales"
                         },
                         "hOFqC": {
-                          "content": "3 × 15 reps • 12kg"
+                          "content": "3 × 15 reps • 12kg",
+                          "y": 24
+                        },
+                        "5Rx0N": {
+                          "x": 298,
+                          "y": 26
+                        },
+                        "iHgqe": {
+                          "x": 10,
+                          "y": 10
                         }
                       }
                     }
@@ -4252,7 +4688,70 @@
           "type": "ref",
           "ref": "NIwwl",
           "width": "fill_container",
-          "name": "bnav"
+          "name": "bnav",
+          "y": 1358,
+          "descendants": {
+            "zxWDW": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 16,
+              "y": 0
+            },
+            "zxWDW/utIoo": {
+              "x": 33.75,
+              "y": 8
+            },
+            "zxWDW/5mXnE": {
+              "x": 29.75,
+              "y": 34
+            },
+            "zxWDW/WWCet": {
+              "x": 42.75,
+              "y": 52
+            },
+            "cKTV9": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 105.5,
+              "y": 4
+            },
+            "cKTV9/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "cKTV9/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "Mb3eT": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 195,
+              "y": 4
+            },
+            "Mb3eT/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "Mb3eT/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "SgKBV": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 284.5,
+              "y": 4
+            },
+            "SgKBV/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "SgKBV/ENUOf": {
+              "x": 28.75,
+              "y": 34
+            }
+          }
         }
       ]
     },
@@ -4953,14 +5452,20 @@
                               "type": "ref",
                               "ref": "Wc6bH",
                               "name": "heroCtaD",
+                              "width": "fit_content",
+                              "x": 295,
                               "descendants": {
                                 "QKtcE": {
-                                  "iconFontName": "play"
+                                  "iconFontName": "play",
+                                  "x": 24,
+                                  "y": 15
                                 },
                                 "5TiZu": {
                                   "content": "INICIAR ENTRENAMIENTO",
                                   "fontSize": 13,
-                                  "letterSpacing": 1
+                                  "letterSpacing": 1,
+                                  "x": 50,
+                                  "y": 16
                                 }
                               }
                             }
@@ -5605,12 +6110,32 @@
                               "ref": "jQvNn",
                               "width": "fill_container",
                               "name": "ed1",
+                              "height": "fit_content",
                               "descendants": {
+                                "kX9DM": {
+                                  "x": 16,
+                                  "y": 16
+                                },
+                                "G0aJT": {
+                                  "width": "fill_container",
+                                  "height": "fit_content",
+                                  "x": 88,
+                                  "y": 24
+                                },
                                 "xAHtX": {
                                   "content": "Press Banca"
                                 },
                                 "hOFqC": {
-                                  "content": "4 × 10 reps • 80kg"
+                                  "content": "4 × 10 reps • 80kg",
+                                  "y": 24
+                                },
+                                "5Rx0N": {
+                                  "x": 636,
+                                  "y": 26
+                                },
+                                "iHgqe": {
+                                  "x": 10,
+                                  "y": 10
                                 }
                               }
                             },
@@ -5620,12 +6145,33 @@
                               "ref": "jQvNn",
                               "width": "fill_container",
                               "name": "ed2",
+                              "height": "fit_content",
+                              "y": 96,
                               "descendants": {
+                                "kX9DM": {
+                                  "x": 16,
+                                  "y": 16
+                                },
+                                "G0aJT": {
+                                  "width": "fill_container",
+                                  "height": "fit_content",
+                                  "x": 88,
+                                  "y": 24
+                                },
                                 "xAHtX": {
                                   "content": "Press Militar"
                                 },
                                 "hOFqC": {
-                                  "content": "3 × 12 reps • 40kg"
+                                  "content": "3 × 12 reps • 40kg",
+                                  "y": 24
+                                },
+                                "5Rx0N": {
+                                  "x": 636,
+                                  "y": 26
+                                },
+                                "iHgqe": {
+                                  "x": 10,
+                                  "y": 10
                                 }
                               }
                             },
@@ -5635,12 +6181,33 @@
                               "ref": "jQvNn",
                               "width": "fill_container",
                               "name": "ed3",
+                              "height": "fit_content",
+                              "y": 192,
                               "descendants": {
+                                "kX9DM": {
+                                  "x": 16,
+                                  "y": 16
+                                },
+                                "G0aJT": {
+                                  "width": "fill_container",
+                                  "height": "fit_content",
+                                  "x": 88,
+                                  "y": 24
+                                },
                                 "xAHtX": {
                                   "content": "Elevaciones Laterales"
                                 },
                                 "hOFqC": {
-                                  "content": "3 × 15 reps • 12kg"
+                                  "content": "3 × 15 reps • 12kg",
+                                  "y": 24
+                                },
+                                "5Rx0N": {
+                                  "x": 636,
+                                  "y": 26
+                                },
+                                "iHgqe": {
+                                  "x": 10,
+                                  "y": 10
                                 }
                               }
                             }
@@ -6084,7 +6651,8 @@
                           "content": "— Tu versión futura",
                           "textAlign": "center",
                           "fontFamily": "Inter",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -6186,15 +6754,24 @@
               "ref": "5aClI",
               "width": "fill_container",
               "name": "emailInput",
+              "height": "fit_content",
               "descendants": {
                 "qgsmB": {
                   "content": "Correo electrónico"
                 },
+                "D29g7": {
+                  "width": "fill_container",
+                  "y": 22
+                },
                 "xhOaY": {
-                  "iconFontName": "mail"
+                  "iconFontName": "mail",
+                  "x": 16,
+                  "y": 15
                 },
                 "cFOBR": {
-                  "content": "tu@email.com"
+                  "content": "tu@email.com",
+                  "x": 46,
+                  "y": 15.5
                 }
               }
             },
@@ -6204,15 +6781,25 @@
               "ref": "5aClI",
               "width": "fill_container",
               "name": "passInput",
+              "height": "fit_content",
+              "y": 86,
               "descendants": {
                 "qgsmB": {
                   "content": "Contraseña"
                 },
+                "D29g7": {
+                  "width": "fill_container",
+                  "y": 22
+                },
                 "xhOaY": {
-                  "iconFontName": "lock"
+                  "iconFontName": "lock",
+                  "x": 16,
+                  "y": 15
                 },
                 "cFOBR": {
-                  "content": "••••••••"
+                  "content": "••••••••",
+                  "x": 46,
+                  "y": 15.5
                 }
               }
             },
@@ -6241,12 +6828,17 @@
               "ref": "Wc6bH",
               "width": "fill_container",
               "name": "loginBtn",
+              "y": 204,
               "descendants": {
                 "QKtcE": {
-                  "iconFontName": "log-in"
+                  "iconFontName": "log-in",
+                  "x": 101.5,
+                  "y": 15
                 },
                 "5TiZu": {
-                  "content": "INICIAR SESIÓN"
+                  "content": "INICIAR SESIÓN",
+                  "x": 127.5,
+                  "y": 14.5
                 }
               }
             }
@@ -6500,15 +7092,24 @@
                   "ref": "5aClI",
                   "width": "fill_container",
                   "name": "firstName",
+                  "height": "fit_content",
                   "descendants": {
                     "qgsmB": {
                       "content": "Nombre"
                     },
+                    "D29g7": {
+                      "width": "fill_container",
+                      "y": 22
+                    },
                     "xhOaY": {
-                      "iconFontName": "user"
+                      "iconFontName": "user",
+                      "x": 16,
+                      "y": 15
                     },
                     "cFOBR": {
-                      "content": "Tu nombre"
+                      "content": "Tu nombre",
+                      "x": 46,
+                      "y": 15.5
                     }
                   }
                 },
@@ -6518,15 +7119,23 @@
                   "ref": "5aClI",
                   "width": "fill_container",
                   "name": "lastName",
+                  "height": "fit_content",
+                  "x": 177,
                   "descendants": {
                     "qgsmB": {
                       "content": "Apellido"
+                    },
+                    "D29g7": {
+                      "width": "fill_container",
+                      "y": 22
                     },
                     "xhOaY": {
                       "enabled": false
                     },
                     "cFOBR": {
-                      "content": "Tu apellido"
+                      "content": "Tu apellido",
+                      "x": 16,
+                      "y": 15.5
                     }
                   }
                 }
@@ -6538,15 +7147,25 @@
               "ref": "5aClI",
               "width": "fill_container",
               "name": "emailReg",
+              "height": "fit_content",
+              "y": 84,
               "descendants": {
                 "qgsmB": {
                   "content": "Correo electrónico"
                 },
+                "D29g7": {
+                  "width": "fill_container",
+                  "y": 22
+                },
                 "xhOaY": {
-                  "iconFontName": "mail"
+                  "iconFontName": "mail",
+                  "x": 16,
+                  "y": 15
                 },
                 "cFOBR": {
-                  "content": "tu@email.com"
+                  "content": "tu@email.com",
+                  "x": 46,
+                  "y": 15.5
                 }
               }
             },
@@ -6556,15 +7175,25 @@
               "ref": "5aClI",
               "width": "fill_container",
               "name": "passReg",
+              "height": "fit_content",
+              "y": 168,
               "descendants": {
                 "qgsmB": {
                   "content": "Contraseña"
                 },
+                "D29g7": {
+                  "width": "fill_container",
+                  "y": 22
+                },
                 "xhOaY": {
-                  "iconFontName": "lock"
+                  "iconFontName": "lock",
+                  "x": 16,
+                  "y": 15
                 },
                 "cFOBR": {
-                  "content": "Mínimo 8 caracteres"
+                  "content": "Mínimo 8 caracteres",
+                  "x": 46,
+                  "y": 15.5
                 }
               }
             },
@@ -6574,15 +7203,25 @@
               "ref": "5aClI",
               "width": "fill_container",
               "name": "confirmPass",
+              "height": "fit_content",
+              "y": 252,
               "descendants": {
                 "qgsmB": {
                   "content": "Confirmar contraseña"
                 },
+                "D29g7": {
+                  "width": "fill_container",
+                  "y": 22
+                },
                 "xhOaY": {
-                  "iconFontName": "lock"
+                  "iconFontName": "lock",
+                  "x": 16,
+                  "y": 15
                 },
                 "cFOBR": {
-                  "content": "Repite tu contraseña"
+                  "content": "Repite tu contraseña",
+                  "x": 46,
+                  "y": 15.5
                 }
               }
             },
@@ -6627,12 +7266,17 @@
               "ref": "Wc6bH",
               "width": "fill_container",
               "name": "regBtn",
+              "y": 370,
               "descendants": {
                 "QKtcE": {
-                  "iconFontName": "user-plus"
+                  "iconFontName": "user-plus",
+                  "x": 101.5,
+                  "y": 15
                 },
                 "5TiZu": {
-                  "content": "CREAR CUENTA"
+                  "content": "CREAR CUENTA",
+                  "x": 127.5,
+                  "y": 14.5
                 }
               }
             }
@@ -6912,15 +7556,24 @@
               "ref": "5aClI",
               "width": "fill_container",
               "name": "recEmail",
+              "height": "fit_content",
               "descendants": {
                 "qgsmB": {
                   "content": "Correo electrónico"
                 },
+                "D29g7": {
+                  "width": "fill_container",
+                  "y": 22
+                },
                 "xhOaY": {
-                  "iconFontName": "mail"
+                  "iconFontName": "mail",
+                  "x": 16,
+                  "y": 15
                 },
                 "cFOBR": {
-                  "content": "tu@email.com"
+                  "content": "tu@email.com",
+                  "x": 46,
+                  "y": 15.5
                 }
               }
             },
@@ -6930,12 +7583,17 @@
               "ref": "Wc6bH",
               "width": "fill_container",
               "name": "recSendBtn",
+              "y": 86,
               "descendants": {
                 "QKtcE": {
-                  "iconFontName": "send"
+                  "iconFontName": "send",
+                  "x": 99,
+                  "y": 15
                 },
                 "5TiZu": {
-                  "content": "ENVIAR ENLACE"
+                  "content": "ENVIAR ENLACE",
+                  "x": 125,
+                  "y": 14.5
                 }
               }
             }
@@ -7284,10 +7942,14 @@
               "name": "verBtn",
               "descendants": {
                 "QKtcE": {
-                  "iconFontName": "shield"
+                  "iconFontName": "shield",
+                  "x": 86.5,
+                  "y": 15
                 },
                 "5TiZu": {
-                  "content": "VERIFICAR CÓDIGO"
+                  "content": "VERIFICAR CÓDIGO",
+                  "x": 112.5,
+                  "y": 14.5
                 }
               }
             },
@@ -7546,15 +8208,24 @@
                   "ref": "5aClI",
                   "width": "fill_container",
                   "name": "dlEmail",
+                  "height": "fit_content",
                   "descendants": {
                     "qgsmB": {
                       "content": "Correo electrónico"
                     },
+                    "D29g7": {
+                      "width": "fill_container",
+                      "y": 22
+                    },
                     "xhOaY": {
-                      "iconFontName": "mail"
+                      "iconFontName": "mail",
+                      "x": 16,
+                      "y": 15
                     },
                     "cFOBR": {
-                      "content": "tu@email.com"
+                      "content": "tu@email.com",
+                      "x": 46,
+                      "y": 15.5
                     }
                   }
                 },
@@ -7564,15 +8235,25 @@
                   "ref": "5aClI",
                   "width": "fill_container",
                   "name": "dlPass",
+                  "height": "fit_content",
+                  "y": 86,
                   "descendants": {
                     "qgsmB": {
                       "content": "Contraseña"
                     },
+                    "D29g7": {
+                      "width": "fill_container",
+                      "y": 22
+                    },
                     "xhOaY": {
-                      "iconFontName": "lock"
+                      "iconFontName": "lock",
+                      "x": 16,
+                      "y": 15
                     },
                     "cFOBR": {
-                      "content": "••••••••"
+                      "content": "••••••••",
+                      "x": 46,
+                      "y": 15.5
                     }
                   }
                 },
@@ -7601,12 +8282,17 @@
                   "ref": "Wc6bH",
                   "width": "fill_container",
                   "name": "dlLoginBtn",
+                  "y": 204,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "log-in"
+                      "iconFontName": "log-in",
+                      "x": 130.5,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "INICIAR SESIÓN"
+                      "content": "INICIAR SESIÓN",
+                      "x": 156.5,
+                      "y": 14.5
                     }
                   }
                 }
@@ -7968,15 +8654,24 @@
                       "ref": "5aClI",
                       "width": "fill_container",
                       "name": "drFN",
+                      "height": "fit_content",
                       "descendants": {
                         "qgsmB": {
                           "content": "Nombre"
                         },
+                        "D29g7": {
+                          "width": "fill_container",
+                          "y": 22
+                        },
                         "xhOaY": {
-                          "iconFontName": "user"
+                          "iconFontName": "user",
+                          "x": 16,
+                          "y": 15
                         },
                         "cFOBR": {
-                          "content": "Tu nombre"
+                          "content": "Tu nombre",
+                          "x": 46,
+                          "y": 15.5
                         }
                       }
                     },
@@ -7986,15 +8681,23 @@
                       "ref": "5aClI",
                       "width": "fill_container",
                       "name": "drLN",
+                      "height": "fit_content",
+                      "x": 218,
                       "descendants": {
                         "qgsmB": {
                           "content": "Apellido"
+                        },
+                        "D29g7": {
+                          "width": "fill_container",
+                          "y": 22
                         },
                         "xhOaY": {
                           "enabled": false
                         },
                         "cFOBR": {
-                          "content": "Tu apellido"
+                          "content": "Tu apellido",
+                          "x": 16,
+                          "y": 15.5
                         }
                       }
                     }
@@ -8006,15 +8709,25 @@
                   "ref": "5aClI",
                   "width": "fill_container",
                   "name": "drEmail",
+                  "height": "fit_content",
+                  "y": 84,
                   "descendants": {
                     "qgsmB": {
                       "content": "Correo electrónico"
                     },
+                    "D29g7": {
+                      "width": "fill_container",
+                      "y": 22
+                    },
                     "xhOaY": {
-                      "iconFontName": "mail"
+                      "iconFontName": "mail",
+                      "x": 16,
+                      "y": 15
                     },
                     "cFOBR": {
-                      "content": "tu@email.com"
+                      "content": "tu@email.com",
+                      "x": 46,
+                      "y": 15.5
                     }
                   }
                 },
@@ -8031,15 +8744,24 @@
                       "ref": "5aClI",
                       "width": "fill_container",
                       "name": "drPass",
+                      "height": "fit_content",
                       "descendants": {
                         "qgsmB": {
                           "content": "Contraseña"
                         },
+                        "D29g7": {
+                          "width": "fill_container",
+                          "y": 22
+                        },
                         "xhOaY": {
-                          "iconFontName": "lock"
+                          "iconFontName": "lock",
+                          "x": 16,
+                          "y": 15
                         },
                         "cFOBR": {
-                          "content": "Mínimo 8 caracteres"
+                          "content": "Mínimo 8 caracteres",
+                          "x": 46,
+                          "y": 15.5
                         }
                       }
                     },
@@ -8049,15 +8771,25 @@
                       "ref": "5aClI",
                       "width": "fill_container",
                       "name": "drConf",
+                      "height": "fit_content",
+                      "x": 218,
                       "descendants": {
                         "qgsmB": {
                           "content": "Confirmar"
                         },
+                        "D29g7": {
+                          "width": "fill_container",
+                          "y": 22
+                        },
                         "xhOaY": {
-                          "iconFontName": "lock"
+                          "iconFontName": "lock",
+                          "x": 16,
+                          "y": 15
                         },
                         "cFOBR": {
-                          "content": "Repite contraseña"
+                          "content": "Repite contraseña",
+                          "x": 46,
+                          "y": 15.5
                         }
                       }
                     }
@@ -8104,12 +8836,17 @@
                   "ref": "Wc6bH",
                   "width": "fill_container",
                   "name": "drRegBtn",
+                  "y": 286,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "user-plus"
+                      "iconFontName": "user-plus",
+                      "x": 142.5,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "CREAR CUENTA"
+                      "content": "CREAR CUENTA",
+                      "x": 168.5,
+                      "y": 14.5
                     }
                   }
                 }
@@ -8465,15 +9202,24 @@
                   "ref": "5aClI",
                   "width": "fill_container",
                   "name": "drecEmail",
+                  "height": "fit_content",
                   "descendants": {
                     "qgsmB": {
                       "content": "Correo electrónico"
                     },
+                    "D29g7": {
+                      "width": "fill_container",
+                      "y": 22
+                    },
                     "xhOaY": {
-                      "iconFontName": "mail"
+                      "iconFontName": "mail",
+                      "x": 16,
+                      "y": 15
                     },
                     "cFOBR": {
-                      "content": "tu@email.com"
+                      "content": "tu@email.com",
+                      "x": 46,
+                      "y": 15.5
                     }
                   }
                 },
@@ -8483,12 +9229,17 @@
                   "ref": "Wc6bH",
                   "width": "fill_container",
                   "name": "drecBtn",
+                  "y": 86,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "send"
+                      "iconFontName": "send",
+                      "x": 128,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "ENVIAR ENLACE"
+                      "content": "ENVIAR ENLACE",
+                      "x": 154,
+                      "y": 14.5
                     }
                   }
                 }
@@ -8913,10 +9664,14 @@
                   "name": "dverBtn",
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "shield"
+                      "iconFontName": "shield",
+                      "x": 115.5,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "VERIFICAR CÓDIGO"
+                      "content": "VERIFICAR CÓDIGO",
+                      "x": 141.5,
+                      "y": 14.5
                     }
                   }
                 },
@@ -9078,9 +9833,17 @@
                   "ref": "2X64o",
                   "width": "fill_container",
                   "name": "searchBar",
+                  "x": 20,
+                  "y": 74,
                   "descendants": {
+                    "QHa3u": {
+                      "x": 16,
+                      "y": 15
+                    },
                     "oCnOg": {
-                      "content": "Buscar rutinas..."
+                      "content": "Buscar rutinas...",
+                      "x": 46,
+                      "y": 15.5
                     }
                   }
                 },
@@ -9096,12 +9859,15 @@
                       "type": "ref",
                       "ref": "LjFYt",
                       "name": "fAll",
+                      "width": "fit_content",
                       "descendants": {
                         "AAKgC": {
                           "enabled": false
                         },
                         "0Ws6v": {
-                          "content": "Todos"
+                          "content": "Todos",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -9110,9 +9876,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "fFuerza",
+                      "width": "fit_content",
+                      "x": 79,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Fuerza"
+                          "content": "Fuerza",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -9121,9 +9891,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "fCardio",
+                      "width": "fit_content",
+                      "x": 162,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Cardio"
+                          "content": "Cardio",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -9132,9 +9906,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "fFlex",
+                      "width": "fit_content",
+                      "x": 243,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Flexibilidad"
+                          "content": "Flexibilidad",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -9143,9 +9921,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "fHiit",
+                      "width": "fit_content",
+                      "x": 354,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "HIIT"
+                          "content": "HIIT",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     }
@@ -10193,7 +10975,69 @@
           "width": 390,
           "x": 0,
           "y": 764,
-          "name": "botNav"
+          "name": "botNav",
+          "descendants": {
+            "zxWDW": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 16,
+              "y": 0
+            },
+            "zxWDW/utIoo": {
+              "x": 33.75,
+              "y": 8
+            },
+            "zxWDW/5mXnE": {
+              "x": 29.75,
+              "y": 34
+            },
+            "zxWDW/WWCet": {
+              "x": 42.75,
+              "y": 52
+            },
+            "cKTV9": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 105.5,
+              "y": 4
+            },
+            "cKTV9/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "cKTV9/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "Mb3eT": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 195,
+              "y": 4
+            },
+            "Mb3eT/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "Mb3eT/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "SgKBV": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 284.5,
+              "y": 4
+            },
+            "SgKBV/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "SgKBV/ENUOf": {
+              "x": 28.75,
+              "y": 34
+            }
+          }
         },
         {
           "type": "frame",
@@ -10304,9 +11148,17 @@
               "ref": "2X64o",
               "width": "fill_container",
               "name": "eSearch",
+              "x": 20,
+              "y": 74,
               "descendants": {
+                "QHa3u": {
+                  "x": 16,
+                  "y": 15
+                },
                 "oCnOg": {
-                  "content": "Buscar rutinas..."
+                  "content": "Buscar rutinas...",
+                  "x": 46,
+                  "y": 15.5
                 }
               }
             },
@@ -10322,12 +11174,15 @@
                   "type": "ref",
                   "ref": "LjFYt",
                   "name": "efAll",
+                  "width": "fit_content",
                   "descendants": {
                     "AAKgC": {
                       "enabled": false
                     },
                     "0Ws6v": {
-                      "content": "Todos"
+                      "content": "Todos",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -10336,9 +11191,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "efF",
+                  "width": "fit_content",
+                  "x": 79,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Fuerza"
+                      "content": "Fuerza",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -10347,9 +11206,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "efC",
+                  "width": "fit_content",
+                  "x": 162,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Cardio"
+                      "content": "Cardio",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -10358,9 +11221,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "efFl",
+                  "width": "fit_content",
+                  "x": 243,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Flexibilidad"
+                      "content": "Flexibilidad",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 }
@@ -10439,12 +11306,19 @@
                   "type": "ref",
                   "ref": "Wc6bH",
                   "name": "emptyBtn",
+                  "width": "fit_content",
+                  "x": 83.5,
+                  "y": 342.5,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "plus"
+                      "iconFontName": "plus",
+                      "x": 24,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "CREAR RUTINA"
+                      "content": "CREAR RUTINA",
+                      "x": 50,
+                      "y": 14.5
                     }
                   }
                 }
@@ -10459,7 +11333,69 @@
           "width": 390,
           "x": 0,
           "y": 764,
-          "name": "eNav"
+          "name": "eNav",
+          "descendants": {
+            "zxWDW": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 16,
+              "y": 0
+            },
+            "zxWDW/utIoo": {
+              "x": 33.75,
+              "y": 8
+            },
+            "zxWDW/5mXnE": {
+              "x": 29.75,
+              "y": 34
+            },
+            "zxWDW/WWCet": {
+              "x": 42.75,
+              "y": 52
+            },
+            "cKTV9": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 105.5,
+              "y": 4
+            },
+            "cKTV9/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "cKTV9/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "Mb3eT": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 195,
+              "y": 4
+            },
+            "Mb3eT/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "Mb3eT/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "SgKBV": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 284.5,
+              "y": 4
+            },
+            "SgKBV/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "SgKBV/ENUOf": {
+              "x": 28.75,
+              "y": 34
+            }
+          }
         }
       ]
     },
@@ -10824,7 +11760,69 @@
           "width": 390,
           "x": 0,
           "y": 764,
-          "name": "lNav"
+          "name": "lNav",
+          "descendants": {
+            "zxWDW": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 16,
+              "y": 0
+            },
+            "zxWDW/utIoo": {
+              "x": 33.75,
+              "y": 8
+            },
+            "zxWDW/5mXnE": {
+              "x": 29.75,
+              "y": 34
+            },
+            "zxWDW/WWCet": {
+              "x": 42.75,
+              "y": 52
+            },
+            "cKTV9": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 105.5,
+              "y": 4
+            },
+            "cKTV9/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "cKTV9/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "Mb3eT": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 195,
+              "y": 4
+            },
+            "Mb3eT/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "Mb3eT/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "SgKBV": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 284.5,
+              "y": 4
+            },
+            "SgKBV/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "SgKBV/ENUOf": {
+              "x": 28.75,
+              "y": 34
+            }
+          }
         }
       ]
     },
@@ -10887,9 +11885,17 @@
               "ref": "2X64o",
               "width": "fill_container",
               "name": "errSearch",
+              "x": 20,
+              "y": 74,
               "descendants": {
+                "QHa3u": {
+                  "x": 16,
+                  "y": 15
+                },
                 "oCnOg": {
-                  "content": "Buscar rutinas..."
+                  "content": "Buscar rutinas...",
+                  "x": 46,
+                  "y": 15.5
                 }
               }
             },
@@ -10905,12 +11911,15 @@
                   "type": "ref",
                   "ref": "LjFYt",
                   "name": "errfAll",
+                  "width": "fit_content",
                   "descendants": {
                     "AAKgC": {
                       "enabled": false
                     },
                     "0Ws6v": {
-                      "content": "Todos"
+                      "content": "Todos",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 },
@@ -10919,9 +11928,13 @@
                   "type": "ref",
                   "ref": "sGgmt",
                   "name": "errfF",
+                  "width": "fit_content",
+                  "x": 79,
                   "descendants": {
                     "Z0r5V": {
-                      "content": "Fuerza"
+                      "content": "Fuerza",
+                      "x": 16,
+                      "y": 10
                     }
                   }
                 }
@@ -11001,12 +12014,19 @@
                   "type": "ref",
                   "ref": "j9zVR",
                   "name": "errRetryBtn",
+                  "width": "fit_content",
+                  "x": 101.5,
+                  "y": 346.5,
                   "descendants": {
                     "6V2Pk": {
-                      "iconFontName": "refresh-cw"
+                      "iconFontName": "refresh-cw",
+                      "x": 24,
+                      "y": 15
                     },
                     "kx8UC": {
-                      "content": "Reintentar"
+                      "content": "Reintentar",
+                      "x": 50,
+                      "y": 14.5
                     }
                   }
                 }
@@ -11021,7 +12041,69 @@
           "width": 390,
           "x": 0,
           "y": 764,
-          "name": "errNav"
+          "name": "errNav",
+          "descendants": {
+            "zxWDW": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 16,
+              "y": 0
+            },
+            "zxWDW/utIoo": {
+              "x": 33.75,
+              "y": 8
+            },
+            "zxWDW/5mXnE": {
+              "x": 29.75,
+              "y": 34
+            },
+            "zxWDW/WWCet": {
+              "x": 42.75,
+              "y": 52
+            },
+            "cKTV9": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 105.5,
+              "y": 4
+            },
+            "cKTV9/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "cKTV9/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "Mb3eT": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 195,
+              "y": 4
+            },
+            "Mb3eT/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "Mb3eT/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "SgKBV": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 284.5,
+              "y": 4
+            },
+            "SgKBV/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "SgKBV/ENUOf": {
+              "x": 28.75,
+              "y": 34
+            }
+          }
         }
       ]
     },
@@ -11461,12 +12543,18 @@
                       "type": "ref",
                       "ref": "Wc6bH",
                       "name": "dNewBtn",
+                      "width": "fit_content",
+                      "x": 96,
                       "descendants": {
                         "QKtcE": {
-                          "iconFontName": "plus"
+                          "iconFontName": "plus",
+                          "x": 24,
+                          "y": 15
                         },
                         "5TiZu": {
-                          "content": "Nueva rutina"
+                          "content": "Nueva rutina",
+                          "x": 50,
+                          "y": 14.5
                         }
                       }
                     }
@@ -11489,8 +12577,14 @@
                   "width": 320,
                   "name": "dSearch",
                   "descendants": {
+                    "QHa3u": {
+                      "x": 16,
+                      "y": 15
+                    },
                     "oCnOg": {
-                      "content": "Buscar rutinas..."
+                      "content": "Buscar rutinas...",
+                      "x": 46,
+                      "y": 15.5
                     }
                   }
                 },
@@ -11505,12 +12599,15 @@
                       "type": "ref",
                       "ref": "LjFYt",
                       "name": "dfAll",
+                      "width": "fit_content",
                       "descendants": {
                         "AAKgC": {
                           "enabled": false
                         },
                         "0Ws6v": {
-                          "content": "Todos"
+                          "content": "Todos",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -11519,9 +12616,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "dfF",
+                      "width": "fit_content",
+                      "x": 79,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Fuerza"
+                          "content": "Fuerza",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -11530,9 +12631,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "dfC",
+                      "width": "fit_content",
+                      "x": 162,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Cardio"
+                          "content": "Cardio",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -11541,9 +12646,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "dfFl",
+                      "width": "fit_content",
+                      "x": 243,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Flexibilidad"
+                          "content": "Flexibilidad",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -11552,9 +12661,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "dfH",
+                      "width": "fit_content",
+                      "x": 354,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "HIIT"
+                          "content": "HIIT",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -11563,9 +12676,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "dfHi",
+                      "width": "fit_content",
+                      "x": 420,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Hipertrofia"
+                          "content": "Hipertrofia",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     }
@@ -13131,12 +14248,19 @@
                   "type": "ref",
                   "ref": "Wc6bH",
                   "name": "hdrBtn",
+                  "width": "fit_content",
+                  "x": 937,
+                  "y": 4,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "plus"
+                      "iconFontName": "plus",
+                      "x": 24,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "Nueva rutina"
+                      "content": "Nueva rutina",
+                      "x": 50,
+                      "y": 14.5
                     }
                   }
                 }
@@ -13157,8 +14281,14 @@
                   "width": 320,
                   "name": "search",
                   "descendants": {
+                    "QHa3u": {
+                      "x": 16,
+                      "y": 15
+                    },
                     "oCnOg": {
-                      "content": "Buscar rutinas..."
+                      "content": "Buscar rutinas...",
+                      "x": 46,
+                      "y": 15.5
                     }
                   }
                 },
@@ -13174,9 +14304,16 @@
                       "type": "ref",
                       "ref": "LjFYt",
                       "name": "c1",
+                      "width": "fit_content",
                       "descendants": {
+                        "AAKgC": {
+                          "x": 16,
+                          "y": 11
+                        },
                         "0Ws6v": {
-                          "content": "Todos"
+                          "content": "Todos",
+                          "x": 36,
+                          "y": 10
                         }
                       }
                     },
@@ -13185,9 +14322,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "c2",
+                      "width": "fit_content",
+                      "x": 99,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Fuerza"
+                          "content": "Fuerza",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -13196,9 +14337,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "c3",
+                      "width": "fit_content",
+                      "x": 182,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Cardio"
+                          "content": "Cardio",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -13207,9 +14352,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "c4",
+                      "width": "fit_content",
+                      "x": 263,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Flexibilidad"
+                          "content": "Flexibilidad",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -13218,9 +14367,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "c5",
+                      "width": "fit_content",
+                      "x": 374,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "HIIT"
+                          "content": "HIIT",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -13229,9 +14382,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "c6",
+                      "width": "fit_content",
+                      "x": 440,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Hipertrofia"
+                          "content": "Hipertrofia",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     }
@@ -13303,12 +14460,19 @@
                   "type": "ref",
                   "ref": "Wc6bH",
                   "name": "emptyBtn",
+                  "width": "fit_content",
+                  "x": 458.5,
+                  "y": 435,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "plus"
+                      "iconFontName": "plus",
+                      "x": 24,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "CREAR RUTINA"
+                      "content": "CREAR RUTINA",
+                      "x": 50,
+                      "y": 14.5
                     }
                   }
                 }
@@ -14616,12 +15780,19 @@
                   "ref": "Wc6bH",
                   "opacity": 0.5,
                   "name": "ehdrBtn",
+                  "width": "fit_content",
+                  "x": 937,
+                  "y": 4,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "plus"
+                      "iconFontName": "plus",
+                      "x": 24,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "Nueva rutina"
+                      "content": "Nueva rutina",
+                      "x": 50,
+                      "y": 14.5
                     }
                   }
                 }
@@ -14643,8 +15814,14 @@
                   "opacity": 0.5,
                   "name": "esearch",
                   "descendants": {
+                    "QHa3u": {
+                      "x": 16,
+                      "y": 15
+                    },
                     "oCnOg": {
-                      "content": "Buscar rutinas..."
+                      "content": "Buscar rutinas...",
+                      "x": 46,
+                      "y": 15.5
                     }
                   }
                 },
@@ -14661,9 +15838,12 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "ec1",
+                      "width": "fit_content",
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Todos"
+                          "content": "Todos",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -14672,9 +15852,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "ec2",
+                      "width": "fit_content",
+                      "x": 79,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Fuerza"
+                          "content": "Fuerza",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     },
@@ -14683,9 +15867,13 @@
                       "type": "ref",
                       "ref": "sGgmt",
                       "name": "ec3",
+                      "width": "fit_content",
+                      "x": 162,
                       "descendants": {
                         "Z0r5V": {
-                          "content": "Cardio"
+                          "content": "Cardio",
+                          "x": 16,
+                          "y": 10
                         }
                       }
                     }
@@ -14757,12 +15945,19 @@
                   "type": "ref",
                   "ref": "j9zVR",
                   "name": "errBtn",
+                  "width": "fit_content",
+                  "x": 476.5,
+                  "y": 435,
                   "descendants": {
                     "6V2Pk": {
-                      "iconFontName": "refresh-cw"
+                      "iconFontName": "refresh-cw",
+                      "x": 24,
+                      "y": 15
                     },
                     "kx8UC": {
-                      "content": "Reintentar"
+                      "content": "Reintentar",
+                      "x": 50,
+                      "y": 14.5
                     }
                   }
                 }
@@ -14861,15 +16056,21 @@
                         20
                       ],
                       "name": "saveBtn",
+                      "width": "fit_content",
+                      "x": 230,
                       "descendants": {
                         "QKtcE": {
                           "iconFontName": "save",
                           "width": 16,
-                          "height": 16
+                          "height": 16,
+                          "x": 20,
+                          "y": 12
                         },
                         "5TiZu": {
                           "content": "Guardar",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "x": 44,
+                          "y": 11
                         }
                       }
                     }
@@ -16144,12 +17345,18 @@
               "ref": "Wc6bH",
               "width": "fill_container",
               "name": "saveMain",
+              "x": 20,
+              "y": 16,
               "descendants": {
                 "QKtcE": {
-                  "iconFontName": "save"
+                  "iconFontName": "save",
+                  "x": 102,
+                  "y": 15
                 },
                 "5TiZu": {
-                  "content": "Guardar cambios"
+                  "content": "Guardar cambios",
+                  "x": 128,
+                  "y": 14.5
                 }
               }
             }
@@ -16914,9 +18121,12 @@
                           "type": "ref",
                           "ref": "nFb3O",
                           "name": "discardBtn",
+                          "width": "fit_content",
                           "descendants": {
                             "U7eXJ": {
-                              "content": "Descartar"
+                              "content": "Descartar",
+                              "x": 24,
+                              "y": 14.5
                             }
                           }
                         },
@@ -16925,12 +18135,18 @@
                           "type": "ref",
                           "ref": "Wc6bH",
                           "name": "saveDesktop",
+                          "width": "fit_content",
+                          "x": 130,
                           "descendants": {
                             "QKtcE": {
-                              "iconFontName": "save"
+                              "iconFontName": "save",
+                              "x": 24,
+                              "y": 15
                             },
                             "5TiZu": {
-                              "content": "Guardar cambios"
+                              "content": "Guardar cambios",
+                              "x": 50,
+                              "y": 14.5
                             }
                           }
                         }
@@ -18525,15 +19741,21 @@
                         16
                       ],
                       "name": "finishBtn",
+                      "width": "fit_content",
+                      "x": 244,
                       "descendants": {
                         "5F8r7": {
                           "iconFontName": "flag",
                           "width": 14,
-                          "height": 14
+                          "height": 14,
+                          "x": 16,
+                          "y": 11
                         },
                         "rYOmV": {
                           "content": "Finalizar",
-                          "fontSize": 13
+                          "fontSize": 13,
+                          "x": 38,
+                          "y": 10
                         }
                       }
                     }
@@ -20019,12 +21241,17 @@
                       "ref": "Wc6bH",
                       "width": "fill_container",
                       "name": "mYes",
+                      "x": 24,
                       "descendants": {
                         "QKtcE": {
-                          "iconFontName": "check"
+                          "iconFontName": "check",
+                          "x": 66.5,
+                          "y": 15
                         },
                         "5TiZu": {
-                          "content": "Sí, actualizar rutina"
+                          "content": "Sí, actualizar rutina",
+                          "x": 92.5,
+                          "y": 14.5
                         }
                       }
                     },
@@ -20034,12 +21261,16 @@
                       "ref": "j9zVR",
                       "width": "fill_container",
                       "name": "mNo",
+                      "x": 24,
+                      "y": 58,
                       "descendants": {
                         "6V2Pk": {
                           "enabled": false
                         },
                         "kx8UC": {
-                          "content": "No, mantener la original"
+                          "content": "No, mantener la original",
+                          "x": 65,
+                          "y": 14.5
                         }
                       }
                     }
@@ -20570,15 +21801,21 @@
                         20
                       ],
                       "name": "dFinish",
+                      "width": "fit_content",
+                      "x": 322,
                       "descendants": {
                         "5F8r7": {
                           "iconFontName": "flag",
                           "width": 16,
-                          "height": 16
+                          "height": 16,
+                          "x": 20,
+                          "y": 12
                         },
                         "rYOmV": {
                           "content": "Finalizar sesión",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "x": 44,
+                          "y": 11
                         }
                       }
                     }
@@ -22789,7 +24026,69 @@
           "ref": "NIwwl",
           "x": 0,
           "y": 764,
-          "name": "botNav"
+          "name": "botNav",
+          "descendants": {
+            "zxWDW": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 16,
+              "y": 0
+            },
+            "zxWDW/utIoo": {
+              "x": 33.75,
+              "y": 8
+            },
+            "zxWDW/5mXnE": {
+              "x": 29.75,
+              "y": 34
+            },
+            "zxWDW/WWCet": {
+              "x": 42.75,
+              "y": 52
+            },
+            "cKTV9": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 105.5,
+              "y": 4
+            },
+            "cKTV9/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "cKTV9/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "Mb3eT": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 195,
+              "y": 4
+            },
+            "Mb3eT/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "Mb3eT/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "SgKBV": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 284.5,
+              "y": 4
+            },
+            "SgKBV/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "SgKBV/ENUOf": {
+              "x": 28.75,
+              "y": 34
+            }
+          }
         }
       ]
     },
@@ -23833,10 +25132,14 @@
                       "name": "ctaAdd",
                       "descendants": {
                         "QKtcE": {
-                          "iconFontName": "circle-plus"
+                          "iconFontName": "circle-plus",
+                          "x": 69.5,
+                          "y": 15
                         },
                         "5TiZu": {
-                          "content": "Añadir a Comida"
+                          "content": "Añadir a Comida",
+                          "x": 95.5,
+                          "y": 14.5
                         }
                       }
                     },
@@ -23846,9 +25149,12 @@
                       "ref": "YhnSg",
                       "width": 56,
                       "name": "ctaRetry",
+                      "x": 294,
                       "descendants": {
                         "xIzSL": {
-                          "iconFontName": "refresh-cw"
+                          "iconFontName": "refresh-cw",
+                          "x": 19,
+                          "y": 15
                         },
                         "5uxtS": {
                           "enabled": false
@@ -24310,12 +25616,17 @@
                       "type": "ref",
                       "ref": "YhnSg",
                       "name": "dAIBtn",
+                      "width": "fit_content",
                       "descendants": {
                         "xIzSL": {
-                          "iconFontName": "camera"
+                          "iconFontName": "camera",
+                          "x": 24,
+                          "y": 15
                         },
                         "5uxtS": {
-                          "content": "Escanear con IA"
+                          "content": "Escanear con IA",
+                          "x": 50,
+                          "y": 14.5
                         }
                       }
                     },
@@ -24324,12 +25635,18 @@
                       "type": "ref",
                       "ref": "Wc6bH",
                       "name": "dAddBtn",
+                      "width": "fit_content",
+                      "x": 195,
                       "descendants": {
                         "QKtcE": {
-                          "iconFontName": "circle-plus"
+                          "iconFontName": "circle-plus",
+                          "x": 24,
+                          "y": 15
                         },
                         "5TiZu": {
-                          "content": "Añadir comida"
+                          "content": "Añadir comida",
+                          "x": 50,
+                          "y": 14.5
                         }
                       }
                     }
@@ -26112,12 +27429,19 @@
                   "type": "ref",
                   "ref": "Wc6bH",
                   "name": "headerBtn",
+                  "width": "fit_content",
+                  "x": 231,
+                  "y": 16,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "circle-plus"
+                      "iconFontName": "circle-plus",
+                      "x": 24,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "Registrar"
+                      "content": "Registrar",
+                      "x": 50,
+                      "y": 14.5
                     }
                   }
                 }
@@ -27193,7 +28517,69 @@
           "ref": "NIwwl",
           "x": 0,
           "y": 764,
-          "name": "botNav"
+          "name": "botNav",
+          "descendants": {
+            "zxWDW": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 16,
+              "y": 0
+            },
+            "zxWDW/utIoo": {
+              "x": 33.75,
+              "y": 8
+            },
+            "zxWDW/5mXnE": {
+              "x": 29.75,
+              "y": 34
+            },
+            "zxWDW/WWCet": {
+              "x": 42.75,
+              "y": 52
+            },
+            "cKTV9": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 105.5,
+              "y": 4
+            },
+            "cKTV9/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "cKTV9/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "Mb3eT": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 195,
+              "y": 4
+            },
+            "Mb3eT/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "Mb3eT/ENUOf": {
+              "x": 31.75,
+              "y": 34
+            },
+            "SgKBV": {
+              "width": "fill_container",
+              "height": "fit_content",
+              "x": 284.5,
+              "y": 4
+            },
+            "SgKBV/untM6": {
+              "x": 33.75,
+              "y": 8
+            },
+            "SgKBV/ENUOf": {
+              "x": 28.75,
+              "y": 34
+            }
+          }
         }
       ]
     },
@@ -27615,12 +29001,17 @@
                       "type": "ref",
                       "ref": "YhnSg",
                       "name": "dExportBtn",
+                      "width": "fit_content",
                       "descendants": {
                         "xIzSL": {
-                          "iconFontName": "download"
+                          "iconFontName": "download",
+                          "x": 24,
+                          "y": 15
                         },
                         "5uxtS": {
-                          "content": "Exportar"
+                          "content": "Exportar",
+                          "x": 50,
+                          "y": 14.5
                         }
                       }
                     },
@@ -27629,12 +29020,18 @@
                       "type": "ref",
                       "ref": "Wc6bH",
                       "name": "dRegBtn",
+                      "width": "fit_content",
+                      "x": 148,
                       "descendants": {
                         "QKtcE": {
-                          "iconFontName": "circle-plus"
+                          "iconFontName": "circle-plus",
+                          "x": 24,
+                          "y": 15
                         },
                         "5TiZu": {
-                          "content": "Registrar medición"
+                          "content": "Registrar medición",
+                          "x": 50,
+                          "y": 14.5
                         }
                       }
                     }
@@ -28910,12 +30307,18 @@
                               "ref": "Wc6bH",
                               "width": "fill_container",
                               "name": "dFormCTA",
+                              "x": 20,
+                              "y": 372,
                               "descendants": {
                                 "QKtcE": {
-                                  "iconFontName": "save"
+                                  "iconFontName": "save",
+                                  "x": 91.5,
+                                  "y": 15
                                 },
                                 "5TiZu": {
-                                  "content": "Registrar medición"
+                                  "content": "Registrar medición",
+                                  "x": 117.5,
+                                  "y": 14.5
                                 }
                               }
                             }
@@ -29954,15 +31357,20 @@
                               "ref": "Wc6bH",
                               "height": 34,
                               "name": "ctaBtn1",
+                              "width": "fit_content",
                               "descendants": {
                                 "QKtcE": {
                                   "iconFontName": "bookmark",
                                   "width": 14,
-                                  "height": 14
+                                  "height": 14,
+                                  "x": 24,
+                                  "y": 10
                                 },
                                 "5TiZu": {
                                   "content": "Guardar rutina",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "x": 46,
+                                  "y": 9.5
                                 }
                               }
                             },
@@ -29972,15 +31380,21 @@
                               "ref": "YhnSg",
                               "height": 34,
                               "name": "ctaBtn2",
+                              "width": "fit_content",
+                              "x": 162,
                               "descendants": {
                                 "xIzSL": {
                                   "iconFontName": "sliders-horizontal",
                                   "width": 14,
-                                  "height": 14
+                                  "height": 14,
+                                  "x": 24,
+                                  "y": 10
                                 },
                                 "5uxtS": {
                                   "content": "Ajustar",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "x": 46,
+                                  "y": 9.5
                                 }
                               }
                             }
@@ -30079,27 +31493,76 @@
               "ref": "NIwwl",
               "width": "fill_container",
               "name": "bnav",
+              "y": 684,
               "descendants": {
+                "zxWDW": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 16,
+                  "y": 4
+                },
                 "zxWDW/utIoo": {
                   "iconFontName": "home",
-                  "fill": "$--gim-text-tertiary"
+                  "fill": "$--gim-text-tertiary",
+                  "x": 33.75,
+                  "y": 8
                 },
                 "zxWDW/5mXnE": {
                   "content": "Home",
                   "fill": "$--gim-text-tertiary",
-                  "fontWeight": "500"
+                  "fontWeight": "500",
+                  "x": 29.75,
+                  "y": 34
                 },
                 "zxWDW/WWCet": {
                   "enabled": false
                 },
+                "cKTV9": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 105.5,
+                  "y": 4
+                },
+                "cKTV9/untM6": {
+                  "x": 33.75,
+                  "y": 8
+                },
+                "cKTV9/ENUOf": {
+                  "x": 31.75,
+                  "y": 34
+                },
+                "Mb3eT": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 195,
+                  "y": 4
+                },
+                "Mb3eT/untM6": {
+                  "x": 33.75,
+                  "y": 8
+                },
+                "Mb3eT/ENUOf": {
+                  "x": 31.75,
+                  "y": 34
+                },
+                "SgKBV": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 284.5,
+                  "y": 4
+                },
                 "SgKBV/untM6": {
                   "iconFontName": "message-circle",
-                  "fill": "$--gim-accent"
+                  "fill": "$--gim-accent",
+                  "x": 33.75,
+                  "y": 8
                 },
                 "SgKBV/ENUOf": {
                   "content": "Chat IA",
                   "fill": "$--gim-accent",
-                  "fontWeight": "700"
+                  "fontWeight": "700",
+                  "x": 25.25,
+                  "y": 34
                 }
               }
             }
@@ -30329,12 +31792,18 @@
                   "ref": "Wc6bH",
                   "width": "fill_container",
                   "name": "ctaBtn",
+                  "x": 40,
+                  "y": 428,
                   "descendants": {
                     "QKtcE": {
-                      "iconFontName": "settings"
+                      "iconFontName": "settings",
+                      "x": 81.5,
+                      "y": 15
                     },
                     "5TiZu": {
-                      "content": "Ir a Ajustes BYOK"
+                      "content": "Ir a Ajustes BYOK",
+                      "x": 107.5,
+                      "y": 14.5
                     }
                   }
                 },
@@ -30356,25 +31825,74 @@
               "ref": "NIwwl",
               "width": "fill_container",
               "name": "bnav2",
+              "y": 684,
               "descendants": {
+                "zxWDW": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 16,
+                  "y": 4
+                },
                 "zxWDW/utIoo": {
-                  "fill": "$--gim-text-tertiary"
+                  "fill": "$--gim-text-tertiary",
+                  "x": 33.75,
+                  "y": 8
                 },
                 "zxWDW/5mXnE": {
                   "fill": "$--gim-text-tertiary",
-                  "fontWeight": "500"
+                  "fontWeight": "500",
+                  "x": 29.75,
+                  "y": 34
                 },
                 "zxWDW/WWCet": {
                   "enabled": false
                 },
+                "cKTV9": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 105.5,
+                  "y": 4
+                },
+                "cKTV9/untM6": {
+                  "x": 33.75,
+                  "y": 8
+                },
+                "cKTV9/ENUOf": {
+                  "x": 31.75,
+                  "y": 34
+                },
+                "Mb3eT": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 195,
+                  "y": 4
+                },
+                "Mb3eT/untM6": {
+                  "x": 33.75,
+                  "y": 8
+                },
+                "Mb3eT/ENUOf": {
+                  "x": 31.75,
+                  "y": 34
+                },
+                "SgKBV": {
+                  "width": "fill_container",
+                  "height": "fit_content",
+                  "x": 284.5,
+                  "y": 4
+                },
                 "SgKBV/untM6": {
                   "iconFontName": "message-circle",
-                  "fill": "$--gim-accent"
+                  "fill": "$--gim-accent",
+                  "x": 33.75,
+                  "y": 8
                 },
                 "SgKBV/ENUOf": {
                   "content": "Chat IA",
                   "fill": "$--gim-accent",
-                  "fontWeight": "700"
+                  "fontWeight": "700",
+                  "x": 25.25,
+                  "y": 34
                 }
               }
             }
@@ -31710,15 +33228,20 @@
                                   "ref": "Wc6bH",
                                   "height": 36,
                                   "name": "cta1",
+                                  "width": "fit_content",
                                   "descendants": {
                                     "QKtcE": {
                                       "iconFontName": "bookmark",
                                       "width": 15,
-                                      "height": 15
+                                      "height": 15,
+                                      "x": 24,
+                                      "y": 10.5
                                     },
                                     "5TiZu": {
                                       "content": "Guardar rutina",
-                                      "fontSize": 13
+                                      "fontSize": 13,
+                                      "x": 47,
+                                      "y": 10
                                     }
                                   }
                                 },
@@ -31728,15 +33251,21 @@
                                   "ref": "YhnSg",
                                   "height": 36,
                                   "name": "cta2",
+                                  "width": "fit_content",
+                                  "x": 172,
                                   "descendants": {
                                     "xIzSL": {
                                       "iconFontName": "sliders-horizontal",
                                       "width": 15,
-                                      "height": 15
+                                      "height": 15,
+                                      "x": 24,
+                                      "y": 10.5
                                     },
                                     "5uxtS": {
                                       "content": "Personalizar",
-                                      "fontSize": 13
+                                      "fontSize": 13,
+                                      "x": 47,
+                                      "y": 10
                                     }
                                   }
                                 }
@@ -32394,12 +33923,18 @@
                   "ref": "YhnSg",
                   "width": "fill_container",
                   "name": "addPrefBtn",
+                  "x": 20,
+                  "y": 832,
                   "descendants": {
                     "xIzSL": {
-                      "iconFontName": "circle-plus"
+                      "iconFontName": "circle-plus",
+                      "x": 52,
+                      "y": 15
                     },
                     "5uxtS": {
-                      "content": "Añadir preferencia"
+                      "content": "Añadir preferencia",
+                      "x": 78,
+                      "y": 14.5
                     }
                   }
                 }
@@ -32765,11 +34300,15 @@
                             "xIzSL": {
                               "iconFontName": "refresh-cw",
                               "width": 14,
-                              "height": 14
+                              "height": 14,
+                              "x": 37,
+                              "y": 12
                             },
                             "5uxtS": {
                               "content": "Rotar Key",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "x": 59,
+                              "y": 11
                             }
                           }
                         },
@@ -32780,15 +34319,20 @@
                           "width": "fill_container",
                           "height": 38,
                           "name": "deleteBtn",
+                          "x": 163,
                           "descendants": {
                             "5F8r7": {
                               "iconFontName": "trash-2",
                               "width": 14,
-                              "height": 14
+                              "height": 14,
+                              "x": 41.5,
+                              "y": 12
                             },
                             "rYOmV": {
                               "content": "Eliminar",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "x": 63.5,
+                              "y": 11
                             }
                           }
                         }
@@ -33015,11 +34559,15 @@
                             "xIzSL": {
                               "iconFontName": "refresh-cw",
                               "width": 14,
-                              "height": 14
+                              "height": 14,
+                              "x": 37,
+                              "y": 12
                             },
                             "5uxtS": {
                               "content": "Rotar Key",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "x": 59,
+                              "y": 11
                             }
                           }
                         },
@@ -33030,15 +34578,20 @@
                           "width": "fill_container",
                           "height": 38,
                           "name": "oaiDelete",
+                          "x": 163,
                           "descendants": {
                             "5F8r7": {
                               "iconFontName": "trash-2",
                               "width": 14,
-                              "height": 14
+                              "height": 14,
+                              "x": 41.5,
+                              "y": 12
                             },
                             "rYOmV": {
                               "content": "Eliminar",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "x": 63.5,
+                              "y": 11
                             }
                           }
                         }
@@ -33183,15 +34736,26 @@
                       "ref": "5aClI",
                       "width": "fill_container",
                       "name": "gAddInput",
+                      "height": "fit_content",
+                      "x": 16,
+                      "y": 66,
                       "descendants": {
                         "qgsmB": {
                           "content": "API Key"
                         },
+                        "D29g7": {
+                          "width": "fill_container",
+                          "y": 22
+                        },
                         "xhOaY": {
-                          "iconFontName": "key-round"
+                          "iconFontName": "key-round",
+                          "x": 16,
+                          "y": 15
                         },
                         "cFOBR": {
-                          "content": "AIza..."
+                          "content": "AIza...",
+                          "x": 46,
+                          "y": 15.5
                         }
                       }
                     },
@@ -33202,15 +34766,21 @@
                       "width": "fill_container",
                       "height": 40,
                       "name": "gAddBtn",
+                      "x": 16,
+                      "y": 150,
                       "descendants": {
                         "QKtcE": {
                           "iconFontName": "shield-check",
                           "width": 15,
-                          "height": 15
+                          "height": 15,
+                          "x": 90.5,
+                          "y": 12.5
                         },
                         "5TiZu": {
                           "content": "Verificar y guardar",
-                          "fontSize": 13
+                          "fontSize": 13,
+                          "x": 113.5,
+                          "y": 12
                         }
                       }
                     }
@@ -33744,12 +35314,17 @@
                       "ref": "MmiBT",
                       "width": "fill_container",
                       "name": "deleteBtn",
+                      "x": 24,
                       "descendants": {
                         "5F8r7": {
-                          "iconFontName": "trash-2"
+                          "iconFontName": "trash-2",
+                          "x": 76,
+                          "y": 15
                         },
                         "rYOmV": {
-                          "content": "Sí, eliminar clave"
+                          "content": "Sí, eliminar clave",
+                          "x": 102,
+                          "y": 14.5
                         }
                       }
                     },
@@ -33759,12 +35334,16 @@
                       "ref": "j9zVR",
                       "width": "fill_container",
                       "name": "cancelBtn",
+                      "x": 24,
+                      "y": 60,
                       "descendants": {
                         "6V2Pk": {
                           "enabled": false
                         },
                         "kx8UC": {
-                          "content": "Cancelar"
+                          "content": "Cancelar",
+                          "x": 115,
+                          "y": 14.5
                         }
                       }
                     }
@@ -34493,11 +36072,15 @@
                                 "xIzSL": {
                                   "iconFontName": "refresh-cw",
                                   "width": 14,
-                                  "height": 14
+                                  "height": 14,
+                                  "x": 48.33333333333333,
+                                  "y": 12
                                 },
                                 "5uxtS": {
                                   "content": "Rotar",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "x": 70.33333333333333,
+                                  "y": 11
                                 }
                               }
                             },
@@ -34508,15 +36091,20 @@
                               "width": "fill_container",
                               "height": 38,
                               "name": "dAnthDel",
+                              "x": 160.66666666666666,
                               "descendants": {
                                 "5F8r7": {
                                   "iconFontName": "trash-2",
                                   "width": 14,
-                                  "height": 14
+                                  "height": 14,
+                                  "x": 40.33333333333333,
+                                  "y": 12
                                 },
                                 "rYOmV": {
                                   "content": "Eliminar",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "x": 62.33333333333333,
+                                  "y": 11
                                 }
                               }
                             }
@@ -34743,11 +36331,15 @@
                                 "xIzSL": {
                                   "iconFontName": "refresh-cw",
                                   "width": 14,
-                                  "height": 14
+                                  "height": 14,
+                                  "x": 48.33333333333333,
+                                  "y": 12
                                 },
                                 "5uxtS": {
                                   "content": "Rotar",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "x": 70.33333333333333,
+                                  "y": 11
                                 }
                               }
                             },
@@ -34758,15 +36350,20 @@
                               "width": "fill_container",
                               "height": 38,
                               "name": "dOaiDel",
+                              "x": 160.66666666666666,
                               "descendants": {
                                 "5F8r7": {
                                   "iconFontName": "trash-2",
                                   "width": 14,
-                                  "height": 14
+                                  "height": 14,
+                                  "x": 40.33333333333333,
+                                  "y": 12
                                 },
                                 "rYOmV": {
                                   "content": "Eliminar",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "x": 62.33333333333333,
+                                  "y": 11
                                 }
                               }
                             }
@@ -34911,15 +36508,26 @@
                           "ref": "5aClI",
                           "width": "fill_container",
                           "name": "dGInput",
+                          "height": "fit_content",
+                          "x": 20,
+                          "y": 76,
                           "descendants": {
                             "qgsmB": {
                               "content": "API Key"
                             },
+                            "D29g7": {
+                              "width": "fill_container",
+                              "y": 22
+                            },
                             "xhOaY": {
-                              "iconFontName": "key-round"
+                              "iconFontName": "key-round",
+                              "x": 16,
+                              "y": 15
                             },
                             "cFOBR": {
-                              "content": "AIza..."
+                              "content": "AIza...",
+                              "x": 46,
+                              "y": 15.5
                             }
                           }
                         },
@@ -34930,15 +36538,21 @@
                           "width": "fill_container",
                           "height": 40,
                           "name": "dGAddBtn",
+                          "x": 20,
+                          "y": 162,
                           "descendants": {
                             "QKtcE": {
                               "iconFontName": "shield-check",
                               "width": 16,
-                              "height": 16
+                              "height": 16,
+                              "x": 83.66666666666666,
+                              "y": 12
                             },
                             "5TiZu": {
                               "content": "Verificar y guardar",
-                              "fontSize": 14
+                              "fontSize": 14,
+                              "x": 107.66666666666666,
+                              "y": 11
                             }
                           }
                         }
@@ -35371,6 +36985,34 @@
           ]
         }
       ]
+    },
+    {
+      "type": "rectangle",
+      "id": "1TPy2",
+      "x": 21915,
+      "y": 2754,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "press-banca-female.webp",
+        "mode": "fill"
+      },
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "type": "rectangle",
+      "id": "XGOEw",
+      "x": 23164,
+      "y": 2754,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "press-banca-male.webp",
+        "mode": "fill"
+      },
+      "width": 1024,
+      "height": 1024
     }
   ],
   "themes": {
