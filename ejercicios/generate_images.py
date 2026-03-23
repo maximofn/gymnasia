@@ -58,6 +58,8 @@ EXERCISE_PROMPTS = {
     "prensa-horizontal": ("a horizontal seated leg press machine, sitting upright pushing a vertical platform forward with both legs, knees bent at 90 degrees", "3/4 diagonal view"),
     "prensa-vertical": ("a vertical leg press machine, lying flat on back on the floor pushing a weighted plate-loaded platform straight up overhead with both feet, legs extending vertically upward", "side view"),
     "femoral-de-pie": ("a standing single-leg hamstring curl machine, standing upright with chest leaning on pad, curling one leg back bringing heel toward glute against a roller pad", "3/4 diagonal view from behind"),
+    "femoral-tumbado": ("a prone lying leg curl machine, lying face down on a bench curling both heels toward glutes against a roller pad, gripping front handles", "side view"),
+    "femoral-sentado": ("a seated leg curl machine, sitting upright with back against pad, legs extended over a roller, curling heels down and back under the seat", "side view"),
     "press-inclinado-unilateral-maquina": ("a seated single-arm incline chest press on a machine, pushing upward and forward with one arm on an inclined trajectory", "3/4 diagonal view"),
     "extensiones-triceps-barra": ("a standing tricep straight bar pushdown on a cable machine, gripping a straight bar pushing down", "3/4 diagonal view"),
 }

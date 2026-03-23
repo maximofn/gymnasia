@@ -87,6 +87,32 @@
     "instructions": "De pie en la máquina de femoral, apoya el pecho en el soporte y sujétate de las asas laterales. Coloca el tobillo detrás del rodillo acolchado. Flexiona la rodilla llevando el talón hacia el glúteo, apretando el isquiotibial en la parte alta del movimiento. Baja de forma controlada. Completa las repeticiones con una pierna antes de cambiar a la otra."
   },
   {
+    "id": "femoral-sentado",
+    "name": "Femoral sentado",
+    "image_male": "images/femoral-sentado-male.webp",
+    "image_female": "images/femoral-sentado-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "máquina",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en la máquina de femoral con la espalda apoyada en el respaldo y las piernas extendidas sobre el rodillo superior. Ajusta la almohadilla sobre los muslos para sujetarte. Flexiona las rodillas llevando los talones hacia abajo y atrás, apretando los isquiotibiales. Vuelve de forma controlada a la posición inicial."
+  },
+  {
+    "id": "femoral-tumbado",
+    "name": "Femoral tumbado",
+    "image_male": "images/femoral-tumbado-male.webp",
+    "image_female": "images/femoral-tumbado-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "máquina",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca abajo en la máquina de femoral con los tobillos debajo del rodillo acolchado y las rodillas justo al borde del banco. Sujétate de las asas frontales. Flexiona las rodillas llevando los talones hacia los glúteos, apretando los isquiotibiales en la parte alta. Baja de forma controlada."
+  },
+  {
     "id": "jalon-poleas",
     "name": "Jalón en máquina de poleas",
     "image_male": "images/jalon-poleas-male.webp",

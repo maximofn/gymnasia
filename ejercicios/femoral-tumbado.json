@@ -1,0 +1,11 @@
+{
+  "id": "femoral-tumbado",
+  "name": "Femoral tumbado",
+  "image_male": "images/femoral-tumbado-male.webp",
+  "image_female": "images/femoral-tumbado-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos"],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca abajo en la máquina de femoral con los tobillos debajo del rodillo acolchado y las rodillas justo al borde del banco. Sujétate de las asas frontales. Flexiona las rodillas llevando los talones hacia los glúteos, apretando los isquiotibiales en la parte alta. Baja de forma controlada."
+}
