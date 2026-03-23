@@ -28,7 +28,7 @@ import {
 import { mobileTheme } from "./theme";
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training";
 
 type ExerciseSeries = {
   id: string;
@@ -728,6 +728,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "diet", label: "Dieta" },
   { key: "provider", label: "Proveedor IA" },
   { key: "memory", label: "Memoria" },
+  { key: "training", label: "Entreno" },
 ];
 
 function createDefaultDietSettings(): DietSettings {
@@ -12617,6 +12618,142 @@ export default function App() {
                       <Text style={{ color: "#ffb5b5", fontWeight: "700" }}>Borrar toda la memoria</Text>
                     </Pressable>
                   ) : null}
+                </View>
+              ) : null}
+
+              {settingsTab === "training" ? (
+                <View style={{ gap: 16 }}>
+                  {/* Routines section */}
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: mobileTheme.radius.lg,
+                      padding: 12,
+                      gap: 10,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                      Rutinas ({store.templates.length})
+                    </Text>
+                    {store.templates.length === 0 ? (
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                        No hay rutinas creadas.
+                      </Text>
+                    ) : (
+                      store.templates.map((tpl) => {
+                        const catLabel = TRAINING_CATEGORY_EDIT_OPTIONS.find((o) => o.key === tpl.category)?.label ?? "Sin categoría";
+                        return (
+                          <View
+                            key={tpl.id}
+                            style={{
+                              borderWidth: 1,
+                              borderColor: mobileTheme.color.borderSubtle,
+                              borderRadius: mobileTheme.radius.md,
+                              padding: 10,
+                              gap: 6,
+                            }}
+                          >
+                            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 14 }}>
+                                {tpl.name}
+                              </Text>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                                {catLabel}
+                              </Text>
+                            </View>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                              {tpl.exercises.length} ejercicio{tpl.exercises.length !== 1 ? "s" : ""}
+                              {tpl.duration_minutes ? ` · ${tpl.duration_minutes} min` : ""}
+                            </Text>
+                            {tpl.exercises.length > 0 ? (
+                              <View style={{ gap: 4, marginTop: 2 }}>
+                                {tpl.exercises.map((ex, i) => {
+                                  const totalSeries = ex.series?.length ?? ex.sets?.length ?? 0;
+                                  return (
+                                    <View key={ex.id} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                                      {ex.image_uri ? (
+                                        <Image
+                                          source={{ uri: ex.image_uri }}
+                                          style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: "#1a1a1a" }}
+                                        />
+                                      ) : (
+                                        <View style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: "#1a1a1a", alignItems: "center", justifyContent: "center" }}>
+                                          <Text style={{ color: "#555", fontSize: 10 }}>{i + 1}</Text>
+                                        </View>
+                                      )}
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, flex: 1 }} numberOfLines={1}>
+                                        {ex.name ?? `Ejercicio ${i + 1}`}
+                                      </Text>
+                                      <Text style={{ color: mobileTheme.color.textTertiary, fontSize: 11 }}>
+                                        {totalSeries}×
+                                      </Text>
+                                    </View>
+                                  );
+                                })}
+                              </View>
+                            ) : null}
+                          </View>
+                        );
+                      })
+                    )}
+                  </View>
+
+                  {/* Exercises repository section */}
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: mobileTheme.radius.lg,
+                      padding: 12,
+                      gap: 10,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                      Ejercicios ({exercisesRepo.length})
+                    </Text>
+                    {exercisesRepo.length === 0 ? (
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                        No se han cargado ejercicios del repositorio.
+                      </Text>
+                    ) : (
+                      exercisesRepo.map((ex) => (
+                        <View
+                          key={ex.id}
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 10,
+                            paddingVertical: 4,
+                            borderBottomWidth: 1,
+                            borderBottomColor: mobileTheme.color.borderSubtle,
+                          }}
+                        >
+                          {ex.image_male ? (
+                            <Image
+                              source={{ uri: ex.image_male }}
+                              style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a" }}
+                            />
+                          ) : (
+                            <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a" }} />
+                          )}
+                          <View style={{ flex: 1 }}>
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
+                              {ex.name}
+                            </Text>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                              {ex.muscle_group}{ex.equipment ? ` · ${ex.equipment}` : ""}
+                            </Text>
+                          </View>
+                          <Text style={{ color: mobileTheme.color.textTertiary, fontSize: 10 }}>
+                            {ex.difficulty}
+                          </Text>
+                        </View>
+                      ))
+                    )}
+                  </View>
                 </View>
               ) : null}
             </View>
