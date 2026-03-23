@@ -1,0 +1,11 @@
+{
+  "id": "remo-polea",
+  "name": "Remo en máquina de polea",
+  "image_male": "images/remo-polea-male.webp",
+  "image_female": "images/remo-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en la máquina de polea baja con los pies apoyados en la plataforma y las rodillas ligeramente flexionadas. Agarra el agarre con ambas manos y tira hacia el abdomen manteniendo la espalda recta, apretando las escápulas en la parte final del movimiento. Vuelve de forma controlada extendiendo los brazos sin redondear la espalda."
+}
