@@ -3131,6 +3131,7 @@ export default function App() {
   const [quadricepsInput, setQuadricepsInput] = useState("");
   const [calfInput, setCalfInput] = useState("");
   const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("diet");
+  const [selectedExerciseDetail, setSelectedExerciseDetail] = useState<ExerciseRepoEntry | null>(null);
   const [exercisesRepo, setExercisesRepo] = useState<ExerciseRepoEntry[]>([]);
   const [exercisePickerOpen, setExercisePickerOpen] = useState(false);
   const [exercisePickerSearch, setExercisePickerSearch] = useState("");
@@ -12720,8 +12721,10 @@ export default function App() {
                       </Text>
                     ) : (
                       exercisesRepo.map((ex) => (
-                        <View
+                        <Pressable
                           key={ex.id}
+                          activeOpacity={0.7}
+                          onPress={() => setSelectedExerciseDetail(ex)}
                           style={{
                             flexDirection: "row",
                             alignItems: "center",
@@ -12744,16 +12747,94 @@ export default function App() {
                               {ex.name}
                             </Text>
                             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                              {ex.muscle_group}{ex.equipment ? ` · ${ex.equipment}` : ""}
+                              {ex.equipment || ""}
                             </Text>
                           </View>
                           <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
-                            {ex.difficulty}
+                            {ex.muscle_group}
                           </Text>
-                        </View>
+                        </Pressable>
                       ))
                     )}
                   </View>
+                </View>
+              ) : null}
+
+              {/* Exercise detail overlay */}
+              {selectedExerciseDetail ? (
+                <View
+                  style={{
+                    backgroundColor: mobileTheme.color.cardBg,
+                    borderRadius: 12,
+                    padding: 16,
+                    gap: 12,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                  }}
+                >
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>
+                      {selectedExerciseDetail.name}
+                    </Text>
+                    <Pressable onPress={() => setSelectedExerciseDetail(null)} style={{ padding: 4 }}>
+                      <Feather name="x" size={20} color={mobileTheme.color.textSecondary} />
+                    </Pressable>
+                  </View>
+
+                  {selectedExerciseDetail.image_male ? (
+                    <Image
+                      source={{ uri: `${EXERCISES_REPO_BASE_URL}/${selectedExerciseDetail.image_male}` }}
+                      style={{ width: "100%", height: 180, borderRadius: 10, backgroundColor: "#1a1a1a" }}
+                      resizeMode="cover"
+                    />
+                  ) : null}
+
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                    {[
+                      selectedExerciseDetail.muscle_group,
+                      ...(selectedExerciseDetail.secondary_muscles || []),
+                    ].map((m) => (
+                      <View
+                        key={m}
+                        style={{
+                          backgroundColor: mobileTheme.color.accent + "22",
+                          paddingHorizontal: 8,
+                          paddingVertical: 3,
+                          borderRadius: 6,
+                        }}
+                      >
+                        <Text style={{ color: mobileTheme.color.accent, fontSize: 11, fontWeight: "600" }}>{m}</Text>
+                      </View>
+                    ))}
+                    <View
+                      style={{
+                        backgroundColor: "#ffffff15",
+                        paddingHorizontal: 8,
+                        paddingVertical: 3,
+                        borderRadius: 6,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                        {selectedExerciseDetail.equipment}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        backgroundColor: "#ffffff15",
+                        paddingHorizontal: 8,
+                        paddingVertical: 3,
+                        borderRadius: 6,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                        {selectedExerciseDetail.difficulty}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
+                    {selectedExerciseDetail.instructions}
+                  </Text>
                 </View>
               ) : null}
             </View>
