@@ -12686,7 +12686,7 @@ export default function App() {
                                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, flex: 1 }} numberOfLines={1}>
                                         {ex.name ?? `Ejercicio ${i + 1}`}
                                       </Text>
-                                      <Text style={{ color: mobileTheme.color.textTertiary, fontSize: 11 }}>
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
                                         {totalSeries}×
                                       </Text>
                                     </View>
@@ -12733,7 +12733,7 @@ export default function App() {
                         >
                           {ex.image_male ? (
                             <Image
-                              source={{ uri: ex.image_male }}
+                              source={{ uri: `${EXERCISES_REPO_BASE_URL}/${ex.image_male}` }}
                               style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a" }}
                             />
                           ) : (
@@ -12747,7 +12747,7 @@ export default function App() {
                               {ex.muscle_group}{ex.equipment ? ` · ${ex.equipment}` : ""}
                             </Text>
                           </View>
-                          <Text style={{ color: mobileTheme.color.textTertiary, fontSize: 10 }}>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
                             {ex.difficulty}
                           </Text>
                         </View>
