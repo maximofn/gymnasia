@@ -1,0 +1,11 @@
+{
+  "id": "prensa-horizontal",
+  "name": "Prensa horizontal",
+  "image_male": "images/prensa-horizontal-male.webp",
+  "image_female": "images/prensa-horizontal-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales"],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en la prensa horizontal con la espalda apoyada en el respaldo. Coloca los pies en la plataforma a la anchura de los hombros. Empuja la plataforma hacia delante extendiendo las piernas sin bloquear las rodillas. Vuelve de forma controlada flexionando las rodillas hasta que formen un ángulo de 90°."
+}

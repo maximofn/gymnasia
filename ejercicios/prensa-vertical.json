@@ -1,0 +1,11 @@
+{
+  "id": "prensa-vertical",
+  "name": "Prensa vertical",
+  "image_male": "images/prensa-vertical-male.webp",
+  "image_female": "images/prensa-vertical-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales"],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Acuéstate en la prensa vertical con la espalda apoyada en la base. Coloca los pies en la plataforma superior a la anchura de los hombros. Desbloquea los seguros y baja la plataforma flexionando las rodillas hasta que formen un ángulo de 90°. Empuja hacia arriba extendiendo las piernas sin bloquear las rodillas por completo."
+}
