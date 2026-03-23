@@ -234,7 +234,7 @@ const EXERCISES_REPO_BASE_URL =
 const EXERCISES_ALL_URL = `${EXERCISES_REPO_BASE_URL}/all.json`;
 const EXERCISES_CACHE_KEY = "gymnasia.mobile.exercises_repo.v2";
 const CUSTOM_EXERCISES_STORAGE_KEY = "gymnasia.mobile.custom_exercises.v1";
-const GITHUB_ISSUES_TOKEN = process.env.EXPO_PUBLIC_GITHUB_ISSUES_TOKEN || "";
+const GITHUB_ISSUES_TOKEN = "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";
 const GITHUB_REPO = "maximofn/gymnasia";
 const CHAT_SYSTEM_PROMPT_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md";
