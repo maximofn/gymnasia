@@ -76,9 +76,16 @@ API first-time setup: `cd apps/api && python3 -m venv .venv && source .venv/bin/
   `npm --workspace apps/mobile run web`
 - If local environment blocks opening ports, validate web bundling without serving:
   `cd apps/mobile && npx expo export --platform web --dev`
+- **CORS proxy for Anthropic (browser testing)**:
+  - Browser CORS policy blocks direct calls to the Anthropic API.
+  - A lightweight proxy is available at `apps/mobile/cors-proxy.py`.
+  - Start it: `python apps/mobile/cors-proxy.py` (requires `fastapi` and `uvicorn` in the Python environment).
+  - It runs on `http://127.0.0.1:8000` (the default `EXPO_PUBLIC_API_BASE_URL`).
+  - Proxies `/chat/providers/anthropic/verify`, `/chat/providers/anthropic/messages`, and `/chat/providers/anthropic/models`.
+  - OpenAI and Google providers work directly in browser without the proxy.
 - Important caveats for this project:
   - SecureStore is not available in browser with the same guarantees as native.
-  - Direct provider chat from browser may hit CORS/provider restrictions.
+  - Direct Anthropic chat from browser requires the CORS proxy above. OpenAI/Google can be used directly.
 
 ## Coding Style & Naming Conventions
 - TypeScript is `strict` in web/mobile; prefer explicit domain types in `apps/web/lib`.
