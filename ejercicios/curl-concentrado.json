@@ -1,0 +1,11 @@
+{
+  "id": "curl-concentrado",
+  "name": "Curl concentrado",
+  "image_male": "images/curl-concentrado-male.webp",
+  "image_female": "images/curl-concentrado-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con las piernas abiertas. Apoya el codo del brazo que trabaja en la cara interna del muslo, con una mancuerna en la mano y el brazo extendido. Flexiona el codo llevando la mancuerna hacia el hombro, apretando el bíceps en la parte alta. Baja de forma controlada. Completa las repeticiones antes de cambiar de brazo."
+}
