@@ -62,6 +62,20 @@
     "instructions": "Acuéstate en un banco plano con los pies firmes en el suelo. Agarra la barra con las manos algo más abiertas que el ancho de los hombros. Baja la barra de forma controlada hasta el pecho y empuja hacia arriba hasta extender los brazos."
   },
   {
+    "id": "press-inclinado-unilateral-maquina",
+    "name": "Press inclinado unilateral sentado en máquina",
+    "image_male": "images/press-inclinado-unilateral-maquina-male.webp",
+    "image_female": "images/press-inclinado-unilateral-maquina-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombro anterior"
+    ],
+    "equipment": "máquina",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en la máquina de press inclinado con la espalda apoyada en el respaldo. Agarra una de las asas con una mano y empuja hacia arriba y adelante siguiendo la trayectoria de la máquina hasta extender el brazo. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
+  },
+  {
     "id": "press-mancuernas",
     "name": "Press plano con mancuernas",
     "image_male": "images/press-mancuernas-male.webp",
