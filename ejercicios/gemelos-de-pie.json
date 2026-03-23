@@ -1,0 +1,11 @@
+{
+  "id": "gemelos-de-pie",
+  "name": "Gemelos de pie en máquina",
+  "image_male": "images/gemelos-de-pie-male.webp",
+  "image_female": "images/gemelos-de-pie-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["sóleo"],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Colócate de pie en la máquina de gemelos con las almohadillas sobre los hombros. Apoya la punta de los pies en la plataforma con los talones colgando. Eleva los talones lo más alto posible contrayendo los gemelos. Baja de forma controlada hasta sentir un estiramiento completo."
+}

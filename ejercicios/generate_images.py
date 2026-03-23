@@ -63,6 +63,7 @@ EXERCISE_PROMPTS = {
     "press-inclinado-unilateral-maquina": ("a seated single-arm incline chest press on a machine, pushing upward and forward with one arm on an inclined trajectory", "3/4 diagonal view"),
     "extensiones-triceps-barra": ("a standing tricep straight bar pushdown on a cable machine, gripping a straight bar pushing down", "3/4 diagonal view"),
     "gemelos-sentado": ("a seated calf raise machine, person sitting with a pad on top of the knees, feet on a platform with heels hanging off the edge, raising the heels upward by contracting the calves", "3/4 diagonal view"),
+    "gemelos-de-pie": ("a standing calf raise machine, person standing upright with shoulder pads pressing down on the shoulders, toes on a platform with heels hanging off the edge, rising up on tiptoes by contracting the calves", "3/4 diagonal view from behind"),
 }
 
 
