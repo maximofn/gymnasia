@@ -1,0 +1,11 @@
+{
+  "id": "curl-mancuernas-sentado",
+  "name": "Curl con mancuernas sentado",
+  "image_male": "images/curl-mancuernas-sentado-male.webp",
+  "image_female": "images/curl-mancuernas-sentado-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco inclinado con la espalda apoyada y una mancuerna en cada mano, los brazos extendidos a los lados del cuerpo. Flexiona ambos codos llevando las mancuernas hacia los hombros, apretando los bíceps en la parte alta del movimiento. Baja de forma controlada."
+}

@@ -39,17 +39,17 @@
     "instructions": "Siéntate en un banco con las piernas abiertas. Apoya el codo del brazo que trabaja en la cara interna del muslo, con una mancuerna en la mano y el brazo extendido. Flexiona el codo llevando la mancuerna hacia el hombro, apretando el bíceps en la parte alta. Baja de forma controlada. Completa las repeticiones antes de cambiar de brazo."
   },
   {
-    "id": "curl-unilateral-mancuerna-sentado",
-    "name": "Curl unilateral con mancuerna sentado",
-    "image_male": "images/curl-unilateral-mancuerna-sentado-male.webp",
-    "image_female": "images/curl-unilateral-mancuerna-sentado-female.webp",
+    "id": "curl-mancuernas-sentado",
+    "name": "Curl con mancuernas sentado",
+    "image_male": "images/curl-mancuernas-sentado-male.webp",
+    "image_female": "images/curl-mancuernas-sentado-female.webp",
     "muscle_group": "bíceps",
     "secondary_muscles": [
       "antebrazo"
     ],
     "equipment": "mancuernas",
     "difficulty": "beginner",
-    "instructions": "Siéntate en un banco con la espalda recta y una mancuerna en una mano, el brazo extendido a un lado del cuerpo. Flexiona el codo llevando la mancuerna hacia el hombro, apretando el bíceps en la parte alta del movimiento. Baja de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
+    "instructions": "Siéntate en un banco inclinado con la espalda apoyada y una mancuerna en cada mano, los brazos extendidos a los lados del cuerpo. Flexiona ambos codos llevando las mancuernas hacia los hombros, apretando los bíceps en la parte alta del movimiento. Baja de forma controlada."
   },
   {
     "id": "extensiones-triceps-barra",
