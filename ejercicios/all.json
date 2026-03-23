@@ -102,6 +102,20 @@
     "instructions": "Siéntate en la máquina de jalón con la espalda recta y los pies apoyados. Agarra el asa con una mano y tira hacia abajo llevando el codo hacia la cadera, apretando el dorsal en la parte baja del movimiento. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
   },
   {
+    "id": "prensa-inclinada",
+    "name": "Prensa inclinada",
+    "image_male": "images/prensa-inclinada-male.webp",
+    "image_female": "images/prensa-inclinada-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "glúteos",
+      "isquiotibiales"
+    ],
+    "equipment": "máquina",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en la prensa inclinada con la espalda y la cabeza apoyadas en el respaldo. Coloca los pies en la plataforma a la anchura de los hombros. Desbloquea los seguros y baja la plataforma flexionando las rodillas hasta que formen un ángulo de 90°, manteniendo la espalda pegada al respaldo. Empuja la plataforma hacia arriba extendiendo las piernas sin bloquear las rodillas por completo."
+  },
+  {
     "id": "press-banca",
     "name": "Press de banca",
     "image_male": "images/press-banca-male.webp",

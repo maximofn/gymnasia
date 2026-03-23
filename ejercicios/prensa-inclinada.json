@@ -1,0 +1,11 @@
+{
+  "id": "prensa-inclinada",
+  "name": "Prensa inclinada",
+  "image_male": "images/prensa-inclinada-male.webp",
+  "image_female": "images/prensa-inclinada-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales"],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en la prensa inclinada con la espalda y la cabeza apoyadas en el respaldo. Coloca los pies en la plataforma a la anchura de los hombros. Desbloquea los seguros y baja la plataforma flexionando las rodillas hasta que formen un ángulo de 90°, manteniendo la espalda pegada al respaldo. Empuja la plataforma hacia arriba extendiendo las piernas sin bloquear las rodillas por completo."
+}
