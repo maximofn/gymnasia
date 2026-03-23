@@ -198,5 +198,20 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Siéntate en la máquina de remo con el pecho apoyado en el soporte. Agarra el asa con una mano y tira hacia atrás llevando el codo pegado al cuerpo, apretando la escápula en la parte final del movimiento. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
+  },
+  {
+    "id": "sentadilla-barra",
+    "name": "Sentadilla con barra",
+    "image_male": "images/sentadilla-barra-male.webp",
+    "image_female": "images/sentadilla-barra-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "glúteos",
+      "isquiotibiales",
+      "core"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Coloca la barra sobre los trapecios, detrás del cuello, con los pies a la anchura de los hombros. Desciende flexionando rodillas y caderas como si te sentaras, manteniendo la espalda recta y el pecho arriba, hasta que los muslos queden paralelos al suelo o por debajo. Empuja con los talones para volver a la posición inicial."
   }
 ]
