@@ -48,6 +48,20 @@
     "instructions": "De pie frente a una polea alta, agarra la cuerda con ambas manos. Con los codos pegados al cuerpo, extiende los brazos hacia abajo separando los extremos de la cuerda al final del movimiento. Vuelve de forma controlada."
   },
   {
+    "id": "jalon-poleas",
+    "name": "Jalón en máquina de poleas",
+    "image_male": "images/jalon-poleas-male.webp",
+    "image_female": "images/jalon-poleas-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "bíceps",
+      "hombro posterior"
+    ],
+    "equipment": "polea",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en la máquina de poleas con los muslos sujetos bajo las almohadillas y los pies firmes en el suelo. Agarra la barra ancha con ambas manos en pronación, algo más abiertas que el ancho de los hombros. Tira de la barra hacia abajo llevándola hasta la parte superior del pecho, apretando los dorsales. Vuelve de forma controlada hasta extender los brazos por completo."
+  },
+  {
     "id": "jalon-unilateral-maquina",
     "name": "Jalón unilateral sentado en máquina",
     "image_male": "images/jalon-unilateral-maquina-male.webp",

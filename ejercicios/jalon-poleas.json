@@ -1,0 +1,11 @@
+{
+  "id": "jalon-poleas",
+  "name": "Jalón en máquina de poleas",
+  "image_male": "images/jalon-poleas-male.webp",
+  "image_female": "images/jalon-poleas-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en la máquina de poleas con los muslos sujetos bajo las almohadillas y los pies firmes en el suelo. Agarra la barra ancha con ambas manos en pronación, algo más abiertas que el ancho de los hombros. Tira de la barra hacia abajo llevándola hasta la parte superior del pecho, apretando los dorsales. Vuelve de forma controlada hasta extender los brazos por completo."
+}
