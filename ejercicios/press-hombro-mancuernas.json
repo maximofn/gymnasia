@@ -1,0 +1,11 @@
+{
+  "id": "press-hombro-mancuernas",
+  "name": "Press de hombro con mancuernas",
+  "image_male": "images/press-hombro-mancuernas-male.webp",
+  "image_female": "images/press-hombro-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["tríceps", "trapecio"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con respaldo vertical. Sujeta una mancuerna en cada mano a la altura de los hombros con las palmas mirando hacia delante. Empuja las mancuernas hacia arriba hasta extender los brazos por encima de la cabeza. Baja de forma controlada hasta la posición inicial."
+}
