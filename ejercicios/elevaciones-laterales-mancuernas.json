@@ -1,0 +1,11 @@
+{
+  "id": "elevaciones-laterales-mancuernas",
+  "name": "Elevaciones laterales con mancuernas",
+  "image_male": "images/elevaciones-laterales-mancuernas-male.webp",
+  "image_female": "images/elevaciones-laterales-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["deltoides lateral", "trapecio"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "De pie con una mancuerna en cada mano a los lados del cuerpo. Con los codos ligeramente flexionados, eleva los brazos lateralmente hasta la altura de los hombros formando una T. Baja de forma controlada a la posición inicial."
+}

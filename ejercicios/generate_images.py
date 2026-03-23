@@ -67,6 +67,8 @@ EXERCISE_PROMPTS = {
     "gemelos-prensa": ("a calf press on a 45-degree leg press machine, person lying back on the inclined seat with legs almost fully extended, only the toes and balls of the feet on the bottom edge of the platform, pushing the platform by pointing the toes and extending the ankles", "side view"),
     "press-hombro-mancuernas": ("a seated dumbbell shoulder press, sitting on a bench with back support, pressing two dumbbells overhead with arms extended above the head, palms facing forward", "3/4 diagonal view"),
     "press-hombro-unilateral-maquina": ("a seated single-arm overhead shoulder press on a plate-loaded machine, sitting with back against pad, pushing one handle upward above the head with one arm, the other arm resting", "3/4 diagonal view"),
+    "elevaciones-laterales-mancuernas": ("a standing dumbbell lateral raise, standing upright holding a dumbbell in each hand, arms raised out to the sides at shoulder height forming a T shape, slight bend in the elbows", "front view"),
+    "elevaciones-frontales-mancuernas": ("a standing dumbbell front raise, standing upright holding a dumbbell in each hand, one arm raised straight forward to shoulder height in front of the body, palms facing down", "3/4 diagonal view"),
 }
 
 

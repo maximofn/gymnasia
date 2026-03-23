@@ -233,6 +233,9 @@ const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
 const EXERCISES_ALL_URL = `${EXERCISES_REPO_BASE_URL}/all.json`;
 const EXERCISES_CACHE_KEY = "gymnasia.mobile.exercises_repo.v2";
+const CUSTOM_EXERCISES_STORAGE_KEY = "gymnasia.mobile.custom_exercises.v1";
+const GITHUB_ISSUES_TOKEN = process.env.EXPO_PUBLIC_GITHUB_ISSUES_TOKEN || "";
+const GITHUB_REPO = "maximofn/gymnasia";
 const CHAT_SYSTEM_PROMPT_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md";
 const DEFAULT_CHAT_SYSTEM_PROMPT =
@@ -256,7 +259,12 @@ const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Responde en español, de forma clara y práctica. " +
   "Si el usuario pide 'Devuelve json' o 'Devuelve el json', responde únicamente con JSON válido y sin texto adicional, " +
   "con estas claves exactas: dish_name, calories_kcal, protein_g, carbs_g, fat_g. " +
-  "Cuando el usuario pregunte o debata, responde usando el contexto previo de la conversación y las fotos adjuntas.";
+  "Cuando el usuario pregunte o debata, responde usando el contexto previo de la conversación y las fotos adjuntas. " +
+  "IMPORTANTE: Si ves un código de barras en alguna imagen, DEBES usar OBLIGATORIAMENTE la herramienta lookup_barcode. " +
+  "NUNCA estimes visualmente si hay un código de barras visible — SIEMPRE llama a la herramienta primero. " +
+  "Lee cuidadosamente TODOS los dígitos del código (normalmente 8 o 13 dígitos, los números debajo de las barras) y pásalos SIN espacios a lookup_barcode. " +
+  "Si el primer intento no encuentra el producto, verifica cada dígito y prueba de nuevo. " +
+  "Solo si la herramienta no devuelve resultados tras varios intentos, haz una estimación visual.";
 const PROVIDER_UI_META: Record<
   Provider,
   {
@@ -371,6 +379,62 @@ function getExerciseImageUrl(entry: ExerciseRepoEntry, gender: "male" | "female"
   return `${EXERCISES_REPO_BASE_URL}/${imagePath}`;
 }
 
+async function loadCustomExercises(): Promise<ExerciseRepoEntry[]> {
+  try {
+    const raw = await AsyncStorage.getItem(CUSTOM_EXERCISES_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+async function saveCustomExercisesToStorage(exercises: ExerciseRepoEntry[]): Promise<void> {
+  await AsyncStorage.setItem(CUSTOM_EXERCISES_STORAGE_KEY, JSON.stringify(exercises));
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+async function createExerciseGitHubIssue(exercise: ExerciseRepoEntry): Promise<void> {
+  if (!GITHUB_ISSUES_TOKEN) return;
+  const body = [
+    `## Nuevo ejercicio propuesto`,
+    "",
+    `**Nombre:** ${exercise.name}`,
+    exercise.muscle_group ? `**Grupo muscular:** ${exercise.muscle_group}` : "",
+    exercise.secondary_muscles.length > 0 ? `**Músculos secundarios:** ${exercise.secondary_muscles.join(", ")}` : "",
+    exercise.equipment ? `**Equipamiento:** ${exercise.equipment}` : "",
+    exercise.difficulty ? `**Dificultad:** ${exercise.difficulty}` : "",
+    exercise.instructions ? `**Instrucciones:** ${exercise.instructions}` : "",
+    "",
+    "### JSON",
+    "```json",
+    JSON.stringify(exercise, null, 2),
+    "```",
+  ].filter(Boolean).join("\n");
+
+  await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${GITHUB_ISSUES_TOKEN}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title: `[Nuevo ejercicio] ${exercise.name}`,
+      body,
+      labels: ["new-exercise"],
+    }),
+  });
+}
+
 type PersonalDataField = { key: string; description: string; value: string };
 
 async function loadPersonalData(): Promise<PersonalDataField[]> {
@@ -436,6 +500,48 @@ const READ_VALUE_DESC =
   "Usa esta herramienta una vez que hayas identificado el campo correcto mediante su description.";
 const READ_VALUE_PARAM_DESC = "El key (nombre) del campo cuyo valor quieres leer";
 
+const LOOKUP_BARCODE_TOOL = "lookup_barcode";
+const LOOKUP_BARCODE_DESC =
+  "Busca la información nutricional de un producto alimenticio usando su código de barras (EAN/UPC). " +
+  "Usa esta herramienta cuando detectes un código de barras en la imagen del usuario. " +
+  "Devuelve nombre del producto, calorías, proteínas, carbohidratos y grasas por 100g.";
+const LOOKUP_BARCODE_PARAM_DESC = "El código de barras numérico del producto (EAN-13, EAN-8 o UPC-A)";
+
+async function lookupBarcodeOpenFoodFacts(barcode: string): Promise<string> {
+  try {
+    const cleanBarcode = barcode.trim().replace(/\s+/g, "").replace(/[^0-9]/g, "");
+    if (!cleanBarcode) return "Código de barras vacío o inválido.";
+    const response = await fetch(
+      `https://world.openfoodfacts.net/api/v2/product/${encodeURIComponent(cleanBarcode)}?fields=product_name,brands,quantity,nutriments,nutrition_grades`,
+      {
+        headers: { "User-Agent": "Gymnasia/1.0 (gymnasia-app)" },
+      },
+    );
+    if (!response.ok) return `Error al buscar el código de barras ${barcode} (HTTP ${response.status}).`;
+    const data = await response.json();
+    if (data.status === 0 || !data.product) return `No se encontró ningún producto con el código de barras ${barcode} en Open Food Facts.`;
+    const p = data.product;
+    const n = p.nutriments ?? {};
+    return JSON.stringify({
+      product_name: p.product_name ?? "Desconocido",
+      brands: p.brands ?? "",
+      quantity: p.quantity ?? "",
+      nutrition_grade: p.nutrition_grades ?? "",
+      per_100g: {
+        calories_kcal: n["energy-kcal_100g"] ?? n["energy-kcal"] ?? null,
+        protein_g: n.proteins_100g ?? null,
+        carbs_g: n.carbohydrates_100g ?? null,
+        fat_g: n.fat_100g ?? null,
+        sugars_g: n.sugars_100g ?? null,
+        fiber_g: n.fiber_100g ?? null,
+        salt_g: n.salt_100g ?? null,
+      },
+    });
+  } catch (err) {
+    return `Error de red al buscar código de barras: ${err instanceof Error ? err.message : "desconocido"}`;
+  }
+}
+
 async function handleToolCall(name: string, args: Record<string, unknown>): Promise<string> {
   if (name === SAVE_PERSONAL_DATA_TOOL) {
     const fields = parsePersonalDataInput(args.personal_data);
@@ -460,6 +566,11 @@ async function handleToolCall(name: string, args: Record<string, unknown>): Prom
     const field = fields.find((f) => f.key === key);
     if (!field) return `Campo "${key}" no encontrado.`;
     return field.value || "(sin valor)";
+  }
+  if (name === LOOKUP_BARCODE_TOOL) {
+    const barcode = (args.barcode as string) ?? "";
+    if (!barcode) return "No se proporcionó un código de barras.";
+    return lookupBarcodeOpenFoodFacts(barcode);
   }
   return "Herramienta no reconocida.";
 }
@@ -1696,6 +1807,41 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
   return content;
 }
 
+const BARCODE_TOOL_OPENAI = {
+  type: "function",
+  function: {
+    name: LOOKUP_BARCODE_TOOL,
+    description: LOOKUP_BARCODE_DESC,
+    parameters: {
+      type: "object",
+      properties: { barcode: { type: "string", description: LOOKUP_BARCODE_PARAM_DESC } },
+      required: ["barcode"],
+    },
+  },
+};
+const BARCODE_TOOL_ANTHROPIC = {
+  name: LOOKUP_BARCODE_TOOL,
+  description: LOOKUP_BARCODE_DESC,
+  input_schema: {
+    type: "object",
+    properties: { barcode: { type: "string", description: LOOKUP_BARCODE_PARAM_DESC } },
+    required: ["barcode"],
+  },
+};
+const BARCODE_TOOL_GOOGLE = {
+  functionDeclarations: [
+    {
+      name: LOOKUP_BARCODE_TOOL,
+      description: LOOKUP_BARCODE_DESC,
+      parameters: {
+        type: "object",
+        properties: { barcode: { type: "string", description: LOOKUP_BARCODE_PARAM_DESC } },
+        required: ["barcode"],
+      },
+    },
+  ],
+};
+
 async function callFoodEstimatorAPI(
   provider: AIKey,
   messages: ChatInputMessage[],
@@ -1722,8 +1868,9 @@ async function callFoodEstimatorAPI(
     return -1;
   })();
 
+  // --- OPENAI ---
   if (provider.provider === "openai") {
-    const openAIMessages = messages.map((msg, index) => {
+    const openAIMessages: any[] = messages.map((msg, index) => {
       if (msg.role === "system") return { role: "system", content: msg.content };
       if (msg.role === "assistant") return { role: "assistant", content: msg.content };
       const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
@@ -1744,28 +1891,30 @@ async function callFoodEstimatorAPI(
       };
     });
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${provider.api_key}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: openAIMessages,
-        temperature: 0.2,
-      }),
-    });
+    const makeRequest = async () => {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
+        body: JSON.stringify({ model, messages: openAIMessages, temperature: 0.2, tools: [BARCODE_TOOL_OPENAI] }),
+      });
+      let p: any = null;
+      try { p = await res.json(); } catch {}
+      if (!res.ok) throw new Error(extractErrorMessage(p, `OpenAI error (${res.status})`));
+      return p;
+    };
 
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
+    let payload = await makeRequest();
+    for (let round = 0; round < 5; round++) {
+      const choice = payload?.choices?.[0];
+      const toolCalls = choice?.message?.tool_calls;
+      if (!toolCalls?.length) break;
+      openAIMessages.push(choice.message);
+      for (const tc of toolCalls) {
+        const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
+        const toolResult = await handleToolCall(tc.function?.name, args);
+        openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: toolResult });
+      }
+      payload = await makeRequest();
     }
 
     const content = parseOpenAIContent(payload);
@@ -1773,6 +1922,7 @@ async function callFoodEstimatorAPI(
     return content;
   }
 
+  // --- ANTHROPIC ---
   if (provider.provider === "anthropic") {
     if (Platform.OS === "web" && normalizedImages.length > 0) {
       throw new Error(
@@ -1780,35 +1930,26 @@ async function callFoodEstimatorAPI(
       );
     }
 
-    const anthropicMessages = nonSystemMessages.map((msg, index) => {
-      if (msg.role === "assistant") {
-        return {
-          role: "assistant",
-          content: msg.content.trim() || "Entendido.",
-        };
-      }
-      const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
-      if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
+    const buildAnthropicMessages = (): any[] =>
+      nonSystemMessages.map((msg, index) => {
+        if (msg.role === "assistant") {
+          return { role: "assistant", content: msg.content.trim() || "Entendido." };
+        }
+        const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
+        if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
+          return { role: "user", content: textContent };
+        }
         return {
           role: "user",
-          content: textContent,
+          content: [
+            { type: "text", text: textContent },
+            ...normalizedImages.map((image) => ({
+              type: "image",
+              source: { type: "base64", media_type: image.mime_type, data: image.base64 },
+            })),
+          ],
         };
-      }
-      return {
-        role: "user",
-        content: [
-          { type: "text", text: textContent },
-          ...normalizedImages.map((image) => ({
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: image.mime_type,
-              data: image.base64,
-            },
-          })),
-        ],
-      };
-    });
+      });
 
     if (Platform.OS === "web") {
       const textOnlyMessages = nonSystemMessages.map((msg) => ({
@@ -1818,90 +1959,113 @@ async function callFoodEstimatorAPI(
       return callAnthropicViaWebProxy(provider, FOOD_ESTIMATOR_SYSTEM_PROMPT, textOnlyMessages);
     }
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": provider.api_key,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: 900,
-        system: FOOD_ESTIMATOR_SYSTEM_PROMPT,
-        messages: anthropicMessages,
-      }),
-    });
+    const anthropicHeaders = {
+      "Content-Type": "application/json",
+      "x-api-key": provider.api_key,
+      "anthropic-version": "2023-06-01",
+    };
 
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
+    let currentMessages: any[] = buildAnthropicMessages();
 
-    if (!response.ok) {
-      throw new Error(extractErrorMessage(payload, `Anthropic error (${response.status})`));
+    const makeRequest = async (msgs: any[]) => {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: anthropicHeaders,
+        body: JSON.stringify({
+          model,
+          max_tokens: 1200,
+          system: FOOD_ESTIMATOR_SYSTEM_PROMPT,
+          messages: msgs,
+          tools: [BARCODE_TOOL_ANTHROPIC],
+        }),
+      });
+      let p: any = null;
+      try { p = await res.json(); } catch {}
+      if (!res.ok) throw new Error(extractErrorMessage(p, `Anthropic error (${res.status})`));
+      return p;
+    };
+
+    let payload = await makeRequest(currentMessages);
+    console.log("[FoodEstimator] Anthropic response stop_reason:", payload?.stop_reason, "content types:", (payload?.content as any[])?.map((b: any) => b.type));
+    for (let round = 0; round < 5; round++) {
+      const contentBlocks = payload?.content as any[] | undefined;
+      const toolUseBlocks = contentBlocks?.filter((b: any) => b.type === "tool_use") ?? [];
+      if (toolUseBlocks.length === 0) break;
+      console.log("[FoodEstimator] Anthropic tool calls found:", toolUseBlocks.length);
+      const toolResults: any[] = [];
+      for (const block of toolUseBlocks) {
+        console.log("[FoodEstimator] Tool call:", block.name, "input:", JSON.stringify(block.input));
+        const result = await handleToolCall(block.name, block.input ?? {});
+        console.log("[FoodEstimator] Tool result:", result.substring(0, 300));
+        toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
+      }
+      currentMessages = [
+        ...currentMessages,
+        { role: "assistant", content: contentBlocks },
+        { role: "user", content: toolResults },
+      ];
+      payload = await makeRequest(currentMessages);
+      console.log("[FoodEstimator] Anthropic follow-up stop_reason:", payload?.stop_reason);
     }
 
     const content = parseAnthropicContent(payload);
+    console.log("[FoodEstimator] Final Anthropic content:", content?.substring(0, 200));
     if (!content) throw new Error("Anthropic no devolvio contenido.");
     return content;
   }
 
-  const googleContents = nonSystemMessages.map((msg, index) => {
+  // --- GOOGLE ---
+  const googleMessages: any[] = nonSystemMessages.map((msg, index) => {
     if (msg.role === "assistant") {
-      return {
-        role: "model",
-        parts: [{ text: msg.content.trim() || "Entendido." }],
-      };
+      return { role: "model", parts: [{ text: msg.content.trim() || "Entendido." }] };
     }
     const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
     if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
-      return {
-        role: "user",
-        parts: [{ text: textContent }],
-      };
+      return { role: "user", parts: [{ text: textContent }] };
     }
     return {
       role: "user",
       parts: [
         { text: textContent },
         ...normalizedImages.map((image) => ({
-          inline_data: {
-            mime_type: image.mime_type,
-            data: image.base64,
-          },
+          inline_data: { mime_type: image.mime_type, data: image.base64 },
         })),
       ],
     };
   });
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(provider.api_key)}`,
-    {
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(provider.api_key)}`;
+
+  const makeGoogleRequest = async (msgs: any[]) => {
+    const res = await fetch(googleUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        contents: googleContents,
-        systemInstruction: {
-          parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }],
-        },
+        contents: msgs,
+        systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }] },
+        tools: [BARCODE_TOOL_GOOGLE],
       }),
-    },
-  );
+    });
+    let p: any = null;
+    try { p = await res.json(); } catch {}
+    if (!res.ok) throw new Error(extractErrorMessage(p, `Google AI error (${res.status})`));
+    return p;
+  };
 
-  let payload: unknown = null;
-  try {
-    payload = await response.json();
-  } catch {
-    // ignore json parse errors
-  }
-
-  if (!response.ok) {
-    throw new Error(extractErrorMessage(payload, `Google AI error (${response.status})`));
+  let payload = await makeGoogleRequest(googleMessages);
+  for (let round = 0; round < 5; round++) {
+    const parts = payload?.candidates?.[0]?.content?.parts as any[] | undefined;
+    const functionCalls = parts?.filter((p: any) => p.functionCall) ?? [];
+    if (functionCalls.length === 0) break;
+    const modelParts = functionCalls.map((fc: any) => ({ functionCall: fc.functionCall }));
+    const responseParts: any[] = [];
+    for (const fc of functionCalls) {
+      const toolResult = await handleToolCall(fc.functionCall.name, fc.functionCall.args ?? {});
+      responseParts.push({ functionResponse: { name: fc.functionCall.name, response: { result: toolResult } } });
+    }
+    googleMessages.push({ role: "model", parts: modelParts });
+    googleMessages.push({ role: "user", parts: responseParts });
+    payload = await makeGoogleRequest(googleMessages);
   }
 
   const content = parseGoogleContent(payload);
@@ -3133,9 +3297,17 @@ export default function App() {
   const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("diet");
   const [selectedExerciseDetail, setSelectedExerciseDetail] = useState<ExerciseRepoEntry | null>(null);
   const [exercisesRepo, setExercisesRepo] = useState<ExerciseRepoEntry[]>([]);
+  const [customExercises, setCustomExercises] = useState<ExerciseRepoEntry[]>([]);
   const [exercisePickerOpen, setExercisePickerOpen] = useState(false);
   const [exercisePickerSearch, setExercisePickerSearch] = useState("");
   const [exercisePickerMuscleFilter, setExercisePickerMuscleFilter] = useState("all");
+  const [customExerciseFormOpen, setCustomExerciseFormOpen] = useState(false);
+  const [ceNameDraft, setCeNameDraft] = useState("");
+  const [ceMuscleDraft, setCeMuscleDraft] = useState("");
+  const [ceSecondaryDraft, setCeSecondaryDraft] = useState("");
+  const [ceEquipmentDraft, setCeEquipmentDraft] = useState("");
+  const [ceDifficultyDraft, setCeDifficultyDraft] = useState("");
+  const [ceInstructionsDraft, setCeInstructionsDraft] = useState("");
   const [memoryFields, setMemoryFields] = useState<PersonalDataField[]>([]);
   const [memoryNewKey, setMemoryNewKey] = useState("");
   const [memoryNewDesc, setMemoryNewDesc] = useState("");
@@ -3795,18 +3967,22 @@ export default function App() {
       ),
     [activeTrainingPreviewExercises, trainingDetailMuscleFilter],
   );
+  const allPickerExercises = useMemo(
+    () => [...exercisesRepo, ...customExercises.filter((ce) => !exercisesRepo.some((r) => r.id === ce.id))],
+    [exercisesRepo, customExercises],
+  );
   const exercisePickerMuscleGroups = useMemo(
-    () => Array.from(new Set(exercisesRepo.map((e) => e.muscle_group))),
-    [exercisesRepo],
+    () => Array.from(new Set(allPickerExercises.map((e) => e.muscle_group).filter(Boolean))),
+    [allPickerExercises],
   );
   const filteredExercisePickerEntries = useMemo(() => {
     const search = exercisePickerSearch.trim().toLowerCase();
-    return exercisesRepo.filter((entry) => {
-      const matchesSearch = !search || entry.name.toLowerCase().includes(search) || entry.muscle_group.toLowerCase().includes(search);
+    return allPickerExercises.filter((entry) => {
+      const matchesSearch = !search || entry.name.toLowerCase().includes(search) || (entry.muscle_group && entry.muscle_group.toLowerCase().includes(search));
       const matchesMuscle = exercisePickerMuscleFilter === "all" || entry.muscle_group === exercisePickerMuscleFilter;
       return matchesSearch && matchesMuscle;
     });
-  }, [exercisesRepo, exercisePickerSearch, exercisePickerMuscleFilter]);
+  }, [allPickerExercises, exercisePickerSearch, exercisePickerMuscleFilter]);
 
   const activeTrainingPreviewImageUri = useMemo(
     () => activeTrainingPreviewExercises.find((exercise) => exercise.imageUri)?.imageUri ?? null,
@@ -4234,6 +4410,7 @@ export default function App() {
   useEffect(() => {
     if (!isHydrated) return;
     loadExercisesRepo().then(setExercisesRepo);
+    loadCustomExercises().then(setCustomExercises);
   }, [isHydrated]);
 
   useEffect(() => {
@@ -4914,6 +5091,7 @@ export default function App() {
     setError(null);
 
     try {
+      const isFirstMessage = nextMessages.filter((m) => m.role === "user").length === 1;
       const estimatorHistory: ChatInputMessage[] = [
         { role: "system", content: FOOD_ESTIMATOR_SYSTEM_PROMPT },
         ...nextMessages.map<ChatInputMessage>((message) => ({
@@ -4924,7 +5102,7 @@ export default function App() {
       const assistantContent = await callFoodEstimatorAPI(
         resolvedProvider,
         estimatorHistory,
-        foodEstimatorImages,
+        isFirstMessage ? foodEstimatorImages : [],
       );
       const assistantMessage: ChatMessage = {
         id: uid("food_est_msg"),
@@ -5550,6 +5728,47 @@ export default function App() {
     setActiveExerciseMenuId(null);
     setExercisePickerOpen(false);
     setError(null);
+  }
+
+  function openCustomExerciseForm() {
+    setCeNameDraft("");
+    setCeMuscleDraft("");
+    setCeSecondaryDraft("");
+    setCeEquipmentDraft("");
+    setCeDifficultyDraft("");
+    setCeInstructionsDraft("");
+    setCustomExerciseFormOpen(true);
+  }
+
+  function handleSubmitCustomExercise() {
+    const name = ceNameDraft.trim();
+    if (!name) return;
+
+    const id = `custom-${slugify(name)}-${Date.now()}`;
+    const entry: ExerciseRepoEntry = {
+      id,
+      name,
+      image_male: "",
+      image_female: "",
+      muscle_group: ceMuscleDraft.trim(),
+      secondary_muscles: ceSecondaryDraft.trim() ? ceSecondaryDraft.split(",").map((s) => s.trim()).filter(Boolean) : [],
+      equipment: ceEquipmentDraft.trim(),
+      difficulty: ceDifficultyDraft.trim() || "intermediate",
+      instructions: ceInstructionsDraft.trim(),
+    };
+
+    // Save locally
+    const updated = [...customExercises, entry];
+    setCustomExercises(updated);
+    saveCustomExercisesToStorage(updated).catch(() => {});
+
+    // Add to current routine
+    addExerciseFromRepo(entry);
+
+    // Create GitHub issue in background
+    createExerciseGitHubIssue(entry).catch(() => {});
+
+    setCustomExerciseFormOpen(false);
   }
 
   function addSeriesToExercise(exerciseId: string) {
@@ -10388,90 +10607,105 @@ export default function App() {
                         )}
 
                         {isEditing ? (
-                          <View style={{ gap: 8 }}>
-                            <TextInput
-                              style={{
-                                minHeight: 42,
-                                borderRadius: mobileTheme.radius.md,
-                                borderWidth: 1,
-                                borderColor: mobileTheme.color.borderSubtle,
-                                backgroundColor: mobileTheme.color.bgApp,
-                                color: mobileTheme.color.textPrimary,
-                                paddingHorizontal: 12,
-                              }}
-                              value={mealTitleInput}
-                              onChangeText={setMealTitleInput}
-                              placeholder="Nombre del alimento"
-                              placeholderTextColor={mobileTheme.color.textSecondary}
-                            />
-                            <TextInput
-                              style={{
-                                minHeight: 42,
-                                borderRadius: mobileTheme.radius.md,
-                                borderWidth: 1,
-                                borderColor: mobileTheme.color.borderSubtle,
-                                backgroundColor: mobileTheme.color.bgApp,
-                                color: mobileTheme.color.textPrimary,
-                                paddingHorizontal: 12,
-                              }}
-                              value={mealCaloriesInput}
-                              onChangeText={setMealCaloriesInput}
-                              placeholder="Calorías"
-                              placeholderTextColor={mobileTheme.color.textSecondary}
-                              keyboardType="decimal-pad"
-                            />
+                          <View style={{ gap: 10 }}>
+                            <View style={{ gap: 4 }}>
+                              <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "600" }}>Nombre</Text>
+                              <TextInput
+                                style={{
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 12,
+                                }}
+                                value={mealTitleInput}
+                                onChangeText={setMealTitleInput}
+                                placeholder="Nombre del alimento"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                              />
+                            </View>
+                            <View style={{ gap: 4 }}>
+                              <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "600" }}>Calorías (kcal)</Text>
+                              <TextInput
+                                style={{
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 12,
+                                }}
+                                value={mealCaloriesInput}
+                                onChangeText={setMealCaloriesInput}
+                                placeholder="0"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                keyboardType="decimal-pad"
+                              />
+                            </View>
                             <View style={{ gap: 8 }}>
-                              <TextInput
-                                style={{
-                                  width: "100%",
-                                  minHeight: 42,
-                                  borderRadius: mobileTheme.radius.md,
-                                  borderWidth: 1,
-                                  borderColor: mobileTheme.color.borderSubtle,
-                                  backgroundColor: mobileTheme.color.bgApp,
-                                  color: mobileTheme.color.textPrimary,
-                                  paddingHorizontal: 12,
-                                }}
-                                value={mealProteinInput}
-                                onChangeText={setMealProteinInput}
-                                placeholder="P (g)"
-                                placeholderTextColor={mobileTheme.color.textSecondary}
-                                keyboardType="decimal-pad"
-                              />
-                              <TextInput
-                                style={{
-                                  width: "100%",
-                                  minHeight: 42,
-                                  borderRadius: mobileTheme.radius.md,
-                                  borderWidth: 1,
-                                  borderColor: mobileTheme.color.borderSubtle,
-                                  backgroundColor: mobileTheme.color.bgApp,
-                                  color: mobileTheme.color.textPrimary,
-                                  paddingHorizontal: 12,
-                                }}
-                                value={mealCarbsInput}
-                                onChangeText={setMealCarbsInput}
-                                placeholder="C (g)"
-                                placeholderTextColor={mobileTheme.color.textSecondary}
-                                keyboardType="decimal-pad"
-                              />
-                              <TextInput
-                                style={{
-                                  width: "100%",
-                                  minHeight: 42,
-                                  borderRadius: mobileTheme.radius.md,
-                                  borderWidth: 1,
-                                  borderColor: mobileTheme.color.borderSubtle,
-                                  backgroundColor: mobileTheme.color.bgApp,
-                                  color: mobileTheme.color.textPrimary,
-                                  paddingHorizontal: 12,
-                                }}
-                                value={mealFatInput}
-                                onChangeText={setMealFatInput}
-                                placeholder="G (g)"
-                                placeholderTextColor={mobileTheme.color.textSecondary}
-                                keyboardType="decimal-pad"
-                              />
+                              <View style={{ gap: 4 }}>
+                                <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "600" }}>Proteína (g)</Text>
+                                <TextInput
+                                  style={{
+                                    width: "100%",
+                                    minHeight: 42,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    color: mobileTheme.color.textPrimary,
+                                    paddingHorizontal: 12,
+                                  }}
+                                  value={mealProteinInput}
+                                  onChangeText={setMealProteinInput}
+                                  placeholder="0"
+                                  placeholderTextColor={mobileTheme.color.textSecondary}
+                                  keyboardType="decimal-pad"
+                                />
+                              </View>
+                              <View style={{ gap: 4 }}>
+                                <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "600" }}>Carbohidratos (g)</Text>
+                                <TextInput
+                                  style={{
+                                    width: "100%",
+                                    minHeight: 42,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    color: mobileTheme.color.textPrimary,
+                                    paddingHorizontal: 12,
+                                  }}
+                                  value={mealCarbsInput}
+                                  onChangeText={setMealCarbsInput}
+                                  placeholder="0"
+                                  placeholderTextColor={mobileTheme.color.textSecondary}
+                                  keyboardType="decimal-pad"
+                                />
+                              </View>
+                              <View style={{ gap: 4 }}>
+                                <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "600" }}>Grasas (g)</Text>
+                                <TextInput
+                                  style={{
+                                    width: "100%",
+                                    minHeight: 42,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    color: mobileTheme.color.textPrimary,
+                                    paddingHorizontal: 12,
+                                  }}
+                                  value={mealFatInput}
+                                  onChangeText={setMealFatInput}
+                                  placeholder="0"
+                                  placeholderTextColor={mobileTheme.color.textSecondary}
+                                  keyboardType="decimal-pad"
+                                />
+                              </View>
                             </View>
                             <View style={{ flexDirection: "row", gap: 8 }}>
                               <Pressable
@@ -13326,7 +13560,7 @@ export default function App() {
       ) : null}
 
       {foodEstimatorModalOpen ? (
-        <View
+        <KeyboardAvoidingView
           style={{
             position: "absolute",
             top: 0,
@@ -13341,6 +13575,7 @@ export default function App() {
             zIndex: 610,
             elevation: 61,
           }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <View
             style={{
@@ -13354,10 +13589,9 @@ export default function App() {
               paddingHorizontal: 12,
               paddingTop: 12,
               paddingBottom: 10,
-              gap: 10,
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
                 Estimar con IA
               </Text>
@@ -13378,6 +13612,7 @@ export default function App() {
               </Pressable>
             </View>
 
+            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingBottom: 4 }}>
             <View
               style={{
                 borderWidth: 1,
@@ -13534,7 +13769,7 @@ export default function App() {
                         paddingVertical: 8,
                       }}
                     >
-                      <Text style={{ color: mobileTheme.color.textPrimary, lineHeight: 19 }}>
+                      <Text selectable style={{ color: mobileTheme.color.textPrimary, lineHeight: 19 }}>
                         {msg.content}
                       </Text>
                     </View>
@@ -13624,8 +13859,9 @@ export default function App() {
                 Abre primero "Añadir alimento" en una comida para rellenar los campos desde IA.
               </Text>
             ) : null}
+            </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       ) : null}
 
       {providerDeleteModal ? (
@@ -14109,7 +14345,7 @@ export default function App() {
       })()}
 
       {exercisePickerOpen ? (
-        <View
+        <KeyboardAvoidingView
           style={{
             position: "absolute",
             top: 0,
@@ -14120,6 +14356,7 @@ export default function App() {
             zIndex: 700,
             elevation: 70,
           }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <SafeAreaView style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
@@ -14247,7 +14484,7 @@ export default function App() {
               ) : null}
 
               <Pressable
-                onPress={addBlankExerciseToActiveTemplate}
+                onPress={openCustomExerciseForm}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -14267,7 +14504,191 @@ export default function App() {
               </Pressable>
             </ScrollView>
           </SafeAreaView>
-        </View>
+        </KeyboardAvoidingView>
+      ) : null}
+
+      {customExerciseFormOpen ? (
+        <KeyboardAvoidingView
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "#0D1117",
+            zIndex: 800,
+            elevation: 80,
+          }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
+              <Pressable onPress={() => setCustomExerciseFormOpen(false)} style={{ padding: 6 }}>
+                <Feather name="arrow-left" size={24} color={mobileTheme.color.textPrimary} />
+              </Pressable>
+              <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
+                Nuevo ejercicio
+              </Text>
+            </View>
+
+            <ScrollView style={{ flex: 1, paddingHorizontal: 14 }} contentContainerStyle={{ gap: 14, paddingBottom: 30 }}>
+              <View style={{ gap: 6 }}>
+                <Text style={{ color: "#9EA6B3", fontSize: 13, fontWeight: "600" }}>Nombre *</Text>
+                <TextInput
+                  style={{
+                    backgroundColor: "#171B23",
+                    borderRadius: 14,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    color: mobileTheme.color.textPrimary,
+                    fontSize: 16,
+                  }}
+                  placeholder="Ej: Press inclinado con mancuernas"
+                  placeholderTextColor="#5A6270"
+                  value={ceNameDraft}
+                  onChangeText={setCeNameDraft}
+                  autoCapitalize="sentences"
+                  autoFocus
+                />
+              </View>
+
+              <View style={{ gap: 6 }}>
+                <Text style={{ color: "#9EA6B3", fontSize: 13, fontWeight: "600" }}>Grupo muscular</Text>
+                <TextInput
+                  style={{
+                    backgroundColor: "#171B23",
+                    borderRadius: 14,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    color: mobileTheme.color.textPrimary,
+                    fontSize: 16,
+                  }}
+                  placeholder="Ej: pecho, espalda, piernas..."
+                  placeholderTextColor="#5A6270"
+                  value={ceMuscleDraft}
+                  onChangeText={setCeMuscleDraft}
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <View style={{ gap: 6 }}>
+                <Text style={{ color: "#9EA6B3", fontSize: 13, fontWeight: "600" }}>Músculos secundarios</Text>
+                <TextInput
+                  style={{
+                    backgroundColor: "#171B23",
+                    borderRadius: 14,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    color: mobileTheme.color.textPrimary,
+                    fontSize: 16,
+                  }}
+                  placeholder="Separados por coma: tríceps, hombro anterior"
+                  placeholderTextColor="#5A6270"
+                  value={ceSecondaryDraft}
+                  onChangeText={setCeSecondaryDraft}
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <View style={{ gap: 6 }}>
+                <Text style={{ color: "#9EA6B3", fontSize: 13, fontWeight: "600" }}>Equipamiento</Text>
+                <TextInput
+                  style={{
+                    backgroundColor: "#171B23",
+                    borderRadius: 14,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    color: mobileTheme.color.textPrimary,
+                    fontSize: 16,
+                  }}
+                  placeholder="Ej: mancuernas, barra, máquina, polea..."
+                  placeholderTextColor="#5A6270"
+                  value={ceEquipmentDraft}
+                  onChangeText={setCeEquipmentDraft}
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <View style={{ gap: 6 }}>
+                <Text style={{ color: "#9EA6B3", fontSize: 13, fontWeight: "600" }}>Dificultad</Text>
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  {["beginner", "intermediate", "advanced"].map((level) => {
+                    const isActive = ceDifficultyDraft === level;
+                    const labels: Record<string, string> = { beginner: "Principiante", intermediate: "Intermedio", advanced: "Avanzado" };
+                    return (
+                      <Pressable
+                        key={level}
+                        onPress={() => setCeDifficultyDraft(isActive ? "" : level)}
+                        style={{
+                          flex: 1,
+                          paddingVertical: 10,
+                          borderRadius: 12,
+                          borderWidth: 1,
+                          borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
+                          backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#171B23",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 13, fontWeight: "600" }}>
+                          {labels[level]}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+
+              <View style={{ gap: 6 }}>
+                <Text style={{ color: "#9EA6B3", fontSize: 13, fontWeight: "600" }}>Instrucciones</Text>
+                <TextInput
+                  style={{
+                    backgroundColor: "#171B23",
+                    borderRadius: 14,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    color: mobileTheme.color.textPrimary,
+                    fontSize: 16,
+                    minHeight: 100,
+                    textAlignVertical: "top",
+                  }}
+                  placeholder="Describe cómo se realiza el ejercicio..."
+                  placeholderTextColor="#5A6270"
+                  value={ceInstructionsDraft}
+                  onChangeText={setCeInstructionsDraft}
+                  multiline
+                  autoCapitalize="sentences"
+                />
+              </View>
+
+              <Pressable
+                onPress={handleSubmitCustomExercise}
+                style={{
+                  backgroundColor: ceNameDraft.trim() ? mobileTheme.color.brandPrimary : "rgba(203,255,26,0.3)",
+                  borderRadius: 16,
+                  minHeight: 54,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: 6,
+                }}
+                disabled={!ceNameDraft.trim()}
+              >
+                <Text style={{ color: "#0D1117", fontSize: 17, fontWeight: "800" }}>
+                  Añadir ejercicio
+                </Text>
+              </Pressable>
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       ) : null}
 
       <StatusBar style="light" />

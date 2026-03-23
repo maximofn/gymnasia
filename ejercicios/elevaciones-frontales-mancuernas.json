@@ -1,0 +1,11 @@
+{
+  "id": "elevaciones-frontales-mancuernas",
+  "name": "Elevaciones frontales con mancuernas",
+  "image_male": "images/elevaciones-frontales-mancuernas-male.webp",
+  "image_female": "images/elevaciones-frontales-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["deltoides anterior", "trapecio"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "De pie con una mancuerna en cada mano frente a los muslos con las palmas mirando hacia el cuerpo. Eleva un brazo hacia delante hasta la altura de los hombros manteniéndolo recto. Baja de forma controlada y alterna con el otro brazo."
+}
