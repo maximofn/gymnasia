@@ -40,5 +40,10 @@ Minimal flat illustration of a {man/woman} performing {exercise_en}, {view}. Sil
 
 ### Femoral sentado
 - **ID:** `femoral-sentado`
-- **Exercise:** `a seated leg curl machine for hamstrings, the person is sitting on the seat with knees bent at 90 degrees and feet tucked directly below the knees pointing straight down to the floor, a pad rests across the top of the thighs and a roller is behind the ankles, the lower legs are vertical under the seat`
-- **View:** `side view`
+- **Exercise:** `person sitting on a machine seat in a gym, torso upright, thighs flat on the seat, but the knees are bent sharply so the feet go DOWN and BACK with the soles of the feet facing the wall behind the chair, the calves are pressed against a round roller pad under the seat near the floor`
+- **View:** `side view close-up`
+
+### Gemelos sentado
+- **ID:** `gemelos-sentado`
+- **Exercise:** `a seated calf raise machine, person sitting with a pad on top of the knees, feet on a platform with heels hanging off the edge, raising the heels upward by contracting the calves`
+- **View:** `3/4 diagonal view`
