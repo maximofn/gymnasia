@@ -56,7 +56,7 @@ EXERCISE_PROMPTS = {
     "sentadilla-barra": ("a barbell back squat, standing with a barbell on the upper back behind the neck, squatting down with thighs parallel to the floor, feet shoulder width apart", "3/4 diagonal view"),
     "prensa-inclinada": ("a 45-degree incline leg press machine, seated with back against pad, pushing a weighted platform upward with both legs, knees bent at 90 degrees", "3/4 diagonal view"),
     "prensa-horizontal": ("a horizontal seated leg press machine, sitting upright pushing a vertical platform forward with both legs, knees bent at 90 degrees", "3/4 diagonal view"),
-    "prensa-vertical": ("a vertical leg press machine, lying flat on back on the floor pushing a weighted plate-loaded platform straight up overhead with both feet, legs extending vertically upward", "side view"),
+    "prensa-vertical": ("a vertical leg press machine with metal frame and guide rails, person lying on back on the base pad inside the machine frame, pushing a plate-loaded platform vertically upward with both feet along guide rails", "3/4 diagonal view"),
     "femoral-de-pie": ("a standing single-leg hamstring curl machine, standing upright with chest leaning on pad, curling one leg back bringing heel toward glute against a roller pad", "3/4 diagonal view from behind"),
     "femoral-tumbado": ("a prone lying leg curl machine, lying face down on a bench curling both heels toward glutes against a roller pad, gripping front handles", "side view"),
     "femoral-sentado": ("a seated leg curl machine, sitting upright with back against pad, legs extended over a roller, curling heels down and back under the seat", "side view"),
