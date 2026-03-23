@@ -1,0 +1,11 @@
+{
+  "id": "remo-cuello-polea-baja",
+  "name": "Remo al cuello en polea baja",
+  "image_male": "images/remo-cuello-polea-baja-male.webp",
+  "image_female": "images/remo-cuello-polea-baja-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": ["trapecio", "espalda"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "De pie frente a una polea baja, agarra la cuerda o barra con ambas manos. Tira hacia arriba en dirección al cuello con los codos altos y abiertos hacia los lados. Aprieta los deltoides posteriores y el trapecio en la parte alta del movimiento. Vuelve de forma controlada."
+}
