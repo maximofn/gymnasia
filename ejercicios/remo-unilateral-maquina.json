@@ -1,0 +1,11 @@
+{
+  "id": "remo-unilateral-maquina",
+  "name": "Remo unilateral sentado en máquina",
+  "image_male": "images/remo-unilateral-maquina-male.webp",
+  "image_female": "images/remo-unilateral-maquina-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en la máquina de remo con el pecho apoyado en el soporte. Agarra el asa con una mano y tira hacia atrás llevando el codo pegado al cuerpo, apretando la escápula en la parte final del movimiento. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
+}
