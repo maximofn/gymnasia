@@ -48,6 +48,20 @@
     "instructions": "De pie frente a una polea alta, agarra la cuerda con ambas manos. Con los codos pegados al cuerpo, extiende los brazos hacia abajo separando los extremos de la cuerda al final del movimiento. Vuelve de forma controlada."
   },
   {
+    "id": "jalon-unilateral-maquina",
+    "name": "Jalón unilateral sentado en máquina",
+    "image_male": "images/jalon-unilateral-maquina-male.webp",
+    "image_female": "images/jalon-unilateral-maquina-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "bíceps",
+      "hombro posterior"
+    ],
+    "equipment": "máquina",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en la máquina de jalón con la espalda recta y los pies apoyados. Agarra el asa con una mano y tira hacia abajo llevando el codo hacia la cadera, apretando el dorsal en la parte baja del movimiento. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
+  },
+  {
     "id": "press-banca",
     "name": "Press de banca",
     "image_male": "images/press-banca-male.webp",

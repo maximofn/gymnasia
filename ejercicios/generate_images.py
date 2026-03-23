@@ -46,6 +46,7 @@ EXERCISE_PROMPTS = {
     "aperturas-inclinadas-mancuernas": ("incline dumbbell chest flyes lying on an incline bench at 30-45 degrees, arms open wide with slight elbow bend", "3/4 diagonal view"),
     "press-unilateral-maquina": ("a seated single-arm chest press on a machine, pushing forward with one arm", "3/4 diagonal view"),
     "extensiones-triceps-cuerda": ("a standing tricep rope pushdown on a cable machine, arms pushing down", "3/4 diagonal view"),
+    "jalon-unilateral-maquina": ("a seated single-arm lat pulldown on a machine, pulling down with one arm bringing the elbow toward the hip", "3/4 diagonal view"),
     "press-inclinado-unilateral-maquina": ("a seated single-arm incline chest press on a machine, pushing upward and forward with one arm on an inclined trajectory", "3/4 diagonal view"),
     "extensiones-triceps-barra": ("a standing tricep straight bar pushdown on a cable machine, gripping a straight bar pushing down", "3/4 diagonal view"),
 }
