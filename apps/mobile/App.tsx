@@ -256,6 +256,8 @@ const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Tu tarea es estimar siempre: calorías totales (kcal), gramos de proteína, gramos de carbohidratos, gramos de grasas y peso total de la comida en gramos. " +
   "Si la información es incierta, indica rangos aproximados y explica supuestos breves. " +
   "Responde en español, de forma clara y práctica. " +
+  "IMPORTANTE: Si detectas un código de barras (EAN, UPC) en alguna de las imágenes, DEBES usar la herramienta scan_barcode para buscar el producto. " +
+  "Lee los dígitos del código de barras de la imagen y pásalos como parámetro. Con los datos de OpenFoodFacts, presenta la información nutricional exacta del producto. " +
   "Si el usuario pide 'Devuelve json' o 'Devuelve el json', responde únicamente con JSON válido y sin texto adicional, " +
   "con estas claves exactas: dish_name, calories_kcal, protein_g, carbs_g, fat_g. " +
   "Cuando el usuario pregunte o debata, responde usando el contexto previo de la conversación y las fotos adjuntas.";
@@ -437,6 +439,59 @@ const READ_VALUE_DESC =
   "Recibe el key del campo y devuelve su value. " +
   "Usa esta herramienta una vez que hayas identificado el campo correcto mediante su description.";
 const READ_VALUE_PARAM_DESC = "El key (nombre) del campo cuyo valor quieres leer";
+
+const SCAN_BARCODE_TOOL = "scan_barcode";
+const SCAN_BARCODE_DESC =
+  "Busca un producto alimentario por su código de barras (EAN/UPC) en OpenFoodFacts. " +
+  "Usa esta herramienta cuando detectes un código de barras en la imagen del usuario. " +
+  "Lee los dígitos del código de barras de la imagen y pásalos como parámetro.";
+const SCAN_BARCODE_PARAM_DESC = "El número del código de barras (EAN-13, UPC-A, etc.)";
+
+async function lookupBarcode(barcode: string): Promise<string> {
+  const cleaned = barcode.replace(/\s/g, "");
+  const response = await fetch(
+    `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(cleaned)}.json`,
+  );
+  if (!response.ok) return `Error al buscar código de barras: HTTP ${response.status}`;
+  const data = await response.json();
+  if (data.status !== 1 || !data.product)
+    return `Producto no encontrado para el código de barras "${cleaned}". Intenta estimar visualmente la comida.`;
+  const p = data.product;
+  const n = p.nutriments ?? {};
+  return JSON.stringify({
+    name: p.product_name ?? "Desconocido",
+    brands: p.brands ?? "",
+    quantity: p.quantity ?? "",
+    serving_size: p.serving_size ?? "",
+    per_100g: {
+      calories_kcal: n["energy-kcal_100g"] ?? null,
+      fat_g: n.fat_100g ?? null,
+      saturated_fat_g: n["saturated-fat_100g"] ?? null,
+      carbs_g: n.carbohydrates_100g ?? null,
+      sugars_g: n.sugars_100g ?? null,
+      protein_g: n.proteins_100g ?? null,
+      fiber_g: n.fiber_100g ?? null,
+      salt_g: n.salt_100g ?? null,
+    },
+    per_serving: {
+      calories_kcal: n["energy-kcal_serving"] ?? null,
+      fat_g: n.fat_serving ?? null,
+      carbs_g: n.carbohydrates_serving ?? null,
+      protein_g: n.proteins_serving ?? null,
+    },
+    ingredients_text: p.ingredients_text ?? "",
+    nutriscore_grade: p.nutriscore_grade ?? "",
+  });
+}
+
+async function handleFoodEstimatorToolCall(name: string, args: Record<string, unknown>): Promise<string> {
+  if (name === SCAN_BARCODE_TOOL) {
+    const barcode = (args.barcode as string) ?? "";
+    if (!barcode) return "No se proporcionó un código de barras.";
+    return lookupBarcode(barcode);
+  }
+  return "Herramienta no reconocida.";
+}
 
 async function handleToolCall(name: string, args: Record<string, unknown>): Promise<string> {
   if (name === SAVE_PERSONAL_DATA_TOOL) {
@@ -1705,6 +1760,49 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
   return content;
 }
 
+const foodEstimatorTools = {
+  openai: [
+    {
+      type: "function",
+      function: {
+        name: SCAN_BARCODE_TOOL,
+        description: SCAN_BARCODE_DESC,
+        parameters: {
+          type: "object",
+          properties: { barcode: { type: "string", description: SCAN_BARCODE_PARAM_DESC } },
+          required: ["barcode"],
+        },
+      },
+    },
+  ],
+  anthropic: [
+    {
+      name: SCAN_BARCODE_TOOL,
+      description: SCAN_BARCODE_DESC,
+      input_schema: {
+        type: "object",
+        properties: { barcode: { type: "string", description: SCAN_BARCODE_PARAM_DESC } },
+        required: ["barcode"],
+      },
+    },
+  ],
+  google: [
+    {
+      functionDeclarations: [
+        {
+          name: SCAN_BARCODE_TOOL,
+          description: SCAN_BARCODE_DESC,
+          parameters: {
+            type: "object",
+            properties: { barcode: { type: "string", description: SCAN_BARCODE_PARAM_DESC } },
+            required: ["barcode"],
+          },
+        },
+      ],
+    },
+  ],
+};
+
 async function callFoodEstimatorAPI(
   provider: AIKey,
   messages: ChatInputMessage[],
@@ -1732,7 +1830,7 @@ async function callFoodEstimatorAPI(
   })();
 
   if (provider.provider === "openai") {
-    const openAIMessages = messages.map((msg, index) => {
+    const openAIMessages: any[] = messages.map((msg, index) => {
       if (msg.role === "system") return { role: "system", content: msg.content };
       if (msg.role === "assistant") return { role: "assistant", content: msg.content };
       const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
@@ -1745,36 +1843,37 @@ async function callFoodEstimatorAPI(
           { type: "text", text: textContent },
           ...normalizedImages.map((image) => ({
             type: "image_url",
-            image_url: {
-              url: `data:${image.mime_type};base64,${image.base64}`,
-            },
+            image_url: { url: `data:${image.mime_type};base64,${image.base64}` },
           })),
         ],
       };
     });
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${provider.api_key}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: openAIMessages,
-        temperature: 0.2,
-      }),
-    });
+    const makeRequest = async () => {
+      const body: any = { model, messages: openAIMessages, temperature: 0.2, tools: foodEstimatorTools.openai };
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
+        body: JSON.stringify(body),
+      });
+      let p: any = null;
+      try { p = await res.json(); } catch {}
+      if (!res.ok) throw new Error(extractErrorMessage(p, `OpenAI error (${res.status})`));
+      return p;
+    };
 
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
+    let payload = await makeRequest();
+    for (let round = 0; round < 5; round++) {
+      const choice = payload?.choices?.[0];
+      const toolCalls = choice?.message?.tool_calls;
+      if (!toolCalls?.length) break;
+      openAIMessages.push(choice.message);
+      for (const tc of toolCalls) {
+        const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
+        const result = await handleFoodEstimatorToolCall(tc.function?.name, args);
+        openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: result });
+      }
+      payload = await makeRequest();
     }
 
     const content = parseOpenAIContent(payload);
@@ -1789,19 +1888,13 @@ async function callFoodEstimatorAPI(
       );
     }
 
-    const anthropicMessages = nonSystemMessages.map((msg, index) => {
+    const buildAnthropicMessages = (): any[] => nonSystemMessages.map((msg, index) => {
       if (msg.role === "assistant") {
-        return {
-          role: "assistant",
-          content: msg.content.trim() || "Entendido.",
-        };
+        return { role: "assistant", content: msg.content.trim() || "Entendido." };
       }
       const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
       if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
-        return {
-          role: "user",
-          content: textContent,
-        };
+        return { role: "user", content: textContent };
       }
       return {
         role: "user",
@@ -1809,11 +1902,7 @@ async function callFoodEstimatorAPI(
           { type: "text", text: textContent },
           ...normalizedImages.map((image) => ({
             type: "image",
-            source: {
-              type: "base64",
-              media_type: image.mime_type,
-              data: image.base64,
-            },
+            source: { type: "base64", media_type: image.mime_type, data: image.base64 },
           })),
         ],
       };
@@ -1827,30 +1916,43 @@ async function callFoodEstimatorAPI(
       return callAnthropicViaWebProxy(provider, FOOD_ESTIMATOR_SYSTEM_PROMPT, textOnlyMessages);
     }
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": provider.api_key,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: 900,
-        system: FOOD_ESTIMATOR_SYSTEM_PROMPT,
-        messages: anthropicMessages,
-      }),
-    });
+    const anthropicHeaders = {
+      "Content-Type": "application/json",
+      "x-api-key": provider.api_key,
+      "anthropic-version": "2023-06-01",
+    };
+    let currentMessages = buildAnthropicMessages();
+    const makeRequest = async (msgs: any[]) => {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: anthropicHeaders,
+        body: JSON.stringify({
+          model, max_tokens: 1200, system: FOOD_ESTIMATOR_SYSTEM_PROMPT,
+          messages: msgs, tools: foodEstimatorTools.anthropic,
+        }),
+      });
+      let p: any = null;
+      try { p = await res.json(); } catch {}
+      if (!res.ok) throw new Error(extractErrorMessage(p, `Anthropic error (${res.status})`));
+      return p;
+    };
 
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      throw new Error(extractErrorMessage(payload, `Anthropic error (${response.status})`));
+    let payload = await makeRequest(currentMessages);
+    for (let round = 0; round < 5; round++) {
+      const contentBlocks = payload?.content as any[] | undefined;
+      const toolUseBlocks = contentBlocks?.filter((b: any) => b.type === "tool_use") ?? [];
+      if (toolUseBlocks.length === 0) break;
+      const toolResults: any[] = [];
+      for (const block of toolUseBlocks) {
+        const result = await handleFoodEstimatorToolCall(block.name, block.input ?? {});
+        toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
+      }
+      currentMessages = [
+        ...currentMessages,
+        { role: "assistant", content: contentBlocks },
+        { role: "user", content: toolResults },
+      ];
+      payload = await makeRequest(currentMessages);
     }
 
     const content = parseAnthropicContent(payload);
@@ -1858,59 +1960,59 @@ async function callFoodEstimatorAPI(
     return content;
   }
 
-  const googleContents = nonSystemMessages.map((msg, index) => {
+  // --- GOOGLE ---
+  const googleContents: any[] = nonSystemMessages.map((msg, index) => {
     if (msg.role === "assistant") {
-      return {
-        role: "model",
-        parts: [{ text: msg.content.trim() || "Entendido." }],
-      };
+      return { role: "model", parts: [{ text: msg.content.trim() || "Entendido." }] };
     }
     const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
     if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
-      return {
-        role: "user",
-        parts: [{ text: textContent }],
-      };
+      return { role: "user", parts: [{ text: textContent }] };
     }
     return {
       role: "user",
       parts: [
         { text: textContent },
         ...normalizedImages.map((image) => ({
-          inline_data: {
-            mime_type: image.mime_type,
-            data: image.base64,
-          },
+          inline_data: { mime_type: image.mime_type, data: image.base64 },
         })),
       ],
     };
   });
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(provider.api_key)}`,
-    {
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(provider.api_key)}`;
+  const makeGoogleRequest = async (contents: any[]) => {
+    const res = await fetch(googleUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        contents: googleContents,
-        systemInstruction: {
-          parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }],
-        },
+        contents,
+        systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }] },
+        tools: foodEstimatorTools.google,
       }),
-    },
-  );
+    });
+    let p: any = null;
+    try { p = await res.json(); } catch {}
+    if (!res.ok) throw new Error(extractErrorMessage(p, `Google AI error (${res.status})`));
+    return p;
+  };
 
-  let payload: unknown = null;
-  try {
-    payload = await response.json();
-  } catch {
-    // ignore json parse errors
-  }
-
-  if (!response.ok) {
-    throw new Error(extractErrorMessage(payload, `Google AI error (${response.status})`));
+  let payload: any = await makeGoogleRequest(googleContents);
+  for (let round = 0; round < 5; round++) {
+    const candidate = payload?.candidates?.[0];
+    const parts = candidate?.content?.parts ?? [];
+    const functionCalls = parts.filter((p: any) => p.functionCall);
+    if (functionCalls.length === 0) break;
+    googleContents.push({ role: "model", parts });
+    const functionResponseParts: any[] = [];
+    for (const fc of functionCalls) {
+      const result = await handleFoodEstimatorToolCall(fc.functionCall.name, fc.functionCall.args ?? {});
+      functionResponseParts.push({
+        functionResponse: { name: fc.functionCall.name, response: { result } },
+      });
+    }
+    googleContents.push({ role: "user", parts: functionResponseParts });
+    payload = await makeGoogleRequest(googleContents);
   }
 
   const content = parseGoogleContent(payload);
@@ -4936,11 +5038,26 @@ export default function App() {
           content: message.content,
         })),
       ];
-      const assistantContent = await callFoodEstimatorAPI(
-        resolvedProvider,
-        estimatorHistory,
-        foodEstimatorImages,
-      );
+      let assistantContent: string | null = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          assistantContent = await callFoodEstimatorAPI(
+            resolvedProvider,
+            estimatorHistory,
+            foodEstimatorImages,
+          );
+          if (assistantContent && assistantContent.trim().length > 0) break;
+          assistantContent = null;
+        } catch (retryErr) {
+          const msg = retryErr instanceof Error ? retryErr.message : "";
+          const isRetryable = /high demand|overloaded|rate.?limit|529|503|429/i.test(msg);
+          if (!isRetryable || attempt === 2) throw retryErr;
+          await new Promise((r) => setTimeout(r, (attempt + 1) * 2000));
+        }
+      }
+      if (!assistantContent || assistantContent.trim().length === 0) {
+        throw new Error("El modelo no devolvió contenido. Intenta reformular tu mensaje.");
+      }
       const assistantMessage: ChatMessage = {
         id: uid("food_est_msg"),
         role: "assistant",
@@ -10426,74 +10543,53 @@ export default function App() {
                               placeholder="Nombre del alimento"
                               placeholderTextColor={mobileTheme.color.textSecondary}
                             />
-                            <TextInput
-                              style={{
-                                minHeight: 42,
-                                borderRadius: mobileTheme.radius.md,
-                                borderWidth: 1,
-                                borderColor: mobileTheme.color.borderSubtle,
-                                backgroundColor: mobileTheme.color.bgApp,
-                                color: mobileTheme.color.textPrimary,
-                                paddingHorizontal: 12,
-                              }}
-                              value={mealCaloriesInput}
-                              onChangeText={setMealCaloriesInput}
-                              placeholder="Calorías"
-                              placeholderTextColor={mobileTheme.color.textSecondary}
-                              keyboardType="decimal-pad"
-                            />
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, width: 110 }}>Calorías (kcal)</Text>
+                              <TextInput
+                                style={{
+                                  flex: 1,
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 12,
+                                }}
+                                value={mealCaloriesInput}
+                                onChangeText={setMealCaloriesInput}
+                                placeholder="Calorías (kcal)"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                keyboardType="decimal-pad"
+                              />
+                            </View>
                             <View style={{ gap: 8 }}>
-                              <TextInput
-                                style={{
-                                  width: "100%",
-                                  minHeight: 42,
-                                  borderRadius: mobileTheme.radius.md,
-                                  borderWidth: 1,
-                                  borderColor: mobileTheme.color.borderSubtle,
-                                  backgroundColor: mobileTheme.color.bgApp,
-                                  color: mobileTheme.color.textPrimary,
-                                  paddingHorizontal: 12,
-                                }}
-                                value={mealProteinInput}
-                                onChangeText={setMealProteinInput}
-                                placeholder="P (g)"
-                                placeholderTextColor={mobileTheme.color.textSecondary}
-                                keyboardType="decimal-pad"
-                              />
-                              <TextInput
-                                style={{
-                                  width: "100%",
-                                  minHeight: 42,
-                                  borderRadius: mobileTheme.radius.md,
-                                  borderWidth: 1,
-                                  borderColor: mobileTheme.color.borderSubtle,
-                                  backgroundColor: mobileTheme.color.bgApp,
-                                  color: mobileTheme.color.textPrimary,
-                                  paddingHorizontal: 12,
-                                }}
-                                value={mealCarbsInput}
-                                onChangeText={setMealCarbsInput}
-                                placeholder="C (g)"
-                                placeholderTextColor={mobileTheme.color.textSecondary}
-                                keyboardType="decimal-pad"
-                              />
-                              <TextInput
-                                style={{
-                                  width: "100%",
-                                  minHeight: 42,
-                                  borderRadius: mobileTheme.radius.md,
-                                  borderWidth: 1,
-                                  borderColor: mobileTheme.color.borderSubtle,
-                                  backgroundColor: mobileTheme.color.bgApp,
-                                  color: mobileTheme.color.textPrimary,
-                                  paddingHorizontal: 12,
-                                }}
-                                value={mealFatInput}
-                                onChangeText={setMealFatInput}
-                                placeholder="G (g)"
-                                placeholderTextColor={mobileTheme.color.textSecondary}
-                                keyboardType="decimal-pad"
-                              />
+                              {[
+                                { label: "Proteínas (g)", value: mealProteinInput, setter: setMealProteinInput },
+                                { label: "Carbohidratos (g)", value: mealCarbsInput, setter: setMealCarbsInput },
+                                { label: "Grasas (g)", value: mealFatInput, setter: setMealFatInput },
+                              ].map((field) => (
+                                <View key={field.label} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, width: 110 }}>{field.label}</Text>
+                                  <TextInput
+                                    style={{
+                                      flex: 1,
+                                      minHeight: 42,
+                                      borderRadius: mobileTheme.radius.md,
+                                      borderWidth: 1,
+                                      borderColor: mobileTheme.color.borderSubtle,
+                                      backgroundColor: mobileTheme.color.bgApp,
+                                      color: mobileTheme.color.textPrimary,
+                                      paddingHorizontal: 12,
+                                    }}
+                                    value={field.value}
+                                    onChangeText={field.setter}
+                                    placeholder={field.label}
+                                    placeholderTextColor={mobileTheme.color.textSecondary}
+                                    keyboardType="decimal-pad"
+                                  />
+                                </View>
+                              ))}
                             </View>
                             <View style={{ flexDirection: "row", gap: 8 }}>
                               <Pressable
