@@ -26,6 +26,19 @@
     "instructions": "Acuéstate en un banco plano con una mancuerna en cada mano y los brazos extendidos sobre el pecho. Con los codos ligeramente flexionados, abre los brazos hacia los lados en arco hasta sentir el estiramiento en el pecho y vuelve a la posición inicial."
   },
   {
+    "id": "curl-unilateral-mancuerna-sentado",
+    "name": "Curl unilateral con mancuerna sentado",
+    "image_male": "images/curl-unilateral-mancuerna-sentado-male.webp",
+    "image_female": "images/curl-unilateral-mancuerna-sentado-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en un banco con la espalda recta y una mancuerna en una mano, el brazo extendido a un lado del cuerpo. Flexiona el codo llevando la mancuerna hacia el hombro, apretando el bíceps en la parte alta del movimiento. Baja de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
+  },
+  {
     "id": "extensiones-triceps-barra",
     "name": "Extensiones de tríceps con barra",
     "image_male": "images/extensiones-triceps-barra-male.webp",

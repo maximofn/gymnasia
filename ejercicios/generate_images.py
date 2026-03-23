@@ -51,6 +51,7 @@ EXERCISE_PROMPTS = {
     "jalon-poleas": ("a seated cable lat pulldown, pulling a wide bar down to the upper chest with both hands on a cable pulley machine, thighs locked under pads", "3/4 diagonal view"),
     "remo-polea": ("a seated cable row on a low pulley machine, feet on platform, pulling a handle toward the abdomen with both hands, back straight", "3/4 diagonal view"),
     "remo-cuello-polea-baja": ("a standing face pull on a low cable pulley, pulling a rope upward toward the neck with elbows high and wide, targeting rear deltoids", "3/4 diagonal view"),
+    "curl-unilateral-mancuerna-sentado": ("a seated single-arm dumbbell bicep curl, sitting on a bench with back straight, curling one dumbbell up toward the shoulder", "3/4 diagonal view"),
     "press-inclinado-unilateral-maquina": ("a seated single-arm incline chest press on a machine, pushing upward and forward with one arm on an inclined trajectory", "3/4 diagonal view"),
     "extensiones-triceps-barra": ("a standing tricep straight bar pushdown on a cable machine, gripping a straight bar pushing down", "3/4 diagonal view"),
 }
