@@ -1,0 +1,11 @@
+{
+  "id": "press-hombro-unilateral-maquina",
+  "name": "Press de hombro unilateral en máquina",
+  "image_male": "images/press-hombro-unilateral-maquina-male.webp",
+  "image_female": "images/press-hombro-unilateral-maquina-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["tríceps", "trapecio"],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en la máquina de press militar con la espalda apoyada en el respaldo. Agarra una de las asas con una mano a la altura del hombro. Empuja el asa hacia arriba hasta extender el brazo por encima de la cabeza. Baja de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
+}
