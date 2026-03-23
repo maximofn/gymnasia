@@ -1,5 +1,18 @@
 [
   {
+    "id": "aperturas-inclinadas-mancuernas",
+    "name": "Aperturas inclinadas con mancuernas",
+    "image_male": "images/aperturas-inclinadas-mancuernas-male.webp",
+    "image_female": "images/aperturas-inclinadas-mancuernas-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombro anterior"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Acuéstate en un banco inclinado (30-45°) con una mancuerna en cada mano y los brazos extendidos sobre el pecho. Con los codos ligeramente flexionados, abre los brazos hacia los lados en arco hasta sentir el estiramiento en la parte superior del pecho y vuelve a la posición inicial de forma controlada."
+  },
+  {
     "id": "aperturas-mancuernas",
     "name": "Aperturas con mancuernas",
     "image_male": "images/aperturas-mancuernas-male.webp",
