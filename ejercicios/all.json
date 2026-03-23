@@ -74,6 +74,19 @@
     "instructions": "De pie frente a una polea alta, agarra la cuerda con ambas manos. Con los codos pegados al cuerpo, extiende los brazos hacia abajo separando los extremos de la cuerda al final del movimiento. Vuelve de forma controlada."
   },
   {
+    "id": "femoral-de-pie",
+    "name": "Femoral de pie",
+    "image_male": "images/femoral-de-pie-male.webp",
+    "image_female": "images/femoral-de-pie-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "máquina",
+    "difficulty": "beginner",
+    "instructions": "De pie en la máquina de femoral, apoya el pecho en el soporte y sujétate de las asas laterales. Coloca el tobillo detrás del rodillo acolchado. Flexiona la rodilla llevando el talón hacia el glúteo, apretando el isquiotibial en la parte alta del movimiento. Baja de forma controlada. Completa las repeticiones con una pierna antes de cambiar a la otra."
+  },
+  {
     "id": "jalon-poleas",
     "name": "Jalón en máquina de poleas",
     "image_male": "images/jalon-poleas-male.webp",
