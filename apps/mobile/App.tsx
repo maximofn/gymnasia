@@ -12138,8 +12138,8 @@ export default function App() {
 
 
 
-                  <View style={{ flexDirection: "row", gap: 10 }}>
-                    <View style={{ flex: 1, gap: 8 }}>
+                  <View style={{ flexDirection: "row", gap: 10, overflow: "hidden" }}>
+                    <View style={{ flex: 1, gap: 8, minWidth: 0 }}>
                       <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>kcal</Text>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
                         Proteínas
@@ -12199,7 +12199,7 @@ export default function App() {
                         keyboardType="decimal-pad"
                       />
                     </View>
-                    <View style={{ flex: 1, gap: 8 }}>
+                    <View style={{ flex: 1, gap: 8, minWidth: 0 }}>
                       <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>g/kg</Text>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
                         Proteína{proteinMaxGramsPerKgHint !== null ? ` · max ${proteinMaxGramsPerKgHint.toFixed(1)}` : ""}
