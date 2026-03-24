@@ -12162,73 +12162,64 @@ export default function App() {
 
 
 
-                  <View style={{ flexDirection: "row", gap: 10, overflow: "hidden" }}>
-                    <View style={{ flex: 1, gap: 8, minWidth: 0 }}>
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>kcal</Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Proteínas
-                      </Text>
-                      {(["protein", "carbs", "fat"] as const).map((macro) => (
-                        <View key={macro}>
-                          {macro === "carbs" ? (
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>Carbohidratos</Text>
-                          ) : macro === "fat" ? (
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>Grasas</Text>
-                          ) : null}
-                          <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
-                            <TextInput
-                              style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
-                              value={dietSettings.manual_macro_calories[macro]}
-                              onChangeText={(value) => updateManualMacroCalories(macro, value)}
-                              placeholder="kcal"
-                              placeholderTextColor={mobileTheme.color.textSecondary}
-                              keyboardType="decimal-pad"
-                            />
-                            <View style={{ justifyContent: "center", paddingRight: 4, gap: 2 }}>
-                              <Pressable onPress={() => updateManualMacroCalories(macro, String((parseInt(dietSettings.manual_macro_calories[macro]) || 0) + 1))} style={{ padding: 2 }}>
-                                <Feather name="chevron-up" size={14} color={mobileTheme.color.textSecondary} />
-                              </Pressable>
-                              <Pressable onPress={() => updateManualMacroCalories(macro, String(Math.max(0, (parseInt(dietSettings.manual_macro_calories[macro]) || 0) - 1)))} style={{ padding: 2 }}>
-                                <Feather name="chevron-down" size={14} color={mobileTheme.color.textSecondary} />
-                              </Pressable>
-                            </View>
+                  {([
+                    { macro: "protein" as const, kcalLabel: "Proteínas", gkgLabel: "Proteína", gkgHint: proteinMaxGramsPerKgHint, gkgValue: dietSettings.protein_grams_per_kg, gkgOnChange: updateProteinGramsPerKg },
+                    { macro: "carbs" as const, kcalLabel: "Carbohidratos", gkgLabel: "Carbohidratos", gkgHint: carbsMaxGramsPerKgHint, gkgValue: dietSettings.carbs_grams_per_kg, gkgOnChange: updateCarbsGramsPerKg },
+                    { macro: "fat" as const, kcalLabel: "Grasas", gkgLabel: "Grasas", gkgHint: fatMaxGramsPerKgHint, gkgValue: dietSettings.fat_grams_per_kg, gkgOnChange: updateFatGramsPerKg },
+                  ]).map((row, idx) => (
+                    <View key={row.macro}>
+                      {idx === 0 ? (
+                        <View style={{ flexDirection: "row", gap: 10, marginBottom: 4 }}>
+                          <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>kcal</Text>
+                          <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>g/kg</Text>
+                        </View>
+                      ) : null}
+                      <View style={{ flexDirection: "row", gap: 10, marginBottom: 2 }}>
+                        <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>{row.kcalLabel}</Text>
+                        <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }} numberOfLines={1}>
+                          {row.gkgLabel}{row.gkgHint !== null ? ` · max ${row.gkgHint.toFixed(1)}` : ""}
+                        </Text>
+                      </View>
+                      <View style={{ flexDirection: "row", gap: 10 }}>
+                        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
+                          <TextInput
+                            style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
+                            value={dietSettings.manual_macro_calories[row.macro]}
+                            onChangeText={(value) => updateManualMacroCalories(row.macro, value)}
+                            placeholder="kcal"
+                            placeholderTextColor={mobileTheme.color.textSecondary}
+                            keyboardType="decimal-pad"
+                          />
+                          <View style={{ justifyContent: "center", paddingRight: 6 }}>
+                            <Pressable onPress={() => updateManualMacroCalories(row.macro, String((parseInt(dietSettings.manual_macro_calories[row.macro]) || 0) + 1))} style={{ padding: 4 }}>
+                              <Feather name="chevron-up" size={16} color={mobileTheme.color.textSecondary} />
+                            </Pressable>
+                            <Pressable onPress={() => updateManualMacroCalories(row.macro, String(Math.max(0, (parseInt(dietSettings.manual_macro_calories[row.macro]) || 0) - 1)))} style={{ padding: 4 }}>
+                              <Feather name="chevron-down" size={16} color={mobileTheme.color.textSecondary} />
+                            </Pressable>
                           </View>
                         </View>
-                      ))}
-                    </View>
-                    <View style={{ flex: 1, gap: 8, minWidth: 0 }}>
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>g/kg</Text>
-                      {([
-                        { key: "protein" as const, label: "Proteína", hint: proteinMaxGramsPerKgHint, value: dietSettings.protein_grams_per_kg, onChange: updateProteinGramsPerKg },
-                        { key: "carbs" as const, label: "Carbohidratos", hint: carbsMaxGramsPerKgHint, value: dietSettings.carbs_grams_per_kg, onChange: updateCarbsGramsPerKg },
-                        { key: "fat" as const, label: "Grasas", hint: fatMaxGramsPerKgHint, value: dietSettings.fat_grams_per_kg, onChange: updateFatGramsPerKg },
-                      ]).map((item) => (
-                        <View key={item.key} style={{ gap: 2 }}>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                            {item.label}{item.hint !== null ? ` · max ${item.hint.toFixed(1)}` : ""}
-                          </Text>
-                          <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
-                            <TextInput
-                              style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
-                              value={item.value}
-                              onChangeText={item.onChange}
-                              placeholder="g/kg"
-                              placeholderTextColor={mobileTheme.color.textSecondary}
-                              keyboardType="decimal-pad"
-                            />
-                            <View style={{ justifyContent: "center", paddingRight: 4, gap: 2 }}>
-                              <Pressable onPress={() => item.onChange((Math.round(((parseFloat(item.value) || 0) + 0.1) * 10) / 10).toFixed(1))} style={{ padding: 2 }}>
-                                <Feather name="chevron-up" size={14} color={mobileTheme.color.textSecondary} />
-                              </Pressable>
-                              <Pressable onPress={() => item.onChange((Math.max(0, Math.round(((parseFloat(item.value) || 0) - 0.1) * 10) / 10)).toFixed(1))} style={{ padding: 2 }}>
-                                <Feather name="chevron-down" size={14} color={mobileTheme.color.textSecondary} />
-                              </Pressable>
-                            </View>
+                        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
+                          <TextInput
+                            style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
+                            value={row.gkgValue}
+                            onChangeText={row.gkgOnChange}
+                            placeholder="g/kg"
+                            placeholderTextColor={mobileTheme.color.textSecondary}
+                            keyboardType="decimal-pad"
+                          />
+                          <View style={{ justifyContent: "center", paddingRight: 6 }}>
+                            <Pressable onPress={() => row.gkgOnChange((Math.round(((parseFloat(row.gkgValue) || 0) + 0.1) * 10) / 10).toFixed(1))} style={{ padding: 4 }}>
+                              <Feather name="chevron-up" size={16} color={mobileTheme.color.textSecondary} />
+                            </Pressable>
+                            <Pressable onPress={() => row.gkgOnChange((Math.max(0, Math.round(((parseFloat(row.gkgValue) || 0) - 0.1) * 10) / 10)).toFixed(1))} style={{ padding: 4 }}>
+                              <Feather name="chevron-down" size={16} color={mobileTheme.color.textSecondary} />
+                            </Pressable>
                           </View>
                         </View>
-                      ))}
+                      </View>
                     </View>
-                  </View>
+                  ))}
 
                   <View
                     style={{
