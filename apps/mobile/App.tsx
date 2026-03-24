@@ -3232,6 +3232,148 @@ function normalizeDietByDate(rawValue: unknown): Record<string, DietDay> {
   return normalized;
 }
 
+function createWebSeedStore(): LocalStore {
+  const threadId = uid("thread");
+  const today = new Date().toISOString().slice(0, 10);
+  return {
+    templates: [
+      {
+        id: uid("tpl"),
+        name: "Tren Superior — Fuerza",
+        category: "strength",
+        icon: "activity",
+        duration_minutes: "45",
+        exercises: [
+          {
+            id: uid("ex"),
+            name: "Press banca",
+            muscle: "pecho",
+            sets: [8, 8, 8, 6],
+            series: [
+              { id: uid("set"), type: "warmup", reps: "12", weight_kg: "40", rest_seconds: "60" },
+              { id: uid("set"), reps: "8", weight_kg: "70", rest_seconds: "120" },
+              { id: uid("set"), reps: "8", weight_kg: "70", rest_seconds: "120" },
+              { id: uid("set"), reps: "6", weight_kg: "75", rest_seconds: "150" },
+            ],
+            load_kg: 70,
+            rest_seconds: 120,
+          },
+          {
+            id: uid("ex"),
+            name: "Remo con barra",
+            muscle: "espalda",
+            sets: [10, 10, 10],
+            series: [
+              { id: uid("set"), reps: "10", weight_kg: "60", rest_seconds: "90" },
+              { id: uid("set"), reps: "10", weight_kg: "60", rest_seconds: "90" },
+              { id: uid("set"), reps: "10", weight_kg: "60", rest_seconds: "90" },
+            ],
+            load_kg: 60,
+            rest_seconds: 90,
+          },
+          {
+            id: uid("ex"),
+            name: "Curl bíceps",
+            muscle: "bíceps",
+            sets: [12, 12, 12],
+            series: [
+              { id: uid("set"), reps: "12", weight_kg: "14", rest_seconds: "60" },
+              { id: uid("set"), type: "dropset", reps: "12", weight_kg: "14", rest_seconds: "0",
+                sub_series: [
+                  { id: uid("sub"), reps: "10", weight_kg: "14", rest_seconds: "0" },
+                  { id: uid("sub"), reps: "8", weight_kg: "10", rest_seconds: "0" },
+                  { id: uid("sub"), reps: "6", weight_kg: "8", rest_seconds: "0" },
+                ],
+              },
+              { id: uid("set"), reps: "12", weight_kg: "14", rest_seconds: "60" },
+            ],
+            load_kg: 14,
+            rest_seconds: 60,
+          },
+        ],
+      },
+      {
+        id: uid("tpl"),
+        name: "Tren Inferior — Hipertrofia",
+        category: "hypertrophy",
+        icon: "zap",
+        duration_minutes: "50",
+        exercises: [
+          {
+            id: uid("ex"),
+            name: "Sentadilla",
+            muscle: "cuádriceps",
+            sets: [10, 10, 8, 8],
+            series: [
+              { id: uid("set"), type: "warmup", reps: "15", weight_kg: "40", rest_seconds: "60" },
+              { id: uid("set"), reps: "10", weight_kg: "80", rest_seconds: "120" },
+              { id: uid("set"), reps: "8", weight_kg: "90", rest_seconds: "150" },
+              { id: uid("set"), reps: "8", weight_kg: "90", rest_seconds: "150" },
+            ],
+            load_kg: 80,
+            rest_seconds: 120,
+          },
+          {
+            id: uid("ex"),
+            name: "Peso muerto rumano",
+            muscle: "isquiotibiales",
+            sets: [10, 10, 10],
+            series: [
+              { id: uid("set"), reps: "10", weight_kg: "70", rest_seconds: "90" },
+              { id: uid("set"), reps: "10", weight_kg: "70", rest_seconds: "90" },
+              { id: uid("set"), reps: "10", weight_kg: "70", rest_seconds: "90" },
+            ],
+            load_kg: 70,
+            rest_seconds: 90,
+          },
+          {
+            id: uid("ex"),
+            name: "Plancha isométrica",
+            muscle: "core",
+            sets: [60, 60],
+            series: [
+              { id: uid("set"), type: "isometric", reps: "60", weight_kg: "", rest_seconds: "60" },
+              { id: uid("set"), type: "isometric", reps: "60", weight_kg: "", rest_seconds: "60" },
+            ],
+            load_kg: null,
+            rest_seconds: 60,
+          },
+        ],
+      },
+    ],
+    workoutHistory: [],
+    dietByDate: {
+      [today]: {
+        meals: [
+          {
+            id: uid("meal"),
+            label: "Desayuno",
+            items: [
+              { id: uid("fi"), name: "Avena con leche", kcal: 350, protein_g: 12, carbs_g: 55, fat_g: 8, amount_g: 300 },
+              { id: uid("fi"), name: "Plátano", kcal: 105, protein_g: 1.3, carbs_g: 27, fat_g: 0.4, amount_g: 120 },
+            ],
+          },
+          {
+            id: uid("meal"),
+            label: "Almuerzo",
+            items: [
+              { id: uid("fi"), name: "Pechuga de pollo", kcal: 280, protein_g: 52, carbs_g: 0, fat_g: 6, amount_g: 200 },
+              { id: uid("fi"), name: "Arroz integral", kcal: 215, protein_g: 5, carbs_g: 45, fat_g: 2, amount_g: 180 },
+            ],
+          },
+        ],
+      },
+    },
+    dietSettings: createDefaultDietSettings(),
+    measurements: [
+      { id: uid("m"), date: today, weight_kg: 78, body_fat_pct: 15, muscle_mass_kg: 35, notes: "" },
+    ],
+    threads: [{ id: threadId, title: "Coach 1" }],
+    messagesByThread: { [threadId]: [] },
+    keys: createDefaultProviderKeys(),
+  };
+}
+
 function createInitialStore(): LocalStore {
   const firstThreadId = uid("thread");
 
@@ -4762,7 +4904,9 @@ export default function App() {
 
         const baseStore = rawStore
           ? normalizeStore(JSON.parse(rawStore) as LocalStore)
-          : createInitialStore();
+          : Platform.OS === "web"
+            ? createWebSeedStore()
+            : createInitialStore();
 
         const mergedStore = mergeStoreWithSecureApiKeys(baseStore, secureApiKeys);
         const hydratedSession = rawSession
