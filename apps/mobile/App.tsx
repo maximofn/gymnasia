@@ -266,6 +266,20 @@ const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Si el usuario pide 'Devuelve json' o 'Devuelve el json', responde únicamente con JSON válido y sin texto adicional, " +
   "con estas claves exactas: dish_name, calories_kcal, protein_g, carbs_g, fat_g. " +
   "Cuando el usuario pregunte o debata, responde usando el contexto previo de la conversación y las fotos adjuntas.";
+const FOOD_AI_SYSTEM_PROMPT =
+  "Eres un nutricionista experto. El usuario te va a decir un alimento, plato o receta. " +
+  "Tu objetivo es determinar los valores nutricionales exactos por unidad base (100g, 1ml, 1 unidad, etc.). " +
+  "Flujo: 1) El usuario te dice un alimento, plato o receta. " +
+  "2) Si necesitas más datos (ingredientes, cantidades, modo de preparación), pregúntale. " +
+  "3) Cuando tengas toda la información, calcula los valores nutricionales. " +
+  "4) Presenta los valores al usuario y pregúntale si son correctos. " +
+  "5) Cuando el usuario confirme, devuelve EXACTAMENTE un bloque JSON con este formato:\n" +
+  "```json\n" +
+  '{"name":"Nombre del alimento","category":"categoría","calories_per_100g":0,"protein_per_100g":0,' +
+  '"carbs_per_100g":0,"fat_per_100g":0,"fiber_per_100g":0,"serving_size_g":0,"serving_description":"descripción de ración"}\n' +
+  "```\n" +
+  "Categorías válidas: proteína, carbohidrato, grasa, fruta, verdura, lácteo, legumbre, fruto-seco, receta, suplemento, bebida, otro. " +
+  "Responde siempre en español. Sé conciso pero preciso.";
 const PROVIDER_UI_META: Record<
   Provider,
   {
@@ -569,6 +583,21 @@ async function handleToolCall(name: string, args: Record<string, unknown>): Prom
     return field.value || "(sin valor)";
   }
   return "Herramienta no reconocida.";
+}
+
+function resolveProviderByPriority(keys: AIKey[], priority: Provider[]): AIKey | null {
+  for (const provider of priority) {
+    const configured = keys.find((item) => item.provider === provider);
+    if (!configured) continue;
+    const apiKey = configured.api_key.trim();
+    if (!apiKey) continue;
+    return {
+      ...configured,
+      api_key: apiKey,
+      model: configured.model.trim() || DEFAULT_MODELS[provider],
+    };
+  }
+  return null;
 }
 
 function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
@@ -3246,6 +3275,184 @@ function normalizeStore(raw: LocalStore): LocalStore {
   };
 }
 
+type MiniChatProps = {
+  systemPrompt: string;
+  providerKeys: AIKey[];
+  providerPriority?: Provider[];
+  onJsonResult?: (json: Record<string, unknown>) => void;
+  onClose: () => void;
+  visible: boolean;
+  title: string;
+};
+
+function MiniChat({ systemPrompt, providerKeys, providerPriority, onJsonResult, onClose, visible, title }: MiniChatProps) {
+  const [mcMessages, setMcMessages] = useState<ChatMessage[]>([]);
+  const [mcInput, setMcInput] = useState("");
+  const [mcSending, setMcSending] = useState(false);
+  const mcScrollRef = useRef<ScrollView>(null);
+
+  if (!visible) return null;
+
+  function extractJson(text: string): Record<string, unknown> | null {
+    const match = text.match(/```json\s*([\s\S]*?)```/);
+    if (match) {
+      try { return JSON.parse(match[1].trim()); } catch { return null; }
+    }
+    const braceMatch = text.match(/\{[\s\S]*"name"\s*:[\s\S]*\}/);
+    if (braceMatch) {
+      try { return JSON.parse(braceMatch[0]); } catch { return null; }
+    }
+    return null;
+  }
+
+  async function sendMcMessage() {
+    const text = mcInput.trim();
+    if (!text || mcSending) return;
+
+    const provider = resolveProviderByPriority(providerKeys, providerPriority ?? FOOD_ESTIMATOR_PROVIDER_PRIORITY);
+    if (!provider) {
+      setMcMessages((prev) => [...prev, { id: uid("msg"), role: "assistant", content: "No hay proveedor de IA configurado. Ve a Configuración → Proveedor IA para añadir una API key.", created_at: new Date().toISOString() }]);
+      return;
+    }
+
+    const userMsg: ChatMessage = { id: uid("msg"), role: "user", content: text, created_at: new Date().toISOString() };
+    setMcMessages((prev) => [...prev, userMsg]);
+    setMcInput("");
+    setMcSending(true);
+
+    try {
+      const history: ChatInputMessage[] = [
+        { role: "system", content: systemPrompt },
+        ...mcMessages.map((m) => ({ role: m.role, content: m.content })),
+        { role: "user" as const, content: text },
+      ];
+      const response = await callProviderChatAPI(provider, history);
+      const assistantMsg: ChatMessage = { id: uid("msg"), role: "assistant", content: response, created_at: new Date().toISOString() };
+      setMcMessages((prev) => [...prev, assistantMsg]);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Error desconocido";
+      setMcMessages((prev) => [...prev, { id: uid("msg"), role: "assistant", content: `Error: ${errMsg}`, created_at: new Date().toISOString() }]);
+    } finally {
+      setMcSending(false);
+      setTimeout(() => mcScrollRef.current?.scrollToEnd({ animated: true }), 100);
+    }
+  }
+
+  const lastAssistantMsg = [...mcMessages].reverse().find((m) => m.role === "assistant");
+  const detectedJson = lastAssistantMsg ? extractJson(lastAssistantMsg.content) : null;
+
+  return (
+    <View
+      style={{
+        borderWidth: 1,
+        borderColor: mobileTheme.color.borderSubtle,
+        backgroundColor: mobileTheme.color.bgSurface,
+        borderRadius: mobileTheme.radius.lg,
+        padding: 12,
+        gap: 10,
+      }}
+    >
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>{title}</Text>
+        <Pressable
+          onPress={() => { setMcMessages([]); setMcInput(""); onClose(); }}
+          style={{ padding: 4 }}
+        >
+          <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
+        </Pressable>
+      </View>
+
+      <ScrollView
+        ref={mcScrollRef}
+        style={{ maxHeight: 320 }}
+        onContentSizeChange={() => mcScrollRef.current?.scrollToEnd({ animated: true })}
+      >
+        {mcMessages.length === 0 ? (
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontStyle: "italic" }}>
+            Escribe un alimento, plato o receta para obtener sus macros...
+          </Text>
+        ) : null}
+        {mcMessages.map((msg) => (
+          <View
+            key={msg.id}
+            style={{
+              alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
+              maxWidth: "85%",
+              marginBottom: 8,
+              borderRadius: 10,
+              padding: 10,
+              backgroundColor: msg.role === "user" ? "rgba(203,255,26,0.1)" : mobileTheme.color.cardBg,
+              borderWidth: 1,
+              borderColor: msg.role === "user" ? "rgba(203,255,26,0.25)" : mobileTheme.color.borderSubtle,
+            }}
+          >
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, lineHeight: 19 }}>
+              {msg.content}
+            </Text>
+          </View>
+        ))}
+        {mcSending ? (
+          <View style={{ alignSelf: "flex-start", marginBottom: 8 }}>
+            <ActivityIndicator size="small" color={mobileTheme.color.brandPrimary} />
+          </View>
+        ) : null}
+      </ScrollView>
+
+      {detectedJson && onJsonResult ? (
+        <Pressable
+          onPress={() => { onJsonResult(detectedJson); setMcMessages([]); setMcInput(""); }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            paddingVertical: 10,
+            borderRadius: mobileTheme.radius.md,
+            backgroundColor: mobileTheme.color.brandPrimary,
+          }}
+        >
+          <Feather name="plus-circle" size={16} color="#000" />
+          <Text style={{ color: "#000", fontSize: 14, fontWeight: "700" }}>Añadir a mis alimentos</Text>
+        </Pressable>
+      ) : null}
+
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        <TextInput
+          value={mcInput}
+          onChangeText={setMcInput}
+          placeholder="Ej: tortilla de patatas..."
+          placeholderTextColor={mobileTheme.color.textSecondary}
+          onSubmitEditing={sendMcMessage}
+          style={{
+            flex: 1,
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+            borderRadius: mobileTheme.radius.md,
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            color: mobileTheme.color.textPrimary,
+            fontSize: 14,
+            backgroundColor: mobileTheme.color.cardBg,
+          }}
+        />
+        <Pressable
+          onPress={sendMcMessage}
+          disabled={mcSending || !mcInput.trim()}
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            paddingHorizontal: 14,
+            borderRadius: mobileTheme.radius.md,
+            backgroundColor: mcSending || !mcInput.trim() ? "#333" : mobileTheme.color.brandPrimary,
+          }}
+        >
+          <Feather name="send" size={16} color={mcSending || !mcInput.trim() ? "#666" : "#000"} />
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 export default function App() {
   const [tab, setTab] = useState<TabKey>("home");
   const [loading, setLoading] = useState(true);
@@ -3315,6 +3522,7 @@ export default function App() {
   const [personalFoodFormVisible, setPersonalFoodFormVisible] = useState(false);
   const [personalFoodDraft, setPersonalFoodDraft] = useState<Partial<FoodRepoEntry>>({});
   const [editingPersonalFoodId, setEditingPersonalFoodId] = useState<string | null>(null);
+  const [personalFoodAIChatOpen, setPersonalFoodAIChatOpen] = useState(false);
   const [memoryFields, setMemoryFields] = useState<PersonalDataField[]>([]);
   const [memoryNewKey, setMemoryNewKey] = useState("");
   const [memoryNewDesc, setMemoryNewDesc] = useState("");
@@ -11370,7 +11578,7 @@ export default function App() {
                   return (
                     <Pressable
                       key={option.key}
-                      onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); }}
+                      onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); setPersonalFoodAIChatOpen(false); }}
                       style={{
                         borderWidth: 1,
                         borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
@@ -13221,31 +13429,85 @@ export default function App() {
 
               {settingsTab === "personalFoods" ? (
                 <View style={{ gap: 12 }}>
-                  {/* Add button */}
-                  <Pressable
-                    onPress={() => {
-                      setPersonalFoodDraft({});
-                      setEditingPersonalFoodId(null);
-                      setPersonalFoodFormVisible(true);
-                      setSelectedPersonalFoodDetail(null);
+                  {/* Add buttons */}
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    <Pressable
+                      onPress={() => {
+                        setPersonalFoodDraft({});
+                        setEditingPersonalFoodId(null);
+                        setPersonalFoodFormVisible(true);
+                        setSelectedPersonalFoodDetail(null);
+                        setPersonalFoodAIChatOpen(false);
+                      }}
+                      style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 6,
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.45)",
+                        borderRadius: mobileTheme.radius.md,
+                        paddingVertical: 10,
+                        backgroundColor: "rgba(203,255,26,0.08)",
+                      }}
+                    >
+                      <Feather name="edit-3" size={14} color={mobileTheme.color.brandPrimary} />
+                      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>
+                        Añadir con formulario
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setPersonalFoodAIChatOpen(true);
+                        setPersonalFoodFormVisible(false);
+                        setSelectedPersonalFoodDetail(null);
+                      }}
+                      style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 6,
+                        borderWidth: 1,
+                        borderColor: "rgba(78,205,196,0.45)",
+                        borderRadius: mobileTheme.radius.md,
+                        paddingVertical: 10,
+                        backgroundColor: "rgba(78,205,196,0.08)",
+                      }}
+                    >
+                      <Feather name="cpu" size={14} color="#4ECDC4" />
+                      <Text style={{ color: "#4ECDC4", fontSize: 13, fontWeight: "700" }}>
+                        Añadir con IA
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {/* AI Chat */}
+                  <MiniChat
+                    visible={personalFoodAIChatOpen}
+                    title="Asistente de alimentos"
+                    systemPrompt={FOOD_AI_SYSTEM_PROMPT}
+                    providerKeys={store.keys}
+                    providerPriority={FOOD_ESTIMATOR_PROVIDER_PRIORITY}
+                    onJsonResult={(json) => {
+                      const entry: FoodRepoEntry = {
+                        id: uid("food"),
+                        name: String(json.name ?? ""),
+                        category: String(json.category ?? "otro"),
+                        calories_per_100g: Number(json.calories_per_100g) || 0,
+                        protein_per_100g: Number(json.protein_per_100g) || 0,
+                        carbs_per_100g: Number(json.carbs_per_100g) || 0,
+                        fat_per_100g: Number(json.fat_per_100g) || 0,
+                        fiber_per_100g: Number(json.fiber_per_100g) || 0,
+                        serving_size_g: Number(json.serving_size_g) || 100,
+                        serving_description: String(json.serving_description ?? ""),
+                      };
+                      setPersonalFoods((prev) => [...prev, entry]);
+                      setPersonalFoodAIChatOpen(false);
                     }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 6,
-                      borderWidth: 1,
-                      borderColor: "rgba(203,255,26,0.45)",
-                      borderRadius: mobileTheme.radius.md,
-                      paddingVertical: 10,
-                      backgroundColor: "rgba(203,255,26,0.08)",
-                    }}
-                  >
-                    <Feather name="plus" size={16} color={mobileTheme.color.brandPrimary} />
-                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700" }}>
-                      Añadir alimento
-                    </Text>
-                  </Pressable>
+                    onClose={() => setPersonalFoodAIChatOpen(false)}
+                  />
 
                   {/* Add/Edit form */}
                   {personalFoodFormVisible ? (
