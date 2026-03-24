@@ -3441,13 +3441,14 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
         </Pressable>
       ) : null}
 
-      <View style={{ flexDirection: "row", gap: 8 }}>
+      <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
         <TextInput
           value={mcInput}
           onChangeText={setMcInput}
           placeholder="Ej: tortilla de patatas..."
           placeholderTextColor={mobileTheme.color.textSecondary}
           onSubmitEditing={sendMcMessage}
+          multiline
           style={{
             flex: 1,
             borderWidth: 1,
@@ -3458,6 +3459,7 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
             color: mobileTheme.color.textPrimary,
             fontSize: 14,
             backgroundColor: mobileTheme.color.cardBg,
+            maxHeight: 120,
           }}
         />
         <Pressable

@@ -1,5 +1,9 @@
 See [AGENTS.md](./AGENTS.md) for full project instructions.
 
+## Git
+
+- Siempre hacer commit y push después de completar un cambio, sin preguntar.
+
 ## Mobile
 
 Para probar en el móvil a través de un túnel (cuando estoy en otra red):
