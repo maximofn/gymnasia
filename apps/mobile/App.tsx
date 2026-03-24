@@ -11963,41 +11963,64 @@ export default function App() {
                     </View>
                     <View style={{ flex: 1.5, gap: 2 }}>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>F. Nacimiento</Text>
-                      <Pressable
-                        onPress={() => setShowBirthDatePicker(true)}
-                        style={{
-                          minHeight: 40,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 10,
-                        }}
-                      >
-                        <Text style={{ color: dietSettings.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
-                          {dietSettings.birth_date || "Seleccionar"}
-                        </Text>
-                        <Feather name="calendar" size={14} color={mobileTheme.color.textSecondary} />
-                      </Pressable>
-                      {showBirthDatePicker ? (
-                        <DateTimePicker
-                          value={dietSettings.birth_date ? new Date(dietSettings.birth_date) : new Date(1990, 0, 1)}
-                          mode="date"
-                          display={Platform.OS === "ios" ? "spinner" : "default"}
-                          maximumDate={new Date()}
-                          minimumDate={new Date(1930, 0, 1)}
-                          onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
-                            setShowBirthDatePicker(Platform.OS === "ios");
-                            if (selectedDate) {
-                              const iso = selectedDate.toISOString().slice(0, 10);
-                              updateDietSettings((prev) => ({ ...prev, birth_date: iso }));
-                            }
+                      {Platform.OS === "web" ? (
+                        <TextInput
+                          value={dietSettings.birth_date ?? ""}
+                          onChangeText={(v) => {
+                            updateDietSettings((prev) => ({ ...prev, birth_date: v }));
+                          }}
+                          placeholder="AAAA-MM-DD"
+                          placeholderTextColor={mobileTheme.color.textSecondary}
+                          style={{
+                            minHeight: 40,
+                            borderRadius: mobileTheme.radius.md,
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            backgroundColor: mobileTheme.color.bgApp,
+                            color: mobileTheme.color.textPrimary,
+                            paddingHorizontal: 10,
+                            fontSize: 14,
                           }}
                         />
-                      ) : null}
+                      ) : (
+                        <>
+                          <Pressable
+                            onPress={() => setShowBirthDatePicker(true)}
+                            style={{
+                              minHeight: 40,
+                              borderRadius: mobileTheme.radius.md,
+                              borderWidth: 1,
+                              borderColor: mobileTheme.color.borderSubtle,
+                              backgroundColor: mobileTheme.color.bgApp,
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              paddingHorizontal: 10,
+                            }}
+                          >
+                            <Text style={{ color: dietSettings.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
+                              {dietSettings.birth_date || "Seleccionar"}
+                            </Text>
+                            <Feather name="calendar" size={14} color={mobileTheme.color.textSecondary} />
+                          </Pressable>
+                          {showBirthDatePicker ? (
+                            <DateTimePicker
+                              value={dietSettings.birth_date ? new Date(dietSettings.birth_date) : new Date(1990, 0, 1)}
+                              mode="date"
+                              display={Platform.OS === "ios" ? "spinner" : "default"}
+                              maximumDate={new Date()}
+                              minimumDate={new Date(1930, 0, 1)}
+                              onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+                                setShowBirthDatePicker(Platform.OS === "ios");
+                                if (selectedDate) {
+                                  const iso = selectedDate.toISOString().slice(0, 10);
+                                  updateDietSettings((prev) => ({ ...prev, birth_date: iso }));
+                                }
+                              }}
+                            />
+                          ) : null}
+                        </>
+                      )}
                     </View>
                   </View>
 
