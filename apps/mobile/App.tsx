@@ -12078,22 +12078,58 @@ export default function App() {
                     })}
                   </View>
 
-                  <TextInput
-                    style={{
-                      minHeight: 42,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                    }}
-                    value={dietSettings.daily_calories}
-                    onChangeText={updateDietDailyCalories}
-                    placeholder="Calorías diarias objetivo (kcal)"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    keyboardType="decimal-pad"
-                  />
+                  <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                    <TextInput
+                      style={{
+                        flex: 1,
+                        minHeight: 42,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgApp,
+                        color: mobileTheme.color.textPrimary,
+                        paddingHorizontal: 12,
+                      }}
+                      value={dietSettings.daily_calories}
+                      onChangeText={updateDietDailyCalories}
+                      placeholder="Calorías objetivo (kcal)"
+                      placeholderTextColor={mobileTheme.color.textSecondary}
+                      keyboardType="decimal-pad"
+                    />
+                    <Pressable
+                      onPress={() => {
+                        const heightCm = parseFloat(dietSettings.height_cm ?? "") || (latestBodyHeightCm ?? 0);
+                        const weightKg = latestBodyWeightKg ?? 0;
+                        const birthDate = dietSettings.birth_date;
+                        if (!weightKg || !heightCm || !birthDate) {
+                          setError("Introduce altura, peso y fecha de nacimiento para calcular.");
+                          return;
+                        }
+                        const ageYears = Math.floor((Date.now() - new Date(birthDate).getTime()) / 31557600000);
+                        // Mifflin-St Jeor BMR (asumimos hombre por defecto, ajustar si se añade sexo)
+                        const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + 5;
+                        const activityMultipliers: Record<string, number> = {
+                          moderate: 1.55,
+                          intermediate: 1.725,
+                          high: 1.9,
+                        };
+                        const multiplier = activityMultipliers[dietSettings.activity_level ?? "moderate"] ?? 1.55;
+                        const tdee = Math.round(bmr * multiplier);
+                        updateDietDailyCalories(String(tdee));
+                        setError(null);
+                      }}
+                      style={{
+                        minHeight: 42,
+                        borderRadius: mobileTheme.radius.md,
+                        backgroundColor: mobileTheme.color.brandPrimary,
+                        paddingHorizontal: 12,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: "#000", fontSize: 12, fontWeight: "700" }}>Calcular</Text>
+                    </Pressable>
+                  </View>
 
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                     {DIET_MACRO_MODE_OPTIONS.map((option) => {
