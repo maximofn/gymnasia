@@ -7398,21 +7398,6 @@ export default function App() {
             </View>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
               <Pressable
-                onPress={() => setTab("chat")}
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 14,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgSurface,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Feather name="bell" size={18} color={mobileTheme.color.textPrimary} />
-              </Pressable>
-              <Pressable
                 onPress={() => setTab("settings")}
                 style={{
                   width: 42,
