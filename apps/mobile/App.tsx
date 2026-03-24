@@ -3685,6 +3685,7 @@ export default function App() {
   const [trainingStatsMetric, setTrainingStatsMetric] = useState<TrainingStatsMetricKey>("volume");
   const [trainingMenuTemplateId, setTrainingMenuTemplateId] = useState<string | null>(null);
   const [activeExerciseMenuId, setActiveExerciseMenuId] = useState<string | null>(null);
+  const [activeSeriesMenuId, setActiveSeriesMenuId] = useState<string | null>(null);
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
   const [exerciseDetailIndex, setExerciseDetailIndex] = useState<number | null>(null);
   const [activeWorkoutSession, setActiveWorkoutSession] = useState<WorkoutSession | null>(null);
@@ -4649,11 +4650,13 @@ export default function App() {
   useEffect(() => {
     if (!activeTrainingTemplate) {
       setActiveExerciseMenuId(null);
+      setActiveSeriesMenuId(null);
       setExpandedExerciseId(null);
       return;
     }
     if (activeTrainingTemplate.exercises.length === 0) {
       setActiveExerciseMenuId(null);
+      setActiveSeriesMenuId(null);
       setExpandedExerciseId(null);
       return;
     }
@@ -6175,6 +6178,37 @@ export default function App() {
             const existingSeries = exercise.series ?? [];
             if (existingSeries.length <= 1) return exercise;
             const nextSeries = existingSeries.filter((s) => s.id !== seriesId);
+            return {
+              ...exercise,
+              series: nextSeries,
+              sets: seriesToLegacySets(nextSeries),
+            };
+          }),
+        };
+      }),
+    }));
+  }
+
+  function duplicateSeriesInExercise(exerciseId: string, seriesId: string) {
+    if (!activeTrainingTemplateId) return;
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((template) => {
+        if (template.id !== activeTrainingTemplateId) return template;
+        return {
+          ...template,
+          exercises: template.exercises.map((exercise) => {
+            if (exercise.id !== exerciseId) return exercise;
+            const existingSeries = exercise.series ?? [];
+            const sourceIndex = existingSeries.findIndex((s) => s.id === seriesId);
+            if (sourceIndex < 0) return exercise;
+            const source = existingSeries[sourceIndex];
+            const clone = { ...source, id: uid("set") };
+            const nextSeries = [
+              ...existingSeries.slice(0, sourceIndex + 1),
+              clone,
+              ...existingSeries.slice(sourceIndex + 1),
+            ];
             return {
               ...exercise,
               series: nextSeries,
@@ -9820,8 +9854,11 @@ export default function App() {
 
                             {exerciseSeries.map((seriesItem, setIndex) => {
                               const canDelete = exerciseSeries.length > 1;
+                              const seriesMenuKey = `${exercise.id}:${seriesItem.id}`;
+                              const isSeriesMenuOpen = activeSeriesMenuId === seriesMenuKey;
                               const handleDelete = () => {
                                 if (!canDelete) return;
+                                setActiveSeriesMenuId(null);
                                 Vibration.vibrate(50);
                                 removeSeriesFromExercise(exercise.id, seriesItem.id);
                               };
@@ -9831,6 +9868,7 @@ export default function App() {
                                   onDelete={handleDelete}
                                   enabled={canDelete}
                                 >
+                                <View style={{ position: "relative", zIndex: isSeriesMenuOpen ? 100 : 0 }}>
                                 <View
                                   style={{
                                     minHeight: 36,
@@ -9926,7 +9964,7 @@ export default function App() {
                                     }}
                                   />
                                   <Pressable
-                                    onPress={handleDelete}
+                                    onPress={() => setActiveSeriesMenuId(isSeriesMenuOpen ? null : seriesMenuKey)}
                                     hitSlop={8}
                                     style={{ width: 16, alignItems: "center", justifyContent: "center", gap: 2 }}
                                   >
@@ -9954,6 +9992,68 @@ export default function App() {
                                       </View>
                                     ))}
                                   </Pressable>
+                                </View>
+                                {isSeriesMenuOpen && (
+                                  <View
+                                    style={{
+                                      position: "absolute",
+                                      top: 36,
+                                      right: 4,
+                                      width: 190,
+                                      borderRadius: 16,
+                                      borderWidth: 1,
+                                      borderColor: "rgba(255,255,255,0.1)",
+                                      backgroundColor: "rgba(12,14,19,0.98)",
+                                      paddingVertical: 8,
+                                      zIndex: 240,
+                                      elevation: 24,
+                                      shadowColor: "#000",
+                                      shadowOpacity: 0.36,
+                                      shadowRadius: 10,
+                                      shadowOffset: { width: 0, height: 6 },
+                                    }}
+                                  >
+                                    <Pressable
+                                      onPress={() => {
+                                        setActiveSeriesMenuId(null);
+                                        duplicateSeriesInExercise(exercise.id, seriesItem.id);
+                                      }}
+                                      style={{
+                                        minHeight: 40,
+                                        paddingHorizontal: 12,
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 10,
+                                      }}
+                                    >
+                                      <Feather name="copy" size={14} color={mobileTheme.color.textSecondary} />
+                                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16 }}>
+                                        Duplicar serie
+                                      </Text>
+                                    </Pressable>
+                                    <Pressable
+                                      onPress={handleDelete}
+                                      style={{
+                                        minHeight: 40,
+                                        borderTopWidth: 1,
+                                        borderTopColor: "rgba(255,255,255,0.2)",
+                                        marginTop: 4,
+                                        paddingTop: 8,
+                                        paddingHorizontal: 12,
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 10,
+                                        opacity: canDelete ? 1 : 0.35,
+                                      }}
+                                      disabled={!canDelete}
+                                    >
+                                      <Feather name="trash-2" size={14} color="#FF4A4A" />
+                                      <Text style={{ color: "#FF4A4A", fontSize: 16, fontWeight: "600" }}>
+                                        Eliminar serie
+                                      </Text>
+                                    </Pressable>
+                                  </View>
+                                )}
                                 </View>
                                 </SwipeableSetRow>
                               );
