@@ -11305,6 +11305,24 @@ export default function App() {
                 </View>
 
                 {showDietDatePicker ? (
+                  Platform.OS === "web" ? (
+                    <TextInput
+                      value={selectedDietDate}
+                      onChangeText={(text) => {
+                        const parsed = new Date(text + "T12:00:00");
+                        if (!isNaN(parsed.getTime())) {
+                          setSelectedDietDate(text);
+                        }
+                      }}
+                      placeholder="AAAA-MM-DD"
+                      placeholderTextColor={mobileTheme.color.textSecondary}
+                      style={{
+                        minHeight: 44, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle,
+                        borderRadius: 12, backgroundColor: mobileTheme.color.bgApp,
+                        color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 14,
+                      }}
+                    />
+                  ) : (
                   <View
                     style={{
                       borderWidth: 1,
@@ -11340,6 +11358,7 @@ export default function App() {
                       </Pressable>
                     ) : null}
                   </View>
+                  )
                 ) : null}
               </View>
 
@@ -12744,20 +12763,36 @@ export default function App() {
                             <Feather name="calendar" size={14} color={mobileTheme.color.textSecondary} />
                           </Pressable>
                           {showBirthDatePicker ? (
-                            <DateTimePicker
-                              value={dietSettings.birth_date ? new Date(dietSettings.birth_date) : new Date(1990, 0, 1)}
-                              mode="date"
-                              display={Platform.OS === "ios" ? "spinner" : "default"}
-                              maximumDate={new Date()}
-                              minimumDate={new Date(1930, 0, 1)}
-                              onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
-                                setShowBirthDatePicker(Platform.OS === "ios");
-                                if (selectedDate) {
-                                  const iso = selectedDate.toISOString().slice(0, 10);
-                                  updateDietSettings((prev) => ({ ...prev, birth_date: iso }));
-                                }
-                              }}
-                            />
+                            Platform.OS === "web" ? (
+                              <TextInput
+                                value={dietSettings.birth_date || ""}
+                                onChangeText={(text) => {
+                                  updateDietSettings((prev) => ({ ...prev, birth_date: text }));
+                                }}
+                                placeholder="AAAA-MM-DD"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                style={{
+                                  minHeight: 40, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle,
+                                  borderRadius: 12, backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary, paddingHorizontal: 10, fontSize: 14,
+                                }}
+                              />
+                            ) : (
+                              <DateTimePicker
+                                value={dietSettings.birth_date ? new Date(dietSettings.birth_date) : new Date(1990, 0, 1)}
+                                mode="date"
+                                display={Platform.OS === "ios" ? "spinner" : "default"}
+                                maximumDate={new Date()}
+                                minimumDate={new Date(1930, 0, 1)}
+                                onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+                                  setShowBirthDatePicker(Platform.OS === "ios");
+                                  if (selectedDate) {
+                                    const iso = selectedDate.toISOString().slice(0, 10);
+                                    updateDietSettings((prev) => ({ ...prev, birth_date: iso }));
+                                  }
+                                }}
+                              />
+                            )
                           ) : null}
                         </>
                       )}
@@ -15246,6 +15281,29 @@ export default function App() {
               </Pressable>
 
               {showMeasurementDatePicker ? (
+                Platform.OS === "web" ? (
+                  <TextInput
+                    value={measurementDate.toISOString().slice(0, 10)}
+                    onChangeText={(text) => {
+                      const parsed = new Date(text + "T12:00:00");
+                      if (!isNaN(parsed.getTime()) && parsed <= new Date()) {
+                        setMeasurementDate(parsed);
+                      }
+                    }}
+                    placeholder="AAAA-MM-DD"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    style={{
+                      minHeight: 44,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      borderRadius: 12,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                      fontSize: 14,
+                    }}
+                  />
+                ) : (
                 <View
                   style={{
                     borderWidth: 1,
@@ -15282,6 +15340,7 @@ export default function App() {
                     </Pressable>
                   ) : null}
                 </View>
+                )
               ) : null}
 
               <View style={{ gap: 8 }}>
