@@ -11910,7 +11910,7 @@ export default function App() {
 
                   <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
                     <View style={{ flex: 0.7, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Altura</Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Altura</Text>
                       <TextInput
                         value={dietSettings.height_cm ?? (latestBodyHeightCm ? String(latestBodyHeightCm) : "")}
                         onChangeText={(v) => updateDietSettings((prev) => ({ ...prev, height_cm: v }))}
@@ -11930,7 +11930,7 @@ export default function App() {
                       />
                     </View>
                     <View style={{ flex: 0.7, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Peso</Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Peso</Text>
                       <View style={{
                         minHeight: 40,
                         borderRadius: mobileTheme.radius.md,
@@ -11946,7 +11946,7 @@ export default function App() {
                       </View>
                     </View>
                     <View style={{ flex: 0.6, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Edad</Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Edad</Text>
                       <View style={{
                         minHeight: 40,
                         borderRadius: mobileTheme.radius.md,
@@ -11962,7 +11962,7 @@ export default function App() {
                       </View>
                     </View>
                     <View style={{ flex: 1.5, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Nacimiento</Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Nacimiento</Text>
                       <Pressable
                         onPress={() => setShowBirthDatePicker(true)}
                         style={{
