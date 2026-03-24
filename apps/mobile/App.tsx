@@ -208,6 +208,8 @@ type LocalStore = {
   threads: ChatThread[];
   messagesByThread: Record<string, ChatMessage[]>;
   keys: AIKey[];
+  chatProvider?: Provider;
+  foodAIProvider?: Provider;
 };
 
 const STORAGE_KEY = "gymnasia.mobile.local.v3";
@@ -3212,6 +3214,12 @@ function normalizeStore(raw: LocalStore): LocalStore {
     });
   }
 
+  // Migrate chatProvider / foodAIProvider
+  const chatProvider: Provider = (raw as Record<string, unknown>).chatProvider as Provider
+    ?? keys.find((k) => k.is_active)?.provider
+    ?? "openai";
+  const foodAIProvider: Provider = (raw as Record<string, unknown>).foodAIProvider as Provider ?? "google";
+
   const templates: WorkoutTemplate[] = (raw.templates ?? []).map((template, templateIndex) => {
     const normalizedExercises = (template.exercises ?? []).map((exercise, exerciseIndex) => {
       const normalizedSeries = buildSeriesFromLegacyExercise(exercise);
@@ -3272,6 +3280,8 @@ function normalizeStore(raw: LocalStore): LocalStore {
     threads: raw.threads ?? [],
     messagesByThread: raw.messagesByThread ?? {},
     keys,
+    chatProvider,
+    foodAIProvider,
   };
 }
 
@@ -3279,19 +3289,31 @@ type MiniChatProps = {
   systemPrompt: string;
   providerKeys: AIKey[];
   providerPriority?: Provider[];
+  preferredProvider?: Provider;
   onJsonResult?: (json: Record<string, unknown>) => void;
   onClose: () => void;
   visible: boolean;
   title: string;
 };
 
-function MiniChat({ systemPrompt, providerKeys, providerPriority, onJsonResult, onClose, visible, title }: MiniChatProps) {
+function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvider, onJsonResult, onClose, visible, title }: MiniChatProps) {
   const [mcMessages, setMcMessages] = useState<ChatMessage[]>([]);
   const [mcInput, setMcInput] = useState("");
   const [mcSending, setMcSending] = useState(false);
   const mcScrollRef = useRef<ScrollView>(null);
 
   if (!visible) return null;
+
+  const resolvedProvider = (() => {
+    if (preferredProvider) {
+      const match = providerKeys.find((k) => k.provider === preferredProvider && k.api_key.trim());
+      if (match) return { ...match, api_key: match.api_key.trim(), model: match.model.trim() || DEFAULT_MODELS[match.provider] };
+    }
+    return resolveProviderByPriority(providerKeys, providerPriority ?? FOOD_ESTIMATOR_PROVIDER_PRIORITY);
+  })();
+  const providerLabel = resolvedProvider
+    ? `${resolvedProvider.provider.charAt(0).toUpperCase() + resolvedProvider.provider.slice(1)} · ${resolvedProvider.model}`
+    : "Sin proveedor";
 
   function extractJson(text: string): Record<string, unknown> | null {
     const match = text.match(/```json\s*([\s\S]*?)```/);
@@ -3309,7 +3331,7 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, onJsonResult, 
     const text = mcInput.trim();
     if (!text || mcSending) return;
 
-    const provider = resolveProviderByPriority(providerKeys, providerPriority ?? FOOD_ESTIMATOR_PROVIDER_PRIORITY);
+    const provider = resolvedProvider;
     if (!provider) {
       setMcMessages((prev) => [...prev, { id: uid("msg"), role: "assistant", content: "No hay proveedor de IA configurado. Ve a Configuración → Proveedor IA para añadir una API key.", created_at: new Date().toISOString() }]);
       return;
@@ -3352,14 +3374,17 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, onJsonResult, 
         gap: 10,
       }}
     >
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>{title}</Text>
-        <Pressable
-          onPress={() => { setMcMessages([]); setMcInput(""); onClose(); }}
-          style={{ padding: 4 }}
-        >
-          <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
-        </Pressable>
+      <View>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, marginBottom: 2 }}>{providerLabel}</Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>{title}</Text>
+          <Pressable
+            onPress={() => { setMcMessages([]); setMcInput(""); onClose(); }}
+            style={{ padding: 4 }}
+          >
+            <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView
@@ -3540,6 +3565,8 @@ export default function App() {
   const [providerSaveLoading, setProviderSaveLoading] = useState<Record<Provider, boolean>>(() =>
     createProviderBooleanMap(false),
   );
+  const [chatProviderDropdownOpen, setChatProviderDropdownOpen] = useState(false);
+  const [foodAIProviderDropdownOpen, setFoodAIProviderDropdownOpen] = useState(false);
   const [anthropicModelDropdownOpen, setAnthropicModelDropdownOpen] = useState(false);
   const [anthropicModelOptions, setAnthropicModelOptions] = useState<AnthropicModelOption[]>([]);
   const [anthropicModelOptionsLoading, setAnthropicModelOptionsLoading] = useState(false);
@@ -3603,8 +3630,15 @@ export default function App() {
   const todayDietDay = store.dietByDate[today] ?? { day_date: today, meals: [] };
   const dietDay = store.dietByDate[selectedDietDate] ?? { day_date: selectedDietDate, meals: [] };
   const activeProvider = useMemo(
-    () => store.keys.find((item) => item.is_active) ?? null,
-    [store.keys],
+    () => {
+      if (store.chatProvider) {
+        const match = store.keys.find((item) => item.provider === store.chatProvider && item.api_key.trim());
+        if (match) return match;
+      }
+      // Fallback: first provider with API key
+      return store.keys.find((item) => item.api_key.trim()) ?? store.keys[0] ?? null;
+    },
+    [store.keys, store.chatProvider],
   );
   const orderedProviderKeys = useMemo(
     () =>
@@ -5148,6 +5182,20 @@ export default function App() {
   }
 
   function resolveFoodEstimatorProviderFromState(): AIKey | null {
+    // Use store.foodAIProvider if set
+    if (store.foodAIProvider) {
+      const match = store.keys.find(
+        (item) => item.provider === store.foodAIProvider && item.api_key.trim().length > 0,
+      );
+      if (match) {
+        return {
+          ...match,
+          api_key: match.api_key.trim(),
+          model: match.model.trim() || DEFAULT_MODELS[match.provider],
+        };
+      }
+    }
+    // Fallback to previous logic
     const selectedProviderFromStore =
       foodEstimatorProvider &&
       store.keys.find(
@@ -5164,7 +5212,9 @@ export default function App() {
   }
 
   function openFoodEstimatorModal() {
-    const provider = resolveFoodEstimatorProvider(store.keys);
+    const provider = store.foodAIProvider
+      ? store.keys.find((k) => k.provider === store.foodAIProvider && k.api_key.trim()) ?? resolveFoodEstimatorProvider(store.keys)
+      : resolveFoodEstimatorProvider(store.keys);
     setFoodEstimatorProvider(provider);
     setFoodEstimatorImages([]);
     setFoodEstimatorInput("");
@@ -6525,6 +6575,7 @@ export default function App() {
   function setActiveProvider(provider: Provider) {
     setStore((prev) => ({
       ...prev,
+      chatProvider: provider,
       keys: prev.keys.map((item) =>
         item.provider === provider ? { ...item, is_active: true } : { ...item, is_active: false },
       ),
@@ -11971,6 +12022,115 @@ export default function App() {
                     </Text>
                   </View>
 
+                  {/* Provider selector dropdowns */}
+                  {[
+                    {
+                      label: "Agente principal",
+                      value: store.chatProvider,
+                      onChange: (p: Provider) => { setStore((prev) => ({ ...prev, chatProvider: p })); setChatProviderDropdownOpen(false); },
+                      open: chatProviderDropdownOpen,
+                      setOpen: setChatProviderDropdownOpen,
+                      otherClose: () => setFoodAIProviderDropdownOpen(false),
+                    },
+                    {
+                      label: "Buscador de alimentos",
+                      value: store.foodAIProvider,
+                      onChange: (p: Provider) => { setStore((prev) => ({ ...prev, foodAIProvider: p })); setFoodAIProviderDropdownOpen(false); },
+                      open: foodAIProviderDropdownOpen,
+                      setOpen: setFoodAIProviderDropdownOpen,
+                      otherClose: () => setChatProviderDropdownOpen(false),
+                    },
+                  ].map((dropdown) => {
+                    const selectedKey = dropdown.value
+                      ? store.keys.find((k) => k.provider === dropdown.value)
+                      : null;
+                    const selectedLabel = selectedKey
+                      ? `${PROVIDER_UI_META[selectedKey.provider].label} · ${selectedKey.model || DEFAULT_MODELS[selectedKey.provider]}`
+                      : "Sin proveedor";
+                    return (
+                      <View key={dropdown.label} style={{ gap: 4 }}>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>
+                          {dropdown.label}
+                        </Text>
+                        <Pressable
+                          onPress={() => { dropdown.otherClose(); dropdown.setOpen(!dropdown.open); }}
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            borderWidth: 1,
+                            borderColor: dropdown.open ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                            borderRadius: mobileTheme.radius.md,
+                            paddingHorizontal: 12,
+                            paddingVertical: 10,
+                            backgroundColor: mobileTheme.color.bgSurface,
+                          }}
+                        >
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14 }}>
+                            {selectedLabel}
+                          </Text>
+                          <Feather name={dropdown.open ? "chevron-up" : "chevron-down"} size={16} color={mobileTheme.color.textSecondary} />
+                        </Pressable>
+                        {dropdown.open ? (
+                          <View
+                            style={{
+                              borderWidth: 1,
+                              borderColor: mobileTheme.color.borderSubtle,
+                              borderRadius: mobileTheme.radius.md,
+                              backgroundColor: mobileTheme.color.bgSurface,
+                              overflow: "hidden",
+                            }}
+                          >
+                            {(["anthropic", "openai", "google"] as Provider[]).map((provider) => {
+                              const k = store.keys.find((item) => item.provider === provider);
+                              const hasKey = !!(k?.api_key.trim());
+                              const isSelected = dropdown.value === provider;
+                              return (
+                                <Pressable
+                                  key={provider}
+                                  onPress={() => hasKey && dropdown.onChange(provider)}
+                                  style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 10,
+                                    paddingHorizontal: 12,
+                                    paddingVertical: 10,
+                                    backgroundColor: isSelected ? "rgba(203,255,26,0.08)" : "transparent",
+                                    opacity: hasKey ? 1 : 0.4,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      width: 28,
+                                      height: 28,
+                                      borderRadius: 8,
+                                      backgroundColor: PROVIDER_UI_META[provider].avatar_bg,
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                    }}
+                                  >
+                                    <Text style={{ color: PROVIDER_UI_META[provider].avatar_text, fontSize: 14, fontWeight: "700" }}>
+                                      {PROVIDER_UI_META[provider].label[0]}
+                                    </Text>
+                                  </View>
+                                  <View style={{ flex: 1 }}>
+                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+                                      {PROVIDER_UI_META[provider].label}
+                                    </Text>
+                                    {!hasKey ? (
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>Sin API key</Text>
+                                    ) : null}
+                                  </View>
+                                  {isSelected ? <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} /> : null}
+                                </Pressable>
+                              );
+                            })}
+                          </View>
+                        ) : null}
+                      </View>
+                    );
+                  })}
+
                   <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 26 }}>
                     API Keys (BYOK)
                   </Text>
@@ -11996,10 +12156,6 @@ export default function App() {
                     };
                     const statusMeta = providerConnectionBadge(connectionStatus);
                     const isSavingProvider = providerSaveLoading[key.provider];
-                    const providerUsageHint = key.is_active
-                      ? "Proveedor activo para el chat."
-                      : "Toca el encabezado para usar este proveedor en el chat.";
-                    const providerUsageHintColor = key.is_active ? "#24D68B" : "#656E7B";
                     const providerConnectionDetailColor = providerDetailColorBySeverity(
                       connectionStatus.severity,
                     );
@@ -12008,15 +12164,14 @@ export default function App() {
                         key={key.provider}
                         style={{
                           borderWidth: 1,
-                          borderColor: key.is_active ? "rgba(69,141,255,0.45)" : mobileTheme.color.borderSubtle,
+                          borderColor: mobileTheme.color.borderSubtle,
                           borderRadius: mobileTheme.radius.lg,
                           backgroundColor: mobileTheme.color.bgSurface,
                           padding: 12,
                           gap: 10,
                         }}
                       >
-                        <Pressable
-                          onPress={() => setActiveProvider(key.provider)}
+                        <View
                           style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}
                         >
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
@@ -12076,7 +12231,7 @@ export default function App() {
                               {statusMeta.text}
                             </Text>
                           </View>
-                        </Pressable>
+                        </View>
 
                         <View
                           style={{
@@ -12101,7 +12256,7 @@ export default function App() {
                               paddingHorizontal: 0,
                             }}
                             value={draft.api_key}
-                            onFocus={() => setActiveProvider(key.provider)}
+                            onFocus={() => {}}
                             onChangeText={(value) => updateProviderDraft(key.provider, { api_key: value })}
                             placeholder="Añade tu API Key"
                             placeholderTextColor={mobileTheme.color.textSecondary}
@@ -12111,7 +12266,7 @@ export default function App() {
                           />
                           <Pressable
                             onPress={() => {
-                              setActiveProvider(key.provider);
+
                               toggleProviderKeyVisibility(key.provider);
                             }}
                             style={{
@@ -12183,19 +12338,15 @@ export default function App() {
                           </Pressable>
                         </View>
 
-                        <Text style={{ color: providerUsageHintColor, fontSize: 12 }}>
-                          {providerUsageHint}
-                        </Text>
                         <Text style={{ color: providerConnectionDetailColor, fontSize: 12 }}>
                           {connectionStatus.detail}
                         </Text>
 
-                        {key.is_active ? (
-                          key.provider === "anthropic" ? (
+                        {key.provider === "anthropic" ? (
                             <View style={{ gap: 8 }}>
                               <Pressable
                                 onPress={() => {
-                                  setActiveProvider(key.provider);
+    
                                   toggleAnthropicModelDropdown();
                                 }}
                                 style={{
@@ -12233,7 +12384,7 @@ export default function App() {
 
                               <Pressable
                                 onPress={() => {
-                                  setActiveProvider(key.provider);
+    
                                   const anthropicApiKey = draft.api_key.trim();
                                   if (!anthropicApiKey) {
                                     setAnthropicModelOptionsMessage({
@@ -12346,7 +12497,7 @@ export default function App() {
                                           <Pressable
                                             key={modelOption.id}
                                             onPress={() => {
-                                              setActiveProvider(key.provider);
+                
                                               selectAnthropicModel(modelOption.id);
                                             }}
                                             style={{
@@ -12393,7 +12544,7 @@ export default function App() {
                             <View style={{ gap: 8 }}>
                               <Pressable
                                 onPress={() => {
-                                  setActiveProvider(key.provider);
+    
                                   toggleOpenAIModelDropdown();
                                 }}
                                 style={{
@@ -12431,7 +12582,7 @@ export default function App() {
 
                               <Pressable
                                 onPress={() => {
-                                  setActiveProvider(key.provider);
+    
                                   const openAIApiKey = draft.api_key.trim();
                                   if (!openAIApiKey) {
                                     setOpenAIModelOptionsMessage({
@@ -12544,7 +12695,7 @@ export default function App() {
                                           <Pressable
                                             key={modelOption.id}
                                             onPress={() => {
-                                              setActiveProvider(key.provider);
+                
                                               selectOpenAIModel(modelOption.id);
                                             }}
                                             style={{
@@ -12591,7 +12742,7 @@ export default function App() {
                             <View style={{ gap: 8 }}>
                               <Pressable
                                 onPress={() => {
-                                  setActiveProvider(key.provider);
+    
                                   toggleGoogleModelDropdown();
                                 }}
                                 style={{
@@ -12629,7 +12780,7 @@ export default function App() {
 
                               <Pressable
                                 onPress={() => {
-                                  setActiveProvider(key.provider);
+    
                                   const googleApiKey = draft.api_key.trim();
                                   if (!googleApiKey) {
                                     setGoogleModelOptionsMessage({
@@ -12742,7 +12893,7 @@ export default function App() {
                                           <Pressable
                                             key={modelOption.id}
                                             onPress={() => {
-                                              setActiveProvider(key.provider);
+                
                                               selectGoogleModel(modelOption.id);
                                             }}
                                             style={{
@@ -12803,8 +12954,7 @@ export default function App() {
                               autoCapitalize="none"
                               autoCorrect={false}
                             />
-                          )
-                        ) : null}
+                          )}
                       </View>
                     );
                   })}
@@ -13489,6 +13639,7 @@ export default function App() {
                     title="Asistente de alimentos"
                     systemPrompt={FOOD_AI_SYSTEM_PROMPT}
                     providerKeys={store.keys}
+                    preferredProvider={store.foodAIProvider}
                     providerPriority={FOOD_ESTIMATOR_PROVIDER_PRIORITY}
                     onJsonResult={(json) => {
                       const entry: FoodRepoEntry = {
