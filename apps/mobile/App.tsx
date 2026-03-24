@@ -12,9 +12,11 @@ import DateTimePicker, {
 import {
   ActivityIndicator,
   Alert,
+  Animated,
   Image,
   Keyboard,
   KeyboardAvoidingView,
+  PanResponder,
   Platform,
   Pressable,
   SafeAreaView,
@@ -3490,6 +3492,68 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
   );
 }
 
+function SwipeableSetRow({
+  children,
+  onDelete,
+  enabled,
+}: {
+  children: React.ReactNode;
+  onDelete: () => void;
+  enabled: boolean;
+}) {
+  const translateX = useRef(new Animated.Value(0)).current;
+  const DELETE_THRESHOLD = -80;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gs) =>
+        enabled && Math.abs(gs.dx) > 10 && Math.abs(gs.dx) > Math.abs(gs.dy),
+      onPanResponderMove: (_, gs) => {
+        if (gs.dx < 0) translateX.setValue(gs.dx);
+      },
+      onPanResponderRelease: (_, gs) => {
+        if (gs.dx < DELETE_THRESHOLD) {
+          Animated.timing(translateX, {
+            toValue: -300,
+            duration: 200,
+            useNativeDriver: true,
+          }).start(() => onDelete());
+        } else {
+          Animated.spring(translateX, {
+            toValue: 0,
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+    }),
+  ).current;
+
+  return (
+    <View style={{ overflow: "hidden" }}>
+      <View
+        style={{
+          position: "absolute",
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: 80,
+          backgroundColor: "#E53935",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Feather name="trash-2" size={18} color="#fff" />
+      </View>
+      <Animated.View
+        style={{ transform: [{ translateX }], backgroundColor: "#171B23" }}
+        {...panResponder.panHandlers}
+      >
+        {children}
+      </Animated.View>
+    </View>
+  );
+}
+
 export default function App() {
   const [tab, setTab] = useState<TabKey>("home");
   const [loading, setLoading] = useState(true);
@@ -6087,6 +6151,30 @@ export default function App() {
                 rest_seconds: lastSeries?.rest_seconds || "",
               },
             ];
+            return {
+              ...exercise,
+              series: nextSeries,
+              sets: seriesToLegacySets(nextSeries),
+            };
+          }),
+        };
+      }),
+    }));
+  }
+
+  function removeSeriesFromExercise(exerciseId: string, seriesId: string) {
+    if (!activeTrainingTemplateId) return;
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((template) => {
+        if (template.id !== activeTrainingTemplateId) return template;
+        return {
+          ...template,
+          exercises: template.exercises.map((exercise) => {
+            if (exercise.id !== exerciseId) return exercise;
+            const existingSeries = exercise.series ?? [];
+            if (existingSeries.length <= 1) return exercise;
+            const nextSeries = existingSeries.filter((s) => s.id !== seriesId);
             return {
               ...exercise,
               series: nextSeries,
@@ -9731,9 +9819,19 @@ export default function App() {
                             </View>
 
                             {exerciseSeries.map((seriesItem, setIndex) => {
+                              const canDelete = exerciseSeries.length > 1;
+                              const handleDelete = () => {
+                                if (!canDelete) return;
+                                Vibration.vibrate(50);
+                                removeSeriesFromExercise(exercise.id, seriesItem.id);
+                              };
                               return (
-                                <View
+                                <SwipeableSetRow
                                   key={seriesItem.id}
+                                  onDelete={handleDelete}
+                                  enabled={canDelete}
+                                >
+                                <View
                                   style={{
                                     minHeight: 36,
                                     borderBottomWidth:
@@ -9827,7 +9925,11 @@ export default function App() {
                                       textAlign: "center",
                                     }}
                                   />
-                                  <View style={{ width: 16, alignItems: "center", justifyContent: "center", gap: 2 }}>
+                                  <Pressable
+                                    onPress={handleDelete}
+                                    hitSlop={8}
+                                    style={{ width: 16, alignItems: "center", justifyContent: "center", gap: 2 }}
+                                  >
                                     {Array.from({ length: 3 }).map((_, rowIndex) => (
                                       <View
                                         key={`${seriesItem.id}_drag_row_${rowIndex}`}
@@ -9851,8 +9953,9 @@ export default function App() {
                                         />
                                       </View>
                                     ))}
-                                  </View>
+                                  </Pressable>
                                 </View>
+                                </SwipeableSetRow>
                               );
                             })}
 
