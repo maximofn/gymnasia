@@ -8343,16 +8343,16 @@ export default function App() {
                               }}
                             >
                               <Text style={{ width: 42, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
-                                SET
+                                Serie
                               </Text>
                               <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
-                                REPS
+                                Repeticiones
                               </Text>
                               <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
-                                PESO
+                                Peso (kg)
                               </Text>
                               <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
-                                DESCANSO
+                                Descanso (s)
                               </Text>
                             </View>
 
