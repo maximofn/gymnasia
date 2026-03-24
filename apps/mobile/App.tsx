@@ -12131,36 +12131,13 @@ export default function App() {
                     </Pressable>
                   </View>
 
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                    {DIET_MACRO_MODE_OPTIONS.map((option) => {
-                      const isActive = dietSettings.macro_mode === option.key;
-                      return (
-                        <Pressable
-                          key={option.key}
-                          onPress={() => setDietMacroMode(option.key)}
-                          style={{
-                            borderWidth: 1,
-                            borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                            borderRadius: mobileTheme.radius.pill,
-                            paddingHorizontal: 12,
-                            minHeight: 34,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp,
-                          }}
-                        >
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
-                            {option.label}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
 
-                  {dietSettings.macro_mode === "manual_calories" ? (
-                    <View style={{ gap: 8 }}>
+
+                  <View style={{ flexDirection: "row", gap: 10 }}>
+                    <View style={{ flex: 1, gap: 8 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>kcal</Text>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Proteínas (kcal)
+                        Proteínas
                       </Text>
                       <TextInput
                         style={{
@@ -12179,7 +12156,7 @@ export default function App() {
                         keyboardType="decimal-pad"
                       />
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Carbohidratos (kcal)
+                        Carbohidratos
                       </Text>
                       <TextInput
                         style={{
@@ -12198,7 +12175,7 @@ export default function App() {
                         keyboardType="decimal-pad"
                       />
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Grasas (kcal)
+                        Grasas
                       </Text>
                       <TextInput
                         style={{
@@ -12244,10 +12221,10 @@ export default function App() {
                         </Text>
                       </View>
                     </View>
-                  ) : (
-                    <View style={{ gap: 8 }}>
+                    <View style={{ flex: 1, gap: 8 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>g/kg</Text>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        Peso actual usado: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(2)} kg` : "Sin definir"}
+                        Peso: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(0)} kg` : "Sin definir"}
                       </Text>
                       {latestBodyWeightKg === null ? (
                         <Text style={{ color: "#ffd7a8", fontSize: 12 }}>
@@ -12416,7 +12393,7 @@ export default function App() {
                         </Text>
                       </View>
                     </View>
-                  )}
+                  </View>
 
                   <Text
                     style={{
