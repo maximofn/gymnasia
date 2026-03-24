@@ -11908,7 +11908,7 @@ export default function App() {
                     Define tu objetivo y las calorías diarias.
                   </Text>
 
-                  <View style={{ flexDirection: "row", gap: 8 }}>
+                  <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
                     <View style={{ flex: 1, gap: 2 }}>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Altura (cm)</Text>
                       <TextInput
@@ -11962,7 +11962,7 @@ export default function App() {
                       </View>
                     </View>
                     <View style={{ flex: 1.2, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Fecha de nacimiento</Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Nacimiento</Text>
                       <Pressable
                         onPress={() => setShowBirthDatePicker(true)}
                         style={{
