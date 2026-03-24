@@ -11909,12 +11909,12 @@ export default function App() {
                   </Text>
 
                   <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
-                    <View style={{ flex: 1, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Altura (cm)</Text>
+                    <View style={{ flex: 0.7, gap: 2 }}>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Altura</Text>
                       <TextInput
                         value={dietSettings.height_cm ?? (latestBodyHeightCm ? String(latestBodyHeightCm) : "")}
                         onChangeText={(v) => updateDietSettings((prev) => ({ ...prev, height_cm: v }))}
-                        placeholder="175"
+                        placeholder="cm"
                         placeholderTextColor={mobileTheme.color.textSecondary}
                         keyboardType="decimal-pad"
                         style={{
@@ -11929,8 +11929,8 @@ export default function App() {
                         }}
                       />
                     </View>
-                    <View style={{ flex: 1, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Peso (kg)</Text>
+                    <View style={{ flex: 0.7, gap: 2 }}>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Peso</Text>
                       <View style={{
                         minHeight: 40,
                         borderRadius: mobileTheme.radius.md,
@@ -11961,7 +11961,7 @@ export default function App() {
                         </Text>
                       </View>
                     </View>
-                    <View style={{ flex: 1.2, gap: 2 }}>
+                    <View style={{ flex: 1.5, gap: 2 }}>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Nacimiento</Text>
                       <Pressable
                         onPress={() => setShowBirthDatePicker(true)}
