@@ -135,6 +135,8 @@ type ActivityLevel = "moderate" | "intermediate" | "high";
 type DietSettings = {
   goal: DietGoal;
   activity_level?: ActivityLevel;
+  height_cm?: string;
+  birth_date?: string;
   daily_calories: string;
   macro_mode: DietMacroMode;
   manual_macro_calories: {
@@ -11904,6 +11906,66 @@ export default function App() {
                   <Text style={{ color: mobileTheme.color.textSecondary }}>
                     Define tu objetivo y las calorías diarias.
                   </Text>
+
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Altura (cm)</Text>
+                      <TextInput
+                        value={dietSettings.height_cm ?? (latestBodyHeightCm ? String(latestBodyHeightCm) : "")}
+                        onChangeText={(v) => updateDietSettings((prev) => ({ ...prev, height_cm: v }))}
+                        placeholder="175"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        keyboardType="decimal-pad"
+                        style={{
+                          minHeight: 40,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 10,
+                          fontSize: 14,
+                        }}
+                      />
+                    </View>
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Peso (kg)</Text>
+                      <View style={{
+                        minHeight: 40,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgApp,
+                        justifyContent: "center",
+                        paddingHorizontal: 10,
+                      }}>
+                        <Text style={{ color: latestBodyWeightKg ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
+                          {latestBodyWeightKg ? `${latestBodyWeightKg} kg` : "Sin registro"}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={{ flex: 1.2, gap: 2 }}>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>
+                        Edad ({dietSettings.birth_date ? `${Math.floor((Date.now() - new Date(dietSettings.birth_date).getTime()) / 31557600000)}` : "?"} años)
+                      </Text>
+                      <TextInput
+                        value={dietSettings.birth_date ?? ""}
+                        onChangeText={(v) => updateDietSettings((prev) => ({ ...prev, birth_date: v }))}
+                        placeholder="1990-01-15"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        style={{
+                          minHeight: 40,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 10,
+                          fontSize: 14,
+                        }}
+                      />
+                    </View>
+                  </View>
 
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Objetivo</Text>
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
