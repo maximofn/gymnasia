@@ -12159,6 +12159,9 @@ export default function App() {
 
                   {dietSettings.macro_mode === "manual_calories" ? (
                     <View style={{ gap: 8 }}>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
+                        Carbohidratos (kcal)
+                      </Text>
                       <TextInput
                         style={{
                           minHeight: 42,
@@ -12171,10 +12174,13 @@ export default function App() {
                         }}
                         value={dietSettings.manual_macro_calories.carbs}
                         onChangeText={(value) => updateManualMacroCalories("carbs", value)}
-                        placeholder="Carbohidratos (kcal)"
+                        placeholder="kcal"
                         placeholderTextColor={mobileTheme.color.textSecondary}
                         keyboardType="decimal-pad"
                       />
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
+                        Proteínas (kcal)
+                      </Text>
                       <TextInput
                         style={{
                           minHeight: 42,
@@ -12187,10 +12193,13 @@ export default function App() {
                         }}
                         value={dietSettings.manual_macro_calories.protein}
                         onChangeText={(value) => updateManualMacroCalories("protein", value)}
-                        placeholder="Proteínas (kcal)"
+                        placeholder="kcal"
                         placeholderTextColor={mobileTheme.color.textSecondary}
                         keyboardType="decimal-pad"
                       />
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
+                        Grasas (kcal)
+                      </Text>
                       <TextInput
                         style={{
                           minHeight: 42,
@@ -12203,7 +12212,7 @@ export default function App() {
                         }}
                         value={dietSettings.manual_macro_calories.fat}
                         onChangeText={(value) => updateManualMacroCalories("fat", value)}
-                        placeholder="Grasas (kcal)"
+                        placeholder="kcal"
                         placeholderTextColor={mobileTheme.color.textSecondary}
                         keyboardType="decimal-pad"
                       />
