@@ -48,13 +48,28 @@ type SeriesType =
   | "cluster"
   | "superset";
 
+type SubSeries = {
+  id: string;
+  reps: string;
+  weight_kg: string;
+  rest_seconds: string;
+  exercise_name?: string;
+  exercise_id?: string;
+};
+
 type ExerciseSeries = {
   id: string;
   type?: SeriesType;
   reps: string;
   weight_kg: string;
   rest_seconds: string;
+  tempo_contraction?: string;
+  tempo_pause?: string;
+  tempo_relaxation?: string;
+  sub_series?: SubSeries[];
 };
+
+const COMPOUND_SERIES_TYPES: SeriesType[] = ["dropset", "restpause", "myoreps", "cluster", "superset"];
 type RoutineIconName =
   | "activity"
   | "heart"
@@ -3654,6 +3669,11 @@ export default function App() {
   const [exercisePickerOpen, setExercisePickerOpen] = useState(false);
   const [exercisePickerSearch, setExercisePickerSearch] = useState("");
   const [exercisePickerMuscleFilter, setExercisePickerMuscleFilter] = useState("all");
+  const [supersetPickerTarget, setSupersetPickerTarget] = useState<{
+    exerciseId: string;
+    seriesId: string;
+    subSeriesId: string;
+  } | null>(null);
   const [foodsRepo, setFoodsRepo] = useState<FoodRepoEntry[]>([]);
   const [selectedFoodDetail, setSelectedFoodDetail] = useState<FoodRepoEntry | null>(null);
   const [foodSearch, setFoodSearch] = useState("");
@@ -3727,6 +3747,7 @@ export default function App() {
     seriesId: string;
     source: "editor" | "session";
   } | null>(null);
+  const [expandedCompoundSeriesId, setExpandedCompoundSeriesId] = useState<string | null>(null);
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
   const [exerciseDetailIndex, setExerciseDetailIndex] = useState<number | null>(null);
   const [activeWorkoutSession, setActiveWorkoutSession] = useState<WorkoutSession | null>(null);
@@ -5956,7 +5977,7 @@ export default function App() {
     templateId: string,
     exerciseId: string,
     seriesId: string,
-    field: "reps" | "weight_kg" | "rest_seconds" | "type",
+    field: "reps" | "weight_kg" | "rest_seconds" | "type" | "tempo_contraction" | "tempo_pause" | "tempo_relaxation",
     value: string,
   ) {
     setStore((prev) => ({
@@ -6030,7 +6051,7 @@ export default function App() {
   function updateExerciseSeriesFieldInActiveTemplate(
     exerciseId: string,
     seriesId: string,
-    field: "reps" | "weight_kg" | "rest_seconds" | "type",
+    field: "reps" | "weight_kg" | "rest_seconds" | "type" | "tempo_contraction" | "tempo_pause" | "tempo_relaxation",
     value: string,
   ) {
     if (!activeTrainingTemplateId) return;
@@ -6040,7 +6061,7 @@ export default function App() {
   function updateExerciseSeriesFieldInActiveSession(
     exerciseId: string,
     seriesId: string,
-    field: "reps" | "weight_kg" | "rest_seconds" | "type",
+    field: "reps" | "weight_kg" | "rest_seconds" | "type" | "tempo_contraction" | "tempo_pause" | "tempo_relaxation",
     value: string,
   ) {
     if (!activeWorkoutSession) return;
@@ -6245,7 +6266,11 @@ export default function App() {
             const sourceIndex = existingSeries.findIndex((s) => s.id === seriesId);
             if (sourceIndex < 0) return exercise;
             const source = existingSeries[sourceIndex];
-            const clone = { ...source, id: uid("set") };
+            const clone = {
+              ...source,
+              id: uid("set"),
+              sub_series: source.sub_series?.map((ss) => ({ ...ss, id: uid("sub") })),
+            };
             const nextSeries = [
               ...existingSeries.slice(0, sourceIndex + 1),
               clone,
@@ -6256,6 +6281,121 @@ export default function App() {
               series: nextSeries,
               sets: seriesToLegacySets(nextSeries),
             };
+          }),
+        };
+      }),
+    }));
+  }
+
+  function changeSeriesType(exerciseId: string, seriesId: string, newType: SeriesType) {
+    if (!activeTrainingTemplateId) return;
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((template) => {
+        if (template.id !== activeTrainingTemplateId) return template;
+        return {
+          ...template,
+          exercises: template.exercises.map((exercise) => {
+            if (exercise.id !== exerciseId) return exercise;
+            const nextSeries = (exercise.series ?? []).map((s) => {
+              if (s.id !== seriesId) return s;
+              const isCompound = COMPOUND_SERIES_TYPES.includes(newType);
+              const wasCompound = COMPOUND_SERIES_TYPES.includes(s.type ?? "normal");
+              return {
+                ...s,
+                type: newType,
+                sub_series: isCompound && !wasCompound
+                  ? [{ id: uid("sub"), reps: s.reps || "10", weight_kg: s.weight_kg || "", rest_seconds: newType === "dropset" ? "0" : "" }]
+                  : isCompound ? s.sub_series : undefined,
+              };
+            });
+            return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
+          }),
+        };
+      }),
+    }));
+  }
+
+  function addSubSeriesToSeries(exerciseId: string, seriesId: string) {
+    if (!activeTrainingTemplateId) return;
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((template) => {
+        if (template.id !== activeTrainingTemplateId) return template;
+        return {
+          ...template,
+          exercises: template.exercises.map((exercise) => {
+            if (exercise.id !== exerciseId) return exercise;
+            const nextSeries = (exercise.series ?? []).map((s) => {
+              if (s.id !== seriesId || !s.sub_series) return s;
+              const last = s.sub_series[s.sub_series.length - 1];
+              return {
+                ...s,
+                sub_series: [
+                  ...s.sub_series,
+                  {
+                    id: uid("sub"),
+                    reps: last?.reps || "10",
+                    weight_kg: last?.weight_kg || "",
+                    rest_seconds: (s.type ?? "normal") === "dropset" ? "0" : last?.rest_seconds || "",
+                  },
+                ],
+              };
+            });
+            return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
+          }),
+        };
+      }),
+    }));
+  }
+
+  function removeSubSeriesFromSeries(exerciseId: string, seriesId: string, subSeriesId: string) {
+    if (!activeTrainingTemplateId) return;
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((template) => {
+        if (template.id !== activeTrainingTemplateId) return template;
+        return {
+          ...template,
+          exercises: template.exercises.map((exercise) => {
+            if (exercise.id !== exerciseId) return exercise;
+            const nextSeries = (exercise.series ?? []).map((s) => {
+              if (s.id !== seriesId || !s.sub_series || s.sub_series.length <= 1) return s;
+              return { ...s, sub_series: s.sub_series.filter((ss) => ss.id !== subSeriesId) };
+            });
+            return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
+          }),
+        };
+      }),
+    }));
+  }
+
+  function updateSubSeriesField(
+    exerciseId: string,
+    seriesId: string,
+    subSeriesId: string,
+    field: "reps" | "weight_kg" | "rest_seconds" | "exercise_name" | "exercise_id",
+    value: string,
+  ) {
+    if (!activeTrainingTemplateId) return;
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((template) => {
+        if (template.id !== activeTrainingTemplateId) return template;
+        return {
+          ...template,
+          exercises: template.exercises.map((exercise) => {
+            if (exercise.id !== exerciseId) return exercise;
+            const nextSeries = (exercise.series ?? []).map((s) => {
+              if (s.id !== seriesId || !s.sub_series) return s;
+              return {
+                ...s,
+                sub_series: s.sub_series.map((ss) =>
+                  ss.id === subSeriesId ? { ...ss, [field]: value } : ss,
+                ),
+              };
+            });
+            return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
           }),
         };
       }),
@@ -8488,39 +8628,63 @@ export default function App() {
                                   </Text>
                                 </Pressable>
                                 <>
-                                  <TextInput
-                                    value={seriesState.series.reps}
-                                    onChangeText={(value) =>
-                                      updateExerciseSeriesFieldInActiveSession(
-                                        sessionExercise.exercise.id,
-                                        seriesState.series.id,
-                                        "reps",
-                                        value,
-                                      )
-                                    }
-                                    placeholder="-"
-                                    placeholderTextColor="#8C95A4"
-                                    keyboardType="number-pad"
-                                    style={{
-                                      flex: 1,
-                                      minWidth: 0,
-                                      minHeight: 34,
-                                      borderRadius: 8,
-                                      borderWidth: 1,
-                                      borderColor: seriesState.isCompleted
-                                        ? "rgba(203,255,26,0.8)"
-                                        : "rgba(255,255,255,0.16)",
-                                      backgroundColor: seriesState.isCompleted
-                                        ? "rgba(6,9,13,0.32)"
-                                        : "rgba(10,13,18,0.5)",
-                                      color: seriesState.isCompleted
-                                        ? mobileTheme.color.brandPrimary
-                                        : "#C7CED9",
-                                      fontSize: 16,
-                                      fontWeight: "700",
-                                      textAlign: "center",
-                                    }}
-                                  />
+                                  {(seriesState.series.type ?? "normal") === "tempo" ? (
+                                    <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 2 }}>
+                                      {(["tempo_contraction", "tempo_pause", "tempo_relaxation"] as const).map((tf, ti) => (
+                                        <View key={tf} style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+                                          {ti > 0 && <Text style={{ color: "#7D8798", fontSize: 10 }}>-</Text>}
+                                          <TextInput
+                                            value={seriesState.series[tf] ?? ""}
+                                            onChangeText={(v) => updateExerciseSeriesFieldInActiveSession(sessionExercise.exercise.id, seriesState.series.id, tf, v)}
+                                            placeholder={["C","P","R"][ti]}
+                                            placeholderTextColor="#8C95A4"
+                                            keyboardType="number-pad"
+                                            style={{
+                                              flex: 1, minHeight: 34, borderRadius: 8, borderWidth: 1,
+                                              borderColor: seriesState.isCompleted ? "rgba(203,255,26,0.8)" : "rgba(255,255,255,0.16)",
+                                              backgroundColor: seriesState.isCompleted ? "rgba(6,9,13,0.32)" : "rgba(10,13,18,0.5)",
+                                              color: seriesState.isCompleted ? mobileTheme.color.brandPrimary : "#C7CED9",
+                                              fontSize: 13, fontWeight: "700", textAlign: "center",
+                                            }}
+                                          />
+                                        </View>
+                                      ))}
+                                    </View>
+                                  ) : (
+                                    <TextInput
+                                      value={seriesState.series.reps}
+                                      onChangeText={(value) =>
+                                        updateExerciseSeriesFieldInActiveSession(
+                                          sessionExercise.exercise.id,
+                                          seriesState.series.id,
+                                          "reps",
+                                          value,
+                                        )
+                                      }
+                                      placeholder={(seriesState.series.type ?? "normal") === "isometric" ? "(s)" : "-"}
+                                      placeholderTextColor="#8C95A4"
+                                      keyboardType="number-pad"
+                                      style={{
+                                        flex: 1,
+                                        minWidth: 0,
+                                        minHeight: 34,
+                                        borderRadius: 8,
+                                        borderWidth: 1,
+                                        borderColor: seriesState.isCompleted
+                                          ? "rgba(203,255,26,0.8)"
+                                          : "rgba(255,255,255,0.16)",
+                                        backgroundColor: seriesState.isCompleted
+                                          ? "rgba(6,9,13,0.32)"
+                                          : "rgba(10,13,18,0.5)",
+                                        color: seriesState.isCompleted
+                                          ? mobileTheme.color.brandPrimary
+                                          : "#C7CED9",
+                                        fontSize: 16,
+                                        fontWeight: "700",
+                                        textAlign: "center",
+                                      }}
+                                    />
+                                  )}
                                   <TextInput
                                     value={seriesState.series.weight_kg}
                                     onChangeText={(value) =>
@@ -9997,29 +10161,60 @@ export default function App() {
                                       {SERIES_TYPE_META[seriesItem.type ?? "normal"].short}
                                     </Text>
                                   </Pressable>
-                                  <TextInput
-                                    value={seriesItem.reps}
-                                    onChangeText={(value) =>
-                                      updateExerciseSeriesFieldInActiveTemplate(
-                                        exercise.id,
-                                        seriesItem.id,
-                                        "reps",
-                                        value,
-                                      )
-                                    }
-                                    placeholder="-"
-                                    placeholderTextColor="#8C95A4"
-                                    style={{
-                                      flex: 1,
-                                      minWidth: 0,
-                                      color: mobileTheme.color.textPrimary,
-                                      fontSize: 13,
-                                      fontWeight: "700",
-                                      paddingVertical: 0,
-                                      paddingHorizontal: 0,
-                                      textAlign: "center",
-                                    }}
-                                  />
+                                  {(seriesItem.type ?? "normal") === "tempo" ? (
+                                    <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 1 }}>
+                                      <TextInput
+                                        value={seriesItem.tempo_contraction ?? ""}
+                                        onChangeText={(v) => updateExerciseSeriesFieldInActiveTemplate(exercise.id, seriesItem.id, "tempo_contraction", v)}
+                                        placeholder="C"
+                                        placeholderTextColor="#8C95A4"
+                                        keyboardType="number-pad"
+                                        style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "700", textAlign: "center", paddingVertical: 0, paddingHorizontal: 0 }}
+                                      />
+                                      <Text style={{ color: "#7D8798", fontSize: 10 }}>-</Text>
+                                      <TextInput
+                                        value={seriesItem.tempo_pause ?? ""}
+                                        onChangeText={(v) => updateExerciseSeriesFieldInActiveTemplate(exercise.id, seriesItem.id, "tempo_pause", v)}
+                                        placeholder="P"
+                                        placeholderTextColor="#8C95A4"
+                                        keyboardType="number-pad"
+                                        style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "700", textAlign: "center", paddingVertical: 0, paddingHorizontal: 0 }}
+                                      />
+                                      <Text style={{ color: "#7D8798", fontSize: 10 }}>-</Text>
+                                      <TextInput
+                                        value={seriesItem.tempo_relaxation ?? ""}
+                                        onChangeText={(v) => updateExerciseSeriesFieldInActiveTemplate(exercise.id, seriesItem.id, "tempo_relaxation", v)}
+                                        placeholder="R"
+                                        placeholderTextColor="#8C95A4"
+                                        keyboardType="number-pad"
+                                        style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "700", textAlign: "center", paddingVertical: 0, paddingHorizontal: 0 }}
+                                      />
+                                    </View>
+                                  ) : (
+                                    <TextInput
+                                      value={seriesItem.reps}
+                                      onChangeText={(value) =>
+                                        updateExerciseSeriesFieldInActiveTemplate(
+                                          exercise.id,
+                                          seriesItem.id,
+                                          "reps",
+                                          value,
+                                        )
+                                      }
+                                      placeholder={(seriesItem.type ?? "normal") === "isometric" ? "(s)" : "-"}
+                                      placeholderTextColor="#8C95A4"
+                                      style={{
+                                        flex: 1,
+                                        minWidth: 0,
+                                        color: mobileTheme.color.textPrimary,
+                                        fontSize: 13,
+                                        fontWeight: "700",
+                                        paddingVertical: 0,
+                                        paddingHorizontal: 0,
+                                        textAlign: "center",
+                                      }}
+                                    />
+                                  )}
                                   <TextInput
                                     value={seriesItem.weight_kg}
                                     onChangeText={(value) =>
@@ -10158,6 +10353,90 @@ export default function App() {
                                         Eliminar serie
                                       </Text>
                                     </Pressable>
+                                  </View>
+                                )}
+                                {COMPOUND_SERIES_TYPES.includes(seriesItem.type ?? "normal") && (
+                                  <View style={{ marginLeft: 24, borderLeftWidth: 2, borderLeftColor: "#2A3240", paddingLeft: 8, paddingVertical: 4 }}>
+                                    <Pressable
+                                      onPress={() => setExpandedCompoundSeriesId(expandedCompoundSeriesId === seriesItem.id ? null : seriesItem.id)}
+                                      style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 4 }}
+                                    >
+                                      <Feather
+                                        name={expandedCompoundSeriesId === seriesItem.id ? "chevron-down" : "chevron-right"}
+                                        size={12}
+                                        color="#7D8798"
+                                      />
+                                      <Text style={{ color: "#7D8798", fontSize: 11, fontWeight: "600" }}>
+                                        {(seriesItem.sub_series ?? []).length} mini-series
+                                      </Text>
+                                    </Pressable>
+                                    {expandedCompoundSeriesId === seriesItem.id && (
+                                      <>
+                                        {(seriesItem.sub_series ?? []).map((sub, subIdx) => (
+                                          <View key={sub.id} style={{ flexDirection: "row", alignItems: "center", minHeight: 30, gap: 4, paddingRight: 4 }}>
+                                            <Text style={{ width: 18, color: "#7D8798", fontSize: 10, textAlign: "center" }}>
+                                              {subIdx + 1}
+                                            </Text>
+                                            {(seriesItem.type ?? "normal") === "superset" && (
+                                              <Pressable
+                                                onPress={() => {
+                                                  setSupersetPickerTarget({ exerciseId: exercise.id, seriesId: seriesItem.id, subSeriesId: sub.id });
+                                                  setExercisePickerSearch("");
+                                                  setExercisePickerMuscleFilter("all");
+                                                  setExercisePickerOpen(true);
+                                                }}
+                                                style={{ flex: 1, minHeight: 26, borderRadius: 6, backgroundColor: "#202630", justifyContent: "center", paddingHorizontal: 6 }}
+                                              >
+                                                <Text style={{ color: sub.exercise_name ? "#C7CED9" : "#7D8798", fontSize: 11 }} numberOfLines={1}>
+                                                  {sub.exercise_name || "Ejercicio..."}
+                                                </Text>
+                                              </Pressable>
+                                            )}
+                                            <TextInput
+                                              value={sub.reps}
+                                              onChangeText={(v) => updateSubSeriesField(exercise.id, seriesItem.id, sub.id, "reps", v)}
+                                              placeholder="reps"
+                                              placeholderTextColor="#7D8798"
+                                              keyboardType="number-pad"
+                                              style={{ flex: 1, color: "#C7CED9", fontSize: 12, fontWeight: "600", textAlign: "center", paddingVertical: 0 }}
+                                            />
+                                            <TextInput
+                                              value={sub.weight_kg}
+                                              onChangeText={(v) => updateSubSeriesField(exercise.id, seriesItem.id, sub.id, "weight_kg", v)}
+                                              placeholder="kg"
+                                              placeholderTextColor="#7D8798"
+                                              keyboardType="numbers-and-punctuation"
+                                              style={{ flex: 1, color: "#C7CED9", fontSize: 12, fontWeight: "600", textAlign: "center", paddingVertical: 0 }}
+                                            />
+                                            {(seriesItem.type ?? "normal") !== "dropset" && (
+                                              <TextInput
+                                                value={sub.rest_seconds}
+                                                onChangeText={(v) => updateSubSeriesField(exercise.id, seriesItem.id, sub.id, "rest_seconds", v)}
+                                                placeholder="desc"
+                                                placeholderTextColor="#7D8798"
+                                                keyboardType="number-pad"
+                                                style={{ flex: 1, color: "#8C95A4", fontSize: 12, fontWeight: "600", textAlign: "center", paddingVertical: 0 }}
+                                              />
+                                            )}
+                                            {(seriesItem.sub_series ?? []).length > 1 && (
+                                              <Pressable
+                                                onPress={() => removeSubSeriesFromSeries(exercise.id, seriesItem.id, sub.id)}
+                                                hitSlop={6}
+                                              >
+                                                <Feather name="x" size={12} color="#7D8798" />
+                                              </Pressable>
+                                            )}
+                                          </View>
+                                        ))}
+                                        <Pressable
+                                          onPress={() => addSubSeriesToSeries(exercise.id, seriesItem.id)}
+                                          style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 4 }}
+                                        >
+                                          <Feather name="plus" size={11} color="#7D8798" />
+                                          <Text style={{ color: "#7D8798", fontSize: 11, fontWeight: "600" }}>Mini-serie</Text>
+                                        </Pressable>
+                                      </>
+                                    )}
                                   </View>
                                 )}
                                 </View>
@@ -15928,7 +16207,7 @@ export default function App() {
         >
           <SafeAreaView style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
-              <Pressable onPress={() => setExercisePickerOpen(false)} style={{ padding: 6 }}>
+              <Pressable onPress={() => { setExercisePickerOpen(false); setSupersetPickerTarget(null); }} style={{ padding: 6 }}>
                 <Feather name="arrow-left" size={24} color={mobileTheme.color.textPrimary} />
               </Pressable>
               <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
@@ -16010,7 +16289,16 @@ export default function App() {
               {filteredExercisePickerEntries.map((entry) => (
                 <Pressable
                   key={entry.id}
-                  onPress={() => addExerciseFromRepo(entry)}
+                  onPress={() => {
+                    if (supersetPickerTarget) {
+                      updateSubSeriesField(supersetPickerTarget.exerciseId, supersetPickerTarget.seriesId, supersetPickerTarget.subSeriesId, "exercise_name", entry.name);
+                      updateSubSeriesField(supersetPickerTarget.exerciseId, supersetPickerTarget.seriesId, supersetPickerTarget.subSeriesId, "exercise_id", entry.id);
+                      setSupersetPickerTarget(null);
+                      setExercisePickerOpen(false);
+                    } else {
+                      addExerciseFromRepo(entry);
+                    }
+                  }}
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
@@ -16117,10 +16405,14 @@ export default function App() {
                   <Pressable
                     key={st}
                     onPress={() => {
-                      const fn = seriesTypePickerTarget.source === "session"
-                        ? updateExerciseSeriesFieldInActiveSession
-                        : updateExerciseSeriesFieldInActiveTemplate;
-                      fn(seriesTypePickerTarget.exerciseId, seriesTypePickerTarget.seriesId, "type", st);
+                      if (COMPOUND_SERIES_TYPES.includes(st)) {
+                        changeSeriesType(seriesTypePickerTarget.exerciseId, seriesTypePickerTarget.seriesId, st);
+                      } else {
+                        const fn = seriesTypePickerTarget.source === "session"
+                          ? updateExerciseSeriesFieldInActiveSession
+                          : updateExerciseSeriesFieldInActiveTemplate;
+                        fn(seriesTypePickerTarget.exerciseId, seriesTypePickerTarget.seriesId, "type", st);
+                      }
                       setSeriesTypePickerTarget(null);
                     }}
                     style={{
