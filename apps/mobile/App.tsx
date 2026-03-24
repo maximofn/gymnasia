@@ -12193,33 +12193,6 @@ export default function App() {
                         placeholderTextColor={mobileTheme.color.textSecondary}
                         keyboardType="decimal-pad"
                       />
-                      <View
-                        style={{
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          borderRadius: mobileTheme.radius.md,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          padding: 10,
-                          gap: 4,
-                        }}
-                      >
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                          Asignadas: {manualAssignedCalories.toFixed(0)} kcal
-                        </Text>
-                        <Text
-                          style={{
-                            color: manualRemainingCalories < 0 ? "#FF8D8D" : mobileTheme.color.brandPrimary,
-                            fontWeight: "700",
-                          }}
-                        >
-                          {manualRemainingCalories >= 0
-                            ? `Restantes: ${manualRemainingCalories.toFixed(0)} kcal`
-                            : `Excedente: ${Math.abs(manualRemainingCalories).toFixed(0)} kcal`}
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                          Carbos: {manualCarbsGrams.toFixed(1)} g • Proteínas: {manualProteinGrams.toFixed(1)} g • Grasas: {manualFatGrams.toFixed(1)} g
-                        </Text>
-                      </View>
                     </View>
                     <View style={{ flex: 1, gap: 8 }}>
                       <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>g/kg</Text>
@@ -12349,42 +12322,35 @@ export default function App() {
                           </Pressable>
                         ) : null}
                       </View>
-                      <View
-                        style={{
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          borderRadius: mobileTheme.radius.md,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          padding: 10,
-                          gap: 4,
-                        }}
-                      >
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                          Proteínas: {proteinCaloriesFromWeightPlan.toFixed(0)} kcal ({proteinGramsFromWeightPlan.toFixed(1)} g)
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                          Carbos: {carbsCaloriesFromWeightPlan.toFixed(0)} kcal ({carbsGramsFromWeightPlan.toFixed(1)} g)
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                          Grasas: {fatCaloriesFromWeightPlan.toFixed(0)} kcal ({fatGramsFromWeightPlan.toFixed(1)} g)
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                          Objetivo por kg: P {proteinGramsPerKgTarget.toFixed(2)} • C {carbsGramsPerKgTarget.toFixed(2)} • G {fatGramsPerKgTarget.toFixed(2)}
-                        </Text>
-                        <Text
-                          style={{
-                            color:
-                              caloriesRemainingAfterWeightPlan < 0 ? "#FF8D8D" : mobileTheme.color.brandPrimary,
-                            fontWeight: "700",
-                            fontSize: 12,
-                          }}
-                        >
-                          {caloriesRemainingAfterWeightPlan >= 0
-                            ? `Calorías por repartir: ${caloriesRemainingAfterWeightPlan.toFixed(0)} kcal`
-                            : `El plan excede el objetivo en ${Math.abs(caloriesRemainingAfterWeightPlan).toFixed(0)} kcal`}
-                        </Text>
-                      </View>
                     </View>
+                  </View>
+
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      padding: 10,
+                      gap: 4,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                      Asignadas: {configuredMacroCaloriesTotal.toFixed(0)} kcal
+                    </Text>
+                    <Text
+                      style={{
+                        color: configuredMacroCaloriesRemaining < 0 ? "#FF8D8D" : mobileTheme.color.brandPrimary,
+                        fontWeight: "700",
+                      }}
+                    >
+                      {configuredMacroCaloriesRemaining >= 0
+                        ? `Restantes: ${configuredMacroCaloriesRemaining.toFixed(0)} kcal`
+                        : `Excedente: ${Math.abs(configuredMacroCaloriesRemaining).toFixed(0)} kcal`}
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                      P: {proteinDailyTargetGrams.toFixed(1)}g ({(proteinDailyTargetGrams * 4).toFixed(0)} kcal) • C: {carbsDailyTargetGrams.toFixed(1)}g ({(carbsDailyTargetGrams * 4).toFixed(0)} kcal) • G: {fatDailyTargetGrams.toFixed(1)}g ({(fatDailyTargetGrams * 9).toFixed(0)} kcal)
+                    </Text>
                   </View>
 
                   <Text
