@@ -12289,17 +12289,6 @@ export default function App() {
                     </Text>
                   </View>
 
-                  <Text
-                    style={{
-                      color: configuredMacroCaloriesRemaining < 0 ? "#FF8D8D" : mobileTheme.color.textSecondary,
-                      fontSize: 12,
-                    }}
-                  >
-                    Resumen plan: {configuredMacroCaloriesTotal.toFixed(0)} kcal asignadas •{" "}
-                    {configuredMacroCaloriesRemaining >= 0
-                      ? `${configuredMacroCaloriesRemaining.toFixed(0)} kcal por repartir`
-                      : `${Math.abs(configuredMacroCaloriesRemaining).toFixed(0)} kcal excedidas`}
-                  </Text>
                 </View>
               ) : null}
 
