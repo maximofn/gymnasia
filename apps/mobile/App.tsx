@@ -9863,12 +9863,11 @@ export default function App() {
                                 removeSeriesFromExercise(exercise.id, seriesItem.id);
                               };
                               return (
+                                <View key={seriesItem.id} style={{ position: "relative", zIndex: isSeriesMenuOpen ? 100 : 0 }}>
                                 <SwipeableSetRow
-                                  key={seriesItem.id}
                                   onDelete={handleDelete}
                                   enabled={canDelete}
                                 >
-                                <View style={{ position: "relative", zIndex: isSeriesMenuOpen ? 100 : 0 }}>
                                 <View
                                   style={{
                                     minHeight: 36,
@@ -9993,6 +9992,7 @@ export default function App() {
                                     ))}
                                   </Pressable>
                                 </View>
+                                </SwipeableSetRow>
                                 {isSeriesMenuOpen && (
                                   <View
                                     style={{
@@ -10055,7 +10055,6 @@ export default function App() {
                                   </View>
                                 )}
                                 </View>
-                                </SwipeableSetRow>
                               );
                             })}
 
