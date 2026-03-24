@@ -11941,7 +11941,7 @@ export default function App() {
                         paddingHorizontal: 10,
                       }}>
                         <Text style={{ color: latestBodyWeightKg ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
-                          {latestBodyWeightKg ? `${latestBodyWeightKg} kg` : "Sin registro"}
+                          {latestBodyWeightKg ? `${latestBodyWeightKg}` : "—"}
                         </Text>
                       </View>
                     </View>
