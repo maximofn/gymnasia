@@ -12204,129 +12204,60 @@ export default function App() {
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
                         Proteína{proteinMaxGramsPerKgHint !== null ? ` · max ${proteinMaxGramsPerKgHint.toFixed(1)}` : ""}
                       </Text>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                        <TextInput
-                          style={{
-                            flex: 1,
-                            minHeight: 42,
-                            borderRadius: mobileTheme.radius.md,
-                            borderWidth: 1,
-                            borderColor: mobileTheme.color.borderSubtle,
-                            backgroundColor: mobileTheme.color.bgApp,
-                            color: mobileTheme.color.textPrimary,
-                            paddingHorizontal: 12,
-                          }}
-                          value={dietSettings.protein_grams_per_kg}
-                          onChangeText={updateProteinGramsPerKg}
-                          placeholder="g/kg"
-                          placeholderTextColor={mobileTheme.color.textSecondary}
-                          keyboardType="decimal-pad"
-                        />
-                        {canAutocompleteGkgMacro && autocompleteGkgMacroKey === "protein" ? (
-                          <Pressable
-                            onPress={autocompleteMissingGkgMacro}
-                            style={{
-                              minWidth: 62,
-                              height: 42,
-                              borderRadius: mobileTheme.radius.md,
-                              borderWidth: 1,
-                              borderColor: "rgba(203,255,26,0.45)",
-                              backgroundColor: "rgba(203,255,26,0.12)",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              paddingHorizontal: 10,
-                            }}
-                          >
-                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
-                              Auto
-                            </Text>
-                          </Pressable>
-                        ) : null}
-                      </View>
+                      <TextInput
+                        style={{
+                          minHeight: 42,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 12,
+                        }}
+                        value={dietSettings.protein_grams_per_kg}
+                        onChangeText={updateProteinGramsPerKg}
+                        placeholder="g/kg"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        keyboardType="decimal-pad"
+                      />
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
                         Carbohidratos{carbsMaxGramsPerKgHint !== null ? ` · max ${carbsMaxGramsPerKgHint.toFixed(1)}` : ""}
                       </Text>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                        <TextInput
-                          style={{
-                            flex: 1,
-                            minHeight: 42,
-                            borderRadius: mobileTheme.radius.md,
-                            borderWidth: 1,
-                            borderColor: mobileTheme.color.borderSubtle,
-                            backgroundColor: mobileTheme.color.bgApp,
-                            color: mobileTheme.color.textPrimary,
-                            paddingHorizontal: 12,
-                          }}
-                          value={dietSettings.carbs_grams_per_kg}
-                          onChangeText={updateCarbsGramsPerKg}
-                          placeholder="g/kg"
-                          placeholderTextColor={mobileTheme.color.textSecondary}
-                          keyboardType="decimal-pad"
-                        />
-                        {canAutocompleteGkgMacro && autocompleteGkgMacroKey === "carbs" ? (
-                          <Pressable
-                            onPress={autocompleteMissingGkgMacro}
-                            style={{
-                              minWidth: 62,
-                              height: 42,
-                              borderRadius: mobileTheme.radius.md,
-                              borderWidth: 1,
-                              borderColor: "rgba(203,255,26,0.45)",
-                              backgroundColor: "rgba(203,255,26,0.12)",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              paddingHorizontal: 10,
-                            }}
-                          >
-                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
-                              Auto
-                            </Text>
-                          </Pressable>
-                        ) : null}
-                      </View>
+                      <TextInput
+                        style={{
+                          minHeight: 42,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 12,
+                        }}
+                        value={dietSettings.carbs_grams_per_kg}
+                        onChangeText={updateCarbsGramsPerKg}
+                        placeholder="g/kg"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        keyboardType="decimal-pad"
+                      />
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
                         Grasas{fatMaxGramsPerKgHint !== null ? ` · max ${fatMaxGramsPerKgHint.toFixed(1)}` : ""}
                       </Text>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                        <TextInput
-                          style={{
-                            flex: 1,
-                            minHeight: 42,
-                            borderRadius: mobileTheme.radius.md,
-                            borderWidth: 1,
-                            borderColor: mobileTheme.color.borderSubtle,
-                            backgroundColor: mobileTheme.color.bgApp,
-                            color: mobileTheme.color.textPrimary,
-                            paddingHorizontal: 12,
-                          }}
-                          value={dietSettings.fat_grams_per_kg}
-                          onChangeText={updateFatGramsPerKg}
-                          placeholder="g/kg"
-                          placeholderTextColor={mobileTheme.color.textSecondary}
-                          keyboardType="decimal-pad"
-                        />
-                        {canAutocompleteGkgMacro && autocompleteGkgMacroKey === "fat" ? (
-                          <Pressable
-                            onPress={autocompleteMissingGkgMacro}
-                            style={{
-                              minWidth: 62,
-                              height: 42,
-                              borderRadius: mobileTheme.radius.md,
-                              borderWidth: 1,
-                              borderColor: "rgba(203,255,26,0.45)",
-                              backgroundColor: "rgba(203,255,26,0.12)",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              paddingHorizontal: 10,
-                            }}
-                          >
-                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
-                              Auto
-                            </Text>
-                          </Pressable>
-                        ) : null}
-                      </View>
+                      <TextInput
+                        style={{
+                          minHeight: 42,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          backgroundColor: mobileTheme.color.bgApp,
+                          color: mobileTheme.color.textPrimary,
+                          paddingHorizontal: 12,
+                        }}
+                        value={dietSettings.fat_grams_per_kg}
+                        onChangeText={updateFatGramsPerKg}
+                        placeholder="g/kg"
+                        placeholderTextColor={mobileTheme.color.textSecondary}
+                        keyboardType="decimal-pad"
+                      />
                     </View>
                   </View>
 
