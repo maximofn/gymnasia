@@ -12168,120 +12168,65 @@ export default function App() {
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
                         Proteínas
                       </Text>
-                      <TextInput
-                        style={{
-                          minHeight: 42,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 12,
-                        }}
-                        value={dietSettings.manual_macro_calories.protein}
-                        onChangeText={(value) => updateManualMacroCalories("protein", value)}
-                        placeholder="kcal"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        keyboardType="decimal-pad"
-                      />
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Carbohidratos
-                      </Text>
-                      <TextInput
-                        style={{
-                          minHeight: 42,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 12,
-                        }}
-                        value={dietSettings.manual_macro_calories.carbs}
-                        onChangeText={(value) => updateManualMacroCalories("carbs", value)}
-                        placeholder="kcal"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        keyboardType="decimal-pad"
-                      />
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Grasas
-                      </Text>
-                      <TextInput
-                        style={{
-                          minHeight: 42,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 12,
-                        }}
-                        value={dietSettings.manual_macro_calories.fat}
-                        onChangeText={(value) => updateManualMacroCalories("fat", value)}
-                        placeholder="kcal"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        keyboardType="decimal-pad"
-                      />
+                      {(["protein", "carbs", "fat"] as const).map((macro) => (
+                        <View key={macro}>
+                          {macro === "carbs" ? (
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>Carbohidratos</Text>
+                          ) : macro === "fat" ? (
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>Grasas</Text>
+                          ) : null}
+                          <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
+                            <TextInput
+                              style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
+                              value={dietSettings.manual_macro_calories[macro]}
+                              onChangeText={(value) => updateManualMacroCalories(macro, value)}
+                              placeholder="kcal"
+                              placeholderTextColor={mobileTheme.color.textSecondary}
+                              keyboardType="decimal-pad"
+                            />
+                            <View style={{ justifyContent: "center", paddingRight: 4, gap: 2 }}>
+                              <Pressable onPress={() => updateManualMacroCalories(macro, String((parseInt(dietSettings.manual_macro_calories[macro]) || 0) + 1))} style={{ padding: 2 }}>
+                                <Feather name="chevron-up" size={14} color={mobileTheme.color.textSecondary} />
+                              </Pressable>
+                              <Pressable onPress={() => updateManualMacroCalories(macro, String(Math.max(0, (parseInt(dietSettings.manual_macro_calories[macro]) || 0) - 1)))} style={{ padding: 2 }}>
+                                <Feather name="chevron-down" size={14} color={mobileTheme.color.textSecondary} />
+                              </Pressable>
+                            </View>
+                          </View>
+                        </View>
+                      ))}
                     </View>
                     <View style={{ flex: 1, gap: 8, minWidth: 0 }}>
                       <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>g/kg</Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Proteína{proteinMaxGramsPerKgHint !== null ? ` · max ${proteinMaxGramsPerKgHint.toFixed(1)}` : ""}
-                      </Text>
-                      <TextInput
-                        style={{
-                          minHeight: 42,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 12,
-                        }}
-                        value={dietSettings.protein_grams_per_kg}
-                        onChangeText={updateProteinGramsPerKg}
-                        placeholder="g/kg"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        keyboardType="decimal-pad"
-                      />
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Carbohidratos{carbsMaxGramsPerKgHint !== null ? ` · max ${carbsMaxGramsPerKgHint.toFixed(1)}` : ""}
-                      </Text>
-                      <TextInput
-                        style={{
-                          minHeight: 42,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 12,
-                        }}
-                        value={dietSettings.carbs_grams_per_kg}
-                        onChangeText={updateCarbsGramsPerKg}
-                        placeholder="g/kg"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        keyboardType="decimal-pad"
-                      />
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Grasas{fatMaxGramsPerKgHint !== null ? ` · max ${fatMaxGramsPerKgHint.toFixed(1)}` : ""}
-                      </Text>
-                      <TextInput
-                        style={{
-                          minHeight: 42,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 12,
-                        }}
-                        value={dietSettings.fat_grams_per_kg}
-                        onChangeText={updateFatGramsPerKg}
-                        placeholder="g/kg"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        keyboardType="decimal-pad"
-                      />
+                      {([
+                        { key: "protein" as const, label: "Proteína", hint: proteinMaxGramsPerKgHint, value: dietSettings.protein_grams_per_kg, onChange: updateProteinGramsPerKg },
+                        { key: "carbs" as const, label: "Carbohidratos", hint: carbsMaxGramsPerKgHint, value: dietSettings.carbs_grams_per_kg, onChange: updateCarbsGramsPerKg },
+                        { key: "fat" as const, label: "Grasas", hint: fatMaxGramsPerKgHint, value: dietSettings.fat_grams_per_kg, onChange: updateFatGramsPerKg },
+                      ]).map((item) => (
+                        <View key={item.key} style={{ gap: 2 }}>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
+                            {item.label}{item.hint !== null ? ` · max ${item.hint.toFixed(1)}` : ""}
+                          </Text>
+                          <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
+                            <TextInput
+                              style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
+                              value={item.value}
+                              onChangeText={item.onChange}
+                              placeholder="g/kg"
+                              placeholderTextColor={mobileTheme.color.textSecondary}
+                              keyboardType="decimal-pad"
+                            />
+                            <View style={{ justifyContent: "center", paddingRight: 4, gap: 2 }}>
+                              <Pressable onPress={() => item.onChange((Math.round(((parseFloat(item.value) || 0) + 0.1) * 10) / 10).toFixed(1))} style={{ padding: 2 }}>
+                                <Feather name="chevron-up" size={14} color={mobileTheme.color.textSecondary} />
+                              </Pressable>
+                              <Pressable onPress={() => item.onChange((Math.max(0, Math.round(((parseFloat(item.value) || 0) - 0.1) * 10) / 10)).toFixed(1))} style={{ padding: 2 }}>
+                                <Feather name="chevron-down" size={14} color={mobileTheme.color.textSecondary} />
+                              </Pressable>
+                            </View>
+                          </View>
+                        </View>
+                      ))}
                     </View>
                   </View>
 
