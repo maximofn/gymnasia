@@ -3504,8 +3504,10 @@ export default function App() {
   const [selectedDietDate, setSelectedDietDate] = useState<string>(() => todayISO());
   const [showDietDatePicker, setShowDietDatePicker] = useState(false);
   const [dietMealEditorCategory, setDietMealEditorCategory] = useState<DietMealCategory | null>(null);
-  const [dietAddMode, setDietAddMode] = useState<"search" | "form" | "ai" | null>(null);
+  const [dietAddMode, setDietAddMode] = useState<"search" | "form" | "ai" | "selected" | null>(null);
   const [dietFoodSearch, setDietFoodSearch] = useState("");
+  const [dietSelectedFood, setDietSelectedFood] = useState<FoodRepoEntry | null>(null);
+  const [dietSelectedGrams, setDietSelectedGrams] = useState("");
   const [dietItemMenu, setDietItemMenu] = useState<DietItemMenuState>(null);
   const [dietEditingItem, setDietEditingItem] = useState<DietEditingItemState>(null);
   const [dietMealExpanded, setDietMealExpanded] = useState<Record<DietMealCategory, boolean>>(
@@ -10885,13 +10887,9 @@ export default function App() {
                                     <Pressable
                                       key={entry.id}
                                       onPress={() => {
-                                        const servingRatio = entry.serving_size_g / 100;
-                                        setMealTitleInput(entry.name);
-                                        setMealCaloriesInput(String(Math.round(entry.calories_per_100g * servingRatio)));
-                                        setMealProteinInput(String(Math.round(entry.protein_per_100g * servingRatio)));
-                                        setMealCarbsInput(String(Math.round(entry.carbs_per_100g * servingRatio)));
-                                        setMealFatInput(String(Math.round(entry.fat_per_100g * servingRatio)));
-                                        setDietAddMode("form");
+                                        setDietSelectedFood(entry);
+                                        setDietSelectedGrams(String(entry.serving_size_g));
+                                        setDietAddMode("selected");
                                         setDietFoodSearch("");
                                       }}
                                       style={{
@@ -10936,6 +10934,109 @@ export default function App() {
                             </Pressable>
                           </View>
                         ) : null}
+
+                        {isEditing && dietAddMode === "selected" && dietSelectedFood ? (() => {
+                          const grams = parseFloat(dietSelectedGrams) || 0;
+                          const ratio = grams / 100;
+                          const cal = Math.round(dietSelectedFood.calories_per_100g * ratio);
+                          const prot = Math.round(dietSelectedFood.protein_per_100g * ratio * 10) / 10;
+                          const carbs = Math.round(dietSelectedFood.carbs_per_100g * ratio * 10) / 10;
+                          const fat = Math.round(dietSelectedFood.fat_per_100g * ratio * 10) / 10;
+                          return (
+                            <View style={{ gap: 10 }}>
+                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>
+                                {dietSelectedFood.name}
+                              </Text>
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>Cantidad (g):</Text>
+                                <TextInput
+                                  value={dietSelectedGrams}
+                                  onChangeText={setDietSelectedGrams}
+                                  keyboardType="decimal-pad"
+                                  autoFocus
+                                  style={{
+                                    flex: 1,
+                                    minHeight: 42,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.brandPrimary,
+                                    borderRadius: mobileTheme.radius.md,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    color: mobileTheme.color.textPrimary,
+                                    paddingHorizontal: 12,
+                                    fontSize: 16,
+                                    fontWeight: "700",
+                                  }}
+                                />
+                              </View>
+                              <View style={{ flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
+                                {[
+                                  { label: "Calorías", value: `${cal} kcal`, color: "#F7A547" },
+                                  { label: "Proteína", value: `${prot} g`, color: "#4ECDC4" },
+                                  { label: "Carbos", value: `${carbs} g`, color: "#77A8FF" },
+                                  { label: "Grasa", value: `${fat} g`, color: "#FF6B6B" },
+                                ].map((m) => (
+                                  <View key={m.label} style={{ alignItems: "center", minWidth: 65 }}>
+                                    <Text style={{ color: m.color, fontSize: 16, fontWeight: "700" }}>{m.value}</Text>
+                                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{m.label}</Text>
+                                  </View>
+                                ))}
+                              </View>
+                              <View style={{ flexDirection: "row", gap: 8 }}>
+                                <Pressable
+                                  onPress={() => {
+                                    if (grams <= 0 || !dietMealEditorCategory) return;
+                                    const newItem: DietItem = {
+                                      id: uid("food"),
+                                      title: dietSelectedFood.name,
+                                      calories_kcal: cal,
+                                      protein_g: prot,
+                                      carbs_g: carbs,
+                                      fat_g: fat,
+                                    };
+                                    const activeDietDate = selectedDietDate;
+                                    const cat = dietMealEditorCategory;
+                                    setStore((prev) => {
+                                      const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
+                                      const existingMeal = currentDay.meals.find((m) => m.title === cat);
+                                      const updatedMeals = existingMeal
+                                        ? currentDay.meals.map((m) => m.id === existingMeal.id ? { ...m, items: [...m.items, newItem] } : m)
+                                        : [...currentDay.meals, { id: uid("meal"), title: cat, items: [newItem] }].sort((a, b) => DIET_MEAL_CATEGORIES.indexOf(a.title as DietMealCategory) - DIET_MEAL_CATEGORIES.indexOf(b.title as DietMealCategory));
+                                      return { ...prev, dietByDate: { ...prev.dietByDate, [activeDietDate]: { ...currentDay, meals: updatedMeals } } };
+                                    });
+                                    setDietAddMode(null);
+                                    setDietSelectedFood(null);
+                                    setDietMealEditorCategory(null);
+                                  }}
+                                  style={{
+                                    flex: 1,
+                                    minHeight: 42,
+                                    borderRadius: mobileTheme.radius.md,
+                                    backgroundColor: mobileTheme.color.brandPrimary,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <Text style={{ color: "#000", fontWeight: "700" }}>Guardar</Text>
+                                </Pressable>
+                                <Pressable
+                                  onPress={() => { setDietAddMode("search"); setDietSelectedFood(null); setDietSelectedGrams(""); }}
+                                  style={{
+                                    flex: 1,
+                                    minHeight: 42,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>Volver</Text>
+                                </Pressable>
+                              </View>
+                            </View>
+                          );
+                        })() : null}
 
                         {isEditing && (dietAddMode === "form" || dietAddMode === null) ? (
                           <View style={{ gap: 8 }}>
