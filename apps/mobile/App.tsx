@@ -12223,14 +12223,6 @@ export default function App() {
                     </View>
                     <View style={{ flex: 1, gap: 8 }}>
                       <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>g/kg</Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        Peso: {latestBodyWeightKg !== null ? `${latestBodyWeightKg.toFixed(0)} kg` : "Sin definir"}
-                      </Text>
-                      {latestBodyWeightKg === null ? (
-                        <Text style={{ color: "#ffd7a8", fontSize: 12 }}>
-                          Guarda tu peso corporal para calcular macros por kg.
-                        </Text>
-                      ) : null}
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
                         Proteína (g/kg){proteinMaxGramsPerKgHint !== null ? ` · max ${proteinMaxGramsPerKgHint.toFixed(1)}` : ""}
                       </Text>
