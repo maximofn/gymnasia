@@ -5719,34 +5719,58 @@ export default function App() {
     macro: keyof DietSettings["manual_macro_calories"],
     value: string,
   ) {
-    updateDietSettings((prev) => ({
-      ...prev,
-      manual_macro_calories: {
-        ...prev.manual_macro_calories,
-        [macro]: value,
-      },
-    }));
+    const weight = latestBodyWeightKg;
+    const calPerGram = macro === "fat" ? 9 : 4;
+    const gkgKey = macro === "protein" ? "protein_grams_per_kg" : macro === "carbs" ? "carbs_grams_per_kg" : "fat_grams_per_kg";
+    updateDietSettings((prev) => {
+      const kcal = parseFloat(value) || 0;
+      const grams = kcal / calPerGram;
+      const gkg = weight ? (grams / weight).toFixed(2) : "";
+      return {
+        ...prev,
+        manual_macro_calories: { ...prev.manual_macro_calories, [macro]: value },
+        [gkgKey]: kcal > 0 && weight ? gkg : prev[gkgKey],
+      };
+    });
   }
 
   function updateProteinGramsPerKg(value: string) {
-    updateDietSettings((prev) => ({
-      ...prev,
-      protein_grams_per_kg: value,
-    }));
+    const weight = latestBodyWeightKg;
+    updateDietSettings((prev) => {
+      const gkg = parseFloat(value) || 0;
+      const kcal = weight ? Math.round(gkg * weight * 4) : 0;
+      return {
+        ...prev,
+        protein_grams_per_kg: value,
+        manual_macro_calories: { ...prev.manual_macro_calories, protein: gkg > 0 && weight ? String(kcal) : prev.manual_macro_calories.protein },
+      };
+    });
   }
 
   function updateCarbsGramsPerKg(value: string) {
-    updateDietSettings((prev) => ({
-      ...prev,
-      carbs_grams_per_kg: value,
-    }));
+    const weight = latestBodyWeightKg;
+    updateDietSettings((prev) => {
+      const gkg = parseFloat(value) || 0;
+      const kcal = weight ? Math.round(gkg * weight * 4) : 0;
+      return {
+        ...prev,
+        carbs_grams_per_kg: value,
+        manual_macro_calories: { ...prev.manual_macro_calories, carbs: gkg > 0 && weight ? String(kcal) : prev.manual_macro_calories.carbs },
+      };
+    });
   }
 
   function updateFatGramsPerKg(value: string) {
-    updateDietSettings((prev) => ({
-      ...prev,
-      fat_grams_per_kg: value,
-    }));
+    const weight = latestBodyWeightKg;
+    updateDietSettings((prev) => {
+      const gkg = parseFloat(value) || 0;
+      const kcal = weight ? Math.round(gkg * weight * 9) : 0;
+      return {
+        ...prev,
+        fat_grams_per_kg: value,
+        manual_macro_calories: { ...prev.manual_macro_calories, fat: gkg > 0 && weight ? String(kcal) : prev.manual_macro_calories.fat },
+      };
+    });
   }
 
   function autocompleteMissingGkgMacro() {
