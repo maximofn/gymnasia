@@ -9818,36 +9818,36 @@ export default function App() {
                                   flex: 1,
                                   minWidth: 0,
                                   color: "#7D8798",
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   fontWeight: "700",
                                   textAlign: "center",
                                 }}
                               >
-                                REPS
+                                Repeticiones
                               </Text>
                               <Text
                                 style={{
                                   flex: 1,
                                   minWidth: 0,
                                   color: "#7D8798",
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   fontWeight: "700",
                                   textAlign: "center",
                                 }}
                               >
-                                KG
+                                Peso (kg)
                               </Text>
                               <Text
                                 style={{
                                   flex: 1,
                                   minWidth: 0,
                                   color: "#7D8798",
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   fontWeight: "700",
                                   textAlign: "center",
                                 }}
                               >
-                                DESC
+                                Descanso (s)
                               </Text>
                               <View style={{ width: 16 }} />
                             </View>
