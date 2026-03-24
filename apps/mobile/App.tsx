@@ -3515,6 +3515,7 @@ export default function App() {
   const [showDietDatePicker, setShowDietDatePicker] = useState(false);
   const [dietMealEditorCategory, setDietMealEditorCategory] = useState<DietMealCategory | null>(null);
   const [dietAddMode, setDietAddMode] = useState<"search" | "form" | "ai" | "selected" | null>(null);
+  const [showBirthDatePicker, setShowBirthDatePicker] = useState(false);
   const [dietFoodSearch, setDietFoodSearch] = useState("");
   const [dietSelectedFood, setDietSelectedFood] = useState<FoodRepoEntry | null>(null);
   const [dietSelectedGrams, setDietSelectedGrams] = useState("");
@@ -11944,26 +11945,59 @@ export default function App() {
                         </Text>
                       </View>
                     </View>
+                    <View style={{ flex: 0.6, gap: 2 }}>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Edad</Text>
+                      <View style={{
+                        minHeight: 40,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgApp,
+                        justifyContent: "center",
+                        paddingHorizontal: 10,
+                      }}>
+                        <Text style={{ color: dietSettings.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
+                          {dietSettings.birth_date ? `${Math.floor((Date.now() - new Date(dietSettings.birth_date).getTime()) / 31557600000)}` : "—"}
+                        </Text>
+                      </View>
+                    </View>
                     <View style={{ flex: 1.2, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>
-                        Edad ({dietSettings.birth_date ? `${Math.floor((Date.now() - new Date(dietSettings.birth_date).getTime()) / 31557600000)}` : "?"} años)
-                      </Text>
-                      <TextInput
-                        value={dietSettings.birth_date ?? ""}
-                        onChangeText={(v) => updateDietSettings((prev) => ({ ...prev, birth_date: v }))}
-                        placeholder="1990-01-15"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>Fecha de nacimiento</Text>
+                      <Pressable
+                        onPress={() => setShowBirthDatePicker(true)}
                         style={{
                           minHeight: 40,
                           borderRadius: mobileTheme.radius.md,
                           borderWidth: 1,
                           borderColor: mobileTheme.color.borderSubtle,
                           backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
                           paddingHorizontal: 10,
-                          fontSize: 14,
                         }}
-                      />
+                      >
+                        <Text style={{ color: dietSettings.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
+                          {dietSettings.birth_date || "Seleccionar"}
+                        </Text>
+                        <Feather name="calendar" size={14} color={mobileTheme.color.textSecondary} />
+                      </Pressable>
+                      {showBirthDatePicker ? (
+                        <DateTimePicker
+                          value={dietSettings.birth_date ? new Date(dietSettings.birth_date) : new Date(1990, 0, 1)}
+                          mode="date"
+                          display={Platform.OS === "ios" ? "spinner" : "default"}
+                          maximumDate={new Date()}
+                          minimumDate={new Date(1930, 0, 1)}
+                          onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+                            setShowBirthDatePicker(Platform.OS === "ios");
+                            if (selectedDate) {
+                              const iso = selectedDate.toISOString().slice(0, 10);
+                              updateDietSettings((prev) => ({ ...prev, birth_date: iso }));
+                            }
+                          }}
+                        />
+                      ) : null}
                     </View>
                   </View>
 
