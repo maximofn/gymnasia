@@ -12245,6 +12245,9 @@ export default function App() {
                           Guarda tu peso corporal para calcular macros por kg.
                         </Text>
                       ) : null}
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
+                        Proteína (g/kg){proteinMaxGramsPerKgHint !== null ? ` · max ${proteinMaxGramsPerKgHint.toFixed(1)}` : ""}
+                      </Text>
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                         <TextInput
                           style={{
@@ -12259,7 +12262,7 @@ export default function App() {
                           }}
                           value={dietSettings.protein_grams_per_kg}
                           onChangeText={updateProteinGramsPerKg}
-                          placeholder={proteinGkgPlaceholder}
+                          placeholder="g/kg"
                           placeholderTextColor={mobileTheme.color.textSecondary}
                           keyboardType="decimal-pad"
                         />
@@ -12284,6 +12287,9 @@ export default function App() {
                           </Pressable>
                         ) : null}
                       </View>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
+                        Carbohidratos (g/kg){carbsMaxGramsPerKgHint !== null ? ` · max ${carbsMaxGramsPerKgHint.toFixed(1)}` : ""}
+                      </Text>
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                         <TextInput
                           style={{
@@ -12298,7 +12304,7 @@ export default function App() {
                           }}
                           value={dietSettings.carbs_grams_per_kg}
                           onChangeText={updateCarbsGramsPerKg}
-                          placeholder={carbsGkgPlaceholder}
+                          placeholder="g/kg"
                           placeholderTextColor={mobileTheme.color.textSecondary}
                           keyboardType="decimal-pad"
                         />
@@ -12323,6 +12329,9 @@ export default function App() {
                           </Pressable>
                         ) : null}
                       </View>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
+                        Grasas (g/kg){fatMaxGramsPerKgHint !== null ? ` · max ${fatMaxGramsPerKgHint.toFixed(1)}` : ""}
+                      </Text>
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                         <TextInput
                           style={{
@@ -12337,7 +12346,7 @@ export default function App() {
                           }}
                           value={dietSettings.fat_grams_per_kg}
                           onChangeText={updateFatGramsPerKg}
-                          placeholder={fatGkgPlaceholder}
+                          placeholder="g/kg"
                           placeholderTextColor={mobileTheme.color.textSecondary}
                           keyboardType="decimal-pad"
                         />
