@@ -12224,7 +12224,7 @@ export default function App() {
                     <View style={{ flex: 1, gap: 8 }}>
                       <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>g/kg</Text>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Proteína (g/kg){proteinMaxGramsPerKgHint !== null ? ` · max ${proteinMaxGramsPerKgHint.toFixed(1)}` : ""}
+                        Proteína{proteinMaxGramsPerKgHint !== null ? ` · max ${proteinMaxGramsPerKgHint.toFixed(1)}` : ""}
                       </Text>
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                         <TextInput
@@ -12266,7 +12266,7 @@ export default function App() {
                         ) : null}
                       </View>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Carbohidratos (g/kg){carbsMaxGramsPerKgHint !== null ? ` · max ${carbsMaxGramsPerKgHint.toFixed(1)}` : ""}
+                        Carbohidratos{carbsMaxGramsPerKgHint !== null ? ` · max ${carbsMaxGramsPerKgHint.toFixed(1)}` : ""}
                       </Text>
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                         <TextInput
@@ -12308,7 +12308,7 @@ export default function App() {
                         ) : null}
                       </View>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>
-                        Grasas (g/kg){fatMaxGramsPerKgHint !== null ? ` · max ${fatMaxGramsPerKgHint.toFixed(1)}` : ""}
+                        Grasas{fatMaxGramsPerKgHint !== null ? ` · max ${fatMaxGramsPerKgHint.toFixed(1)}` : ""}
                       </Text>
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                         <TextInput
