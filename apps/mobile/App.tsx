@@ -12078,6 +12078,10 @@ export default function App() {
                     })}
                   </View>
 
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Calorías diarias</Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                    Añádelas a mano o pulsa Calcular para estimarlas automáticamente.
+                  </Text>
                   <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
                     <TextInput
                       style={{
