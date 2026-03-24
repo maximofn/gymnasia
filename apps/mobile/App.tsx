@@ -131,8 +131,10 @@ type DietMacroMode = "manual_calories" | "protein_by_weight";
 type GkgMacroKey = "protein" | "carbs" | "fat";
 type DietMealCategory = "Desayuno" | "Almuerzo" | "Comida" | "Merienda" | "Cena";
 type DietGoal = "bulk" | "cut" | "maintain";
+type ActivityLevel = "moderate" | "intermediate" | "high";
 type DietSettings = {
   goal: DietGoal;
+  activity_level?: ActivityLevel;
   daily_calories: string;
   macro_mode: DietMacroMode;
   manual_macro_calories: {
@@ -875,6 +877,12 @@ const DIET_GOAL_OPTIONS: Array<{ key: DietGoal; label: string }> = [
   { key: "bulk", label: "Volumen" },
   { key: "cut", label: "Definición" },
   { key: "maintain", label: "Mantenimiento" },
+];
+
+const ACTIVITY_LEVEL_OPTIONS: Array<{ key: ActivityLevel; label: string }> = [
+  { key: "moderate", label: "Moderada" },
+  { key: "intermediate", label: "Intermedia" },
+  { key: "high", label: "Alta" },
 ];
 
 function createDefaultDietSettings(): DietSettings {
@@ -5687,6 +5695,13 @@ export default function App() {
     updateDietSettings((prev) => ({
       ...prev,
       goal,
+    }));
+  }
+
+  function updateActivityLevel(level: ActivityLevel) {
+    updateDietSettings((prev) => ({
+      ...prev,
+      activity_level: level,
     }));
   }
 
@@ -11898,6 +11913,33 @@ export default function App() {
                         <Pressable
                           key={option.key}
                           onPress={() => updateDietGoal(option.key)}
+                          style={{
+                            borderWidth: 1,
+                            borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                            borderRadius: mobileTheme.radius.pill,
+                            paddingHorizontal: 12,
+                            minHeight: 34,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp,
+                          }}
+                        >
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
+                            {option.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Nivel de actividad</Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                    {ACTIVITY_LEVEL_OPTIONS.map((option) => {
+                      const isActive = dietSettings.activity_level === option.key;
+                      return (
+                        <Pressable
+                          key={option.key}
+                          onPress={() => updateActivityLevel(option.key)}
                           style={{
                             borderWidth: 1,
                             borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
