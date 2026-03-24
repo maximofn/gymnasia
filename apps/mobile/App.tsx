@@ -32,8 +32,25 @@ import { mobileTheme } from "./theme";
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
 type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "personalFoods";
 
+type SeriesType =
+  | "normal"
+  | "warmup"
+  | "failure"
+  | "amrap"
+  | "partial"
+  | "negative"
+  | "forced"
+  | "tempo"
+  | "isometric"
+  | "dropset"
+  | "restpause"
+  | "myoreps"
+  | "cluster"
+  | "superset";
+
 type ExerciseSeries = {
   id: string;
+  type?: SeriesType;
   reps: string;
   weight_kg: string;
   rest_seconds: string;
@@ -248,6 +265,25 @@ const FOODS_REPO_BASE_URL =
 const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
 const FOODS_CACHE_KEY = "gymnasia.mobile.foods_repo.v1";
 const PERSONAL_FOODS_STORAGE_KEY = "gymnasia.mobile.personal_foods.v1";
+
+const SERIES_TYPE_META: Record<SeriesType, { label: string; short: string; color?: string }> = {
+  normal:    { label: "Normal",         short: "N" },
+  warmup:    { label: "Calentamiento",  short: "🔥", color: "#FF4A4A" },
+  failure:   { label: "Al fallo",       short: "F" },
+  amrap:     { label: "AMRAP",          short: "A" },
+  partial:   { label: "Parcial",        short: "P" },
+  negative:  { label: "Negativa",       short: "—" },
+  forced:    { label: "Forzada",        short: "F+" },
+  tempo:     { label: "Tempo",          short: "T" },
+  isometric: { label: "Isométrica",     short: "I" },
+  dropset:   { label: "Drop set",       short: "DS" },
+  restpause: { label: "Rest-Pause",     short: "RP" },
+  myoreps:   { label: "Myo-Reps",       short: "MR" },
+  cluster:   { label: "Cluster",        short: "CL" },
+  superset:  { label: "Superserie",     short: "SS" },
+};
+const ALL_SERIES_TYPES = Object.keys(SERIES_TYPE_META) as SeriesType[];
+
 const CHAT_SYSTEM_PROMPT_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md";
 const DEFAULT_CHAT_SYSTEM_PROMPT =
@@ -3686,6 +3722,11 @@ export default function App() {
   const [trainingMenuTemplateId, setTrainingMenuTemplateId] = useState<string | null>(null);
   const [activeExerciseMenuId, setActiveExerciseMenuId] = useState<string | null>(null);
   const [activeSeriesMenuId, setActiveSeriesMenuId] = useState<string | null>(null);
+  const [seriesTypePickerTarget, setSeriesTypePickerTarget] = useState<{
+    exerciseId: string;
+    seriesId: string;
+    source: "editor" | "session";
+  } | null>(null);
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
   const [exerciseDetailIndex, setExerciseDetailIndex] = useState<number | null>(null);
   const [activeWorkoutSession, setActiveWorkoutSession] = useState<WorkoutSession | null>(null);
@@ -5915,7 +5956,7 @@ export default function App() {
     templateId: string,
     exerciseId: string,
     seriesId: string,
-    field: "reps" | "weight_kg" | "rest_seconds",
+    field: "reps" | "weight_kg" | "rest_seconds" | "type",
     value: string,
   ) {
     setStore((prev) => ({
@@ -5989,7 +6030,7 @@ export default function App() {
   function updateExerciseSeriesFieldInActiveTemplate(
     exerciseId: string,
     seriesId: string,
-    field: "reps" | "weight_kg" | "rest_seconds",
+    field: "reps" | "weight_kg" | "rest_seconds" | "type",
     value: string,
   ) {
     if (!activeTrainingTemplateId) return;
@@ -5999,7 +6040,7 @@ export default function App() {
   function updateExerciseSeriesFieldInActiveSession(
     exerciseId: string,
     seriesId: string,
-    field: "reps" | "weight_kg" | "rest_seconds",
+    field: "reps" | "weight_kg" | "rest_seconds" | "type",
     value: string,
   ) {
     if (!activeWorkoutSession) return;
@@ -6149,6 +6190,7 @@ export default function App() {
               ...existingSeries,
               {
                 id: uid("set"),
+                type: lastSeries?.type,
                 reps: lastSeries?.reps || "10",
                 weight_kg: lastSeries?.weight_kg || "",
                 rest_seconds: lastSeries?.rest_seconds || "",
@@ -8345,6 +8387,9 @@ export default function App() {
                               <Text style={{ width: 42, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
                                 Serie
                               </Text>
+                              <Text style={{ width: 32, color: "#7D8798", fontSize: 10, fontWeight: "700", textAlign: "center" }}>
+                                Tipo
+                              </Text>
                               <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
                                 Repeticiones
                               </Text>
@@ -8364,7 +8409,9 @@ export default function App() {
                                   borderRadius: 10,
                                   backgroundColor: seriesState.isCompleted
                                     ? "rgba(203,255,26,0.16)"
-                                    : "transparent",
+                                    : (seriesState.series.type ?? "normal") === "warmup"
+                                      ? "rgba(255,74,74,0.06)"
+                                      : "transparent",
                                   borderWidth: seriesState.isCompleted ? 1 : 0,
                                   borderColor: seriesState.isCompleted
                                     ? "rgba(203,255,26,0.6)"
@@ -8414,6 +8461,30 @@ export default function App() {
                                     }}
                                   >
                                     {seriesState.isCompleted ? "✓" : `${seriesState.seriesIndex + 1}`}
+                                  </Text>
+                                </Pressable>
+                                <Pressable
+                                  onPress={() => setSeriesTypePickerTarget({
+                                    exerciseId: sessionExercise.exercise.id,
+                                    seriesId: seriesState.series.id,
+                                    source: "session",
+                                  })}
+                                  style={{
+                                    width: 32,
+                                    height: 24,
+                                    borderRadius: 6,
+                                    backgroundColor: (seriesState.series.type ?? "normal") === "warmup" ? "rgba(255,74,74,0.2)" : "#202630",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginRight: 6,
+                                  }}
+                                >
+                                  <Text style={{
+                                    color: (seriesState.series.type ?? "normal") === "warmup" ? "#FF4A4A" : "#8C95A4",
+                                    fontSize: 10,
+                                    fontWeight: "700",
+                                  }}>
+                                    {SERIES_TYPE_META[seriesState.series.type ?? "normal"].short}
                                   </Text>
                                 </Pressable>
                                 <>
@@ -9815,6 +9886,17 @@ export default function App() {
                               </Text>
                               <Text
                                 style={{
+                                  width: 32,
+                                  color: "#7D8798",
+                                  fontSize: 10,
+                                  fontWeight: "700",
+                                  textAlign: "center",
+                                }}
+                              >
+                                Tipo
+                              </Text>
+                              <Text
+                                style={{
                                   flex: 1,
                                   minWidth: 0,
                                   color: "#7D8798",
@@ -9877,6 +9959,7 @@ export default function App() {
                                     flexDirection: "row",
                                     alignItems: "center",
                                     paddingHorizontal: 10,
+                                    backgroundColor: (seriesItem.type ?? "normal") === "warmup" ? "rgba(255,74,74,0.06)" : "transparent",
                                     gap: 6,
                                   }}
                                 >
@@ -9891,6 +9974,29 @@ export default function App() {
                                   >
                                     {setIndex + 1}
                                   </Text>
+                                  <Pressable
+                                    onPress={() => setSeriesTypePickerTarget({
+                                      exerciseId: exercise.id,
+                                      seriesId: seriesItem.id,
+                                      source: "editor",
+                                    })}
+                                    style={{
+                                      width: 32,
+                                      height: 24,
+                                      borderRadius: 6,
+                                      backgroundColor: (seriesItem.type ?? "normal") === "warmup" ? "rgba(255,74,74,0.2)" : "#202630",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                    }}
+                                  >
+                                    <Text style={{
+                                      color: (seriesItem.type ?? "normal") === "warmup" ? "#FF4A4A" : "#8C95A4",
+                                      fontSize: 10,
+                                      fontWeight: "700",
+                                    }}>
+                                      {SERIES_TYPE_META[seriesItem.type ?? "normal"].short}
+                                    </Text>
+                                  </Pressable>
                                   <TextInput
                                     value={seriesItem.reps}
                                     onChangeText={(value) =>
@@ -15968,6 +16074,100 @@ export default function App() {
           </SafeAreaView>
         </View>
       ) : null}
+
+      {seriesTypePickerTarget && (
+        <Pressable
+          onPress={() => setSeriesTypePickerTarget(null)}
+          style={{
+            position: "absolute",
+            top: 0, right: 0, bottom: 0, left: 0,
+            backgroundColor: "rgba(0,0,0,0.76)",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 610,
+            elevation: 61,
+          }}
+        >
+          <Pressable
+            onPress={(e) => e.stopPropagation()}
+            style={{
+              width: "85%",
+              maxWidth: 340,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.08)",
+              backgroundColor: "#12151C",
+              paddingVertical: 12,
+              paddingHorizontal: 4,
+            }}
+          >
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700", paddingHorizontal: 12, marginBottom: 10 }}>
+              Tipo de serie
+            </Text>
+            <ScrollView style={{ maxHeight: 420 }}>
+              {ALL_SERIES_TYPES.map((st) => {
+                const meta = SERIES_TYPE_META[st];
+                const isSelected = (() => {
+                  const tpl = store.templates.find((t) => t.exercises.some((e) => e.id === seriesTypePickerTarget.exerciseId));
+                  const ex = tpl?.exercises.find((e) => e.id === seriesTypePickerTarget.exerciseId);
+                  const s = ex?.series?.find((s) => s.id === seriesTypePickerTarget.seriesId);
+                  return (s?.type ?? "normal") === st;
+                })();
+                return (
+                  <Pressable
+                    key={st}
+                    onPress={() => {
+                      const fn = seriesTypePickerTarget.source === "session"
+                        ? updateExerciseSeriesFieldInActiveSession
+                        : updateExerciseSeriesFieldInActiveTemplate;
+                      fn(seriesTypePickerTarget.exerciseId, seriesTypePickerTarget.seriesId, "type", st);
+                      setSeriesTypePickerTarget(null);
+                    }}
+                    style={{
+                      minHeight: 44,
+                      paddingHorizontal: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 10,
+                      backgroundColor: isSelected ? "rgba(203,255,26,0.1)" : "transparent",
+                      borderRadius: 10,
+                      marginHorizontal: 4,
+                    }}
+                  >
+                    <View style={{
+                      width: 32,
+                      height: 24,
+                      borderRadius: 6,
+                      backgroundColor: st === "warmup" ? "rgba(255,74,74,0.2)" : "#202630",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                      <Text style={{
+                        color: st === "warmup" ? "#FF4A4A" : "#8C95A4",
+                        fontSize: 10,
+                        fontWeight: "700",
+                      }}>
+                        {meta.short}
+                      </Text>
+                    </View>
+                    <Text style={{
+                      flex: 1,
+                      color: isSelected ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary,
+                      fontSize: 15,
+                      fontWeight: isSelected ? "700" : "500",
+                    }}>
+                      {meta.label}
+                    </Text>
+                    {isSelected && (
+                      <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} />
+                    )}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      )}
 
       <StatusBar style="light" />
     </SafeAreaView>
