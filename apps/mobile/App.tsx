@@ -11962,7 +11962,7 @@ export default function App() {
                       </View>
                     </View>
                     <View style={{ flex: 1.5, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Nacimiento</Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>F. Nacimiento</Text>
                       <Pressable
                         onPress={() => setShowBirthDatePicker(true)}
                         style={{
