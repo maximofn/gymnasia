@@ -1,0 +1,12 @@
+{
+  "id": "yogur-griego",
+  "name": "Yogur griego natural",
+  "category": "lácteo",
+  "calories_per_100g": 97,
+  "protein_per_100g": 9,
+  "carbs_per_100g": 3.6,
+  "fat_per_100g": 5,
+  "fiber_per_100g": 0,
+  "serving_size_g": 170,
+  "serving_description": "1 yogur (170g)"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "nueces",
+  "name": "Nueces",
+  "category": "fruto-seco",
+  "calories_per_100g": 654,
+  "protein_per_100g": 15,
+  "carbs_per_100g": 14,
+  "fat_per_100g": 65,
+  "fiber_per_100g": 6.7,
+  "serving_size_g": 30,
+  "serving_description": "1 puñado (30g)"
+}

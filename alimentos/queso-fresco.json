@@ -1,0 +1,12 @@
+{
+  "id": "queso-fresco",
+  "name": "Queso fresco",
+  "category": "lácteo",
+  "calories_per_100g": 174,
+  "protein_per_100g": 11,
+  "carbs_per_100g": 3.3,
+  "fat_per_100g": 13,
+  "fiber_per_100g": 0,
+  "serving_size_g": 60,
+  "serving_description": "1 porción (60g)"
+}

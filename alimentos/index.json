@@ -1,0 +1,110 @@
+[
+  {
+    "id": "aceite-oliva",
+    "name": "Aceite de oliva virgen extra"
+  },
+  {
+    "id": "aguacate",
+    "name": "Aguacate"
+  },
+  {
+    "id": "almendras",
+    "name": "Almendras"
+  },
+  {
+    "id": "arroz-blanco",
+    "name": "Arroz blanco (cocido)"
+  },
+  {
+    "id": "arroz-integral",
+    "name": "Arroz integral (cocido)"
+  },
+  {
+    "id": "atun",
+    "name": "Atún"
+  },
+  {
+    "id": "avena",
+    "name": "Copos de avena"
+  },
+  {
+    "id": "boniato",
+    "name": "Boniato (cocido)"
+  },
+  {
+    "id": "brocoli",
+    "name": "Brócoli"
+  },
+  {
+    "id": "claras-huevo",
+    "name": "Claras de huevo"
+  },
+  {
+    "id": "espinacas",
+    "name": "Espinacas"
+  },
+  {
+    "id": "garbanzos",
+    "name": "Garbanzos (cocidos)"
+  },
+  {
+    "id": "huevo",
+    "name": "Huevo entero"
+  },
+  {
+    "id": "leche",
+    "name": "Leche entera"
+  },
+  {
+    "id": "lentejas",
+    "name": "Lentejas (cocidas)"
+  },
+  {
+    "id": "manzana",
+    "name": "Manzana"
+  },
+  {
+    "id": "nueces",
+    "name": "Nueces"
+  },
+  {
+    "id": "pan-integral",
+    "name": "Pan integral"
+  },
+  {
+    "id": "pasta",
+    "name": "Pasta (cocida)"
+  },
+  {
+    "id": "patata",
+    "name": "Patata (cocida)"
+  },
+  {
+    "id": "pechuga-pavo",
+    "name": "Pechuga de pavo"
+  },
+  {
+    "id": "pechuga-pollo",
+    "name": "Pechuga de pollo"
+  },
+  {
+    "id": "platano",
+    "name": "Plátano"
+  },
+  {
+    "id": "queso-fresco",
+    "name": "Queso fresco"
+  },
+  {
+    "id": "salmon",
+    "name": "Salmón"
+  },
+  {
+    "id": "tomate",
+    "name": "Tomate"
+  },
+  {
+    "id": "yogur-griego",
+    "name": "Yogur griego natural"
+  }
+]

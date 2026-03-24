@@ -1,0 +1,12 @@
+{
+  "id": "tomate",
+  "name": "Tomate",
+  "category": "verdura",
+  "calories_per_100g": 18,
+  "protein_per_100g": 0.9,
+  "carbs_per_100g": 3.9,
+  "fat_per_100g": 0.2,
+  "fiber_per_100g": 1.2,
+  "serving_size_g": 150,
+  "serving_description": "1 tomate mediano (150g)"
+}

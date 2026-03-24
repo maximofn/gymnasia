@@ -1,0 +1,12 @@
+{
+  "id": "salmon",
+  "name": "Salmón",
+  "category": "proteína",
+  "calories_per_100g": 208,
+  "protein_per_100g": 20,
+  "carbs_per_100g": 0,
+  "fat_per_100g": 13,
+  "fiber_per_100g": 0,
+  "serving_size_g": 125,
+  "serving_description": "1 filete (125g)"
+}

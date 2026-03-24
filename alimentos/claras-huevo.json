@@ -1,0 +1,12 @@
+{
+  "id": "claras-huevo",
+  "name": "Claras de huevo",
+  "category": "proteína",
+  "calories_per_100g": 52,
+  "protein_per_100g": 11,
+  "carbs_per_100g": 0.7,
+  "fat_per_100g": 0.2,
+  "fiber_per_100g": 0,
+  "serving_size_g": 100,
+  "serving_description": "3 claras (~100g)"
+}

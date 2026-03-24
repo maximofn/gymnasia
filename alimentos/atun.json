@@ -1,0 +1,12 @@
+{
+  "id": "atun",
+  "name": "Atún",
+  "category": "proteína",
+  "calories_per_100g": 130,
+  "protein_per_100g": 29,
+  "carbs_per_100g": 0,
+  "fat_per_100g": 1,
+  "fiber_per_100g": 0,
+  "serving_size_g": 80,
+  "serving_description": "1 lata escurrida (80g)"
+}

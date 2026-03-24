@@ -1,0 +1,12 @@
+{
+  "id": "espinacas",
+  "name": "Espinacas",
+  "category": "verdura",
+  "calories_per_100g": 23,
+  "protein_per_100g": 2.9,
+  "carbs_per_100g": 3.6,
+  "fat_per_100g": 0.4,
+  "fiber_per_100g": 2.2,
+  "serving_size_g": 100,
+  "serving_description": "1 ración (100g)"
+}

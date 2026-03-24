@@ -1,0 +1,12 @@
+{
+  "id": "platano",
+  "name": "Plátano",
+  "category": "fruta",
+  "calories_per_100g": 89,
+  "protein_per_100g": 1.1,
+  "carbs_per_100g": 23,
+  "fat_per_100g": 0.3,
+  "fiber_per_100g": 2.6,
+  "serving_size_g": 120,
+  "serving_description": "1 plátano mediano (120g)"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "pechuga-pollo",
+  "name": "Pechuga de pollo",
+  "category": "proteína",
+  "calories_per_100g": 165,
+  "protein_per_100g": 31,
+  "carbs_per_100g": 0,
+  "fat_per_100g": 3.6,
+  "fiber_per_100g": 0,
+  "serving_size_g": 150,
+  "serving_description": "1 filete mediano (150g)"
+}

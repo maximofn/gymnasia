@@ -1,0 +1,12 @@
+{
+  "id": "brocoli",
+  "name": "Brócoli",
+  "category": "verdura",
+  "calories_per_100g": 34,
+  "protein_per_100g": 2.8,
+  "carbs_per_100g": 7,
+  "fat_per_100g": 0.4,
+  "fiber_per_100g": 2.6,
+  "serving_size_g": 150,
+  "serving_description": "1 ración (150g)"
+}

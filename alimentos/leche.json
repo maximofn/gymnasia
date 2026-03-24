@@ -1,0 +1,12 @@
+{
+  "id": "leche",
+  "name": "Leche entera",
+  "category": "lácteo",
+  "calories_per_100g": 0.66,
+  "protein_per_100g": 0.031,
+  "carbs_per_100g": 0.047,
+  "fat_per_100g": 0.038,
+  "fiber_per_100g": 0,
+  "serving_size_g": 250,
+  "serving_description": "1 vaso (250ml)"
+}

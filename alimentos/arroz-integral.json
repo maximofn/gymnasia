@@ -1,0 +1,12 @@
+{
+  "id": "arroz-integral",
+  "name": "Arroz integral (cocido)",
+  "category": "carbohidrato",
+  "calories_per_100g": 123,
+  "protein_per_100g": 2.7,
+  "carbs_per_100g": 25.6,
+  "fat_per_100g": 1,
+  "fiber_per_100g": 1.8,
+  "serving_size_g": 150,
+  "serving_description": "1 ración (150g cocido)"
+}

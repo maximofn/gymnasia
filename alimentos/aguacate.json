@@ -1,0 +1,12 @@
+{
+  "id": "aguacate",
+  "name": "Aguacate",
+  "category": "grasa",
+  "calories_per_100g": 160,
+  "protein_per_100g": 2,
+  "carbs_per_100g": 8.5,
+  "fat_per_100g": 14.7,
+  "fiber_per_100g": 6.7,
+  "serving_size_g": 80,
+  "serving_description": "½ aguacate (80g)"
+}

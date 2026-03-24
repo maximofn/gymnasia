@@ -1,0 +1,12 @@
+{
+  "id": "pechuga-pavo",
+  "name": "Pechuga de pavo",
+  "category": "proteína",
+  "calories_per_100g": 135,
+  "protein_per_100g": 30,
+  "carbs_per_100g": 0,
+  "fat_per_100g": 1.5,
+  "fiber_per_100g": 0,
+  "serving_size_g": 150,
+  "serving_description": "1 filete mediano (150g)"
+}

@@ -28,7 +28,7 @@ import {
 import { mobileTheme } from "./theme";
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods";
 
 type ExerciseSeries = {
   id: string;
@@ -235,6 +235,10 @@ const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
 const EXERCISES_ALL_URL = `${EXERCISES_REPO_BASE_URL}/all.json`;
 const EXERCISES_CACHE_KEY = "gymnasia.mobile.exercises_repo.v2";
+const FOODS_REPO_BASE_URL =
+  "https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos";
+const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
+const FOODS_CACHE_KEY = "gymnasia.mobile.foods_repo.v1";
 const CHAT_SYSTEM_PROMPT_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md";
 const DEFAULT_CHAT_SYSTEM_PROMPT =
@@ -351,6 +355,37 @@ type ExerciseRepoEntry = {
   difficulty: string;
   instructions: string;
 };
+
+type FoodRepoEntry = {
+  id: string;
+  name: string;
+  category: string;
+  calories_per_100g: number;
+  protein_per_100g: number;
+  carbs_per_100g: number;
+  fat_per_100g: number;
+  fiber_per_100g: number;
+  serving_size_g: number;
+  serving_description: string;
+};
+
+async function loadFoodsRepo(): Promise<FoodRepoEntry[]> {
+  try {
+    const response = await fetch(`${FOODS_ALL_URL}?ts=${Date.now()}`);
+    if (!response.ok) throw new Error(`Foods fetch error (${response.status})`);
+    const foods: FoodRepoEntry[] = await response.json();
+    AsyncStorage.setItem(FOODS_CACHE_KEY, JSON.stringify(foods)).catch(() => {});
+    return foods;
+  } catch {
+    try {
+      const cached = await AsyncStorage.getItem(FOODS_CACHE_KEY);
+      if (cached) return JSON.parse(cached);
+      return [];
+    } catch {
+      return [];
+    }
+  }
+}
 
 async function loadExercisesRepo(): Promise<ExerciseRepoEntry[]> {
   try {
@@ -786,6 +821,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "provider", label: "Proveedor IA" },
   { key: "memory", label: "Memoria" },
   { key: "training", label: "Entreno" },
+  { key: "foods", label: "Alimentos" },
 ];
 
 const DIET_GOAL_OPTIONS: Array<{ key: DietGoal; label: string }> = [
@@ -3253,6 +3289,10 @@ export default function App() {
   const [exercisePickerOpen, setExercisePickerOpen] = useState(false);
   const [exercisePickerSearch, setExercisePickerSearch] = useState("");
   const [exercisePickerMuscleFilter, setExercisePickerMuscleFilter] = useState("all");
+  const [foodsRepo, setFoodsRepo] = useState<FoodRepoEntry[]>([]);
+  const [selectedFoodDetail, setSelectedFoodDetail] = useState<FoodRepoEntry | null>(null);
+  const [foodSearch, setFoodSearch] = useState("");
+  const [foodCategoryFilter, setFoodCategoryFilter] = useState("all");
   const [memoryFields, setMemoryFields] = useState<PersonalDataField[]>([]);
   const [memoryNewKey, setMemoryNewKey] = useState("");
   const [memoryNewDesc, setMemoryNewDesc] = useState("");
@@ -4351,6 +4391,7 @@ export default function App() {
   useEffect(() => {
     if (!isHydrated) return;
     loadExercisesRepo().then(setExercisesRepo);
+    loadFoodsRepo().then(setFoodsRepo);
   }, [isHydrated]);
 
   useEffect(() => {
@@ -11301,7 +11342,7 @@ export default function App() {
                   return (
                     <Pressable
                       key={option.key}
-                      onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); }}
+                      onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); }}
                       style={{
                         borderWidth: 1,
                         borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
@@ -12913,6 +12954,240 @@ export default function App() {
                       ))
                     )}
                   </View>
+                </View>
+              ) : null}
+
+              {settingsTab === "foods" ? (
+                <View style={{ gap: 12 }}>
+                  {/* Search bar */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      paddingHorizontal: 10,
+                      height: 40,
+                    }}
+                  >
+                    <Feather name="search" size={16} color={mobileTheme.color.textSecondary} />
+                    <TextInput
+                      value={foodSearch}
+                      onChangeText={setFoodSearch}
+                      placeholder="Buscar alimento..."
+                      placeholderTextColor={mobileTheme.color.textSecondary}
+                      style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 14, marginLeft: 8 }}
+                    />
+                    {foodSearch ? (
+                      <Pressable onPress={() => setFoodSearch("")} style={{ padding: 4 }}>
+                        <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
+                      </Pressable>
+                    ) : null}
+                  </View>
+
+                  {/* Category filter chips */}
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
+                    <View style={{ flexDirection: "row", gap: 6 }}>
+                      {["all", ...Array.from(new Set(foodsRepo.map((f) => f.category))).sort()].map((cat) => {
+                        const isActive = foodCategoryFilter === cat;
+                        const label = cat === "all" ? "Todos" : cat.charAt(0).toUpperCase() + cat.slice(1);
+                        return (
+                          <Pressable
+                            key={cat}
+                            onPress={() => setFoodCategoryFilter(cat)}
+                            style={{
+                              borderWidth: 1,
+                              borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                              borderRadius: mobileTheme.radius.pill,
+                              paddingHorizontal: 10,
+                              minHeight: 30,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
+                            }}
+                          >
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "600" }}>
+                              {label}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </ScrollView>
+
+                  {/* Food list */}
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: mobileTheme.radius.lg,
+                      padding: 12,
+                      gap: 10,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                      Alimentos ({foodsRepo.length})
+                    </Text>
+                    {(() => {
+                      const filtered = foodsRepo.filter((f) => {
+                        const matchesSearch = !foodSearch || f.name.toLowerCase().includes(foodSearch.toLowerCase()) || f.category.toLowerCase().includes(foodSearch.toLowerCase());
+                        const matchesCategory = foodCategoryFilter === "all" || f.category === foodCategoryFilter;
+                        return matchesSearch && matchesCategory;
+                      });
+                      if (filtered.length === 0) {
+                        return (
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                            No se encontraron alimentos.
+                          </Text>
+                        );
+                      }
+                      return filtered.map((food) => (
+                        <Pressable
+                          key={food.id}
+                          onPress={() => setSelectedFoodDetail(food)}
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 10,
+                            paddingVertical: 6,
+                            borderBottomWidth: 1,
+                            borderBottomColor: mobileTheme.color.borderSubtle,
+                          }}
+                        >
+                          <View
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: 8,
+                              backgroundColor: "rgba(203,255,26,0.1)",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text style={{ fontSize: 16 }}>
+                              {food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️"}
+                            </Text>
+                          </View>
+                          <View style={{ flex: 1 }}>
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
+                              {food.name}
+                            </Text>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                              {food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g
+                            </Text>
+                          </View>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
+                            {food.category}
+                          </Text>
+                        </Pressable>
+                      ));
+                    })()}
+                  </View>
+
+                  {/* Food detail modal */}
+                  {selectedFoodDetail ? (
+                    <View
+                      style={{
+                        backgroundColor: mobileTheme.color.cardBg,
+                        borderRadius: 12,
+                        padding: 16,
+                        gap: 12,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>
+                          {selectedFoodDetail.name}
+                        </Text>
+                        <Pressable onPress={() => setSelectedFoodDetail(null)} style={{ padding: 4 }}>
+                          <Feather name="x" size={20} color={mobileTheme.color.textSecondary} />
+                        </Pressable>
+                      </View>
+
+                      {/* Category tag */}
+                      <View style={{ flexDirection: "row", gap: 6 }}>
+                        <View
+                          style={{
+                            backgroundColor: mobileTheme.color.accent + "22",
+                            paddingHorizontal: 8,
+                            paddingVertical: 3,
+                            borderRadius: 6,
+                          }}
+                        >
+                          <Text style={{ color: mobileTheme.color.accent, fontSize: 11, fontWeight: "600" }}>
+                            {selectedFoodDetail.category}
+                          </Text>
+                        </View>
+                      </View>
+
+                      {/* Macros per 100g */}
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+                        Por 100g
+                      </Text>
+                      <View style={{ flexDirection: "row", gap: 8 }}>
+                        {[
+                          { label: "Calorías", value: `${selectedFoodDetail.calories_per_100g}`, unit: "kcal", color: "#FF6B6B" },
+                          { label: "Proteína", value: `${selectedFoodDetail.protein_per_100g}`, unit: "g", color: "#4ECDC4" },
+                          { label: "Carbos", value: `${selectedFoodDetail.carbs_per_100g}`, unit: "g", color: "#FFE66D" },
+                          { label: "Grasa", value: `${selectedFoodDetail.fat_per_100g}`, unit: "g", color: "#FF8A5C" },
+                        ].map((macro) => (
+                          <View
+                            key={macro.label}
+                            style={{
+                              flex: 1,
+                              backgroundColor: macro.color + "15",
+                              borderRadius: 8,
+                              padding: 8,
+                              alignItems: "center",
+                              gap: 2,
+                            }}
+                          >
+                            <Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>
+                              {macro.value}
+                            </Text>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
+                              {macro.unit}
+                            </Text>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
+                              {macro.label}
+                            </Text>
+                          </View>
+                        ))}
+                      </View>
+
+                      {/* Fiber */}
+                      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
+                          {selectedFoodDetail.fiber_per_100g}g
+                        </Text>
+                      </View>
+
+                      {/* Serving info */}
+                      <View
+                        style={{
+                          backgroundColor: "#ffffff08",
+                          borderRadius: 8,
+                          padding: 10,
+                          gap: 4,
+                        }}
+                      >
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+                          Ración típica
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>
+                          {selectedFoodDetail.serving_description}
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                          {Math.round(selectedFoodDetail.calories_per_100g * selectedFoodDetail.serving_size_g / 100)} kcal · P:{(selectedFoodDetail.protein_per_100g * selectedFoodDetail.serving_size_g / 100).toFixed(1)}g · C:{(selectedFoodDetail.carbs_per_100g * selectedFoodDetail.serving_size_g / 100).toFixed(1)}g · G:{(selectedFoodDetail.fat_per_100g * selectedFoodDetail.serving_size_g / 100).toFixed(1)}g
+                        </Text>
+                      </View>
+                    </View>
+                  ) : null}
                 </View>
               ) : null}
 

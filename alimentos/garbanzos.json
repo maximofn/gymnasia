@@ -1,0 +1,12 @@
+{
+  "id": "garbanzos",
+  "name": "Garbanzos (cocidos)",
+  "category": "legumbre",
+  "calories_per_100g": 164,
+  "protein_per_100g": 8.9,
+  "carbs_per_100g": 27,
+  "fat_per_100g": 2.6,
+  "fiber_per_100g": 7.6,
+  "serving_size_g": 200,
+  "serving_description": "1 ración (200g cocidos)"
+}

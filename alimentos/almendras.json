@@ -1,0 +1,12 @@
+{
+  "id": "almendras",
+  "name": "Almendras",
+  "category": "fruto-seco",
+  "calories_per_100g": 579,
+  "protein_per_100g": 21,
+  "carbs_per_100g": 22,
+  "fat_per_100g": 49,
+  "fiber_per_100g": 12.5,
+  "serving_size_g": 30,
+  "serving_description": "1 puñado (30g)"
+}
