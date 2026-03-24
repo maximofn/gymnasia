@@ -12118,8 +12118,9 @@ export default function App() {
                           high: 1.9,
                         };
                         const multiplier = activityMultipliers[dietSettings.activity_level ?? "moderate"] ?? 1.55;
-                        const tdee = Math.round(bmr * multiplier);
-                        updateDietDailyCalories(String(tdee));
+                        const tdee = bmr * multiplier;
+                        const goalMultiplier = dietSettings.goal === "cut" ? 0.8 : dietSettings.goal === "bulk" ? 1.2 : 1;
+                        updateDietDailyCalories(String(Math.round(tdee * goalMultiplier)));
                         setError(null);
                       }}
                       style={{
