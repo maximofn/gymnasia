@@ -6,7 +6,6 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
-import * as Notifications from "expo-notifications";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -3900,7 +3899,7 @@ export default function App() {
     useState<WorkoutCompletionModalState | null>(null);
   const [confirmDiscardSession, setConfirmDiscardSession] = useState(false);
   const restFinishSoundRef = useRef<Audio.Sound | null>(null);
-  const restNotificationIdRef = useRef<string | null>(null);
+  const backgroundRestTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const workoutTemplateBeforeSessionRef = useRef<WorkoutTemplate | null>(null);
   const globalScreenLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const trainingEditorLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -4739,47 +4738,18 @@ export default function App() {
     resetDietMealEditorState();
   }, [tab]);
 
-  const scheduleRestNotification = useCallback(async (seconds: number) => {
-    try {
-      if (restNotificationIdRef.current) {
-        await Notifications.cancelScheduledNotificationAsync(restNotificationIdRef.current).catch(() => {});
-        restNotificationIdRef.current = null;
-      }
-      if (seconds <= 0) return;
-      const perms = await Notifications.getPermissionsAsync();
-      if (!(perms as { granted?: boolean }).granted) {
-        const req = await Notifications.requestPermissionsAsync();
-        if (!(req as { granted?: boolean }).granted) return;
-      }
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Descanso terminado",
-          body: "Empieza la siguiente serie.",
-          sound: true,
-        },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds, repeats: false },
-      });
-      restNotificationIdRef.current = id;
-    } catch {
-      // best effort
+  const cancelBackgroundRestTimer = useCallback(() => {
+    if (backgroundRestTimerRef.current) {
+      clearTimeout(backgroundRestTimerRef.current);
+      backgroundRestTimerRef.current = null;
     }
-  }, []);
-
-  const cancelRestNotification = useCallback(async () => {
-    if (!restNotificationIdRef.current) return;
-    try {
-      await Notifications.cancelScheduledNotificationAsync(restNotificationIdRef.current);
-    } catch {
-      // ignore
-    }
-    restNotificationIdRef.current = null;
   }, []);
 
   const playRestFinishedAlert = useCallback(async () => {
     if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
     try {
-      Vibration.vibrate(180);
+      Vibration.vibrate([0, 300, 150, 300]);
 
       try {
         await Audio.setAudioModeAsync({
@@ -4788,7 +4758,7 @@ export default function App() {
           shouldDuckAndroid: true,
           interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
           interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-          staysActiveInBackground: false,
+          staysActiveInBackground: true,
         });
 
         if (!restFinishSoundRef.current) {
@@ -4802,16 +4772,23 @@ export default function App() {
         await restFinishSoundRef.current.setPositionAsync(0);
         await restFinishSoundRef.current.playAsync();
       } catch {
-        // best effort: vibration + alert still notify the user
+        // best effort: vibration still notifies the user
       }
-
-      Alert.alert("Descanso terminado", "Empieza la siguiente serie.");
     } finally {
       setTimeout(() => {
         restAlertLockRef.current = false;
       }, 450);
     }
   }, []);
+
+  const scheduleBackgroundRestAlert = useCallback((seconds: number) => {
+    cancelBackgroundRestTimer();
+    if (seconds <= 0) return;
+    backgroundRestTimerRef.current = setTimeout(() => {
+      backgroundRestTimerRef.current = null;
+      void playRestFinishedAlert();
+    }, seconds * 1000);
+  }, [cancelBackgroundRestTimer, playRestFinishedAlert]);
 
   useEffect(() => {
     if (globalScreenLoadTimeoutRef.current) {
@@ -5071,7 +5048,7 @@ export default function App() {
       if (nextAppState === "active" && backgroundTimestampRef.current) {
         const elapsedSeconds = Math.floor((Date.now() - backgroundTimestampRef.current) / 1000);
         backgroundTimestampRef.current = null;
-        void cancelRestNotification();
+        cancelBackgroundRestTimer();
         setActiveWorkoutSession((prev) => {
           if (!prev || prev.status !== "running") return prev;
           const nextElapsed = prev.elapsed_seconds + elapsedSeconds;
@@ -5091,7 +5068,7 @@ export default function App() {
         backgroundTimestampRef.current = Date.now();
         setActiveWorkoutSession((prev) => {
           if (prev?.is_resting && prev.rest_seconds_left > 0) {
-            void scheduleRestNotification(prev.rest_seconds_left);
+            scheduleBackgroundRestAlert(prev.rest_seconds_left);
           }
           return prev;
         });
@@ -5102,19 +5079,7 @@ export default function App() {
     return () => {
       subscription.remove();
     };
-  }, [cancelRestNotification, scheduleRestNotification]);
-
-  useEffect(() => {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowBanner: true,
-        shouldShowList: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-      }),
-    });
-    Notifications.requestPermissionsAsync().catch(() => {});
-  }, []);
+  }, [cancelBackgroundRestTimer, scheduleBackgroundRestAlert]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -5130,7 +5095,7 @@ export default function App() {
       !activeWorkoutSession.is_resting &&
       activeWorkoutSession.rest_seconds_left === 0;
     if (endedRestThisTick) {
-      void cancelRestNotification();
+      cancelBackgroundRestTimer();
       if (!manualRestSkipRef.current) {
         void playRestFinishedAlert();
       }
@@ -5145,6 +5110,7 @@ export default function App() {
     activeWorkoutSession?.id,
     activeWorkoutSession?.is_resting,
     activeWorkoutSession?.rest_seconds_left,
+    cancelBackgroundRestTimer,
     playRestFinishedAlert,
   ]);
 
