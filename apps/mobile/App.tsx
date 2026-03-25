@@ -3902,6 +3902,7 @@ export default function App() {
   const bgSilenceRef = useRef<Audio.Sound | null>(null);
   const bgRestDeadlineRef = useRef<number | null>(null);
   const bgRestFiredRef = useRef(false);
+  const bgHeartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const workoutTemplateBeforeSessionRef = useRef<WorkoutTemplate | null>(null);
   const globalScreenLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const trainingEditorLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -4777,6 +4778,10 @@ export default function App() {
   }, []);
 
   const stopBackgroundSilence = useCallback(async () => {
+    if (bgHeartbeatRef.current) {
+      clearInterval(bgHeartbeatRef.current);
+      bgHeartbeatRef.current = null;
+    }
     bgRestDeadlineRef.current = null;
     bgRestFiredRef.current = false;
     if (bgSilenceRef.current) {
@@ -4810,14 +4815,16 @@ export default function App() {
       );
       bgSilenceRef.current = sound;
 
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (!status.isLoaded || bgRestFiredRef.current) return;
+      // setInterval as heartbeat — the background audio session keeps the
+      // Android process (and JS timers) alive so the interval should fire.
+      bgHeartbeatRef.current = setInterval(() => {
+        if (bgRestFiredRef.current) return;
         if (bgRestDeadlineRef.current && Date.now() >= bgRestDeadlineRef.current) {
           bgRestFiredRef.current = true;
           void playRestFinishedAlert();
           void stopBackgroundSilence();
         }
-      });
+      }, 1000);
     } catch {
       // best effort
     }
