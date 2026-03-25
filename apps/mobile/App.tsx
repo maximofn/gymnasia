@@ -8514,7 +8514,8 @@ export default function App() {
                   </View>
                 ) : (
                   activeSessionExercises.map((sessionExercise) => {
-                    const isExpanded = sessionExercise.isCurrentExercise;
+                    const isExpanded = true;
+                    const isCurrent = sessionExercise.isCurrentExercise;
                     const exercisePreview = resolveExercisePreviewMeta(
                       sessionExercise.exercise.name ?? "",
                       sessionExercise.muscle,
@@ -8526,8 +8527,8 @@ export default function App() {
                         onPress={() => focusWorkoutSessionExercise(sessionExercise.exercise.id)}
                         disabled={activeWorkoutSession.is_resting}
                         style={{
-                          borderWidth: isExpanded ? 1.5 : 1,
-                          borderColor: isExpanded
+                          borderWidth: isCurrent ? 1.5 : 1,
+                          borderColor: isCurrent
                             ? "rgba(203,255,26,0.78)"
                             : mobileTheme.color.borderSubtle,
                           backgroundColor: "#171B23",
@@ -8595,7 +8596,7 @@ export default function App() {
                                 borderColor: "rgba(255,255,255,0.12)",
                                 backgroundColor: sessionExercise.isCompletedExercise
                                   ? "#00A75A"
-                                  : isExpanded
+                                  : isCurrent
                                     ? mobileTheme.color.brandPrimary
                                     : "#222834",
                                 alignItems: "center",
@@ -8606,7 +8607,7 @@ export default function App() {
                                 style={{
                                   color: sessionExercise.isCompletedExercise
                                     ? "#FFFFFF"
-                                    : isExpanded
+                                    : isCurrent
                                       ? "#06090D"
                                       : "#9FA7B5",
                                   fontSize: 10,
@@ -8637,7 +8638,7 @@ export default function App() {
                             </Text>
                           </View>
                           <Text style={{ color: "#8C94A5", fontSize: 20, fontWeight: "700" }}>
-                            {isExpanded ? "˅" : "˃"}
+                            ˅
                           </Text>
                         </View>
 
