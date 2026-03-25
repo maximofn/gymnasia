@@ -3899,7 +3899,9 @@ export default function App() {
     useState<WorkoutCompletionModalState | null>(null);
   const [confirmDiscardSession, setConfirmDiscardSession] = useState(false);
   const restFinishSoundRef = useRef<Audio.Sound | null>(null);
-  const backgroundRestTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const bgSilenceRef = useRef<Audio.Sound | null>(null);
+  const bgRestDeadlineRef = useRef<number | null>(null);
+  const bgRestFiredRef = useRef(false);
   const workoutTemplateBeforeSessionRef = useRef<WorkoutTemplate | null>(null);
   const globalScreenLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const trainingEditorLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -4738,13 +4740,6 @@ export default function App() {
     resetDietMealEditorState();
   }, [tab]);
 
-  const cancelBackgroundRestTimer = useCallback(() => {
-    if (backgroundRestTimerRef.current) {
-      clearTimeout(backgroundRestTimerRef.current);
-      backgroundRestTimerRef.current = null;
-    }
-  }, []);
-
   const playRestFinishedAlert = useCallback(async () => {
     if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
@@ -4781,14 +4776,52 @@ export default function App() {
     }
   }, []);
 
-  const scheduleBackgroundRestAlert = useCallback((seconds: number) => {
-    cancelBackgroundRestTimer();
+  const stopBackgroundSilence = useCallback(async () => {
+    bgRestDeadlineRef.current = null;
+    bgRestFiredRef.current = false;
+    if (bgSilenceRef.current) {
+      try {
+        await bgSilenceRef.current.stopAsync();
+        await bgSilenceRef.current.unloadAsync();
+      } catch { /* ignore */ }
+      bgSilenceRef.current = null;
+    }
+  }, []);
+
+  const startBackgroundSilence = useCallback(async (seconds: number) => {
+    await stopBackgroundSilence();
     if (seconds <= 0) return;
-    backgroundRestTimerRef.current = setTimeout(() => {
-      backgroundRestTimerRef.current = null;
-      void playRestFinishedAlert();
-    }, seconds * 1000);
-  }, [cancelBackgroundRestTimer, playRestFinishedAlert]);
+    try {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+        staysActiveInBackground: true,
+      });
+
+      bgRestDeadlineRef.current = Date.now() + seconds * 1000;
+      bgRestFiredRef.current = false;
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("./assets/silence.wav"),
+        { isLooping: true, volume: 0, shouldPlay: true },
+      );
+      bgSilenceRef.current = sound;
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (!status.isLoaded || bgRestFiredRef.current) return;
+        if (bgRestDeadlineRef.current && Date.now() >= bgRestDeadlineRef.current) {
+          bgRestFiredRef.current = true;
+          void playRestFinishedAlert();
+          void stopBackgroundSilence();
+        }
+      });
+    } catch {
+      // best effort
+    }
+  }, [playRestFinishedAlert, stopBackgroundSilence]);
 
   useEffect(() => {
     if (globalScreenLoadTimeoutRef.current) {
@@ -5048,7 +5081,7 @@ export default function App() {
       if (nextAppState === "active" && backgroundTimestampRef.current) {
         const elapsedSeconds = Math.floor((Date.now() - backgroundTimestampRef.current) / 1000);
         backgroundTimestampRef.current = null;
-        cancelBackgroundRestTimer();
+        void stopBackgroundSilence();
         setActiveWorkoutSession((prev) => {
           if (!prev || prev.status !== "running") return prev;
           const nextElapsed = prev.elapsed_seconds + elapsedSeconds;
@@ -5068,7 +5101,7 @@ export default function App() {
         backgroundTimestampRef.current = Date.now();
         setActiveWorkoutSession((prev) => {
           if (prev?.is_resting && prev.rest_seconds_left > 0) {
-            scheduleBackgroundRestAlert(prev.rest_seconds_left);
+            void startBackgroundSilence(prev.rest_seconds_left);
           }
           return prev;
         });
@@ -5079,7 +5112,7 @@ export default function App() {
     return () => {
       subscription.remove();
     };
-  }, [cancelBackgroundRestTimer, scheduleBackgroundRestAlert]);
+  }, [startBackgroundSilence, stopBackgroundSilence]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -5095,7 +5128,7 @@ export default function App() {
       !activeWorkoutSession.is_resting &&
       activeWorkoutSession.rest_seconds_left === 0;
     if (endedRestThisTick) {
-      cancelBackgroundRestTimer();
+      void stopBackgroundSilence();
       if (!manualRestSkipRef.current) {
         void playRestFinishedAlert();
       }
@@ -5110,17 +5143,20 @@ export default function App() {
     activeWorkoutSession?.id,
     activeWorkoutSession?.is_resting,
     activeWorkoutSession?.rest_seconds_left,
-    cancelBackgroundRestTimer,
+    stopBackgroundSilence,
     playRestFinishedAlert,
   ]);
 
   useEffect(() => {
     return () => {
-      if (!restFinishSoundRef.current) return;
-      restFinishSoundRef.current.unloadAsync().catch(() => {
-        // ignore unload failures
-      });
-      restFinishSoundRef.current = null;
+      if (restFinishSoundRef.current) {
+        restFinishSoundRef.current.unloadAsync().catch(() => {});
+        restFinishSoundRef.current = null;
+      }
+      if (bgSilenceRef.current) {
+        bgSilenceRef.current.unloadAsync().catch(() => {});
+        bgSilenceRef.current = null;
+      }
     };
   }, []);
 
