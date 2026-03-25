@@ -14,10 +14,18 @@
     ],
     "ios": {
       "bundleIdentifier": "com.maximofn.gymnasia",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"]
+      }
     },
     "android": {
-      "package": "com.maximofn.gymnasia"
+      "package": "com.maximofn.gymnasia",
+      "permissions": [
+        "FOREGROUND_SERVICE",
+        "WAKE_LOCK",
+        "VIBRATE"
+      ]
     },
     "web": {
       "bundler": "metro"
