@@ -16650,6 +16650,105 @@ export default function App() {
         </Pressable>
       )}
 
+      {activeWorkoutSession && tab !== "training" ? (() => {
+        const currentExercise = activeSessionExercises.find((e) => e.isCurrentExercise);
+        const currentExerciseName = currentExercise?.exercise.name || "Ejercicio";
+        const currentMuscle = currentExercise?.muscle || "";
+        const seriesLabel = `${activeWorkoutSession.completed_series_count}/${activeWorkoutSession.total_series_count}`;
+        return (
+          <Pressable
+            onPress={() => setTab("training")}
+            style={{
+              position: "absolute",
+              left: 12,
+              right: 12,
+              bottom: 14,
+              minHeight: 64,
+              borderRadius: 16,
+              backgroundColor: "#1A2030",
+              borderWidth: 1,
+              borderColor: "rgba(203,255,26,0.25)",
+              paddingHorizontal: 14,
+              paddingVertical: 10,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 12,
+              shadowColor: "#000",
+              shadowOpacity: 0.5,
+              shadowRadius: 16,
+              shadowOffset: { width: 0, height: 6 },
+              elevation: 20,
+              zIndex: 500,
+            }}
+          >
+            <View
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 12,
+                backgroundColor: "rgba(203,255,26,0.12)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Feather name="activity" size={20} color={mobileTheme.color.brandPrimary} />
+            </View>
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text
+                style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "700" }}
+                numberOfLines={1}
+              >
+                {currentExerciseName}
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                {currentMuscle ? (
+                  <Text style={{ color: "#8B94A3", fontSize: 12 }}>{currentMuscle}</Text>
+                ) : null}
+                <Text style={{ color: "#8B94A3", fontSize: 12 }}>
+                  {currentMuscle ? "•" : ""} {seriesLabel} series
+                </Text>
+              </View>
+              <View
+                style={{
+                  height: 3,
+                  borderRadius: 999,
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  marginTop: 4,
+                  overflow: "hidden",
+                }}
+              >
+                <View
+                  style={{
+                    width: `${activeSessionProgressPercent}%`,
+                    height: "100%",
+                    borderRadius: 999,
+                    backgroundColor: mobileTheme.color.brandPrimary,
+                  }}
+                />
+              </View>
+            </View>
+            <View style={{ alignItems: "flex-end", gap: 2 }}>
+              <Text style={{ color: "#F2F5FA", fontSize: 16, fontWeight: "700" }}>
+                {formatClock(activeWorkoutSession.elapsed_seconds)}
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <View
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: 999,
+                    backgroundColor: activeWorkoutSession.is_resting ? "#FF9500" : "#00C66B",
+                  }}
+                />
+                <Text style={{ color: activeWorkoutSession.is_resting ? "#FF9500" : "#00C66B", fontSize: 11, fontWeight: "700" }}>
+                  {activeWorkoutSession.is_resting ? "Descanso" : "Activo"}
+                </Text>
+              </View>
+            </View>
+          </Pressable>
+        );
+      })() : null}
+
       <StatusBar style="light" />
     </SafeAreaView>
   );
