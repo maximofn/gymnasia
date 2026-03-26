@@ -3797,6 +3797,7 @@ export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [sendingChat, setSendingChat] = useState(false);
+  const [showByokExplain, setShowByokExplain] = useState(false);
   const chatScrollRef = useRef<ScrollView>(null);
   const mainScrollRef = useRef<ScrollView>(null);
 
@@ -12929,9 +12930,18 @@ export default function App() {
                 <Ionicons name="settings-sharp" size={18} color="#06090D" />
                 <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 16 }}>Ir a Ajustes BYOK</Text>
               </Pressable>
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                ¿Qué es BYOK?
-              </Text>
+              <Pressable onPress={() => setShowByokExplain((v) => !v)}>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, textAlign: "center" }}>
+                  {showByokExplain ? "Ocultar" : "¿Qué es BYOK?"}
+                </Text>
+              </Pressable>
+              {showByokExplain ? (
+                <View style={{ backgroundColor: "rgba(255,255,255,0.04)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
+                    BYOK significa "Bring Your Own Key" (Trae Tu Propia Clave). Gymnasia no incluye acceso a ningún proveedor de IA. Tú proporcionas tu propia API key de OpenAI, Anthropic o Google, y las conversaciones se envían directamente desde tu dispositivo al proveedor. Tu clave nunca sale de tu teléfono.
+                  </Text>
+                </View>
+              ) : null}
             </View>
             )
           ) : null}
