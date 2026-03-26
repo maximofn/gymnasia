@@ -12515,7 +12515,7 @@ export default function App() {
                               <Path d={areaPath} fill="url(#areaGrad)" />
                               <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.5} />
                               {pts.length >= 3 ? (
-                                <Path d={maPath} fill="none" stroke="#FFFFFF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.85} />
+                                <Path d={maPath} fill="none" stroke="#4A9EFF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} strokeDasharray="6,4" />
                               ) : null}
 
                               {coords.map((c, i) => (
