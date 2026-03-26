@@ -30,7 +30,7 @@ import {
 import { mobileTheme } from "./theme";
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "personalFoods";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "personalFoods" | "measures";
 
 type SeriesType =
   | "normal"
@@ -926,6 +926,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "training", label: "Entreno" },
   { key: "foods", label: "Alimentos" },
   { key: "personalFoods", label: "Alimentos personales" },
+  { key: "measures", label: "Medidas" },
 ];
 
 const DIET_GOAL_OPTIONS: Array<{ key: DietGoal; label: string }> = [
@@ -15056,6 +15057,94 @@ export default function App() {
                       </View>
                     </View>
                   ) : null}
+                </View>
+              ) : null}
+
+              {settingsTab === "measures" ? (
+                <View style={{ gap: 12 }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                    Medidas guardadas ({store.measurements.length})
+                  </Text>
+
+                  {store.measurements.length === 0 ? (
+                    <View
+                      style={{
+                        backgroundColor: mobileTheme.color.bgSurface,
+                        borderRadius: mobileTheme.radius.lg,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        padding: 24,
+                        alignItems: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <Feather name="activity" size={32} color={mobileTheme.color.textSecondary} />
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, textAlign: "center" }}>
+                        No hay medidas guardadas. Registra tus medidas desde la pestaña "Medidas".
+                      </Text>
+                    </View>
+                  ) : (
+                    store.measurements.map((m, idx) => {
+                      const date = new Date(m.measured_at);
+                      const dateStr = date.toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+                      const fields: Array<{ label: string; value: string }> = [];
+                      if (m.weight_kg !== null) fields.push({ label: "Peso", value: `${formatMeasurementNumber(m.weight_kg)} kg` });
+                      if (m.height_cm !== null) fields.push({ label: "Altura", value: `${formatMeasurementNumber(m.height_cm)} cm` });
+                      if (m.neck_cm !== null) fields.push({ label: "Cuello", value: `${formatMeasurementNumber(m.neck_cm)} cm` });
+                      if (m.chest_cm !== null) fields.push({ label: "Pecho", value: `${formatMeasurementNumber(m.chest_cm)} cm` });
+                      if (m.waist_cm !== null) fields.push({ label: "Cintura", value: `${formatMeasurementNumber(m.waist_cm)} cm` });
+                      if (m.hips_cm !== null) fields.push({ label: "Cadera", value: `${formatMeasurementNumber(m.hips_cm)} cm` });
+                      if (m.biceps_cm !== null) fields.push({ label: "Bíceps", value: `${formatMeasurementNumber(m.biceps_cm)} cm` });
+                      if (m.quadriceps_cm !== null) fields.push({ label: "Cuádriceps", value: `${formatMeasurementNumber(m.quadriceps_cm)} cm` });
+                      if (m.calf_cm !== null) fields.push({ label: "Gemelo", value: `${formatMeasurementNumber(m.calf_cm)} cm` });
+                      if (m.photo_uri) fields.push({ label: "Foto", value: "Sí" });
+
+                      return (
+                        <View
+                          key={m.id}
+                          style={{
+                            backgroundColor: mobileTheme.color.bgSurface,
+                            borderRadius: mobileTheme.radius.lg,
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            padding: 12,
+                            gap: 8,
+                          }}
+                        >
+                          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>
+                              {dateStr}
+                            </Text>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                              #{store.measurements.length - idx}
+                            </Text>
+                          </View>
+
+                          {fields.length > 0 ? (
+                            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                              {fields.map((f) => (
+                                <View
+                                  key={f.label}
+                                  style={{
+                                    backgroundColor: "#ffffff08",
+                                    borderRadius: 8,
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 6,
+                                    gap: 2,
+                                  }}
+                                >
+                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{f.label}</Text>
+                                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>{f.value}</Text>
+                                </View>
+                              ))}
+                            </View>
+                          ) : (
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Sin medidas numéricas</Text>
+                          )}
+                        </View>
+                      );
+                    })
+                  )}
                 </View>
               ) : null}
 
