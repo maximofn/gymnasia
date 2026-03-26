@@ -12607,8 +12607,8 @@ export default function App() {
                                       style={{
                                         position: "absolute",
                                         left: `${xPct}%`,
-                                        transform: [{ translateX: -20 }],
-                                        width: 40,
+                                        transform: [{ translateX: -28 }],
+                                        width: 56,
                                         textAlign: "center",
                                         color: "#7F8795",
                                         fontSize: 9,
