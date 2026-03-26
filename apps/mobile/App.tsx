@@ -12464,37 +12464,48 @@ export default function App() {
 
                             <View style={{ height: 16, position: "relative", marginLeft: padL, marginRight: padR }}>
                               {(() => {
-                                const numLabels = Math.min(5, pts.length);
-                                const labels: Array<{ label: string; xPercent: number; isLast: boolean }> = [];
-                                for (let li = 0; li < numLabels; li++) {
-                                  const t = minT + (li / (numLabels - 1)) * rangeT;
-                                  const closestPt = pts.reduce((best, p) =>
-                                    Math.abs(p.timestamp - t) < Math.abs(best.timestamp - t) ? p : best
-                                  );
-                                  const xPct = ((closestPt.timestamp - minT) / rangeT) * 100;
-                                  const isLast = li === numLabels - 1;
-                                  if (!labels.some((l) => l.label === closestPt.label)) {
-                                    labels.push({ label: closestPt.label, xPercent: xPct, isLast });
-                                  }
+                                // Generate evenly-spaced calendar month labels
+                                const startDate = new Date(minT);
+                                const endDate = new Date(maxT);
+                                const months: Array<{ label: string; timestamp: number }> = [];
+                                const cur = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+                                while (cur.getTime() <= endDate.getTime()) {
+                                  months.push({
+                                    label: DIET_MONTH_LABELS_SHORT[cur.getMonth()],
+                                    timestamp: cur.getTime(),
+                                  });
+                                  cur.setMonth(cur.getMonth() + 1);
                                 }
-                                return labels.map((l) => (
-                                  <Text
-                                    key={l.label}
-                                    style={{
-                                      position: "absolute",
-                                      left: `${l.xPercent}%`,
-                                      transform: [{ translateX: -20 }],
-                                      width: 40,
-                                      textAlign: "center",
-                                      color: l.isLast ? mobileTheme.color.brandPrimary : "#7F8795",
-                                      fontSize: 10,
-                                      fontWeight: l.isLast ? "800" : "600",
-                                    }}
-                                    numberOfLines={1}
-                                  >
-                                    {l.label}
-                                  </Text>
-                                ));
+                                // Add one more month after data ends
+                                months.push({
+                                  label: DIET_MONTH_LABELS_SHORT[cur.getMonth()],
+                                  timestamp: cur.getTime(),
+                                });
+                                // Filter to max ~6 labels to avoid overlap
+                                const step = Math.max(1, Math.ceil(months.length / 6));
+                                const filtered = months.filter((_, i) => i % step === 0 || i === months.length - 1);
+                                return filtered.map((m, i) => {
+                                  const xPct = Math.max(0, Math.min(100, ((m.timestamp - minT) / rangeT) * 100));
+                                  const isLast = i === filtered.length - 1;
+                                  return (
+                                    <Text
+                                      key={`${m.label}-${m.timestamp}`}
+                                      style={{
+                                        position: "absolute",
+                                        left: `${xPct}%`,
+                                        transform: [{ translateX: -16 }],
+                                        width: 32,
+                                        textAlign: "center",
+                                        color: isLast ? mobileTheme.color.brandPrimary : "#7F8795",
+                                        fontSize: 10,
+                                        fontWeight: isLast ? "800" : "600",
+                                      }}
+                                      numberOfLines={1}
+                                    >
+                                      {m.label}
+                                    </Text>
+                                  );
+                                });
                               })()}
                             </View>
 
