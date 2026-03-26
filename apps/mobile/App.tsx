@@ -12919,7 +12919,7 @@ export default function App() {
               <View style={{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "rgba(100,149,237,0.08)", borderWidth: 1, borderColor: "rgba(100,149,237,0.25)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
                 <Feather name="info" size={16} color="rgba(100,149,237,0.9)" />
                 <Text style={{ color: "rgba(100,149,237,0.9)", fontSize: 13, flex: 1, lineHeight: 19 }}>
-                  Tus datos y conversaciones se envían directamente a la API. Gymnasia no almacena tu clave.
+                  Gymnasia guarda tus API keys solo en tu dispositivo, no las guarda en ningún otro lugar.
                 </Text>
               </View>
               <Pressable
