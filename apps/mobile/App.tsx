@@ -3500,7 +3500,7 @@ function normalizeStore(raw: LocalStore): LocalStore {
     (Array.isArray(raw.measurements) ? raw.measurements : []).map((measurement, index) =>
       normalizeMeasurement(measurement, index),
     ),
-  ).slice(0, 60);
+  ).slice(0, 500);
   const normalizedWorkoutHistory = sortWorkoutHistoryDesc(
     (Array.isArray(raw.workoutHistory) ? raw.workoutHistory : []).map((summary, index) =>
       normalizeWorkoutSessionSummary(summary, index),
@@ -6036,7 +6036,7 @@ export default function App() {
       const base = editingMeasurementId
         ? prev.measurements.filter((m) => m.id !== editingMeasurementId)
         : prev.measurements;
-      const nextMeasurements = sortMeasurementsDesc([measurement, ...base]).slice(0, 60);
+      const nextMeasurements = sortMeasurementsDesc([measurement, ...base]).slice(0, 500);
       return {
         ...prev,
         measurements: nextMeasurements,
