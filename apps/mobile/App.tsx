@@ -12914,7 +12914,7 @@ export default function App() {
                 API Key no configurada
               </Text>
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 15, textAlign: "center", lineHeight: 22 }}>
-                Para usar el asistente IA necesitas configurar tu API Key. Puedes obtener una en OpenAI y añadirla en los ajustes de la app.
+                Para usar el asistente IA necesitas configurar tu API Key. Obtén una API key de tu proveedor y añádela en los ajustes de la app.
               </Text>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "rgba(100,149,237,0.08)", borderWidth: 1, borderColor: "rgba(100,149,237,0.25)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
                 <Feather name="info" size={16} color="rgba(100,149,237,0.9)" />
