@@ -3794,6 +3794,7 @@ export default function App() {
   const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
   const [showMeasurementDatePicker, setShowMeasurementDatePicker] = useState(false);
   const [measurementEntryScreenOpen, setMeasurementEntryScreenOpen] = useState(false);
+  const [editingMeasurementId, setEditingMeasurementId] = useState<string | null>(null);
   const [measuresDashboardPeriod, setMeasuresDashboardPeriod] =
     useState<MeasuresDashboardPeriodKey>("3m");
   const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
@@ -5892,6 +5893,31 @@ export default function App() {
     setQuadricepsInput("");
     setCalfInput("");
     setMeasurementDate(measurementDateFromSelection(new Date()));
+    setEditingMeasurementId(null);
+  }
+
+  function openMeasurementForEdit(m: Measurement) {
+    setWeightInput(m.weight_kg !== null ? String(m.weight_kg) : "");
+    setHeightInput(m.height_cm !== null ? String(m.height_cm) : "");
+    setNeckInput(m.neck_cm !== null ? String(m.neck_cm) : "");
+    setChestInput(m.chest_cm !== null ? String(m.chest_cm) : "");
+    setWaistInput(m.waist_cm !== null ? String(m.waist_cm) : "");
+    setHipsInput(m.hips_cm !== null ? String(m.hips_cm) : "");
+    setBicepsInput(m.biceps_cm !== null ? String(m.biceps_cm) : "");
+    setQuadricepsInput(m.quadriceps_cm !== null ? String(m.quadriceps_cm) : "");
+    setCalfInput(m.calf_cm !== null ? String(m.calf_cm) : "");
+    setMeasurementPhotoUri(m.photo_uri ?? null);
+    setMeasurementDate(new Date(m.measured_at));
+    setEditingMeasurementId(m.id);
+    setMeasurementEntryScreenOpen(true);
+    setError(null);
+  }
+
+  function deleteMeasurement(id: string) {
+    setStore((prev) => ({
+      ...prev,
+      measurements: prev.measurements.filter((m) => m.id !== id),
+    }));
   }
 
   function addMeasurementFromSettings() {
@@ -5959,7 +5985,7 @@ export default function App() {
     }
 
     const measurement: Measurement = {
-      id: uid("measurement"),
+      id: editingMeasurementId ?? uid("measurement"),
       measured_at: measurementDateFromSelection(measurementDate).toISOString(),
       weight_kg: weightResult.value,
       photo_uri: measurementPhotoUri,
@@ -5974,7 +6000,10 @@ export default function App() {
     };
 
     setStore((prev) => {
-      const nextMeasurements = sortMeasurementsDesc([measurement, ...prev.measurements]).slice(0, 60);
+      const base = editingMeasurementId
+        ? prev.measurements.filter((m) => m.id !== editingMeasurementId)
+        : prev.measurements;
+      const nextMeasurements = sortMeasurementsDesc([measurement, ...base]).slice(0, 60);
       return {
         ...prev,
         measurements: nextMeasurements,
@@ -15062,9 +15091,28 @@ export default function App() {
 
               {settingsTab === "measures" ? (
                 <View style={{ gap: 12 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                    Medidas guardadas ({store.measurements.length})
-                  </Text>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                      Medidas guardadas ({store.measurements.length})
+                    </Text>
+                    <Pressable
+                      onPress={openMeasurementEntryScreen}
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 6,
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.45)",
+                        borderRadius: mobileTheme.radius.pill,
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                        backgroundColor: "rgba(203,255,26,0.08)",
+                      }}
+                    >
+                      <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
+                      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>Añadir</Text>
+                    </Pressable>
+                  </View>
 
                   {store.measurements.length === 0 ? (
                     <View
@@ -15080,7 +15128,7 @@ export default function App() {
                     >
                       <Feather name="activity" size={32} color={mobileTheme.color.textSecondary} />
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, textAlign: "center" }}>
-                        No hay medidas guardadas. Registra tus medidas desde la pestaña "Medidas".
+                        No hay medidas guardadas. Pulsa "Añadir" para registrar tus medidas.
                       </Text>
                     </View>
                   ) : (
@@ -15141,6 +15189,44 @@ export default function App() {
                           ) : (
                             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Sin medidas numéricas</Text>
                           )}
+
+                          <View style={{ flexDirection: "row", gap: 8 }}>
+                            <Pressable
+                              onPress={() => openMeasurementForEdit(m)}
+                              style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 6,
+                                paddingVertical: 8,
+                                borderRadius: mobileTheme.radius.md,
+                                borderWidth: 1,
+                                borderColor: mobileTheme.color.borderSubtle,
+                              }}
+                            >
+                              <Feather name="edit-2" size={13} color={mobileTheme.color.textSecondary} />
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Editar</Text>
+                            </Pressable>
+                            <Pressable
+                              onPress={() => deleteMeasurement(m.id)}
+                              style={{
+                                flex: 1,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 6,
+                                paddingVertical: 8,
+                                borderRadius: mobileTheme.radius.md,
+                                borderWidth: 1,
+                                borderColor: "#FF6B6B44",
+                                backgroundColor: "#FF6B6B10",
+                              }}
+                            >
+                              <Feather name="trash-2" size={13} color="#FF6B6B" />
+                              <Text style={{ color: "#FF6B6B", fontSize: 12, fontWeight: "600" }}>Eliminar</Text>
+                            </Pressable>
+                          </View>
                         </View>
                       );
                     })
@@ -15340,10 +15426,10 @@ export default function App() {
           >
             <View style={{ gap: 4 }}>
               <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
-                Registrar medidas
+                {editingMeasurementId ? "Editar medidas" : "Registrar medidas"}
               </Text>
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                Guarda peso, foto y contornos sin salir de la pestaña `Medidas`.
+                {editingMeasurementId ? "Modifica los valores de esta entrada." : "Guarda peso, foto y contornos sin salir de la pestaña `Medidas`."}
               </Text>
             </View>
 
@@ -15376,7 +15462,7 @@ export default function App() {
                   justifyContent: "center",
                 }}
               >
-                <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar medidas</Text>
+                <Text style={{ color: "#06090D", fontWeight: "700" }}>{editingMeasurementId ? "Actualizar" : "Guardar medidas"}</Text>
               </Pressable>
             </View>
           </View>
@@ -15746,7 +15832,7 @@ export default function App() {
                     justifyContent: "center",
                   }}
                 >
-                  <Text style={{ color: "#06090D", fontWeight: "700" }}>Guardar medidas</Text>
+                  <Text style={{ color: "#06090D", fontWeight: "700" }}>{editingMeasurementId ? "Actualizar" : "Guardar medidas"}</Text>
                 </Pressable>
               </View>
             </View>
