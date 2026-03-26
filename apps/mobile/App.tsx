@@ -12547,23 +12547,34 @@ export default function App() {
 
                             <View style={{ height: 16, position: "relative", marginLeft: padL, marginRight: padR }}>
                               {(() => {
-                                // Generate evenly-spaced calendar month labels
+                                // Generate calendar month labels spanning the data range
                                 const startDate = new Date(minT);
                                 const endDate = new Date(maxT);
-                                const months: Array<{ label: string; timestamp: number }> = [];
+                                const allMonths: Array<{ label: string; timestamp: number }> = [];
                                 const cur = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
                                 while (cur.getTime() <= endDate.getTime()) {
-                                  months.push({
+                                  allMonths.push({
                                     label: DIET_MONTH_LABELS_SHORT[cur.getMonth()],
                                     timestamp: cur.getTime(),
                                   });
                                   cur.setMonth(cur.getMonth() + 1);
                                 }
-                                // Filter to max ~6 labels to avoid overlap
-                                const step = Math.max(1, Math.ceil(months.length / 6));
-                                const filtered = months.filter((_, i) => i % step === 0 || i === months.length - 1);
-                                return filtered.map((m) => {
-                                  const xPct = Math.max(0, Math.min(100, ((m.timestamp - minT) / rangeT) * 100));
+                                // Only include months up to the one containing the last data point
+                                // Pick max ~5 labels, evenly spaced by index
+                                const maxLabels = 5;
+                                let filtered: typeof allMonths;
+                                if (allMonths.length <= maxLabels) {
+                                  filtered = allMonths;
+                                } else {
+                                  const step = (allMonths.length - 1) / (maxLabels - 1);
+                                  filtered = [];
+                                  for (let i = 0; i < maxLabels; i++) {
+                                    filtered.push(allMonths[Math.round(i * step)]);
+                                  }
+                                }
+                                // Distribute labels equidistantly across the axis
+                                return filtered.map((m, i) => {
+                                  const xPct = filtered.length === 1 ? 50 : (i / (filtered.length - 1)) * 100;
                                   return (
                                     <Text
                                       key={`${m.label}-${m.timestamp}`}
