@@ -12376,8 +12376,10 @@ export default function App() {
                         const plotH = chartH - padT - padB;
                         const pts = measuresDashboardChartPoints;
                         const vals = pts.map((p) => p.value);
-                        const minV = Math.min(...vals);
-                        const maxV = Math.max(...vals);
+                        const rawMin = Math.min(...vals);
+                        const rawMax = Math.max(...vals);
+                        const minV = Math.floor(rawMin) - 1;
+                        const maxV = Math.ceil(rawMax) + 1;
                         const rangeV = Math.max(0.4, maxV - minV);
                         const coords = pts.map((p, i) => ({
                           x: padL + (pts.length === 1 ? plotW / 2 : (i / (pts.length - 1)) * plotW),
