@@ -12805,6 +12805,7 @@ export default function App() {
           ) : null}
 
           {tab === "chat" ? (
+            store.keys.some((k) => k.api_key.trim()) ? (
             <View style={{ gap: 10 }}>
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                 {threads.map((thread) => (
@@ -12904,6 +12905,35 @@ export default function App() {
                 <Text style={{ color: "#06090D", fontWeight: "700" }}>{sendingChat ? "Enviando..." : "Enviar"}</Text>
               </Pressable>
             </View>
+            ) : (
+            <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32, gap: 20 }}>
+              <View style={{ width: 100, height: 100, borderRadius: 50, backgroundColor: "rgba(255,255,255,0.06)", alignItems: "center", justifyContent: "center" }}>
+                <Feather name="key" size={40} color="rgba(255,255,255,0.25)" />
+              </View>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800", textAlign: "center" }}>
+                API Key no configurada
+              </Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 15, textAlign: "center", lineHeight: 22 }}>
+                Para usar el asistente IA necesitas configurar tu API Key. Puedes obtener una en OpenAI y añadirla en los ajustes de la app.
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "rgba(100,149,237,0.08)", borderWidth: 1, borderColor: "rgba(100,149,237,0.25)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
+                <Feather name="info" size={16} color="rgba(100,149,237,0.9)" />
+                <Text style={{ color: "rgba(100,149,237,0.9)", fontSize: 13, flex: 1, lineHeight: 19 }}>
+                  Tus datos y conversaciones se envían directamente a la API. GIMNASIA no almacena tu clave.
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => { setTab("settings"); setSettingsTab("provider"); }}
+                style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 52, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, width: "100%", marginTop: 4 }}
+              >
+                <Ionicons name="settings-sharp" size={18} color="#06090D" />
+                <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 16 }}>Ir a Ajustes BYOK</Text>
+              </Pressable>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                ¿Qué es BYOK?
+              </Text>
+            </View>
+            )
           ) : null}
 
           {tab === "settings" ? (
