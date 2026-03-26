@@ -12539,7 +12539,7 @@ export default function App() {
                                   key={pts[i].key}
                                   cx={c.x}
                                   cy={c.y}
-                                  r={pts[i].isLatest ? 4.5 : 2.5}
+                                  r={pts[i].isLatest ? 3 : 1.5}
                                   fill={mobileTheme.color.brandPrimary}
                                 />
                               ))}
