@@ -12531,7 +12531,7 @@ export default function App() {
                                 <Path d={maPath} fill="none" stroke="#7EC8FF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} strokeDasharray="6,4" />
                               ) : null}
                               {pts.length >= 3 ? (
-                                <Path d={ma30Path} fill="none" stroke="#2B5C8A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} strokeDasharray="2,4" />
+                                <Path d={ma30Path} fill="none" stroke="#2B5C8A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.85} strokeDasharray="2,4" />
                               ) : null}
 
                               {coords.map((c, i) => (
