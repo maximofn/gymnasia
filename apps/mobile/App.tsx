@@ -31,7 +31,7 @@ import {
 import { mobileTheme } from "./theme";
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "personalFoods" | "measures";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "personalFoods" | "measures" | "preferences";
 
 type SeriesType =
   | "normal"
@@ -224,6 +224,9 @@ type TrainingTemplateScreenMode = "detail" | "edit";
 type TrainingStatsPeriodKey = "3m" | "6m" | "12m" | "all";
 type TrainingStatsMetricKey = "volume" | "reps" | "duration";
 type MeasuresDashboardPeriodKey = "1m" | "3m" | "6m" | "all";
+type UserPreferences = {
+  chartPeriod: MeasuresDashboardPeriodKey;
+};
 type TemplateSeriesPointer = {
   exerciseIndex: number;
   seriesIndex: number;
@@ -255,6 +258,8 @@ const STORAGE_KEY = "gymnasia.mobile.local.v3";
 const SESSION_STORAGE_KEY = "gymnasia.mobile.training.session.v1";
 const CHAT_SYSTEM_PROMPT_CACHE_KEY = "gymnasia.mobile.chat.system_prompt.v1";
 const PERSONAL_DATA_STORAGE_KEY = "gymnasia.mobile.personal_data.v1";
+const USER_PREFS_STORAGE_KEY = "gymnasia.mobile.user_prefs.v1";
+const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m" };
 const SECURE_STORE_API_KEY_PREFIX = "gymnasia.mobile.v3.provider.api_key";
 const LEGACY_STORAGE_KEYS = [
   "gymnasia.mobile.local.v1",
@@ -957,6 +962,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "foods", label: "Alimentos" },
   { key: "personalFoods", label: "Alimentos personales" },
   { key: "measures", label: "Medidas" },
+  { key: "preferences", label: "Preferencias" },
 ];
 
 const DIET_GOAL_OPTIONS: Array<{ key: DietGoal; label: string }> = [
@@ -3826,6 +3832,7 @@ export default function App() {
   const [measurementDateTextInput, setMeasurementDateTextInput] = useState("");
   const [measurementEntryScreenOpen, setMeasurementEntryScreenOpen] = useState(false);
   const [editingMeasurementId, setEditingMeasurementId] = useState<string | null>(null);
+  const [userPrefs, setUserPrefs] = useState<UserPreferences>({ ...DEFAULT_USER_PREFS });
   const [measuresDashboardPeriod, setMeasuresDashboardPeriod] =
     useState<MeasuresDashboardPeriodKey>("3m");
   const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
@@ -4989,10 +4996,11 @@ export default function App() {
 
         await clearLegacyStorageData(secureAvailable);
 
-        const [rawStore, secureApiKeys, rawSession] = await Promise.all([
+        const [rawStore, secureApiKeys, rawSession, rawPrefs] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEY),
           readProviderApiKeysFromSecureStore(secureAvailable),
           AsyncStorage.getItem(SESSION_STORAGE_KEY),
+          AsyncStorage.getItem(USER_PREFS_STORAGE_KEY),
         ]);
 
         // On web dev, prefer file-backed store over localStorage
@@ -5021,6 +5029,11 @@ export default function App() {
         if (!ignore) {
           setStore(mergedStore);
           setActiveWorkoutSession(hydratedSession);
+          const parsedPrefs: UserPreferences = rawPrefs
+            ? { ...DEFAULT_USER_PREFS, ...JSON.parse(rawPrefs) }
+            : { ...DEFAULT_USER_PREFS };
+          setUserPrefs(parsedPrefs);
+          setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
         }
       } catch (err) {
         if (!ignore) {
@@ -5065,6 +5078,11 @@ export default function App() {
       setError("No se pudo guardar en almacenamiento local/seguro.");
     });
   }, [isHydrated, secureStoreAvailable, store]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    AsyncStorage.setItem(USER_PREFS_STORAGE_KEY, JSON.stringify(userPrefs)).catch(() => {});
+  }, [isHydrated, userPrefs]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -5885,6 +5903,7 @@ export default function App() {
   function selectMeasuresDashboardPeriod(periodKey: MeasuresDashboardPeriodKey) {
     setMeasuresDashboardPeriod(periodKey);
     setMeasuresDashboardPeriodDropdownOpen(false);
+    setUserPrefs((prev) => ({ ...prev, chartPeriod: periodKey }));
   }
 
   async function pickMeasurementPhoto() {
@@ -15399,6 +15418,45 @@ export default function App() {
                       );
                     })
                   )}
+                </View>
+              ) : null}
+
+              {settingsTab === "preferences" ? (
+                <View style={{ gap: 12 }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                    Preferencias del usuario
+                  </Text>
+                  {Object.entries(userPrefs).map(([key, value]) => {
+                    let displayLabel = key;
+                    let displayValue = String(value);
+                    if (key === "chartPeriod") {
+                      displayLabel = "Vista del gráfico";
+                      const option = MEASURES_DASHBOARD_PERIOD_OPTIONS.find((o) => o.key === value);
+                      displayValue = option ? option.label : String(value);
+                    }
+                    return (
+                      <View
+                        key={key}
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          backgroundColor: mobileTheme.color.cardBg,
+                          borderRadius: 12,
+                          padding: 14,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                        }}
+                      >
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
+                          {displayLabel}
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
+                          {displayValue}
+                        </Text>
+                      </View>
+                    );
+                  })}
                 </View>
               ) : null}
 
