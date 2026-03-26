@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import Svg, { Path, Circle, Defs, LinearGradient, Stop } from "react-native-svg";
 import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
@@ -12364,118 +12365,137 @@ export default function App() {
                     </View>
                   ) : (
                     <>
-                      <View
-                        style={{
-                          width: 28,
-                          justifyContent: "space-between",
-                          paddingVertical: 4,
-                        }}
-                      >
-                        <Text style={{ color: "#4E5665", fontSize: 11 }}>
-                          {measuresDashboardScaleLabels.top}
-                        </Text>
-                        <Text style={{ color: "#4E5665", fontSize: 11 }}>
-                          {measuresDashboardScaleLabels.mid}
-                        </Text>
-                        <Text style={{ color: "#4E5665", fontSize: 11 }}>
-                          {measuresDashboardScaleLabels.bottom}
-                        </Text>
-                      </View>
+                      {(() => {
+                        const chartW = 300;
+                        const chartH = 160;
+                        const padL = 36;
+                        const padR = 12;
+                        const padT = 8;
+                        const padB = 24;
+                        const plotW = chartW - padL - padR;
+                        const plotH = chartH - padT - padB;
+                        const pts = measuresDashboardChartPoints;
+                        const vals = pts.map((p) => p.value);
+                        const minV = Math.min(...vals);
+                        const maxV = Math.max(...vals);
+                        const rangeV = Math.max(0.4, maxV - minV);
+                        const coords = pts.map((p, i) => ({
+                          x: padL + (pts.length === 1 ? plotW / 2 : (i / (pts.length - 1)) * plotW),
+                          y: padT + plotH - ((p.value - minV) / rangeV) * plotH,
+                        }));
 
-                      <View
-                        style={{
-                          flex: 1,
-                          minHeight: 190,
-                          borderRadius: 16,
-                          overflow: "hidden",
-                          paddingTop: 6,
-                        }}
-                      >
-                        {[0, 1, 2, 3].map((lineIndex) => (
-                          <View
-                            key={`measure-chart-line-${lineIndex}`}
-                            style={{
-                              position: "absolute",
-                              left: 0,
-                              right: 0,
-                              top: `${lineIndex * 28}%`,
-                              borderTopWidth: 1,
-                              borderTopColor: "rgba(255,255,255,0.05)",
-                            }}
-                          />
-                        ))}
+                        // Smooth curve using cardinal spline
+                        let linePath = "";
+                        if (coords.length === 1) {
+                          linePath = `M${coords[0].x},${coords[0].y}L${coords[0].x},${coords[0].y}`;
+                        } else if (coords.length === 2) {
+                          linePath = `M${coords[0].x},${coords[0].y}L${coords[1].x},${coords[1].y}`;
+                        } else {
+                          linePath = `M${coords[0].x},${coords[0].y}`;
+                          for (let i = 0; i < coords.length - 1; i++) {
+                            const p0 = coords[Math.max(0, i - 1)];
+                            const p1 = coords[i];
+                            const p2 = coords[i + 1];
+                            const p3 = coords[Math.min(coords.length - 1, i + 2)];
+                            const cp1x = p1.x + (p2.x - p0.x) / 6;
+                            const cp1y = p1.y + (p2.y - p0.y) / 6;
+                            const cp2x = p2.x - (p3.x - p1.x) / 6;
+                            const cp2y = p2.y - (p3.y - p1.y) / 6;
+                            linePath += `C${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
+                          }
+                        }
 
-                        <View
-                          style={{
-                            flex: 1,
-                            flexDirection: "row",
-                            alignItems: "flex-end",
-                            gap: 8,
-                          }}
-                        >
-                          {measuresDashboardChartPoints.map((point) => (
-                            <View
-                              key={point.key}
-                              style={{
-                                flex: 1,
-                                minWidth: measuresDashboardChartPoints.length > 6 ? 22 : 34,
-                                height: "100%",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                                gap: 4,
-                              }}
-                            >
-                              <View
-                                style={{
-                                  flex: 1,
-                                  width: "100%",
-                                  justifyContent: "flex-end",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <View
+                        const areaPath = linePath + `L${coords[coords.length - 1].x},${padT + plotH}L${coords[0].x},${padT + plotH}Z`;
+
+                        // Scale labels
+                        const midV = minV + rangeV / 2;
+                        const gridLines = [
+                          { y: padT, label: formatMeasurementNumber(maxV) },
+                          { y: padT + plotH / 2, label: formatMeasurementNumber(midV) },
+                          { y: padT + plotH, label: formatMeasurementNumber(minV) },
+                        ];
+
+                        // X-axis labels: show first, last, and middle
+                        const labelIndices = new Set<number>();
+                        labelIndices.add(0);
+                        labelIndices.add(pts.length - 1);
+                        if (pts.length > 2) labelIndices.add(Math.floor(pts.length / 2));
+                        if (pts.length > 4) {
+                          labelIndices.add(Math.floor(pts.length / 4));
+                          labelIndices.add(Math.floor((3 * pts.length) / 4));
+                        }
+
+                        return (
+                          <View style={{ flex: 1 }}>
+                            <Svg width="100%" height={chartH} viewBox={`0 0 ${chartW} ${chartH}`}>
+                              <Defs>
+                                <LinearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                                  <Stop offset="0" stopColor={mobileTheme.color.brandPrimary} stopOpacity="0.35" />
+                                  <Stop offset="1" stopColor={mobileTheme.color.brandPrimary} stopOpacity="0.02" />
+                                </LinearGradient>
+                              </Defs>
+
+                              {gridLines.map((gl, i) => (
+                                <Path
+                                  key={`grid-${i}`}
+                                  d={`M${padL},${gl.y}L${chartW - padR},${gl.y}`}
+                                  stroke="rgba(255,255,255,0.06)"
+                                  strokeWidth={1}
+                                />
+                              ))}
+
+                              <Path d={areaPath} fill="url(#areaGrad)" />
+                              <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+
+                              {coords.map((c, i) => (
+                                <Circle
+                                  key={pts[i].key}
+                                  cx={c.x}
+                                  cy={c.y}
+                                  r={pts[i].isLatest ? 4.5 : 0}
+                                  fill={mobileTheme.color.brandPrimary}
+                                />
+                              ))}
+                            </Svg>
+
+                            <View style={{ flexDirection: "row", justifyContent: "space-between", paddingLeft: padL, paddingRight: padR }}>
+                              {pts.map((p, i) => (
+                                <Text
+                                  key={p.key}
                                   style={{
-                                    width: "72%",
-                                    height: `${point.heightPercent}%`,
-                                    minHeight: 22,
-                                    borderRadius: 999,
-                                    borderWidth: 1,
-                                    borderColor: point.isLatest
-                                      ? "rgba(203,255,26,0.42)"
-                                      : "rgba(203,255,26,0.12)",
-                                    backgroundColor: point.isLatest
-                                      ? "rgba(203,255,26,0.16)"
-                                      : "rgba(203,255,26,0.08)",
-                                    justifyContent: "flex-start",
-                                    alignItems: "center",
+                                    color: p.isLatest ? mobileTheme.color.brandPrimary : "#7F8795",
+                                    fontSize: pts.length > 8 ? 8 : 10,
+                                    fontWeight: p.isLatest ? "800" : "600",
+                                    textAlign: "center",
+                                    width: pts.length > 6 ? undefined : 40,
+                                    display: pts.length > 6 && !labelIndices.has(i) ? "none" : "flex",
+                                  }}
+                                  numberOfLines={1}
+                                >
+                                  {p.label}
+                                </Text>
+                              ))}
+                            </View>
+
+                            <View style={{ position: "absolute", top: 0, left: 0 }}>
+                              {gridLines.map((gl, i) => (
+                                <Text
+                                  key={`label-${i}`}
+                                  style={{
+                                    position: "absolute",
+                                    top: gl.y - 6,
+                                    left: 0,
+                                    color: "#4E5665",
+                                    fontSize: 10,
                                   }}
                                 >
-                                  <View
-                                    style={{
-                                      width: 8,
-                                      height: 8,
-                                      borderRadius: 999,
-                                      backgroundColor: mobileTheme.color.brandPrimary,
-                                      marginTop: -4,
-                                    }}
-                                  />
-                                </View>
-                              </View>
-
-                              <Text
-                                style={{
-                                  color: point.isLatest ? mobileTheme.color.brandPrimary : "#7F8795",
-                                  fontSize: measuresDashboardChartPoints.length > 6 ? 8 : 11,
-                                  fontWeight: point.isLatest ? "800" : "600",
-                                }}
-                                numberOfLines={1}
-                              >
-                                {point.label}
-                              </Text>
+                                  {gl.label}
+                                </Text>
+                              ))}
                             </View>
-                          ))}
-                        </View>
-                      </View>
+                          </View>
+                        );
+                      })()}
                     </>
                   )}
                 </View>
