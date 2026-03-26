@@ -4141,8 +4141,7 @@ export default function App() {
           timestamp: measurementTime,
         };
       })
-      .filter((p): p is NonNullable<typeof p> => p !== null)
-      .slice(-12);
+      .filter((p): p is NonNullable<typeof p> => p !== null);
 
     if (points.length === 0) return [];
 
