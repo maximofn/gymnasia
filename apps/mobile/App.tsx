@@ -12476,17 +12476,11 @@ export default function App() {
                                   });
                                   cur.setMonth(cur.getMonth() + 1);
                                 }
-                                // Add one more month after data ends
-                                months.push({
-                                  label: DIET_MONTH_LABELS_SHORT[cur.getMonth()],
-                                  timestamp: cur.getTime(),
-                                });
                                 // Filter to max ~6 labels to avoid overlap
                                 const step = Math.max(1, Math.ceil(months.length / 6));
                                 const filtered = months.filter((_, i) => i % step === 0 || i === months.length - 1);
-                                return filtered.map((m, i) => {
+                                return filtered.map((m) => {
                                   const xPct = Math.max(0, Math.min(100, ((m.timestamp - minT) / rangeT) * 100));
-                                  const isLast = i === filtered.length - 1;
                                   return (
                                     <Text
                                       key={`${m.label}-${m.timestamp}`}
@@ -12496,9 +12490,9 @@ export default function App() {
                                         transform: [{ translateX: -16 }],
                                         width: 32,
                                         textAlign: "center",
-                                        color: isLast ? mobileTheme.color.brandPrimary : "#7F8795",
+                                        color: "#7F8795",
                                         fontSize: 10,
-                                        fontWeight: isLast ? "800" : "600",
+                                        fontWeight: "600",
                                       }}
                                       numberOfLines={1}
                                     >
