@@ -4185,6 +4185,15 @@ export default function App() {
       isLatest: index === points.length - 1,
     }));
   }, [measuresDashboardPeriodMeta.days, store.measurements]);
+
+  // All weight measurements sorted ascending (for MA calculation across periods)
+  const allWeightValues = useMemo(() => {
+    return [...store.measurements]
+      .filter((m) => m.weight_kg !== null && !Number.isNaN(new Date(m.measured_at).getTime()))
+      .sort((a, b) => new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime())
+      .map((m) => ({ timestamp: new Date(m.measured_at).getTime(), value: m.weight_kg as number }));
+  }, [store.measurements]);
+
   const measuresDashboardScaleLabels = useMemo(() => {
     if (measuresDashboardChartPoints.length === 0) {
       return { top: null, mid: null, bottom: null };
@@ -12443,18 +12452,28 @@ export default function App() {
 
                         const areaPath = linePath + `L${coords[coords.length - 1].x},${padT + plotH}L${coords[0].x},${padT + plotH}Z`;
 
-                        // 10-point moving average
-                        const MA_WINDOW = 10;
-                        const maCoords: Array<{ x: number; y: number }> = [];
-                        for (let i = 0; i < pts.length; i++) {
-                          const start = Math.max(0, i - MA_WINDOW + 1);
-                          const window = vals.slice(start, i + 1);
-                          const avg = window.reduce((s, v) => s + v, 0) / window.length;
-                          maCoords.push({
-                            x: coords[i].x,
-                            y: padT + plotH - ((avg - minV) / rangeV) * plotH,
-                          });
+                        // Compute MA using full history (not just visible range)
+                        function computeMaFromFullHistory(window: number): Array<{ x: number; y: number }> {
+                          const result: Array<{ x: number; y: number }> = [];
+                          for (let i = 0; i < pts.length; i++) {
+                            // Find this point's index in the full history
+                            const fullIdx = allWeightValues.findIndex((v) => v.timestamp === pts[i].timestamp);
+                            if (fullIdx === -1) {
+                              // Fallback: use only visible data
+                              const start = Math.max(0, i - window + 1);
+                              const w = vals.slice(start, i + 1);
+                              const avg = w.reduce((s, v) => s + v, 0) / w.length;
+                              result.push({ x: coords[i].x, y: padT + plotH - ((avg - minV) / rangeV) * plotH });
+                            } else {
+                              const start = Math.max(0, fullIdx - window + 1);
+                              const w = allWeightValues.slice(start, fullIdx + 1).map((v) => v.value);
+                              const avg = w.reduce((s, v) => s + v, 0) / w.length;
+                              result.push({ x: coords[i].x, y: padT + plotH - ((avg - minV) / rangeV) * plotH });
+                            }
+                          }
+                          return result;
                         }
+                        const maCoords = computeMaFromFullHistory(10);
                         function buildMaPath(maCoords: Array<{ x: number; y: number }>): string {
                           if (maCoords.length === 1) return `M${maCoords[0].x},${maCoords[0].y}L${maCoords[0].x},${maCoords[0].y}`;
                           if (maCoords.length === 2) return `M${maCoords[0].x},${maCoords[0].y}L${maCoords[1].x},${maCoords[1].y}`;
@@ -12474,18 +12493,7 @@ export default function App() {
                         }
                         const maPath = buildMaPath(maCoords);
 
-                        // 30-point moving average
-                        const MA30_WINDOW = 30;
-                        const ma30Coords: Array<{ x: number; y: number }> = [];
-                        for (let i = 0; i < pts.length; i++) {
-                          const start = Math.max(0, i - MA30_WINDOW + 1);
-                          const window = vals.slice(start, i + 1);
-                          const avg = window.reduce((s, v) => s + v, 0) / window.length;
-                          ma30Coords.push({
-                            x: coords[i].x,
-                            y: padT + plotH - ((avg - minV) / rangeV) * plotH,
-                          });
-                        }
+                        const ma30Coords = computeMaFromFullHistory(30);
                         const ma30Path = buildMaPath(ma30Coords);
 
                         // Scale labels
@@ -12557,45 +12565,53 @@ export default function App() {
 
                             <View style={{ height: 16, position: "relative", marginLeft: padL, marginRight: padR }}>
                               {(() => {
-                                // Generate calendar month labels spanning the data range
-                                const startDate = new Date(minT);
-                                const endDate = new Date(maxT);
-                                const allMonths: Array<{ label: string; timestamp: number }> = [];
-                                const cur = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-                                while (cur.getTime() <= endDate.getTime()) {
-                                  allMonths.push({
-                                    label: DIET_MONTH_LABELS_SHORT[cur.getMonth()],
-                                    timestamp: cur.getTime(),
-                                  });
-                                  cur.setMonth(cur.getMonth() + 1);
-                                }
-                                // Only include months up to the one containing the last data point
-                                // Pick max ~5 labels, evenly spaced by index
-                                const maxLabels = 5;
-                                let filtered: typeof allMonths;
-                                if (allMonths.length <= maxLabels) {
-                                  filtered = allMonths;
+                                const NUM_LABELS = 4;
+                                const startD = new Date(minT);
+                                const endD = new Date(maxT);
+                                const labels: Array<{ label: string }> = [];
+                                const period = measuresDashboardPeriod;
+
+                                // Check if range spans multiple years
+                                const startYear = startD.getFullYear();
+                                const endYear = endD.getFullYear();
+                                const multiYear = startYear !== endYear;
+
+                                const fmtMonth = (d: Date) => {
+                                  const m = DIET_MONTH_LABELS_SHORT[d.getMonth()];
+                                  return multiYear ? `${m} '${String(d.getFullYear()).slice(2)}` : m;
+                                };
+                                const fmtDay = (d: Date) => {
+                                  const day = d.getDate();
+                                  const m = DIET_MONTH_LABELS_SHORT[d.getMonth()];
+                                  return multiYear ? `${day} ${m} '${String(d.getFullYear()).slice(2)}` : `${day} ${m}`;
+                                };
+
+                                if (period === "all" || period === "6m") {
+                                  for (let i = 0; i < NUM_LABELS; i++) {
+                                    const t = minT + (rangeT * i) / (NUM_LABELS - 1);
+                                    labels.push({ label: fmtMonth(new Date(t)) });
+                                  }
                                 } else {
-                                  const step = (allMonths.length - 1) / (maxLabels - 1);
-                                  filtered = [];
-                                  for (let i = 0; i < maxLabels; i++) {
-                                    filtered.push(allMonths[Math.round(i * step)]);
+                                  // 3m or 1m: day + month labels
+                                  for (let i = 0; i < NUM_LABELS; i++) {
+                                    const t = minT + (rangeT * i) / (NUM_LABELS - 1);
+                                    labels.push({ label: fmtDay(new Date(t)) });
                                   }
                                 }
-                                // Distribute labels equidistantly across the axis
-                                return filtered.map((m, i) => {
-                                  const xPct = filtered.length === 1 ? 50 : (i / (filtered.length - 1)) * 100;
+
+                                return labels.map((m, i) => {
+                                  const xPct = (i / (NUM_LABELS - 1)) * 100;
                                   return (
                                     <Text
-                                      key={`${m.label}-${m.timestamp}`}
+                                      key={`lbl-${i}`}
                                       style={{
                                         position: "absolute",
                                         left: `${xPct}%`,
-                                        transform: [{ translateX: -16 }],
-                                        width: 32,
+                                        transform: [{ translateX: -20 }],
+                                        width: 40,
                                         textAlign: "center",
                                         color: "#7F8795",
-                                        fontSize: 10,
+                                        fontSize: 9,
                                         fontWeight: "600",
                                       }}
                                       numberOfLines={1}
