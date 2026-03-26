@@ -282,6 +282,35 @@ const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
 const FOODS_CACHE_KEY = "gymnasia.mobile.foods_repo.v1";
 const PERSONAL_FOODS_STORAGE_KEY = "gymnasia.mobile.personal_foods.v1";
 
+// --- Dev-store file persistence (web only) ---
+// Reads/writes store JSON via Metro middleware so data survives server restarts.
+const DEV_STORE_ENDPOINT = "/dev-store";
+
+async function loadDevStoreFile(): Promise<string | null> {
+  if (Platform.OS !== "web" || !__DEV__) return null;
+  try {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const res = await fetch(`${origin}${DEV_STORE_ENDPOINT}`);
+    if (res.status === 200) {
+      const text = await res.text();
+      if (text && text !== "{}") return text;
+    }
+  } catch {}
+  return null;
+}
+
+async function saveDevStoreFile(json: string): Promise<void> {
+  if (Platform.OS !== "web" || !__DEV__) return;
+  try {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    await fetch(`${origin}${DEV_STORE_ENDPOINT}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: json,
+    });
+  } catch {}
+}
+
 const SERIES_TYPE_META: Record<SeriesType, { label: string; short: string; color?: string }> = {
   normal:    { label: "Normal",         short: "N" },
   warmup:    { label: "Calentamiento",  short: "🔥", color: "#FF4A4A" },
@@ -4957,8 +4986,12 @@ export default function App() {
           AsyncStorage.getItem(SESSION_STORAGE_KEY),
         ]);
 
-        const baseStore = rawStore
-          ? normalizeStore(JSON.parse(rawStore) as LocalStore)
+        // On web dev, prefer file-backed store over localStorage
+        const devStoreRaw = !rawStore ? await loadDevStoreFile() : null;
+        const effectiveRaw = rawStore || devStoreRaw;
+
+        const baseStore = effectiveRaw
+          ? normalizeStore(JSON.parse(effectiveRaw) as LocalStore)
           : Platform.OS === "web"
             ? createWebSeedStore()
             : createInitialStore();
@@ -5014,12 +5047,11 @@ export default function App() {
   useEffect(() => {
     if (!isHydrated) return;
 
+    const serialized = JSON.stringify(serializeStoreForAsyncStorage(store, secureStoreAvailable));
     Promise.all([
-      AsyncStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(serializeStoreForAsyncStorage(store, secureStoreAvailable)),
-      ),
+      AsyncStorage.setItem(STORAGE_KEY, serialized),
       writeProviderApiKeysToSecureStore(store.keys, secureStoreAvailable),
+      saveDevStoreFile(serialized),
     ]).catch(() => {
       setError("No se pudo guardar en almacenamiento local/seguro.");
     });

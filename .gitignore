@@ -51,3 +51,6 @@ Thumbs.db
 
 # Local agent/tool state
 .claude/
+
+# Dev store persistence (web dev data)
+.dev-store.json
