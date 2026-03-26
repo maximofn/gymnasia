@@ -4112,10 +4112,6 @@ export default function App() {
       measuresDashboardPeriodMeta.days === null
         ? null
         : Date.now() - measuresDashboardPeriodMeta.days * 24 * 60 * 60 * 1000;
-    const monthBuckets = new Map<
-      string,
-      { key: string; label: string; value: number; timestamp: number }
-    >();
 
     const filteredWeightMeasurements = [...store.measurements]
       .filter((measurement) => measurement.weight_kg !== null)
@@ -4130,22 +4126,23 @@ export default function App() {
           new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime(),
       );
 
-    filteredWeightMeasurements.forEach((measurement) => {
-      const measurementTime = new Date(measurement.measured_at).getTime();
-      if (Number.isNaN(measurementTime) || measurement.weight_kg === null) return;
-      const parsedDate = new Date(measurementTime);
-      const bucketKey = `${parsedDate.getFullYear()}-${parsedDate.getMonth()}`;
-      monthBuckets.set(bucketKey, {
-        key: bucketKey,
-        label: DIET_MONTH_LABELS_SHORT[parsedDate.getMonth()],
-        value: measurement.weight_kg,
-        timestamp: measurementTime,
-      });
-    });
+    const points = filteredWeightMeasurements
+      .map((measurement) => {
+        const measurementTime = new Date(measurement.measured_at).getTime();
+        if (Number.isNaN(measurementTime) || measurement.weight_kg === null) return null;
+        const parsedDate = new Date(measurementTime);
+        const day = parsedDate.getDate();
+        const monthLabel = DIET_MONTH_LABELS_SHORT[parsedDate.getMonth()];
+        return {
+          key: measurement.id,
+          label: `${day} ${monthLabel}`,
+          value: measurement.weight_kg,
+          timestamp: measurementTime,
+        };
+      })
+      .filter((p): p is NonNullable<typeof p> => p !== null)
+      .slice(-12);
 
-    const points = Array.from(monthBuckets.values())
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .slice(-6);
     if (points.length === 0) return [];
 
     const values = points.map((point) => point.value);
@@ -12421,11 +12418,11 @@ export default function App() {
                               key={point.key}
                               style={{
                                 flex: 1,
-                                minWidth: 34,
+                                minWidth: measuresDashboardChartPoints.length > 6 ? 22 : 34,
                                 height: "100%",
                                 justifyContent: "flex-end",
                                 alignItems: "center",
-                                gap: 8,
+                                gap: 4,
                               }}
                             >
                               <View
@@ -12468,9 +12465,10 @@ export default function App() {
                               <Text
                                 style={{
                                   color: point.isLatest ? mobileTheme.color.brandPrimary : "#7F8795",
-                                  fontSize: 11,
+                                  fontSize: measuresDashboardChartPoints.length > 6 ? 8 : 11,
                                   fontWeight: point.isLatest ? "800" : "600",
                                 }}
+                                numberOfLines={1}
                               >
                                 {point.label}
                               </Text>
