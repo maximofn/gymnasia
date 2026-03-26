@@ -12455,13 +12455,10 @@ export default function App() {
                             y: padT + plotH - ((avg - minV) / rangeV) * plotH,
                           });
                         }
-                        let maPath = "";
-                        if (maCoords.length === 1) {
-                          maPath = `M${maCoords[0].x},${maCoords[0].y}L${maCoords[0].x},${maCoords[0].y}`;
-                        } else if (maCoords.length === 2) {
-                          maPath = `M${maCoords[0].x},${maCoords[0].y}L${maCoords[1].x},${maCoords[1].y}`;
-                        } else {
-                          maPath = `M${maCoords[0].x},${maCoords[0].y}`;
+                        function buildMaPath(maCoords: Array<{ x: number; y: number }>): string {
+                          if (maCoords.length === 1) return `M${maCoords[0].x},${maCoords[0].y}L${maCoords[0].x},${maCoords[0].y}`;
+                          if (maCoords.length === 2) return `M${maCoords[0].x},${maCoords[0].y}L${maCoords[1].x},${maCoords[1].y}`;
+                          let path = `M${maCoords[0].x},${maCoords[0].y}`;
                           for (let i = 0; i < maCoords.length - 1; i++) {
                             const p0 = maCoords[Math.max(0, i - 1)];
                             const p1 = maCoords[i];
@@ -12471,9 +12468,25 @@ export default function App() {
                             const cp1y = p1.y + (p2.y - p0.y) / 6;
                             const cp2x = p2.x - (p3.x - p1.x) / 6;
                             const cp2y = p2.y - (p3.y - p1.y) / 6;
-                            maPath += `C${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
+                            path += `C${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
                           }
+                          return path;
                         }
+                        const maPath = buildMaPath(maCoords);
+
+                        // 30-point moving average
+                        const MA30_WINDOW = 30;
+                        const ma30Coords: Array<{ x: number; y: number }> = [];
+                        for (let i = 0; i < pts.length; i++) {
+                          const start = Math.max(0, i - MA30_WINDOW + 1);
+                          const window = vals.slice(start, i + 1);
+                          const avg = window.reduce((s, v) => s + v, 0) / window.length;
+                          ma30Coords.push({
+                            x: coords[i].x,
+                            y: padT + plotH - ((avg - minV) / rangeV) * plotH,
+                          });
+                        }
+                        const ma30Path = buildMaPath(ma30Coords);
 
                         // Scale labels
                         const midV = minV + rangeV / 2;
@@ -12515,7 +12528,10 @@ export default function App() {
                               <Path d={areaPath} fill="url(#areaGrad)" />
                               <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.5} />
                               {pts.length >= 3 ? (
-                                <Path d={maPath} fill="none" stroke="#4A9EFF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} strokeDasharray="6,4" />
+                                <Path d={maPath} fill="none" stroke="#7EC8FF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} strokeDasharray="6,4" />
+                              ) : null}
+                              {pts.length >= 3 ? (
+                                <Path d={ma30Path} fill="none" stroke="#2B5C8A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} strokeDasharray="2,4" />
                               ) : null}
 
                               {coords.map((c, i) => (
