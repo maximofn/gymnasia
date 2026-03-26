@@ -12462,23 +12462,40 @@ export default function App() {
                               ))}
                             </Svg>
 
-                            <View style={{ flexDirection: "row", justifyContent: "space-between", paddingLeft: padL, paddingRight: padR }}>
-                              {pts.map((p, i) => (
-                                <Text
-                                  key={p.key}
-                                  style={{
-                                    color: p.isLatest ? mobileTheme.color.brandPrimary : "#7F8795",
-                                    fontSize: pts.length > 8 ? 8 : 10,
-                                    fontWeight: p.isLatest ? "800" : "600",
-                                    textAlign: "center",
-                                    width: pts.length > 6 ? undefined : 40,
-                                    display: pts.length > 6 && !labelIndices.has(i) ? "none" : "flex",
-                                  }}
-                                  numberOfLines={1}
-                                >
-                                  {p.label}
-                                </Text>
-                              ))}
+                            <View style={{ height: 16, position: "relative", marginLeft: padL, marginRight: padR }}>
+                              {(() => {
+                                const numLabels = Math.min(5, pts.length);
+                                const labels: Array<{ label: string; xPercent: number; isLast: boolean }> = [];
+                                for (let li = 0; li < numLabels; li++) {
+                                  const t = minT + (li / (numLabels - 1)) * rangeT;
+                                  const closestPt = pts.reduce((best, p) =>
+                                    Math.abs(p.timestamp - t) < Math.abs(best.timestamp - t) ? p : best
+                                  );
+                                  const xPct = ((closestPt.timestamp - minT) / rangeT) * 100;
+                                  const isLast = li === numLabels - 1;
+                                  if (!labels.some((l) => l.label === closestPt.label)) {
+                                    labels.push({ label: closestPt.label, xPercent: xPct, isLast });
+                                  }
+                                }
+                                return labels.map((l) => (
+                                  <Text
+                                    key={l.label}
+                                    style={{
+                                      position: "absolute",
+                                      left: `${l.xPercent}%`,
+                                      transform: [{ translateX: -20 }],
+                                      width: 40,
+                                      textAlign: "center",
+                                      color: l.isLast ? mobileTheme.color.brandPrimary : "#7F8795",
+                                      fontSize: 10,
+                                      fontWeight: l.isLast ? "800" : "600",
+                                    }}
+                                    numberOfLines={1}
+                                  >
+                                    {l.label}
+                                  </Text>
+                                ));
+                              })()}
                             </View>
 
                             <View style={{ position: "absolute", top: 0, left: 0 }}>
