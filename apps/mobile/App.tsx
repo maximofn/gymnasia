@@ -3793,6 +3793,7 @@ export default function App() {
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
   const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
   const [showMeasurementDatePicker, setShowMeasurementDatePicker] = useState(false);
+  const [measurementDateTextInput, setMeasurementDateTextInput] = useState("");
   const [measurementEntryScreenOpen, setMeasurementEntryScreenOpen] = useState(false);
   const [editingMeasurementId, setEditingMeasurementId] = useState<string | null>(null);
   const [measuresDashboardPeriod, setMeasuresDashboardPeriod] =
@@ -5828,6 +5829,7 @@ export default function App() {
     setShowMeasurementDatePicker(false);
     setMeasuresDashboardPeriodDropdownOpen(false);
     setMeasurementEntryScreenOpen(true);
+    setMeasurementDateTextInput(measurementDateFromSelection(new Date()).toISOString().slice(0, 10));
     setError(null);
   }
 
@@ -5907,7 +5909,9 @@ export default function App() {
     setQuadricepsInput(m.quadriceps_cm !== null ? String(m.quadriceps_cm) : "");
     setCalfInput(m.calf_cm !== null ? String(m.calf_cm) : "");
     setMeasurementPhotoUri(m.photo_uri ?? null);
-    setMeasurementDate(new Date(m.measured_at));
+    const editDate = new Date(m.measured_at);
+    setMeasurementDate(editDate);
+    setMeasurementDateTextInput(editDate.toISOString().slice(0, 10));
     setEditingMeasurementId(m.id);
     setMeasurementEntryScreenOpen(true);
     setError(null);
@@ -15526,10 +15530,11 @@ export default function App() {
               {showMeasurementDatePicker ? (
                 Platform.OS === "web" ? (
                   <TextInput
-                    value={measurementDate.toISOString().slice(0, 10)}
+                    value={measurementDateTextInput}
                     onChangeText={(text) => {
+                      setMeasurementDateTextInput(text);
                       const parsed = new Date(text + "T12:00:00");
-                      if (!isNaN(parsed.getTime()) && parsed <= new Date()) {
+                      if (!isNaN(parsed.getTime()) && parsed <= new Date() && /^\d{4}-\d{2}-\d{2}$/.test(text)) {
                         setMeasurementDate(parsed);
                       }
                     }}
