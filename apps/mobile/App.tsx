@@ -12380,8 +12380,11 @@ export default function App() {
                         const minV = Math.floor(rawMin) - 1;
                         const maxV = Math.ceil(rawMax) + 1;
                         const rangeV = Math.max(0.4, maxV - minV);
-                        const coords = pts.map((p, i) => ({
-                          x: padL + (pts.length === 1 ? plotW / 2 : (i / (pts.length - 1)) * plotW),
+                        const minT = pts[0].timestamp;
+                        const maxT = pts[pts.length - 1].timestamp;
+                        const rangeT = Math.max(1, maxT - minT);
+                        const coords = pts.map((p) => ({
+                          x: padL + (pts.length === 1 ? plotW / 2 : ((p.timestamp - minT) / rangeT) * plotW),
                           y: padT + plotH - ((p.value - minV) / rangeV) * plotH,
                         }));
 
