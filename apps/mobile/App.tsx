@@ -12443,6 +12443,38 @@ export default function App() {
 
                         const areaPath = linePath + `L${coords[coords.length - 1].x},${padT + plotH}L${coords[0].x},${padT + plotH}Z`;
 
+                        // 10-point moving average
+                        const MA_WINDOW = 10;
+                        const maCoords: Array<{ x: number; y: number }> = [];
+                        for (let i = 0; i < pts.length; i++) {
+                          const start = Math.max(0, i - MA_WINDOW + 1);
+                          const window = vals.slice(start, i + 1);
+                          const avg = window.reduce((s, v) => s + v, 0) / window.length;
+                          maCoords.push({
+                            x: coords[i].x,
+                            y: padT + plotH - ((avg - minV) / rangeV) * plotH,
+                          });
+                        }
+                        let maPath = "";
+                        if (maCoords.length === 1) {
+                          maPath = `M${maCoords[0].x},${maCoords[0].y}L${maCoords[0].x},${maCoords[0].y}`;
+                        } else if (maCoords.length === 2) {
+                          maPath = `M${maCoords[0].x},${maCoords[0].y}L${maCoords[1].x},${maCoords[1].y}`;
+                        } else {
+                          maPath = `M${maCoords[0].x},${maCoords[0].y}`;
+                          for (let i = 0; i < maCoords.length - 1; i++) {
+                            const p0 = maCoords[Math.max(0, i - 1)];
+                            const p1 = maCoords[i];
+                            const p2 = maCoords[i + 1];
+                            const p3 = maCoords[Math.min(maCoords.length - 1, i + 2)];
+                            const cp1x = p1.x + (p2.x - p0.x) / 6;
+                            const cp1y = p1.y + (p2.y - p0.y) / 6;
+                            const cp2x = p2.x - (p3.x - p1.x) / 6;
+                            const cp2y = p2.y - (p3.y - p1.y) / 6;
+                            maPath += `C${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
+                          }
+                        }
+
                         // Scale labels
                         const midV = minV + rangeV / 2;
                         const gridLines = [
@@ -12481,7 +12513,10 @@ export default function App() {
                               ))}
 
                               <Path d={areaPath} fill="url(#areaGrad)" />
-                              <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+                              <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.5} />
+                              {pts.length >= 3 ? (
+                                <Path d={maPath} fill="none" stroke="#FFFFFF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.85} />
+                              ) : null}
 
                               {coords.map((c, i) => (
                                 <Circle
