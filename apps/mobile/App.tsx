@@ -12508,6 +12508,16 @@ export default function App() {
 
                         return (
                           <View style={{ flex: 1 }}>
+                            <View style={{ flexDirection: "row", gap: 12, marginBottom: 6, paddingLeft: padL }}>
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                                <View style={{ width: 16, height: 0, borderTopWidth: 2, borderTopColor: "#7EC8FF", borderStyle: "dashed" }} />
+                                <Text style={{ color: "#7EC8FF", fontSize: 8, fontWeight: "600" }}>Media 10 valores</Text>
+                              </View>
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                                <View style={{ width: 16, height: 0, borderTopWidth: 2, borderTopColor: "#2B5C8A", borderStyle: "dotted" }} />
+                                <Text style={{ color: "#2B5C8A", fontSize: 8, fontWeight: "600" }}>Media 30 valores</Text>
+                              </View>
+                            </View>
                             <Svg width="100%" height={chartH} viewBox={`0 0 ${chartW} ${chartH}`}>
                               <Defs>
                                 <LinearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
