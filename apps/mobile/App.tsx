@@ -555,6 +555,29 @@ function personalDataToJson(fields: PersonalDataField[]): string {
   return JSON.stringify(fields, null, 2);
 }
 
+async function loadMeasurementsFromStorage(): Promise<Measurement[]> {
+  try {
+    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed?.measurements) ? parsed.measurements : [];
+  } catch {
+    return [];
+  }
+}
+
+async function saveMeasurementsToStorage(measurements: Measurement[]): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    parsed.measurements = measurements;
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+  } catch {
+    /* silently fail — component useEffect will persist next cycle */
+  }
+}
+
 function parsePersonalDataInput(input: unknown): PersonalDataField[] {
   if (typeof input === "string") {
     try {
@@ -597,6 +620,25 @@ const READ_VALUE_DESC =
   "Recibe el key del campo y devuelve su value. " +
   "Usa esta herramienta una vez que hayas identificado el campo correcto mediante su description.";
 const READ_VALUE_PARAM_DESC = "El key (nombre) del campo cuyo valor quieres leer";
+
+const READ_MEASUREMENT_TOOL = "read_measurement";
+const READ_MEASUREMENT_DESC =
+  "Lee las medidas corporales del usuario para una fecha específica. " +
+  "Devuelve el registro de medidas de ese día (peso, contornos, altura) si existe, o un mensaje indicando que no hay registro. " +
+  "Usa esta herramienta cuando el usuario pregunte por sus medidas de un día concreto.";
+const READ_MEASUREMENT_PARAM_DESC =
+  "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-03-30)";
+
+const WRITE_MEASUREMENT_TOOL = "write_measurement";
+const WRITE_MEASUREMENT_DESC =
+  "Guarda o actualiza las medidas corporales del usuario para una fecha específica. " +
+  "Usa esta herramienta cuando el usuario te diga sus medidas (peso, contornos, altura). " +
+  "Solo incluye en el JSON los campos que el usuario proporcione; los demás se mantendrán como null.";
+const WRITE_MEASUREMENT_DATE_PARAM_DESC =
+  "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-03-30)";
+const WRITE_MEASUREMENT_DATA_PARAM_DESC =
+  'JSON con las medidas a guardar. Campos posibles: weight_kg, neck_cm, chest_cm, waist_cm, hips_cm, biceps_cm, quadriceps_cm, calf_cm, height_cm. ' +
+  'Ejemplo: {"weight_kg": 75.5, "waist_cm": 82}';
 
 const SCAN_BARCODE_TOOL = "scan_barcode";
 const SCAN_BARCODE_DESC =
@@ -651,7 +693,11 @@ async function handleFoodEstimatorToolCall(name: string, args: Record<string, un
   return "Herramienta no reconocida.";
 }
 
-async function handleToolCall(name: string, args: Record<string, unknown>): Promise<string> {
+async function handleToolCall(
+  name: string,
+  args: Record<string, unknown>,
+  setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
+): Promise<string> {
   if (name === SAVE_PERSONAL_DATA_TOOL) {
     const fields = parsePersonalDataInput(args.personal_data);
     await savePersonalData(fields);
@@ -675,6 +721,56 @@ async function handleToolCall(name: string, args: Record<string, unknown>): Prom
     const field = fields.find((f) => f.key === key);
     if (!field) return `Campo "${key}" no encontrado.`;
     return field.value || "(sin valor)";
+  }
+  if (name === READ_MEASUREMENT_TOOL) {
+    const date = (args.date as string) ?? "";
+    if (!date) return "No se proporcionó una fecha.";
+    const measurements = await loadMeasurementsFromStorage();
+    const match = measurements.find((m) => m.measured_at.startsWith(date));
+    if (!match) return `No hay registro de medidas para la fecha "${date}".`;
+    const { id, photo_uri, ...data } = match;
+    return JSON.stringify(data);
+  }
+  if (name === WRITE_MEASUREMENT_TOOL) {
+    const date = (args.date as string) ?? "";
+    if (!date) return "No se proporcionó una fecha.";
+    let data: Record<string, unknown> = {};
+    if (typeof args.data === "string") {
+      try { data = JSON.parse(args.data); } catch { return "El JSON de medidas no es válido."; }
+    } else if (typeof args.data === "object" && args.data) {
+      data = args.data as Record<string, unknown>;
+    } else {
+      return "No se proporcionaron medidas.";
+    }
+    const measurements = await loadMeasurementsFromStorage();
+    const existingIdx = measurements.findIndex((m) => m.measured_at.startsWith(date));
+    const existing = existingIdx >= 0 ? measurements[existingIdx] : null;
+    const toNum = (v: unknown): number | null => {
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return isFinite(n) && n > 0 ? n : null;
+    };
+    const measurement: Measurement = {
+      id: existing?.id ?? uid("measurement"),
+      measured_at: existing?.measured_at ?? new Date(date + "T12:00:00").toISOString(),
+      weight_kg: data.weight_kg !== undefined ? toNum(data.weight_kg) : (existing?.weight_kg ?? null),
+      photo_uri: existing?.photo_uri ?? null,
+      neck_cm: data.neck_cm !== undefined ? toNum(data.neck_cm) : (existing?.neck_cm ?? null),
+      chest_cm: data.chest_cm !== undefined ? toNum(data.chest_cm) : (existing?.chest_cm ?? null),
+      waist_cm: data.waist_cm !== undefined ? toNum(data.waist_cm) : (existing?.waist_cm ?? null),
+      hips_cm: data.hips_cm !== undefined ? toNum(data.hips_cm) : (existing?.hips_cm ?? null),
+      biceps_cm: data.biceps_cm !== undefined ? toNum(data.biceps_cm) : (existing?.biceps_cm ?? null),
+      quadriceps_cm: data.quadriceps_cm !== undefined ? toNum(data.quadriceps_cm) : (existing?.quadriceps_cm ?? null),
+      calf_cm: data.calf_cm !== undefined ? toNum(data.calf_cm) : (existing?.calf_cm ?? null),
+      height_cm: data.height_cm !== undefined ? toNum(data.height_cm) : (existing?.height_cm ?? null),
+    };
+    const base = existingIdx >= 0 ? measurements.filter((_, i) => i !== existingIdx) : measurements;
+    const sorted = sortMeasurementsDesc([measurement, ...base]).slice(0, 1826);
+    await saveMeasurementsToStorage(sorted);
+    if (setStore) {
+      setStore((prev) => ({ ...prev, measurements: sorted }));
+    }
+    return "Medidas guardadas correctamente para " + date + ".";
   }
   return "Herramienta no reconocida.";
 }
@@ -1701,6 +1797,13 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
 
   const keyParam = { key: { type: "string" as const } };
   const keyRequired = ["key"];
+  const dateParam = { date: { type: "string" as const, description: READ_MEASUREMENT_PARAM_DESC } };
+  const dateRequired = ["date"];
+  const writeMeasurementProps = {
+    date: { type: "string" as const, description: WRITE_MEASUREMENT_DATE_PARAM_DESC },
+    data: { type: "string" as const, description: WRITE_MEASUREMENT_DATA_PARAM_DESC },
+  };
+  const writeMeasurementRequired = ["date", "data"];
 
   const chatTools = {
     openai: [
@@ -1740,6 +1843,22 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
           parameters: { type: "object", properties: { key: { type: "string", description: READ_VALUE_PARAM_DESC } }, required: keyRequired },
         },
       },
+      {
+        type: "function",
+        function: {
+          name: READ_MEASUREMENT_TOOL,
+          description: READ_MEASUREMENT_DESC,
+          parameters: { type: "object", properties: dateParam, required: dateRequired },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: WRITE_MEASUREMENT_TOOL,
+          description: WRITE_MEASUREMENT_DESC,
+          parameters: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
+        },
+      },
     ],
     anthropic: [
       {
@@ -1765,6 +1884,16 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
         name: READ_VALUE_TOOL,
         description: READ_VALUE_DESC,
         input_schema: { type: "object", properties: keyParam, required: keyRequired },
+      },
+      {
+        name: READ_MEASUREMENT_TOOL,
+        description: READ_MEASUREMENT_DESC,
+        input_schema: { type: "object", properties: dateParam, required: dateRequired },
+      },
+      {
+        name: WRITE_MEASUREMENT_TOOL,
+        description: WRITE_MEASUREMENT_DESC,
+        input_schema: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
       },
     ],
     google: [
@@ -1793,6 +1922,16 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
             name: READ_VALUE_TOOL,
             description: READ_VALUE_DESC,
             parameters: { type: "object", properties: keyParam, required: keyRequired },
+          },
+          {
+            name: READ_MEASUREMENT_TOOL,
+            description: READ_MEASUREMENT_DESC,
+            parameters: { type: "object", properties: dateParam, required: dateRequired },
+          },
+          {
+            name: WRITE_MEASUREMENT_TOOL,
+            description: WRITE_MEASUREMENT_DESC,
+            parameters: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
           },
         ],
       },
@@ -1827,7 +1966,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
       openAIMessages.push(choice.message);
       for (const tc of toolCalls) {
         const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
-        const toolResult = await handleToolCall(tc.function?.name, args);
+        const toolResult = await handleToolCall(tc.function?.name, args, setStore);
         openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: toolResult });
       }
       payload = await makeOpenAIRequest(true);
@@ -1879,7 +2018,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
 
       const toolResults: any[] = [];
       for (const block of toolUseBlocks) {
-        const result = await handleToolCall(block.name, block.input ?? {});
+        const result = await handleToolCall(block.name, block.input ?? {}, setStore);
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
       }
       currentMessages = [
@@ -1930,7 +2069,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
     const modelParts = functionCalls.map((fc: any) => ({ functionCall: fc.functionCall }));
     const responseParts: any[] = [];
     for (const fc of functionCalls) {
-      const toolResult = await handleToolCall(fc.functionCall.name, fc.functionCall.args ?? {});
+      const toolResult = await handleToolCall(fc.functionCall.name, fc.functionCall.args ?? {}, setStore);
       responseParts.push({ functionResponse: { name: fc.functionCall.name, response: { result: toolResult } } });
     }
     googleMessages.push({ role: "model", parts: modelParts });
