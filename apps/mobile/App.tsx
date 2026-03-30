@@ -971,6 +971,23 @@ const MEASURES_DASHBOARD_PERIOD_OPTIONS: Array<{
   { key: "6m", label: "6 meses", days: 180 },
   { key: "all", label: "Todo", days: null },
 ];
+type MeasuresChartMetricKey = "weight" | "bodyFat" | "chest" | "waist" | "hips" | "biceps" | "neck" | "quadriceps" | "calf";
+const MEASURES_CHART_METRIC_OPTIONS: Array<{
+  key: MeasuresChartMetricKey;
+  label: string;
+  unit: string;
+  field: keyof Measurement | null;
+}> = [
+  { key: "weight", label: "Peso", unit: "kg", field: "weight_kg" },
+  { key: "bodyFat", label: "% Grasa", unit: "%", field: null },
+  { key: "chest", label: "Pecho", unit: "cm", field: "chest_cm" },
+  { key: "waist", label: "Cintura", unit: "cm", field: "waist_cm" },
+  { key: "hips", label: "Cadera", unit: "cm", field: "hips_cm" },
+  { key: "biceps", label: "Brazo", unit: "cm", field: "biceps_cm" },
+  { key: "neck", label: "Cuello", unit: "cm", field: "neck_cm" },
+  { key: "quadriceps", label: "Cuádriceps", unit: "cm", field: "quadriceps_cm" },
+  { key: "calf", label: "Gemelo", unit: "cm", field: "calf_cm" },
+];
 const TRAINING_STATS_METRIC_OPTIONS: Array<{
   key: TrainingStatsMetricKey;
   label: string;
@@ -3990,6 +4007,8 @@ export default function App() {
   const [measuresDashboardPeriod, setMeasuresDashboardPeriod] =
     useState<MeasuresDashboardPeriodKey>("3m");
   const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
+  const [measuresChartMetric, setMeasuresChartMetric] = useState<MeasuresChartMetricKey>("weight");
+  const [measuresChartMetricDropdownOpen, setMeasuresChartMetricDropdownOpen] = useState(false);
   const [showAllMeasurementsHistory, setShowAllMeasurementsHistory] = useState(false);
   const [expandedPhotoUri, setExpandedPhotoUri] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState("");
@@ -4276,44 +4295,52 @@ export default function App() {
   for (let i = 0; i < measuresAllStatCards.length; i += 3) {
     measuresStatCardRows.push(measuresAllStatCards.slice(i, i + 3));
   }
+  const measuresChartMetricMeta = MEASURES_CHART_METRIC_OPTIONS.find((o) => o.key === measuresChartMetric) ?? MEASURES_CHART_METRIC_OPTIONS[0];
+
+  function extractMetricValue(m: Measurement): number | null {
+    if (measuresChartMetricMeta.key === "bodyFat") {
+      return estimateMeasurementBodyFatPercentage(m, latestBodyHeightCm, userSex);
+    }
+    const field = measuresChartMetricMeta.field;
+    if (!field) return null;
+    const v = m[field];
+    return typeof v === "number" && Number.isFinite(v) ? v : null;
+  }
+
   const measuresDashboardChartPoints = useMemo(() => {
     const cutoffTime =
       measuresDashboardPeriodMeta.days === null
         ? null
         : Date.now() - measuresDashboardPeriodMeta.days * 24 * 60 * 60 * 1000;
 
-    const filteredWeightMeasurements = [...store.measurements]
-      .filter((measurement) => measurement.weight_kg !== null)
-      .filter((measurement) => {
-        const measurementTime = new Date(measurement.measured_at).getTime();
-        if (Number.isNaN(measurementTime)) return false;
+    const filtered = [...store.measurements]
+      .filter((m) => extractMetricValue(m) !== null)
+      .filter((m) => {
+        const t = new Date(m.measured_at).getTime();
+        if (Number.isNaN(t)) return false;
         if (cutoffTime === null) return true;
-        return measurementTime >= cutoffTime;
+        return t >= cutoffTime;
       })
-      .sort(
-        (a, b) =>
-          new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime(),
-      );
+      .sort((a, b) => new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime());
 
-    const points = filteredWeightMeasurements
-      .map((measurement) => {
-        const measurementTime = new Date(measurement.measured_at).getTime();
-        if (Number.isNaN(measurementTime) || measurement.weight_kg === null) return null;
-        const parsedDate = new Date(measurementTime);
-        const day = parsedDate.getDate();
-        const monthLabel = DIET_MONTH_LABELS_SHORT[parsedDate.getMonth()];
+    const points = filtered
+      .map((m) => {
+        const t = new Date(m.measured_at).getTime();
+        const v = extractMetricValue(m);
+        if (Number.isNaN(t) || v === null) return null;
+        const d = new Date(t);
         return {
-          key: measurement.id,
-          label: `${day} ${monthLabel}`,
-          value: measurement.weight_kg,
-          timestamp: measurementTime,
+          key: m.id,
+          label: `${d.getDate()} ${DIET_MONTH_LABELS_SHORT[d.getMonth()]}`,
+          value: v,
+          timestamp: t,
         };
       })
       .filter((p): p is NonNullable<typeof p> => p !== null);
 
     if (points.length === 0) return [];
 
-    const values = points.map((point) => point.value);
+    const values = points.map((p) => p.value);
     const minValue = Math.min(...values);
     const maxValue = Math.max(...values);
     const range = Math.max(0.4, maxValue - minValue);
@@ -4323,15 +4350,16 @@ export default function App() {
       heightPercent: 24 + ((point.value - minValue) / range) * 64,
       isLatest: index === points.length - 1,
     }));
-  }, [measuresDashboardPeriodMeta.days, store.measurements]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [measuresDashboardPeriodMeta.days, store.measurements, measuresChartMetric, latestBodyHeightCm, userSex]);
 
-  // All weight measurements sorted ascending (for MA calculation across periods)
-  const allWeightValues = useMemo(() => {
+  const allMetricValues = useMemo(() => {
     return [...store.measurements]
-      .filter((m) => m.weight_kg !== null && !Number.isNaN(new Date(m.measured_at).getTime()))
+      .filter((m) => extractMetricValue(m) !== null && !Number.isNaN(new Date(m.measured_at).getTime()))
       .sort((a, b) => new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime())
-      .map((m) => ({ timestamp: new Date(m.measured_at).getTime(), value: m.weight_kg as number }));
-  }, [store.measurements]);
+      .map((m) => ({ timestamp: new Date(m.measured_at).getTime(), value: extractMetricValue(m) as number }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store.measurements, measuresChartMetric, latestBodyHeightCm, userSex]);
 
   const measuresDashboardScaleLabels = useMemo(() => {
     if (measuresDashboardChartPoints.length === 0) {
@@ -6036,6 +6064,15 @@ export default function App() {
     setMeasuresDashboardPeriod(periodKey);
     setMeasuresDashboardPeriodDropdownOpen(false);
     setUserPrefs((prev) => ({ ...prev, chartPeriod: periodKey }));
+  }
+
+  function toggleMeasuresChartMetricDropdown() {
+    setMeasuresChartMetricDropdownOpen((c) => !c);
+  }
+
+  function selectMeasuresChartMetric(key: MeasuresChartMetricKey) {
+    setMeasuresChartMetric(key);
+    setMeasuresChartMetricDropdownOpen(false);
   }
 
   async function pickMeasurementPhoto() {
@@ -12393,9 +12430,19 @@ export default function App() {
                     zIndex: 2,
                   }}
                 >
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
-                    Evolución de peso
-                  </Text>
+                  <Pressable
+                    onPress={toggleMeasuresChartMetricDropdown}
+                    style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
+                      {measuresChartMetricMeta.label}
+                    </Text>
+                    <Ionicons
+                      name={measuresChartMetricDropdownOpen ? "chevron-up" : "chevron-down"}
+                      size={16}
+                      color={mobileTheme.color.textSecondary}
+                    />
+                  </Pressable>
                   <Pressable
                     onPress={toggleMeasuresDashboardPeriodDropdown}
                     style={{
@@ -12482,6 +12529,66 @@ export default function App() {
                   </View>
                 ) : null}
 
+                {measuresChartMetricDropdownOpen ? (
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 56,
+                      left: 14,
+                      zIndex: 20,
+                      elevation: 12,
+                    }}
+                  >
+                    <View
+                      style={{
+                        minWidth: 150,
+                        borderRadius: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.06)",
+                        backgroundColor: "#1B2029",
+                        shadowColor: "#000000",
+                        shadowOpacity: 0.28,
+                        shadowRadius: 14,
+                        shadowOffset: { width: 0, height: 8 },
+                        padding: 6,
+                        gap: 4,
+                      }}
+                    >
+                      {MEASURES_CHART_METRIC_OPTIONS.map((option) => {
+                        const isActive = measuresChartMetric === option.key;
+                        return (
+                          <Pressable
+                            key={option.key}
+                            onPress={() => selectMeasuresChartMetric(option.key)}
+                            style={{
+                              minHeight: 34,
+                              borderRadius: 10,
+                              paddingHorizontal: 10,
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              backgroundColor: isActive ? "rgba(203,255,26,0.12)" : "transparent",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary,
+                                fontSize: 12,
+                                fontWeight: "700",
+                              }}
+                            >
+                              {option.label}
+                            </Text>
+                            {isActive ? (
+                              <Ionicons name="checkmark" size={14} color={mobileTheme.color.brandPrimary} />
+                            ) : null}
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </View>
+                ) : null}
+
                 <View
                   style={{
                     minHeight: 214,
@@ -12511,9 +12618,9 @@ export default function App() {
                           textAlign: "center",
                         }}
                       >
-                        {store.measurements.some((measurement) => measurement.weight_kg !== null)
-                          ? "No hay registros de peso suficientes para este periodo."
-                          : "Registra tu peso para empezar a ver la evolución."}
+                        {store.measurements.some((m) => extractMetricValue(m) !== null)
+                          ? `No hay registros de ${measuresChartMetricMeta.label.toLowerCase()} suficientes para este periodo.`
+                          : `Registra ${measuresChartMetricMeta.label.toLowerCase()} para ver la evolución.`}
                       </Text>
                     </View>
                   ) : (
@@ -12570,7 +12677,7 @@ export default function App() {
                           const result: Array<{ x: number; y: number }> = [];
                           for (let i = 0; i < pts.length; i++) {
                             // Find this point's index in the full history
-                            const fullIdx = allWeightValues.findIndex((v) => v.timestamp === pts[i].timestamp);
+                            const fullIdx = allMetricValues.findIndex((v) => v.timestamp === pts[i].timestamp);
                             if (fullIdx === -1) {
                               // Fallback: use only visible data
                               const start = Math.max(0, i - window + 1);
@@ -12579,7 +12686,7 @@ export default function App() {
                               result.push({ x: coords[i].x, y: padT + plotH - ((avg - minV) / rangeV) * plotH });
                             } else {
                               const start = Math.max(0, fullIdx - window + 1);
-                              const w = allWeightValues.slice(start, fullIdx + 1).map((v) => v.value);
+                              const w = allMetricValues.slice(start, fullIdx + 1).map((v) => v.value);
                               const avg = w.reduce((s, v) => s + v, 0) / w.length;
                               result.push({ x: coords[i].x, y: padT + plotH - ((avg - minV) / rangeV) * plotH });
                             }
