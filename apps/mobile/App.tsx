@@ -11376,7 +11376,7 @@ export default function App() {
                               </View>
                               <View style={{ flex: 1, gap: 4 }}>
                                 <Text
-                                  style={{ color: mobileTheme.color.textPrimary, fontSize: 24, fontWeight: "700" }}
+                                  style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}
                                   numberOfLines={1}
                                 >
                                   {tpl.name}
@@ -11384,23 +11384,23 @@ export default function App() {
                                 <View
                                   style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}
                                 >
-                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
                                     <View
                                       style={{
-                                        width: 8,
-                                        height: 8,
+                                        width: 7,
+                                        height: 7,
                                         borderRadius: 999,
                                         backgroundColor: categoryMeta.color,
                                       }}
                                     />
-                                    <Text style={{ color: categoryMeta.color, fontSize: 15, fontWeight: "700" }}>
+                                    <Text style={{ color: categoryMeta.color, fontSize: 12, fontWeight: "700" }}>
                                       {categoryMeta.label}
                                     </Text>
                                   </View>
-                                  <Text style={{ color: "#8892A2", fontSize: 15 }}>
+                                  <Text style={{ color: "#8892A2", fontSize: 12 }}>
                                     {durationMinutes > 0 ? `${durationMinutes} min` : "-- min"}
                                   </Text>
-                                  <Text style={{ color: "#8892A2", fontSize: 15 }}>
+                                  <Text style={{ color: "#8892A2", fontSize: 12 }}>
                                     {tpl.exercises.length} ejercicios
                                   </Text>
                                 </View>
