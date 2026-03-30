@@ -167,9 +167,11 @@ type GkgMacroKey = "protein" | "carbs" | "fat";
 type DietMealCategory = "Desayuno" | "Almuerzo" | "Comida" | "Merienda" | "Cena";
 type DietGoal = "bulk" | "cut" | "maintain";
 type ActivityLevel = "moderate" | "intermediate" | "high";
+type UserSex = "male" | "female";
 type DietSettings = {
   goal: DietGoal;
   activity_level?: ActivityLevel;
+  sex?: UserSex;
   height_cm?: string;
   birth_date?: string;
   daily_calories: string;
@@ -2648,27 +2650,39 @@ function formatMeasurementNumber(value: number): string {
 function estimateMeasurementBodyFatPercentage(
   measurement: Measurement,
   fallbackHeightCm: number | null,
+  sex: UserSex = "male",
 ): number | null {
   const heightCm = measurement.height_cm ?? fallbackHeightCm;
   if (heightCm === null || measurement.waist_cm === null || measurement.neck_cm === null) {
     return null;
   }
 
-  const waistMinusNeckCm = measurement.waist_cm - measurement.neck_cm;
-  if (!(waistMinusNeckCm > 0)) return null;
-
-  const waistMinusNeckIn = waistMinusNeckCm / 2.54;
   const heightIn = heightCm / 2.54;
-  const estimate =
-    86.01 * Math.log10(waistMinusNeckIn) - 70.041 * Math.log10(heightIn) + 36.76;
-  if (!Number.isFinite(estimate)) return null;
+  let estimate: number;
 
+  if (sex === "female") {
+    if (measurement.hips_cm === null) return null;
+    const circumferenceCm = measurement.waist_cm + measurement.hips_cm - measurement.neck_cm;
+    if (!(circumferenceCm > 0)) return null;
+    const circumferenceIn = circumferenceCm / 2.54;
+    estimate =
+      163.205 * Math.log10(circumferenceIn) - 97.684 * Math.log10(heightIn) - 78.387;
+  } else {
+    const waistMinusNeckCm = measurement.waist_cm - measurement.neck_cm;
+    if (!(waistMinusNeckCm > 0)) return null;
+    const waistMinusNeckIn = waistMinusNeckCm / 2.54;
+    estimate =
+      86.01 * Math.log10(waistMinusNeckIn) - 70.041 * Math.log10(heightIn) + 36.76;
+  }
+
+  if (!Number.isFinite(estimate)) return null;
   return Math.max(3, Math.min(60, Math.round(estimate * 10) / 10));
 }
 
 function buildMeasurementHistorySummary(
   measurement: Measurement,
   fallbackHeightCm: number | null,
+  sex: UserSex = "male",
 ): string {
   const summaryParts: string[] = [];
 
@@ -2676,7 +2690,7 @@ function buildMeasurementHistorySummary(
     summaryParts.push(`${formatMeasurementNumber(measurement.weight_kg)} kg`);
   }
 
-  const bodyFatPercentage = estimateMeasurementBodyFatPercentage(measurement, fallbackHeightCm);
+  const bodyFatPercentage = estimateMeasurementBodyFatPercentage(measurement, fallbackHeightCm, sex);
   if (bodyFatPercentage !== null) {
     summaryParts.push(`${formatMeasurementNumber(bodyFatPercentage)}% grasa`);
   }
@@ -4234,8 +4248,9 @@ export default function App() {
   }
 
   const weightMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.weight_kg);
+  const userSex: UserSex = store.dietSettings.sex ?? "male";
   const bodyFatMeasurementPair = resolveMeasurementMetricPair((measurement) =>
-    estimateMeasurementBodyFatPercentage(measurement, latestBodyHeightCm),
+    estimateMeasurementBodyFatPercentage(measurement, latestBodyHeightCm, userSex),
   );
   const waistMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.waist_cm);
   const chestMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.chest_cm);
@@ -12904,7 +12919,7 @@ export default function App() {
                               style={{ color: "#7F8795", fontSize: 12, lineHeight: 17 }}
                               numberOfLines={1}
                             >
-                              {buildMeasurementHistorySummary(measurement, latestBodyHeightCm)}
+                              {buildMeasurementHistorySummary(measurement, latestBodyHeightCm, userSex)}
                             </Text>
                           </View>
 
@@ -13134,6 +13149,30 @@ export default function App() {
                     Define tu objetivo y las calorías diarias.
                   </Text>
 
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10, alignSelf: "center" }}>Sexo</Text>
+                    {(["male", "female"] as const).map((s) => (
+                      <Pressable
+                        key={s}
+                        onPress={() => updateDietSettings((prev) => ({ ...prev, sex: s }))}
+                        style={{
+                          flex: 1,
+                          minHeight: 36,
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: (dietSettings.sex ?? "male") === s ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                          backgroundColor: (dietSettings.sex ?? "male") === s ? "rgba(203,255,26,0.12)" : mobileTheme.color.bgApp,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={{ color: (dietSettings.sex ?? "male") === s ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontWeight: "700", fontSize: 13 }}>
+                          {s === "male" ? "Hombre" : "Mujer"}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+
                   <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
                     <View style={{ flex: 0.7, gap: 2 }}>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Altura</Text>
@@ -13352,8 +13391,9 @@ export default function App() {
                           return;
                         }
                         const ageYears = Math.floor((Date.now() - new Date(birthDate).getTime()) / 31557600000);
-                        // Mifflin-St Jeor BMR (asumimos hombre por defecto, ajustar si se añade sexo)
-                        const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + 5;
+                        // Mifflin-St Jeor BMR
+                        const sexOffset = (dietSettings.sex ?? "male") === "female" ? -161 : 5;
+                        const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + sexOffset;
                         const activityMultipliers: Record<string, number> = {
                           moderate: 1.55,
                           intermediate: 1.725,
