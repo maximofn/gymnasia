@@ -5213,7 +5213,7 @@ export default function App() {
     Promise.all([
       AsyncStorage.setItem(STORAGE_KEY, serialized),
       writeProviderApiKeysToSecureStore(store.keys, secureStoreAvailable),
-      saveDevStoreFile(serialized),
+      saveDevStoreFile(JSON.stringify(store)),
     ]).catch(() => {
       setError("No se pudo guardar en almacenamiento local/seguro.");
     });
