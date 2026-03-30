@@ -228,6 +228,7 @@ type TrainingStatsMetricKey = "volume" | "reps" | "duration";
 type MeasuresDashboardPeriodKey = "1m" | "3m" | "6m" | "all";
 type UserPreferences = {
   chartPeriod: MeasuresDashboardPeriodKey;
+  chartMetric?: MeasuresChartMetricKey;
 };
 type TemplateSeriesPointer = {
   exerciseIndex: number;
@@ -5194,6 +5195,7 @@ export default function App() {
             : { ...DEFAULT_USER_PREFS };
           setUserPrefs(parsedPrefs);
           setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
+          if (parsedPrefs.chartMetric) setMeasuresChartMetric(parsedPrefs.chartMetric);
         }
       } catch (err) {
         if (!ignore) {
@@ -6073,6 +6075,7 @@ export default function App() {
   function selectMeasuresChartMetric(key: MeasuresChartMetricKey) {
     setMeasuresChartMetric(key);
     setMeasuresChartMetricDropdownOpen(false);
+    setUserPrefs((prev) => ({ ...prev, chartMetric: key }));
   }
 
   async function pickMeasurementPhoto() {
