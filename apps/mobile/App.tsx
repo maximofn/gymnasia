@@ -4259,84 +4259,21 @@ export default function App() {
   const armMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.biceps_cm);
   const quadMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.quadriceps_cm);
   const calfMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.calf_cm);
-  const measuresPrimaryStatCards = [
-    buildMeasurementStatCard(
-      "Peso actual",
-      weightMeasurementPair.latest,
-      weightMeasurementPair.previous,
-      (value) => `${formatMeasurementNumber(value)} kg`,
-      "kg",
-      true,
-    ),
-    buildMeasurementStatCard(
-      "% Grasa",
-      bodyFatMeasurementPair.latest,
-      bodyFatMeasurementPair.previous,
-      (value) => `${formatMeasurementNumber(value)}%`,
-      "%",
-      true,
-    ),
+  const measuresAllStatCards = [
+    buildMeasurementStatCard("Peso", weightMeasurementPair.latest, weightMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} kg`, "kg", true),
+    buildMeasurementStatCard("% Grasa", bodyFatMeasurementPair.latest, bodyFatMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)}%`, "%", true),
+    buildMeasurementStatCard("Pecho", chestMeasurementPair.latest, chestMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+    buildMeasurementStatCard("Cintura", waistMeasurementPair.latest, waistMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", true),
+    buildMeasurementStatCard("Cadera", hipsMeasurementPair.latest, hipsMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+    buildMeasurementStatCard("Brazo", armMeasurementPair.latest, armMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+    buildMeasurementStatCard("Cuello", neckMeasurementPair.latest, neckMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+    buildMeasurementStatCard("Cuádriceps", quadMeasurementPair.latest, quadMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+    buildMeasurementStatCard("Gemelo", calfMeasurementPair.latest, calfMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
   ];
-  const measuresSecondaryStatCards = [
-    buildMeasurementStatCard(
-      "Cintura",
-      waistMeasurementPair.latest,
-      waistMeasurementPair.previous,
-      (value) => `${formatMeasurementNumber(value)} cm`,
-      "cm",
-      true,
-    ),
-    buildMeasurementStatCard(
-      "Pecho",
-      chestMeasurementPair.latest,
-      chestMeasurementPair.previous,
-      (value) => `${formatMeasurementNumber(value)} cm`,
-      "cm",
-      false,
-    ),
-    buildMeasurementStatCard(
-      "Brazo",
-      armMeasurementPair.latest,
-      armMeasurementPair.previous,
-      (value) => `${formatMeasurementNumber(value)} cm`,
-      "cm",
-      false,
-    ),
-  ];
-  const measuresTertiaryStatCards = [
-    buildMeasurementStatCard(
-      "Cuello",
-      neckMeasurementPair.latest,
-      neckMeasurementPair.previous,
-      (value) => `${formatMeasurementNumber(value)} cm`,
-      "cm",
-      false,
-    ),
-    buildMeasurementStatCard(
-      "Cadera",
-      hipsMeasurementPair.latest,
-      hipsMeasurementPair.previous,
-      (value) => `${formatMeasurementNumber(value)} cm`,
-      "cm",
-      false,
-    ),
-    buildMeasurementStatCard(
-      "Cuádriceps",
-      quadMeasurementPair.latest,
-      quadMeasurementPair.previous,
-      (value) => `${formatMeasurementNumber(value)} cm`,
-      "cm",
-      false,
-    ),
-    buildMeasurementStatCard(
-      "Gemelo",
-      calfMeasurementPair.latest,
-      calfMeasurementPair.previous,
-      (value) => `${formatMeasurementNumber(value)} cm`,
-      "cm",
-      false,
-    ),
-  ];
+  const measuresStatCardRows: (typeof measuresAllStatCards)[] = [];
+  for (let i = 0; i < measuresAllStatCards.length; i += 3) {
+    measuresStatCardRows.push(measuresAllStatCards.slice(i, i + 3));
+  }
   const measuresDashboardChartPoints = useMemo(() => {
     const cutoffTime =
       measuresDashboardPeriodMeta.days === null
@@ -12393,84 +12330,8 @@ export default function App() {
                 </Pressable>
               </View>
 
-              <View style={{ flexDirection: "row", gap: 10 }}>
-                {measuresPrimaryStatCards.map((card) => (
-                  <View
-                    key={card.label}
-                    style={{
-                      flex: 1,
-                      minHeight: 118,
-                      borderRadius: 18,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.04)",
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      padding: 14,
-                      gap: 6,
-                    }}
-                  >
-                    <Text style={{ color: "#7F8795", fontSize: 12, fontWeight: "600" }}>
-                      {card.label}
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
-                      {card.valueText}
-                    </Text>
-                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 6, marginTop: "auto" }}>
-                      <Feather name={card.changeIcon} size={12} color={card.changeColor} style={{ marginTop: 2 }} />
-                      <Text
-                        style={{
-                          color: card.changeColor,
-                          fontSize: 12,
-                          fontWeight: "700",
-                          flex: 1,
-                        }}
-                      >
-                        {card.changeText}
-                      </Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-
-              <View style={{ flexDirection: "row", gap: 10 }}>
-                {measuresSecondaryStatCards.map((card) => (
-                  <View
-                    key={card.label}
-                    style={{
-                      flex: 1,
-                      minHeight: 94,
-                      borderRadius: 18,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.04)",
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      padding: 12,
-                      gap: 4,
-                    }}
-                  >
-                    <Text style={{ color: "#7F8795", fontSize: 12, fontWeight: "600" }}>
-                      {card.label}
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
-                      {card.valueText}
-                    </Text>
-                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 5, marginTop: "auto" }}>
-                      <Feather name={card.changeIcon} size={11} color={card.changeColor} style={{ marginTop: 2 }} />
-                      <Text
-                        style={{
-                          color: card.changeColor,
-                          fontSize: 11,
-                          fontWeight: "700",
-                          flex: 1,
-                        }}
-                      >
-                        {card.changeText}
-                      </Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-
-              {[measuresTertiaryStatCards.slice(0, 3), measuresTertiaryStatCards.slice(3)].map((row, rowIdx) => (
-                <View key={`tertiary-${rowIdx}`} style={{ flexDirection: "row", gap: 10 }}>
+              {measuresStatCardRows.map((row, rowIdx) => (
+                <View key={`measures-row-${rowIdx}`} style={{ flexDirection: "row", gap: 10 }}>
                   {row.map((card) => (
                     <View
                       key={card.label}
