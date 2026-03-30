@@ -4161,7 +4161,8 @@ export default function App() {
     [store.measurements],
   );
   const latestBodyWeightKg = latestWeightMeasurement?.weight_kg ?? null;
-  const latestBodyHeightCm = latestHeightMeasurement?.height_cm ?? null;
+  const dietHeightCm = store.dietSettings.height_cm ? parseFloat(store.dietSettings.height_cm) : null;
+  const latestBodyHeightCm = latestHeightMeasurement?.height_cm ?? (Number.isFinite(dietHeightCm) && dietHeightCm! > 0 ? dietHeightCm : null);
   const measuresDashboardPeriodMeta = useMemo(
     () =>
       MEASURES_DASHBOARD_PERIOD_OPTIONS.find((option) => option.key === measuresDashboardPeriod) ??
