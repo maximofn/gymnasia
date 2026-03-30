@@ -11718,7 +11718,7 @@ export default function App() {
               >
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
                   <View>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 39, fontWeight: "800" }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "800" }}>
                       {formatNutritionNumber(dayCaloriesConsumed)}/{formatNutritionNumber(dietDailyCaloriesTarget)}
                     </Text>
                     <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}>
@@ -11765,7 +11765,7 @@ export default function App() {
                       macro.total > 0 ? Math.max(0, Math.min(macro.consumed / macro.total, 1)) : 0;
                     return (
                       <View key={macro.key} style={{ flex: 1, gap: 3 }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 32, fontWeight: "800" }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
                           {formatNutritionNumber(macro.consumed)}g
                         </Text>
                         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{macro.label}</Text>
