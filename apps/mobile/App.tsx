@@ -12838,7 +12838,7 @@ export default function App() {
                       return (
                         <Pressable
                           key={measurement.id}
-                          onPress={openMeasurementEntryScreen}
+                          onPress={() => openMeasurementForEdit(measurement)}
                           style={{
                             borderRadius: 18,
                             borderWidth: 1,
