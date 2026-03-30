@@ -12894,6 +12894,32 @@ export default function App() {
                   </View>
                 )}
               </View>
+
+              {store.measurements.some((m) => m.photo_uri) ? (
+                <View style={{ gap: 10 }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "800", fontSize: 20 }}>
+                    Fotos de progreso
+                  </Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                    {store.measurements
+                      .filter((m) => m.photo_uri)
+                      .map((m) => (
+                        <View key={m.id} style={{ width: "31%", aspectRatio: 1, borderRadius: 14, overflow: "hidden" }}>
+                          <Image
+                            source={{ uri: m.photo_uri! }}
+                            style={{ width: "100%", height: "100%" }}
+                            resizeMode="cover"
+                          />
+                          <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.55)", paddingHorizontal: 6, paddingVertical: 3 }}>
+                            <Text style={{ color: "#fff", fontSize: 10, fontWeight: "700" }}>
+                              {formatMeasurementHistoryDate(m.measured_at)}
+                            </Text>
+                          </View>
+                        </View>
+                      ))}
+                  </View>
+                </View>
+              ) : null}
             </View>
           ) : null}
 
