@@ -4220,7 +4220,7 @@ export default function App() {
       return {
         label,
         valueText: formatValue(latest),
-        changeText: "Primer registro",
+        changeText: "",
         changeColor: "#19C37D",
         changeIcon: "arrow-right",
       };
@@ -4231,18 +4231,18 @@ export default function App() {
       return {
         label,
         valueText: formatValue(latest),
-        changeText: "Sin cambio",
+        changeText: "=",
         changeColor: "#6F7785",
         changeIcon: "minus",
       };
     }
 
     const improved = prefersDecrease ? delta < 0 : delta > 0;
-    const signedValue = `${delta > 0 ? "+" : "-"}${formatMeasurementNumber(Math.abs(delta))}`;
+    const signedValue = `${delta > 0 ? "+" : ""}${formatMeasurementNumber(delta)}`;
     return {
       label,
       valueText: formatValue(latest),
-      changeText: `${signedValue} ${unitLabel} vs registro ant.`,
+      changeText: `${signedValue} ${unitLabel}`,
       changeColor: improved ? "#19C37D" : mobileTheme.color.brandPrimary,
       changeIcon: delta < 0 ? "trending-down" : "trending-up",
     };
