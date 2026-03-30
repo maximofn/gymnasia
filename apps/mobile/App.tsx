@@ -12921,30 +12921,30 @@ export default function App() {
                 ) : (
                   <View style={{ gap: 10 }}>
                     {measurementHistoryEntries.map(({ measurement, sourceIndex }) => {
-                      const previousWeightMeasurement =
-                        measurement.weight_kg === null
+                      const currentMetricValue = extractMetricValue(measurement);
+                      const previousMetricMeasurement =
+                        currentMetricValue === null
                           ? null
                           : store.measurements
                               .slice(sourceIndex + 1)
-                              .find((entry) => entry.weight_kg !== null) ?? null;
-                      const previousWeightValue = previousWeightMeasurement?.weight_kg ?? null;
-                      const weightDelta =
-                        measurement.weight_kg !== null && previousWeightValue !== null
-                          ? Math.round(
-                              (measurement.weight_kg - previousWeightValue) * 10,
-                            ) / 10
+                              .find((entry) => extractMetricValue(entry) !== null) ?? null;
+                      const previousMetricValue = previousMetricMeasurement ? extractMetricValue(previousMetricMeasurement) : null;
+                      const metricDelta =
+                        currentMetricValue !== null && previousMetricValue !== null
+                          ? Math.round((currentMetricValue - previousMetricValue) * 10) / 10
                           : null;
-                      const changeIsDecrease = weightDelta !== null && weightDelta < 0;
+                      const changeIsDecrease = metricDelta !== null && metricDelta < 0;
+                      const prefersDecrease = measuresChartMetricMeta.key === "weight" || measuresChartMetricMeta.key === "bodyFat" || measuresChartMetricMeta.key === "waist";
                       const changeBadgeColor =
-                        weightDelta === null
+                        metricDelta === null
                           ? "#6F7785"
-                          : changeIsDecrease
+                          : (prefersDecrease ? changeIsDecrease : !changeIsDecrease)
                             ? "#19C37D"
                             : mobileTheme.color.brandPrimary;
                       const changeBadgeBackground =
-                        weightDelta === null
+                        metricDelta === null
                           ? "rgba(127,135,149,0.14)"
-                          : changeIsDecrease
+                          : (prefersDecrease ? changeIsDecrease : !changeIsDecrease)
                             ? "rgba(25,195,125,0.14)"
                             : "rgba(203,255,26,0.12)";
 
@@ -12975,7 +12975,7 @@ export default function App() {
                             </Text>
                           </View>
 
-                          {weightDelta !== null ? (
+                          {metricDelta !== null ? (
                             <View
                               style={{
                                 minHeight: 30,
@@ -12994,7 +12994,7 @@ export default function App() {
                                 color={changeBadgeColor}
                               />
                               <Text style={{ color: changeBadgeColor, fontSize: 12, fontWeight: "800" }}>
-                                {formatMeasurementNumber(Math.abs(weightDelta))}
+                                {formatMeasurementNumber(Math.abs(metricDelta))} {measuresChartMetricMeta.unit}
                               </Text>
                             </View>
                           ) : null}
