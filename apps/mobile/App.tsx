@@ -12361,8 +12361,8 @@ export default function App() {
                     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
                       {card.valueText}
                     </Text>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: "auto" }}>
-                      <Feather name={card.changeIcon} size={12} color={card.changeColor} />
+                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 6, marginTop: "auto" }}>
+                      <Feather name={card.changeIcon} size={12} color={card.changeColor} style={{ marginTop: 2 }} />
                       <Text
                         style={{
                           color: card.changeColor,
@@ -12370,7 +12370,6 @@ export default function App() {
                           fontWeight: "700",
                           flex: 1,
                         }}
-                        numberOfLines={1}
                       >
                         {card.changeText}
                       </Text>
@@ -12400,8 +12399,8 @@ export default function App() {
                     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
                       {card.valueText}
                     </Text>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginTop: "auto" }}>
-                      <Feather name={card.changeIcon} size={11} color={card.changeColor} />
+                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 5, marginTop: "auto" }}>
+                      <Feather name={card.changeIcon} size={11} color={card.changeColor} style={{ marginTop: 2 }} />
                       <Text
                         style={{
                           color: card.changeColor,
@@ -12409,7 +12408,6 @@ export default function App() {
                           fontWeight: "700",
                           flex: 1,
                         }}
-                        numberOfLines={1}
                       >
                         {card.changeText}
                       </Text>
