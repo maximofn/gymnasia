@@ -12358,7 +12358,7 @@ export default function App() {
                     <Text style={{ color: "#7F8795", fontSize: 12, fontWeight: "600" }}>
                       {card.label}
                     </Text>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800" }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
                       {card.valueText}
                     </Text>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: "auto" }}>
@@ -12397,7 +12397,7 @@ export default function App() {
                     <Text style={{ color: "#7F8795", fontSize: 12, fontWeight: "600" }}>
                       {card.label}
                     </Text>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
                       {card.valueText}
                     </Text>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginTop: "auto" }}>
