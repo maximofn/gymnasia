@@ -4220,7 +4220,7 @@ export default function App() {
       return {
         label,
         valueText: formatValue(latest),
-        changeText: "",
+        changeText: "Primer registro",
         changeColor: "#19C37D",
         changeIcon: "arrow-right",
       };
