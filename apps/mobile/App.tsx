@@ -12417,6 +12417,7 @@ export default function App() {
                   backgroundColor: mobileTheme.color.bgSurface,
                   position: "relative",
                   overflow: "visible",
+                  zIndex: measuresChartMetricDropdownOpen || measuresDashboardPeriodDropdownOpen ? 10 : 1,
                   padding: 14,
                   gap: 14,
                 }}
