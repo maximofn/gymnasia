@@ -3991,6 +3991,7 @@ export default function App() {
     useState<MeasuresDashboardPeriodKey>("3m");
   const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
   const [showAllMeasurementsHistory, setShowAllMeasurementsHistory] = useState(false);
+  const [expandedPhotoUri, setExpandedPhotoUri] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState("");
   const [neckInput, setNeckInput] = useState("");
   const [chestInput, setChestInput] = useState("");
@@ -12904,7 +12905,7 @@ export default function App() {
                     {store.measurements
                       .filter((m) => m.photo_uri)
                       .map((m) => (
-                        <View key={m.id} style={{ width: "31%", aspectRatio: 1, borderRadius: 14, overflow: "hidden" }}>
+                        <Pressable key={m.id} onPress={() => setExpandedPhotoUri(m.photo_uri)} style={{ width: "31%", aspectRatio: 1, borderRadius: 14, overflow: "hidden" }}>
                           <Image
                             source={{ uri: m.photo_uri! }}
                             style={{ width: "100%", height: "100%" }}
@@ -12915,7 +12916,7 @@ export default function App() {
                               {formatMeasurementHistoryDate(m.measured_at)}
                             </Text>
                           </View>
-                        </View>
+                        </Pressable>
                       ))}
                   </View>
                 </View>
@@ -15812,6 +15813,32 @@ export default function App() {
             <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>Nueva rutina</Text>
           </Pressable>
         </View>
+      ) : null}
+
+      {expandedPhotoUri ? (
+        <Pressable
+          onPress={() => setExpandedPhotoUri(null)}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.92)",
+            zIndex: 999,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Image
+            source={{ uri: expandedPhotoUri }}
+            style={{ width: "90%", height: "80%", borderRadius: 16 }}
+            resizeMode="contain"
+          />
+          <Text style={{ color: "#fff", fontSize: 14, fontWeight: "700", marginTop: 16 }}>
+            Toca para cerrar
+          </Text>
+        </Pressable>
       ) : null}
 
       {measurementEntryScreenOpen ? (
