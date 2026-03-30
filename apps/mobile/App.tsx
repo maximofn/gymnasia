@@ -3363,8 +3363,20 @@ function normalizeDietSettings(rawValue: unknown): DietSettings {
       ? maybe.goal
       : defaults.goal;
 
+  const activityLevel: ActivityLevel | undefined =
+    maybe.activity_level === "moderate" || maybe.activity_level === "intermediate" || maybe.activity_level === "high"
+      ? maybe.activity_level
+      : undefined;
+
+  const sex: UserSex | undefined =
+    maybe.sex === "male" || maybe.sex === "female" ? maybe.sex : undefined;
+
   return {
     goal,
+    activity_level: activityLevel,
+    sex,
+    height_cm: typeof maybe.height_cm === "string" ? maybe.height_cm : undefined,
+    birth_date: typeof maybe.birth_date === "string" ? maybe.birth_date : undefined,
     daily_calories: normalizeNumberInputText(maybe.daily_calories),
     macro_mode: mode,
     manual_macro_calories: {
