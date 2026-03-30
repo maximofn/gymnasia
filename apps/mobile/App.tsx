@@ -11834,7 +11834,7 @@ export default function App() {
                           >
                             <Feather name={meta.icon} size={15} color={meta.accent} />
                           </View>
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 30, fontWeight: "800" }}>
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
                             {category}
                           </Text>
                         </View>
