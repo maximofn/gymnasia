@@ -4252,9 +4252,13 @@ export default function App() {
   const bodyFatMeasurementPair = resolveMeasurementMetricPair((measurement) =>
     estimateMeasurementBodyFatPercentage(measurement, latestBodyHeightCm, userSex),
   );
+  const neckMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.neck_cm);
   const waistMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.waist_cm);
   const chestMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.chest_cm);
+  const hipsMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.hips_cm);
   const armMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.biceps_cm);
+  const quadMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.quadriceps_cm);
+  const calfMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.calf_cm);
   const measuresPrimaryStatCards = [
     buildMeasurementStatCard(
       "Peso actual",
@@ -4294,6 +4298,40 @@ export default function App() {
       "Brazo",
       armMeasurementPair.latest,
       armMeasurementPair.previous,
+      (value) => `${formatMeasurementNumber(value)} cm`,
+      "cm",
+      false,
+    ),
+  ];
+  const measuresTertiaryStatCards = [
+    buildMeasurementStatCard(
+      "Cuello",
+      neckMeasurementPair.latest,
+      neckMeasurementPair.previous,
+      (value) => `${formatMeasurementNumber(value)} cm`,
+      "cm",
+      false,
+    ),
+    buildMeasurementStatCard(
+      "Cadera",
+      hipsMeasurementPair.latest,
+      hipsMeasurementPair.previous,
+      (value) => `${formatMeasurementNumber(value)} cm`,
+      "cm",
+      false,
+    ),
+    buildMeasurementStatCard(
+      "Cuádriceps",
+      quadMeasurementPair.latest,
+      quadMeasurementPair.previous,
+      (value) => `${formatMeasurementNumber(value)} cm`,
+      "cm",
+      false,
+    ),
+    buildMeasurementStatCard(
+      "Gemelo",
+      calfMeasurementPair.latest,
+      calfMeasurementPair.previous,
       (value) => `${formatMeasurementNumber(value)} cm`,
       "cm",
       false,
@@ -12430,6 +12468,46 @@ export default function App() {
                   </View>
                 ))}
               </View>
+
+              {[measuresTertiaryStatCards.slice(0, 3), measuresTertiaryStatCards.slice(3)].map((row, rowIdx) => (
+                <View key={`tertiary-${rowIdx}`} style={{ flexDirection: "row", gap: 10 }}>
+                  {row.map((card) => (
+                    <View
+                      key={card.label}
+                      style={{
+                        flex: 1,
+                        minHeight: 94,
+                        borderRadius: 18,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.04)",
+                        backgroundColor: mobileTheme.color.bgSurface,
+                        padding: 12,
+                        gap: 4,
+                      }}
+                    >
+                      <Text style={{ color: "#7F8795", fontSize: 12, fontWeight: "600" }}>
+                        {card.label}
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
+                        {card.valueText}
+                      </Text>
+                      <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 5, marginTop: "auto" }}>
+                        <Feather name={card.changeIcon} size={11} color={card.changeColor} style={{ marginTop: 2 }} />
+                        <Text
+                          style={{
+                            color: card.changeColor,
+                            fontSize: 11,
+                            fontWeight: "700",
+                            flex: 1,
+                          }}
+                        >
+                          {card.changeText}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              ))}
 
               <View
                 style={{
