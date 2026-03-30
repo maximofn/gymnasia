@@ -16046,150 +16046,55 @@ export default function App() {
                 </View>
               </View>
 
-              <TextInput
-                style={{
-                  minHeight: 42,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                }}
-                value={weightInput}
-                onChangeText={setWeightInput}
-                placeholder="Peso corporal (kg)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                keyboardType="decimal-pad"
-              />
-              <TextInput
-                style={{
-                  minHeight: 42,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                }}
-                value={neckInput}
-                onChangeText={setNeckInput}
-                placeholder="Contorno cuello (cm)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                keyboardType="decimal-pad"
-              />
-              <TextInput
-                style={{
-                  minHeight: 42,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                }}
-                value={chestInput}
-                onChangeText={setChestInput}
-                placeholder="Contorno pecho (cm)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                keyboardType="decimal-pad"
-              />
-              <TextInput
-                style={{
-                  minHeight: 42,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                }}
-                value={waistInput}
-                onChangeText={setWaistInput}
-                placeholder="Contorno cintura (cm)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                keyboardType="decimal-pad"
-              />
-              <TextInput
-                style={{
-                  minHeight: 42,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                }}
-                value={hipsInput}
-                onChangeText={setHipsInput}
-                placeholder="Contorno cadera (cm)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                keyboardType="decimal-pad"
-              />
-              <TextInput
-                style={{
-                  minHeight: 42,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                }}
-                value={bicepsInput}
-                onChangeText={setBicepsInput}
-                placeholder="Contorno bíceps (cm)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                keyboardType="decimal-pad"
-              />
-              <TextInput
-                style={{
-                  minHeight: 42,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                }}
-                value={quadricepsInput}
-                onChangeText={setQuadricepsInput}
-                placeholder="Contorno cuádriceps (cm)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                keyboardType="decimal-pad"
-              />
-              <TextInput
-                style={{
-                  minHeight: 42,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                }}
-                value={calfInput}
-                onChangeText={setCalfInput}
-                placeholder="Contorno gemelo (cm)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                keyboardType="decimal-pad"
-              />
-              <TextInput
-                style={{
-                  minHeight: 42,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                }}
-                value={heightInput}
-                onChangeText={setHeightInput}
-                placeholder="Altura (cm)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                keyboardType="decimal-pad"
-              />
+              <View style={{ gap: 2 }}>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Peso (kg)</Text>
+                <TextInput
+                  style={{
+                    minHeight: 42,
+                    borderRadius: mobileTheme.radius.md,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgApp,
+                    color: mobileTheme.color.textPrimary,
+                    paddingHorizontal: 12,
+                  }}
+                  value={weightInput}
+                  onChangeText={setWeightInput}
+                  placeholder="—"
+                  placeholderTextColor={mobileTheme.color.textSecondary}
+                  keyboardType="decimal-pad"
+                />
+              </View>
+              {[
+                { label: "Cuello (cm)", value: neckInput, setter: setNeckInput },
+                { label: "Pecho (cm)", value: chestInput, setter: setChestInput },
+                { label: "Cintura (cm)", value: waistInput, setter: setWaistInput },
+                { label: "Cadera (cm)", value: hipsInput, setter: setHipsInput },
+                { label: "Bíceps (cm)", value: bicepsInput, setter: setBicepsInput },
+                { label: "Cuádriceps (cm)", value: quadricepsInput, setter: setQuadricepsInput },
+                { label: "Gemelo (cm)", value: calfInput, setter: setCalfInput },
+                { label: "Altura (cm)", value: heightInput, setter: setHeightInput },
+              ].map((field) => (
+                <View key={field.label} style={{ gap: 2 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>{field.label}</Text>
+                  <TextInput
+                    style={{
+                      minHeight: 42,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                    }}
+                    value={field.value}
+                    onChangeText={field.setter}
+                    placeholder="—"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    keyboardType="decimal-pad"
+                  />
+                </View>
+              ))}
 
               <View style={{ flexDirection: "row", gap: 8 }}>
                 <Pressable
