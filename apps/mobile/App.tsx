@@ -4641,10 +4641,11 @@ export default function App() {
       : "Crear rutina";
 
   const filteredTrainingTemplates = useMemo(() => {
-    const normalizedSearch = trainingSearch.trim().toLowerCase();
+    const strip = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const normalizedSearch = strip(trainingSearch.trim());
     return store.templates.filter((template) => {
       const matchesSearch =
-        !normalizedSearch || template.name.toLowerCase().includes(normalizedSearch);
+        !normalizedSearch || strip(template.name).includes(normalizedSearch);
       const matchesFilter =
         trainingFilter === "all" ||
         resolveTrainingCategory(template) === trainingFilter;
@@ -4729,9 +4730,10 @@ export default function App() {
     [exercisesRepo],
   );
   const filteredExercisePickerEntries = useMemo(() => {
-    const search = exercisePickerSearch.trim().toLowerCase();
+    const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const search = normalize(exercisePickerSearch.trim());
     return exercisesRepo.filter((entry) => {
-      const matchesSearch = !search || entry.name.toLowerCase().includes(search) || entry.muscle_group.toLowerCase().includes(search);
+      const matchesSearch = !search || normalize(entry.name).includes(search) || normalize(entry.muscle_group).includes(search);
       const matchesMuscle = exercisePickerMuscleFilter === "all" || entry.muscle_group === exercisePickerMuscleFilter;
       return matchesSearch && matchesMuscle;
     });
