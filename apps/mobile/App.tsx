@@ -15772,100 +15772,7 @@ export default function App() {
                 </View>
               ) : null}
 
-              {/* Exercise detail overlay */}
-              {selectedExerciseDetail ? (
-                <View
-                  style={{
-                    backgroundColor: mobileTheme.color.cardBg,
-                    borderRadius: 12,
-                    padding: 16,
-                    gap: 12,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                  }}
-                >
-                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>
-                      {selectedExerciseDetail.name}
-                    </Text>
-                    <Pressable onPress={() => setSelectedExerciseDetail(null)} style={{ padding: 4 }}>
-                      <Feather name="x" size={20} color={mobileTheme.color.textSecondary} />
-                    </Pressable>
-                  </View>
-
-                  <View style={{ flexDirection: "row", gap: 8 }}>
-                    {selectedExerciseDetail.image_male ? (
-                      <Image
-                        source={{ uri: `${EXERCISES_REPO_BASE_URL}/${selectedExerciseDetail.image_male}` }}
-                        style={{ flex: 1, height: 160, borderRadius: 10, backgroundColor: "#1a1a1a" }}
-                        resizeMode="cover"
-                      />
-                    ) : null}
-                    {selectedExerciseDetail.image_female ? (
-                      <Image
-                        source={{ uri: `${EXERCISES_REPO_BASE_URL}/${selectedExerciseDetail.image_female}` }}
-                        style={{ flex: 1, height: 160, borderRadius: 10, backgroundColor: "#1a1a1a" }}
-                        resizeMode="cover"
-                      />
-                    ) : null}
-                  </View>
-                  <View style={{ flexDirection: "row", gap: 8 }}>
-                    {selectedExerciseDetail.image_male ? (
-                      <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 10, textAlign: "center" }}>Hombre</Text>
-                    ) : null}
-                    {selectedExerciseDetail.image_female ? (
-                      <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 10, textAlign: "center" }}>Mujer</Text>
-                    ) : null}
-                  </View>
-
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-                    {[
-                      selectedExerciseDetail.muscle_group,
-                      ...(selectedExerciseDetail.secondary_muscles || []),
-                    ].map((m) => (
-                      <View
-                        key={m}
-                        style={{
-                          backgroundColor: mobileTheme.color.accent + "22",
-                          paddingHorizontal: 8,
-                          paddingVertical: 3,
-                          borderRadius: 6,
-                        }}
-                      >
-                        <Text style={{ color: mobileTheme.color.accent, fontSize: 11, fontWeight: "600" }}>{m}</Text>
-                      </View>
-                    ))}
-                    <View
-                      style={{
-                        backgroundColor: "#ffffff15",
-                        paddingHorizontal: 8,
-                        paddingVertical: 3,
-                        borderRadius: 6,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                        {selectedExerciseDetail.equipment}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        backgroundColor: "#ffffff15",
-                        paddingHorizontal: 8,
-                        paddingVertical: 3,
-                        borderRadius: 6,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                        {selectedExerciseDetail.difficulty}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
-                    {selectedExerciseDetail.instructions}
-                  </Text>
-                </View>
-              ) : null}
+              {/* Exercise detail rendered as fullscreen overlay below */}
             </View>
           ) : null}
         </ScrollView>
@@ -15935,6 +15842,96 @@ export default function App() {
             <Text style={{ color: "#06090D", fontSize: 24, fontWeight: "700", lineHeight: 26 }}>+</Text>
             <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>Nueva rutina</Text>
           </Pressable>
+        </View>
+      ) : null}
+
+      {selectedExerciseDetail ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.88)",
+            zIndex: 998,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              width: "92%",
+              maxHeight: "90%",
+              backgroundColor: mobileTheme.color.bgSurface,
+              borderRadius: 20,
+              padding: 20,
+              gap: 14,
+            }}
+          >
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "800", fontSize: 20, flex: 1 }}>
+                {selectedExerciseDetail.name}
+              </Text>
+              <Pressable onPress={() => setSelectedExerciseDetail(null)} style={{ padding: 6 }}>
+                <Feather name="x" size={22} color={mobileTheme.color.textSecondary} />
+              </Pressable>
+            </View>
+
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              {selectedExerciseDetail.image_male ? (
+                <View style={{ flex: 1, gap: 4 }}>
+                  <Image
+                    source={{ uri: `${EXERCISES_REPO_BASE_URL}/${selectedExerciseDetail.image_male}` }}
+                    style={{ width: "100%", height: 200, borderRadius: 12, backgroundColor: "#1a1a1a" }}
+                    resizeMode="cover"
+                  />
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, textAlign: "center" }}>Hombre</Text>
+                </View>
+              ) : null}
+              {selectedExerciseDetail.image_female ? (
+                <View style={{ flex: 1, gap: 4 }}>
+                  <Image
+                    source={{ uri: `${EXERCISES_REPO_BASE_URL}/${selectedExerciseDetail.image_female}` }}
+                    style={{ width: "100%", height: 200, borderRadius: 12, backgroundColor: "#1a1a1a" }}
+                    resizeMode="cover"
+                  />
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, textAlign: "center" }}>Mujer</Text>
+                </View>
+              ) : null}
+            </View>
+
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+              {[
+                selectedExerciseDetail.muscle_group,
+                ...(selectedExerciseDetail.secondary_muscles || []),
+              ].map((m) => (
+                <View
+                  key={m}
+                  style={{
+                    backgroundColor: mobileTheme.color.accent + "22",
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderRadius: 6,
+                  }}
+                >
+                  <Text style={{ color: mobileTheme.color.accent, fontSize: 11, fontWeight: "600" }}>{m}</Text>
+                </View>
+              ))}
+              <View style={{ backgroundColor: "#ffffff15", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{selectedExerciseDetail.equipment}</Text>
+              </View>
+              <View style={{ backgroundColor: "#ffffff15", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{selectedExerciseDetail.difficulty}</Text>
+              </View>
+            </View>
+
+            <ScrollView style={{ maxHeight: 150 }}>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
+                {selectedExerciseDetail.instructions}
+              </Text>
+            </ScrollView>
+          </View>
         </View>
       ) : null}
 
