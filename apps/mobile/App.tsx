@@ -13018,17 +13018,22 @@ export default function App() {
               <TextInput
                 style={{
                   minHeight: 44,
+                  maxHeight: 120,
                   borderRadius: mobileTheme.radius.md,
                   borderWidth: 1,
                   borderColor: mobileTheme.color.borderSubtle,
                   backgroundColor: mobileTheme.color.bgSurface,
                   color: mobileTheme.color.textPrimary,
                   paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  textAlignVertical: "top",
                 }}
                 value={chatInput}
                 onChangeText={setChatInput}
                 placeholder="Pregunta al coach (API proveedor)"
                 placeholderTextColor={mobileTheme.color.textSecondary}
+                multiline
+                blurOnSubmit={false}
               />
 
               <Pressable
