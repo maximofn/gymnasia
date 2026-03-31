@@ -2149,6 +2149,7 @@ async function callFoodEstimatorAPI(
   provider: AIKey,
   messages: ChatInputMessage[],
   images: FoodEstimatorImage[],
+  onStatus?: (status: string) => void,
 ): Promise<string> {
   const model = provider.model.trim() || DEFAULT_MODELS[provider.provider];
   const normalizedImages = images
@@ -2204,6 +2205,7 @@ async function callFoodEstimatorAPI(
       return p;
     };
 
+    onStatus?.("Analizando imagen...");
     let payload = await makeRequest();
     for (let round = 0; round < 5; round++) {
       const choice = payload?.choices?.[0];
@@ -2211,10 +2213,13 @@ async function callFoodEstimatorAPI(
       if (!toolCalls?.length) break;
       openAIMessages.push(choice.message);
       for (const tc of toolCalls) {
+        const toolName = tc.function?.name ?? "";
+        onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
         const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
-        const result = await handleFoodEstimatorToolCall(tc.function?.name, args);
+        const result = await handleFoodEstimatorToolCall(toolName, args);
         openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: result });
       }
+      onStatus?.("Procesando resultado...");
       payload = await makeRequest();
     }
 
@@ -2279,6 +2284,7 @@ async function callFoodEstimatorAPI(
       return p;
     };
 
+    onStatus?.("Analizando imagen...");
     let payload = await makeRequest(currentMessages);
     for (let round = 0; round < 5; round++) {
       const contentBlocks = payload?.content as any[] | undefined;
@@ -2286,7 +2292,9 @@ async function callFoodEstimatorAPI(
       if (toolUseBlocks.length === 0) break;
       const toolResults: any[] = [];
       for (const block of toolUseBlocks) {
-        const result = await handleFoodEstimatorToolCall(block.name, block.input ?? {});
+        const toolName = block.name ?? "";
+        onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
+        const result = await handleFoodEstimatorToolCall(toolName, block.input ?? {});
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
       }
       currentMessages = [
@@ -2294,6 +2302,7 @@ async function callFoodEstimatorAPI(
         { role: "assistant", content: contentBlocks },
         { role: "user", content: toolResults },
       ];
+      onStatus?.("Procesando resultado...");
       payload = await makeRequest(currentMessages);
     }
 
@@ -2339,6 +2348,7 @@ async function callFoodEstimatorAPI(
     return p;
   };
 
+  onStatus?.("Analizando imagen...");
   let payload: any = await makeGoogleRequest(googleContents);
   for (let round = 0; round < 5; round++) {
     const candidate = payload?.candidates?.[0];
@@ -2348,12 +2358,15 @@ async function callFoodEstimatorAPI(
     googleContents.push({ role: "model", parts });
     const functionResponseParts: any[] = [];
     for (const fc of functionCalls) {
-      const result = await handleFoodEstimatorToolCall(fc.functionCall.name, fc.functionCall.args ?? {});
+      const toolName = fc.functionCall.name ?? "";
+      onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
+      const result = await handleFoodEstimatorToolCall(toolName, fc.functionCall.args ?? {});
       functionResponseParts.push({
-        functionResponse: { name: fc.functionCall.name, response: { result } },
+        functionResponse: { name: toolName, response: { result } },
       });
     }
     googleContents.push({ role: "user", parts: functionResponseParts });
+    onStatus?.("Procesando resultado...");
     payload = await makeGoogleRequest(googleContents);
   }
 
@@ -4008,6 +4021,7 @@ export default function App() {
   const [foodEstimatorMessages, setFoodEstimatorMessages] = useState<ChatMessage[]>([]);
   const [foodEstimatorInput, setFoodEstimatorInput] = useState("");
   const [foodEstimatorSending, setFoodEstimatorSending] = useState(false);
+  const [foodEstimatorStatus, setFoodEstimatorStatus] = useState("");
   const [foodEstimatorHasLLMResponse, setFoodEstimatorHasLLMResponse] = useState(false);
   const [weightInput, setWeightInput] = useState("");
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
@@ -5810,7 +5824,7 @@ export default function App() {
     setFoodEstimatorProvider(provider);
     setFoodEstimatorImages([]);
     setFoodEstimatorInput("");
-    setFoodEstimatorSending(false);
+    setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     setFoodEstimatorHasLLMResponse(false);
     setFoodEstimatorMessages([
       {
@@ -5828,7 +5842,7 @@ export default function App() {
 
   function closeFoodEstimatorModal() {
     setFoodEstimatorModalOpen(false);
-    setFoodEstimatorSending(false);
+    setFoodEstimatorSending(false); setFoodEstimatorStatus("");
   }
 
   function removeFoodEstimatorImage(imageId: string) {
@@ -5947,6 +5961,7 @@ export default function App() {
       setFoodEstimatorInput("");
     }
     setFoodEstimatorSending(true);
+    setFoodEstimatorStatus("Enviando...");
     setError(null);
 
     try {
@@ -5964,6 +5979,7 @@ export default function App() {
             resolvedProvider,
             estimatorHistory,
             foodEstimatorImages,
+            setFoodEstimatorStatus,
           );
           if (assistantContent && assistantContent.trim().length > 0) break;
           assistantContent = null;
@@ -6001,7 +6017,7 @@ export default function App() {
         },
       ]);
     } finally {
-      setFoodEstimatorSending(false);
+      setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     }
   }
 
@@ -6018,6 +6034,7 @@ export default function App() {
     }
 
     setFoodEstimatorSending(true);
+    setFoodEstimatorStatus("Generando datos nutricionales...");
     setError(null);
     try {
       const estimatorHistory: ChatInputMessage[] = [
@@ -6053,7 +6070,7 @@ export default function App() {
           : "No se pudo solicitar JSON al modelo para rellenar el alimento.";
       setError(message);
     } finally {
-      setFoodEstimatorSending(false);
+      setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     }
   }
 
@@ -16564,7 +16581,7 @@ export default function App() {
                 }}
               >
                 <Text style={{ color: "#06090D", fontWeight: "800" }}>
-                  {foodEstimatorSending ? "Enviando..." : "Enviar"}
+                  {foodEstimatorSending ? (foodEstimatorStatus || "Enviando...") : "Enviar"}
                 </Text>
               </Pressable>
             </View>
