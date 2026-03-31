@@ -13219,7 +13219,7 @@ export default function App() {
                   justifyContent: "center",
                 }}
               >
-                <Text style={{ color: "#06090D", fontWeight: "700" }}>{sendingChat ? `${chatThinkingLabel}...` : "Enviar"}</Text>
+                <Text style={{ color: "#06090D", fontWeight: "700" }}>{sendingChat ? "Enviando..." : "Enviar"}</Text>
               </Pressable>
             </View>
             ) : (
@@ -16649,7 +16649,7 @@ export default function App() {
                 }}
               >
                 <Text style={{ color: "#06090D", fontWeight: "800" }}>
-                  {foodEstimatorSending ? (foodEstimatorStatus || `${foodThinkingLabel}...`) : "Enviar"}
+                  {foodEstimatorSending ? "Enviando..." : "Enviar"}
                 </Text>
               </Pressable>
             </View>
