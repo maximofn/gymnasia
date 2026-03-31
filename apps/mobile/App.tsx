@@ -6083,7 +6083,9 @@ export default function App() {
         resolvedProvider,
         estimatorHistory,
         foodEstimatorImages,
+        setFoodEstimatorStatus,
       );
+      setFoodEstimatorStatus("Interpretando datos...");
       const parsed = parseFoodEstimatorNutritionJSON(assistantContent);
       if (!parsed) {
         setError("No se pudo interpretar JSON del modelo. Repite la estimación y vuelve a intentar.");
