@@ -3980,6 +3980,27 @@ function SwipeableSetRow({
   );
 }
 
+const THINKING_VERBS = [
+  "Pensando", "Reflexionando", "Analizando", "Calculando", "Procesando",
+  "Masticando datos", "Consultando", "Investigando", "Conectando ideas",
+  "Evaluando", "Entrenando neuronas", "Calentando motores", "Preparando",
+  "Cocinando respuesta", "Mezclando ingredientes", "Levantando pesas mentales",
+  "Haciendo crunches de datos", "Estirando la mente", "Sprint final",
+  "Activando cerebro", "Descifrando", "Componiendo", "Elaborando",
+];
+
+function useThinkingLabel(active: boolean): string {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    if (!active) { setIndex(0); return; }
+    const interval = setInterval(() => {
+      setIndex((i) => (i + 1) % THINKING_VERBS.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [active]);
+  return THINKING_VERBS[index];
+}
+
 export default function App() {
   const [tab, setTab] = useState<TabKey>("home");
   const [loading, setLoading] = useState(true);
@@ -3993,6 +4014,7 @@ export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [sendingChat, setSendingChat] = useState(false);
+  const chatThinkingLabel = useThinkingLabel(sendingChat);
   const [showByokExplain, setShowByokExplain] = useState(false);
   const chatScrollRef = useRef<ScrollView>(null);
   const mainScrollRef = useRef<ScrollView>(null);
@@ -4022,6 +4044,7 @@ export default function App() {
   const [foodEstimatorInput, setFoodEstimatorInput] = useState("");
   const [foodEstimatorSending, setFoodEstimatorSending] = useState(false);
   const [foodEstimatorStatus, setFoodEstimatorStatus] = useState("");
+  const foodThinkingLabel = useThinkingLabel(foodEstimatorSending);
   const [foodEstimatorHasLLMResponse, setFoodEstimatorHasLLMResponse] = useState(false);
   const [weightInput, setWeightInput] = useState("");
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
@@ -13169,7 +13192,7 @@ export default function App() {
                   justifyContent: "center",
                 }}
               >
-                <Text style={{ color: "#06090D", fontWeight: "700" }}>{sendingChat ? "Enviando..." : "Enviar"}</Text>
+                <Text style={{ color: "#06090D", fontWeight: "700" }}>{sendingChat ? `${chatThinkingLabel}...` : "Enviar"}</Text>
               </Pressable>
             </View>
             ) : (
@@ -16581,7 +16604,7 @@ export default function App() {
                 }}
               >
                 <Text style={{ color: "#06090D", fontWeight: "800" }}>
-                  {foodEstimatorSending ? (foodEstimatorStatus || "Enviando...") : "Enviar"}
+                  {foodEstimatorSending ? (foodEstimatorStatus || `${foodThinkingLabel}...`) : "Enviar"}
                 </Text>
               </Pressable>
             </View>
