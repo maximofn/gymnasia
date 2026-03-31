@@ -5547,13 +5547,23 @@ export default function App() {
       const fullSystemPrompt = debugField?.value
         ? `${systemPrompt}\n\n## Instrucciones de depuracion\n\n${debugField.value}`
         : systemPrompt;
-      const assistantContent = await callProviderChatAPIWithTools(activeProvider, [
-        {
-          role: "system",
-          content: fullSystemPrompt,
-        },
-        ...history,
-      ]);
+      let assistantContent: string | null = null;
+      const chatMessages = [{ role: "system" as const, content: fullSystemPrompt }, ...history];
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          assistantContent = await callProviderChatAPIWithTools(activeProvider, chatMessages);
+          if (assistantContent && assistantContent.trim().length > 0) break;
+          assistantContent = null;
+        } catch (retryErr) {
+          const errMsg = retryErr instanceof Error ? retryErr.message : "";
+          const isRetryable = /failed to fetch|network|timeout|econnrefused|econnreset|overloaded|529|503|429/i.test(errMsg);
+          if (!isRetryable || attempt === 2) throw retryErr;
+          await new Promise((r) => setTimeout(r, (attempt + 1) * 2000));
+        }
+      }
+      if (!assistantContent || assistantContent.trim().length === 0) {
+        throw new Error("El modelo no devolvió contenido.");
+      }
 
       const assistantMessage: ChatMessage = {
         id: uid("msg"),
@@ -6008,8 +6018,9 @@ export default function App() {
           assistantContent = null;
         } catch (retryErr) {
           const msg = retryErr instanceof Error ? retryErr.message : "";
-          const isRetryable = /high demand|overloaded|rate.?limit|529|503|429/i.test(msg);
+          const isRetryable = /high demand|overloaded|rate.?limit|529|503|429|failed to fetch|network|timeout|econnrefused|econnreset/i.test(msg);
           if (!isRetryable || attempt === 2) throw retryErr;
+          setFoodEstimatorStatus(`Reintentando (${attempt + 2}/3)...`);
           await new Promise((r) => setTimeout(r, (attempt + 1) * 2000));
         }
       }
@@ -13158,6 +13169,22 @@ export default function App() {
                     <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
                   </View>
                 ))}
+                {sendingChat ? (
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "rgba(203,255,26,0.45)",
+                      backgroundColor: "rgba(203,255,26,0.08)",
+                      borderRadius: mobileTheme.radius.md,
+                      padding: 10,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>assistant</Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, marginTop: 4, fontStyle: "italic" }}>
+                      {chatThinkingLabel}...
+                    </Text>
+                  </View>
+                ) : null}
               </ScrollView>
 
               <TextInput
@@ -16564,6 +16591,24 @@ export default function App() {
                     </View>
                   );
                 })}
+                {foodEstimatorSending ? (
+                  <View
+                    style={{
+                      alignSelf: "flex-start",
+                      maxWidth: "92%",
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: 12,
+                      paddingHorizontal: 10,
+                      paddingVertical: 8,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textSecondary, lineHeight: 19, fontStyle: "italic" }}>
+                      {foodEstimatorStatus || `${foodThinkingLabel}...`}
+                    </Text>
+                  </View>
+                ) : null}
               </ScrollView>
             </View>
 
