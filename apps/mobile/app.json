@@ -4,10 +4,12 @@
     "slug": "gymnasia",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0A0E14"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -20,6 +22,10 @@
       }
     },
     "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0A0E14"
+      },
       "package": "com.maximofn.gymnasia",
       "permissions": [
         "FOREGROUND_SERVICE",
