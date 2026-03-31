@@ -2150,9 +2150,10 @@ async function callFoodEstimatorAPI(
   messages: ChatInputMessage[],
   images: FoodEstimatorImage[],
   onStatus?: (status: string) => void,
+  skipImages?: boolean,
 ): Promise<string> {
   const model = provider.model.trim() || DEFAULT_MODELS[provider.provider];
-  const normalizedImages = images
+  const normalizedImages = skipImages ? [] : images
     .filter((image) => image.base64.trim().length > 0)
     .map((image) => ({
       ...image,
@@ -2205,7 +2206,7 @@ async function callFoodEstimatorAPI(
       return p;
     };
 
-    onStatus?.("Analizando imagen...");
+    onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
     let payload = await makeRequest();
     for (let round = 0; round < 5; round++) {
       const choice = payload?.choices?.[0];
@@ -2284,7 +2285,7 @@ async function callFoodEstimatorAPI(
       return p;
     };
 
-    onStatus?.("Analizando imagen...");
+    onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
     let payload = await makeRequest(currentMessages);
     for (let round = 0; round < 5; round++) {
       const contentBlocks = payload?.content as any[] | undefined;
@@ -2348,7 +2349,7 @@ async function callFoodEstimatorAPI(
     return p;
   };
 
-  onStatus?.("Analizando imagen...");
+  onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
   let payload: any = await makeGoogleRequest(googleContents);
   for (let round = 0; round < 5; round++) {
     const candidate = payload?.candidates?.[0];
@@ -6005,6 +6006,7 @@ export default function App() {
           content: message.content,
         })),
       ];
+      const isFollowUp = foodEstimatorMessages.some((m) => m.role === "assistant");
       let assistantContent: string | null = null;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
@@ -6013,6 +6015,7 @@ export default function App() {
             estimatorHistory,
             foodEstimatorImages,
             setFoodEstimatorStatus,
+            isFollowUp,
           );
           if (assistantContent && assistantContent.trim().length > 0) break;
           assistantContent = null;
