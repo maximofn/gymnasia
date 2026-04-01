@@ -14442,7 +14442,7 @@ export default function App() {
                             }}
                           >
                             <Feather name="edit-3" size={13} color={mobileTheme.color.textSecondary} />
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600", fontSize: 12 }}>Formulario</Text>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600", fontSize: 12 }}>Añadir a mano</Text>
                           </Pressable>
                           <Pressable
                             onPress={() => { setDietAddMode("ai"); openDietMealEditor(category); openFoodEstimatorModal(); }}
@@ -14460,7 +14460,7 @@ export default function App() {
                             }}
                           >
                             <Feather name="cpu" size={13} color={mobileTheme.color.textSecondary} />
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600", fontSize: 12 }}>Con IA</Text>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600", fontSize: 12 }}>Añadir con IA</Text>
                           </Pressable>
                         </View>
                       </View>
