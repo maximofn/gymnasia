@@ -14220,7 +14220,7 @@ export default function App() {
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
                   <View>
                     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "800" }}>
-                      {formatNutritionNumber(dayCaloriesConsumed)}/{formatNutritionNumber(dietDailyCaloriesTarget)} ({dayCaloriesPercent}%)
+                      {formatNutritionNumber(dayCaloriesConsumed)}/{formatNutritionNumber(dietDailyCaloriesTarget)}
                     </Text>
                     <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}>
                       kcal consumidas
