@@ -109,6 +109,25 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - OpenAI food estimator now receives uploaded images correctly
+- Failure:
+  In `Añadir alimento con IA`, the OpenAI provider replied that it still needed the photos, while Google correctly read the same image input and could even trigger barcode scanning.
+- Root cause:
+  The OpenAI food estimator path in `apps/mobile/App.tsx` still used the legacy Chat Completions payload with image parts, while the rest of the app had already moved OpenAI chat to the Responses API. In practice, this food-estimator path was not reliably passing the uploaded image context through for the selected OpenAI reasoning model.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - migrated the OpenAI food estimator branch from `chat/completions` to `https://api.openai.com/v1/responses`.
+     - changed uploaded food photos to Responses API image input parts (`input_image`) alongside `input_text`.
+     - migrated the OpenAI barcode tool definition to the Responses API function schema.
+     - continued tool rounds with `previous_response_id` plus `function_call_output`, matching the main chat OpenAI flow.
+  2. Validated:
+     - `npm --workspace apps/mobile exec tsc --noEmit`
+       - still fails because of unrelated pre-existing `apps/mobile/App.tsx` errors outside this change.
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-food-openai-responses-export`
+     - real OpenAI API smoke test from the running browser app:
+       - confirmed a public image URL is described correctly through `v1/responses`.
+       - confirmed the same image also works when converted to `data:image/...;base64,...`, which matches the app upload format.
+
 ### 2026-04-01 - OpenAI provider settings now let users choose reasoning effort
 - Failure:
   The `Configuración > Proveedor IA` sub-tab let users choose the OpenAI model, but not the model's reasoning effort, so the app always sent the same hardcoded effort level.

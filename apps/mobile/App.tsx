@@ -3514,14 +3514,12 @@ const foodEstimatorTools = {
   openai: [
     {
       type: "function",
-      function: {
-        name: SCAN_BARCODE_TOOL,
-        description: SCAN_BARCODE_DESC,
-        parameters: {
-          type: "object",
-          properties: { barcode: { type: "string", description: SCAN_BARCODE_PARAM_DESC } },
-          required: ["barcode"],
-        },
+      name: SCAN_BARCODE_TOOL,
+      description: SCAN_BARCODE_DESC,
+      parameters: {
+        type: "object",
+        properties: { barcode: { type: "string", description: SCAN_BARCODE_PARAM_DESC } },
+        required: ["barcode"],
       },
     },
   ],
@@ -3582,28 +3580,55 @@ async function callFoodEstimatorAPI(
   })();
 
   if (provider.provider === "openai") {
-    const openAIMessages: any[] = messages.map((msg, index) => {
-      if (msg.role === "system") return { role: "system", content: msg.content };
-      if (msg.role === "assistant") return { role: "assistant", content: msg.content };
-      const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
-      if (index !== lastUserMessageIndex || normalizedImages.length === 0) {
-        return { role: "user", content: textContent };
-      }
-      return {
-        role: "user",
-        content: [
-          { type: "text", text: textContent },
-          ...normalizedImages.map((image) => ({
-            type: "image_url",
-            image_url: { url: `data:${image.mime_type};base64,${image.base64}` },
-          })),
-        ],
-      };
-    });
+    const systemPrompt = normalizeChatSystemPrompt(
+      messages
+        .filter((msg) => msg.role === "system")
+        .map((msg) => msg.content)
+        .join("\n\n"),
+    );
+    const openAIInputs: Array<Record<string, unknown>> = messages
+      .filter((msg) => msg.role !== "system")
+      .map((msg, index) => {
+        const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
+        if (msg.role === "assistant") {
+          return {
+            role: "assistant",
+            content: [{ type: "input_text", text: textContent }],
+          };
+        }
+        if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
+          return {
+            role: "user",
+            content: [{ type: "input_text", text: textContent }],
+          };
+        }
+        return {
+          role: "user",
+          content: [
+            { type: "input_text", text: textContent },
+            ...normalizedImages.map((image) => ({
+              type: "input_image",
+              image_url: `data:${image.mime_type};base64,${image.base64}`,
+              detail: "auto",
+            })),
+          ],
+        };
+      });
 
-    const makeRequest = async () => {
-      const body: any = { model, messages: openAIMessages, temperature: 0.2, tools: foodEstimatorTools.openai };
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const makeRequest = async (
+      input: Array<Record<string, unknown>>,
+      previousResponseId: string | null,
+    ) => {
+      const body: Record<string, unknown> = {
+        model,
+        instructions: systemPrompt,
+        input,
+        tools: foodEstimatorTools.openai,
+      };
+      if (previousResponseId) {
+        body.previous_response_id = previousResponseId;
+      }
+      const res = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
         body: JSON.stringify(body),
@@ -3615,26 +3640,36 @@ async function callFoodEstimatorAPI(
     };
 
     onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
-    let payload = await makeRequest();
+    let payload = await makeRequest(openAIInputs, null);
     for (let round = 0; round < 5; round++) {
-      const choice = payload?.choices?.[0];
-      const toolCalls = choice?.message?.tool_calls;
-      if (!toolCalls?.length) break;
-      openAIMessages.push(choice.message);
-      for (const tc of toolCalls) {
-        const toolName = tc.function?.name ?? "";
+      const outputItems = parseOpenAIResponseOutputItems(payload);
+      const toolCalls = outputItems.filter(
+        (item): item is OpenAIFunctionCallOutputItem => item.type === "function_call",
+      );
+      if (toolCalls.length === 0) break;
+      const responseId = typeof payload?.id === "string" ? payload.id : null;
+      if (!responseId) {
+        throw new Error("OpenAI no devolvio response_id para continuar la estimación.");
+      }
+      const toolOutputs: Array<Record<string, unknown>> = [];
+      for (const toolCall of toolCalls) {
+        const toolName = toolCall.name ?? "";
         onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
-        const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
+        const args = parseOpenAIFunctionArguments(toolCall.arguments);
         const result = await handleFoodEstimatorToolCall(toolName, args);
-        openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: result });
+        toolOutputs.push({
+          type: "function_call_output",
+          call_id: toolCall.call_id,
+          output: result,
+        });
       }
       onStatus?.("Procesando resultado...");
-      payload = await makeRequest();
+      payload = await makeRequest(toolOutputs, responseId);
     }
 
-    const content = parseOpenAIContent(payload);
-    if (!content) throw new Error("OpenAI no devolvio contenido.");
-    return content;
+    const result = parseOpenAIResponseResult(payload);
+    if (!result?.content) throw new Error("OpenAI no devolvio contenido.");
+    return result.content;
   }
 
   if (provider.provider === "anthropic") {
