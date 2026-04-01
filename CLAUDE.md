@@ -109,6 +109,25 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - OpenAI chat now streams reasoning summaries and answer text with `gpt-5-mini`
+- Failure:
+  OpenAI chat in `apps/mobile` still used `chat/completions`, so the assistant answer only appeared after the full response and the UI had no proper stream of visible reasoning tokens.
+- Root cause:
+  The mobile chat OpenAI path was still built on the legacy Chat Completions API, which meant no `Responses API` SSE event handling, no `reasoning.summary` stream, and no `previous_response_id` continuation path for tool calls. The persisted default OpenAI model could also remain on the old `gpt-4o-mini`.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - changed `DEFAULT_MODELS.openai` to `gpt-5-mini`.
+     - normalized persisted legacy OpenAI defaults from `gpt-4o-mini` to `gpt-5-mini`.
+     - moved the chat OpenAI provider flow from `chat/completions` to `https://api.openai.com/v1/responses`.
+     - added OpenAI SSE parsing for `response.output_text.delta`, `response.reasoning_summary_text.delta`, and function-call events.
+     - kept the existing assistant draft message flow so both answer text and reasoning update incrementally in the same chat bubble.
+     - updated OpenAI tools to the `Responses API` function schema and continued tool rounds with `previous_response_id` plus `function_call_output`.
+  2. Validated:
+     - `npm --workspace apps/mobile exec tsc --noEmit`
+       - still fails because of unrelated pre-existing `apps/mobile/App.tsx` errors outside this change.
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-openai-stream-export`
+     - reloaded `http://127.0.0.1:8081` and confirmed the app still loads without browser console errors.
+
 ### 2026-04-01 - Google streaming validation remains blocked by provider-side high demand
 - Failure:
   After the browser-debug streaming changes, end-to-end validation of Google reasoning tokens could not be completed because Gemini responded with `503` and `This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.`

@@ -196,6 +196,33 @@ type ChatMessage = {
   created_at: string;
 };
 type AnthropicChatResult = { content: string; thinking: string | null };
+type OpenAIReasoningSummaryPart = { type: "summary_text"; text: string };
+type OpenAIReasoningOutputItem = {
+  type: "reasoning";
+  id?: string;
+  summary?: OpenAIReasoningSummaryPart[];
+};
+type OpenAIMessageOutputItem = {
+  type: "message";
+  id?: string;
+  content?: Array<{ type: "output_text"; text: string }>;
+};
+type OpenAIFunctionCallOutputItem = {
+  type: "function_call";
+  id: string;
+  call_id: string;
+  name: string;
+  arguments: string;
+  status?: string;
+};
+type OpenAIResponseOutputItem =
+  | OpenAIReasoningOutputItem
+  | OpenAIMessageOutputItem
+  | OpenAIFunctionCallOutputItem;
+type OpenAIStreamTurnResult = AnthropicChatResult & {
+  responseId: string | null;
+  outputItems: OpenAIResponseOutputItem[];
+};
 type Provider = "anthropic" | "openai" | "google";
 type AIKey = { provider: Provider; is_active: boolean; api_key: string; model: string };
 type ProviderDraft = { api_key: string; model: string };
@@ -309,13 +336,16 @@ const LEGACY_SECURE_STORE_PREFIXES = [
   "gymnasia.mobile.v2.provider.api_key",
 ];
 const DEFAULT_MODELS: Record<Provider, string> = {
-  openai: "gpt-4o-mini",
+  openai: "gpt-5-mini",
   anthropic: "claude-3-5-sonnet-latest",
   google: "gemini-3-flash-preview",
 };
+const LEGACY_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 const LEGACY_GOOGLE_DEFAULT_MODEL = "gemini-1.5-flash";
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
+const OPENAI_REASONING_EFFORT = "medium";
+const OPENAI_REASONING_SUMMARY = "detailed";
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
@@ -332,6 +362,9 @@ const PERSONAL_FOODS_STORAGE_KEY = "gymnasia.mobile.personal_foods.v1";
 function normalizeProviderModel(provider: Provider, rawModel: string | null | undefined): string {
   const trimmed = (rawModel ?? "").trim();
   const model = trimmed || DEFAULT_MODELS[provider];
+  if (provider === "openai" && model === LEGACY_OPENAI_DEFAULT_MODEL) {
+    return DEFAULT_MODELS.openai;
+  }
   if (provider === "google" && model === LEGACY_GOOGLE_DEFAULT_MODEL) {
     return DEFAULT_MODELS.google;
   }
@@ -1691,6 +1724,10 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
 }
 
 function parseOpenAIContent(payload: unknown): string | null {
+  const responseResult = parseOpenAIResponseResult(payload);
+  if (responseResult?.content) {
+    return responseResult.content;
+  }
   if (!payload || typeof payload !== "object") return null;
   const maybe = payload as {
     choices?: Array<{ message?: { content?: string | Array<{ type?: string; text?: string }> } }>;
@@ -1706,6 +1743,133 @@ function parseOpenAIContent(payload: unknown): string | null {
     return text || null;
   }
   return null;
+}
+
+function normalizeOpenAIFunctionCallArguments(rawArguments: unknown): string {
+  if (typeof rawArguments === "string") return rawArguments;
+  if (rawArguments && typeof rawArguments === "object") {
+    try {
+      return JSON.stringify(rawArguments);
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
+function normalizeOpenAIResponseOutputItem(rawItem: unknown): OpenAIResponseOutputItem | null {
+  if (!rawItem || typeof rawItem !== "object") return null;
+  const item = rawItem as {
+    type?: string;
+    id?: string;
+    summary?: Array<{ type?: string; text?: string }>;
+    content?: Array<{ type?: string; text?: string }>;
+    call_id?: string;
+    name?: string;
+    arguments?: unknown;
+    status?: string;
+  };
+
+  if (item.type === "reasoning") {
+    const summary = Array.isArray(item.summary)
+      ? item.summary
+          .filter(
+            (part): part is OpenAIReasoningSummaryPart =>
+              part?.type === "summary_text" && typeof part.text === "string",
+          )
+          .map((part) => ({ type: "summary_text" as const, text: part.text }))
+      : undefined;
+    return {
+      type: "reasoning",
+      id: typeof item.id === "string" ? item.id : undefined,
+      summary,
+    };
+  }
+
+  if (item.type === "message") {
+    const content = Array.isArray(item.content)
+      ? item.content
+          .filter(
+            (part): part is { type: "output_text"; text: string } =>
+              part?.type === "output_text" && typeof part.text === "string",
+          )
+          .map((part) => ({ type: "output_text" as const, text: part.text }))
+      : undefined;
+    return {
+      type: "message",
+      id: typeof item.id === "string" ? item.id : undefined,
+      content,
+    };
+  }
+
+  if (
+    item.type === "function_call"
+    && typeof item.id === "string"
+    && typeof item.call_id === "string"
+    && typeof item.name === "string"
+  ) {
+    return {
+      type: "function_call",
+      id: item.id,
+      call_id: item.call_id,
+      name: item.name,
+      arguments: normalizeOpenAIFunctionCallArguments(item.arguments),
+      status: typeof item.status === "string" ? item.status : undefined,
+    };
+  }
+
+  return null;
+}
+
+function parseOpenAIResponseOutputItems(payload: unknown): OpenAIResponseOutputItem[] {
+  if (!payload || typeof payload !== "object") return [];
+  const maybe = payload as { output?: unknown[] };
+  if (!Array.isArray(maybe.output)) return [];
+  return maybe.output
+    .map((item) => normalizeOpenAIResponseOutputItem(item))
+    .filter((item): item is OpenAIResponseOutputItem => Boolean(item));
+}
+
+function collectOpenAIOutputText(outputItems: OpenAIResponseOutputItem[]): string | null {
+  const text = outputItems
+    .filter((item): item is OpenAIMessageOutputItem => item.type === "message")
+    .flatMap((item) => item.content ?? [])
+    .filter((part) => part.type === "output_text")
+    .map((part) => part.text.trim())
+    .filter(Boolean)
+    .join("\n");
+  return text || null;
+}
+
+function collectOpenAIThinking(outputItems: OpenAIResponseOutputItem[]): string | null {
+  const thinking = outputItems
+    .filter((item): item is OpenAIReasoningOutputItem => item.type === "reasoning")
+    .flatMap((item) => item.summary ?? [])
+    .filter((part) => part.type === "summary_text")
+    .map((part) => part.text.trim())
+    .filter(Boolean)
+    .join("\n\n");
+  return thinking || null;
+}
+
+function parseOpenAIFunctionArguments(rawArguments: string): Record<string, unknown> {
+  const trimmed = rawArguments.trim();
+  if (!trimmed) return {};
+  const parsed = parseJsonSafely<unknown>(trimmed);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+  return parsed as Record<string, unknown>;
+}
+
+function parseOpenAIResponseResult(payload: unknown): AnthropicChatResult | null {
+  if (!payload || typeof payload !== "object") return null;
+  const maybe = payload as { output_text?: string | null };
+  const outputItems = parseOpenAIResponseOutputItems(payload);
+  const content =
+    collectOpenAIOutputText(outputItems)
+    ?? (typeof maybe.output_text === "string" ? maybe.output_text.trim() : null);
+  const thinking = collectOpenAIThinking(outputItems);
+  if (!content && !thinking) return null;
+  return { content: content ?? "", thinking };
 }
 
 function parseAnthropicContent(payload: unknown): AnthropicChatResult | null {
@@ -2082,6 +2246,340 @@ async function streamAnthropicRequestViaXHR(
   });
 }
 
+function createOpenAIStreamParser(
+  handlers?: StreamingHandlers,
+): {
+  push: (chunk: string) => void;
+  finish: () => OpenAIStreamTurnResult;
+} {
+  let rawBuffer = "";
+  let streamedContent = "";
+  let streamedThinking = "";
+  let responseId: string | null = null;
+  const outputItemsByIndex = new Map<number, OpenAIResponseOutputItem>();
+  const outputIndexesByItemId = new Map<string, number>();
+
+  const setOutputItem = (outputIndex: number, item: OpenAIResponseOutputItem) => {
+    outputItemsByIndex.set(outputIndex, item);
+    if ("id" in item && typeof item.id === "string" && item.id.trim().length > 0) {
+      outputIndexesByItemId.set(item.id, outputIndex);
+    }
+  };
+
+  const replaceOutputItems = (items: OpenAIResponseOutputItem[]) => {
+    outputItemsByIndex.clear();
+    outputIndexesByItemId.clear();
+    items.forEach((item, index) => {
+      setOutputItem(index, item);
+    });
+  };
+
+  const updateFunctionCallArguments = (
+    itemId: string,
+    updater: (currentArguments: string) => string,
+  ) => {
+    const outputIndex = outputIndexesByItemId.get(itemId);
+    if (typeof outputIndex !== "number") return;
+    const currentItem = outputItemsByIndex.get(outputIndex);
+    if (!currentItem || currentItem.type !== "function_call") return;
+    setOutputItem(outputIndex, {
+      ...currentItem,
+      arguments: updater(currentItem.arguments),
+    });
+  };
+
+  const processEvent = (parsedEvent: { event: string; data: string | null }) => {
+    if (!parsedEvent.data || parsedEvent.data.trim() === "[DONE]") return;
+    const payload = parseJsonSafely<{
+      type?: string;
+      delta?: string;
+      arguments?: string;
+      item_id?: string;
+      output_index?: number;
+      item?: unknown;
+      error?: { message?: string };
+      response?: {
+        id?: string;
+        output?: unknown[];
+        error?: { message?: string };
+      };
+    }>(parsedEvent.data);
+    if (!payload || typeof payload !== "object") return;
+
+    const payloadType = typeof payload.type === "string" ? payload.type : parsedEvent.event;
+    if (payloadType === "error" || parsedEvent.event === "error") {
+      throw new Error(extractErrorMessage(payload, "OpenAI stream error"));
+    }
+    if (payloadType === "response.failed") {
+      throw new Error(
+        payload.response?.error?.message
+        ?? extractErrorMessage(payload, "OpenAI stream error"),
+      );
+    }
+
+    if (payloadType === "response.created" || payloadType === "response.in_progress") {
+      responseId = payload.response?.id ?? responseId;
+      return;
+    }
+
+    if (payloadType === "response.output_text.delta") {
+      const delta = typeof payload.delta === "string" ? payload.delta : "";
+      if (!delta) return;
+      streamedContent += delta;
+      handlers?.onContentDelta?.(delta, streamedContent);
+      return;
+    }
+
+    if (payloadType === "response.reasoning_summary_text.delta") {
+      const delta = typeof payload.delta === "string" ? payload.delta : "";
+      if (!delta) return;
+      streamedThinking += delta;
+      handlers?.onThinkingDelta?.(delta, streamedThinking);
+      return;
+    }
+
+    if (payloadType === "response.output_item.added" || payloadType === "response.output_item.done") {
+      const outputIndex = typeof payload.output_index === "number" ? payload.output_index : null;
+      if (typeof outputIndex !== "number") return;
+      const item = normalizeOpenAIResponseOutputItem(payload.item);
+      if (!item) return;
+      setOutputItem(outputIndex, item);
+      return;
+    }
+
+    if (payloadType === "response.function_call_arguments.delta") {
+      const itemId = typeof payload.item_id === "string" ? payload.item_id : "";
+      const delta = typeof payload.delta === "string" ? payload.delta : "";
+      if (!itemId || !delta) return;
+      updateFunctionCallArguments(itemId, (currentArguments) => currentArguments + delta);
+      return;
+    }
+
+    if (payloadType === "response.function_call_arguments.done") {
+      const itemId = typeof payload.item_id === "string" ? payload.item_id : "";
+      const argumentsText = typeof payload.arguments === "string" ? payload.arguments : "";
+      if (!itemId) return;
+      updateFunctionCallArguments(itemId, () => argumentsText);
+      return;
+    }
+
+    if (payloadType === "response.completed") {
+      responseId = payload.response?.id ?? responseId;
+      const finalOutputItems = parseOpenAIResponseOutputItems(payload.response);
+      if (finalOutputItems.length > 0) {
+        replaceOutputItems(finalOutputItems);
+      }
+    }
+  };
+
+  const processChunk = (chunk: string) => {
+    if (!chunk) return;
+    rawBuffer += chunk;
+    const { events, rest } = splitSSEEvents(rawBuffer);
+    rawBuffer = rest;
+    events.forEach((eventChunk) => {
+      const parsedEvent = parseSSEEvent(eventChunk);
+      if (!parsedEvent) return;
+      processEvent(parsedEvent);
+    });
+  };
+
+  return {
+    push: processChunk,
+    finish: () => {
+      if (rawBuffer.trim()) {
+        const parsedEvent = parseSSEEvent(rawBuffer);
+        if (parsedEvent) processEvent(parsedEvent);
+        rawBuffer = "";
+      }
+
+      const outputItems = Array.from(outputItemsByIndex.entries())
+        .sort(([left], [right]) => left - right)
+        .map(([, item]) => item);
+      const content = streamedContent.trim() || collectOpenAIOutputText(outputItems) || "";
+      const thinking = streamedThinking.trim() || collectOpenAIThinking(outputItems) || null;
+
+      return {
+        responseId,
+        content,
+        thinking,
+        outputItems,
+      };
+    },
+  };
+}
+
+async function streamOpenAIRequestViaXHR(
+  url: string,
+  headers: Record<string, string>,
+  body: Record<string, unknown>,
+  handlers?: StreamingHandlers,
+  networkFallbackMessage = "No se pudo conectar con OpenAI.",
+  statusFallbackPrefix = "OpenAI error",
+): Promise<OpenAIStreamTurnResult> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const parser = createOpenAIStreamParser(handlers);
+    let lastOffset = 0;
+    let settled = false;
+
+    const cleanup = () => {
+      xhr.onreadystatechange = null;
+      xhr.onprogress = null;
+      xhr.onerror = null;
+      xhr.ontimeout = null;
+    };
+
+    const rejectOnce = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(error);
+    };
+
+    const resolveOnce = (result: OpenAIStreamTurnResult) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(result);
+    };
+
+    const processPendingResponseText = () => {
+      const fullText = xhr.responseText ?? "";
+      const nextText = fullText.slice(lastOffset);
+      lastOffset = fullText.length;
+      if (nextText) parser.push(nextText);
+    };
+
+    xhr.open("POST", url);
+    xhr.timeout = 120000;
+    Object.entries(headers).forEach(([key, value]) => {
+      xhr.setRequestHeader(key, value);
+    });
+
+    xhr.onprogress = () => {
+      try {
+        processPendingResponseText();
+      } catch (err) {
+        xhr.abort();
+        rejectOnce(
+          err instanceof Error ? err : new Error("No se pudo procesar el stream de OpenAI."),
+        );
+      }
+    };
+
+    xhr.onerror = () => {
+      rejectOnce(new Error(networkFallbackMessage));
+    };
+
+    xhr.ontimeout = () => {
+      rejectOnce(new Error("Tiempo de espera agotado al conectar con OpenAI."));
+    };
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState !== xhr.DONE || settled) return;
+
+      try {
+        processPendingResponseText();
+      } catch (err) {
+        rejectOnce(
+          err instanceof Error ? err : new Error("No se pudo procesar el stream de OpenAI."),
+        );
+        return;
+      }
+
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          resolveOnce(parser.finish());
+        } catch (err) {
+          rejectOnce(
+            err instanceof Error ? err : new Error("No se pudo finalizar el stream de OpenAI."),
+          );
+        }
+        return;
+      }
+
+      const payload = parseJsonSafely<unknown>(xhr.responseText ?? "");
+      const rawMessage = xhr.responseText?.trim();
+      const fallbackMessage = xhr.status
+        ? `${statusFallbackPrefix} (${xhr.status})`
+        : networkFallbackMessage;
+      rejectOnce(new Error(extractErrorMessage(payload, rawMessage || fallbackMessage)));
+    };
+
+    xhr.send(
+      JSON.stringify({
+        ...body,
+        stream: true,
+      }),
+    );
+  });
+}
+
+async function streamOpenAIRequestViaFetch(
+  url: string,
+  headers: Record<string, string>,
+  body: Record<string, unknown>,
+  handlers?: StreamingHandlers,
+  networkFallbackMessage = "No se pudo conectar con OpenAI.",
+  statusFallbackPrefix = "OpenAI error",
+): Promise<OpenAIStreamTurnResult> {
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timeoutId = setTimeout(() => {
+    controller?.abort();
+  }, 120000);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        ...body,
+        stream: true,
+      }),
+      signal: controller?.signal,
+    });
+
+    if (!response.ok) {
+      const rawText = await response.text().catch(() => "");
+      const payload = parseJsonSafely<unknown>(rawText);
+      throw new Error(
+        extractErrorMessage(payload, rawText || `${statusFallbackPrefix} (${response.status})`),
+      );
+    }
+
+    const parser = createOpenAIStreamParser(handlers);
+    const reader = response.body?.getReader();
+    if (!reader) {
+      const rawText = await response.text().catch(() => "");
+      if (rawText) parser.push(rawText);
+      return parser.finish();
+    }
+
+    const decoder = new TextDecoder();
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      parser.push(decoder.decode(value, { stream: true }));
+    }
+
+    const remaining = decoder.decode();
+    if (remaining) parser.push(remaining);
+    return parser.finish();
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error("Tiempo de espera agotado al conectar con OpenAI.");
+    }
+    if (err instanceof Error && err.message.trim()) {
+      throw err;
+    }
+    throw new Error(networkFallbackMessage);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 function createGoogleStreamParser(
   handlers?: StreamingHandlers,
 ): {
@@ -2399,17 +2897,16 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
     }));
 
   if (provider.provider === "openai") {
-    const openAIMessages = [{ role: "system" as const, content: systemPrompt }, ...nonSystemMessages];
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${provider.api_key}`,
       },
       body: JSON.stringify({
-        model: provider.model || DEFAULT_MODELS.openai,
-        messages: openAIMessages,
-        temperature: 0.7,
+        model: normalizeProviderModel("openai", provider.model),
+        instructions: systemPrompt,
+        input: nonSystemMessages,
       }),
     });
 
@@ -2424,9 +2921,9 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
       throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
     }
 
-    const content = parseOpenAIContent(payload);
-    if (!content) throw new Error("OpenAI no devolvio contenido.");
-    return content;
+    const result = parseOpenAIResponseResult(payload);
+    if (!result?.content) throw new Error("OpenAI no devolvio contenido.");
+    return result.content;
   }
 
   if (provider.provider === "anthropic") {
@@ -2536,55 +3033,43 @@ async function callProviderChatAPIWithTools(
     openai: [
       {
         type: "function",
-        function: {
-          name: SAVE_PERSONAL_DATA_TOOL,
-          description: SAVE_PERSONAL_DATA_DESC,
-          parameters: {
-            type: "object",
-            properties: { personal_data: { type: "string", description: SAVE_PERSONAL_DATA_PARAM_DESC } },
-            required: ["personal_data"],
-          },
+        name: SAVE_PERSONAL_DATA_TOOL,
+        description: SAVE_PERSONAL_DATA_DESC,
+        parameters: {
+          type: "object",
+          properties: { personal_data: { type: "string", description: SAVE_PERSONAL_DATA_PARAM_DESC } },
+          required: ["personal_data"],
         },
       },
       {
         type: "function",
-        function: {
-          name: LIST_KEYS_TOOL,
-          description: LIST_KEYS_DESC,
-          parameters: { type: "object", properties: {}, required: [] },
-        },
+        name: LIST_KEYS_TOOL,
+        description: LIST_KEYS_DESC,
+        parameters: { type: "object", properties: {}, required: [] },
       },
       {
         type: "function",
-        function: {
-          name: READ_DESCRIPTION_TOOL,
-          description: READ_DESCRIPTION_DESC,
-          parameters: { type: "object", properties: { key: { type: "string", description: READ_DESCRIPTION_PARAM_DESC } }, required: keyRequired },
-        },
+        name: READ_DESCRIPTION_TOOL,
+        description: READ_DESCRIPTION_DESC,
+        parameters: { type: "object", properties: { key: { type: "string", description: READ_DESCRIPTION_PARAM_DESC } }, required: keyRequired },
       },
       {
         type: "function",
-        function: {
-          name: READ_VALUE_TOOL,
-          description: READ_VALUE_DESC,
-          parameters: { type: "object", properties: { key: { type: "string", description: READ_VALUE_PARAM_DESC } }, required: keyRequired },
-        },
+        name: READ_VALUE_TOOL,
+        description: READ_VALUE_DESC,
+        parameters: { type: "object", properties: { key: { type: "string", description: READ_VALUE_PARAM_DESC } }, required: keyRequired },
       },
       {
         type: "function",
-        function: {
-          name: READ_MEASUREMENT_TOOL,
-          description: READ_MEASUREMENT_DESC,
-          parameters: { type: "object", properties: dateParam, required: dateRequired },
-        },
+        name: READ_MEASUREMENT_TOOL,
+        description: READ_MEASUREMENT_DESC,
+        parameters: { type: "object", properties: dateParam, required: dateRequired },
       },
       {
         type: "function",
-        function: {
-          name: WRITE_MEASUREMENT_TOOL,
-          description: WRITE_MEASUREMENT_DESC,
-          parameters: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
-        },
+        name: WRITE_MEASUREMENT_TOOL,
+        description: WRITE_MEASUREMENT_DESC,
+        parameters: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
       },
     ],
     anthropic: [
@@ -2667,41 +3152,96 @@ async function callProviderChatAPIWithTools(
 
   // --- OPENAI ---
   if (provider.provider === "openai") {
-    const openAIMessages: any[] = [{ role: "system", content: systemPrompt }, ...nonSystemMessages];
-
-    const makeOpenAIRequest = async (includeTools: boolean) => {
-      const body: any = { model: provider.model || DEFAULT_MODELS.openai, messages: openAIMessages, temperature: 0.7 };
-      if (includeTools) body.tools = chatTools.openai;
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
-        body: JSON.stringify(body),
-      });
-      let p: any = null;
-      try { p = await res.json(); } catch {}
-      if (!res.ok) throw new Error(extractErrorMessage(p, `OpenAI error (${res.status})`));
-      return p;
+    let streamedContent = "";
+    let streamedThinking = "";
+    const model = normalizeProviderModel("openai", provider.model);
+    const streamHandlers: StreamingHandlers = {
+      onContentDelta: (delta) => {
+        streamedContent += delta;
+        options?.onContentDelta?.(delta, streamedContent);
+      },
+      onThinkingDelta: (delta) => {
+        streamedThinking += delta;
+        options?.onThinkingDelta?.(delta, streamedThinking);
+      },
     };
 
-    let payload = await makeOpenAIRequest(true);
+    const makeOpenAIRequest = async (
+      input: Array<Record<string, unknown>>,
+      previousResponseId: string | null,
+      includeTools: boolean,
+    ) => {
+      const body: Record<string, unknown> = {
+        model,
+        instructions: systemPrompt,
+        input,
+        reasoning: {
+          effort: OPENAI_REASONING_EFFORT,
+          summary: OPENAI_REASONING_SUMMARY,
+        },
+      };
+      if (previousResponseId) {
+        body.previous_response_id = previousResponseId;
+      }
+      if (includeTools) {
+        body.tools = chatTools.openai;
+      }
+      if (Platform.OS === "web") {
+        return streamOpenAIRequestViaFetch(
+          "https://api.openai.com/v1/responses",
+          {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+            Authorization: `Bearer ${provider.api_key}`,
+          },
+          body,
+          streamHandlers,
+          "No se pudo conectar con OpenAI.",
+          "OpenAI error",
+        );
+      }
+      return streamOpenAIRequestViaXHR(
+        "https://api.openai.com/v1/responses",
+        {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+          Authorization: `Bearer ${provider.api_key}`,
+        },
+        body,
+        streamHandlers,
+        "No se pudo conectar con OpenAI.",
+        "OpenAI error",
+      );
+    };
+
+    let payload = await makeOpenAIRequest(nonSystemMessages, null, true);
 
     for (let round = 0; round < 10; round++) {
-      const choice = payload?.choices?.[0];
-      const toolCalls = choice?.message?.tool_calls;
-      if (!toolCalls?.length) break;
-
-      openAIMessages.push(choice.message);
-      for (const tc of toolCalls) {
-        const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
-        const toolResult = await handleToolCall(tc.function?.name, args, toolStoreSetter);
-        openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: toolResult });
+      const toolCalls = payload.outputItems.filter(
+        (item): item is OpenAIFunctionCallOutputItem => item.type === "function_call",
+      );
+      if (toolCalls.length === 0) break;
+      if (!payload.responseId) {
+        throw new Error("OpenAI no devolvio response_id para continuar las herramientas.");
       }
-      payload = await makeOpenAIRequest(true);
+
+      const toolOutputs: Array<Record<string, unknown>> = [];
+      for (const toolCall of toolCalls) {
+        const args = parseOpenAIFunctionArguments(toolCall.arguments);
+        const toolResult = await handleToolCall(toolCall.name, args, toolStoreSetter);
+        toolOutputs.push({
+          type: "function_call_output",
+          call_id: toolCall.call_id,
+          output: toolResult,
+        });
+      }
+      payload = await makeOpenAIRequest(toolOutputs, payload.responseId, true);
     }
 
-    const content = parseOpenAIContent(payload);
+    const content = streamedContent.trim() || payload.content;
+    const thinking = streamedThinking.trim() || payload.thinking || null;
     if (!content) throw new Error("OpenAI no devolvio contenido.");
-    return { content, thinking: null };
+    return { content, thinking };
   }
 
   // --- ANTHROPIC ---
@@ -4576,16 +5116,11 @@ function normalizeStore(raw: LocalStore): LocalStore {
 
   const keys: AIKey[] = (["openai", "anthropic", "google"] as Provider[]).map((provider, index) => {
     const item = rawByProvider.get(provider);
-    const rawModel = (item?.model ?? DEFAULT_MODELS[provider]).trim();
-    const normalizedModel =
-      provider === "google" && rawModel === LEGACY_GOOGLE_DEFAULT_MODEL
-        ? DEFAULT_MODELS.google
-        : rawModel;
     return {
       provider,
       is_active: item?.is_active ?? index === 0,
       api_key: (item?.api_key ?? "").trim(),
-      model: normalizedModel,
+      model: normalizeProviderModel(provider, item?.model ?? DEFAULT_MODELS[provider]),
     };
   });
 
