@@ -3358,6 +3358,14 @@ function tabLabel(tab: TabKey): string {
   return map[tab];
 }
 
+function TabTitle({ children }: { children: string }) {
+  return (
+    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 30, fontWeight: "700" }}>
+      {children}
+    </Text>
+  );
+}
+
 function normalizeDietSettings(rawValue: unknown): DietSettings {
   const defaults = createDefaultDietSettings();
   if (!rawValue || typeof rawValue !== "object") return defaults;
@@ -4953,7 +4961,7 @@ export default function App() {
             : "Detalle Rutina"
           : "Mis Rutinas"
       : tabLabel(tab);
-  const headerTitleSize = tab === "training" ? 34 : 28;
+
   const showGlobalScreenLoading = ENABLE_GLOBAL_SCREEN_LOAD_DELAY && isGlobalScreenLoading;
   const isTrainingTemplateScreenOpen =
     tab === "training" && !activeWorkoutSession && !!activeTrainingTemplateId;
@@ -7934,18 +7942,14 @@ export default function App() {
         {tab === "home" ? (
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
             <View style={{ flex: 1, gap: 2 }}>
-              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 30, fontWeight: "700" }}>
-                Gymnasia
-              </Text>
+              <TabTitle>Gymnasia</TabTitle>
             </View>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
             </View>
           </View>
         ) : tab === "training" && (isTrainingTemplateScreenOpen || activeWorkoutSession) ? null : tab === "training" ? (
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: headerTitleSize, fontWeight: "700" }}>
-              {headerTitle}
-            </Text>
+            <TabTitle>{headerTitle}</TabTitle>
             {store.templates.length > 0 && !showTrainingListSkeleton ? (
               <View
                 style={{
@@ -7964,9 +7968,7 @@ export default function App() {
             ) : null}
           </View>
         ) : (
-          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: headerTitleSize, fontWeight: "700" }}>
-            {headerTitle}
-          </Text>
+          <TabTitle>{headerTitle}</TabTitle>
         )}
         <View
           style={{
@@ -11210,10 +11212,8 @@ export default function App() {
                   />
                 </View>
 
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 8, paddingRight: 24 }}
+                <View
+                  style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
                 >
                   {TRAINING_FILTER_OPTIONS.map((option) => {
                     const isActive = trainingFilter === option.key;
@@ -11244,7 +11244,7 @@ export default function App() {
                       </Pressable>
                     );
                   })}
-                </ScrollView>
+                </View>
 
                 {filteredTrainingTemplates.length === 0 ? (
                   <View
