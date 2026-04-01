@@ -3366,6 +3366,49 @@ function TabTitle({ children }: { children: string }) {
   );
 }
 
+function StatCard({ label, value, subtitle, subtitleColor, icon, subtitleIcon, onPress }: {
+  label: string;
+  value: string;
+  subtitle?: string;
+  subtitleColor?: string;
+  icon?: React.ReactNode;
+  subtitleIcon?: React.ReactNode;
+  onPress?: () => void;
+}) {
+  const content = (
+    <View
+      style={{
+        flex: 1,
+        minHeight: 94,
+        borderWidth: 1,
+        borderColor: mobileTheme.color.borderSubtle,
+        backgroundColor: mobileTheme.color.bgSurface,
+        borderRadius: 18,
+        padding: 12,
+        gap: 4,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+        {icon}
+        <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>{label}</Text>
+      </View>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "700" }}>{value}</Text>
+      {subtitle ? (
+        <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 5, marginTop: "auto" }}>
+          {subtitleIcon}
+          <Text style={{ color: subtitleColor ?? "#7F8896", fontSize: 11, fontWeight: subtitleColor ? "700" : "400", flex: 1 }}>
+            {subtitle}
+          </Text>
+        </View>
+      ) : null}
+    </View>
+  );
+  if (onPress) {
+    return <Pressable onPress={onPress} style={{ flex: 1 }}>{content}</Pressable>;
+  }
+  return content;
+}
+
 function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: string; onPress: () => void; disabled?: boolean; icon?: React.ReactNode; testID?: string }) {
   return (
     <Pressable
@@ -8290,80 +8333,27 @@ export default function App() {
               </View>
 
               <View style={{ flexDirection: "row", gap: 10 }}>
-                <View
-                  style={{
-                    flex: 1,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgSurface,
-                    borderRadius: 20,
-                    padding: 12,
-                    gap: 6,
-                  }}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                    <Feather name="zap" size={14} color={mobileTheme.color.brandPrimary} />
-                    <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
-                      Calorías
-                    </Text>
-                  </View>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}>
-                    {Math.round(dashboard.calories).toLocaleString("es-ES")}
-                  </Text>
-                  <Text style={{ color: "#7F8896", fontSize: 11 }}>
-                    {dietDailyCaloriesTarget > 0
-                      ? `${Math.round(dashboard.calories)}/${Math.round(dietDailyCaloriesTarget)} kcal`
-                      : "Consumidas hoy"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgSurface,
-                    borderRadius: 20,
-                    padding: 12,
-                    gap: 6,
-                  }}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                    <Feather name="activity" size={14} color={mobileTheme.color.brandPrimary} />
-                    <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
-                      Peso
-                    </Text>
-                  </View>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}>
-                    {dashboard.weight !== null ? formatMeasurementNumber(dashboard.weight) : "--"}
-                  </Text>
-                  <Text style={{ color: "#19C37D", fontSize: 11, fontWeight: "600" }}>
-                    {dashboard.weight !== null ? homeWeightChangeText : "Sin registro"}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgSurface,
-                    borderRadius: 20,
-                    padding: 12,
-                    gap: 6,
-                  }}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                    <Feather name="award" size={14} color={mobileTheme.color.brandPrimary} />
-                    <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
-                      Racha
-                    </Text>
-                  </View>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}>
-                    {homeWorkoutStreak}
-                  </Text>
-                  <Text style={{ color: "#7F8896", fontSize: 11 }}>
-                    {homeWorkoutStreak === 1 ? "día seguido" : "días seguidos"}
-                  </Text>
-                </View>
+                <StatCard
+                  label="Calorías"
+                  value={Math.round(dashboard.calories).toLocaleString("es-ES")}
+                  subtitle={dietDailyCaloriesTarget > 0
+                    ? `${Math.round(dashboard.calories)}/${Math.round(dietDailyCaloriesTarget)} kcal`
+                    : "Consumidas hoy"}
+                  icon={<Feather name="zap" size={14} color={mobileTheme.color.brandPrimary} />}
+                />
+                <StatCard
+                  label="Peso"
+                  value={dashboard.weight !== null ? formatMeasurementNumber(dashboard.weight) : "--"}
+                  subtitle={dashboard.weight !== null ? homeWeightChangeText : "Sin registro"}
+                  subtitleColor="#19C37D"
+                  icon={<Feather name="activity" size={14} color={mobileTheme.color.brandPrimary} />}
+                />
+                <StatCard
+                  label="Racha"
+                  value={String(homeWorkoutStreak)}
+                  subtitle={homeWorkoutStreak === 1 ? "día seguido" : "días seguidos"}
+                  icon={<Feather name="award" size={14} color={mobileTheme.color.brandPrimary} />}
+                />
               </View>
 
               <View
@@ -12441,39 +12431,14 @@ export default function App() {
               {measuresStatCardRows.map((row, rowIdx) => (
                 <View key={`measures-row-${rowIdx}`} style={{ flexDirection: "row", gap: 10 }}>
                   {row.map((card) => (
-                    <View
+                    <StatCard
                       key={card.label}
-                      style={{
-                        flex: 1,
-                        minHeight: 94,
-                        borderRadius: 18,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.04)",
-                        backgroundColor: mobileTheme.color.bgSurface,
-                        padding: 12,
-                        gap: 4,
-                      }}
-                    >
-                      <Text style={{ color: "#7F8795", fontSize: 12, fontWeight: "600" }}>
-                        {card.label}
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
-                        {card.valueText}
-                      </Text>
-                      <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 5, marginTop: "auto" }}>
-                        <Feather name={card.changeIcon} size={11} color={card.changeColor} style={{ marginTop: 2 }} />
-                        <Text
-                          style={{
-                            color: card.changeColor,
-                            fontSize: 11,
-                            fontWeight: "700",
-                            flex: 1,
-                          }}
-                        >
-                          {card.changeText}
-                        </Text>
-                      </View>
-                    </View>
+                      label={card.label}
+                      value={card.valueText}
+                      subtitle={card.changeText}
+                      subtitleColor={card.changeColor}
+                      subtitleIcon={<Feather name={card.changeIcon} size={11} color={card.changeColor} style={{ marginTop: 2 }} />}
+                    />
                   ))}
                 </View>
               ))}
