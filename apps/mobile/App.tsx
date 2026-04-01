@@ -4267,7 +4267,9 @@ export default function App() {
     useState<TrainingTemplateScreenMode>("detail");
   const [trainingDetailMuscleFilter, setTrainingDetailMuscleFilter] = useState("all");
   const [trainingStatsPeriod, setTrainingStatsPeriod] = useState<TrainingStatsPeriodKey>("3m");
+  const [trainingStatsPeriodDropdownOpen, setTrainingStatsPeriodDropdownOpen] = useState(false);
   const [trainingStatsMetric, setTrainingStatsMetric] = useState<TrainingStatsMetricKey>("volume");
+  const [trainingStatsMetricDropdownOpen, setTrainingStatsMetricDropdownOpen] = useState(false);
   const [trainingMenuTemplateId, setTrainingMenuTemplateId] = useState<string | null>(null);
   const [activeExerciseMenuId, setActiveExerciseMenuId] = useState<string | null>(null);
   const [activeSeriesMenuId, setActiveSeriesMenuId] = useState<string | null>(null);
@@ -9658,87 +9660,142 @@ export default function App() {
                 />
 
                 <ChartCard
-                  title="Estadísticas"
+                  zIndex={trainingStatsMetricDropdownOpen || trainingStatsPeriodDropdownOpen ? 10 : 1}
+                  title={
+                    <Pressable
+                      onPress={() => setTrainingStatsMetricDropdownOpen((c) => !c)}
+                      style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
+                        {activeTrainingStatsMetricMeta.label}
+                      </Text>
+                      <Ionicons
+                        name={trainingStatsMetricDropdownOpen ? "chevron-up" : "chevron-down"}
+                        size={16}
+                        color={mobileTheme.color.textSecondary}
+                      />
+                    </Pressable>
+                  }
                   subtitle={activeTrainingLatestChartBar
                     ? `${activeTrainingStatsMetricMeta.label}: ${activeTrainingLatestChartBar.metricValueLabel}`
                     : activeTrainingHistory.length > 0
                       ? "No hay registros en el periodo seleccionado."
                       : "Completa la rutina para empezar a ver progreso."}
                   periodSelector={
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={{ gap: 6, paddingLeft: 8 }}
+                    <Pressable
+                      onPress={() => setTrainingStatsPeriodDropdownOpen((c) => !c)}
+                      style={{
+                        minHeight: 34,
+                        borderRadius: mobileTheme.radius.pill,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.06)",
+                        backgroundColor: "#1B2029",
+                        paddingHorizontal: 12,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 6,
+                      }}
                     >
-                      {TRAINING_STATS_PERIOD_OPTIONS.map((option) => {
-                        const isActive = trainingStatsPeriod === option.key;
-                        return (
-                          <Pressable
-                            key={option.key}
-                            onPress={() => setTrainingStatsPeriod(option.key)}
-                            style={{
-                              minHeight: 30,
-                              borderRadius: 999,
-                              borderWidth: 1,
-                              borderColor: isActive
-                                ? "rgba(203,255,26,0.78)"
-                                : "rgba(255,255,255,0.08)",
-                              backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#10151D",
-                              paddingHorizontal: 10,
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
-                                fontSize: 11,
-                                fontWeight: "700",
-                              }}
-                            >
-                              {option.label}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </ScrollView>
-                  }
-                  footer={
-                    <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
-                      {TRAINING_STATS_METRIC_OPTIONS.map((option) => {
-                        const isActive = trainingStatsMetric === option.key;
-                        return (
-                          <Pressable
-                            key={option.key}
-                            onPress={() => setTrainingStatsMetric(option.key)}
-                            style={{
-                              minHeight: 38,
-                              borderRadius: mobileTheme.radius.pill,
-                              borderWidth: 1,
-                              borderColor: isActive
-                                ? "rgba(203,255,26,0.82)"
-                                : mobileTheme.color.borderSubtle,
-                              backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
-                              paddingHorizontal: 14,
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
-                                fontSize: 14,
-                                fontWeight: "700",
-                              }}
-                            >
-                              {option.label}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
+                      <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "700" }}>
+                        {TRAINING_STATS_PERIOD_OPTIONS.find((o) => o.key === trainingStatsPeriod)?.label ?? "3M"}
+                      </Text>
+                      <Ionicons
+                        name={trainingStatsPeriodDropdownOpen ? "chevron-up" : "chevron-down"}
+                        size={14}
+                        color="#6F7785"
+                      />
+                    </Pressable>
                   }
                 >
+                  {trainingStatsPeriodDropdownOpen ? (
+                    <View style={{ position: "absolute", top: 56, right: 14, zIndex: 20, elevation: 12 }}>
+                      <View
+                        style={{
+                          minWidth: 128,
+                          borderRadius: 14,
+                          borderWidth: 1,
+                          borderColor: "rgba(255,255,255,0.06)",
+                          backgroundColor: "#1B2029",
+                          shadowColor: "#000000",
+                          shadowOpacity: 0.28,
+                          shadowRadius: 14,
+                          shadowOffset: { width: 0, height: 8 },
+                          padding: 6,
+                          gap: 4,
+                        }}
+                      >
+                        {TRAINING_STATS_PERIOD_OPTIONS.map((option) => {
+                          const isActive = trainingStatsPeriod === option.key;
+                          return (
+                            <Pressable
+                              key={option.key}
+                              onPress={() => { setTrainingStatsPeriod(option.key); setTrainingStatsPeriodDropdownOpen(false); }}
+                              style={{
+                                minHeight: 34,
+                                borderRadius: 10,
+                                paddingHorizontal: 10,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                backgroundColor: isActive ? "rgba(203,255,26,0.12)" : "transparent",
+                              }}
+                            >
+                              <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                                {option.label}
+                              </Text>
+                              {isActive ? <Ionicons name="checkmark" size={14} color={mobileTheme.color.brandPrimary} /> : null}
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    </View>
+                  ) : null}
+
+                  {trainingStatsMetricDropdownOpen ? (
+                    <View style={{ position: "absolute", top: 56, left: 14, zIndex: 20, elevation: 12 }}>
+                      <View
+                        style={{
+                          minWidth: 150,
+                          borderRadius: 14,
+                          borderWidth: 1,
+                          borderColor: "rgba(255,255,255,0.06)",
+                          backgroundColor: "#1B2029",
+                          shadowColor: "#000000",
+                          shadowOpacity: 0.28,
+                          shadowRadius: 14,
+                          shadowOffset: { width: 0, height: 8 },
+                          padding: 6,
+                          gap: 4,
+                        }}
+                      >
+                        {TRAINING_STATS_METRIC_OPTIONS.map((option) => {
+                          const isActive = trainingStatsMetric === option.key;
+                          return (
+                            <Pressable
+                              key={option.key}
+                              onPress={() => { setTrainingStatsMetric(option.key); setTrainingStatsMetricDropdownOpen(false); }}
+                              style={{
+                                minHeight: 34,
+                                borderRadius: 10,
+                                paddingHorizontal: 10,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                backgroundColor: isActive ? "rgba(203,255,26,0.12)" : "transparent",
+                              }}
+                            >
+                              <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                                {option.label}
+                              </Text>
+                              {isActive ? <Ionicons name="checkmark" size={14} color={mobileTheme.color.brandPrimary} /> : null}
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    </View>
+                  ) : null}
+
                   <View
                     style={{
                       minHeight: 196,
