@@ -10370,7 +10370,7 @@ export default function App() {
             })}
           </View>
         ) : null}
-        <ScrollView ref={mainScrollRef} style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90 }} keyboardShouldPersistTaps="handled">
+        <ScrollView ref={mainScrollRef} style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={tab !== "settings"}>
           {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
 
           {tab === "home" ? (
