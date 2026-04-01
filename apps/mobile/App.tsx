@@ -16855,15 +16855,6 @@ export default function App() {
             elevation: 60,
           }}
         >
-          <ConfettiCannon
-            count={120}
-            origin={{ x: -10, y: 0 }}
-            autoStart
-            fadeOut
-            explosionSpeed={400}
-            fallSpeed={2800}
-            colors={["#CBFF1A", "#00D06E", "#4ECDC4", "#FFE66D", "#FF6B6B", "#FFFFFF"]}
-          />
           <View
             style={{
               width: "100%",
@@ -17013,6 +17004,15 @@ export default function App() {
               </>
             )}
           </View>
+          <ConfettiCannon
+            count={120}
+            origin={{ x: -10, y: 0 }}
+            autoStart
+            fadeOut
+            explosionSpeed={400}
+            fallSpeed={2800}
+            colors={["#CBFF1A", "#00D06E", "#4ECDC4", "#FFE66D", "#FF6B6B", "#FFFFFF"]}
+          />
         </View>
       ) : null}
 
