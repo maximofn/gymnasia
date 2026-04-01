@@ -958,9 +958,9 @@ const TRAINING_CATEGORY_EDIT_OPTIONS: Array<{ key: TrainingCategory; label: stri
   { key: "flexibility", label: "Flexibilidad" },
 ];
 const TRAINING_STATS_PERIOD_OPTIONS: Array<{ key: TrainingStatsPeriodKey; label: string }> = [
-  { key: "3m", label: "3M" },
-  { key: "6m", label: "6M" },
-  { key: "12m", label: "1A" },
+  { key: "3m", label: "3 meses" },
+  { key: "6m", label: "6 meses" },
+  { key: "12m", label: "1 año" },
   { key: "all", label: "Todo" },
 ];
 const MEASURES_DASHBOARD_PERIOD_OPTIONS: Array<{
