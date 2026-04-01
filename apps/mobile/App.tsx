@@ -14220,7 +14220,7 @@ export default function App() {
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
                   <View>
                     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "800" }}>
-                      {formatNutritionNumber(dayCaloriesConsumed)}/{formatNutritionNumber(dietDailyCaloriesTarget)}
+                      {formatNutritionNumber(dayCaloriesConsumed)}/{formatNutritionNumber(dietDailyCaloriesTarget)} ({dayCaloriesPercent}%)
                     </Text>
                     <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}>
                       kcal consumidas
@@ -14267,7 +14267,10 @@ export default function App() {
                     return (
                       <View key={macro.key} style={{ flex: 1, gap: 3 }}>
                         <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
-                          {formatNutritionNumber(macro.consumed)}g
+                          {formatNutritionNumber(macro.consumed)}/{formatNutritionNumber(macro.total)}g
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                          {macro.total > 0 ? Math.round((macro.consumed / macro.total) * 100) : 0}%
                         </Text>
                         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{macro.label}</Text>
                         <View
