@@ -2909,9 +2909,12 @@ function inferTemplateDurationMinutes(template: WorkoutTemplate): number {
   const totalSeconds = template.exercises.reduce((acc, item) => {
     const seriesItems = item.series ?? [];
     if (seriesItems.length === 0) return acc;
+    const name = item.name.toLowerCase();
+    const isLegPress = name.includes("prensa") || name.includes("sentadilla") || name.includes("squat") || name.includes("leg press") || name.includes("pierna");
+    const execSeconds = isLegPress ? 30 : 60;
     const seriesSeconds = seriesItems.reduce((seriesAcc, seriesItem) => {
       const restSeconds = parseRestSecondsInput(seriesItem.rest_seconds);
-      return seriesAcc + 30 + restSeconds;
+      return seriesAcc + execSeconds + restSeconds;
     }, 0);
     return acc + seriesSeconds;
   }, 0);
