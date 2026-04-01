@@ -109,6 +109,26 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - OpenAI provider settings now let users choose reasoning effort
+- Failure:
+  The `Configuración > Proveedor IA` sub-tab let users choose the OpenAI model, but not the model's reasoning effort, so the app always sent the same hardcoded effort level.
+- Root cause:
+  `apps/mobile/App.tsx` stored only `api_key` and `model` for OpenAI providers and always sent a fixed `reasoning.effort` value when using the OpenAI `Responses API`.
+- Exact fix steps/commands:
+  1. Checked current OpenAI docs:
+     - confirmed in the Responses API reference that reasoning is sent as `reasoning: { effort: ..., summary: ... }`.
+     - confirmed that supported effort values are model-dependent and currently documented as combinations of `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`.
+  2. Updated `apps/mobile/App.tsx`:
+     - added persisted `reasoning_effort` support for the OpenAI provider config and draft state.
+     - added OpenAI effort normalization plus model-family-based supported-option filtering.
+     - added an effort selector UI in `Configuración > Proveedor IA` for OpenAI.
+     - changed OpenAI chat requests to send the selected value via `reasoning.effort` in the Responses API request body.
+     - omitted the `reasoning` block automatically when the selected OpenAI model does not match a known reasoning-capable family.
+  3. Validated:
+     - `npm --workspace apps/mobile exec tsc --noEmit`
+       - still fails because of unrelated pre-existing `apps/mobile/App.tsx` errors outside this change.
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-openai-effort-export`
+
 ### 2026-04-01 - Chat reasoning bubble now auto-collapses when streaming finishes
 - Failure:
   After enabling streaming reasoning tokens, the `Razonamiento` bubble stayed open after the provider finished sending all reasoning text, so completed messages kept the expanded reasoning panel visible by default.

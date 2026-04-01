@@ -196,6 +196,7 @@ type ChatMessage = {
   created_at: string;
 };
 type AnthropicChatResult = { content: string; thinking: string | null };
+type OpenAIReasoningEffort = "none" | "minimal" | "low" | "medium" | "high" | "xhigh";
 type OpenAIReasoningSummaryPart = { type: "summary_text"; text: string };
 type OpenAIReasoningOutputItem = {
   type: "reasoning";
@@ -224,8 +225,18 @@ type OpenAIStreamTurnResult = AnthropicChatResult & {
   outputItems: OpenAIResponseOutputItem[];
 };
 type Provider = "anthropic" | "openai" | "google";
-type AIKey = { provider: Provider; is_active: boolean; api_key: string; model: string };
-type ProviderDraft = { api_key: string; model: string };
+type AIKey = {
+  provider: Provider;
+  is_active: boolean;
+  api_key: string;
+  model: string;
+  reasoning_effort?: OpenAIReasoningEffort | null;
+};
+type ProviderDraft = {
+  api_key: string;
+  model: string;
+  reasoning_effort?: OpenAIReasoningEffort | null;
+};
 type AnthropicModelOption = { id: string; display_name: string | null };
 type StreamingHandlers = {
   onContentDelta?: (delta: string, aggregate: string) => void;
@@ -344,8 +355,24 @@ const LEGACY_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 const LEGACY_GOOGLE_DEFAULT_MODEL = "gemini-1.5-flash";
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
-const OPENAI_REASONING_EFFORT = "medium";
+const DEFAULT_OPENAI_REASONING_EFFORT: OpenAIReasoningEffort = "medium";
 const OPENAI_REASONING_SUMMARY = "detailed";
+const OPENAI_REASONING_EFFORT_OPTIONS: OpenAIReasoningEffort[] = [
+  "none",
+  "minimal",
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+];
+const OPENAI_REASONING_EFFORT_LABELS: Record<OpenAIReasoningEffort, string> = {
+  none: "Ninguno",
+  minimal: "Minimo",
+  low: "Bajo",
+  medium: "Medio",
+  high: "Alto",
+  xhigh: "Muy alto",
+};
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
@@ -369,6 +396,41 @@ function normalizeProviderModel(provider: Provider, rawModel: string | null | un
     return DEFAULT_MODELS.google;
   }
   return model;
+}
+
+function getSupportedOpenAIReasoningEfforts(rawModel: string | null | undefined): OpenAIReasoningEffort[] {
+  const model = normalizeProviderModel("openai", rawModel).trim().toLowerCase();
+  if (!model) return ["minimal", "low", "medium", "high"];
+  if (model.startsWith("gpt-5.4-pro")) return ["medium", "high", "xhigh"];
+  if (model.startsWith("gpt-5-pro")) return ["high"];
+  if (
+    model.startsWith("gpt-5.4")
+    || model.startsWith("gpt-5.3")
+    || model.startsWith("gpt-5.2")
+  ) {
+    return ["none", "low", "medium", "high", "xhigh"];
+  }
+  if (model.startsWith("gpt-5.1")) return ["none", "low", "medium", "high"];
+  if (model.startsWith("gpt-5")) return ["minimal", "low", "medium", "high"];
+  if (model.startsWith("o")) return ["low", "medium", "high"];
+  return [];
+}
+
+function normalizeOpenAIReasoningEffort(
+  rawEffort: string | null | undefined,
+  rawModel: string | null | undefined,
+): OpenAIReasoningEffort | null {
+  const supported = getSupportedOpenAIReasoningEfforts(rawModel);
+  if (supported.length === 0) return null;
+  const normalized = (rawEffort ?? "").trim().toLowerCase();
+  const candidate = OPENAI_REASONING_EFFORT_OPTIONS.find((effort) => effort === normalized);
+  if (candidate && supported.includes(candidate)) {
+    return candidate;
+  }
+  if (supported.includes(DEFAULT_OPENAI_REASONING_EFFORT)) {
+    return DEFAULT_OPENAI_REASONING_EFFORT;
+  }
+  return supported[0] ?? null;
 }
 
 // --- Dev-store file persistence (web only) ---
@@ -891,7 +953,13 @@ function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
 
 function createDefaultProviderKeys(): AIKey[] {
   return [
-    { provider: "openai", is_active: true, api_key: "", model: DEFAULT_MODELS.openai },
+    {
+      provider: "openai",
+      is_active: true,
+      api_key: "",
+      model: DEFAULT_MODELS.openai,
+      reasoning_effort: DEFAULT_OPENAI_REASONING_EFFORT,
+    },
     { provider: "anthropic", is_active: false, api_key: "", model: DEFAULT_MODELS.anthropic },
     { provider: "google", is_active: false, api_key: "", model: DEFAULT_MODELS.google },
   ];
@@ -904,9 +972,14 @@ function createProviderDraftMap(keys: AIKey[]): Record<Provider, ProviderDraft> 
   });
   return PROVIDERS.reduce((acc, provider) => {
     const current = byProvider.get(provider);
+    const model = normalizeProviderModel(provider, current?.model);
     acc[provider] = {
       api_key: current?.api_key ?? "",
-      model: normalizeProviderModel(provider, current?.model),
+      model,
+      reasoning_effort:
+        provider === "openai"
+          ? normalizeOpenAIReasoningEffort(current?.reasoning_effort, model)
+          : null,
     };
     return acc;
   }, {} as Record<Provider, ProviderDraft>);
@@ -1858,6 +1931,17 @@ function parseOpenAIFunctionArguments(rawArguments: string): Record<string, unkn
   const parsed = parseJsonSafely<unknown>(trimmed);
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
   return parsed as Record<string, unknown>;
+}
+
+function buildOpenAIReasoningConfig(
+  provider: Pick<AIKey, "model" | "reasoning_effort">,
+): { effort: OpenAIReasoningEffort; summary: string } | null {
+  const effort = normalizeOpenAIReasoningEffort(provider.reasoning_effort, provider.model);
+  if (!effort) return null;
+  return {
+    effort,
+    summary: OPENAI_REASONING_SUMMARY,
+  };
 }
 
 function parseOpenAIResponseResult(payload: unknown): AnthropicChatResult | null {
@@ -2897,6 +2981,7 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
     }));
 
   if (provider.provider === "openai") {
+    const reasoning = buildOpenAIReasoningConfig(provider);
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -2907,6 +2992,7 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
         model: normalizeProviderModel("openai", provider.model),
         instructions: systemPrompt,
         input: nonSystemMessages,
+        ...(reasoning ? { reasoning } : {}),
       }),
     });
 
@@ -3155,6 +3241,7 @@ async function callProviderChatAPIWithTools(
     let streamedContent = "";
     let streamedThinking = "";
     const model = normalizeProviderModel("openai", provider.model);
+    const reasoning = buildOpenAIReasoningConfig(provider);
     const streamHandlers: StreamingHandlers = {
       onContentDelta: (delta) => {
         streamedContent += delta;
@@ -3175,11 +3262,10 @@ async function callProviderChatAPIWithTools(
         model,
         instructions: systemPrompt,
         input,
-        reasoning: {
-          effort: OPENAI_REASONING_EFFORT,
-          summary: OPENAI_REASONING_SUMMARY,
-        },
       };
+      if (reasoning) {
+        body.reasoning = reasoning;
+      }
       if (previousResponseId) {
         body.previous_response_id = previousResponseId;
       }
@@ -5116,11 +5202,16 @@ function normalizeStore(raw: LocalStore): LocalStore {
 
   const keys: AIKey[] = (["openai", "anthropic", "google"] as Provider[]).map((provider, index) => {
     const item = rawByProvider.get(provider);
+    const model = normalizeProviderModel(provider, item?.model ?? DEFAULT_MODELS[provider]);
     return {
       provider,
       is_active: item?.is_active ?? index === 0,
       api_key: (item?.api_key ?? "").trim(),
-      model: normalizeProviderModel(provider, item?.model ?? DEFAULT_MODELS[provider]),
+      model,
+      reasoning_effort:
+        provider === "openai"
+          ? normalizeOpenAIReasoningEffort(item?.reasoning_effort, model)
+          : null,
     };
   });
 
@@ -5699,6 +5790,23 @@ export default function App() {
       `${option.id} ${option.owned_by ?? ""}`.toLowerCase().includes(query),
     );
   }, [openAIModelFilter, openAIModelOptions]);
+  const openAIProviderDraft = providerDraftByProvider.openai ?? {
+    api_key: "",
+    model: DEFAULT_MODELS.openai,
+    reasoning_effort: DEFAULT_OPENAI_REASONING_EFFORT,
+  };
+  const normalizedOpenAIProviderModel = useMemo(
+    () => normalizeProviderModel("openai", openAIProviderDraft.model),
+    [openAIProviderDraft.model],
+  );
+  const supportedOpenAIReasoningEfforts = useMemo(
+    () => getSupportedOpenAIReasoningEfforts(normalizedOpenAIProviderModel),
+    [normalizedOpenAIProviderModel],
+  );
+  const selectedOpenAIReasoningEffort = useMemo(
+    () => normalizeOpenAIReasoningEffort(openAIProviderDraft.reasoning_effort, normalizedOpenAIProviderModel),
+    [openAIProviderDraft.reasoning_effort, normalizedOpenAIProviderModel],
+  );
   const filteredGoogleModelOptions = useMemo(() => {
     const query = googleModelFilter.trim().toLowerCase();
     if (!query) return googleModelOptions;
@@ -9052,7 +9160,10 @@ export default function App() {
     setError(null);
   }
 
-  function updateProviderConfig(provider: Provider, updates: Partial<Pick<AIKey, "api_key" | "model">>) {
+  function updateProviderConfig(
+    provider: Provider,
+    updates: Partial<Pick<AIKey, "api_key" | "model" | "reasoning_effort">>,
+  ) {
     setStore((prev) => ({
       ...prev,
       keys: prev.keys.map((item) =>
@@ -9083,10 +9194,20 @@ export default function App() {
     const currentDraft = providerDraftByProvider[provider] ?? {
       api_key: "",
       model: DEFAULT_MODELS[provider],
+      reasoning_effort:
+        provider === "openai" ? DEFAULT_OPENAI_REASONING_EFFORT : null,
     };
+    const nextModel = updates.model ?? currentDraft.model;
     const nextDraft: ProviderDraft = {
       api_key: updates.api_key ?? currentDraft.api_key,
-      model: updates.model ?? currentDraft.model,
+      model: nextModel,
+      reasoning_effort:
+        provider === "openai"
+          ? normalizeOpenAIReasoningEffort(
+              updates.reasoning_effort ?? currentDraft.reasoning_effort,
+              nextModel,
+            )
+          : null,
     };
 
     setProviderDraftByProvider((prev) => ({
@@ -9287,7 +9408,13 @@ export default function App() {
   }
 
   function selectOpenAIModel(modelId: string) {
-    updateProviderDraft("openai", { model: modelId });
+    updateProviderDraft("openai", {
+      model: modelId,
+      reasoning_effort: normalizeOpenAIReasoningEffort(
+        providerDraftByProvider.openai?.reasoning_effort,
+        modelId,
+      ),
+    });
     setOpenAIModelDropdownOpen(false);
     setOpenAIModelOptionsMessage(null);
     setOpenAIModelFilter("");
@@ -9306,6 +9433,10 @@ export default function App() {
 
     const normalizedApiKey = draft.api_key.trim();
     const normalizedModel = normalizeProviderModel(provider, draft.model);
+    const normalizedReasoningEffort =
+      provider === "openai"
+        ? normalizeOpenAIReasoningEffort(draft.reasoning_effort, normalizedModel)
+        : null;
 
     setActiveProvider(provider);
     setError(null);
@@ -9330,12 +9461,14 @@ export default function App() {
       updateProviderConfig(provider, {
         api_key: "",
         model: normalizedModel,
+        reasoning_effort: normalizedReasoningEffort,
       });
       updateProviderDraft(
         provider,
         {
           api_key: "",
           model: normalizedModel,
+          reasoning_effort: normalizedReasoningEffort,
         },
         { markPending: false },
       );
@@ -9381,12 +9514,14 @@ export default function App() {
       updateProviderConfig(provider, {
         api_key: normalizedApiKey,
         model: normalizedModel,
+        reasoning_effort: normalizedReasoningEffort,
       });
       updateProviderDraft(
         provider,
         {
           api_key: normalizedApiKey,
           model: normalizedModel,
+          reasoning_effort: normalizedReasoningEffort,
         },
         { markPending: false },
       );
@@ -9396,6 +9531,7 @@ export default function App() {
         {
           api_key: draft.api_key,
           model: normalizedModel,
+          reasoning_effort: normalizedReasoningEffort,
         },
         { markPending: false },
       );
@@ -15814,6 +15950,89 @@ export default function App() {
                                   )}
                                 </View>
                               ) : null}
+
+                              <View style={{ gap: 8 }}>
+                                <View style={{ gap: 4 }}>
+                                  <Text
+                                    style={{
+                                      color: mobileTheme.color.textSecondary,
+                                      fontSize: 12,
+                                      fontWeight: "700",
+                                    }}
+                                  >
+                                    Esfuerzo de razonamiento
+                                  </Text>
+                                  <Text
+                                    style={{
+                                      color: mobileTheme.color.textSecondary,
+                                      fontSize: 11,
+                                      lineHeight: 16,
+                                    }}
+                                  >
+                                    Se envia a OpenAI como reasoning.effort en la Responses API.
+                                  </Text>
+                                </View>
+                                {supportedOpenAIReasoningEfforts.length > 0 ? (
+                                  <>
+                                    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                                      {supportedOpenAIReasoningEfforts.map((effort) => {
+                                        const selected = effort === selectedOpenAIReasoningEffort;
+                                        return (
+                                          <Pressable
+                                            key={effort}
+                                            onPress={() => updateProviderDraft("openai", { reasoning_effort: effort })}
+                                            style={{
+                                              minHeight: 34,
+                                              borderRadius: mobileTheme.radius.pill,
+                                              borderWidth: 1,
+                                              borderColor: selected
+                                                ? "rgba(69,141,255,0.5)"
+                                                : mobileTheme.color.borderSubtle,
+                                              backgroundColor: selected
+                                                ? "rgba(69,141,255,0.16)"
+                                                : mobileTheme.color.bgApp,
+                                              paddingHorizontal: 12,
+                                              alignItems: "center",
+                                              justifyContent: "center",
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                color: selected ? "#77A8FF" : mobileTheme.color.textPrimary,
+                                                fontSize: 12,
+                                                fontWeight: "700",
+                                              }}
+                                            >
+                                              {OPENAI_REASONING_EFFORT_LABELS[effort]}
+                                            </Text>
+                                          </Pressable>
+                                        );
+                                      })}
+                                    </View>
+                                    {selectedOpenAIReasoningEffort ? (
+                                      <Text
+                                        style={{
+                                          color: mobileTheme.color.textSecondary,
+                                          fontSize: 11,
+                                          lineHeight: 16,
+                                        }}
+                                      >
+                                        Valor actual: {selectedOpenAIReasoningEffort} para {normalizedOpenAIProviderModel}.
+                                      </Text>
+                                    ) : null}
+                                  </>
+                                ) : (
+                                  <Text
+                                    style={{
+                                      color: "#F5C26B",
+                                      fontSize: 11,
+                                      lineHeight: 16,
+                                    }}
+                                  >
+                                    El modelo seleccionado no documenta niveles de reasoning.effort, asi que la app no enviara este campo.
+                                  </Text>
+                                )}
+                              </View>
 
                               {openAIModelOptionsMessage ? (
                                 <Text
