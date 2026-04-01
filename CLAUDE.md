@@ -1,9 +1,10 @@
 See [AGENTS.md](./AGENTS.md) for full project instructions.
 
-## Mantenimiento de CLAUDE.md
+## Mantenimiento de documentación
 
-- Actualizar este archivo cuando haya cambios significativos en la configuración o setup del proyecto.
-- Documentar aquí soluciones a problemas que se presenten durante el desarrollo, para no repetir errores.
+- Actualizar `CLAUDE.md` cuando haya cambios significativos en la configuración o setup del proyecto.
+- Documentar en `CLAUDE.md` soluciones a problemas que se presenten durante el desarrollo, para no repetir errores.
+- Mantener `README.md` actualizado cuando cambie la estructura del proyecto, dependencias o instrucciones de arranque.
 
 ## Git
 
