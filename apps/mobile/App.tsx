@@ -3366,6 +3366,29 @@ function TabTitle({ children }: { children: string }) {
   );
 }
 
+function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: string; onPress: () => void; disabled?: boolean; icon?: React.ReactNode; testID?: string }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      testID={testID}
+      style={{
+        height: 46,
+        borderRadius: 12,
+        backgroundColor: mobileTheme.color.brandPrimary,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: icon ? 10 : 0,
+        opacity: disabled ? 0.6 : 1,
+      }}
+    >
+      {icon}
+      <Text style={{ color: "#06090D", fontWeight: "700" }}>{label}</Text>
+    </Pressable>
+  );
+}
+
 function normalizeDietSettings(rawValue: unknown): DietSettings {
   const defaults = createDefaultDietSettings();
   if (!rawValue || typeof rawValue !== "object") return defaults;
@@ -8248,7 +8271,8 @@ export default function App() {
                   </View>
                 </View>
 
-                <Pressable
+                <PrimaryButton
+                  label={homePrimaryActionLabel}
                   onPress={() => {
                     if (activeWorkoutSession) {
                       setTab("training");
@@ -8260,22 +8284,9 @@ export default function App() {
                     }
                     setTab("training");
                   }}
+                  icon={<Feather name="play" size={16} color="#06090D" />}
                   testID="home-primary-training-action"
-                  style={{
-                    minHeight: 54,
-                    borderRadius: 16,
-                    backgroundColor: mobileTheme.color.brandPrimary,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 10,
-                  }}
-                >
-                  <Feather name="play" size={16} color="#06090D" />
-                  <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>
-                    {homePrimaryActionLabel}
-                  </Text>
-                </Pressable>
+                />
               </View>
 
               <View style={{ flexDirection: "row", gap: 10 }}>
@@ -13198,19 +13209,11 @@ export default function App() {
                 blurOnSubmit={false}
               />
 
-              <Pressable
+              <PrimaryButton
+                label={sendingChat ? "Enviando..." : "Enviar"}
                 onPress={sendMessage}
                 disabled={sendingChat}
-                style={{
-                  height: 46,
-                  borderRadius: mobileTheme.radius.md,
-                  backgroundColor: mobileTheme.color.brandPrimary,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "#06090D", fontWeight: "700" }}>{sendingChat ? "Enviando..." : "Enviar"}</Text>
-              </Pressable>
+              />
             </View>
             ) : (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32, gap: 20 }}>
