@@ -462,6 +462,12 @@ async function saveDevStoreFile(json: string): Promise<void> {
   } catch {}
 }
 
+async function ensureMediaLibraryPermissionForLaunch(): Promise<boolean> {
+  if (Platform.OS === "web") return true;
+  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  return permission.granted;
+}
+
 const SERIES_TYPE_META: Record<SeriesType, { label: string; short: string; color?: string }> = {
   normal:    { label: "Normal",         short: "N" },
   warmup:    { label: "Calentamiento",  short: "🔥", color: "#FF4A4A" },
@@ -7570,8 +7576,8 @@ export default function App() {
       return;
     }
     try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permission.granted) {
+      const hasPermission = await ensureMediaLibraryPermissionForLaunch();
+      if (!hasPermission) {
         setError("Necesitas permitir acceso a la galería para adjuntar fotos.");
         return;
       }
@@ -7831,8 +7837,8 @@ export default function App() {
 
   async function pickMeasurementPhoto() {
     try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permission.granted) {
+      const hasPermission = await ensureMediaLibraryPermissionForLaunch();
+      if (!hasPermission) {
         setError("Necesitas permitir acceso a fotos para adjuntar una imagen.");
         return;
       }

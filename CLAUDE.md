@@ -109,6 +109,22 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Food estimator photo picker opens again in browser-debug mode
+- Failure:
+  In the AI food estimator modal, pressing `Subir foto` in browser-debug mode did not open the file chooser, so no image could be selected from the same computer.
+- Root cause:
+  `apps/mobile/App.tsx` awaited `requestMediaLibraryPermissionsAsync()` before calling `launchImageLibraryAsync()`. On web, that async permission step breaks the original user-gesture chain, and the browser no longer treats the later picker call as a direct click-triggered file chooser.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - added a shared media-library permission helper that returns immediately on web.
+     - changed the AI food estimator upload flow to skip the web permission await and open the image library directly from the click.
+     - applied the same web-safe helper to the measurement photo picker so both browser upload paths behave consistently.
+  2. Validated:
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-food-picker-export`
+     - browser-debug smoke check on `http://127.0.0.1:8081`, confirming the file chooser path becomes available again.
+     - `npm --workspace apps/mobile exec tsc --noEmit`
+       - still fails because of unrelated pre-existing `apps/mobile/App.tsx` errors outside this change.
+
 ### 2026-04-01 - OpenAI provider settings now let users choose reasoning effort
 - Failure:
   The `Configuración > Proveedor IA` sub-tab let users choose the OpenAI model, but not the model's reasoning effort, so the app always sent the same hardcoded effort level.
