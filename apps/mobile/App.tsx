@@ -9676,11 +9676,6 @@ export default function App() {
                       />
                     </Pressable>
                   }
-                  subtitle={activeTrainingLatestChartBar
-                    ? `${activeTrainingStatsMetricMeta.label}: ${activeTrainingLatestChartBar.metricValueLabel}`
-                    : activeTrainingHistory.length > 0
-                      ? "No hay registros en el periodo seleccionado."
-                      : "Completa la rutina para empezar a ver progreso."}
                   periodSelector={
                     <Pressable
                       onPress={() => setTrainingStatsPeriodDropdownOpen((c) => !c)}
