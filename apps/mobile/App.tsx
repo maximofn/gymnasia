@@ -9603,44 +9603,12 @@ export default function App() {
                   </Text>
                 </View>
 
-                <Pressable
+                <PrimaryButton
+                  label="Empezar rutina"
                   onPress={() => startTrainingSession(activeTrainingTemplate.id)}
                   disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
-                  style={{
-                    minHeight: 46,
-                    borderRadius: 14,
-                    borderWidth: 1,
-                    borderColor: templateHasRunnableSeries(activeTrainingTemplate)
-                      ? "rgba(203,255,26,0.75)"
-                      : "rgba(255,255,255,0.08)",
-                    backgroundColor: templateHasRunnableSeries(activeTrainingTemplate)
-                      ? mobileTheme.color.brandPrimary
-                      : "rgba(255,255,255,0.04)",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 10,
-                  }}
-                >
-                  <Feather
-                    name="play"
-                    size={14}
-                    color={
-                      templateHasRunnableSeries(activeTrainingTemplate) ? "#06090D" : "#7F8896"
-                    }
-                  />
-                  <Text
-                    style={{
-                      color: templateHasRunnableSeries(activeTrainingTemplate)
-                        ? "#06090D"
-                        : "#7F8896",
-                      fontSize: 16,
-                      fontWeight: "800",
-                    }}
-                  >
-                    Empezar rutina
-                  </Text>
-                </Pressable>
+                  icon={<Feather name="play" size={14} color="#06090D" />}
+                />
 
                 <View
                   style={{
@@ -10116,45 +10084,13 @@ export default function App() {
                   )}
                 </View>
 
-                <Pressable
+                <PrimaryButton
+                  label="Empezar rutina"
                   onPress={() => startTrainingSession(activeTrainingTemplate.id)}
                   disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
+                  icon={<Feather name="play" size={14} color="#06090D" />}
                   testID="training-detail-start-session"
-                  style={{
-                    minHeight: 46,
-                    borderRadius: 14,
-                    borderWidth: 1,
-                    borderColor: templateHasRunnableSeries(activeTrainingTemplate)
-                      ? "rgba(203,255,26,0.75)"
-                      : "rgba(255,255,255,0.08)",
-                    backgroundColor: templateHasRunnableSeries(activeTrainingTemplate)
-                      ? mobileTheme.color.brandPrimary
-                      : "rgba(255,255,255,0.04)",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 10,
-                  }}
-                >
-                  <Feather
-                    name="play"
-                    size={14}
-                    color={
-                      templateHasRunnableSeries(activeTrainingTemplate) ? "#06090D" : "#7F8896"
-                    }
-                  />
-                  <Text
-                    style={{
-                      color: templateHasRunnableSeries(activeTrainingTemplate)
-                        ? "#06090D"
-                        : "#7F8896",
-                      fontSize: 16,
-                      fontWeight: "800",
-                    }}
-                  >
-                    Empezar rutina
-                  </Text>
-                </Pressable>
+                />
               </View>
             ) : activeTrainingTemplate ? (
               <View style={{ gap: 12, paddingBottom: 110 }}>
@@ -10343,45 +10279,13 @@ export default function App() {
                   </ScrollView>
                 </View>
 
-                <Pressable
+                <PrimaryButton
+                  label="Empezar rutina"
                   onPress={() => startTrainingSession(activeTrainingTemplate.id)}
                   disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
+                  icon={<Feather name="play" size={14} color="#06090D" />}
                   testID="training-editor-start-session"
-                  style={{
-                    minHeight: 46,
-                    borderRadius: 14,
-                    borderWidth: 1,
-                    borderColor: templateHasRunnableSeries(activeTrainingTemplate)
-                      ? "rgba(203,255,26,0.75)"
-                      : "rgba(255,255,255,0.08)",
-                    backgroundColor: templateHasRunnableSeries(activeTrainingTemplate)
-                      ? mobileTheme.color.brandPrimary
-                      : "rgba(255,255,255,0.04)",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 10,
-                  }}
-                >
-                  <Feather
-                    name="play"
-                    size={14}
-                    color={
-                      templateHasRunnableSeries(activeTrainingTemplate) ? "#06090D" : "#7F8896"
-                    }
-                  />
-                  <Text
-                    style={{
-                      color: templateHasRunnableSeries(activeTrainingTemplate)
-                        ? "#06090D"
-                        : "#7F8896",
-                      fontSize: 16,
-                      fontWeight: "800",
-                    }}
-                  >
-                    Empezar rutina
-                  </Text>
-                </Pressable>
+                />
 
                 <Pressable
                   onPress={openExercisePicker}
