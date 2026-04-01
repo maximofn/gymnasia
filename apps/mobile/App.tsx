@@ -142,6 +142,7 @@ type WorkoutCompletionModalState = {
 type DietItem = {
   id: string;
   title: string;
+  grams: number;
   calories_kcal: number;
   protein_g: number;
   carbs_g: number;
@@ -5109,6 +5110,7 @@ function normalizeDietByDate(rawValue: unknown): Record<string, DietDay> {
                 typeof maybeItem.title === "string" && maybeItem.title.trim()
                   ? maybeItem.title.trim()
                   : "Comida",
+              grams: normalizeDietNonNegativeNumber(maybeItem.grams),
               calories_kcal: normalizeDietNonNegativeNumber(maybeItem.calories_kcal),
               protein_g: normalizeDietNonNegativeNumber(maybeItem.protein_g),
               carbs_g: normalizeDietNonNegativeNumber(maybeItem.carbs_g),
@@ -6074,6 +6076,7 @@ export default function App() {
   const [mealProteinInput, setMealProteinInput] = useState("");
   const [mealCarbsInput, setMealCarbsInput] = useState("");
   const [mealFatInput, setMealFatInput] = useState("");
+  const [mealGramsInput, setMealGramsInput] = useState("");
   const [selectedDietDate, setSelectedDietDate] = useState<string>(() => todayISO());
   const [showDietDatePicker, setShowDietDatePicker] = useState(false);
   const [dietMealEditorCategory, setDietMealEditorCategory] = useState<DietMealCategory | null>(null);
@@ -7777,6 +7780,7 @@ export default function App() {
     setMealProteinInput("");
     setMealCarbsInput("");
     setMealFatInput("");
+    setMealGramsInput("");
   }
 
   function changeDietDateBy(days: number) {
@@ -7819,9 +7823,11 @@ export default function App() {
       return;
     }
 
+    const grams = parseNonNegativeNumberInput(mealGramsInput);
     const newItem: DietItem = {
       id: uid("food"),
       title,
+      grams: grams ?? 0,
       calories_kcal: calories,
       protein_g: protein ?? 0,
       carbs_g: carbs ?? 0,
@@ -7842,6 +7848,7 @@ export default function App() {
                   ? {
                       ...item,
                       title: newItem.title,
+                      grams: newItem.grams,
                       calories_kcal: newItem.calories_kcal,
                       protein_g: newItem.protein_g,
                       carbs_g: newItem.carbs_g,
@@ -7901,6 +7908,7 @@ export default function App() {
     setMealProteinInput("");
     setMealCarbsInput("");
     setMealFatInput("");
+    setMealGramsInput("");
     setDietEditingItem(null);
     setDietItemMenu(null);
     setError(null);
@@ -7926,6 +7934,7 @@ export default function App() {
     setMealProteinInput("");
     setMealCarbsInput("");
     setMealFatInput("");
+    setMealGramsInput("");
     setError(null);
   }
 
@@ -7937,12 +7946,14 @@ export default function App() {
     setDietMealExpanded((prev) => ({ ...prev, [category]: true }));
     setDietMealEditorCategory(category);
     setDietEditingItem({ meal_id: meal.id, item_id: item.id });
+    setDietAddMode("form");
     setDietItemMenu(null);
     setMealTitleInput(item.title);
     setMealCaloriesInput(formatNutritionNumber(item.calories_kcal));
     setMealProteinInput(formatNutritionNumber(item.protein_g));
     setMealCarbsInput(formatNutritionNumber(item.carbs_g));
     setMealFatInput(formatNutritionNumber(item.fat_g));
+    setMealGramsInput(item.grams > 0 ? formatNutritionNumber(item.grams) : "");
     setError(null);
   }
 
@@ -7977,6 +7988,7 @@ export default function App() {
       setMealProteinInput("");
       setMealCarbsInput("");
       setMealFatInput("");
+    setMealGramsInput("");
     }
     setDietItemMenu(null);
     setError(null);
@@ -8305,19 +8317,20 @@ export default function App() {
   }
 
   async function requestStructuredNutritionJSON(provider: AIKey, conversationSummary: string): Promise<{
-    dish_name: string; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number;
+    dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number;
   }> {
     const model = normalizeProviderModel(provider.provider, provider.model);
     const jsonSchema = {
       type: "object" as const,
       properties: {
         dish_name: { type: "string" as const, description: "Nombre del plato o alimento" },
+        grams: { type: "number" as const, description: "Peso total estimado en gramos" },
         calories_kcal: { type: "number" as const, description: "Calorías totales en kcal" },
         protein_g: { type: "number" as const, description: "Proteínas en gramos" },
         carbs_g: { type: "number" as const, description: "Carbohidratos en gramos" },
         fat_g: { type: "number" as const, description: "Grasas en gramos" },
       },
-      required: ["dish_name", "calories_kcal", "protein_g", "carbs_g", "fat_g"] as string[],
+      required: ["dish_name", "grams", "calories_kcal", "protein_g", "carbs_g", "fat_g"] as string[],
       additionalProperties: false,
     };
     const extractPrompt = "Basándote en la conversación anterior, devuelve ÚNICAMENTE un JSON con los datos nutricionales estimados. " + conversationSummary;
@@ -8427,6 +8440,7 @@ export default function App() {
       const newItem: DietItem = {
         id: uid("food"),
         title: parsed.dish_name || "Alimento estimado IA",
+        grams: parsed.grams ?? 0,
         calories_kcal: parsed.calories_kcal,
         protein_g: parsed.protein_g ?? 0,
         carbs_g: parsed.carbs_g ?? 0,
@@ -14377,7 +14391,7 @@ export default function App() {
                                     <Text
                                       style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 1 }}
                                     >
-                                      P:{formatNutritionNumber(item.protein_g)} C:{formatNutritionNumber(item.carbs_g)}{" "}
+                                      {item.grams > 0 ? `${formatNutritionNumber(item.grams)} g · ` : ""}P:{formatNutritionNumber(item.protein_g)} C:{formatNutritionNumber(item.carbs_g)}{" "}
                                       G:{formatNutritionNumber(item.fat_g)}
                                     </Text>
                                   </View>
@@ -14565,6 +14579,7 @@ export default function App() {
                                     const newItem: DietItem = {
                                       id: uid("food"),
                                       title: dietSelectedFood.name,
+                                      grams,
                                       calories_kcal: cal,
                                       protein_g: prot,
                                       carbs_g: carbs,
@@ -14632,6 +14647,26 @@ export default function App() {
                               placeholder="Nombre del alimento"
                               placeholderTextColor={mobileTheme.color.textSecondary}
                             />
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, width: 110 }}>Gramos (g)</Text>
+                              <TextInput
+                                style={{
+                                  flex: 1,
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 12,
+                                }}
+                                value={mealGramsInput}
+                                onChangeText={setMealGramsInput}
+                                placeholder="Gramos consumidos"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                keyboardType="decimal-pad"
+                              />
+                            </View>
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, width: 110 }}>Calorías (kcal)</Text>
                               <TextInput
@@ -14722,6 +14757,33 @@ export default function App() {
                                 </Text>
                               </Pressable>
                             </View>
+                            <Pressable
+                              onPress={() => {
+                                setDietMealEditorCategory(null);
+                                setDietEditingItem(null);
+                                setDietItemMenu(null);
+                                setDietAddMode(null);
+                                setDietFoodSearch("");
+                                setMealTitleInput("");
+                                setMealCaloriesInput("");
+                                setMealProteinInput("");
+                                setMealCarbsInput("");
+                                setMealFatInput("");
+                                setMealGramsInput("");
+                                setError(null);
+                              }}
+                              style={{
+                                minHeight: 38,
+                                borderRadius: mobileTheme.radius.md,
+                                borderWidth: 1,
+                                borderColor: mobileTheme.color.borderSubtle,
+                                backgroundColor: mobileTheme.color.bgApp,
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>Cancelar</Text>
+                            </Pressable>
                           </View>
                         ) : null}
 
