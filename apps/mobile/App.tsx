@@ -1270,10 +1270,10 @@ function isDietMealCategory(value: string): value is DietMealCategory {
 function createDietMealExpandedState(): Record<DietMealCategory, boolean> {
   return {
     Desayuno: true,
-    Almuerzo: false,
-    Comida: false,
-    Merienda: false,
-    Cena: false,
+    Almuerzo: true,
+    Comida: true,
+    Merienda: true,
+    Cena: true,
   };
 }
 

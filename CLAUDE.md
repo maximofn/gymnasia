@@ -109,6 +109,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Diet meals now start expanded by default
+- Failure:
+  In the diet screen, only `Desayuno` started expanded, while `Almuerzo`, `Comida`, `Merienda`, and `Cena` were collapsed by default.
+- Root cause:
+  `createDietMealExpandedState()` in `apps/mobile/App.tsx` initialized only `Desayuno` as `true` and every other `DietMealCategory` as `false`.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - changed `createDietMealExpandedState()` so all diet meal categories initialize as expanded.
+  2. Validated:
+     - `npm --workspace apps/mobile exec tsc --noEmit`
+       - still fails because of unrelated pre-existing `apps/mobile/App.tsx` errors outside this change.
+
 ### 2026-04-01 - `Añadir alimento con IA` now reuses the main chat component and streams reasoning/output live
 - Failure:
   The normal chat already showed the live assistant draft, the `Razonamiento` bubble, and incremental output tokens, but the `Añadir alimento con IA` chat still used a separate simplified UI that only appended the final assistant response after the request finished.
