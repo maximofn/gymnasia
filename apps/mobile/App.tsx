@@ -8310,38 +8310,31 @@ export default function App() {
       setError("Abre primero 'Añadir alimento' en una comida para rellenar los campos.");
       return;
     }
-    const resolvedProvider = resolveFoodEstimatorProviderFromState();
-    if (!resolvedProvider) {
-      setError("Configura una API key en Proveedor IA (Google, OpenAI o Anthropic) para usar esta función.");
+
+    setError(null);
+
+    // Try to parse nutrition from the last assistant message first
+    const lastAssistantMsg = [...foodEstimatorMessages].reverse().find((m) => m.role === "assistant" && m.content.trim());
+    let parsed = lastAssistantMsg ? parseFoodEstimatorNutritionJSON(lastAssistantMsg.content) : null;
+
+    // If not found, try all assistant messages
+    if (!parsed) {
+      for (let i = foodEstimatorMessages.length - 1; i >= 0; i--) {
+        const msg = foodEstimatorMessages[i];
+        if (msg.role === "assistant" && msg.content.trim()) {
+          parsed = parseFoodEstimatorNutritionJSON(msg.content);
+          if (parsed) break;
+        }
+      }
+    }
+
+    if (!parsed) {
+      setError("No se encontraron datos nutricionales en la conversación. Pide al modelo que estime los macros primero.");
       return;
     }
 
-    setFoodEstimatorSending(true);
-    setFoodEstimatorStatus("Generando datos nutricionales...");
-    setError(null);
+    // Add the food directly to the meal
     try {
-      const estimatorHistory: ChatInputMessage[] = [
-        { role: "system", content: FOOD_ESTIMATOR_SYSTEM_PROMPT },
-        ...foodEstimatorMessages.map<ChatInputMessage>((message) => ({
-          role: message.role === "assistant" ? "assistant" : "user",
-          content: message.content,
-        })),
-        { role: "user", content: "Devuelve json" },
-      ];
-      const assistantResult = await callFoodEstimatorAPI(
-        resolvedProvider,
-        estimatorHistory,
-        foodEstimatorImages,
-        { onStatus: setFoodEstimatorStatus },
-      );
-      setFoodEstimatorStatus("Interpretando datos...");
-      const parsed = parseFoodEstimatorNutritionJSON(assistantResult.content);
-      if (!parsed) {
-        setError("No se pudo interpretar JSON del modelo. Repite la estimación y vuelve a intentar.");
-        return;
-      }
-
-      // Add the food directly to the meal
       const cat = dietMealEditorCategory;
       const newItem: DietItem = {
         id: uid("food"),
@@ -8362,13 +8355,12 @@ export default function App() {
       });
       setDietMealEditorCategory(null);
       setDietAddMode(null);
-      setFoodEstimatorProvider(resolvedProvider);
       closeFoodEstimatorModal();
     } catch (err) {
       const message =
         err instanceof Error
           ? err.message
-          : "No se pudo solicitar JSON al modelo para rellenar el alimento.";
+          : "No se pudo añadir el alimento.";
       setError(message);
     } finally {
       setFoodEstimatorSending(false); setFoodEstimatorStatus("");
