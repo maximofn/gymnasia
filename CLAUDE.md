@@ -109,6 +109,17 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Google streaming no longer sends invalid top-level `thinkingConfig`
+- Failure:
+  After enabling Gemini streaming, Google could reject chat requests with `Invalid JSON payload received. Unknown name "thinkingConfig": Cannot find field.`
+- Root cause:
+  The REST request body in `apps/mobile/App.tsx` sent `thinkingConfig` at the top level. In the Google Gemini REST API, that setting must be nested under `generationConfig`.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - moved `thinkingConfig: { includeThoughts: true }` under `generationConfig`.
+  2. Validated:
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-google-stream-export-fix`
+
 ### 2026-04-01 - Google chat now streams reasoning and response incrementally, and the default Google model is `gemini-3-flash-preview`
 - Failure:
   The mobile chat only showed Google responses after the full request finished, so users could not watch Gemini reasoning or final answer text arrive progressively. The default Google provider model was also still `gemini-1.5-flash`.
@@ -118,7 +129,7 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   1. Updated `apps/mobile/App.tsx`:
      - changed `DEFAULT_MODELS.google` to `gemini-3-flash-preview`.
      - added Google SSE parsing over `XMLHttpRequest` for `:streamGenerateContent?alt=sse`.
-     - enabled `thinkingConfig.includeThoughts = true` so Gemini can emit thought summaries while streaming.
+     - enabled `generationConfig.thinkingConfig.includeThoughts = true` so Gemini can emit thought summaries while streaming.
      - updated the Google chat-with-tools flow to stream incremental `thinking` and response text into the existing assistant draft message.
      - preserved streamed Google `functionCall` parts and `thoughtSignature` values when replaying the model turn before sending `functionResponse` tool results.
   2. Validated:

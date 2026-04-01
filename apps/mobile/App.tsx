@@ -2741,7 +2741,9 @@ async function callProviderChatAPIWithTools(
     const body: any = {
       contents: msgs,
       systemInstruction: { parts: [{ text: systemPrompt }] },
-      thinkingConfig: { includeThoughts: true },
+      generationConfig: {
+        thinkingConfig: { includeThoughts: true },
+      },
     };
     if (includeTools) body.tools = chatTools.google;
     return streamGoogleRequestViaXHR(
