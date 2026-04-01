@@ -6051,9 +6051,7 @@ function SharedChatPanel({
 }
 
 export default function App() {
-  const [tab, setTabRaw] = useState<TabKey>("home");
-  const prevTabRef = useRef<TabKey>("home");
-  const setTab = (next: TabKey) => { prevTabRef.current = tab; setTabRaw(next); };
+  const [tab, setTab] = useState<TabKey>("home");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -10234,70 +10232,61 @@ export default function App() {
               </View>
             ) : null}
           </View>
-        ) : tab === "settings" ? (
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <Pressable onPress={() => setTab(prevTabRef.current !== "settings" ? prevTabRef.current : "home")} style={{ padding: 4 }}>
-              <Feather name="arrow-left" size={22} color={mobileTheme.color.textPrimary} />
-            </Pressable>
-            <TabTitle>{headerTitle}</TabTitle>
-          </View>
         ) : (
           <TabTitle>{headerTitle}</TabTitle>
         )}
-        {tab !== "settings" ? (
-          <View
-            style={{
-              minHeight: 54,
-              borderRadius: 14,
-              borderWidth: 1,
-              borderColor: mobileTheme.color.borderSubtle,
-              backgroundColor: mobileTheme.color.bgSurface,
-              flexDirection: "row",
-              padding: 4,
-              gap: 4,
-            }}
-          >
-            {(["home", "training", "diet", "measures", "chat", "settings"] as TabKey[]).map((key) => {
-              const isActiveTab = tab === key;
-              const tabTextColor = isActiveTab
-                ? mobileTheme.color.brandPrimary
-                : mobileTheme.color.textSecondary;
-              return (
-                <Pressable
-                  key={key}
-                  onPress={() => setTab(key)}
-                  testID={`nav-tab-${key}`}
-                  accessibilityLabel={tabLabel(key)}
-                  accessibilityRole="button"
-                  style={{
-                    flex: 1,
-                    minHeight: 44,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: isActiveTab ? "rgba(203,255,26,0.14)" : "transparent",
-                    borderWidth: isActiveTab ? 1 : 0,
-                    borderColor: isActiveTab ? "rgba(203,255,26,0.5)" : "transparent",
-                  }}
-                >
-                  {key === "settings" ? (
-                    <Ionicons color={tabTextColor} name="settings-sharp" size={18} />
-                  ) : (
-                    <Text
-                      style={{
-                        color: tabTextColor,
-                        fontWeight: "700",
-                        fontSize: 12,
-                      }}
-                    >
-                      {tabLabel(key)}
-                    </Text>
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : null}
+        <View
+          style={{
+            minHeight: 54,
+            borderRadius: 14,
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+            backgroundColor: mobileTheme.color.bgSurface,
+            flexDirection: "row",
+            padding: 4,
+            gap: 4,
+          }}
+        >
+          {(["home", "training", "diet", "measures", "chat", "settings"] as TabKey[]).map((key) => {
+            const isActiveTab = tab === key;
+            const tabTextColor = isActiveTab
+              ? mobileTheme.color.brandPrimary
+              : mobileTheme.color.textSecondary;
+            return (
+              <Pressable
+                key={key}
+                onPress={() => setTab(key)}
+                testID={`nav-tab-${key}`}
+                accessibilityLabel={tabLabel(key)}
+                accessibilityRole="button"
+                style={{
+                  flex: 1,
+                  minHeight: 44,
+                  borderRadius: 10,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: isActiveTab ? "rgba(203,255,26,0.14)" : "transparent",
+                  borderWidth: isActiveTab ? 1 : 0,
+                  borderColor: isActiveTab ? "rgba(203,255,26,0.5)" : "transparent",
+                }}
+              >
+                {key === "settings" ? (
+                  <Ionicons color={tabTextColor} name="settings-sharp" size={18} />
+                ) : (
+                  <Text
+                    style={{
+                      color: tabTextColor,
+                      fontWeight: "700",
+                      fontSize: 12,
+                    }}
+                  >
+                    {tabLabel(key)}
+                  </Text>
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       {loading ? (
