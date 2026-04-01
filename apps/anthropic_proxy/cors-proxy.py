@@ -17,7 +17,7 @@ from urllib.error import HTTPError
 try:
     from fastapi import FastAPI, Request as FRequest
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import JSONResponse
+    from fastapi.responses import JSONResponse, StreamingResponse
 except ImportError:
     print("Install fastapi + uvicorn: pip install fastapi uvicorn")
     sys.exit(1)
@@ -76,18 +76,41 @@ async def anthropic_verify(req: FRequest):
 async def anthropic_messages(req: FRequest):
     body = await req.json()
     api_key = body.pop("api_key", "")
+    should_stream = bool(body.get("stream"))
 
     headers = {
         "x-api-key": api_key,
         "anthropic-version": ANTHROPIC_API_VERSION,
         "content-type": "application/json",
     }
+    if should_stream:
+        headers["accept"] = "text/event-stream"
     payload = json.dumps(body).encode()
 
     try:
         r = Request(f"{ANTHROPIC_API}/v1/messages", data=payload, headers=headers, method="POST")
         resp = urlopen(r, timeout=120)
+        if should_stream:
+            def iter_stream():
+                try:
+                    while True:
+                        chunk = resp.read(1024)
+                        if not chunk:
+                            break
+                        yield chunk
+                finally:
+                    resp.close()
+
+            return StreamingResponse(
+                iter_stream(),
+                media_type="text/event-stream",
+                headers={
+                    "Cache-Control": "no-cache",
+                    "X-Accel-Buffering": "no",
+                },
+            )
         data = json.loads(resp.read())
+        resp.close()
         return JSONResponse(data)
     except HTTPError as e:
         err_body = e.read().decode()

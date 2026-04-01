@@ -74,6 +74,7 @@ Run from repo root unless noted.
   - It runs on `http://127.0.0.1:8000` (the default `EXPO_PUBLIC_API_BASE_URL`).
   - Quick health check:
     `curl -sS http://127.0.0.1:8000/health`
+  - The `/chat/providers/anthropic/messages` endpoint supports SSE streaming, so browser debugging can mirror the live Anthropic chat flow used by the mobile app.
   - Proxies `/chat/providers/anthropic/verify`, `/chat/providers/anthropic/messages`, and `/chat/providers/anthropic/models`.
   - OpenAI and Google providers work directly in browser without the proxy.
 - Important caveats for this project:
@@ -108,6 +109,27 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Anthropic chat now streams reasoning and response incrementally in the mobile app, with browser debugging parity through the local proxy
+- Failure:
+  The chat only showed Anthropic `thinking` and final response text after the full request finished, so users could not watch reasoning or answer text arrive progressively.
+- Root cause:
+  `apps/mobile/App.tsx` created the assistant message only after parsing a completed JSON response, and `apps/anthropic_proxy/cors-proxy.py` buffered `/messages` responses instead of forwarding Anthropic SSE chunks.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - added streaming-aware assistant draft messages using `is_streaming`.
+     - implemented Anthropic SSE parsing over `XMLHttpRequest`, including `thinking_delta`, `text_delta`, and streamed `tool_use` handling.
+     - changed the main chat flow so the assistant message is inserted immediately and updated in place as reasoning and response text arrive.
+     - passed the component `setStore` explicitly into provider tool calls, replacing the broken implicit `setStore` references.
+  2. Updated `apps/anthropic_proxy/cors-proxy.py`:
+     - added SSE passthrough for `/chat/providers/anthropic/messages` using `StreamingResponse`.
+     - kept the existing JSON response path for non-streaming calls.
+  3. Updated `CLAUDE.md`:
+     - documented that the local Anthropic proxy now supports streaming in browser-debug mode.
+  4. Validated:
+     - `apps/anthropic_proxy/.venv/bin/python -m py_compile apps/anthropic_proxy/cors-proxy.py`
+     - `cd apps/mobile && npx expo export --platform web --dev`
+     - attempted `npm --workspace apps/mobile exec tsc --noEmit`, but the current repo config still fails because `apps/mobile/dist` is included by default and references a stale generated file unrelated to this change.
+
 ### 2026-04-01 - Anthropic web proxy no longer sends invalid API version and the documented mobile proxy path now exists
 - Failure:
   In browser mode, saving an Anthropic API key could still fail with `Error grave: anthropic-version: "2025-01-01" is not a valid version` even after the direct app requests were updated.

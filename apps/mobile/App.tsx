@@ -192,6 +192,7 @@ type ChatMessage = {
   role: "user" | "assistant" | "system";
   content: string;
   thinking?: string | null;
+  is_streaming?: boolean;
   created_at: string;
 };
 type AnthropicChatResult = { content: string; thinking: string | null };
@@ -199,6 +200,27 @@ type Provider = "anthropic" | "openai" | "google";
 type AIKey = { provider: Provider; is_active: boolean; api_key: string; model: string };
 type ProviderDraft = { api_key: string; model: string };
 type AnthropicModelOption = { id: string; display_name: string | null };
+type AnthropicStreamingHandlers = {
+  onContentDelta?: (delta: string, aggregate: string) => void;
+  onThinkingDelta?: (delta: string, aggregate: string) => void;
+};
+type ChatProviderCallOptions = AnthropicStreamingHandlers & {
+  setStore?: React.Dispatch<React.SetStateAction<LocalStore>>;
+};
+type AnthropicTextBlock = { type: "text"; text: string };
+type AnthropicThinkingBlock = { type: "thinking"; thinking: string; signature?: string };
+type AnthropicToolUseBlock = {
+  type: "tool_use";
+  id: string;
+  name: string;
+  input: Record<string, unknown>;
+  partial_json?: string;
+};
+type AnthropicResponseBlock = AnthropicTextBlock | AnthropicThinkingBlock | AnthropicToolUseBlock;
+type AnthropicStreamTurnResult = AnthropicChatResult & {
+  contentBlocks: AnthropicResponseBlock[];
+  stopReason: string | null;
+};
 type OpenAIModelOption = { id: string; owned_by: string | null };
 type GoogleModelOption = { id: string; display_name: string | null };
 type ProviderConnectionState = "connected" | "disconnected" | "checking" | "unknown";
@@ -1685,6 +1707,327 @@ function parseAnthropicContent(payload: unknown): AnthropicChatResult | null {
   return { content: text, thinking: thinking || null };
 }
 
+function parseJsonSafely<T>(value: string): T | null {
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return null;
+  }
+}
+
+function parseAnthropicToolInput(raw: string): Record<string, unknown> {
+  const trimmed = raw.trim();
+  if (!trimmed) return {};
+  const parsed = parseJsonSafely<unknown>(trimmed);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+  return parsed as Record<string, unknown>;
+}
+
+function splitSSEEvents(buffer: string): { events: string[]; rest: string } {
+  const normalized = buffer.replace(/\r\n/g, "\n");
+  const events: string[] = [];
+  let cursor = 0;
+  while (cursor < normalized.length) {
+    const boundary = normalized.indexOf("\n\n", cursor);
+    if (boundary === -1) break;
+    events.push(normalized.slice(cursor, boundary));
+    cursor = boundary + 2;
+  }
+  return { events, rest: normalized.slice(cursor) };
+}
+
+function parseSSEEvent(rawEvent: string): { event: string; data: string | null } | null {
+  const trimmed = rawEvent.trim();
+  if (!trimmed) return null;
+
+  let eventName = "message";
+  const dataLines: string[] = [];
+  for (const line of trimmed.split("\n")) {
+    if (!line || line.startsWith(":")) continue;
+    const separator = line.indexOf(":");
+    const field = separator === -1 ? line : line.slice(0, separator);
+    let value = separator === -1 ? "" : line.slice(separator + 1);
+    if (value.startsWith(" ")) value = value.slice(1);
+    if (field === "event") eventName = value || eventName;
+    if (field === "data") dataLines.push(value);
+  }
+  return {
+    event: eventName,
+    data: dataLines.length > 0 ? dataLines.join("\n") : null,
+  };
+}
+
+function createAnthropicStreamParser(
+  handlers?: AnthropicStreamingHandlers,
+): {
+  push: (chunk: string) => void;
+  finish: () => AnthropicStreamTurnResult;
+} {
+  let rawBuffer = "";
+  let streamedContent = "";
+  let streamedThinking = "";
+  let stopReason: string | null = null;
+  const blocks = new Map<number, AnthropicResponseBlock>();
+
+  const processEvent = (parsedEvent: { event: string; data: string | null }) => {
+    if (!parsedEvent.data) return;
+    const payload = parseJsonSafely<{
+      type?: string;
+      index?: number;
+      delta?: {
+        type?: string;
+        text?: string;
+        thinking?: string;
+        signature?: string;
+        partial_json?: string;
+      };
+      content_block?: {
+        type?: string;
+        text?: string;
+        thinking?: string;
+        signature?: string;
+        id?: string;
+        name?: string;
+        input?: Record<string, unknown>;
+      };
+      error?: { message?: string };
+      message?: { stop_reason?: string | null };
+    }>(parsedEvent.data);
+    if (!payload || typeof payload !== "object") return;
+
+    const payloadType = typeof payload.type === "string" ? payload.type : parsedEvent.event;
+    if (payloadType === "error" || parsedEvent.event === "error") {
+      throw new Error(extractErrorMessage(payload, "Anthropic stream error"));
+    }
+
+    if (payloadType === "content_block_start") {
+      const index = typeof payload.index === "number" ? payload.index : -1;
+      if (index < 0 || !payload.content_block) return;
+      const block = payload.content_block;
+      if (block.type === "text") {
+        blocks.set(index, { type: "text", text: typeof block.text === "string" ? block.text : "" });
+      } else if (block.type === "thinking") {
+        blocks.set(index, {
+          type: "thinking",
+          thinking: typeof block.thinking === "string" ? block.thinking : "",
+          signature: typeof block.signature === "string" ? block.signature : undefined,
+        });
+      } else if (block.type === "tool_use") {
+        blocks.set(index, {
+          type: "tool_use",
+          id: typeof block.id === "string" ? block.id : "",
+          name: typeof block.name === "string" ? block.name : "",
+          input:
+            block.input && typeof block.input === "object" && !Array.isArray(block.input)
+              ? block.input
+              : {},
+          partial_json: "",
+        });
+      }
+      return;
+    }
+
+    if (payloadType === "content_block_delta") {
+      const index = typeof payload.index === "number" ? payload.index : -1;
+      const block = blocks.get(index);
+      if (!block || !payload.delta) return;
+      if (payload.delta.type === "text_delta" && block.type === "text") {
+        const nextText = typeof payload.delta.text === "string" ? payload.delta.text : "";
+        if (!nextText) return;
+        block.text += nextText;
+        streamedContent += nextText;
+        handlers?.onContentDelta?.(nextText, streamedContent);
+        return;
+      }
+      if (payload.delta.type === "thinking_delta" && block.type === "thinking") {
+        const nextThinking =
+          typeof payload.delta.thinking === "string" ? payload.delta.thinking : "";
+        if (!nextThinking) return;
+        block.thinking += nextThinking;
+        streamedThinking += nextThinking;
+        handlers?.onThinkingDelta?.(nextThinking, streamedThinking);
+        return;
+      }
+      if (payload.delta.type === "signature_delta" && block.type === "thinking") {
+        block.signature =
+          typeof payload.delta.signature === "string" ? payload.delta.signature : block.signature;
+        return;
+      }
+      if (payload.delta.type === "input_json_delta" && block.type === "tool_use") {
+        const partialJson =
+          typeof payload.delta.partial_json === "string" ? payload.delta.partial_json : "";
+        block.partial_json = (block.partial_json ?? "") + partialJson;
+      }
+      return;
+    }
+
+    if (payloadType === "content_block_stop") {
+      const index = typeof payload.index === "number" ? payload.index : -1;
+      const block = blocks.get(index);
+      if (block?.type === "tool_use") {
+        block.input = parseAnthropicToolInput(block.partial_json ?? "");
+      }
+      return;
+    }
+
+    if (payloadType === "message_delta") {
+      stopReason =
+        payload.message?.stop_reason ??
+        (payload as { delta?: { stop_reason?: string | null } }).delta?.stop_reason ??
+        stopReason;
+    }
+  };
+
+  const processChunk = (chunk: string) => {
+    if (!chunk) return;
+    rawBuffer += chunk;
+    const { events, rest } = splitSSEEvents(rawBuffer);
+    rawBuffer = rest;
+    events.forEach((eventChunk) => {
+      const parsedEvent = parseSSEEvent(eventChunk);
+      if (!parsedEvent) return;
+      processEvent(parsedEvent);
+    });
+  };
+
+  return {
+    push: processChunk,
+    finish: () => {
+      if (rawBuffer.trim()) {
+        const parsedEvent = parseSSEEvent(rawBuffer);
+        if (parsedEvent) processEvent(parsedEvent);
+        rawBuffer = "";
+      }
+      const contentBlocks = Array.from(blocks.entries())
+        .sort(([left], [right]) => left - right)
+        .map(([, block]) =>
+          block.type === "tool_use"
+            ? {
+                type: "tool_use" as const,
+                id: block.id,
+                name: block.name,
+                input: block.input,
+              }
+            : block,
+        );
+
+      return {
+        content: streamedContent.trim(),
+        thinking: streamedThinking.trim() || null,
+        contentBlocks,
+        stopReason,
+      };
+    },
+  };
+}
+
+async function streamAnthropicRequestViaXHR(
+  url: string,
+  headers: Record<string, string>,
+  body: Record<string, unknown>,
+  handlers?: AnthropicStreamingHandlers,
+  networkFallbackMessage = "No se pudo conectar con Anthropic.",
+  statusFallbackPrefix = "Anthropic error",
+): Promise<AnthropicStreamTurnResult> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const parser = createAnthropicStreamParser(handlers);
+    let lastOffset = 0;
+    let settled = false;
+
+    const cleanup = () => {
+      xhr.onreadystatechange = null;
+      xhr.onprogress = null;
+      xhr.onerror = null;
+      xhr.ontimeout = null;
+    };
+
+    const rejectOnce = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(error);
+    };
+
+    const resolveOnce = (result: AnthropicStreamTurnResult) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(result);
+    };
+
+    const processPendingResponseText = () => {
+      const fullText = xhr.responseText ?? "";
+      const nextText = fullText.slice(lastOffset);
+      lastOffset = fullText.length;
+      if (nextText) parser.push(nextText);
+    };
+
+    xhr.open("POST", url);
+    xhr.timeout = 120000;
+    Object.entries(headers).forEach(([key, value]) => {
+      xhr.setRequestHeader(key, value);
+    });
+
+    xhr.onprogress = () => {
+      try {
+        processPendingResponseText();
+      } catch (err) {
+        xhr.abort();
+        rejectOnce(
+          err instanceof Error ? err : new Error("No se pudo procesar el stream de Anthropic."),
+        );
+      }
+    };
+
+    xhr.onerror = () => {
+      rejectOnce(new Error(networkFallbackMessage));
+    };
+
+    xhr.ontimeout = () => {
+      rejectOnce(new Error("Tiempo de espera agotado al conectar con Anthropic."));
+    };
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState !== xhr.DONE || settled) return;
+
+      try {
+        processPendingResponseText();
+      } catch (err) {
+        rejectOnce(
+          err instanceof Error ? err : new Error("No se pudo procesar el stream de Anthropic."),
+        );
+        return;
+      }
+
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          resolveOnce(parser.finish());
+        } catch (err) {
+          rejectOnce(
+            err instanceof Error ? err : new Error("No se pudo finalizar el stream de Anthropic."),
+          );
+        }
+        return;
+      }
+
+      const payload = parseJsonSafely<unknown>(xhr.responseText ?? "");
+      const rawMessage = xhr.responseText?.trim();
+      const fallbackMessage = xhr.status
+        ? `${statusFallbackPrefix} (${xhr.status})`
+        : networkFallbackMessage;
+      rejectOnce(new Error(extractErrorMessage(payload, rawMessage || fallbackMessage)));
+    };
+
+    xhr.send(
+      JSON.stringify({
+        ...body,
+        stream: true,
+      }),
+    );
+  });
+}
+
 function parseGoogleContent(payload: unknown): string | null {
   if (!payload || typeof payload !== "object") return null;
   const maybe = payload as {
@@ -1816,7 +2159,11 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInputMessage[]): Promise<AnthropicChatResult> {
+async function callProviderChatAPIWithTools(
+  provider: AIKey,
+  messages: ChatInputMessage[],
+  options?: ChatProviderCallOptions,
+): Promise<AnthropicChatResult> {
   const systemPrompt = normalizeChatSystemPrompt(
     messages
       .filter((msg) => msg.role === "system")
@@ -1839,6 +2186,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
     data: { type: "string" as const, description: WRITE_MEASUREMENT_DATA_PARAM_DESC },
   };
   const writeMeasurementRequired = ["date", "data"];
+  const toolStoreSetter = options?.setStore;
 
   const chatTools = {
     openai: [
@@ -2001,7 +2349,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
       openAIMessages.push(choice.message);
       for (const tc of toolCalls) {
         const args = tc.function?.arguments ? JSON.parse(tc.function.arguments) : {};
-        const toolResult = await handleToolCall(tc.function?.name, args, setStore);
+        const toolResult = await handleToolCall(tc.function?.name, args, toolStoreSetter);
         openAIMessages.push({ role: "tool", tool_call_id: tc.id, content: toolResult });
       }
       payload = await makeOpenAIRequest(true);
@@ -2014,14 +2362,17 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
 
   // --- ANTHROPIC ---
   if (provider.provider === "anthropic") {
-    if (Platform.OS === "web") {
-      return callAnthropicViaWebProxy(provider, systemPrompt, nonSystemMessages);
-    }
-
-    const anthropicHeaders = {
-      "Content-Type": "application/json",
-      "x-api-key": provider.api_key,
-      "anthropic-version": ANTHROPIC_API_VERSION,
+    let streamedContent = "";
+    let streamedThinking = "";
+    const streamHandlers: AnthropicStreamingHandlers = {
+      onContentDelta: (delta) => {
+        streamedContent += delta;
+        options?.onContentDelta?.(delta, streamedContent);
+      },
+      onThinkingDelta: (delta) => {
+        streamedThinking += delta;
+        options?.onThinkingDelta?.(delta, streamedThinking);
+      },
     };
 
     const makeAnthropicRequest = async (msgs: any[], includeTools: boolean) => {
@@ -2033,28 +2384,51 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
         messages: msgs,
       };
       if (includeTools) body.tools = chatTools.anthropic;
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: anthropicHeaders,
-        body: JSON.stringify(body),
-      });
-      let p: any = null;
-      try { p = await res.json(); } catch {}
-      if (!res.ok) throw new Error(extractErrorMessage(p, `Anthropic error (${res.status})`));
-      return p;
+      if (Platform.OS === "web") {
+        return streamAnthropicRequestViaXHR(
+          buildWebProxyUrl("/chat/providers/anthropic/messages"),
+          {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+          },
+          {
+            api_key: provider.api_key,
+            ...body,
+          },
+          streamHandlers,
+          ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE,
+          "Proxy Anthropic error",
+        );
+      }
+
+      return streamAnthropicRequestViaXHR(
+        "https://api.anthropic.com/v1/messages",
+        {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+          "x-api-key": provider.api_key,
+          "anthropic-version": ANTHROPIC_API_VERSION,
+        },
+        body,
+        streamHandlers,
+        "No se pudo conectar con Anthropic.",
+        "Anthropic error",
+      );
     };
 
     let currentMessages: any[] = [...nonSystemMessages];
     let payload = await makeAnthropicRequest(currentMessages, true);
 
     for (let round = 0; round < 10; round++) {
-      const contentBlocks = payload?.content as any[] | undefined;
-      const toolUseBlocks = contentBlocks?.filter((b: any) => b.type === "tool_use") ?? [];
+      const contentBlocks = payload.contentBlocks;
+      const toolUseBlocks = contentBlocks.filter(
+        (block): block is AnthropicToolUseBlock => block.type === "tool_use",
+      );
       if (toolUseBlocks.length === 0) break;
 
       const toolResults: any[] = [];
       for (const block of toolUseBlocks) {
-        const result = await handleToolCall(block.name, block.input ?? {}, setStore);
+        const result = await handleToolCall(block.name, block.input ?? {}, toolStoreSetter);
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
       }
       currentMessages = [
@@ -2065,9 +2439,10 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
       payload = await makeAnthropicRequest(currentMessages, true);
     }
 
-    const result = parseAnthropicContent(payload);
-    if (!result) throw new Error("Anthropic no devolvio contenido.");
-    return result;
+    const content = streamedContent.trim() || payload.content;
+    const thinking = streamedThinking.trim() || payload.thinking || null;
+    if (!content) throw new Error("Anthropic no devolvio contenido.");
+    return { content, thinking };
   }
 
   // --- GOOGLE ---
@@ -2105,7 +2480,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
     const modelParts = functionCalls.map((fc: any) => ({ functionCall: fc.functionCall }));
     const responseParts: any[] = [];
     for (const fc of functionCalls) {
-      const toolResult = await handleToolCall(fc.functionCall.name, fc.functionCall.args ?? {}, setStore);
+      const toolResult = await handleToolCall(fc.functionCall.name, fc.functionCall.args ?? {}, toolStoreSetter);
       responseParts.push({ functionResponse: { name: fc.functionCall.name, response: { result: toolResult } } });
     }
     googleMessages.push({ role: "model", parts: modelParts });
@@ -3766,6 +4141,39 @@ function createInitialStore(): LocalStore {
   };
 }
 
+function normalizeChatMessage(raw: ChatMessage, index: number): ChatMessage {
+  const role =
+    raw?.role === "assistant" || raw?.role === "system" || raw?.role === "user"
+      ? raw.role
+      : "assistant";
+  const thinking = typeof raw?.thinking === "string" ? raw.thinking : null;
+  return {
+    id: raw?.id?.trim() || uid(`msg-${index}`),
+    role,
+    content: typeof raw?.content === "string" ? raw.content : "",
+    thinking,
+    is_streaming: false,
+    created_at:
+      typeof raw?.created_at === "string" && raw.created_at.trim()
+        ? raw.created_at
+        : new Date().toISOString(),
+  };
+}
+
+function normalizeMessagesByThread(
+  rawMessagesByThread: Record<string, ChatMessage[]> | null | undefined,
+): Record<string, ChatMessage[]> {
+  if (!rawMessagesByThread || typeof rawMessagesByThread !== "object") return {};
+  return Object.fromEntries(
+    Object.entries(rawMessagesByThread).map(([threadId, threadMessages]) => [
+      threadId,
+      Array.isArray(threadMessages)
+        ? threadMessages.map((message, index) => normalizeChatMessage(message, index))
+        : [],
+    ]),
+  );
+}
+
 function normalizeStore(raw: LocalStore): LocalStore {
   const normalizedDietSettings = normalizeDietSettings(raw.dietSettings);
   const rawByProvider = new Map<Provider, Partial<AIKey>>();
@@ -3858,7 +4266,7 @@ function normalizeStore(raw: LocalStore): LocalStore {
     dietSettings: normalizedDietSettings,
     measurements: normalizedMeasurements,
     threads: raw.threads ?? [],
-    messagesByThread: raw.messagesByThread ?? {},
+    messagesByThread: normalizeMessagesByThread(raw.messagesByThread),
     keys,
     chatProvider,
     foodAIProvider,
@@ -5644,6 +6052,44 @@ export default function App() {
     setMemoryNewValue("");
   }
 
+  function appendMessagesToThread(threadId: string, nextMessages: ChatMessage[]) {
+    setStore((prev) => {
+      const current = prev.messagesByThread[threadId] ?? [];
+      return {
+        ...prev,
+        messagesByThread: {
+          ...prev.messagesByThread,
+          [threadId]: [...current, ...nextMessages],
+        },
+      };
+    });
+  }
+
+  function updateThreadMessage(
+    threadId: string,
+    messageId: string,
+    updater: (message: ChatMessage) => ChatMessage,
+  ) {
+    setStore((prev) => {
+      const current = prev.messagesByThread[threadId] ?? [];
+      let didChange = false;
+      const next = current.map((message) => {
+        if (message.id !== messageId) return message;
+        const updated = updater(message);
+        didChange = didChange || updated !== message;
+        return updated;
+      });
+      if (!didChange) return prev;
+      return {
+        ...prev,
+        messagesByThread: {
+          ...prev.messagesByThread,
+          [threadId]: next,
+        },
+      };
+    });
+  }
+
   async function sendMessage() {
     if (!activeThreadId || !chatInput.trim()) {
       return;
@@ -5659,30 +6105,78 @@ export default function App() {
     }
 
     const threadId = activeThreadId;
+    const assistantMessageId = uid("msg");
+    let draftFlushTimer: ReturnType<typeof setTimeout> | null = null;
     setSendingChat(true);
     setError(null);
 
     try {
       const userInput = chatInput.trim();
+      const createdAt = new Date().toISOString();
       const userMessage: ChatMessage = {
         id: uid("msg"),
         role: "user",
         content: userInput,
-        created_at: new Date().toISOString(),
+        created_at: createdAt,
+      };
+      const assistantDraft: ChatMessage = {
+        id: assistantMessageId,
+        role: "assistant",
+        content: "",
+        thinking: null,
+        is_streaming: true,
+        created_at: createdAt,
       };
 
       const threadMessages = store.messagesByThread[threadId] ?? [];
-      setStore((prev) => {
-        const current = prev.messagesByThread[threadId] ?? [];
-        return {
-          ...prev,
-          messagesByThread: {
-            ...prev.messagesByThread,
-            [threadId]: [...current, userMessage],
-          },
-        };
-      });
+      appendMessagesToThread(threadId, [userMessage, assistantDraft]);
+      setExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: true }));
       setChatInput("");
+
+      let draftContent = "";
+      let draftThinking: string | null = null;
+
+      const flushAssistantDraft = (force = false) => {
+        const apply = () => {
+          const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
+          updateThreadMessage(threadId, assistantMessageId, (current) => {
+            if (
+              current.content === draftContent &&
+              (current.thinking ?? null) === nextThinking &&
+              current.is_streaming
+            ) {
+              return current;
+            }
+            return {
+              ...current,
+              content: draftContent,
+              thinking: nextThinking,
+              is_streaming: true,
+            };
+          });
+        };
+
+        if (force) {
+          if (draftFlushTimer) {
+            clearTimeout(draftFlushTimer);
+            draftFlushTimer = null;
+          }
+          apply();
+          return;
+        }
+
+        if (draftFlushTimer) return;
+        draftFlushTimer = setTimeout(() => {
+          draftFlushTimer = null;
+          apply();
+        }, 40);
+      };
+
+      const resetAssistantDraft = () => {
+        draftContent = "";
+        draftThinking = null;
+        flushAssistantDraft(true);
+      };
 
       const history = [...threadMessages, userMessage]
         .slice(-20)
@@ -5696,7 +6190,20 @@ export default function App() {
       const chatMessages = [{ role: "system" as const, content: fullSystemPrompt }, ...history];
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
-          assistantResult = await callProviderChatAPIWithTools(activeProvider, chatMessages);
+          if (attempt > 0) {
+            resetAssistantDraft();
+          }
+          assistantResult = await callProviderChatAPIWithTools(activeProvider, chatMessages, {
+            setStore,
+            onContentDelta: (_delta, aggregate) => {
+              draftContent = aggregate;
+              flushAssistantDraft();
+            },
+            onThinkingDelta: (_delta, aggregate) => {
+              draftThinking = aggregate;
+              flushAssistantDraft();
+            },
+          });
           if (assistantResult && assistantResult.content.trim().length > 0) break;
           assistantResult = null;
         } catch (retryErr) {
@@ -5710,43 +6217,29 @@ export default function App() {
         throw new Error("El modelo no devolvió contenido.");
       }
 
-      const assistantMessage: ChatMessage = {
-        id: uid("msg"),
-        role: "assistant",
+      if (draftFlushTimer) {
+        clearTimeout(draftFlushTimer);
+        draftFlushTimer = null;
+      }
+      updateThreadMessage(threadId, assistantMessageId, (current) => ({
+        ...current,
         content: assistantResult.content,
         thinking: assistantResult.thinking,
-        created_at: new Date().toISOString(),
-      };
-
-      setStore((prev) => {
-        const current = prev.messagesByThread[threadId] ?? [];
-        return {
-          ...prev,
-          messagesByThread: {
-            ...prev.messagesByThread,
-            [threadId]: [...current, assistantMessage],
-          },
-        };
-      });
+        is_streaming: false,
+      }));
     } catch (err) {
+      if (draftFlushTimer) {
+        clearTimeout(draftFlushTimer);
+        draftFlushTimer = null;
+      }
       const message = err instanceof Error ? err.message : "No se pudo enviar mensaje al proveedor.";
       setError(message);
-      const errorBubble: ChatMessage = {
-        id: uid("msg"),
-        role: "assistant",
+      updateThreadMessage(threadId, assistantMessageId, (current) => ({
+        ...current,
         content: `Error de proveedor: ${message}`,
-        created_at: new Date().toISOString(),
-      };
-      setStore((prev) => {
-        const current = prev.messagesByThread[threadId] ?? [];
-        return {
-          ...prev,
-          messagesByThread: {
-            ...prev.messagesByThread,
-            [threadId]: [...current, errorBubble],
-          },
-        };
-      });
+        thinking: null,
+        is_streaming: false,
+      }));
     } finally {
       setSendingChat(false);
     }
@@ -13151,26 +13644,33 @@ export default function App() {
                       }}
                     >
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{msg.role}</Text>
-                      <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
+                      {msg.content.trim() ? (
+                        <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
+                      ) : null}
+                      {msg.is_streaming ? (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 8,
+                            marginTop: msg.content.trim() ? 8 : 4,
+                          }}
+                        >
+                          <ActivityIndicator size="small" color={mobileTheme.color.textSecondary} />
+                          <Text
+                            style={{
+                              color: mobileTheme.color.textSecondary,
+                              fontSize: 13,
+                              fontStyle: "italic",
+                            }}
+                          >
+                            {chatThinkingLabel}...
+                          </Text>
+                        </View>
+                      ) : null}
                     </View>
                   </View>
                 ))}
-                {sendingChat ? (
-                  <View
-                    style={{
-                      borderWidth: 1,
-                      borderColor: "rgba(203,255,26,0.45)",
-                      backgroundColor: "rgba(203,255,26,0.08)",
-                      borderRadius: mobileTheme.radius.md,
-                      padding: 10,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>assistant</Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, marginTop: 4, fontStyle: "italic" }}>
-                      {chatThinkingLabel}...
-                    </Text>
-                  </View>
-                ) : null}
               </ScrollView>
 
               <TextInput
