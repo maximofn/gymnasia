@@ -8304,45 +8304,133 @@ export default function App() {
     }
   }
 
+  async function requestStructuredNutritionJSON(provider: AIKey, conversationSummary: string): Promise<{
+    dish_name: string; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number;
+  }> {
+    const model = normalizeProviderModel(provider.provider, provider.model);
+    const jsonSchema = {
+      type: "object" as const,
+      properties: {
+        dish_name: { type: "string" as const, description: "Nombre del plato o alimento" },
+        calories_kcal: { type: "number" as const, description: "Calorías totales en kcal" },
+        protein_g: { type: "number" as const, description: "Proteínas en gramos" },
+        carbs_g: { type: "number" as const, description: "Carbohidratos en gramos" },
+        fat_g: { type: "number" as const, description: "Grasas en gramos" },
+      },
+      required: ["dish_name", "calories_kcal", "protein_g", "carbs_g", "fat_g"] as string[],
+      additionalProperties: false,
+    };
+    const extractPrompt = "Basándote en la conversación anterior, devuelve ÚNICAMENTE un JSON con los datos nutricionales estimados. " + conversationSummary;
+
+    if (provider.provider === "openai") {
+      const response = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${provider.api_key}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model,
+          input: [{ role: "user", content: extractPrompt }],
+          text: { format: { type: "json_schema", name: "nutrition", strict: true, schema: jsonSchema } },
+        }),
+      });
+      if (!response.ok) throw new Error(`OpenAI error: ${response.status}`);
+      const data = await response.json();
+      const outputText = data.output?.find((o: Record<string, unknown>) => o.type === "message")
+        ?.content?.find((c: Record<string, unknown>) => c.type === "output_text")?.text;
+      if (!outputText) throw new Error("No se recibió respuesta de OpenAI");
+      return JSON.parse(outputText);
+    }
+
+    if (provider.provider === "anthropic") {
+      const isWeb = Platform.OS === "web";
+      const baseUrl = isWeb
+        ? (process.env.EXPO_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000") + "/chat/providers/anthropic/messages"
+        : "https://api.anthropic.com/v1/messages";
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (isWeb) { headers["x-anthropic-api-key"] = provider.api_key; }
+      else { headers["x-api-key"] = provider.api_key; headers["anthropic-version"] = ANTHROPIC_API_VERSION; }
+      const response = await fetch(baseUrl, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          model,
+          max_tokens: 1024,
+          messages: [{ role: "user", content: extractPrompt }],
+          tool_choice: { type: "tool", name: "extract_nutrition" },
+          tools: [{
+            name: "extract_nutrition",
+            description: "Extrae datos nutricionales del alimento estimado",
+            input_schema: jsonSchema,
+          }],
+        }),
+      });
+      if (!response.ok) throw new Error(`Anthropic error: ${response.status}`);
+      const data = await response.json();
+      const toolBlock = data.content?.find((b: Record<string, unknown>) => b.type === "tool_use");
+      if (!toolBlock?.input) throw new Error("No se recibió respuesta estructurada de Anthropic");
+      return toolBlock.input as { dish_name: string; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number };
+    }
+
+    // Google
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${provider.api_key}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: extractPrompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: jsonSchema,
+          },
+        }),
+      },
+    );
+    if (!response.ok) throw new Error(`Google error: ${response.status}`);
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error("No se recibió respuesta de Google");
+    return JSON.parse(text);
+  }
+
   async function addFoodFromEstimatorJSON() {
     if (foodEstimatorSending) return;
     if (!dietMealEditorCategory) {
       setError("Abre primero 'Añadir alimento' en una comida para rellenar los campos.");
       return;
     }
-
-    setError(null);
-
-    // Try to parse nutrition from the last assistant message first
-    const lastAssistantMsg = [...foodEstimatorMessages].reverse().find((m) => m.role === "assistant" && m.content.trim());
-    let parsed = lastAssistantMsg ? parseFoodEstimatorNutritionJSON(lastAssistantMsg.content) : null;
-
-    // If not found, try all assistant messages
-    if (!parsed) {
-      for (let i = foodEstimatorMessages.length - 1; i >= 0; i--) {
-        const msg = foodEstimatorMessages[i];
-        if (msg.role === "assistant" && msg.content.trim()) {
-          parsed = parseFoodEstimatorNutritionJSON(msg.content);
-          if (parsed) break;
-        }
-      }
-    }
-
-    if (!parsed) {
-      setError("No se encontraron datos nutricionales en la conversación. Pide al modelo que estime los macros primero.");
+    const resolvedProvider = resolveFoodEstimatorProviderFromState();
+    if (!resolvedProvider) {
+      setError("Configura una API key en Proveedor IA para usar esta función.");
       return;
     }
 
-    // Add the food directly to the meal
+    setError(null);
+    setFoodEstimatorSending(true);
+    setFoodEstimatorStatus("Extrayendo datos nutricionales...");
+
     try {
+      // Build a summary of the conversation for the structured output call
+      const conversationSummary = foodEstimatorMessages
+        .filter((m) => m.content.trim())
+        .map((m) => `${m.role === "assistant" ? "Asistente" : "Usuario"}: ${m.content}`)
+        .join("\n");
+
+      const parsed = await requestStructuredNutritionJSON(resolvedProvider, conversationSummary);
+
+      if (!parsed.dish_name || parsed.calories_kcal == null) {
+        setError("El modelo no devolvió datos nutricionales válidos.");
+        return;
+      }
+
+      // Add the food directly to the meal
       const cat = dietMealEditorCategory;
       const newItem: DietItem = {
         id: uid("food"),
         title: parsed.dish_name || "Alimento estimado IA",
         calories_kcal: parsed.calories_kcal,
-        protein_g: parsed.protein_g,
-        carbs_g: parsed.carbs_g,
-        fat_g: parsed.fat_g,
+        protein_g: parsed.protein_g ?? 0,
+        carbs_g: parsed.carbs_g ?? 0,
+        fat_g: parsed.fat_g ?? 0,
       };
       const activeDietDate = selectedDietDate;
       setStore((prev) => {
