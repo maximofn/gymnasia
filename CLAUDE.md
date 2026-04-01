@@ -66,8 +66,14 @@ Run from repo root unless noted.
 - **CORS proxy for Anthropic (browser testing)**:
   - Browser CORS policy blocks direct calls to the Anthropic API.
   - A lightweight proxy is available at `apps/mobile/cors-proxy.py`.
-  - Start it: `python apps/mobile/cors-proxy.py` (requires `fastapi` and `uvicorn` in the Python environment).
+  - The real implementation lives in `apps/anthropic_proxy/cors-proxy.py`; `apps/mobile/cors-proxy.py` is a symlink to that file.
+  - Start it with the project virtualenv interpreter:
+    `apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py`
+  - If the virtualenv is missing, create/install it once:
+    `cd apps/anthropic_proxy && uv venv .venv && .venv/bin/pip install fastapi uvicorn`
   - It runs on `http://127.0.0.1:8000` (the default `EXPO_PUBLIC_API_BASE_URL`).
+  - Quick health check:
+    `curl -sS http://127.0.0.1:8000/health`
   - Proxies `/chat/providers/anthropic/verify`, `/chat/providers/anthropic/messages`, and `/chat/providers/anthropic/models`.
   - OpenAI and Google providers work directly in browser without the proxy.
 - Important caveats for this project:
