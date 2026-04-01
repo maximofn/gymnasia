@@ -8341,11 +8341,27 @@ export default function App() {
         return;
       }
 
-      setMealCaloriesInput(formatNutritionNumber(parsed.calories_kcal));
-      setMealProteinInput(formatNutritionNumber(parsed.protein_g));
-      setMealCarbsInput(formatNutritionNumber(parsed.carbs_g));
-      setMealFatInput(formatNutritionNumber(parsed.fat_g));
-      setMealTitleInput(parsed.dish_name || "Alimento estimado IA");
+      // Add the food directly to the meal
+      const cat = dietMealEditorCategory;
+      const newItem: DietItem = {
+        id: uid("food"),
+        title: parsed.dish_name || "Alimento estimado IA",
+        calories_kcal: parsed.calories_kcal,
+        protein_g: parsed.protein_g,
+        carbs_g: parsed.carbs_g,
+        fat_g: parsed.fat_g,
+      };
+      const activeDietDate = selectedDietDate;
+      setStore((prev) => {
+        const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
+        const existingMeal = currentDay.meals.find((m) => m.title === cat);
+        const updatedMeals = existingMeal
+          ? currentDay.meals.map((m) => m.title === cat ? { ...m, items: [...m.items, newItem] } : m)
+          : [...currentDay.meals, { id: uid("meal"), title: cat, items: [newItem] }].sort((a, b) => DIET_MEAL_CATEGORIES.indexOf(a.title as DietMealCategory) - DIET_MEAL_CATEGORIES.indexOf(b.title as DietMealCategory));
+        return { ...prev, dietByDate: { ...prev.dietByDate, [activeDietDate]: { ...currentDay, meals: updatedMeals } } };
+      });
+      setDietMealEditorCategory(null);
+      setDietAddMode(null);
       setFoodEstimatorProvider(resolvedProvider);
       closeFoodEstimatorModal();
     } catch (err) {
