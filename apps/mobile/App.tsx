@@ -14266,12 +14266,14 @@ export default function App() {
                       macro.total > 0 ? Math.max(0, Math.min(macro.consumed / macro.total, 1)) : 0;
                     return (
                       <View key={macro.key} style={{ flex: 1, gap: 3 }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
-                          {formatNutritionNumber(macro.consumed)}/{formatNutritionNumber(macro.total)}g
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                          {macro.total > 0 ? Math.round((macro.consumed / macro.total) * 100) : 0}%
-                        </Text>
+                        <View style={{ flexDirection: "row", alignItems: "baseline", gap: 4 }}>
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
+                            {formatNutritionNumber(macro.consumed)}/{formatNutritionNumber(macro.total)}g
+                          </Text>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                            {macro.total > 0 ? Math.round((macro.consumed / macro.total) * 100) : 0}%
+                          </Text>
+                        </View>
                         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{macro.label}</Text>
                         <View
                           style={{
