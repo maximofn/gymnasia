@@ -109,6 +109,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Google streaming validation remains blocked by provider-side high demand
+- Failure:
+  After the browser-debug streaming changes, end-to-end validation of Google reasoning tokens could not be completed because Gemini responded with `503` and `This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.`
+- Root cause:
+  The remaining blocker was no longer the app code path but temporary upstream capacity on the Google model, so the stream could not be exercised reliably enough to confirm the final UX in this environment.
+- Exact fix steps/commands:
+  1. Verified current local app state:
+     - confirmed the browser build is using the persisted Google provider with `gemini-3-flash-preview`.
+  2. Attempted validation:
+     - tested browser chat and direct Google requests against the configured model.
+     - both validation attempts were blocked by temporary `503` high-demand responses from Google.
+
 ### 2026-04-01 - Google reasoning and answer now stream incrementally in browser-debug mode
 - Failure:
   Even when Gemini returned thought summaries, the browser-debug build could still show the reasoning block only after the full request finished instead of revealing it progressively.
