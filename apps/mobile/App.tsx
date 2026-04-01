@@ -313,6 +313,7 @@ const DEFAULT_MODELS: Record<Provider, string> = {
   anthropic: "claude-3-5-sonnet-latest",
   google: "gemini-3-flash-preview",
 };
+const LEGACY_GOOGLE_DEFAULT_MODEL = "gemini-1.5-flash";
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
@@ -327,6 +328,15 @@ const FOODS_REPO_BASE_URL =
 const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
 const FOODS_CACHE_KEY = "gymnasia.mobile.foods_repo.v1";
 const PERSONAL_FOODS_STORAGE_KEY = "gymnasia.mobile.personal_foods.v1";
+
+function normalizeProviderModel(provider: Provider, rawModel: string | null | undefined): string {
+  const trimmed = (rawModel ?? "").trim();
+  const model = trimmed || DEFAULT_MODELS[provider];
+  if (provider === "google" && model === LEGACY_GOOGLE_DEFAULT_MODEL) {
+    return DEFAULT_MODELS.google;
+  }
+  return model;
+}
 
 // --- Dev-store file persistence (web only) ---
 // Reads/writes store JSON via Metro middleware so data survives server restarts.
@@ -825,7 +835,7 @@ function resolveProviderByPriority(keys: AIKey[], priority: Provider[]): AIKey |
     return {
       ...configured,
       api_key: apiKey,
-      model: configured.model.trim() || DEFAULT_MODELS[provider],
+      model: normalizeProviderModel(provider, configured.model),
     };
   }
   return null;
@@ -840,7 +850,7 @@ function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
     return {
       ...configured,
       api_key: apiKey,
-      model: configured.model.trim() || DEFAULT_MODELS[provider],
+      model: normalizeProviderModel(provider, configured.model),
     };
   }
   return null;
@@ -863,7 +873,7 @@ function createProviderDraftMap(keys: AIKey[]): Record<Provider, ProviderDraft> 
     const current = byProvider.get(provider);
     acc[provider] = {
       api_key: current?.api_key ?? "",
-      model: current?.model ?? DEFAULT_MODELS[provider],
+      model: normalizeProviderModel(provider, current?.model),
     };
     return acc;
   }, {} as Record<Provider, ProviderDraft>);
@@ -1590,7 +1600,7 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
     return { ok: false, severity: "warning", message: PROVIDER_STATUS_COPY.warningNoKey };
   }
 
-  const model = provider.model.trim() || DEFAULT_MODELS[provider.provider];
+  const model = normalizeProviderModel(provider.provider, provider.model);
   try {
     let response: Response;
     if (provider.provider === "openai") {
@@ -2402,7 +2412,7 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
   }));
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(provider.model || DEFAULT_MODELS.google)}:generateContent?key=${encodeURIComponent(provider.api_key)}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(normalizeProviderModel("google", provider.model))}:generateContent?key=${encodeURIComponent(provider.api_key)}`,
     {
       method: "POST",
       headers: {
@@ -2735,14 +2745,17 @@ async function callProviderChatAPIWithTools(
       options?.onThinkingDelta?.(delta, streamedThinking);
     },
   };
-  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(provider.model || DEFAULT_MODELS.google)}:streamGenerateContent?alt=sse&key=${encodeURIComponent(provider.api_key)}`;
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(normalizeProviderModel("google", provider.model))}:streamGenerateContent?alt=sse&key=${encodeURIComponent(provider.api_key)}`;
 
   const makeGoogleRequest = async (msgs: any[], includeTools: boolean) => {
     const body: any = {
       contents: msgs,
       systemInstruction: { parts: [{ text: systemPrompt }] },
       generationConfig: {
-        thinkingConfig: { includeThoughts: true },
+        thinkingConfig: {
+          includeThoughts: true,
+          thinkingLevel: "high",
+        },
       },
     };
     if (includeTools) body.tools = chatTools.google;
@@ -2847,7 +2860,7 @@ async function callFoodEstimatorAPI(
   onStatus?: (status: string) => void,
   skipImages?: boolean,
 ): Promise<string> {
-  const model = provider.model.trim() || DEFAULT_MODELS[provider.provider];
+  const model = normalizeProviderModel(provider.provider, provider.model);
   const normalizedImages = skipImages ? [] : images
     .filter((image) => image.base64.trim().length > 0)
     .map((image) => ({
@@ -4489,11 +4502,16 @@ function normalizeStore(raw: LocalStore): LocalStore {
 
   const keys: AIKey[] = (["openai", "anthropic", "google"] as Provider[]).map((provider, index) => {
     const item = rawByProvider.get(provider);
+    const rawModel = (item?.model ?? DEFAULT_MODELS[provider]).trim();
+    const normalizedModel =
+      provider === "google" && rawModel === LEGACY_GOOGLE_DEFAULT_MODEL
+        ? DEFAULT_MODELS.google
+        : rawModel;
     return {
       provider,
       is_active: item?.is_active ?? index === 0,
       api_key: (item?.api_key ?? "").trim(),
-      model: (item?.model ?? DEFAULT_MODELS[provider]).trim(),
+      model: normalizedModel,
     };
   });
 
@@ -4599,7 +4617,7 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
   const resolvedProvider = (() => {
     if (preferredProvider) {
       const match = providerKeys.find((k) => k.provider === preferredProvider && k.api_key.trim());
-      if (match) return { ...match, api_key: match.api_key.trim(), model: match.model.trim() || DEFAULT_MODELS[match.provider] };
+      if (match) return { ...match, api_key: match.api_key.trim(), model: normalizeProviderModel(match.provider, match.model) };
     }
     return resolveProviderByPriority(providerKeys, providerPriority ?? FOOD_ESTIMATOR_PROVIDER_PRIORITY);
   })();
@@ -6773,7 +6791,7 @@ export default function App() {
         return {
           ...match,
           api_key: match.api_key.trim(),
-          model: match.model.trim() || DEFAULT_MODELS[match.provider],
+          model: normalizeProviderModel(match.provider, match.model),
         };
       }
     }
@@ -6787,7 +6805,7 @@ export default function App() {
       return {
         ...selectedProviderFromStore,
         api_key: selectedProviderFromStore.api_key.trim(),
-        model: selectedProviderFromStore.model.trim() || DEFAULT_MODELS[selectedProviderFromStore.provider],
+        model: normalizeProviderModel(selectedProviderFromStore.provider, selectedProviderFromStore.model),
       };
     }
     return resolveFoodEstimatorProvider(store.keys);
@@ -8674,7 +8692,7 @@ export default function App() {
     if (!draft) return;
 
     const normalizedApiKey = draft.api_key.trim();
-    const normalizedModel = draft.model.trim() || DEFAULT_MODELS[provider];
+    const normalizedModel = normalizeProviderModel(provider, draft.model);
 
     setActiveProvider(provider);
     setError(null);

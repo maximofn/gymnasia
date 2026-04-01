@@ -109,6 +109,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Google thought summaries now appear more consistently after migrating the legacy default model and raising thinking level
+- Failure:
+  After enabling Gemini streaming, Google chat could still show only the final answer and no visible reasoning tokens.
+- Root cause:
+  Existing saved Google provider configs could still be pinned to the old default `gemini-1.5-flash`, because changing `DEFAULT_MODELS.google` does not rewrite already persisted provider entries. In addition, the streaming request left Gemini's reasoning level fully dynamic, so thought summaries were less likely to appear on simpler prompts.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - added shared model normalization so any persisted Google provider still set to `gemini-1.5-flash` is treated as `gemini-3-flash-preview`.
+     - applied that normalization in store hydration, provider resolution, verification, chat send, and provider-save flows.
+     - set `generationConfig.thinkingConfig.thinkingLevel = "high"` together with `includeThoughts = true` for Google chat streaming.
+  2. Validated:
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-google-thoughts-export`
+
 ### 2026-04-01 - Google streaming no longer sends invalid top-level `thinkingConfig`
 - Failure:
   After enabling Gemini streaming, Google could reject chat requests with `Invalid JSON payload received. Unknown name "thinkingConfig": Cannot find field.`
