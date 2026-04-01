@@ -280,7 +280,7 @@ const DEFAULT_MODELS: Record<Provider, string> = {
   anthropic: "claude-3-5-sonnet-latest",
   google: "gemini-1.5-flash",
 };
-const ANTHROPIC_API_VERSION = "2025-01-01";
+const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];

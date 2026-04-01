@@ -98,6 +98,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Anthropic API key save no longer fails with invalid `anthropic-version`
+- Failure:
+  Saving an Anthropic API key from `Configuración > Proveedor IA` failed with `Error grave: anthropic-version: "2025-01-01" is not a valid version`.
+- Root cause:
+  `apps/mobile/App.tsx` was sending the unsupported header value `anthropic-version: 2025-01-01` in Anthropic verification, model loading, and chat requests. Anthropic's documented stable API version remains `2023-06-01`.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - changed `ANTHROPIC_API_VERSION` from `2025-01-01` to `2023-06-01` so all Anthropic requests use a valid version header.
+  2. Attempted mobile TypeScript validation:
+     `npm --workspace apps/mobile exec tsc --noEmit`
+     - current repo state still has unrelated pre-existing TypeScript errors in `apps/mobile/App.tsx`; this fix does not add new ones.
+
 ### 2026-03-02 - Mobile web chat no longer suggests running a local API for no-backend provider flows
 - Failure:
   In browser mode, the mobile chat showed `No se pudo conectar con proxy API (http://127.0.0.1:8000). Inicia 'npm run dev:api'...`, which was misleading for the intended no-backend architecture.
