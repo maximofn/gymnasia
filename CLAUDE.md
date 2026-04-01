@@ -1,5 +1,10 @@
 See [AGENTS.md](./AGENTS.md) for full project instructions.
 
+## Mantenimiento de CLAUDE.md
+
+- Actualizar este archivo cuando haya cambios significativos en la configuración o setup del proyecto.
+- Documentar aquí soluciones a problemas que se presenten durante el desarrollo, para no repetir errores.
+
 ## Git
 
 - Siempre hacer commit y push después de completar un cambio, sin preguntar.
