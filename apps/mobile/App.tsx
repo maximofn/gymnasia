@@ -3392,7 +3392,7 @@ function StatCard({ label, value, subtitle, subtitleColor, icon, subtitleIcon, o
         {icon}
         <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>{label}</Text>
       </View>
-      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "700" }}>{value}</Text>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 17, fontWeight: "700" }}>{value}</Text>
       {subtitle ? (
         <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 5, marginTop: "auto" }}>
           {subtitleIcon}
