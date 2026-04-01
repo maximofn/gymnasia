@@ -109,6 +109,25 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - `Añadir alimento con IA` now reuses the main chat component and streams reasoning/output live
+- Failure:
+  The normal chat already showed the live assistant draft, the `Razonamiento` bubble, and incremental output tokens, but the `Añadir alimento con IA` chat still used a separate simplified UI that only appended the final assistant response after the request finished.
+- Root cause:
+  `apps/mobile/App.tsx` duplicated the food-estimator chat UI instead of reusing the main chat surface, and `sendFoodEstimatorMessage()` only managed `foodEstimatorSending`/`foodEstimatorStatus` plus a final assistant append, with no draft assistant message, no `thinking`, and no shared rendering contract.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - extracted the shared chat transcript + composer UI into a reusable `SharedChatPanel` component inside `App.tsx`.
+     - switched the main coach chat to use that shared component without changing its streaming behavior.
+     - switched the food-estimator modal chat to the same shared component, including expandable reasoning bubbles and the same streaming assistant bubble pattern.
+     - changed `sendFoodEstimatorMessage()` to create/update an assistant draft with `is_streaming` and `thinking`, instead of waiting for a final response.
+     - upgraded `callFoodEstimatorAPI()` to stream OpenAI, Anthropic, and Google responses so the estimator chat can render live reasoning/output deltas.
+     - kept a fallback pending-status bubble for non-chat operations like `Devuelve json`, where there is no assistant draft message.
+     - changed food-estimator follow-ups to skip re-sending images only after a real model response already exists, instead of treating the initial helper message as a follow-up.
+  2. Validated:
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-shared-chat-export`
+     - `npm --workspace apps/mobile exec tsc --noEmit`
+       - still fails because of unrelated pre-existing `apps/mobile/App.tsx` errors outside this change.
+
 ### 2026-04-01 - OpenAI food estimator no longer sends invalid `assistant` content parts
 - Failure:
   After migrating the OpenAI food estimator to `Responses API`, the estimator could fail with `Invalid value: 'input_text'. Supported values are: 'output_text' and 'refusal'.`

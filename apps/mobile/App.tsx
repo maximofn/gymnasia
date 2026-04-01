@@ -3551,13 +3551,17 @@ const foodEstimatorTools = {
   ],
 };
 
+type FoodEstimatorCallOptions = StreamingHandlers & {
+  onStatus?: (status: string) => void;
+};
+
 async function callFoodEstimatorAPI(
   provider: AIKey,
   messages: ChatInputMessage[],
   images: FoodEstimatorImage[],
-  onStatus?: (status: string) => void,
+  options?: FoodEstimatorCallOptions,
   skipImages?: boolean,
-): Promise<string> {
+): Promise<AnthropicChatResult> {
   const model = normalizeProviderModel(provider.provider, provider.model);
   const normalizedImages = skipImages ? [] : images
     .filter((image) => image.base64.trim().length > 0)
@@ -3614,6 +3618,19 @@ async function callFoodEstimatorAPI(
           ],
         };
       });
+    let streamedContent = "";
+    let streamedThinking = "";
+    const streamHandlers: StreamingHandlers = {
+      onContentDelta: (delta) => {
+        streamedContent += delta;
+        options?.onContentDelta?.(delta, streamedContent);
+      },
+      onThinkingDelta: (delta) => {
+        streamedThinking += delta;
+        options?.onThinkingDelta?.(delta, streamedThinking);
+      },
+    };
+    const reasoning = buildOpenAIReasoningConfig(provider);
 
     const makeRequest = async (
       input: Array<Record<string, unknown>>,
@@ -3625,36 +3642,55 @@ async function callFoodEstimatorAPI(
         input,
         tools: foodEstimatorTools.openai,
       };
+      if (reasoning) {
+        body.reasoning = reasoning;
+      }
       if (previousResponseId) {
         body.previous_response_id = previousResponseId;
       }
-      const res = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${provider.api_key}` },
-        body: JSON.stringify(body),
-      });
-      let p: any = null;
-      try { p = await res.json(); } catch {}
-      if (!res.ok) throw new Error(extractErrorMessage(p, `OpenAI error (${res.status})`));
-      return p;
+      if (Platform.OS === "web") {
+        return streamOpenAIRequestViaFetch(
+          "https://api.openai.com/v1/responses",
+          {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+            Authorization: `Bearer ${provider.api_key}`,
+          },
+          body,
+          streamHandlers,
+          "No se pudo conectar con OpenAI.",
+          "OpenAI error",
+        );
+      }
+      return streamOpenAIRequestViaXHR(
+        "https://api.openai.com/v1/responses",
+        {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+          Authorization: `Bearer ${provider.api_key}`,
+        },
+        body,
+        streamHandlers,
+        "No se pudo conectar con OpenAI.",
+        "OpenAI error",
+      );
     };
 
-    onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
+    options?.onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
     let payload = await makeRequest(openAIInputs, null);
     for (let round = 0; round < 5; round++) {
-      const outputItems = parseOpenAIResponseOutputItems(payload);
-      const toolCalls = outputItems.filter(
+      const toolCalls = payload.outputItems.filter(
         (item): item is OpenAIFunctionCallOutputItem => item.type === "function_call",
       );
       if (toolCalls.length === 0) break;
-      const responseId = typeof payload?.id === "string" ? payload.id : null;
+      const responseId = payload.responseId;
       if (!responseId) {
         throw new Error("OpenAI no devolvio response_id para continuar la estimación.");
       }
       const toolOutputs: Array<Record<string, unknown>> = [];
       for (const toolCall of toolCalls) {
         const toolName = toolCall.name ?? "";
-        onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
+        options?.onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
         const args = parseOpenAIFunctionArguments(toolCall.arguments);
         const result = await handleFoodEstimatorToolCall(toolName, args);
         toolOutputs.push({
@@ -3663,13 +3699,14 @@ async function callFoodEstimatorAPI(
           output: result,
         });
       }
-      onStatus?.("Procesando resultado...");
+      options?.onStatus?.("Procesando resultado...");
       payload = await makeRequest(toolOutputs, responseId);
     }
 
-    const result = parseOpenAIResponseResult(payload);
-    if (!result?.content) throw new Error("OpenAI no devolvio contenido.");
-    return result.content;
+    const content = streamedContent.trim() || payload.content;
+    const thinking = streamedThinking.trim() || payload.thinking || null;
+    if (!content) throw new Error("OpenAI no devolvio contenido.");
+    return { content, thinking };
   }
 
   if (provider.provider === "anthropic") {
@@ -3698,47 +3735,71 @@ async function callFoodEstimatorAPI(
         ],
       };
     });
-
-    if (Platform.OS === "web") {
-      const textOnlyMessages = nonSystemMessages.map((msg) => ({
-        role: msg.role === "assistant" ? "assistant" : "user",
-        content: msg.content.trim() || "Analiza esta comida y estima los valores solicitados.",
-      })) as Array<{ role: "assistant" | "user"; content: string }>;
-      const webResult = await callAnthropicViaWebProxy(provider, FOOD_ESTIMATOR_SYSTEM_PROMPT, textOnlyMessages);
-      return webResult.content;
-    }
-
-    const anthropicHeaders = {
-      "Content-Type": "application/json",
-      "x-api-key": provider.api_key,
-      "anthropic-version": ANTHROPIC_API_VERSION,
+    let streamedContent = "";
+    let streamedThinking = "";
+    const streamHandlers: StreamingHandlers = {
+      onContentDelta: (delta) => {
+        streamedContent += delta;
+        options?.onContentDelta?.(delta, streamedContent);
+      },
+      onThinkingDelta: (delta) => {
+        streamedThinking += delta;
+        options?.onThinkingDelta?.(delta, streamedThinking);
+      },
     };
     let currentMessages = buildAnthropicMessages();
     const makeRequest = async (msgs: any[]) => {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: anthropicHeaders,
-        body: JSON.stringify({
-          model, max_tokens: 1200, system: FOOD_ESTIMATOR_SYSTEM_PROMPT,
-          messages: msgs, tools: foodEstimatorTools.anthropic,
-        }),
-      });
-      let p: any = null;
-      try { p = await res.json(); } catch {}
-      if (!res.ok) throw new Error(extractErrorMessage(p, `Anthropic error (${res.status})`));
-      return p;
+      const body: Record<string, unknown> = {
+        model,
+        max_tokens: 1200 + ANTHROPIC_THINKING_BUDGET,
+        thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
+        system: FOOD_ESTIMATOR_SYSTEM_PROMPT,
+        messages: msgs,
+        tools: foodEstimatorTools.anthropic,
+      };
+      if (Platform.OS === "web") {
+        return streamAnthropicRequestViaXHR(
+          buildWebProxyUrl("/chat/providers/anthropic/messages"),
+          {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+          },
+          {
+            api_key: provider.api_key,
+            ...body,
+          },
+          streamHandlers,
+          ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE,
+          "Proxy Anthropic error",
+        );
+      }
+      return streamAnthropicRequestViaXHR(
+        "https://api.anthropic.com/v1/messages",
+        {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+          "x-api-key": provider.api_key,
+          "anthropic-version": ANTHROPIC_API_VERSION,
+        },
+        body,
+        streamHandlers,
+        "No se pudo conectar con Anthropic.",
+        "Anthropic error",
+      );
     };
 
-    onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
+    options?.onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
     let payload = await makeRequest(currentMessages);
     for (let round = 0; round < 5; round++) {
-      const contentBlocks = payload?.content as any[] | undefined;
-      const toolUseBlocks = contentBlocks?.filter((b: any) => b.type === "tool_use") ?? [];
+      const contentBlocks = payload.contentBlocks;
+      const toolUseBlocks = contentBlocks.filter(
+        (block): block is AnthropicToolUseBlock => block.type === "tool_use",
+      );
       if (toolUseBlocks.length === 0) break;
       const toolResults: any[] = [];
       for (const block of toolUseBlocks) {
         const toolName = block.name ?? "";
-        onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
+        options?.onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
         const result = await handleFoodEstimatorToolCall(toolName, block.input ?? {});
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
       }
@@ -3747,13 +3808,14 @@ async function callFoodEstimatorAPI(
         { role: "assistant", content: contentBlocks },
         { role: "user", content: toolResults },
       ];
-      onStatus?.("Procesando resultado...");
+      options?.onStatus?.("Procesando resultado...");
       payload = await makeRequest(currentMessages);
     }
 
-    const result = parseAnthropicContent(payload);
-    if (!result) throw new Error("Anthropic no devolvio contenido.");
-    return result.content;
+    const content = streamedContent.trim() || payload.content;
+    const thinking = streamedThinking.trim() || payload.thinking || null;
+    if (!content) throw new Error("Anthropic no devolvio contenido.");
+    return { content, thinking };
   }
 
   // --- GOOGLE ---
@@ -3775,49 +3837,90 @@ async function callFoodEstimatorAPI(
       ],
     };
   });
-
-  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(provider.api_key)}`;
+  let streamedContent = "";
+  let streamedThinking = "";
+  const streamHandlers: StreamingHandlers = {
+    onContentDelta: (delta) => {
+      streamedContent += delta;
+      options?.onContentDelta?.(delta, streamedContent);
+    },
+    onThinkingDelta: (delta) => {
+      streamedThinking += delta;
+      options?.onThinkingDelta?.(delta, streamedThinking);
+    },
+  };
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse&key=${encodeURIComponent(provider.api_key)}`;
   const makeGoogleRequest = async (contents: any[]) => {
-    const res = await fetch(googleUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents,
-        systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }] },
-        tools: foodEstimatorTools.google,
-      }),
-    });
-    let p: any = null;
-    try { p = await res.json(); } catch {}
-    if (!res.ok) throw new Error(extractErrorMessage(p, `Google AI error (${res.status})`));
-    return p;
+    const body = {
+      contents,
+      systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }] },
+      tools: foodEstimatorTools.google,
+      generationConfig: {
+        thinkingConfig: {
+          includeThoughts: true,
+          thinkingLevel: "high",
+        },
+      },
+    };
+    if (Platform.OS === "web") {
+      return streamGoogleRequestViaFetch(
+        googleUrl,
+        {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body,
+        streamHandlers,
+        "No se pudo conectar con Google AI.",
+        "Google AI error",
+      );
+    }
+    return streamGoogleRequestViaXHR(
+      googleUrl,
+      {
+        "Content-Type": "application/json",
+        Accept: "text/event-stream",
+      },
+      body,
+      streamHandlers,
+      "No se pudo conectar con Google AI.",
+      "Google AI error",
+    );
   };
 
-  onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
-  let payload: any = await makeGoogleRequest(googleContents);
+  options?.onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
+  let payload: GoogleStreamTurnResult = await makeGoogleRequest(googleContents);
   for (let round = 0; round < 5; round++) {
-    const candidate = payload?.candidates?.[0];
-    const parts = candidate?.content?.parts ?? [];
-    const functionCalls = parts.filter((p: any) => p.functionCall);
+    const functionCalls = payload.modelParts.filter(
+      (part): part is GoogleResponsePart & { functionCall: GoogleFunctionCall } =>
+        Boolean(part.functionCall?.name),
+    );
     if (functionCalls.length === 0) break;
-    googleContents.push({ role: "model", parts });
+    const modelParts = payload.modelParts
+      .map(mapGoogleResponsePartToRequestPart)
+      .filter((part: Record<string, unknown> | null): part is Record<string, unknown> => Boolean(part));
+    googleContents.push({
+      role: "model",
+      parts: modelParts,
+    });
     const functionResponseParts: any[] = [];
-    for (const fc of functionCalls) {
-      const toolName = fc.functionCall.name ?? "";
-      onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
-      const result = await handleFoodEstimatorToolCall(toolName, fc.functionCall.args ?? {});
+    for (const part of functionCalls) {
+      const toolName = part.functionCall.name ?? "";
+      options?.onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
+      const result = await handleFoodEstimatorToolCall(toolName, part.functionCall.args ?? {});
       functionResponseParts.push({
         functionResponse: { name: toolName, response: { result } },
       });
     }
     googleContents.push({ role: "user", parts: functionResponseParts });
-    onStatus?.("Procesando resultado...");
+    options?.onStatus?.("Procesando resultado...");
     payload = await makeGoogleRequest(googleContents);
   }
 
-  const content = parseGoogleContent(payload);
+  const content = streamedContent.trim() || payload.content;
+  const thinking = streamedThinking.trim() || payload.thinking || null;
   if (!content) throw new Error("Google AI no devolvio contenido.");
-  return content;
+  return { content, thinking };
 }
 
 function uid(prefix: string): string {
@@ -5608,6 +5711,345 @@ function useThinkingLabel(active: boolean): string {
   return THINKING_VERBS[index];
 }
 
+type SharedChatPanelProps = {
+  variant: "coach" | "estimator";
+  messages: ChatMessage[];
+  inputValue: string;
+  onInputChange: (value: string) => void;
+  onSend: () => void;
+  sendDisabled: boolean;
+  sendLabel: string;
+  inputPlaceholder: string;
+  streamingIndicatorLabel: string;
+  expandedThinking: Record<string, boolean>;
+  onToggleThinking: (messageId: string) => void;
+  pendingStatusMessage?: string | null;
+  scrollRef?: React.RefObject<ScrollView | null>;
+};
+
+function SharedChatPanel({
+  variant,
+  messages,
+  inputValue,
+  onInputChange,
+  onSend,
+  sendDisabled,
+  sendLabel,
+  inputPlaceholder,
+  streamingIndicatorLabel,
+  expandedThinking,
+  onToggleThinking,
+  pendingStatusMessage,
+  scrollRef,
+}: SharedChatPanelProps) {
+  const isEstimator = variant === "estimator";
+  const hasStreamingMessage = messages.some((message) => message.is_streaming);
+
+  return (
+    <View style={{ gap: isEstimator ? 8 : 12 }}>
+      {isEstimator ? (
+        <View
+          style={{
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+            borderRadius: mobileTheme.radius.md,
+            backgroundColor: mobileTheme.color.bgApp,
+            minHeight: 180,
+            maxHeight: 260,
+            padding: 8,
+          }}
+        >
+          <ScrollView
+            ref={scrollRef}
+            style={{ maxHeight: 244 }}
+            contentContainerStyle={{ gap: 8, paddingBottom: 6 }}
+            nestedScrollEnabled
+            onContentSizeChange={() => scrollRef?.current?.scrollToEnd({ animated: true })}
+          >
+            {messages.map((msg) => {
+              const isAssistant = msg.role === "assistant";
+              return (
+                <View
+                  key={msg.id}
+                  style={{
+                    gap: 4,
+                    alignSelf: isAssistant ? "flex-start" : "flex-end",
+                    maxWidth: "92%",
+                  }}
+                >
+                  {isAssistant && msg.thinking ? (
+                    <Pressable
+                      onPress={() => onToggleThinking(msg.id)}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "rgba(147,112,219,0.35)",
+                        backgroundColor: "rgba(147,112,219,0.06)",
+                        borderRadius: mobileTheme.radius.md,
+                        padding: 10,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                        <Feather name="cpu" size={12} color="rgba(147,112,219,0.8)" />
+                        <Text style={{ color: "rgba(147,112,219,0.8)", fontSize: 12, fontWeight: "600", flex: 1 }}>
+                          Razonamiento
+                        </Text>
+                        <Feather
+                          name={expandedThinking[msg.id] ? "chevron-up" : "chevron-down"}
+                          size={14}
+                          color="rgba(147,112,219,0.6)"
+                        />
+                      </View>
+                      {expandedThinking[msg.id] ? (
+                        <ScrollView style={{ maxHeight: 200, marginTop: 8 }} nestedScrollEnabled>
+                          <Text
+                            style={{
+                              color: mobileTheme.color.textSecondary,
+                              fontSize: 13,
+                              lineHeight: 18,
+                              fontStyle: "italic",
+                            }}
+                          >
+                            {msg.thinking}
+                          </Text>
+                        </ScrollView>
+                      ) : null}
+                    </Pressable>
+                  ) : null}
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderColor: isAssistant
+                        ? mobileTheme.color.borderSubtle
+                        : "rgba(203,255,26,0.45)",
+                      backgroundColor: isAssistant
+                        ? mobileTheme.color.bgSurface
+                        : "rgba(203,255,26,0.08)",
+                      borderRadius: 12,
+                      paddingHorizontal: 10,
+                      paddingVertical: 8,
+                    }}
+                  >
+                    {msg.content.trim() ? (
+                      <Text style={{ color: mobileTheme.color.textPrimary, lineHeight: 19 }}>
+                        {msg.content}
+                      </Text>
+                    ) : null}
+                    {msg.is_streaming ? (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 8,
+                          marginTop: msg.content.trim() ? 8 : 2,
+                        }}
+                      >
+                        <ActivityIndicator size="small" color={mobileTheme.color.textSecondary} />
+                        <Text
+                          style={{
+                            color: mobileTheme.color.textSecondary,
+                            fontSize: 13,
+                            lineHeight: 19,
+                            fontStyle: "italic",
+                          }}
+                        >
+                          {streamingIndicatorLabel}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                </View>
+              );
+            })}
+            {pendingStatusMessage && !hasStreamingMessage ? (
+              <View
+                style={{
+                  alignSelf: "flex-start",
+                  maxWidth: "92%",
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgSurface,
+                  borderRadius: 12,
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
+                }}
+              >
+                <Text style={{ color: mobileTheme.color.textSecondary, lineHeight: 19, fontStyle: "italic" }}>
+                  {pendingStatusMessage}
+                </Text>
+              </View>
+            ) : null}
+          </ScrollView>
+        </View>
+      ) : (
+        <ScrollView
+          ref={scrollRef}
+          style={{ maxHeight: 360 }}
+          contentContainerStyle={{ gap: 8 }}
+          nestedScrollEnabled
+          onContentSizeChange={() => scrollRef?.current?.scrollToEnd({ animated: true })}
+        >
+          {messages.map((msg) => (
+            <View key={msg.id} style={{ gap: 4 }}>
+              {msg.role === "assistant" && msg.thinking ? (
+                <Pressable
+                  onPress={() => onToggleThinking(msg.id)}
+                  style={{
+                    borderWidth: 1,
+                    borderColor: "rgba(147,112,219,0.35)",
+                    backgroundColor: "rgba(147,112,219,0.06)",
+                    borderRadius: mobileTheme.radius.md,
+                    padding: 10,
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <Feather name="cpu" size={12} color="rgba(147,112,219,0.8)" />
+                    <Text style={{ color: "rgba(147,112,219,0.8)", fontSize: 12, fontWeight: "600", flex: 1 }}>
+                      Razonamiento
+                    </Text>
+                    <Feather
+                      name={expandedThinking[msg.id] ? "chevron-up" : "chevron-down"}
+                      size={14}
+                      color="rgba(147,112,219,0.6)"
+                    />
+                  </View>
+                  {expandedThinking[msg.id] ? (
+                    <ScrollView style={{ maxHeight: 200, marginTop: 8 }} nestedScrollEnabled>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 18, fontStyle: "italic" }}>
+                        {msg.thinking}
+                      </Text>
+                    </ScrollView>
+                  ) : null}
+                </Pressable>
+              ) : null}
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor:
+                    msg.role === "assistant"
+                      ? "rgba(203,255,26,0.45)"
+                      : mobileTheme.color.borderSubtle,
+                  backgroundColor:
+                    msg.role === "assistant"
+                      ? "rgba(203,255,26,0.08)"
+                      : mobileTheme.color.bgSurface,
+                  borderRadius: mobileTheme.radius.md,
+                  padding: 10,
+                }}
+              >
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{msg.role}</Text>
+                {msg.content.trim() ? (
+                  <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
+                ) : null}
+                {msg.is_streaming ? (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                      marginTop: msg.content.trim() ? 8 : 4,
+                    }}
+                  >
+                    <ActivityIndicator size="small" color={mobileTheme.color.textSecondary} />
+                    <Text
+                      style={{
+                        color: mobileTheme.color.textSecondary,
+                        fontSize: 13,
+                        fontStyle: "italic",
+                      }}
+                    >
+                      {streamingIndicatorLabel}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            </View>
+          ))}
+          {pendingStatusMessage && !hasStreamingMessage ? (
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+                backgroundColor: mobileTheme.color.bgSurface,
+                borderRadius: mobileTheme.radius.md,
+                padding: 10,
+              }}
+            >
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontStyle: "italic" }}>
+                {pendingStatusMessage}
+              </Text>
+            </View>
+          ) : null}
+        </ScrollView>
+      )}
+
+      {isEstimator ? (
+        <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
+          <TextInput
+            style={{
+              flex: 1,
+              minHeight: 44,
+              maxHeight: 120,
+              borderRadius: mobileTheme.radius.md,
+              borderWidth: 1,
+              borderColor: mobileTheme.color.borderSubtle,
+              backgroundColor: mobileTheme.color.bgApp,
+              color: mobileTheme.color.textPrimary,
+              paddingHorizontal: 12,
+              paddingTop: 10,
+              paddingBottom: 10,
+            }}
+            value={inputValue}
+            onChangeText={onInputChange}
+            placeholder={inputPlaceholder}
+            placeholderTextColor={mobileTheme.color.textSecondary}
+            multiline
+          />
+          <Pressable
+            onPress={onSend}
+            disabled={sendDisabled}
+            style={{
+              minWidth: 92,
+              height: 44,
+              borderRadius: mobileTheme.radius.md,
+              backgroundColor: mobileTheme.color.brandPrimary,
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: sendDisabled ? 0.7 : 1,
+            }}
+          >
+            <Text style={{ color: "#06090D", fontWeight: "800" }}>{sendLabel}</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <>
+          <TextInput
+            style={{
+              minHeight: 44,
+              maxHeight: 120,
+              borderRadius: mobileTheme.radius.md,
+              borderWidth: 1,
+              borderColor: mobileTheme.color.borderSubtle,
+              backgroundColor: mobileTheme.color.bgSurface,
+              color: mobileTheme.color.textPrimary,
+              paddingHorizontal: 12,
+              paddingVertical: 10,
+              textAlignVertical: "top",
+            }}
+            value={inputValue}
+            onChangeText={onInputChange}
+            placeholder={inputPlaceholder}
+            placeholderTextColor={mobileTheme.color.textSecondary}
+            multiline
+            blurOnSubmit={false}
+          />
+
+          <PrimaryButton label={sendLabel} onPress={onSend} disabled={sendDisabled} />
+        </>
+      )}
+    </View>
+  );
+}
+
 export default function App() {
   const [tab, setTab] = useState<TabKey>("home");
   const [loading, setLoading] = useState(true);
@@ -5653,7 +6095,9 @@ export default function App() {
   const [foodEstimatorSending, setFoodEstimatorSending] = useState(false);
   const [foodEstimatorStatus, setFoodEstimatorStatus] = useState("");
   const foodThinkingLabel = useThinkingLabel(foodEstimatorSending);
+  const [foodEstimatorExpandedThinking, setFoodEstimatorExpandedThinking] = useState<Record<string, boolean>>({});
   const [foodEstimatorHasLLMResponse, setFoodEstimatorHasLLMResponse] = useState(false);
+  const foodEstimatorScrollRef = useRef<ScrollView>(null);
   const [weightInput, setWeightInput] = useState("");
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
   const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
@@ -7576,6 +8020,7 @@ export default function App() {
     setFoodEstimatorInput("");
     setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     setFoodEstimatorHasLLMResponse(false);
+    setFoodEstimatorExpandedThinking({});
     setFoodEstimatorMessages([
       {
         id: uid("food_est_msg"),
@@ -7593,6 +8038,7 @@ export default function App() {
   function closeFoodEstimatorModal() {
     setFoodEstimatorModalOpen(false);
     setFoodEstimatorSending(false); setFoodEstimatorStatus("");
+    setFoodEstimatorExpandedThinking({});
   }
 
   function removeFoodEstimatorImage(imageId: string) {
@@ -7698,15 +8144,26 @@ export default function App() {
       return;
     }
 
+    const assistantMessageId = uid("food_est_msg");
+    let draftFlushTimer: ReturnType<typeof setTimeout> | null = null;
     const userMessage: ChatMessage = {
       id: uid("food_est_msg"),
       role: "user",
       content: userInput || "Analiza las fotos y dame una estimación nutricional.",
       created_at: new Date().toISOString(),
     };
+    const assistantDraft: ChatMessage = {
+      id: assistantMessageId,
+      role: "assistant",
+      content: "",
+      thinking: null,
+      is_streaming: true,
+      created_at: userMessage.created_at,
+    };
     const nextMessages = [...foodEstimatorMessages, userMessage];
     setFoodEstimatorProvider(resolvedProvider);
-    setFoodEstimatorMessages(nextMessages);
+    setFoodEstimatorMessages([...nextMessages, assistantDraft]);
+    setFoodEstimatorExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: true }));
     if (!forcedMessage) {
       setFoodEstimatorInput("");
     }
@@ -7715,6 +8172,49 @@ export default function App() {
     setError(null);
 
     try {
+      let draftContent = "";
+      let draftThinking: string | null = null;
+      const flushAssistantDraft = (force = false) => {
+        const apply = () => {
+          const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
+          setFoodEstimatorMessages((prev) => prev.map((message) => {
+            if (message.id !== assistantMessageId) return message;
+            if (
+              message.content === draftContent
+              && (message.thinking ?? null) === nextThinking
+              && message.is_streaming
+            ) {
+              return message;
+            }
+            return {
+              ...message,
+              content: draftContent,
+              thinking: nextThinking,
+              is_streaming: true,
+            };
+          }));
+        };
+
+        if (force) {
+          if (draftFlushTimer) {
+            clearTimeout(draftFlushTimer);
+            draftFlushTimer = null;
+          }
+          apply();
+          return;
+        }
+
+        if (draftFlushTimer) return;
+        draftFlushTimer = setTimeout(() => {
+          draftFlushTimer = null;
+          apply();
+        }, 40);
+      };
+      const resetAssistantDraft = () => {
+        draftContent = "";
+        draftThinking = null;
+        flushAssistantDraft(true);
+      };
       const estimatorHistory: ChatInputMessage[] = [
         { role: "system", content: FOOD_ESTIMATOR_SYSTEM_PROMPT },
         ...nextMessages.map<ChatInputMessage>((message) => ({
@@ -7722,19 +8222,32 @@ export default function App() {
           content: message.content,
         })),
       ];
-      const isFollowUp = foodEstimatorMessages.some((m) => m.role === "assistant");
-      let assistantContent: string | null = null;
+      const skipImages = foodEstimatorHasLLMResponse;
+      let assistantResult: AnthropicChatResult | null = null;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
-          assistantContent = await callFoodEstimatorAPI(
+          if (attempt > 0) {
+            resetAssistantDraft();
+          }
+          assistantResult = await callFoodEstimatorAPI(
             resolvedProvider,
             estimatorHistory,
             foodEstimatorImages,
-            setFoodEstimatorStatus,
-            isFollowUp,
+            {
+              onStatus: setFoodEstimatorStatus,
+              onContentDelta: (_delta, aggregate) => {
+                draftContent = aggregate;
+                flushAssistantDraft();
+              },
+              onThinkingDelta: (_delta, aggregate) => {
+                draftThinking = aggregate;
+                flushAssistantDraft();
+              },
+            },
+            skipImages,
           );
-          if (assistantContent && assistantContent.trim().length > 0) break;
-          assistantContent = null;
+          if (assistantResult && assistantResult.content.trim().length > 0) break;
+          assistantResult = null;
         } catch (retryErr) {
           const msg = retryErr instanceof Error ? retryErr.message : "";
           const isRetryable = /high demand|overloaded|rate.?limit|529|503|429|failed to fetch|network|timeout|econnrefused|econnreset/i.test(msg);
@@ -7743,32 +8256,48 @@ export default function App() {
           await new Promise((r) => setTimeout(r, (attempt + 1) * 2000));
         }
       }
-      if (!assistantContent || assistantContent.trim().length === 0) {
+      if (!assistantResult || assistantResult.content.trim().length === 0) {
         throw new Error("El modelo no devolvió contenido. Intenta reformular tu mensaje.");
       }
-      const assistantMessage: ChatMessage = {
-        id: uid("food_est_msg"),
-        role: "assistant",
-        content: assistantContent,
-        created_at: new Date().toISOString(),
-      };
+      if (draftFlushTimer) {
+        clearTimeout(draftFlushTimer);
+        draftFlushTimer = null;
+      }
       setFoodEstimatorHasLLMResponse(true);
-      setFoodEstimatorMessages((prev) => [...prev, assistantMessage]);
+      setFoodEstimatorMessages((prev) => prev.map((message) => (
+        message.id === assistantMessageId
+          ? {
+              ...message,
+              content: assistantResult.content,
+              thinking: assistantResult.thinking,
+              is_streaming: false,
+            }
+          : message
+      )));
+      if (assistantResult.thinking?.trim()) {
+        setFoodEstimatorExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: false }));
+      }
     } catch (err) {
+      if (draftFlushTimer) {
+        clearTimeout(draftFlushTimer);
+        draftFlushTimer = null;
+      }
       const message =
         err instanceof Error
           ? err.message
           : "No se pudo estimar la comida con IA. Revisa tu API key y vuelve a intentarlo.";
       setError(message);
-      setFoodEstimatorMessages((prev) => [
-        ...prev,
-        {
-          id: uid("food_est_msg"),
-          role: "assistant",
-          content: `Error de estimación: ${message}`,
-          created_at: new Date().toISOString(),
-        },
-      ]);
+      setFoodEstimatorMessages((prev) => prev.map((entry) => (
+        entry.id === assistantMessageId
+          ? {
+              ...entry,
+              content: `Error de estimación: ${message}`,
+              thinking: null,
+              is_streaming: false,
+            }
+          : entry
+      )));
+      setFoodEstimatorExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: false }));
     } finally {
       setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     }
@@ -7798,14 +8327,14 @@ export default function App() {
         })),
         { role: "user", content: "Devuelve json" },
       ];
-      const assistantContent = await callFoodEstimatorAPI(
+      const assistantResult = await callFoodEstimatorAPI(
         resolvedProvider,
         estimatorHistory,
         foodEstimatorImages,
-        setFoodEstimatorStatus,
+        { onStatus: setFoodEstimatorStatus },
       );
       setFoodEstimatorStatus("Interpretando datos...");
-      const parsed = parseFoodEstimatorNutritionJSON(assistantContent);
+      const parsed = parseFoodEstimatorNutritionJSON(assistantResult.content);
       if (!parsed) {
         setError("No se pudo interpretar JSON del modelo. Repite la estimación y vuelve a intentar.");
         return;
@@ -14694,116 +15223,21 @@ export default function App() {
                 </Pressable>
               </View>
 
-              <ScrollView
-                ref={chatScrollRef}
-                style={{ maxHeight: 360 }}
-                contentContainerStyle={{ gap: 8 }}
-                nestedScrollEnabled
-                onContentSizeChange={() => chatScrollRef.current?.scrollToEnd({ animated: true })}
-              >
-                {messages.map((msg) => (
-                  <View key={msg.id} style={{ gap: 4 }}>
-                    {msg.role === "assistant" && msg.thinking ? (
-                      <Pressable
-                        onPress={() => setExpandedThinking((prev) => ({ ...prev, [msg.id]: !prev[msg.id] }))}
-                        style={{
-                          borderWidth: 1,
-                          borderColor: "rgba(147,112,219,0.35)",
-                          backgroundColor: "rgba(147,112,219,0.06)",
-                          borderRadius: mobileTheme.radius.md,
-                          padding: 10,
-                        }}
-                      >
-                        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                          <Feather name="cpu" size={12} color="rgba(147,112,219,0.8)" />
-                          <Text style={{ color: "rgba(147,112,219,0.8)", fontSize: 12, fontWeight: "600", flex: 1 }}>
-                            Razonamiento
-                          </Text>
-                          <Feather
-                            name={expandedThinking[msg.id] ? "chevron-up" : "chevron-down"}
-                            size={14}
-                            color="rgba(147,112,219,0.6)"
-                          />
-                        </View>
-                        {expandedThinking[msg.id] ? (
-                          <ScrollView style={{ maxHeight: 200, marginTop: 8 }} nestedScrollEnabled>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 18, fontStyle: "italic" }}>
-                              {msg.thinking}
-                            </Text>
-                          </ScrollView>
-                        ) : null}
-                      </Pressable>
-                    ) : null}
-                    <View
-                      style={{
-                        borderWidth: 1,
-                        borderColor:
-                          msg.role === "assistant"
-                            ? "rgba(203,255,26,0.45)"
-                            : mobileTheme.color.borderSubtle,
-                        backgroundColor:
-                          msg.role === "assistant"
-                            ? "rgba(203,255,26,0.08)"
-                            : mobileTheme.color.bgSurface,
-                        borderRadius: mobileTheme.radius.md,
-                        padding: 10,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{msg.role}</Text>
-                      {msg.content.trim() ? (
-                        <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
-                      ) : null}
-                      {msg.is_streaming ? (
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 8,
-                            marginTop: msg.content.trim() ? 8 : 4,
-                          }}
-                        >
-                          <ActivityIndicator size="small" color={mobileTheme.color.textSecondary} />
-                          <Text
-                            style={{
-                              color: mobileTheme.color.textSecondary,
-                              fontSize: 13,
-                              fontStyle: "italic",
-                            }}
-                          >
-                            {chatThinkingLabel}...
-                          </Text>
-                        </View>
-                      ) : null}
-                    </View>
-                  </View>
-                ))}
-              </ScrollView>
-
-              <TextInput
-                style={{
-                  minHeight: 44,
-                  maxHeight: 120,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgSurface,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                  paddingVertical: 10,
-                  textAlignVertical: "top",
+              <SharedChatPanel
+                variant="coach"
+                messages={messages}
+                inputValue={chatInput}
+                onInputChange={setChatInput}
+                onSend={sendMessage}
+                sendDisabled={sendingChat}
+                sendLabel={sendingChat ? "Enviando..." : "Enviar"}
+                inputPlaceholder="Pregunta al coach (API proveedor)"
+                streamingIndicatorLabel={`${chatThinkingLabel}...`}
+                expandedThinking={expandedThinking}
+                onToggleThinking={(messageId) => {
+                  setExpandedThinking((prev) => ({ ...prev, [messageId]: !prev[messageId] }));
                 }}
-                value={chatInput}
-                onChangeText={setChatInput}
-                placeholder="Pregunta al coach (API proveedor)"
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                multiline
-                blurOnSubmit={false}
-              />
-
-              <PrimaryButton
-                label={sendingChat ? "Enviando..." : "Enviar"}
-                onPress={sendMessage}
-                disabled={sendingChat}
+                scrollRef={chatScrollRef}
               />
             </View>
             ) : (
@@ -18220,106 +18654,25 @@ export default function App() {
               </ScrollView>
             </View>
 
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: mobileTheme.color.borderSubtle,
-                borderRadius: mobileTheme.radius.md,
-                backgroundColor: mobileTheme.color.bgApp,
-                minHeight: 180,
-                maxHeight: 260,
-                padding: 8,
+            <SharedChatPanel
+              variant="estimator"
+              messages={foodEstimatorMessages}
+              inputValue={foodEstimatorInput}
+              onInputChange={setFoodEstimatorInput}
+              onSend={() => {
+                void sendFoodEstimatorMessage();
               }}
-            >
-              <ScrollView contentContainerStyle={{ gap: 8, paddingBottom: 6 }}>
-                {foodEstimatorMessages.map((msg) => {
-                  const isAssistant = msg.role === "assistant";
-                  return (
-                    <View
-                      key={msg.id}
-                      style={{
-                        alignSelf: isAssistant ? "flex-start" : "flex-end",
-                        maxWidth: "92%",
-                        borderWidth: 1,
-                        borderColor: isAssistant
-                          ? mobileTheme.color.borderSubtle
-                          : "rgba(203,255,26,0.45)",
-                        backgroundColor: isAssistant
-                          ? mobileTheme.color.bgSurface
-                          : "rgba(203,255,26,0.08)",
-                        borderRadius: 12,
-                        paddingHorizontal: 10,
-                        paddingVertical: 8,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, lineHeight: 19 }}>
-                        {msg.content}
-                      </Text>
-                    </View>
-                  );
-                })}
-                {foodEstimatorSending ? (
-                  <View
-                    style={{
-                      alignSelf: "flex-start",
-                      maxWidth: "92%",
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: 12,
-                      paddingHorizontal: 10,
-                      paddingVertical: 8,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textSecondary, lineHeight: 19, fontStyle: "italic" }}>
-                      {foodEstimatorStatus || `${foodThinkingLabel}...`}
-                    </Text>
-                  </View>
-                ) : null}
-              </ScrollView>
-            </View>
-
-            <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
-              <TextInput
-                style={{
-                  flex: 1,
-                  minHeight: 44,
-                  maxHeight: 120,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 12,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                }}
-                value={foodEstimatorInput}
-                onChangeText={setFoodEstimatorInput}
-                placeholder="Describe la comida o pide ajustes..."
-                placeholderTextColor={mobileTheme.color.textSecondary}
-                multiline
-              />
-              <Pressable
-                onPress={() => {
-                  void sendFoodEstimatorMessage();
-                }}
-                disabled={foodEstimatorSending}
-                style={{
-                  minWidth: 92,
-                  height: 44,
-                  borderRadius: mobileTheme.radius.md,
-                  backgroundColor: mobileTheme.color.brandPrimary,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  opacity: foodEstimatorSending ? 0.7 : 1,
-                }}
-              >
-                <Text style={{ color: "#06090D", fontWeight: "800" }}>
-                  {foodEstimatorSending ? "Enviando..." : "Enviar"}
-                </Text>
-              </Pressable>
-            </View>
+              sendDisabled={foodEstimatorSending}
+              sendLabel={foodEstimatorSending ? "Enviando..." : "Enviar"}
+              inputPlaceholder="Describe la comida o pide ajustes..."
+              streamingIndicatorLabel={foodEstimatorStatus || `${foodThinkingLabel}...`}
+              expandedThinking={foodEstimatorExpandedThinking}
+              onToggleThinking={(messageId) => {
+                setFoodEstimatorExpandedThinking((prev) => ({ ...prev, [messageId]: !prev[messageId] }));
+              }}
+              pendingStatusMessage={foodEstimatorSending ? (foodEstimatorStatus || `${foodThinkingLabel}...`) : null}
+              scrollRef={foodEstimatorScrollRef}
+            />
 
             <Pressable
               onPress={() => {
