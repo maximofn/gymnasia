@@ -109,6 +109,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Google reasoning and answer now stream incrementally in browser-debug mode
+- Failure:
+  Even when Gemini returned thought summaries, the browser-debug build could still show the reasoning block only after the full request finished instead of revealing it progressively.
+- Root cause:
+  The Google chat stream in `apps/mobile/App.tsx` used `XMLHttpRequest` on web. In practice, that transport was not reliably surfacing incremental Google SSE progress in the browser-debug environment, so the UI only received the buffered result near the end.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - added a web-specific Google streaming transport based on `fetch` + `ReadableStream`.
+     - kept the existing `XMLHttpRequest` path as fallback for non-web/native execution.
+     - kept the same Google SSE parser and assistant-draft update flow so reasoning and answer text continue to render through the existing chat UI.
+  2. Validated:
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-google-fetch-stream-export`
+
 ### 2026-04-01 - Google thought summaries now appear more consistently after migrating the legacy default model and raising thinking level
 - Failure:
   After enabling Gemini streaming, Google chat could still show only the final answer and no visible reasoning tokens.

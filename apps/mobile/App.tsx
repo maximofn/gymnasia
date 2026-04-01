@@ -2310,6 +2310,67 @@ async function streamGoogleRequestViaXHR(
   });
 }
 
+async function streamGoogleRequestViaFetch(
+  url: string,
+  headers: Record<string, string>,
+  body: Record<string, unknown>,
+  handlers?: StreamingHandlers,
+  networkFallbackMessage = "No se pudo conectar con Google AI.",
+  statusFallbackPrefix = "Google AI error",
+): Promise<GoogleStreamTurnResult> {
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timeoutId = setTimeout(() => {
+    controller?.abort();
+  }, 120000);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+      signal: controller?.signal,
+    });
+
+    if (!response.ok) {
+      const rawText = await response.text().catch(() => "");
+      const payload = parseJsonSafely<unknown>(rawText);
+      throw new Error(
+        extractErrorMessage(payload, rawText || `${statusFallbackPrefix} (${response.status})`),
+      );
+    }
+
+    const parser = createGoogleStreamParser(handlers);
+    const reader = response.body?.getReader();
+    if (!reader) {
+      const rawText = await response.text().catch(() => "");
+      if (rawText) parser.push(rawText);
+      return parser.finish();
+    }
+
+    const decoder = new TextDecoder();
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      parser.push(decoder.decode(value, { stream: true }));
+    }
+
+    const remaining = decoder.decode();
+    if (remaining) parser.push(remaining);
+    return parser.finish();
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error("Tiempo de espera agotado al conectar con Google AI.");
+    }
+    if (err instanceof Error && err.message.trim()) {
+      throw err;
+    }
+    throw new Error(networkFallbackMessage);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 function parseGoogleContent(payload: unknown): string | null {
   if (!payload || typeof payload !== "object") return null;
   const maybe = payload as {
@@ -2759,6 +2820,19 @@ async function callProviderChatAPIWithTools(
       },
     };
     if (includeTools) body.tools = chatTools.google;
+    if (Platform.OS === "web") {
+      return streamGoogleRequestViaFetch(
+        googleUrl,
+        {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body,
+        streamHandlers,
+        "No se pudo conectar con Google AI.",
+        "Google AI error",
+      );
+    }
     return streamGoogleRequestViaXHR(
       googleUrl,
       {
