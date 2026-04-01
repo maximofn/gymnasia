@@ -94,6 +94,10 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 ## Security & Configuration Tips
 - Never commit secrets.
 
+## Documentation Maintenance
+- Keep `AGENTS.md` and root `CLAUDE.md` synchronized whenever repository instructions change.
+- Update `README.md` whenever the project structure, dependencies, or startup instructions change.
+
 ## Agent Maintenance Rule
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
