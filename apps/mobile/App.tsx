@@ -14269,7 +14269,7 @@ export default function App() {
                         <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
                           {formatNutritionNumber(macro.consumed)}/{formatNutritionNumber(macro.total)}g
                         </Text>
-                        <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                           <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{macro.label}</Text>
                           <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
                             {macro.total > 0 ? Math.round((macro.consumed / macro.total) * 100) : 0}%
