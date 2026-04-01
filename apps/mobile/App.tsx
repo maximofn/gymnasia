@@ -10343,6 +10343,33 @@ export default function App() {
         </ScrollView>
       ) : (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
+        {tab === "settings" ? (
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 12 }}>
+            {SETTINGS_TAB_OPTIONS.map((option) => {
+              const isActive = settingsTab === option.key;
+              return (
+                <Pressable
+                  key={option.key}
+                  onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); setPersonalFoodAIChatOpen(false); }}
+                  style={{
+                    borderWidth: 1,
+                    borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                    borderRadius: mobileTheme.radius.pill,
+                    paddingHorizontal: 12,
+                    minHeight: 34,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
+                  }}
+                >
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                    {option.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : null}
         <ScrollView ref={mainScrollRef} style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90 }} keyboardShouldPersistTaps="handled">
           {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
 
@@ -15216,32 +15243,6 @@ export default function App() {
 
           {tab === "settings" ? (
             <View style={{ gap: 12 }}>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                {SETTINGS_TAB_OPTIONS.map((option) => {
-                  const isActive = settingsTab === option.key;
-                  return (
-                    <Pressable
-                      key={option.key}
-                      onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); setPersonalFoodAIChatOpen(false); }}
-                      style={{
-                        borderWidth: 1,
-                        borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                        borderRadius: mobileTheme.radius.pill,
-                        paddingHorizontal: 12,
-                        minHeight: 34,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
-                        {option.label}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-
               {settingsTab === "diet" ? (
                 <View
                   style={{
