@@ -109,6 +109,21 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - OpenAI food estimator no longer sends invalid `assistant` content parts
+- Failure:
+  After migrating the OpenAI food estimator to `Responses API`, the estimator could fail with `Invalid value: 'input_text'. Supported values are: 'output_text' and 'refusal'.`
+- Root cause:
+  The food-estimator conversation history included an initial assistant message (`Sube fotos o describe la comida...`). In the OpenAI Responses payload, that prior assistant turn was incorrectly serialized with `content.type = "input_text"` instead of `output_text`.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - changed prior OpenAI assistant turns in the food-estimator history from `input_text` to `output_text`.
+  2. Validated:
+     - real OpenAI API smoke test from the running browser app using:
+       - one prior `assistant` message
+       - one `user` message with `input_text`
+       - one uploaded image sent as `input_image`
+     - confirmed the request succeeds and OpenAI analyzes the image instead of rejecting the payload.
+
 ### 2026-04-01 - OpenAI food estimator now receives uploaded images correctly
 - Failure:
   In `Añadir alimento con IA`, the OpenAI provider replied that it still needed the photos, while Google correctly read the same image input and could even trigger barcode scanning.

@@ -3593,7 +3593,7 @@ async function callFoodEstimatorAPI(
         if (msg.role === "assistant") {
           return {
             role: "assistant",
-            content: [{ type: "input_text", text: textContent }],
+            content: [{ type: "output_text", text: textContent }],
           };
         }
         if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
