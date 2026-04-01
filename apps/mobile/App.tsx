@@ -14763,6 +14763,7 @@ export default function App() {
                           </View>
                         ) : null}
 
+                        {!isEditing ? (
                         <View style={{ flexDirection: "row", gap: 6 }}>
                           <Pressable
                             onPress={() => { setDietAddMode("form"); openDietMealEditor(category); }}
@@ -14801,6 +14802,7 @@ export default function App() {
                             <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600", fontSize: 12 }}>Añadir con IA</Text>
                           </Pressable>
                         </View>
+                        ) : null}
                       </View>
                     ) : null}
                   </View>
