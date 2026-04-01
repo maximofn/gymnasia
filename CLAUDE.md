@@ -109,6 +109,22 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Google chat now streams reasoning and response incrementally, and the default Google model is `gemini-3-flash-preview`
+- Failure:
+  The mobile chat only showed Google responses after the full request finished, so users could not watch Gemini reasoning or final answer text arrive progressively. The default Google provider model was also still `gemini-1.5-flash`.
+- Root cause:
+  `apps/mobile/App.tsx` was calling Google's non-streaming `:generateContent` endpoint for chat and tool-call loops, so the assistant draft could not update incrementally. The Google provider default had not been moved to the requested preview model.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - changed `DEFAULT_MODELS.google` to `gemini-3-flash-preview`.
+     - added Google SSE parsing over `XMLHttpRequest` for `:streamGenerateContent?alt=sse`.
+     - enabled `thinkingConfig.includeThoughts = true` so Gemini can emit thought summaries while streaming.
+     - updated the Google chat-with-tools flow to stream incremental `thinking` and response text into the existing assistant draft message.
+     - preserved streamed Google `functionCall` parts and `thoughtSignature` values when replaying the model turn before sending `functionResponse` tool results.
+  2. Validated:
+     - attempted `npm --workspace apps/mobile exec tsc --noEmit`, but the repo still has unrelated pre-existing TypeScript errors in `apps/mobile/App.tsx`.
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-google-stream-export`
+
 ### 2026-04-01 - Anthropic chat now streams reasoning and response incrementally in the mobile app, with browser debugging parity through the local proxy
 - Failure:
   The chat only showed Anthropic `thinking` and final response text after the full request finished, so users could not watch reasoning or answer text arrive progressively.

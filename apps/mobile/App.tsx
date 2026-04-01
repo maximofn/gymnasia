@@ -200,11 +200,11 @@ type Provider = "anthropic" | "openai" | "google";
 type AIKey = { provider: Provider; is_active: boolean; api_key: string; model: string };
 type ProviderDraft = { api_key: string; model: string };
 type AnthropicModelOption = { id: string; display_name: string | null };
-type AnthropicStreamingHandlers = {
+type StreamingHandlers = {
   onContentDelta?: (delta: string, aggregate: string) => void;
   onThinkingDelta?: (delta: string, aggregate: string) => void;
 };
-type ChatProviderCallOptions = AnthropicStreamingHandlers & {
+type ChatProviderCallOptions = StreamingHandlers & {
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>;
 };
 type AnthropicTextBlock = { type: "text"; text: string };
@@ -220,6 +220,17 @@ type AnthropicResponseBlock = AnthropicTextBlock | AnthropicThinkingBlock | Anth
 type AnthropicStreamTurnResult = AnthropicChatResult & {
   contentBlocks: AnthropicResponseBlock[];
   stopReason: string | null;
+};
+type GoogleFunctionCall = { name: string; args?: Record<string, unknown> };
+type GoogleResponsePart = {
+  text?: string;
+  functionCall?: GoogleFunctionCall;
+  thought?: boolean;
+  thoughtSignature?: string;
+};
+type GoogleStreamTurnResult = AnthropicChatResult & {
+  modelParts: GoogleResponsePart[];
+  finishReason: string | null;
 };
 type OpenAIModelOption = { id: string; owned_by: string | null };
 type GoogleModelOption = { id: string; display_name: string | null };
@@ -300,7 +311,7 @@ const LEGACY_SECURE_STORE_PREFIXES = [
 const DEFAULT_MODELS: Record<Provider, string> = {
   openai: "gpt-4o-mini",
   anthropic: "claude-3-5-sonnet-latest",
-  google: "gemini-1.5-flash",
+  google: "gemini-3-flash-preview",
 };
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
@@ -1723,6 +1734,39 @@ function parseAnthropicToolInput(raw: string): Record<string, unknown> {
   return parsed as Record<string, unknown>;
 }
 
+function normalizeGoogleFunctionArgs(rawArgs: unknown): Record<string, unknown> {
+  if (rawArgs && typeof rawArgs === "object" && !Array.isArray(rawArgs)) {
+    return rawArgs as Record<string, unknown>;
+  }
+  if (typeof rawArgs === "string") {
+    const parsed = parseJsonSafely<unknown>(rawArgs);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
+  }
+  return {};
+}
+
+function mapGoogleResponsePartToRequestPart(part: GoogleResponsePart): Record<string, unknown> | null {
+  const nextPart: Record<string, unknown> = {};
+  if (typeof part.text === "string") {
+    nextPart.text = part.text;
+  }
+  if (part.functionCall) {
+    nextPart.functionCall = {
+      name: part.functionCall.name,
+      args: part.functionCall.args ?? {},
+    };
+  }
+  if (part.thought === true) {
+    nextPart.thought = true;
+  }
+  if (typeof part.thoughtSignature === "string" && part.thoughtSignature.trim().length > 0) {
+    nextPart.thoughtSignature = part.thoughtSignature;
+  }
+  return Object.keys(nextPart).length > 0 ? nextPart : null;
+}
+
 function splitSSEEvents(buffer: string): { events: string[]; rest: string } {
   const normalized = buffer.replace(/\r\n/g, "\n");
   const events: string[] = [];
@@ -1758,7 +1802,7 @@ function parseSSEEvent(rawEvent: string): { event: string; data: string | null }
 }
 
 function createAnthropicStreamParser(
-  handlers?: AnthropicStreamingHandlers,
+  handlers?: StreamingHandlers,
 ): {
   push: (chunk: string) => void;
   finish: () => AnthropicStreamTurnResult;
@@ -1925,7 +1969,7 @@ async function streamAnthropicRequestViaXHR(
   url: string,
   headers: Record<string, string>,
   body: Record<string, unknown>,
-  handlers?: AnthropicStreamingHandlers,
+  handlers?: StreamingHandlers,
   networkFallbackMessage = "No se pudo conectar con Anthropic.",
   statusFallbackPrefix = "Anthropic error",
 ): Promise<AnthropicStreamTurnResult> {
@@ -2028,12 +2072,241 @@ async function streamAnthropicRequestViaXHR(
   });
 }
 
+function createGoogleStreamParser(
+  handlers?: StreamingHandlers,
+): {
+  push: (chunk: string) => void;
+  finish: () => GoogleStreamTurnResult;
+} {
+  let rawBuffer = "";
+  let streamedContent = "";
+  let streamedThinking = "";
+  let finishReason: string | null = null;
+  const modelParts: GoogleResponsePart[] = [];
+
+  const processEvent = (parsedEvent: { event: string; data: string | null }) => {
+    if (!parsedEvent.data) return;
+    if (parsedEvent.data.trim() === "[DONE]") return;
+    const payload = parseJsonSafely<{
+      candidates?: Array<{
+        finishReason?: string;
+        finish_reason?: string;
+        content?: {
+          parts?: Array<{
+            text?: string;
+            thought?: boolean;
+            thoughtSignature?: string;
+            thought_signature?: string;
+            functionCall?: { name?: string; args?: unknown };
+            function_call?: { name?: string; args?: unknown };
+          }>;
+        };
+      }>;
+      error?: { message?: string };
+    }>(parsedEvent.data);
+    if (!payload || typeof payload !== "object") return;
+    if (payload.error) {
+      throw new Error(extractErrorMessage(payload, "Google AI stream error"));
+    }
+
+    const candidates = Array.isArray(payload.candidates) ? payload.candidates : [];
+    candidates.forEach((candidate) => {
+      const candidateFinishReason = candidate?.finishReason ?? candidate?.finish_reason;
+      if (typeof candidateFinishReason === "string" && candidateFinishReason.trim().length > 0) {
+        finishReason = candidateFinishReason;
+      }
+      const parts = Array.isArray(candidate?.content?.parts) ? candidate.content.parts : [];
+      parts.forEach((rawPart) => {
+        if (!rawPart || typeof rawPart !== "object") return;
+        const thought = rawPart.thought === true;
+        const thoughtSignature =
+          typeof rawPart.thoughtSignature === "string"
+            ? rawPart.thoughtSignature
+            : typeof rawPart.thought_signature === "string"
+              ? rawPart.thought_signature
+              : undefined;
+        const functionCall =
+          rawPart.functionCall && typeof rawPart.functionCall === "object"
+            ? rawPart.functionCall
+            : rawPart.function_call && typeof rawPart.function_call === "object"
+              ? rawPart.function_call
+              : null;
+        const text = typeof rawPart.text === "string" ? rawPart.text : undefined;
+
+        if (typeof text === "string" && text.length > 0) {
+          if (thought) {
+            streamedThinking += text;
+            handlers?.onThinkingDelta?.(text, streamedThinking);
+          } else {
+            streamedContent += text;
+            handlers?.onContentDelta?.(text, streamedContent);
+          }
+        }
+
+        if (functionCall) {
+          const name = typeof functionCall.name === "string" ? functionCall.name.trim() : "";
+          if (!name) return;
+          modelParts.push({
+            functionCall: {
+              name,
+              args: normalizeGoogleFunctionArgs(functionCall.args),
+            },
+            thought,
+            thoughtSignature,
+          });
+          return;
+        }
+
+        if ((typeof text === "string" && text.length > 0) || thoughtSignature) {
+          const nextPart: GoogleResponsePart = {};
+          if (typeof text === "string") nextPart.text = text;
+          if (thought) nextPart.thought = true;
+          if (thoughtSignature) nextPart.thoughtSignature = thoughtSignature;
+          modelParts.push(nextPart);
+        }
+      });
+    });
+  };
+
+  const processChunk = (chunk: string) => {
+    if (!chunk) return;
+    rawBuffer += chunk;
+    const { events, rest } = splitSSEEvents(rawBuffer);
+    rawBuffer = rest;
+    events.forEach((eventChunk) => {
+      const parsedEvent = parseSSEEvent(eventChunk);
+      if (!parsedEvent) return;
+      processEvent(parsedEvent);
+    });
+  };
+
+  return {
+    push: processChunk,
+    finish: () => {
+      if (rawBuffer.trim()) {
+        const parsedEvent = parseSSEEvent(rawBuffer);
+        if (parsedEvent) processEvent(parsedEvent);
+        rawBuffer = "";
+      }
+      return {
+        content: streamedContent.trim(),
+        thinking: streamedThinking.trim() || null,
+        modelParts,
+        finishReason,
+      };
+    },
+  };
+}
+
+async function streamGoogleRequestViaXHR(
+  url: string,
+  headers: Record<string, string>,
+  body: Record<string, unknown>,
+  handlers?: StreamingHandlers,
+  networkFallbackMessage = "No se pudo conectar con Google AI.",
+  statusFallbackPrefix = "Google AI error",
+): Promise<GoogleStreamTurnResult> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const parser = createGoogleStreamParser(handlers);
+    let lastOffset = 0;
+    let settled = false;
+
+    const cleanup = () => {
+      xhr.onreadystatechange = null;
+      xhr.onprogress = null;
+      xhr.onerror = null;
+      xhr.ontimeout = null;
+    };
+
+    const rejectOnce = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(error);
+    };
+
+    const resolveOnce = (result: GoogleStreamTurnResult) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(result);
+    };
+
+    const processPendingResponseText = () => {
+      const fullText = xhr.responseText ?? "";
+      const nextText = fullText.slice(lastOffset);
+      lastOffset = fullText.length;
+      if (nextText) parser.push(nextText);
+    };
+
+    xhr.open("POST", url);
+    xhr.timeout = 120000;
+    Object.entries(headers).forEach(([key, value]) => {
+      xhr.setRequestHeader(key, value);
+    });
+
+    xhr.onprogress = () => {
+      try {
+        processPendingResponseText();
+      } catch (err) {
+        xhr.abort();
+        rejectOnce(
+          err instanceof Error ? err : new Error("No se pudo procesar el stream de Google AI."),
+        );
+      }
+    };
+
+    xhr.onerror = () => {
+      rejectOnce(new Error(networkFallbackMessage));
+    };
+
+    xhr.ontimeout = () => {
+      rejectOnce(new Error("Tiempo de espera agotado al conectar con Google AI."));
+    };
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState !== xhr.DONE || settled) return;
+
+      try {
+        processPendingResponseText();
+      } catch (err) {
+        rejectOnce(
+          err instanceof Error ? err : new Error("No se pudo procesar el stream de Google AI."),
+        );
+        return;
+      }
+
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          resolveOnce(parser.finish());
+        } catch (err) {
+          rejectOnce(
+            err instanceof Error ? err : new Error("No se pudo finalizar el stream de Google AI."),
+          );
+        }
+        return;
+      }
+
+      const payload = parseJsonSafely<unknown>(xhr.responseText ?? "");
+      const rawMessage = xhr.responseText?.trim();
+      const fallbackMessage = xhr.status
+        ? `${statusFallbackPrefix} (${xhr.status})`
+        : networkFallbackMessage;
+      rejectOnce(new Error(extractErrorMessage(payload, rawMessage || fallbackMessage)));
+    };
+
+    xhr.send(JSON.stringify(body));
+  });
+}
+
 function parseGoogleContent(payload: unknown): string | null {
   if (!payload || typeof payload !== "object") return null;
   const maybe = payload as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string; thought?: boolean }> } }>;
   };
   const text = (maybe.candidates?.[0]?.content?.parts ?? [])
+    .filter((part) => part?.thought !== true)
     .map((part) => part.text?.trim())
     .filter(Boolean)
     .join("\n");
@@ -2364,7 +2637,7 @@ async function callProviderChatAPIWithTools(
   if (provider.provider === "anthropic") {
     let streamedContent = "";
     let streamedThinking = "";
-    const streamHandlers: AnthropicStreamingHandlers = {
+    const streamHandlers: StreamingHandlers = {
       onContentDelta: (delta) => {
         streamedContent += delta;
         options?.onContentDelta?.(delta, streamedContent);
@@ -2450,47 +2723,76 @@ async function callProviderChatAPIWithTools(
     role: msg.role === "assistant" ? "model" : "user",
     parts: [{ text: msg.content }],
   }));
-
-  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(provider.model || DEFAULT_MODELS.google)}:generateContent?key=${encodeURIComponent(provider.api_key)}`;
+  let streamedContent = "";
+  let streamedThinking = "";
+  const streamHandlers: StreamingHandlers = {
+    onContentDelta: (delta) => {
+      streamedContent += delta;
+      options?.onContentDelta?.(delta, streamedContent);
+    },
+    onThinkingDelta: (delta) => {
+      streamedThinking += delta;
+      options?.onThinkingDelta?.(delta, streamedThinking);
+    },
+  };
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(provider.model || DEFAULT_MODELS.google)}:streamGenerateContent?alt=sse&key=${encodeURIComponent(provider.api_key)}`;
 
   const makeGoogleRequest = async (msgs: any[], includeTools: boolean) => {
     const body: any = {
       contents: msgs,
       systemInstruction: { parts: [{ text: systemPrompt }] },
+      thinkingConfig: { includeThoughts: true },
     };
     if (includeTools) body.tools = chatTools.google;
-    const res = await fetch(googleUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    let p: any = null;
-    try { p = await res.json(); } catch {}
-    if (!res.ok) throw new Error(extractErrorMessage(p, `Google AI error (${res.status})`));
-    return p;
+    return streamGoogleRequestViaXHR(
+      googleUrl,
+      {
+        "Content-Type": "application/json",
+        Accept: "text/event-stream",
+      },
+      body,
+      streamHandlers,
+      "No se pudo conectar con Google AI.",
+      "Google AI error",
+    );
   };
 
   let payload = await makeGoogleRequest(googleMessages, true);
 
   for (let round = 0; round < 10; round++) {
-    const parts = payload?.candidates?.[0]?.content?.parts as any[] | undefined;
-    const functionCalls = parts?.filter((p: any) => p.functionCall) ?? [];
+    const functionCalls = payload.modelParts.filter(
+      (part): part is GoogleResponsePart & { functionCall: GoogleFunctionCall } =>
+        Boolean(part.functionCall?.name),
+    );
     if (functionCalls.length === 0) break;
 
-    const modelParts = functionCalls.map((fc: any) => ({ functionCall: fc.functionCall }));
+    const modelParts = payload.modelParts
+      .map(mapGoogleResponsePartToRequestPart)
+      .filter((part): part is Record<string, unknown> => Boolean(part));
     const responseParts: any[] = [];
-    for (const fc of functionCalls) {
-      const toolResult = await handleToolCall(fc.functionCall.name, fc.functionCall.args ?? {}, toolStoreSetter);
-      responseParts.push({ functionResponse: { name: fc.functionCall.name, response: { result: toolResult } } });
+    for (const part of functionCalls) {
+      const functionCall = part.functionCall;
+      const toolResult = await handleToolCall(
+        functionCall.name,
+        functionCall.args ?? {},
+        toolStoreSetter,
+      );
+      responseParts.push({
+        functionResponse: {
+          name: functionCall.name,
+          response: { result: toolResult },
+        },
+      });
     }
     googleMessages.push({ role: "model", parts: modelParts });
     googleMessages.push({ role: "user", parts: responseParts });
     payload = await makeGoogleRequest(googleMessages, true);
   }
 
-  const content = parseGoogleContent(payload);
+  const content = streamedContent.trim() || payload.content;
+  const thinking = streamedThinking.trim() || payload.thinking || null;
   if (!content) throw new Error("Google AI no devolvio contenido.");
-  return { content, thinking: null };
+  return { content, thinking };
 }
 
 const foodEstimatorTools = {
