@@ -7158,6 +7158,9 @@ export default function App() {
         thinking: assistantResult.thinking,
         is_streaming: false,
       }));
+      if (assistantResult.thinking?.trim()) {
+        setExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: false }));
+      }
     } catch (err) {
       if (draftFlushTimer) {
         clearTimeout(draftFlushTimer);
@@ -7171,6 +7174,7 @@ export default function App() {
         thinking: null,
         is_streaming: false,
       }));
+      setExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: false }));
     } finally {
       setSendingChat(false);
     }

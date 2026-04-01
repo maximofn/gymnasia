@@ -109,6 +109,19 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Chat reasoning bubble now auto-collapses when streaming finishes
+- Failure:
+  After enabling streaming reasoning tokens, the `Razonamiento` bubble stayed open after the provider finished sending all reasoning text, so completed messages kept the expanded reasoning panel visible by default.
+- Root cause:
+  `sendMessage()` in `apps/mobile/App.tsx` explicitly expanded the assistant draft reasoning bubble when the message started streaming, but nothing collapsed that same bubble once `is_streaming` changed to `false`.
+- Exact fix steps/commands:
+  1. Updated `apps/mobile/App.tsx`:
+     - kept the existing auto-expand behavior when the assistant draft starts.
+     - collapsed the same reasoning bubble automatically when the final assistant message is committed and streaming ends.
+     - also cleared the expanded state on provider error so failed drafts do not leave stale UI state behind.
+  2. Validated:
+     - `cd apps/mobile && npx expo export --platform web --dev --output-dir /tmp/gymnasia-thinking-collapse-export`
+
 ### 2026-04-01 - OpenAI chat now streams reasoning summaries and answer text with `gpt-5-mini`
 - Failure:
   OpenAI chat in `apps/mobile` still used `chat/completions`, so the assistant answer only appeared after the full response and the UI had no proper stream of visible reasoning tokens.
