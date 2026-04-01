@@ -14157,80 +14157,60 @@ export default function App() {
                           })
                         )}
 
-                        {isEditing && dietAddMode === "search" ? (
-                          <View style={{ gap: 8 }}>
-                            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, paddingHorizontal: 10 }}>
-                              <Feather name="search" size={14} color={mobileTheme.color.textSecondary} />
-                              <TextInput
-                                value={dietFoodSearch}
-                                onChangeText={setDietFoodSearch}
-                                placeholder="Buscar alimento..."
-                                placeholderTextColor={mobileTheme.color.textSecondary}
-                                autoFocus
-                                style={{ flex: 1, minHeight: 42, color: mobileTheme.color.textPrimary, fontSize: 14 }}
-                              />
-                              {dietFoodSearch ? (
-                                <Pressable onPress={() => setDietFoodSearch("")}>
-                                  <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
-                                </Pressable>
-                              ) : null}
-                            </View>
-                            {dietFoodSearch.trim().length > 0 ? (
-                              <ScrollView style={{ maxHeight: 240 }}>
-                                {[...foodsRepo, ...personalFoods]
-                                  .filter((f) => f.name.toLowerCase().includes(dietFoodSearch.trim().toLowerCase()))
-                                  .slice(0, 8)
-                                  .map((entry) => (
-                                    <Pressable
-                                      key={entry.id}
-                                      onPress={() => {
-                                        setDietSelectedFood(entry);
-                                        setDietSelectedGrams(String(entry.serving_size_g));
-                                        setDietAddMode("selected");
-                                        setDietFoodSearch("");
-                                      }}
-                                      style={{
-                                        paddingVertical: 10,
-                                        paddingHorizontal: 8,
-                                        borderBottomWidth: 1,
-                                        borderBottomColor: mobileTheme.color.borderSubtle,
-                                      }}
-                                    >
-                                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
-                                        {entry.name}
-                                      </Text>
-                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>
-                                        {entry.calories_per_100g} kcal/100g · {entry.serving_description || `${entry.serving_size_g}g`}
-                                      </Text>
-                                    </Pressable>
-                                  ))}
-                                {[...foodsRepo, ...personalFoods].filter((f) => f.name.toLowerCase().includes(dietFoodSearch.trim().toLowerCase())).length === 0 ? (
-                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, padding: 10, fontStyle: "italic" }}>
-                                    No se encontraron alimentos.
-                                  </Text>
-                                ) : null}
-                              </ScrollView>
+                        <View style={{ gap: 8 }}>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, paddingHorizontal: 10 }}>
+                            <Feather name="search" size={14} color={mobileTheme.color.textSecondary} />
+                            <TextInput
+                              value={dietFoodSearch}
+                              onChangeText={(t) => { setDietFoodSearch(t); if (t.trim()) { setDietAddMode("search"); openDietMealEditor(category); } }}
+                              placeholder="Buscar alimento..."
+                              placeholderTextColor={mobileTheme.color.textSecondary}
+                              style={{ flex: 1, minHeight: 42, color: mobileTheme.color.textPrimary, fontSize: 14 }}
+                            />
+                            {dietFoodSearch ? (
+                              <Pressable onPress={() => setDietFoodSearch("")}>
+                                <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
+                              </Pressable>
                             ) : null}
-                            <Pressable
-                              onPress={() => {
-                                setDietMealEditorCategory(null);
-                                setDietAddMode(null);
-                                setDietFoodSearch("");
-                              }}
-                              style={{
-                                minHeight: 36,
-                                borderRadius: mobileTheme.radius.md,
-                                borderWidth: 1,
-                                borderColor: mobileTheme.color.borderSubtle,
-                                backgroundColor: mobileTheme.color.bgApp,
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>Cancelar</Text>
-                            </Pressable>
                           </View>
-                        ) : null}
+                          {dietFoodSearch.trim().length > 0 ? (
+                            <ScrollView style={{ maxHeight: 240 }}>
+                              {[...foodsRepo, ...personalFoods]
+                                .filter((f) => f.name.toLowerCase().includes(dietFoodSearch.trim().toLowerCase()))
+                                .slice(0, 8)
+                                .map((entry) => (
+                                  <Pressable
+                                    key={entry.id}
+                                    onPress={() => {
+                                      setDietSelectedFood(entry);
+                                      setDietSelectedGrams(String(entry.serving_size_g));
+                                      setDietAddMode("selected");
+                                      setDietFoodSearch("");
+                                      openDietMealEditor(category);
+                                    }}
+                                    style={{
+                                      paddingVertical: 10,
+                                      paddingHorizontal: 8,
+                                      borderBottomWidth: 1,
+                                      borderBottomColor: mobileTheme.color.borderSubtle,
+                                    }}
+                                  >
+                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
+                                      {entry.name}
+                                    </Text>
+                                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>
+                                      {entry.calories_per_100g} kcal/100g · {entry.serving_description || `${entry.serving_size_g}g`}
+                                    </Text>
+                                  </Pressable>
+                                ))}
+                              {[...foodsRepo, ...personalFoods].filter((f) => f.name.toLowerCase().includes(dietFoodSearch.trim().toLowerCase())).length === 0 ? (
+                                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, padding: 10, fontStyle: "italic" }}>
+                                  No se encontraron alimentos.
+                                </Text>
+                              ) : null}
+                            </ScrollView>
+                          ) : null}
+                        </View>
 
                         {isEditing && dietAddMode === "selected" && dietSelectedFood ? (() => {
                           const grams = parseFloat(dietSelectedGrams) || 0;
@@ -14441,58 +14421,11 @@ export default function App() {
                                   Estimar con IA
                                 </Text>
                               </Pressable>
-                              <Pressable
-                                onPress={() => {
-                                  setDietMealEditorCategory(null);
-                                  setDietEditingItem(null);
-                                  setDietItemMenu(null);
-                                  setDietAddMode(null);
-                                  setDietFoodSearch("");
-                                  setMealTitleInput("");
-                                  setMealCaloriesInput("");
-                                  setMealProteinInput("");
-                                  setMealCarbsInput("");
-                                  setMealFatInput("");
-                                }}
-                                style={{
-                                  flex: 1,
-                                  minHeight: 42,
-                                  borderRadius: mobileTheme.radius.md,
-                                  borderWidth: 1,
-                                  borderColor: mobileTheme.color.borderSubtle,
-                                  backgroundColor: mobileTheme.color.bgApp,
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  paddingHorizontal: 12,
-                                }}
-                              >
-                                <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>
-                                  Cancelar
-                                </Text>
-                              </Pressable>
                             </View>
                           </View>
                         ) : null}
 
                         <View style={{ flexDirection: "row", gap: 6 }}>
-                          <Pressable
-                            onPress={() => { setDietAddMode("search"); openDietMealEditor(category); setDietFoodSearch(""); }}
-                            style={{
-                              flex: 1,
-                              minHeight: 38,
-                              borderRadius: mobileTheme.radius.md,
-                              borderWidth: 1,
-                              borderColor: mobileTheme.color.borderSubtle,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              flexDirection: "row",
-                              gap: 4,
-                              backgroundColor: mobileTheme.color.bgApp,
-                            }}
-                          >
-                            <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600", fontSize: 12 }}>Buscar</Text>
-                          </Pressable>
                           <Pressable
                             onPress={() => { setDietAddMode("form"); openDietMealEditor(category); }}
                             style={{
