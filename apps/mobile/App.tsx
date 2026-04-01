@@ -16892,29 +16892,29 @@ export default function App() {
               <Ionicons name="trophy-outline" size={30} color="#00D06E" />
             </View>
 
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 42, fontWeight: "800" }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
               ¡Sesión completada!
             </Text>
 
             <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between", gap: 8 }}>
               <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 42, fontWeight: "800" }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
                   {formatClock(workoutCompletionModal.summary.elapsed_seconds)}
                 </Text>
-                <Text style={{ color: "#8B94A3", fontSize: 25, fontWeight: "600" }}>Duración</Text>
+                <Text style={{ color: "#8B94A3", fontSize: 14, fontWeight: "600" }}>Duración</Text>
               </View>
               <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
-                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 42, fontWeight: "800" }}>
+                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 28, fontWeight: "800" }}>
                   {workoutCompletionModal.summary.completed_series_count}/
                   {workoutCompletionModal.summary.total_series_count}
                 </Text>
-                <Text style={{ color: "#8B94A3", fontSize: 25, fontWeight: "600" }}>Series</Text>
+                <Text style={{ color: "#8B94A3", fontSize: 14, fontWeight: "600" }}>Series</Text>
               </View>
               <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 42, fontWeight: "800" }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
                   {workoutCompletionModal.summary.estimated_calories}
                 </Text>
-                <Text style={{ color: "#8B94A3", fontSize: 25, fontWeight: "600" }}>Calorías</Text>
+                <Text style={{ color: "#8B94A3", fontSize: 14, fontWeight: "600" }}>Calorías</Text>
               </View>
             </View>
 
