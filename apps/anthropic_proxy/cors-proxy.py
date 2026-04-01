@@ -46,7 +46,7 @@ async def anthropic_verify(req: FRequest):
 
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": "2025-01-01",
         "content-type": "application/json",
     }
     payload = json.dumps({
@@ -78,7 +78,7 @@ async def anthropic_messages(req: FRequest):
 
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": "2025-01-01",
         "content-type": "application/json",
     }
     payload = json.dumps(body).encode()
@@ -106,7 +106,7 @@ async def anthropic_models(req: FRequest):
 
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": "2025-01-01",
     }
 
     try:

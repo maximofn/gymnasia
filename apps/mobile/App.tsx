@@ -191,8 +191,10 @@ type ChatMessage = {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
+  thinking?: string | null;
   created_at: string;
 };
+type AnthropicChatResult = { content: string; thinking: string | null };
 type Provider = "anthropic" | "openai" | "google";
 type AIKey = { provider: Provider; is_active: boolean; api_key: string; model: string };
 type ProviderDraft = { api_key: string; model: string };
@@ -278,6 +280,8 @@ const DEFAULT_MODELS: Record<Provider, string> = {
   anthropic: "claude-3-5-sonnet-latest",
   google: "gemini-1.5-flash",
 };
+const ANTHROPIC_API_VERSION = "2025-01-01";
+const ANTHROPIC_THINKING_BUDGET = 1024;
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
@@ -1365,7 +1369,7 @@ async function fetchAnthropicModelsDirect(apiKey: string): Promise<AnthropicMode
     method: "GET",
     headers: {
       "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
+      "anthropic-version": ANTHROPIC_API_VERSION,
       "Content-Type": "application/json",
     },
   });
@@ -1506,7 +1510,7 @@ async function callAnthropicViaWebProxy(
   provider: AIKey,
   systemPrompt: string,
   messages: Array<{ role: "assistant" | "user"; content: string }>,
-): Promise<string> {
+): Promise<AnthropicChatResult> {
   const proxyUrl = buildWebProxyUrl("/chat/providers/anthropic/messages");
   try {
     const response = await fetch(proxyUrl, {
@@ -1517,7 +1521,8 @@ async function callAnthropicViaWebProxy(
       body: JSON.stringify({
         api_key: provider.api_key,
         model: provider.model || DEFAULT_MODELS.anthropic,
-        max_tokens: 700,
+        max_tokens: 700 + ANTHROPIC_THINKING_BUDGET,
+        thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
         system: systemPrompt,
         messages,
       }),
@@ -1534,9 +1539,9 @@ async function callAnthropicViaWebProxy(
       throw new Error(extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`));
     }
 
-    const content = parseAnthropicContent(payload);
-    if (!content) throw new Error("Anthropic no devolvio contenido.");
-    return content;
+    const result = parseAnthropicContent(payload);
+    if (!result) throw new Error("Anthropic no devolvio contenido.");
+    return result;
   } catch (err) {
     const rawMessage = err instanceof Error ? err.message : "No se pudo conectar con Anthropic.";
     if (rawMessage.toLowerCase().includes("failed to fetch")) {
@@ -1568,7 +1573,7 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
       }
       const anthropicHeaders = {
         "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": ANTHROPIC_API_VERSION,
         "Content-Type": "application/json",
       };
       response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -1660,17 +1665,24 @@ function parseOpenAIContent(payload: unknown): string | null {
   return null;
 }
 
-function parseAnthropicContent(payload: unknown): string | null {
+function parseAnthropicContent(payload: unknown): AnthropicChatResult | null {
   if (!payload || typeof payload !== "object") return null;
   const maybe = payload as {
-    content?: Array<{ type?: string; text?: string }>;
+    content?: Array<{ type?: string; text?: string; thinking?: string }>;
   };
-  const text = (maybe.content ?? [])
+  const blocks = maybe.content ?? [];
+  const text = blocks
     .filter((part) => part?.type === "text" && typeof part.text === "string")
     .map((part) => part.text?.trim())
     .filter(Boolean)
     .join("\n");
-  return text || null;
+  const thinking = blocks
+    .filter((part) => part?.type === "thinking" && typeof part.thinking === "string")
+    .map((part) => part.thinking?.trim())
+    .filter(Boolean)
+    .join("\n");
+  if (!text) return null;
+  return { content: text, thinking: thinking || null };
 }
 
 function parseGoogleContent(payload: unknown): string | null {
@@ -1732,7 +1744,8 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
 
   if (provider.provider === "anthropic") {
     if (Platform.OS === "web") {
-      return callAnthropicViaWebProxy(provider, systemPrompt, nonSystemMessages);
+      const webResult = await callAnthropicViaWebProxy(provider, systemPrompt, nonSystemMessages);
+      return webResult.content;
     }
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -1740,11 +1753,12 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
       headers: {
         "Content-Type": "application/json",
         "x-api-key": provider.api_key,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": ANTHROPIC_API_VERSION,
       },
       body: JSON.stringify({
         model: provider.model || DEFAULT_MODELS.anthropic,
-        max_tokens: 700,
+        max_tokens: 700 + ANTHROPIC_THINKING_BUDGET,
+        thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
         system: systemPrompt,
         messages: nonSystemMessages,
       }),
@@ -1761,9 +1775,9 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
       throw new Error(extractErrorMessage(payload, `Anthropic error (${response.status})`));
     }
 
-    const content = parseAnthropicContent(payload);
-    if (!content) throw new Error("Anthropic no devolvio contenido.");
-    return content;
+    const result = parseAnthropicContent(payload);
+    if (!result) throw new Error("Anthropic no devolvio contenido.");
+    return result.content;
   }
 
   const googleMessages = nonSystemMessages.map((msg) => ({
@@ -1802,7 +1816,7 @@ async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInputMessage[]): Promise<string> {
+async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInputMessage[]): Promise<AnthropicChatResult> {
   const systemPrompt = normalizeChatSystemPrompt(
     messages
       .filter((msg) => msg.role === "system")
@@ -1995,7 +2009,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
 
     const content = parseOpenAIContent(payload);
     if (!content) throw new Error("OpenAI no devolvio contenido.");
-    return content;
+    return { content, thinking: null };
   }
 
   // --- ANTHROPIC ---
@@ -2007,13 +2021,14 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
     const anthropicHeaders = {
       "Content-Type": "application/json",
       "x-api-key": provider.api_key,
-      "anthropic-version": "2023-06-01",
+      "anthropic-version": ANTHROPIC_API_VERSION,
     };
 
     const makeAnthropicRequest = async (msgs: any[], includeTools: boolean) => {
       const body: any = {
         model: provider.model || DEFAULT_MODELS.anthropic,
-        max_tokens: 2048,
+        max_tokens: 2048 + ANTHROPIC_THINKING_BUDGET,
+        thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
         system: systemPrompt,
         messages: msgs,
       };
@@ -2050,9 +2065,9 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
       payload = await makeAnthropicRequest(currentMessages, true);
     }
 
-    const content = parseAnthropicContent(payload);
-    if (!content) throw new Error("Anthropic no devolvio contenido.");
-    return content;
+    const result = parseAnthropicContent(payload);
+    if (!result) throw new Error("Anthropic no devolvio contenido.");
+    return result;
   }
 
   // --- GOOGLE ---
@@ -2100,7 +2115,7 @@ async function callProviderChatAPIWithTools(provider: AIKey, messages: ChatInput
 
   const content = parseGoogleContent(payload);
   if (!content) throw new Error("Google AI no devolvio contenido.");
-  return content;
+  return { content, thinking: null };
 }
 
 const foodEstimatorTools = {
@@ -2262,13 +2277,14 @@ async function callFoodEstimatorAPI(
         role: msg.role === "assistant" ? "assistant" : "user",
         content: msg.content.trim() || "Analiza esta comida y estima los valores solicitados.",
       })) as Array<{ role: "assistant" | "user"; content: string }>;
-      return callAnthropicViaWebProxy(provider, FOOD_ESTIMATOR_SYSTEM_PROMPT, textOnlyMessages);
+      const webResult = await callAnthropicViaWebProxy(provider, FOOD_ESTIMATOR_SYSTEM_PROMPT, textOnlyMessages);
+      return webResult.content;
     }
 
     const anthropicHeaders = {
       "Content-Type": "application/json",
       "x-api-key": provider.api_key,
-      "anthropic-version": "2023-06-01",
+      "anthropic-version": ANTHROPIC_API_VERSION,
     };
     let currentMessages = buildAnthropicMessages();
     const makeRequest = async (msgs: any[]) => {
@@ -2308,9 +2324,9 @@ async function callFoodEstimatorAPI(
       payload = await makeRequest(currentMessages);
     }
 
-    const content = parseAnthropicContent(payload);
-    if (!content) throw new Error("Anthropic no devolvio contenido.");
-    return content;
+    const result = parseAnthropicContent(payload);
+    if (!result) throw new Error("Anthropic no devolvio contenido.");
+    return result.content;
   }
 
   // --- GOOGLE ---
@@ -4141,6 +4157,7 @@ export default function App() {
   const [chatInput, setChatInput] = useState("");
   const [sendingChat, setSendingChat] = useState(false);
   const chatThinkingLabel = useThinkingLabel(sendingChat);
+  const [expandedThinking, setExpandedThinking] = useState<Record<string, boolean>>({});
   const [showByokExplain, setShowByokExplain] = useState(false);
   const chatScrollRef = useRef<ScrollView>(null);
   const mainScrollRef = useRef<ScrollView>(null);
@@ -5675,13 +5692,13 @@ export default function App() {
       const fullSystemPrompt = debugField?.value
         ? `${systemPrompt}\n\n## Instrucciones de depuracion\n\n${debugField.value}`
         : systemPrompt;
-      let assistantContent: string | null = null;
+      let assistantResult: AnthropicChatResult | null = null;
       const chatMessages = [{ role: "system" as const, content: fullSystemPrompt }, ...history];
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
-          assistantContent = await callProviderChatAPIWithTools(activeProvider, chatMessages);
-          if (assistantContent && assistantContent.trim().length > 0) break;
-          assistantContent = null;
+          assistantResult = await callProviderChatAPIWithTools(activeProvider, chatMessages);
+          if (assistantResult && assistantResult.content.trim().length > 0) break;
+          assistantResult = null;
         } catch (retryErr) {
           const errMsg = retryErr instanceof Error ? retryErr.message : "";
           const isRetryable = /failed to fetch|network|timeout|econnrefused|econnreset|overloaded|529|503|429/i.test(errMsg);
@@ -5689,14 +5706,15 @@ export default function App() {
           await new Promise((r) => setTimeout(r, (attempt + 1) * 2000));
         }
       }
-      if (!assistantContent || assistantContent.trim().length === 0) {
+      if (!assistantResult || assistantResult.content.trim().length === 0) {
         throw new Error("El modelo no devolvió contenido.");
       }
 
       const assistantMessage: ChatMessage = {
         id: uid("msg"),
         role: "assistant",
-        content: assistantContent,
+        content: assistantResult.content,
+        thinking: assistantResult.thinking,
         created_at: new Date().toISOString(),
       };
 
@@ -13085,24 +13103,56 @@ export default function App() {
                 onContentSizeChange={() => chatScrollRef.current?.scrollToEnd({ animated: true })}
               >
                 {messages.map((msg) => (
-                  <View
-                    key={msg.id}
-                    style={{
-                      borderWidth: 1,
-                      borderColor:
-                        msg.role === "assistant"
-                          ? "rgba(203,255,26,0.45)"
-                          : mobileTheme.color.borderSubtle,
-                      backgroundColor:
-                        msg.role === "assistant"
-                          ? "rgba(203,255,26,0.08)"
-                          : mobileTheme.color.bgSurface,
-                      borderRadius: mobileTheme.radius.md,
-                      padding: 10,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{msg.role}</Text>
-                    <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
+                  <View key={msg.id} style={{ gap: 4 }}>
+                    {msg.role === "assistant" && msg.thinking ? (
+                      <Pressable
+                        onPress={() => setExpandedThinking((prev) => ({ ...prev, [msg.id]: !prev[msg.id] }))}
+                        style={{
+                          borderWidth: 1,
+                          borderColor: "rgba(147,112,219,0.35)",
+                          backgroundColor: "rgba(147,112,219,0.06)",
+                          borderRadius: mobileTheme.radius.md,
+                          padding: 10,
+                        }}
+                      >
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                          <Feather name="cpu" size={12} color="rgba(147,112,219,0.8)" />
+                          <Text style={{ color: "rgba(147,112,219,0.8)", fontSize: 12, fontWeight: "600", flex: 1 }}>
+                            Razonamiento
+                          </Text>
+                          <Feather
+                            name={expandedThinking[msg.id] ? "chevron-up" : "chevron-down"}
+                            size={14}
+                            color="rgba(147,112,219,0.6)"
+                          />
+                        </View>
+                        {expandedThinking[msg.id] ? (
+                          <ScrollView style={{ maxHeight: 200, marginTop: 8 }} nestedScrollEnabled>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 18, fontStyle: "italic" }}>
+                              {msg.thinking}
+                            </Text>
+                          </ScrollView>
+                        ) : null}
+                      </Pressable>
+                    ) : null}
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor:
+                          msg.role === "assistant"
+                            ? "rgba(203,255,26,0.45)"
+                            : mobileTheme.color.borderSubtle,
+                        backgroundColor:
+                          msg.role === "assistant"
+                            ? "rgba(203,255,26,0.08)"
+                            : mobileTheme.color.bgSurface,
+                        borderRadius: mobileTheme.radius.md,
+                        padding: 10,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{msg.role}</Text>
+                      <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
+                    </View>
                   </View>
                 ))}
                 {sendingChat ? (
