@@ -102,6 +102,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
 
 ## Solved Problems Log
+### 2026-04-01 - Anthropic web proxy no longer sends invalid API version and the documented mobile proxy path now exists
+- Failure:
+  In browser mode, saving an Anthropic API key could still fail with `Error grave: anthropic-version: "2025-01-01" is not a valid version` even after the direct app requests were updated.
+- Root cause:
+  The legacy local proxy at `apps/anthropic_proxy/cors-proxy.py` was still sending `anthropic-version: 2025-01-01`, and the documented path `apps/mobile/cors-proxy.py` did not actually exist.
+- Exact fix steps/commands:
+  1. Updated `apps/anthropic_proxy/cors-proxy.py`:
+     - introduced shared `ANTHROPIC_API_VERSION = "2023-06-01"`.
+     - updated verify, messages, and models proxy requests to use that valid version header.
+  2. Added `apps/mobile/cors-proxy.py` as a symlink to `../anthropic_proxy/cors-proxy.py` so the documented command path resolves to the real proxy implementation.
+  3. Restarted the local Anthropic proxy so browser requests pick up the new header immediately.
+
 ### 2026-04-01 - Anthropic API key save no longer fails with invalid `anthropic-version`
 - Failure:
   Saving an Anthropic API key from `Configuración > Proveedor IA` failed with `Error grave: anthropic-version: "2025-01-01" is not a valid version`.

@@ -31,6 +31,7 @@ app.add_middleware(
 )
 
 ANTHROPIC_API = "https://api.anthropic.com"
+ANTHROPIC_API_VERSION = "2023-06-01"
 
 
 @app.get("/health")
@@ -46,7 +47,7 @@ async def anthropic_verify(req: FRequest):
 
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2025-01-01",
+        "anthropic-version": ANTHROPIC_API_VERSION,
         "content-type": "application/json",
     }
     payload = json.dumps({
@@ -78,7 +79,7 @@ async def anthropic_messages(req: FRequest):
 
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2025-01-01",
+        "anthropic-version": ANTHROPIC_API_VERSION,
         "content-type": "application/json",
     }
     payload = json.dumps(body).encode()
@@ -106,7 +107,7 @@ async def anthropic_models(req: FRequest):
 
     headers = {
         "x-api-key": api_key,
-        "anthropic-version": "2025-01-01",
+        "anthropic-version": ANTHROPIC_API_VERSION,
     }
 
     try:
