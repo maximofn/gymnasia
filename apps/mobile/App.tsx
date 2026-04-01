@@ -6111,6 +6111,7 @@ export default function App() {
   const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
   const [measuresChartMetric, setMeasuresChartMetric] = useState<MeasuresChartMetricKey>("weight");
   const [measuresChartMetricDropdownOpen, setMeasuresChartMetricDropdownOpen] = useState(false);
+  const [measuresChartContainerWidth, setMeasuresChartContainerWidth] = useState(0);
   const [showAllMeasurementsHistory, setShowAllMeasurementsHistory] = useState(false);
   const [expandedPhotoUri, setExpandedPhotoUri] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState("");
@@ -14775,9 +14776,9 @@ export default function App() {
                       </Text>
                     </View>
                   ) : (
-                    <>
-                      {(() => {
-                        const chartW = 300;
+                    <View style={{ flex: 1 }} onLayout={(e) => { const w = e.nativeEvent.layout.width; if (w > 0 && w !== measuresChartContainerWidth) setMeasuresChartContainerWidth(w); }}>
+                      {measuresChartContainerWidth > 0 ? (() => {
+                        const chartW = measuresChartContainerWidth;
                         const chartH = 160;
                         const padL = 36;
                         const padR = 12;
@@ -15012,8 +15013,8 @@ export default function App() {
                             </View>
                           </View>
                         );
-                      })()}
-                    </>
+                      })() : null}
+                    </View>
                   )}
                 </View>
               </ChartCard>
