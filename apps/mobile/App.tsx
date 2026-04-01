@@ -7933,9 +7933,6 @@ export default function App() {
         {tab === "home" ? (
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
             <View style={{ flex: 1, gap: 2 }}>
-              <Text style={{ color: "#8B94A3", fontSize: 13, fontWeight: "600" }}>
-                {homeGreetingLabel}
-              </Text>
               <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 30, fontWeight: "700" }}>
                 Gymnasia
               </Text>
