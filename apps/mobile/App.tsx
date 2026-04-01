@@ -10370,6 +10370,183 @@ export default function App() {
             })}
           </View>
         ) : null}
+        {tab === "chat" ? (
+          <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4] }}>
+            {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
+            {store.keys.some((k) => k.api_key.trim()) ? (
+              <View style={{ flex: 1, gap: 10 }}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                  {threads.map((thread) => (
+                    <Pressable
+                      key={thread.id}
+                      onPress={() => setActiveThreadId(thread.id)}
+                      style={{
+                        borderWidth: 1,
+                        borderColor:
+                          activeThreadId === thread.id ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                        backgroundColor:
+                          activeThreadId === thread.id ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
+                        paddingHorizontal: 10,
+                        height: 34,
+                        borderRadius: mobileTheme.radius.pill,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12 }}>{thread.title ?? "Hilo"}</Text>
+                    </Pressable>
+                  ))}
+                  <Pressable
+                    onPress={createThread}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      paddingHorizontal: 10,
+                      height: 34,
+                      borderRadius: mobileTheme.radius.pill,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>+ hilo</Text>
+                  </Pressable>
+                </View>
+                <ScrollView
+                  ref={chatScrollRef}
+                  style={{ flex: 1 }}
+                  contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
+                  showsVerticalScrollIndicator={false}
+                  onContentSizeChange={() => chatScrollRef?.current?.scrollToEnd({ animated: true })}
+                >
+                  {messages.map((msg) => (
+                    <View key={msg.id} style={{ gap: 4 }}>
+                      {msg.role === "assistant" && msg.thinking ? (
+                        <Pressable
+                          onPress={() => setExpandedThinking((prev) => ({ ...prev, [msg.id]: !prev[msg.id] }))}
+                          style={{
+                            borderWidth: 1,
+                            borderColor: "rgba(147,112,219,0.35)",
+                            backgroundColor: "rgba(147,112,219,0.06)",
+                            borderRadius: mobileTheme.radius.md,
+                            padding: 10,
+                          }}
+                        >
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                            <Feather name="cpu" size={12} color="rgba(147,112,219,0.8)" />
+                            <Text style={{ color: "rgba(147,112,219,0.8)", fontSize: 12, fontWeight: "600", flex: 1 }}>
+                              Razonamiento
+                            </Text>
+                            <Feather
+                              name={expandedThinking[msg.id] ? "chevron-up" : "chevron-down"}
+                              size={14}
+                              color="rgba(147,112,219,0.6)"
+                            />
+                          </View>
+                          {expandedThinking[msg.id] ? (
+                            <ScrollView style={{ maxHeight: 200, marginTop: 8 }} nestedScrollEnabled>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 18, fontStyle: "italic" }}>
+                                {msg.thinking}
+                              </Text>
+                            </ScrollView>
+                          ) : null}
+                        </Pressable>
+                      ) : null}
+                      <View
+                        style={{
+                          borderWidth: 1,
+                          borderColor:
+                            msg.role === "assistant"
+                              ? "rgba(203,255,26,0.45)"
+                              : mobileTheme.color.borderSubtle,
+                          backgroundColor:
+                            msg.role === "assistant"
+                              ? "rgba(203,255,26,0.08)"
+                              : mobileTheme.color.bgSurface,
+                          borderRadius: mobileTheme.radius.md,
+                          padding: 10,
+                        }}
+                      >
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{msg.role}</Text>
+                        {msg.content.trim() ? (
+                          <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
+                        ) : null}
+                        {msg.is_streaming ? (
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: msg.content.trim() ? 8 : 4 }}>
+                            <ActivityIndicator size="small" color={mobileTheme.color.textSecondary} />
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontStyle: "italic" }}>
+                              {`${chatThinkingLabel}...`}
+                            </Text>
+                          </View>
+                        ) : null}
+                      </View>
+                    </View>
+                  ))}
+                </ScrollView>
+                <View style={{ paddingBottom: Platform.OS === "android" ? 24 : 16, gap: 8 }}>
+                  <TextInput
+                    style={{
+                      minHeight: 44,
+                      maxHeight: 120,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      color: mobileTheme.color.textPrimary,
+                      paddingHorizontal: 12,
+                      paddingVertical: 10,
+                      textAlignVertical: "top",
+                    }}
+                    value={chatInput}
+                    onChangeText={setChatInput}
+                    placeholder="Pregunta al coach (API proveedor)"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    multiline
+                    blurOnSubmit={false}
+                  />
+                  <PrimaryButton label={sendingChat ? "Enviando..." : "Enviar"} onPress={sendMessage} disabled={sendingChat} />
+                </View>
+              </View>
+            ) : (
+              <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32, gap: 20 }}>
+                <View style={{ width: 100, height: 100, borderRadius: 50, backgroundColor: "rgba(255,255,255,0.06)", alignItems: "center", justifyContent: "center" }}>
+                  <Feather name="key" size={40} color="rgba(255,255,255,0.25)" />
+                </View>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800", textAlign: "center" }}>
+                  API Key no configurada
+                </Text>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 15, textAlign: "center", lineHeight: 22 }}>
+                  Para usar el asistente IA necesitas configurar tu API Key. Obtén una API key de tu proveedor y añádela en los ajustes de la app.
+                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "rgba(100,149,237,0.08)", borderWidth: 1, borderColor: "rgba(100,149,237,0.25)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
+                  <Feather name="info" size={16} color="rgba(100,149,237,0.9)" />
+                  <Text style={{ color: "rgba(100,149,237,0.9)", fontSize: 13, flex: 1, lineHeight: 19 }}>
+                    Gymnasia guarda tus API keys solo en tu dispositivo, no las guarda en ningún otro lugar.
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => { setTab("settings"); setSettingsTab("provider"); }}
+                  style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 52, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, width: "100%", marginTop: 4 }}
+                >
+                  <Ionicons name="settings-sharp" size={18} color="#06090D" />
+                  <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 16 }}>Ir a Ajustes BYOK</Text>
+                </Pressable>
+                <Pressable onPress={() => setShowByokExplain((v) => !v)}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, textAlign: "center" }}>
+                    {showByokExplain ? "Ocultar" : "¿Qué es BYOK?"}
+                  </Text>
+                </Pressable>
+                {showByokExplain ? (
+                  <View style={{ backgroundColor: "rgba(255,255,255,0.04)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
+                      BYOK significa "Bring Your Own Key" (Trae Tu Propia Clave). Gymnasia no incluye acceso a ningún proveedor de IA. Tú proporcionas tu propia API key de OpenAI, Anthropic o Google, y las conversaciones se envían directamente desde tu dispositivo al proveedor. Tu clave nunca sale de tu teléfono.
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            )}
+          </View>
+        ) : (
         <ScrollView ref={mainScrollRef} style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
 
@@ -15143,104 +15320,6 @@ export default function App() {
             </View>
           ) : null}
 
-          {tab === "chat" ? (
-            store.keys.some((k) => k.api_key.trim()) ? (
-            <View style={{ gap: 10 }}>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                {threads.map((thread) => (
-                  <Pressable
-                    key={thread.id}
-                    onPress={() => setActiveThreadId(thread.id)}
-                    style={{
-                      borderWidth: 1,
-                      borderColor:
-                        activeThreadId === thread.id ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                      backgroundColor:
-                        activeThreadId === thread.id ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
-                      paddingHorizontal: 10,
-                      height: 34,
-                      borderRadius: mobileTheme.radius.pill,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12 }}>{thread.title ?? "Hilo"}</Text>
-                  </Pressable>
-                ))}
-                <Pressable
-                  onPress={createThread}
-                  style={{
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgSurface,
-                    paddingHorizontal: 10,
-                    height: 34,
-                    borderRadius: mobileTheme.radius.pill,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>+ hilo</Text>
-                </Pressable>
-              </View>
-
-              <SharedChatPanel
-                variant="coach"
-                messages={messages}
-                inputValue={chatInput}
-                onInputChange={setChatInput}
-                onSend={sendMessage}
-                sendDisabled={sendingChat}
-                sendLabel={sendingChat ? "Enviando..." : "Enviar"}
-                inputPlaceholder="Pregunta al coach (API proveedor)"
-                streamingIndicatorLabel={`${chatThinkingLabel}...`}
-                expandedThinking={expandedThinking}
-                onToggleThinking={(messageId) => {
-                  setExpandedThinking((prev) => ({ ...prev, [messageId]: !prev[messageId] }));
-                }}
-                scrollRef={chatScrollRef}
-              />
-            </View>
-            ) : (
-            <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32, gap: 20 }}>
-              <View style={{ width: 100, height: 100, borderRadius: 50, backgroundColor: "rgba(255,255,255,0.06)", alignItems: "center", justifyContent: "center" }}>
-                <Feather name="key" size={40} color="rgba(255,255,255,0.25)" />
-              </View>
-              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800", textAlign: "center" }}>
-                API Key no configurada
-              </Text>
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 15, textAlign: "center", lineHeight: 22 }}>
-                Para usar el asistente IA necesitas configurar tu API Key. Obtén una API key de tu proveedor y añádela en los ajustes de la app.
-              </Text>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "rgba(100,149,237,0.08)", borderWidth: 1, borderColor: "rgba(100,149,237,0.25)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
-                <Feather name="info" size={16} color="rgba(100,149,237,0.9)" />
-                <Text style={{ color: "rgba(100,149,237,0.9)", fontSize: 13, flex: 1, lineHeight: 19 }}>
-                  Gymnasia guarda tus API keys solo en tu dispositivo, no las guarda en ningún otro lugar.
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => { setTab("settings"); setSettingsTab("provider"); }}
-                style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 52, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, width: "100%", marginTop: 4 }}
-              >
-                <Ionicons name="settings-sharp" size={18} color="#06090D" />
-                <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 16 }}>Ir a Ajustes BYOK</Text>
-              </Pressable>
-              <Pressable onPress={() => setShowByokExplain((v) => !v)}>
-                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, textAlign: "center" }}>
-                  {showByokExplain ? "Ocultar" : "¿Qué es BYOK?"}
-                </Text>
-              </Pressable>
-              {showByokExplain ? (
-                <View style={{ backgroundColor: "rgba(255,255,255,0.04)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
-                    BYOK significa "Bring Your Own Key" (Trae Tu Propia Clave). Gymnasia no incluye acceso a ningún proveedor de IA. Tú proporcionas tu propia API key de OpenAI, Anthropic o Google, y las conversaciones se envían directamente desde tu dispositivo al proveedor. Tu clave nunca sale de tu teléfono.
-                  </Text>
-                </View>
-              ) : null}
-            </View>
-            )
-          ) : null}
-
           {tab === "settings" ? (
             <View style={{ gap: 12 }}>
               {settingsTab === "diet" ? (
@@ -17881,6 +17960,7 @@ export default function App() {
             </View>
           ) : null}
         </ScrollView>
+        )}
         </KeyboardAvoidingView>
       )}
 
