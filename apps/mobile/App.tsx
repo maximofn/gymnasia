@@ -7914,6 +7914,8 @@ export default function App() {
     mealPerGramRef.current = null;
     setDietEditingItem(null);
     setDietItemMenu(null);
+    setDietMealEditorCategory(null);
+    setDietAddMode(null);
     setError(null);
   }
 
