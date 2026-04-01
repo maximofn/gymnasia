@@ -2,18 +2,13 @@
   "name": "gymnasia",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
-    "dev:web": "npm --workspace apps/web run dev",
     "dev:mobile": "npm --workspace apps/mobile run start",
-    "dev:api": "cd apps/api && .venv/bin/uvicorn app.main:app --reload",
-    "build:web": "npm --workspace apps/web run build",
     "test:train:e2e": "node apps/mobile/scripts/train-usability.e2e.mjs",
     "test:train:e2e:headed": "TRAIN_E2E_HEADLESS=0 npm run test:train:e2e"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
   "devDependencies": {
     "playwright": "^1.58.2"
   }

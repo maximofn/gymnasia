@@ -1,21 +1,15 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-This repo is an npm workspace monorepo.
-- `apps/api`: FastAPI backend (`app/routers`, `app/services`, `alembic/versions`).
-- `apps/web`: Next.js App Router frontend (`app/**/page.tsx`, `lib/*.ts`).
-- `apps/mobile`: Expo React Native app (`App.tsx`, `theme.ts`).
-- `packages/shared`: shared TypeScript tokens/types (`src/design-tokens.ts`).
-- `docs`: product, backend, and design references.
+This repo contains a single Expo React Native mobile app.
+- `apps/mobile`: Expo React Native app (`App.tsx`, `theme.ts`). This is the only application.
+- `alimentos/`: repositorio de alimentos (JSONs con datos nutricionales).
 - `ejercicios/`: repositorio de ejercicios (JSONs + imágenes generadas). Ver skill `.claude/skills/generate-exercise-images.md` para generar imágenes.
-- `supabase/migrations`: SQL migrations for Supabase environments.
-
-Keep feature changes aligned across API + web/mobile when contracts change.
 
 ## Current Delivery Focus
-- Since 2026-02-22, prioritize `apps/mobile` as the primary surface.
-- New product features should work fully local-first on mobile unless backend work is explicitly requested.
-- Do not introduce mandatory Supabase/backend dependencies for the core mobile flow by default.
+- `apps/mobile` is the only product surface. There is no backend, web frontend, or database.
+- All features must work fully local-first on mobile.
+- Do not introduce backend or database dependencies.
 
 ## Design System Source Of Truth
 - The system design reference is the attached `[Image #1]` in this conversation.
@@ -24,16 +18,9 @@ Keep feature changes aligned across API + web/mobile when contracts change.
 
 ## Build, Test, and Development Commands
 Run from repo root unless noted.
-- `npm install`: install workspace dependencies.
-- `npm run dev:web`: start Next.js on `apps/web`.
+- `npm install`: install dependencies.
 - `npm run dev:mobile`: start Expo dev server.
-- `npm run dev:api`: run FastAPI with reload (requires Python deps).
-- `npm run build:web`: production web build.
-- `npm --workspace apps/web exec tsc --noEmit`: web type-check.
 - `npm --workspace apps/mobile exec tsc --noEmit`: mobile type-check.
-- `cd apps/api && alembic upgrade head`: apply DB migrations.
-
-API first-time setup: `cd apps/api && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && cp .env.example .env`.
 
 ## Mobile Runbook (Expo Go)
 - Goal: run `apps/mobile` reliably on a physical device with Expo Go (SDK 54).
@@ -88,31 +75,24 @@ API first-time setup: `cd apps/api && python3 -m venv .venv && source .venv/bin/
   - Direct Anthropic chat from browser requires the CORS proxy above. OpenAI/Google can be used directly.
 
 ## Coding Style & Naming Conventions
-- TypeScript is `strict` in web/mobile; prefer explicit domain types in `apps/web/lib`.
-- Follow existing TS style: 2-space indentation, semicolons, double quotes.
-- React components/types: `PascalCase`; functions/variables: `camelCase`; route folders: lowercase.
-- Python: PEP 8, 4-space indentation, type hints, snake_case modules.
-- Reuse shared tokens from `packages/shared` before introducing new constants.
-- No repo-wide ESLint/Prettier/Ruff config is committed yet; keep diffs consistent with surrounding code.
+- TypeScript is `strict`; follow existing TS style: 2-space indentation, semicolons, double quotes.
+- React components/types: `PascalCase`; functions/variables: `camelCase`.
+- No repo-wide ESLint/Prettier config is committed yet; keep diffs consistent with surrounding code.
 
 ## Testing Guidelines
 Automated unit/integration suites are not yet established. Minimum validation for PRs:
-- web build + type-check,
-- mobile type-check,
-- API smoke check (`GET /health`) after starting `uvicorn`.
+- mobile type-check: `npm --workspace apps/mobile exec tsc --noEmit`
 
-When adding non-trivial logic, include tests in the same PR when possible (e.g., `apps/api/tests/test_<feature>.py`), or document manual verification steps explicitly.
+When adding non-trivial logic, document manual verification steps explicitly.
 
 ## Commit & Pull Request Guidelines
 History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ...`, `chore(scope): ...`, `docs: ...`.
 - Keep commit subjects imperative and scoped (e.g., `fix(mobile): pin Metro module resolution for monorepo`).
 - After each modification, create a commit and push it to the remote before closing the task.
-- Keep PRs focused by app/module.
-- PR description should include: summary, impacted paths, migration/env changes, commands executed, and screenshots for UI updates.
+- PR description should include: summary, impacted paths, commands executed, and screenshots for UI updates.
 
 ## Security & Configuration Tips
-- Never commit secrets; use `apps/api/.env.example` as template.
-- Validate `DATABASE_URL`, `JWT_SECRET`, `APP_ENCRYPTION_KEY`, and client API base URLs before running locally.
+- Never commit secrets.
 
 ## Agent Maintenance Rule
 - Whenever a problem is solved, document it in `AGENTS.md` with failure, root cause, and exact fix steps/commands.
@@ -2477,10 +2457,6 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
      - kept the existing `training-session-finish`, `training-session-skip-rest`, and `training-session-rest-toggle-pause` controls unchanged.
   2. Validated mobile TypeScript:
      `npm --workspace apps/mobile exec tsc --noEmit`
-
-## Post-Modification Workflow
-After each modification, always commit and push changes:
-
 
 ## Post-Modification Workflow
 After each modification, always commit and push changes:
