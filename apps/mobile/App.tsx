@@ -7966,6 +7966,28 @@ export default function App() {
     setError(null);
   }
 
+  function startEditDietItemWithAI(
+    category: DietMealCategory,
+    meal: DietMeal,
+    item: DietItem,
+  ) {
+    setDietItemMenu(null);
+    setDietMealEditorCategory(category);
+    setDietEditingItem({ meal_id: meal.id, item_id: item.id });
+    setDietAddMode("ai");
+    openFoodEstimatorModal();
+    // Override the initial message with the item's current data
+    const gramsInfo = item.grams > 0 ? `${formatNutritionNumber(item.grams)}g, ` : "";
+    setFoodEstimatorMessages([
+      {
+        id: uid("food_est_msg"),
+        role: "assistant" as const,
+        content: `Alimento actual: ${item.title}, ${gramsInfo}${formatNutritionNumber(item.calories_kcal)} kcal, P:${formatNutritionNumber(item.protein_g)}g C:${formatNutritionNumber(item.carbs_g)}g G:${formatNutritionNumber(item.fat_g)}g.\n\nDime qué cambios quieres hacer.`,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+  }
+
   function deleteDietItem(meal: DietMeal, item: DietItem) {
     const activeDietDate = selectedDietDate;
     setStore((prev) => {
@@ -8445,10 +8467,9 @@ export default function App() {
         return;
       }
 
-      // Add the food directly to the meal
+      // Add or update the food in the meal
       const cat = dietMealEditorCategory;
-      const newItem: DietItem = {
-        id: uid("food"),
+      const updatedFields = {
         title: parsed.dish_name || "Alimento estimado IA",
         grams: parsed.grams ?? 0,
         calories_kcal: parsed.calories_kcal,
@@ -8459,6 +8480,16 @@ export default function App() {
       const activeDietDate = selectedDietDate;
       setStore((prev) => {
         const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
+        if (dietEditingItem) {
+          // Update existing item
+          const meals = currentDay.meals.map((meal) => {
+            if (meal.id !== dietEditingItem.meal_id) return meal;
+            return { ...meal, items: meal.items.map((item) => item.id === dietEditingItem.item_id ? { ...item, ...updatedFields } : item) };
+          });
+          return { ...prev, dietByDate: { ...prev.dietByDate, [activeDietDate]: { ...currentDay, meals } } };
+        }
+        // Create new item
+        const newItem: DietItem = { id: uid("food"), ...updatedFields };
         const existingMeal = currentDay.meals.find((m) => m.title === cat);
         const updatedMeals = existingMeal
           ? currentDay.meals.map((m) => m.title === cat ? { ...m, items: [...m.items, newItem] } : m)
@@ -8466,6 +8497,7 @@ export default function App() {
         return { ...prev, dietByDate: { ...prev.dietByDate, [activeDietDate]: { ...currentDay, meals: updatedMeals } } };
       });
       setDietMealEditorCategory(null);
+      setDietEditingItem(null);
       setDietAddMode(null);
       closeFoodEstimatorModal();
     } catch (err) {
@@ -14462,7 +14494,22 @@ export default function App() {
                                       >
                                         <Feather name="edit-3" size={13} color={mobileTheme.color.textPrimary} />
                                         <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
-                                          Editar
+                                          Editar a mano
+                                        </Text>
+                                      </Pressable>
+                                      <Pressable
+                                        onPress={() => startEditDietItemWithAI(category, meal, item)}
+                                        style={{
+                                          minHeight: 36,
+                                          paddingHorizontal: 12,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <Feather name="cpu" size={13} color={mobileTheme.color.textPrimary} />
+                                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
+                                          Editar con IA
                                         </Text>
                                       </Pressable>
                                       <Pressable
