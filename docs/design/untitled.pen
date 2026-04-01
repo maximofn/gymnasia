@@ -37013,6 +37013,1617 @@
       },
       "width": 1024,
       "height": 1024
+    },
+    {
+      "type": "frame",
+      "id": "tyUT6",
+      "x": 7582,
+      "y": 3950,
+      "name": "App Icon C - Gradient Shield",
+      "width": 512,
+      "height": 512,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 135,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#1A1A1A",
+            "position": 0
+          },
+          {
+            "color": "#0A0A0A",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 112,
+      "layout": "none",
+      "children": [
+        {
+          "type": "path",
+          "id": "iPaNn",
+          "x": 132,
+          "y": 30,
+          "name": "Shield",
+          "geometry": "M124 0l124 80 0 180c0 80-60 140-124 160-64-20-124-80-124-160l0-180z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#CDFF00",
+                "position": 0
+              },
+              {
+                "color": "#9ECC00",
+                "position": 1
+              }
+            ]
+          },
+          "width": 248,
+          "height": 420,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0040",
+            "blur": 40
+          }
+        },
+        {
+          "type": "text",
+          "id": "4pRaU",
+          "x": 190,
+          "y": 150,
+          "name": "G Letter",
+          "fill": "#0A0A0A",
+          "content": "G",
+          "fontFamily": "Outfit",
+          "fontSize": 180,
+          "fontWeight": "900"
+        },
+        {
+          "type": "text",
+          "id": "bykrq",
+          "x": 205,
+          "y": 435,
+          "name": "GIM Label",
+          "fill": "#CDFF00",
+          "content": "GIM",
+          "fontFamily": "Outfit",
+          "fontSize": 36,
+          "fontWeight": "700"
+        },
+        {
+          "type": "rectangle",
+          "id": "Fw0gE",
+          "x": 156,
+          "y": 80,
+          "name": "Speed Line",
+          "rotation": -29.999999999999996,
+          "fill": "#CDFF0030",
+          "width": 200,
+          "height": 2
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "qTchA",
+      "x": 8200,
+      "y": 3950,
+      "name": "App Icon D - Minimal Bolt",
+      "width": 512,
+      "height": 512,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#111111",
+            "position": 0
+          },
+          {
+            "color": "#0A0A0A",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 112,
+      "layout": "none",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "IkLim",
+          "x": 106,
+          "y": 106,
+          "name": "glowBg",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#CDFF0012",
+                "position": 0
+              },
+              {
+                "color": "#CDFF0000",
+                "position": 1
+              }
+            ]
+          },
+          "width": 300,
+          "height": 300
+        },
+        {
+          "type": "path",
+          "id": "GX1hQ",
+          "x": 148,
+          "y": 60,
+          "name": "bolt",
+          "geometry": "M130 0l-90 150 60 0-14 170 90-190-60 0z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#CDFF00",
+                "position": 0
+              },
+              {
+                "color": "#B8E600",
+                "position": 0.6
+              },
+              {
+                "color": "#8FB300",
+                "position": 1
+              }
+            ]
+          },
+          "width": 216,
+          "height": 320,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0035",
+            "blur": 50,
+            "spread": 5
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "VcGTp",
+          "x": 96,
+          "y": 76,
+          "name": "ring",
+          "fill": "#00000000",
+          "width": 320,
+          "height": 320,
+          "stroke": {
+            "align": "center",
+            "thickness": 2,
+            "fill": "#CDFF0020"
+          }
+        },
+        {
+          "type": "text",
+          "id": "qthNP",
+          "x": 178,
+          "y": 410,
+          "name": "brandText",
+          "fill": "#FFFFFF",
+          "content": "GIM",
+          "fontFamily": "Outfit",
+          "fontSize": 48,
+          "fontWeight": "800",
+          "letterSpacing": 6
+        },
+        {
+          "type": "ellipse",
+          "id": "2eh9s",
+          "x": 160,
+          "y": 432,
+          "name": "accentDot1",
+          "fill": "#CDFF00",
+          "width": 6,
+          "height": 6
+        },
+        {
+          "type": "ellipse",
+          "id": "64Udc",
+          "x": 346,
+          "y": 432,
+          "name": "accentDot2",
+          "fill": "#CDFF00",
+          "width": 6,
+          "height": 6
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "5x4TA",
+      "x": 7582,
+      "y": 4650,
+      "name": "App Icon D1 - Refined Glow",
+      "width": 512,
+      "height": 512,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#0F0F0F",
+            "position": 0
+          },
+          {
+            "color": "#050505",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 112,
+      "layout": "none",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "iVFMi",
+          "x": 76,
+          "y": 56,
+          "name": "glowRing",
+          "fill": "#00000000",
+          "width": 360,
+          "height": 360,
+          "stroke": {
+            "align": "center",
+            "thickness": 1.5,
+            "fill": {
+              "type": "gradient",
+              "gradientType": "linear",
+              "enabled": true,
+              "rotation": 0,
+              "size": {
+                "height": 1
+              },
+              "colors": [
+                {
+                  "color": "#CDFF0030",
+                  "position": 0
+                },
+                {
+                  "color": "#CDFF0008",
+                  "position": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "eUy2i",
+          "x": 116,
+          "y": 96,
+          "name": "ambientGlow",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#CDFF0020",
+                "position": 0
+              },
+              {
+                "color": "#CDFF0000",
+                "position": 1
+              }
+            ]
+          },
+          "width": 280,
+          "height": 280
+        },
+        {
+          "type": "path",
+          "id": "BTT7H",
+          "x": 153,
+          "y": 68,
+          "name": "boltShadow",
+          "opacity": 0.4,
+          "geometry": "M130 0l-90 150 60 0-14 170 90-190-60 0z",
+          "fill": "#000000",
+          "width": 216,
+          "height": 320,
+          "effect": {
+            "type": "blur",
+            "radius": 20
+          }
+        },
+        {
+          "type": "path",
+          "id": "wjQ6q",
+          "x": 148,
+          "y": 60,
+          "name": "mainBolt",
+          "geometry": "M130 0l-90 150 60 0-14 170 90-190-60 0z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#EEFF66",
+                "position": 0
+              },
+              {
+                "color": "#CDFF00",
+                "position": 0.5
+              },
+              {
+                "color": "#8FB300",
+                "position": 1
+              }
+            ]
+          },
+          "width": 216,
+          "height": 320,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0045",
+            "blur": 60,
+            "spread": 8
+          }
+        },
+        {
+          "type": "path",
+          "id": "NZcQI",
+          "x": 148,
+          "y": 60,
+          "name": "boltHighlight",
+          "geometry": "M130 0l-90 150 60 0 30-150z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#FFFFFF30",
+                "position": 0
+              },
+              {
+                "color": "#FFFFFF00",
+                "position": 1
+              }
+            ]
+          },
+          "width": 216,
+          "height": 160
+        },
+        {
+          "type": "ellipse",
+          "id": "meXsc",
+          "x": 320,
+          "y": 120,
+          "name": "spark1",
+          "fill": "#CDFF00",
+          "width": 4,
+          "height": 4
+        },
+        {
+          "type": "ellipse",
+          "id": "FnemE",
+          "x": 340,
+          "y": 180,
+          "name": "spark2",
+          "fill": "#CDFF00",
+          "width": 4,
+          "height": 4
+        },
+        {
+          "type": "ellipse",
+          "id": "QdVJk",
+          "x": 370,
+          "y": 100,
+          "name": "spark3",
+          "fill": "#CDFF00",
+          "width": 4,
+          "height": 4
+        },
+        {
+          "type": "text",
+          "id": "JPkiL",
+          "x": 178,
+          "y": 420,
+          "name": "gimText",
+          "fill": "#FFFFFF",
+          "content": "GIM",
+          "fontFamily": "Outfit",
+          "fontSize": 44,
+          "fontWeight": "800",
+          "letterSpacing": 8
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 1,
+          "id": "JkalZ",
+          "x": 190,
+          "y": 470,
+          "name": "underline",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#CDFF0000",
+                "position": 0
+              },
+              {
+                "color": "#CDFF00",
+                "position": 0.5
+              },
+              {
+                "color": "#CDFF0000",
+                "position": 1
+              }
+            ]
+          },
+          "width": 132,
+          "height": 2
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "SFL9u",
+      "x": 8200,
+      "y": 4650,
+      "name": "App Icon D2 - Badge Style",
+      "width": 512,
+      "height": 512,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 160,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#111111",
+            "position": 0
+          },
+          {
+            "color": "#0A0A0A",
+            "position": 0.6
+          },
+          {
+            "color": "#060606",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 112,
+      "layout": "none",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "ErC1H",
+          "x": 56,
+          "y": 36,
+          "name": "outerRing",
+          "fill": "#00000000",
+          "width": 400,
+          "height": 400,
+          "stroke": {
+            "align": "center",
+            "thickness": 1,
+            "fill": "#CDFF0012"
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "ZT8KB",
+          "x": 86,
+          "y": 66,
+          "name": "circleBg",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#1A1A1A",
+                "position": 0
+              },
+              {
+                "color": "#111111",
+                "position": 0.7
+              },
+              {
+                "color": "#0D0D0D",
+                "position": 1
+              }
+            ]
+          },
+          "width": 340,
+          "height": 340,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1.5,
+            "fill": {
+              "type": "gradient",
+              "gradientType": "linear",
+              "enabled": true,
+              "rotation": 180,
+              "size": {
+                "height": 1
+              },
+              "colors": [
+                {
+                  "color": "#CDFF0040",
+                  "position": 0
+                },
+                {
+                  "color": "#CDFF0010",
+                  "position": 0.5
+                },
+                {
+                  "color": "#CDFF0030",
+                  "position": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "YjYKR",
+          "x": 136,
+          "y": 116,
+          "name": "innerGlow",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#CDFF0015",
+                "position": 0
+              },
+              {
+                "color": "#CDFF0000",
+                "position": 1
+              }
+            ]
+          },
+          "width": 240,
+          "height": 240
+        },
+        {
+          "type": "path",
+          "id": "Sj7UF",
+          "x": 153,
+          "y": 78,
+          "name": "boltShadow",
+          "opacity": 0.5,
+          "geometry": "M130 0l-90 150 60 0-14 170 90-190-60 0z",
+          "fill": "#000000",
+          "width": 216,
+          "height": 320,
+          "effect": {
+            "type": "blur",
+            "radius": 15
+          }
+        },
+        {
+          "type": "path",
+          "id": "koVhx",
+          "x": 148,
+          "y": 70,
+          "name": "boltMain",
+          "geometry": "M130 0l-90 150 60 0-14 170 90-190-60 0z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#EEFF66",
+                "position": 0
+              },
+              {
+                "color": "#CDFF00",
+                "position": 0.4
+              },
+              {
+                "color": "#A3CC00",
+                "position": 0.8
+              },
+              {
+                "color": "#8FB300",
+                "position": 1
+              }
+            ]
+          },
+          "width": 216,
+          "height": 320,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0040",
+            "blur": 45,
+            "spread": 5
+          }
+        },
+        {
+          "type": "path",
+          "id": "1WgQG",
+          "x": 148,
+          "y": 70,
+          "name": "boltHighlight",
+          "geometry": "M130 0l-90 150 60 0 30-150z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#FFFFFF25",
+                "position": 0
+              },
+              {
+                "color": "#FFFFFF00",
+                "position": 1
+              }
+            ]
+          },
+          "width": 216,
+          "height": 160
+        },
+        {
+          "type": "ellipse",
+          "id": "7s9ok",
+          "x": 330,
+          "y": 110,
+          "name": "spark1",
+          "fill": "#CDFF00",
+          "width": 5,
+          "height": 5,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0080",
+            "blur": 8
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "h6nEA",
+          "x": 350,
+          "y": 165,
+          "name": "spark2",
+          "fill": "#CDFF00",
+          "width": 3,
+          "height": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0060",
+            "blur": 6
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "2KQsm",
+          "x": 310,
+          "y": 85,
+          "name": "spark3",
+          "fill": "#CDFF0090",
+          "width": 4,
+          "height": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0060",
+            "blur": 6
+          }
+        },
+        {
+          "type": "text",
+          "id": "YvofD",
+          "x": 174,
+          "y": 420,
+          "name": "brandGIM",
+          "fill": "#FFFFFF",
+          "content": "GIM",
+          "fontFamily": "Outfit",
+          "fontSize": 46,
+          "fontWeight": "800",
+          "letterSpacing": 10
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 1,
+          "id": "jLvkd",
+          "x": 192,
+          "y": 472,
+          "name": "underline",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 90,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#CDFF0000",
+                "position": 0
+              },
+              {
+                "color": "#CDFF00",
+                "position": 0.3
+              },
+              {
+                "color": "#CDFF00",
+                "position": 0.7
+              },
+              {
+                "color": "#CDFF0000",
+                "position": 1
+              }
+            ]
+          },
+          "width": 128,
+          "height": 2
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ILmfE",
+      "x": 8792,
+      "y": 4650,
+      "name": "Icon V1 - Clean Centered",
+      "width": 512,
+      "height": 512,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 160,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#111111",
+            "position": 0
+          },
+          {
+            "color": "#0A0A0A",
+            "position": 0.6
+          },
+          {
+            "color": "#060606",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 112,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#00000040",
+        "blur": 60
+      },
+      "layout": "none",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "s1VXO",
+          "x": 56,
+          "y": 56,
+          "name": "outerRing",
+          "fill": "#00000000",
+          "width": 400,
+          "height": 400,
+          "stroke": {
+            "align": "center",
+            "thickness": 1,
+            "fill": "#CDFF0012"
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "ztvsL",
+          "x": 36,
+          "y": 36,
+          "name": "outerRing2",
+          "fill": "#00000000",
+          "width": 440,
+          "height": 440,
+          "stroke": {
+            "align": "center",
+            "thickness": 0.5,
+            "fill": "#CDFF000A"
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "lj19o",
+          "x": 86,
+          "y": 86,
+          "name": "circleBg",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#1A1A1A",
+                "position": 0
+              },
+              {
+                "color": "#111111",
+                "position": 0.7
+              },
+              {
+                "color": "#0D0D0D",
+                "position": 1
+              }
+            ]
+          },
+          "width": 340,
+          "height": 340,
+          "stroke": {
+            "align": "inside",
+            "thickness": 2,
+            "fill": {
+              "type": "gradient",
+              "gradientType": "linear",
+              "enabled": true,
+              "rotation": 180,
+              "size": {
+                "height": 1
+              },
+              "colors": [
+                {
+                  "color": "#CDFF0050",
+                  "position": 0
+                },
+                {
+                  "color": "#CDFF0015",
+                  "position": 0.5
+                },
+                {
+                  "color": "#CDFF0045",
+                  "position": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "J64LE",
+          "x": 136,
+          "y": 136,
+          "name": "innerGlow",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#CDFF0015",
+                "position": 0
+              },
+              {
+                "color": "#CDFF0000",
+                "position": 1
+              }
+            ]
+          },
+          "width": 240,
+          "height": 240
+        },
+        {
+          "type": "path",
+          "id": "VDtEC",
+          "x": 153,
+          "y": 98,
+          "name": "boltShadow",
+          "opacity": 0.5,
+          "geometry": "M130 0l-90 150 60 0-14 170 90-190-60 0z",
+          "fill": "#000000",
+          "width": 216,
+          "height": 320,
+          "effect": {
+            "type": "blur",
+            "radius": 15
+          }
+        },
+        {
+          "type": "path",
+          "id": "s6grN",
+          "x": 148,
+          "y": 90,
+          "name": "boltMain",
+          "geometry": "M130 0l-90 150 60 0-14 170 90-190-60 0z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#F5FF99",
+                "position": 0
+              },
+              {
+                "color": "#CDFF00",
+                "position": 0.3
+              },
+              {
+                "color": "#9ECC00",
+                "position": 0.7
+              },
+              {
+                "color": "#6B8A00",
+                "position": 1
+              }
+            ]
+          },
+          "width": 216,
+          "height": 320,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0035",
+            "blur": 60,
+            "spread": 10
+          }
+        },
+        {
+          "type": "path",
+          "id": "eLp5v",
+          "x": 148,
+          "y": 90,
+          "name": "boltHighlight",
+          "geometry": "M130 0l-90 150 60 0 30-150z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#FFFFFF25",
+                "position": 0
+              },
+              {
+                "color": "#FFFFFF00",
+                "position": 1
+              }
+            ]
+          },
+          "width": 216,
+          "height": 160
+        },
+        {
+          "type": "ellipse",
+          "id": "PUXQ7",
+          "x": 330,
+          "y": 130,
+          "name": "spark1",
+          "fill": "#CDFF00",
+          "width": 5,
+          "height": 5,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0080",
+            "blur": 8
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "1nQmO",
+          "x": 350,
+          "y": 185,
+          "name": "spark2",
+          "fill": "#CDFF00",
+          "width": 3,
+          "height": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0060",
+            "blur": 6
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "yCJCk",
+          "x": 310,
+          "y": 105,
+          "name": "spark3",
+          "fill": "#CDFF0090",
+          "width": 4,
+          "height": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0060",
+            "blur": 6
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "gR3oB",
+          "x": 150,
+          "y": 380,
+          "name": "spark4",
+          "fill": "#CDFF0070",
+          "width": 3,
+          "height": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0050",
+            "blur": 5
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "jXDGu",
+          "x": 340,
+          "y": 280,
+          "name": "spark5",
+          "fill": "#CDFF00",
+          "width": 4,
+          "height": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0060",
+            "blur": 7
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "LK0nj",
+      "x": 9384,
+      "y": 4650,
+      "name": "Icon V2 - Dynamic Energy",
+      "clip": true,
+      "width": 512,
+      "height": 512,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 200,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#141414",
+            "position": 0
+          },
+          {
+            "color": "#0A0A0A",
+            "position": 0.4
+          },
+          {
+            "color": "#050505",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 112,
+      "layout": "none",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "9MgBg",
+          "x": 36,
+          "y": 46,
+          "name": "outerRing",
+          "fill": "#00000000",
+          "width": 440,
+          "height": 440,
+          "stroke": {
+            "align": "center",
+            "thickness": 1.5,
+            "fill": {
+              "type": "gradient",
+              "gradientType": "linear",
+              "enabled": true,
+              "rotation": 180,
+              "size": {
+                "height": 1
+              },
+              "colors": [
+                {
+                  "color": "#CDFF0030",
+                  "position": 0
+                },
+                {
+                  "color": "#CDFF0008",
+                  "position": 0.4
+                },
+                {
+                  "color": "#CDFF0020",
+                  "position": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "gJtIR",
+          "x": 76,
+          "y": 86,
+          "name": "circleBg",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#1A1A1A",
+                "position": 0
+              },
+              {
+                "color": "#111111",
+                "position": 0.7
+              },
+              {
+                "color": "#0D0D0D",
+                "position": 1
+              }
+            ]
+          },
+          "width": 360,
+          "height": 360,
+          "stroke": {
+            "align": "inside",
+            "thickness": 2,
+            "fill": {
+              "type": "gradient",
+              "gradientType": "linear",
+              "enabled": true,
+              "rotation": 180,
+              "size": {
+                "height": 1
+              },
+              "colors": [
+                {
+                  "color": "#CDFF0060",
+                  "position": 0
+                },
+                {
+                  "color": "#CDFF0010",
+                  "position": 0.4
+                },
+                {
+                  "color": "#CDFF0050",
+                  "position": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "tnsak",
+          "x": 116,
+          "y": 126,
+          "name": "innerGlow",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#CDFF0020",
+                "position": 0
+              },
+              {
+                "color": "#CDFF0005",
+                "position": 0.6
+              },
+              {
+                "color": "#CDFF0000",
+                "position": 1
+              }
+            ]
+          },
+          "width": 280,
+          "height": 280
+        },
+        {
+          "type": "path",
+          "id": "DiFEc",
+          "x": 143,
+          "y": 78,
+          "name": "boltShadow",
+          "opacity": 0.5,
+          "geometry": "M135 0l-95 165 60 0-18 185 100-200-60 0z",
+          "fill": "#000000",
+          "width": 230,
+          "height": 350,
+          "effect": {
+            "type": "blur",
+            "radius": 18
+          }
+        },
+        {
+          "type": "path",
+          "id": "po6P5",
+          "x": 138,
+          "y": 70,
+          "name": "boltMain",
+          "geometry": "M135 0l-95 165 60 0-18 185 100-200-60 0z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#F5FF99",
+                "position": 0
+              },
+              {
+                "color": "#EEFF44",
+                "position": 0.15
+              },
+              {
+                "color": "#CDFF00",
+                "position": 0.4
+              },
+              {
+                "color": "#9ECC00",
+                "position": 0.75
+              },
+              {
+                "color": "#5A7A00",
+                "position": 1
+              }
+            ]
+          },
+          "width": 230,
+          "height": 350,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0035",
+            "blur": 70,
+            "spread": 12
+          }
+        },
+        {
+          "type": "path",
+          "id": "G0MsU",
+          "x": 138,
+          "y": 70,
+          "name": "boltHighlight",
+          "geometry": "M135 0l-95 165 60 0 35-165z",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#FFFFFF20",
+                "position": 0
+              },
+              {
+                "color": "#FFFFFF00",
+                "position": 1
+              }
+            ]
+          },
+          "width": 230,
+          "height": 175
+        },
+        {
+          "type": "ellipse",
+          "id": "yFo3t",
+          "x": 340,
+          "y": 130,
+          "name": "spark1",
+          "fill": "#CDFF00",
+          "width": 6,
+          "height": 6,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF00AA",
+            "blur": 12
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "jyyLQ",
+          "x": 360,
+          "y": 200,
+          "name": "spark2",
+          "fill": "#CDFF00",
+          "width": 4,
+          "height": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0080",
+            "blur": 8
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "lKU5a",
+          "x": 320,
+          "y": 95,
+          "name": "spark3",
+          "fill": "#CDFF00",
+          "width": 5,
+          "height": 5,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0090",
+            "blur": 10
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "RHdyF",
+          "x": 155,
+          "y": 390,
+          "name": "sp4",
+          "fill": "#CDFF0080",
+          "width": 3,
+          "height": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0050",
+            "blur": 6
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "zuvqk",
+          "x": 350,
+          "y": 290,
+          "name": "sp5",
+          "fill": "#CDFF00",
+          "width": 4,
+          "height": 4,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0070",
+            "blur": 8
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "riS5i",
+          "x": 130,
+          "y": 120,
+          "name": "sp6",
+          "fill": "#CDFF0060",
+          "width": 3,
+          "height": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0040",
+            "blur": 5
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "TDxZ2",
+          "x": 370,
+          "y": 250,
+          "name": "sp7",
+          "fill": "#CDFF0070",
+          "width": 2,
+          "height": 2,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#CDFF0040",
+            "blur": 4
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "HPvVi",
+          "x": 60,
+          "y": 60,
+          "name": "arc1",
+          "startAngle": 200,
+          "sweepAngle": 80,
+          "fill": "#00000000",
+          "width": 392,
+          "height": 392,
+          "stroke": {
+            "align": "center",
+            "thickness": 1,
+            "fill": "#CDFF000A"
+          }
+        },
+        {
+          "type": "ellipse",
+          "id": "8GhGj",
+          "x": 60,
+          "y": 60,
+          "name": "arc2",
+          "startAngle": 40,
+          "sweepAngle": 60,
+          "fill": "#00000000",
+          "width": 392,
+          "height": 392,
+          "stroke": {
+            "align": "center",
+            "thickness": 1,
+            "fill": "#CDFF000A"
+          }
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 112,
+          "id": "9I2l0",
+          "x": 0,
+          "y": 0,
+          "name": "edgeBorder",
+          "fill": "#00000000",
+          "width": 512,
+          "height": 512,
+          "stroke": {
+            "align": "inside",
+            "thickness": 1,
+            "fill": {
+              "type": "gradient",
+              "gradientType": "linear",
+              "enabled": true,
+              "rotation": 200,
+              "size": {
+                "height": 1
+              },
+              "colors": [
+                {
+                  "color": "#CDFF0018",
+                  "position": 0
+                },
+                {
+                  "color": "#CDFF0000",
+                  "position": 0.4
+                },
+                {
+                  "color": "#CDFF0000",
+                  "position": 0.6
+                },
+                {
+                  "color": "#CDFF000C",
+                  "position": 1
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ],
   "themes": {

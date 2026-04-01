@@ -6,7 +6,8 @@ See [AGENTS.md](./AGENTS.md) for full project instructions.
 
 ## Mobile
 
-Para probar en el móvil a través de un túnel (cuando estoy en otra red):
+- Iniciar Expo dev server: `npm run dev:mobile`
+- Para probar en el móvil a través de un túnel (cuando estoy en otra red):
 
 ```
 npm --workspace apps/mobile run start -- --tunnel
