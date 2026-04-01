@@ -4,6 +4,7 @@ import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import Svg, { Path, Circle, Defs, LinearGradient, Stop } from "react-native-svg";
+import ConfettiCannon from "react-native-confetti-cannon";
 import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
@@ -16854,6 +16855,15 @@ export default function App() {
             elevation: 60,
           }}
         >
+          <ConfettiCannon
+            count={120}
+            origin={{ x: -10, y: 0 }}
+            autoStart
+            fadeOut
+            explosionSpeed={400}
+            fallSpeed={2800}
+            colors={["#CBFF1A", "#00D06E", "#4ECDC4", "#FFE66D", "#FF6B6B", "#FFFFFF"]}
+          />
           <View
             style={{
               width: "100%",
