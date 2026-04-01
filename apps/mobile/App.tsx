@@ -14537,19 +14537,20 @@ export default function App() {
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, paddingHorizontal: 10 }}>
                             <Feather name="search" size={14} color={mobileTheme.color.textSecondary} />
                             <TextInput
-                              value={dietFoodSearch}
-                              onChangeText={(t) => { setDietFoodSearch(t); if (t.trim()) { setDietAddMode("search"); openDietMealEditor(category); } }}
+                              value={dietMealEditorCategory === category ? dietFoodSearch : ""}
+                              onChangeText={(t) => { setDietFoodSearch(t); if (t.trim()) { setDietAddMode("search"); openDietMealEditor(category); } else if (dietMealEditorCategory !== category) { openDietMealEditor(category); } }}
+                              onFocus={() => { if (dietMealEditorCategory !== category) { setDietFoodSearch(""); openDietMealEditor(category); } }}
                               placeholder="Buscar alimento..."
                               placeholderTextColor={mobileTheme.color.textSecondary}
                               style={{ flex: 1, minHeight: 42, color: mobileTheme.color.textPrimary, fontSize: 14 }}
                             />
-                            {dietFoodSearch ? (
+                            {dietMealEditorCategory === category && dietFoodSearch ? (
                               <Pressable onPress={() => setDietFoodSearch("")}>
                                 <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
                               </Pressable>
                             ) : null}
                           </View>
-                          {dietFoodSearch.trim().length > 0 ? (
+                          {dietMealEditorCategory === category && dietFoodSearch.trim().length > 0 ? (
                             <ScrollView style={{ maxHeight: 240 }}>
                               {[...foodsRepo, ...personalFoods]
                                 .filter((f) => f.name.toLowerCase().includes(dietFoodSearch.trim().toLowerCase()))
