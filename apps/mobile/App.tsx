@@ -3409,6 +3409,53 @@ function StatCard({ label, value, subtitle, subtitleColor, icon, subtitleIcon, o
   return content;
 }
 
+function ChartCard({ title, subtitle, periodSelector, children, zIndex, footer }: {
+  title: React.ReactNode;
+  subtitle?: string;
+  periodSelector: React.ReactNode;
+  children: React.ReactNode;
+  zIndex?: number;
+  footer?: React.ReactNode;
+}) {
+  return (
+    <View
+      style={{
+        borderRadius: 22,
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.06)",
+        backgroundColor: mobileTheme.color.bgSurface,
+        position: "relative",
+        overflow: "visible",
+        zIndex: zIndex ?? 1,
+        padding: 14,
+        gap: 14,
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: 12,
+          zIndex: 2,
+        }}
+      >
+        <View style={{ flex: 1, gap: 4 }}>
+          {typeof title === "string" ? (
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>{title}</Text>
+          ) : title}
+          {subtitle ? (
+            <Text style={{ color: "#8B94A3", fontSize: 12 }}>{subtitle}</Text>
+          ) : null}
+        </View>
+        {periodSelector}
+      </View>
+      {children}
+      {footer}
+    </View>
+  );
+}
+
 function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: string; onPress: () => void; disabled?: boolean; icon?: React.ReactNode; testID?: string }) {
   return (
     <Pressable
@@ -9610,36 +9657,14 @@ export default function App() {
                   icon={<Feather name="play" size={14} color="#06090D" />}
                 />
 
-                <View
-                  style={{
-                    borderRadius: 22,
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.06)",
-                    backgroundColor: "#171B23",
-                    padding: 14,
-                    gap: 14,
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "flex-start",
-                      justifyContent: "space-between",
-                      gap: 12,
-                    }}
-                  >
-                    <View style={{ flex: 1, gap: 4 }}>
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>
-                        Estadísticas
-                      </Text>
-                      <Text style={{ color: "#8B94A3", fontSize: 12 }}>
-                        {activeTrainingLatestChartBar
-                          ? `${activeTrainingStatsMetricMeta.label}: ${activeTrainingLatestChartBar.metricValueLabel}`
-                          : activeTrainingHistory.length > 0
-                            ? "No hay registros en el periodo seleccionado."
-                            : "Completa la rutina para empezar a ver progreso."}
-                      </Text>
-                    </View>
+                <ChartCard
+                  title="Estadísticas"
+                  subtitle={activeTrainingLatestChartBar
+                    ? `${activeTrainingStatsMetricMeta.label}: ${activeTrainingLatestChartBar.metricValueLabel}`
+                    : activeTrainingHistory.length > 0
+                      ? "No hay registros en el periodo seleccionado."
+                      : "Completa la rutina para empezar a ver progreso."}
+                  periodSelector={
                     <ScrollView
                       horizontal
                       showsHorizontalScrollIndicator={false}
@@ -9677,8 +9702,43 @@ export default function App() {
                         );
                       })}
                     </ScrollView>
-                  </View>
-
+                  }
+                  footer={
+                    <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                      {TRAINING_STATS_METRIC_OPTIONS.map((option) => {
+                        const isActive = trainingStatsMetric === option.key;
+                        return (
+                          <Pressable
+                            key={option.key}
+                            onPress={() => setTrainingStatsMetric(option.key)}
+                            style={{
+                              minHeight: 38,
+                              borderRadius: mobileTheme.radius.pill,
+                              borderWidth: 1,
+                              borderColor: isActive
+                                ? "rgba(203,255,26,0.82)"
+                                : mobileTheme.color.borderSubtle,
+                              backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                              paddingHorizontal: 14,
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
+                                fontSize: 14,
+                                fontWeight: "700",
+                              }}
+                            >
+                              {option.label}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  }
+                >
                   <View
                     style={{
                       minHeight: 196,
@@ -9783,40 +9843,7 @@ export default function App() {
                     )}
                   </View>
 
-                  <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
-                    {TRAINING_STATS_METRIC_OPTIONS.map((option) => {
-                      const isActive = trainingStatsMetric === option.key;
-                      return (
-                        <Pressable
-                          key={option.key}
-                          onPress={() => setTrainingStatsMetric(option.key)}
-                          style={{
-                            minHeight: 38,
-                            borderRadius: mobileTheme.radius.pill,
-                            borderWidth: 1,
-                            borderColor: isActive
-                              ? "rgba(203,255,26,0.82)"
-                              : mobileTheme.color.borderSubtle,
-                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
-                            paddingHorizontal: 14,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
-                              fontSize: 14,
-                              fontWeight: "700",
-                            }}
-                          >
-                            {option.label}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
+                </ChartCard>
 
                 <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
                   <View
@@ -12347,28 +12374,9 @@ export default function App() {
                 </View>
               ))}
 
-              <View
-                style={{
-                  borderRadius: 22,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,255,255,0.04)",
-                  backgroundColor: mobileTheme.color.bgSurface,
-                  position: "relative",
-                  overflow: "visible",
-                  zIndex: measuresChartMetricDropdownOpen || measuresDashboardPeriodDropdownOpen ? 10 : 1,
-                  padding: 14,
-                  gap: 14,
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    zIndex: 2,
-                  }}
-                >
+              <ChartCard
+                zIndex={measuresChartMetricDropdownOpen || measuresDashboardPeriodDropdownOpen ? 10 : 1}
+                title={
                   <Pressable
                     onPress={toggleMeasuresChartMetricDropdown}
                     style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
@@ -12382,6 +12390,8 @@ export default function App() {
                       color={mobileTheme.color.textSecondary}
                     />
                   </Pressable>
+                }
+                periodSelector={
                   <Pressable
                     onPress={toggleMeasuresDashboardPeriodDropdown}
                     style={{
@@ -12406,7 +12416,8 @@ export default function App() {
                       color="#6F7785"
                     />
                   </Pressable>
-                </View>
+                }
+              >
 
                 {measuresDashboardPeriodDropdownOpen ? (
                   <View
@@ -12804,7 +12815,7 @@ export default function App() {
                     </>
                   )}
                 </View>
-              </View>
+              </ChartCard>
 
               <View style={{ gap: 10 }}>
                 <View
