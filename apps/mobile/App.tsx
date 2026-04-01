@@ -14732,58 +14732,34 @@ export default function App() {
                                 </Text>
                               </Pressable>
                               <Pressable
-                                onPress={openFoodEstimatorModal}
+                                onPress={() => {
+                                  setDietMealEditorCategory(null);
+                                  setDietEditingItem(null);
+                                  setDietItemMenu(null);
+                                  setDietAddMode(null);
+                                  setDietFoodSearch("");
+                                  setMealTitleInput("");
+                                  setMealCaloriesInput("");
+                                  setMealProteinInput("");
+                                  setMealCarbsInput("");
+                                  setMealFatInput("");
+                                  setMealGramsInput("");
+                                  setError(null);
+                                }}
                                 style={{
                                   flex: 1,
                                   minHeight: 42,
                                   borderRadius: mobileTheme.radius.md,
                                   borderWidth: 1,
-                                  borderColor: "rgba(203,255,26,0.45)",
-                                  backgroundColor: "rgba(203,255,26,0.12)",
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
                                   alignItems: "center",
                                   justifyContent: "center",
-                                  paddingHorizontal: 8,
                                 }}
                               >
-                                <Text
-                                  style={{
-                                    color: mobileTheme.color.brandPrimary,
-                                    fontWeight: "700",
-                                    fontSize: 12,
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Estimar con IA
-                                </Text>
+                                <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>Cancelar</Text>
                               </Pressable>
                             </View>
-                            <Pressable
-                              onPress={() => {
-                                setDietMealEditorCategory(null);
-                                setDietEditingItem(null);
-                                setDietItemMenu(null);
-                                setDietAddMode(null);
-                                setDietFoodSearch("");
-                                setMealTitleInput("");
-                                setMealCaloriesInput("");
-                                setMealProteinInput("");
-                                setMealCarbsInput("");
-                                setMealFatInput("");
-                                setMealGramsInput("");
-                                setError(null);
-                              }}
-                              style={{
-                                minHeight: 38,
-                                borderRadius: mobileTheme.radius.md,
-                                borderWidth: 1,
-                                borderColor: mobileTheme.color.borderSubtle,
-                                backgroundColor: mobileTheme.color.bgApp,
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>Cancelar</Text>
-                            </Pressable>
                           </View>
                         ) : null}
 
