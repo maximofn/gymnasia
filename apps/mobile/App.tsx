@@ -7941,19 +7941,6 @@ export default function App() {
               </Text>
             </View>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-              <Pressable
-                onPress={() => setTab("settings")}
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 999,
-                  backgroundColor: mobileTheme.color.brandPrimary,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>G</Text>
-              </Pressable>
             </View>
           </View>
         ) : tab === "training" && (isTrainingTemplateScreenOpen || activeWorkoutSession) ? null : tab === "training" ? (
