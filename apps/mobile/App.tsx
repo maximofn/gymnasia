@@ -6077,6 +6077,7 @@ export default function App() {
   const [mealCarbsInput, setMealCarbsInput] = useState("");
   const [mealFatInput, setMealFatInput] = useState("");
   const [mealGramsInput, setMealGramsInput] = useState("");
+  const mealPerGramRef = useRef<{ cal: number; prot: number; carbs: number; fat: number } | null>(null);
   const [selectedDietDate, setSelectedDietDate] = useState<string>(() => todayISO());
   const [showDietDatePicker, setShowDietDatePicker] = useState(false);
   const [dietMealEditorCategory, setDietMealEditorCategory] = useState<DietMealCategory | null>(null);
@@ -7781,6 +7782,7 @@ export default function App() {
     setMealCarbsInput("");
     setMealFatInput("");
     setMealGramsInput("");
+    mealPerGramRef.current = null;
   }
 
   function changeDietDateBy(days: number) {
@@ -7909,6 +7911,7 @@ export default function App() {
     setMealCarbsInput("");
     setMealFatInput("");
     setMealGramsInput("");
+    mealPerGramRef.current = null;
     setDietEditingItem(null);
     setDietItemMenu(null);
     setError(null);
@@ -7935,6 +7938,7 @@ export default function App() {
     setMealCarbsInput("");
     setMealFatInput("");
     setMealGramsInput("");
+    mealPerGramRef.current = null;
     setError(null);
   }
 
@@ -7954,6 +7958,9 @@ export default function App() {
     setMealCarbsInput(formatNutritionNumber(item.carbs_g));
     setMealFatInput(formatNutritionNumber(item.fat_g));
     setMealGramsInput(item.grams > 0 ? formatNutritionNumber(item.grams) : "");
+    mealPerGramRef.current = item.grams > 0
+      ? { cal: item.calories_kcal / item.grams, prot: item.protein_g / item.grams, carbs: item.carbs_g / item.grams, fat: item.fat_g / item.grams }
+      : null;
     setError(null);
   }
 
@@ -7989,6 +7996,7 @@ export default function App() {
       setMealCarbsInput("");
       setMealFatInput("");
     setMealGramsInput("");
+    mealPerGramRef.current = null;
     }
     setDietItemMenu(null);
     setError(null);
@@ -14661,7 +14669,19 @@ export default function App() {
                                   paddingHorizontal: 12,
                                 }}
                                 value={mealGramsInput}
-                                onChangeText={setMealGramsInput}
+                                onChangeText={(text) => {
+                                  setMealGramsInput(text);
+                                  const pg = mealPerGramRef.current;
+                                  if (pg) {
+                                    const g = parseFloat(text) || 0;
+                                    if (g > 0) {
+                                      setMealCaloriesInput(formatNutritionNumber(Math.round(pg.cal * g)));
+                                      setMealProteinInput(formatNutritionNumber(Math.round(pg.prot * g * 10) / 10));
+                                      setMealCarbsInput(formatNutritionNumber(Math.round(pg.carbs * g * 10) / 10));
+                                      setMealFatInput(formatNutritionNumber(Math.round(pg.fat * g * 10) / 10));
+                                    }
+                                  }
+                                }}
                                 placeholder="Gramos consumidos"
                                 placeholderTextColor={mobileTheme.color.textSecondary}
                                 keyboardType="decimal-pad"
@@ -14744,6 +14764,7 @@ export default function App() {
                                   setMealCarbsInput("");
                                   setMealFatInput("");
                                   setMealGramsInput("");
+    mealPerGramRef.current = null;
                                   setError(null);
                                 }}
                                 style={{
