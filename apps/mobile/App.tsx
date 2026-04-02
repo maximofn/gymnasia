@@ -1195,11 +1195,11 @@ const DIET_MEAL_META: Record<
   DietMealCategory,
   { icon: keyof typeof Feather.glyphMap; accent: string; dot: string }
 > = {
-  Desayuno: { icon: "sunrise", accent: "#F7A547", dot: "#FF6E6E" },
-  Almuerzo: { icon: "sun", accent: "#FFD84D", dot: "#FF8D8D" },
-  Comida: { icon: "sun", accent: "#CBFF1A", dot: "#FF6E6E" },
-  Merienda: { icon: "coffee", accent: "#4D84FF", dot: "#6E8DFF" },
-  Cena: { icon: "moon", accent: "#7D6DFF", dot: "#9C8DFF" },
+  Desayuno: { icon: "sunrise", accent: "#F7A547", dot: "#F7A547" },
+  Almuerzo: { icon: "sun", accent: "#FFD84D", dot: "#FFD84D" },
+  Comida: { icon: "sun", accent: "#CBFF1A", dot: "#CBFF1A" },
+  Merienda: { icon: "coffee", accent: "#4D84FF", dot: "#4D84FF" },
+  Cena: { icon: "moon", accent: "#7D6DFF", dot: "#7D6DFF" },
 };
 const DIET_WEEKDAY_LABELS = [
   "Domingo",
