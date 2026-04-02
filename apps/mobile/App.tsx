@@ -657,6 +657,96 @@ async function savePersonalFoods(foods: FoodRepoEntry[]): Promise<void> {
   await AsyncStorage.setItem(PERSONAL_FOODS_STORAGE_KEY, JSON.stringify(foods));
 }
 
+function normalizeForFoodMatch(s: string): string {
+  return s
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function findFoodInRepo(
+  name: string,
+  repo: FoodRepoEntry[],
+  personal: FoodRepoEntry[],
+): FoodRepoEntry | null {
+  const all = [...repo, ...personal];
+  const needle = normalizeForFoodMatch(name);
+  if (!needle) return null;
+  // Exact match first
+  const exact = all.find((f) => normalizeForFoodMatch(f.name) === needle);
+  if (exact) return exact;
+  // Bidirectional includes
+  const partial = all.find((f) => {
+    const hay = normalizeForFoodMatch(f.name);
+    return hay.includes(needle) || needle.includes(hay);
+  });
+  return partial ?? null;
+}
+
+const GITHUB_FOOD_ISSUE_TOKEN = process.env.EXPO_PUBLIC_GITHUB_TOKEN ?? "";
+
+async function createGitHubFoodIssue(food: {
+  name: string;
+  calories_kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+  grams: number;
+}): Promise<void> {
+  try {
+    const body = [
+      `Se ha añadido un alimento que no está en la base de datos.\n`,
+      `### Datos del alimento`,
+      `- **Nombre**: ${food.name}`,
+      `- **Gramos registrados**: ${food.grams} g`,
+      `- **Calorías**: ${food.calories_kcal} kcal`,
+      `- **Proteína**: ${food.protein_g} g`,
+      `- **Carbohidratos**: ${food.carbs_g} g`,
+      `- **Grasa**: ${food.fat_g} g`,
+      `\n### JSON sugerido (por 100 g)`,
+      "```json",
+      JSON.stringify(
+        {
+          id: food.name
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, ""),
+          name: food.name,
+          category: "",
+          calories_per_100g: food.grams > 0 ? Math.round((food.calories_kcal / food.grams) * 100) : 0,
+          protein_per_100g: food.grams > 0 ? Math.round((food.protein_g / food.grams) * 100 * 10) / 10 : 0,
+          carbs_per_100g: food.grams > 0 ? Math.round((food.carbs_g / food.grams) * 100 * 10) / 10 : 0,
+          fat_per_100g: food.grams > 0 ? Math.round((food.fat_g / food.grams) * 100 * 10) / 10 : 0,
+          fiber_per_100g: 0,
+          serving_size_g: food.grams || 100,
+          serving_description: "",
+        },
+        null,
+        2,
+      ),
+      "```",
+    ].join("\n");
+    await fetch("https://api.github.com/repos/maximofn/gymnasia/issues", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GITHUB_FOOD_ISSUE_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: `Nuevo alimento: ${food.name}`,
+        body,
+        labels: ["alimento"],
+      }),
+    });
+  } catch {
+    // Fire-and-forget: do not block UI
+  }
+}
+
 async function loadExercisesRepo(): Promise<ExerciseRepoEntry[]> {
   try {
     const response = await fetch(`${EXERCISES_ALL_URL}?ts=${Date.now()}`);
@@ -7826,15 +7916,40 @@ export default function App() {
     }
 
     const grams = parseNonNegativeNumberInput(mealGramsInput);
-    const newItem: DietItem = {
-      id: uid("food"),
-      title,
-      grams: grams ?? 0,
-      calories_kcal: calories,
-      protein_g: protein ?? 0,
-      carbs_g: carbs ?? 0,
-      fat_g: fat ?? 0,
-    };
+    const repoMatch = findFoodInRepo(title, foodsRepo, personalFoods);
+    let newItem: DietItem;
+    if (repoMatch && (grams ?? 0) > 0) {
+      const ratio = (grams ?? 0) / 100;
+      newItem = {
+        id: uid("food"),
+        title: repoMatch.name,
+        grams: grams ?? 0,
+        calories_kcal: Math.round(repoMatch.calories_per_100g * ratio),
+        protein_g: Math.round(repoMatch.protein_per_100g * ratio * 10) / 10,
+        carbs_g: Math.round(repoMatch.carbs_per_100g * ratio * 10) / 10,
+        fat_g: Math.round(repoMatch.fat_per_100g * ratio * 10) / 10,
+      };
+    } else {
+      newItem = {
+        id: uid("food"),
+        title,
+        grams: grams ?? 0,
+        calories_kcal: calories,
+        protein_g: protein ?? 0,
+        carbs_g: carbs ?? 0,
+        fat_g: fat ?? 0,
+      };
+      if (!repoMatch) {
+        createGitHubFoodIssue({
+          name: title,
+          calories_kcal: calories,
+          protein_g: protein ?? 0,
+          carbs_g: carbs ?? 0,
+          fat_g: fat ?? 0,
+          grams: grams ?? 0,
+        });
+      }
+    }
 
     const activeDietDate = selectedDietDate;
     setStore((prev) => {
@@ -8467,16 +8582,42 @@ export default function App() {
         return;
       }
 
-      // Add or update the food in the meal
+      // Search food in repository before adding
       const cat = dietMealEditorCategory;
-      const updatedFields = {
-        title: parsed.dish_name || "Alimento estimado IA",
-        grams: parsed.grams ?? 0,
-        calories_kcal: parsed.calories_kcal,
-        protein_g: parsed.protein_g ?? 0,
-        carbs_g: parsed.carbs_g ?? 0,
-        fat_g: parsed.fat_g ?? 0,
-      };
+      const aiName = parsed.dish_name || "Alimento estimado IA";
+      const aiGrams = parsed.grams ?? 0;
+      const repoMatch = findFoodInRepo(aiName, foodsRepo, personalFoods);
+      let updatedFields: { title: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number };
+      if (repoMatch && aiGrams > 0) {
+        const ratio = aiGrams / 100;
+        updatedFields = {
+          title: repoMatch.name,
+          grams: aiGrams,
+          calories_kcal: Math.round(repoMatch.calories_per_100g * ratio),
+          protein_g: Math.round(repoMatch.protein_per_100g * ratio * 10) / 10,
+          carbs_g: Math.round(repoMatch.carbs_per_100g * ratio * 10) / 10,
+          fat_g: Math.round(repoMatch.fat_per_100g * ratio * 10) / 10,
+        };
+      } else {
+        updatedFields = {
+          title: aiName,
+          grams: aiGrams,
+          calories_kcal: parsed.calories_kcal,
+          protein_g: parsed.protein_g ?? 0,
+          carbs_g: parsed.carbs_g ?? 0,
+          fat_g: parsed.fat_g ?? 0,
+        };
+        if (!repoMatch) {
+          createGitHubFoodIssue({
+            name: aiName,
+            calories_kcal: parsed.calories_kcal,
+            protein_g: parsed.protein_g ?? 0,
+            carbs_g: parsed.carbs_g ?? 0,
+            fat_g: parsed.fat_g ?? 0,
+            grams: aiGrams,
+          });
+        }
+      }
       const activeDietDate = selectedDietDate;
       setStore((prev) => {
         const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
