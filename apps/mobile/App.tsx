@@ -17376,34 +17376,32 @@ export default function App() {
                   </View>
 
                   {/* Category filter chips */}
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
-                    <View style={{ flexDirection: "row", gap: 6 }}>
-                      {["all", ...Array.from(new Set(foodsRepo.map((f) => f.category))).sort()].map((cat) => {
-                        const isActive = foodCategoryFilter === cat;
-                        const label = cat === "all" ? "Todos" : cat.charAt(0).toUpperCase() + cat.slice(1);
-                        return (
-                          <Pressable
-                            key={cat}
-                            onPress={() => setFoodCategoryFilter(cat)}
-                            style={{
-                              borderWidth: 1,
-                              borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                              borderRadius: mobileTheme.radius.pill,
-                              paddingHorizontal: 10,
-                              minHeight: 30,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
-                            }}
-                          >
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "600" }}>
-                              {label}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                  </ScrollView>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                    {["all", ...Array.from(new Set(foodsRepo.map((f) => f.category))).sort()].map((cat) => {
+                      const isActive = foodCategoryFilter === cat;
+                      const label = cat === "all" ? "Todos" : cat.charAt(0).toUpperCase() + cat.slice(1);
+                      return (
+                        <Pressable
+                          key={cat}
+                          onPress={() => setFoodCategoryFilter(cat)}
+                          style={{
+                            borderWidth: 1,
+                            borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                            borderRadius: mobileTheme.radius.pill,
+                            paddingHorizontal: 10,
+                            minHeight: 30,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
+                          }}
+                        >
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "600" }}>
+                            {label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
 
                   {/* Food list */}
                   <View
