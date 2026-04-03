@@ -127,6 +127,16 @@ Only non-obvious gotchas that could recur are kept here.
 - Gotcha: `npm run dev:mobile -- --tunnel --clear` sometimes fails to forward the `--tunnel` flag through the workspace command chain, starting Metro in LAN mode instead.
 - Fix: use `npm --workspace apps/mobile run start -- --tunnel --clear` directly. Verify `Tunnel ready` + `exp.direct` URL before scanning QR.
 
+### Expo `--tunnel` fails with `remote gone away` — use manual ngrok + `EXPO_PACKAGER_PROXY_URL`
+- Gotcha: `expo start --tunnel` uses `@expo/ngrok` internally, which can fail with `remote gone away` even though the system `ngrok` works fine (`ngrok diagnose` passes).
+- Fix: launch ngrok and Metro separately:
+  1. `ngrok http 8081 --request-header-add "ngrok-skip-browser-warning: true"`
+  2. Get the public URL from `http://127.0.0.1:4040/api/tunnels`
+  3. `EXPO_PACKAGER_PROXY_URL=<ngrok-url> npm --workspace apps/mobile run start -- --clear`
+  4. In Expo Go: `exp://<ngrok-host>` (without port)
+- Why `EXPO_PACKAGER_PROXY_URL`: without it, Metro tells Expo Go to fetch the bundle from `localhost:8081`, so Expo Go appends `:8081` to the ngrok URL and fails with "Packager is not running".
+- Why `ngrok-skip-browser-warning`: ngrok free plan shows an interstitial HTML page that Expo Go can't handle, causing the download to hang forever on the splash screen.
+
 ### Metro 500 after SDK upgrade — missing `babel-preset-expo`
 - Gotcha: after upgrading Expo SDK, Metro can return HTTP 500 because `babel-preset-expo` is not installed.
 - Fix: `npm --workspace apps/mobile exec expo install babel-preset-expo`
