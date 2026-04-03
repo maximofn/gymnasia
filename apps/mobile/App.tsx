@@ -18892,7 +18892,8 @@ export default function App() {
       ) : null}
 
       {foodEstimatorModalOpen ? (
-        <View
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{
             position: "absolute",
             top: 0,
@@ -19128,7 +19129,7 @@ export default function App() {
               </Text>
             ) : null}
           </View>
-        </View>
+        </KeyboardAvoidingView>
       ) : null}
 
       {providerDeleteModal ? (
