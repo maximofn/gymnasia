@@ -8,5 +8,6 @@
   "fat_per_100g": 6.9,
   "fiber_per_100g": 10.6,
   "serving_size_g": 40,
-  "serving_description": "4 cucharadas (40g)"
+  "serving_description": "4 cucharadas (40g)",
+  "image": "avena.webp"
 }
