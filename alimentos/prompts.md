@@ -11,6 +11,7 @@
 ### Aceite de girasol
 - **ID:** `aceite-girasol`
 - **Food:** `a small glass bottle of pale golden sunflower oil with a bright yellow sunflower beside it`
+- **Imagen compartida por:** `aceite-girasol-virgen`
 
 ### Aceite de oliva
 - **ID:** `aceite-oliva`
