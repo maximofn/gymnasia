@@ -8,5 +8,6 @@
   "fat_per_100g": 49,
   "fiber_per_100g": 12.5,
   "serving_size_g": 30,
-  "serving_description": "1 puñado (30g)"
+  "serving_description": "1 puñado (30g)",
+  "image": "almendras.webp"
 }
