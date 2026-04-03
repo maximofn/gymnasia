@@ -1,0 +1,11 @@
+{
+  "id": "crunch-abdominales",
+  "name": "Crunch de abdominales",
+  "image_male": "images/crunch-abdominales-male.webp",
+  "image_female": "images/crunch-abdominales-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "ninguno",
+  "difficulty": "beginner",
+  "instructions": "Acuéstate boca arriba con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza o cruzadas sobre el pecho. Contrae el abdomen para elevar los hombros y la parte superior de la espalda del suelo. Baja de forma controlada sin apoyar completamente la cabeza."
+}

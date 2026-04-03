@@ -26,6 +26,19 @@
     "instructions": "Acuéstate en un banco plano con una mancuerna en cada mano y los brazos extendidos sobre el pecho. Con los codos ligeramente flexionados, abre los brazos hacia los lados en arco hasta sentir el estiramiento en el pecho y vuelve a la posición inicial."
   },
   {
+    "id": "crunch-abdominales",
+    "name": "Crunch de abdominales",
+    "image_male": "images/crunch-abdominales-male.webp",
+    "image_female": "images/crunch-abdominales-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "ninguno",
+    "difficulty": "beginner",
+    "instructions": "Acuéstate boca arriba con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza o cruzadas sobre el pecho. Contrae el abdomen para elevar los hombros y la parte superior de la espalda del suelo. Baja de forma controlada sin apoyar completamente la cabeza."
+  },
+  {
     "id": "curl-concentrado",
     "name": "Curl concentrado",
     "image_male": "images/curl-concentrado-male.webp",
@@ -50,6 +63,34 @@
     "equipment": "mancuernas",
     "difficulty": "beginner",
     "instructions": "Siéntate en un banco inclinado con la espalda apoyada y una mancuerna en cada mano, los brazos extendidos a los lados del cuerpo. Flexiona ambos codos llevando las mancuernas hacia los hombros, apretando los bíceps en la parte alta del movimiento. Baja de forma controlada."
+  },
+  {
+    "id": "elevaciones-frontales-mancuernas",
+    "name": "Elevaciones frontales con mancuernas",
+    "image_male": "images/elevaciones-frontales-mancuernas-male.webp",
+    "image_female": "images/elevaciones-frontales-mancuernas-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "deltoides anterior",
+      "trapecio"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "De pie con una mancuerna en cada mano frente a los muslos con las palmas mirando hacia el cuerpo. Eleva un brazo hacia delante hasta la altura de los hombros manteniéndolo recto. Baja de forma controlada y alterna con el otro brazo."
+  },
+  {
+    "id": "elevaciones-laterales-mancuernas",
+    "name": "Elevaciones laterales con mancuernas",
+    "image_male": "images/elevaciones-laterales-mancuernas-male.webp",
+    "image_female": "images/elevaciones-laterales-mancuernas-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "deltoides lateral",
+      "trapecio"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "De pie con una mancuerna en cada mano a los lados del cuerpo. Con los codos ligeramente flexionados, eleva los brazos lateralmente hasta la altura de los hombros formando una T. Baja de forma controlada a la posición inicial."
   },
   {
     "id": "extensiones-triceps-barra",
