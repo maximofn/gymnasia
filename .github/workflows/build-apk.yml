@@ -58,13 +58,12 @@ jobs:
         id: build
         run: |
           cd apps/mobile
-          BUILD_JSON=$(eas build \
+          eas build \
             --platform android \
             --profile ${{ steps.profile.outputs.profile }} \
             --non-interactive \
-            --json)
-          echo "build_json=$BUILD_JSON" >> "$GITHUB_OUTPUT"
-          BUILD_ID=$(echo "$BUILD_JSON" | jq -r '.[0].id')
+            --json > /tmp/eas-build.json
+          BUILD_ID=$(jq -r '.[0].id' /tmp/eas-build.json)
           echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
           echo "Build started: $BUILD_ID"
 
@@ -75,11 +74,11 @@ jobs:
           BUILD_ID="${{ steps.build.outputs.build_id }}"
           echo "Waiting for build $BUILD_ID..."
           for i in $(seq 1 60); do
-            STATUS_JSON=$(eas build:view "$BUILD_ID" --json 2>/dev/null || true)
-            STATUS=$(echo "$STATUS_JSON" | jq -r '.status' 2>/dev/null || echo "unknown")
+            eas build:view "$BUILD_ID" --json > /tmp/eas-status.json 2>/dev/null || true
+            STATUS=$(jq -r '.status' /tmp/eas-status.json 2>/dev/null || echo "unknown")
             echo "  [$i/60] Status: $STATUS"
             if [ "$STATUS" = "finished" ]; then
-              APK_URL=$(echo "$STATUS_JSON" | jq -r '.artifacts.applicationArchiveUrl')
+              APK_URL=$(jq -r '.artifacts.applicationArchiveUrl' /tmp/eas-status.json)
               echo "apk_url=$APK_URL" >> "$GITHUB_OUTPUT"
               echo "Build finished! APK: $APK_URL"
               exit 0
