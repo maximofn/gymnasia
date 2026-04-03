@@ -18544,7 +18544,8 @@ export default function App() {
       ) : null}
 
       {measurementEntryScreenOpen ? (
-        <View
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{
             position: "absolute",
             top: 0,
@@ -18615,9 +18616,10 @@ export default function App() {
             contentContainerStyle={{
               paddingHorizontal: mobileTheme.spacing[4],
               paddingTop: 14,
-              paddingBottom: 36,
+              paddingBottom: 120,
               gap: 12,
             }}
+            keyboardShouldPersistTaps="handled"
           >
             {error ? <Text style={{ color: "#ff8a8a" }}>{error}</Text> : null}
 
@@ -18886,7 +18888,7 @@ export default function App() {
               </View>
             </View>
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       ) : null}
 
       {foodEstimatorModalOpen ? (
