@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mobile",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "source ~/.nvm/nvm.sh && npm --workspace apps/mobile run start"],
+      "port": 8081,
+      "autoPort": false
+    }
+  ]
+}
