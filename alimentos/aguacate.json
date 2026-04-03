@@ -8,5 +8,6 @@
   "fat_per_100g": 14.7,
   "fiber_per_100g": 6.7,
   "serving_size_g": 80,
-  "serving_description": "½ aguacate (80g)"
+  "serving_description": "½ aguacate (80g)",
+  "image": "aguacate.webp"
 }
