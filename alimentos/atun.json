@@ -8,5 +8,6 @@
   "fat_per_100g": 1,
   "fiber_per_100g": 0,
   "serving_size_g": 80,
-  "serving_description": "1 lata escurrida (80g)"
+  "serving_description": "1 lata escurrida (80g)",
+  "image": "atun.webp"
 }
