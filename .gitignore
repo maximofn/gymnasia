@@ -50,7 +50,6 @@ Thumbs.db
 *.swo
 
 # Local agent/tool state
-.claude/
 .playwright-mcp/
 
 # Dev store persistence (web dev data)
