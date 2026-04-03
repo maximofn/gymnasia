@@ -105,6 +105,7 @@ FOOD_PROMPTS = {
     "aceite-oliva": "a small glass bottle of golden-green extra virgin olive oil with a thin stream pouring",
     "aguacate": "a ripe avocado cut in half showing the green flesh and brown pit",
     "almendras": "a handful of whole raw almonds with brown skin, scattered loosely",
+    "arroz-basmati": "a small bowl of cooked basmati rice, long slender separated grains with a slightly golden hue",
     "arroz-blanco": "a small bowl of cooked white rice, fluffy separated grains",
     "arroz-integral": "a small bowl of cooked brown rice, slightly nutty-looking grains",
     "atun": "a fresh raw tuna steak, deep red-pink flesh with clean cut",

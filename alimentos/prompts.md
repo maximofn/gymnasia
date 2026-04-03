@@ -26,6 +26,10 @@
 - **ID:** `almendras`
 - **Food:** `a handful of whole raw almonds with brown skin, scattered loosely`
 
+### Arroz basmati
+- **ID:** `arroz-basmati`
+- **Food:** `a small bowl of cooked basmati rice, long slender separated grains with a slightly golden hue`
+
 ### Arroz blanco
 - **ID:** `arroz-blanco`
 - **Food:** `a small bowl of cooked white rice, fluffy separated grains`

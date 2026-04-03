@@ -104,6 +104,19 @@
     "image": "almendras.webp"
   },
   {
+    "id": "arroz-basmati",
+    "name": "Arroz basmati (cocido)",
+    "category": "carbohidrato",
+    "calories_per_100g": 121,
+    "protein_per_100g": 3.5,
+    "carbs_per_100g": 25.2,
+    "fat_per_100g": 0.4,
+    "fiber_per_100g": 0.4,
+    "serving_size_g": 150,
+    "serving_description": "1 ración (150g cocido)",
+    "image": "arroz-basmati.webp"
+  },
+  {
     "id": "arroz-blanco",
     "name": "Arroz blanco (cocido)",
     "category": "carbohidrato",
@@ -126,7 +139,8 @@
     "fat_per_100g": 1,
     "fiber_per_100g": 1.8,
     "serving_size_g": 150,
-    "serving_description": "1 ración (150g cocido)"
+    "serving_description": "1 ración (150g cocido)",
+    "image": "arroz-integral.webp"
   },
   {
     "id": "atun",
