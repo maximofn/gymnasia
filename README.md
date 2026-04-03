@@ -5,7 +5,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 ## Estructura
 
 - `apps/mobile`: App Expo React Native (unica aplicacion)
-- `apps/anthropic_proxy`: Proxy CORS para comunicacion con LLMs de Anthropic
+- `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa)
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
@@ -16,11 +16,12 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
    ```
    npm install
    ```
-2. Levanta el proxy de Anthropic (para funciones de IA):
+2. (Solo para depurar en navegador) Levanta el proxy CORS de Anthropic:
    ```
-   cd apps/anthropic_proxy && uv venv .venv && source .venv/bin/activate && uv pip install fastapi uvicorn httpx anthropic
-   source apps/anthropic_proxy/.venv/bin/activate && python apps/anthropic_proxy/cors-proxy.py
+   cd apps/anthropic_proxy && uv venv .venv && .venv/bin/pip install fastapi uvicorn
+   apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py
    ```
+   En movil (Expo Go / APK) no es necesario — OpenAI, Google y Anthropic funcionan directamente.
 3. Levanta la app movil:
    ```
    npm run dev:mobile
