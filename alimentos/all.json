@@ -143,8 +143,34 @@
     "image": "arroz-integral.webp"
   },
   {
-    "id": "atun-lata",
-    "name": "Atún en lata (al natural, escurrido)",
+    "id": "atun-lata-aceite",
+    "name": "Atún en lata en aceite de oliva (escurrido)",
+    "category": "proteína",
+    "calories_per_100g": 198,
+    "protein_per_100g": 29,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 9,
+    "fiber_per_100g": 0,
+    "serving_size_g": 80,
+    "serving_description": "1 lata escurrida (80g)",
+    "image": "atun-lata.webp"
+  },
+  {
+    "id": "atun-lata-escabeche",
+    "name": "Atún en lata en escabeche (escurrido)",
+    "category": "proteína",
+    "calories_per_100g": 175,
+    "protein_per_100g": 24,
+    "carbs_per_100g": 2,
+    "fat_per_100g": 8,
+    "fiber_per_100g": 0,
+    "serving_size_g": 80,
+    "serving_description": "1 lata escurrida (80g)",
+    "image": "atun-lata.webp"
+  },
+  {
+    "id": "atun-lata-natural",
+    "name": "Atún en lata al natural (escurrido)",
     "category": "proteína",
     "calories_per_100g": 116,
     "protein_per_100g": 26,

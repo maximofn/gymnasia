@@ -1,0 +1,13 @@
+{
+  "id": "atun-lata-natural",
+  "name": "Atún en lata al natural (escurrido)",
+  "category": "proteína",
+  "calories_per_100g": 116,
+  "protein_per_100g": 26,
+  "carbs_per_100g": 0,
+  "fat_per_100g": 1,
+  "fiber_per_100g": 0,
+  "serving_size_g": 80,
+  "serving_description": "1 lata escurrida (80g)",
+  "image": "atun-lata.webp"
+}

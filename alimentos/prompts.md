@@ -43,8 +43,9 @@
 - **Food:** `a fresh raw tuna steak, deep red-pink flesh with clean cut`
 
 ### Atún en lata
-- **ID:** `atun-lata`
+- **ID:** `atun-lata-natural`
 - **Food:** `an open tin can of tuna in water, flaky light-pink chunks visible from above`
+- **Imagen compartida por:** `atun-lata-aceite`, `atun-lata-escabeche`
 
 ### Avena
 - **ID:** `avena`

@@ -44,8 +44,16 @@
     "name": "Arroz integral (cocido)"
   },
   {
-    "id": "atun-lata",
-    "name": "Atún en lata (al natural, escurrido)"
+    "id": "atun-lata-aceite",
+    "name": "Atún en lata en aceite de oliva (escurrido)"
+  },
+  {
+    "id": "atun-lata-escabeche",
+    "name": "Atún en lata en escabeche (escurrido)"
+  },
+  {
+    "id": "atun-lata-natural",
+    "name": "Atún en lata al natural (escurrido)"
   },
   {
     "id": "atun",
