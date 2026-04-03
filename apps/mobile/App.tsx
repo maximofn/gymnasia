@@ -10906,6 +10906,107 @@ export default function App() {
             )}
           </View>
         ) : (
+        <View style={{ flex: 1 }}>
+        {tab === "diet" ? (
+          <View style={{ paddingHorizontal: mobileTheme.spacing[4], paddingTop: 4, paddingBottom: 8, backgroundColor: mobileTheme.color.bgApp }}>
+            <View style={{ gap: 8 }}>
+              <View style={{ minHeight: 56, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <Pressable
+                  onPress={() => changeDietDateBy(-1)}
+                  style={{ width: 34, height: 34, borderRadius: 999, alignItems: "center", justifyContent: "center" }}
+                >
+                  <Feather name="chevron-left" size={20} color={mobileTheme.color.textSecondary} />
+                </Pressable>
+                <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "700" }}>{dietDateLabel}</Text>
+                  <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700" }}>{dietDateContextLabel}</Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <Pressable
+                    onPress={() => changeDietDateBy(1)}
+                    style={{ width: 34, height: 34, borderRadius: 999, alignItems: "center", justifyContent: "center" }}
+                  >
+                    <Feather name="chevron-right" size={20} color={mobileTheme.color.textSecondary} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => setShowDietDatePicker((prev) => !prev)}
+                    style={{ width: 34, height: 34, borderRadius: 999, alignItems: "center", justifyContent: "center" }}
+                  >
+                    <Ionicons name="calendar-outline" size={18} color={mobileTheme.color.textSecondary} />
+                  </Pressable>
+                </View>
+              </View>
+              {showDietDatePicker ? (
+                Platform.OS === "web" ? (
+                  <TextInput
+                    value={selectedDietDate}
+                    onChangeText={(text) => {
+                      const parsed = new Date(text + "T12:00:00");
+                      if (!isNaN(parsed.getTime())) setSelectedDietDate(text);
+                    }}
+                    placeholder="AAAA-MM-DD"
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    style={{
+                      minHeight: 44, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle,
+                      borderRadius: 12, backgroundColor: mobileTheme.color.bgApp,
+                      color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 14,
+                    }}
+                  />
+                ) : (
+                  <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgSurface, padding: 8, gap: 8 }}>
+                    <DateTimePicker value={dateFromISO(selectedDietDate)} mode="date" display={Platform.OS === "ios" ? "inline" : "default"} onChange={onDietDateChange} />
+                    {Platform.OS === "ios" ? (
+                      <Pressable
+                        onPress={() => setShowDietDatePicker(false)}
+                        style={{ height: 38, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center" }}
+                      >
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>Cerrar calendario</Text>
+                      </Pressable>
+                    ) : null}
+                  </View>
+                )
+              ) : null}
+            </View>
+
+            <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: 18, paddingHorizontal: 14, paddingVertical: 14, gap: 10, marginTop: 8 }}>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <View>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "800" }}>
+                    {formatNutritionNumber(dayCaloriesConsumed)}/{formatNutritionNumber(dietDailyCaloriesTarget)}
+                  </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}>kcal consumidas</Text>
+                </View>
+                <View style={{ width: 56, height: 56, borderRadius: 999, backgroundColor: "rgba(203,255,26,0.2)", alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "800", fontSize: 14 }}>{dayCaloriesPercent}%</Text>
+                </View>
+              </View>
+              <View style={{ height: 8, borderRadius: mobileTheme.radius.pill, backgroundColor: "rgba(255,255,255,0.09)", overflow: "hidden" }}>
+                <View style={{ height: "100%", width: `${Math.max(0, Math.min(dayCaloriesProgress * 100, 100))}%`, backgroundColor: mobileTheme.color.brandPrimary, borderRadius: mobileTheme.radius.pill }} />
+              </View>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                {dietMacroOverview.map((macro) => {
+                  const progress = macro.total > 0 ? Math.max(0, Math.min(macro.consumed / macro.total, 1)) : 0;
+                  return (
+                    <View key={macro.key} style={{ flex: 1, gap: 3 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
+                        {formatNutritionNumber(macro.consumed)}/{formatNutritionNumber(macro.total)}g
+                      </Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{macro.label}</Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                          {macro.total > 0 ? Math.round((macro.consumed / macro.total) * 100) : 0}%
+                        </Text>
+                      </View>
+                      <View style={{ height: 5, borderRadius: mobileTheme.radius.pill, backgroundColor: "rgba(255,255,255,0.09)", overflow: "hidden" }}>
+                        <View style={{ height: "100%", width: `${Math.max(0, Math.min(progress * 100, 100))}%`, backgroundColor: mobileTheme.color.brandPrimary, borderRadius: mobileTheme.radius.pill }} />
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          </View>
+        ) : null}
         <ScrollView ref={mainScrollRef} style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
 
@@ -14335,207 +14436,6 @@ export default function App() {
 
           {tab === "diet" ? (
             <View style={{ gap: 12, paddingBottom: 86 }}>
-              <View style={{ gap: 8 }}>
-                <View style={{ minHeight: 56, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Pressable
-                    onPress={() => changeDietDateBy(-1)}
-                    style={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: 999,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Feather name="chevron-left" size={20} color={mobileTheme.color.textSecondary} />
-                  </Pressable>
-
-                  <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "700" }}>
-                      {dietDateLabel}
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700" }}>
-                      {dietDateContextLabel}
-                    </Text>
-                  </View>
-
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                    <Pressable
-                      onPress={() => changeDietDateBy(1)}
-                      style={{
-                        width: 34,
-                        height: 34,
-                        borderRadius: 999,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Feather name="chevron-right" size={20} color={mobileTheme.color.textSecondary} />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => setShowDietDatePicker((prev) => !prev)}
-                      style={{
-                        width: 34,
-                        height: 34,
-                        borderRadius: 999,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Ionicons name="calendar-outline" size={18} color={mobileTheme.color.textSecondary} />
-                    </Pressable>
-                  </View>
-                </View>
-
-                {showDietDatePicker ? (
-                  Platform.OS === "web" ? (
-                    <TextInput
-                      value={selectedDietDate}
-                      onChangeText={(text) => {
-                        const parsed = new Date(text + "T12:00:00");
-                        if (!isNaN(parsed.getTime())) {
-                          setSelectedDietDate(text);
-                        }
-                      }}
-                      placeholder="AAAA-MM-DD"
-                      placeholderTextColor={mobileTheme.color.textSecondary}
-                      style={{
-                        minHeight: 44, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle,
-                        borderRadius: 12, backgroundColor: mobileTheme.color.bgApp,
-                        color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 14,
-                      }}
-                    />
-                  ) : (
-                  <View
-                    style={{
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      padding: 8,
-                      gap: 8,
-                    }}
-                  >
-                    <DateTimePicker
-                      value={dateFromISO(selectedDietDate)}
-                      mode="date"
-                      display={Platform.OS === "ios" ? "inline" : "default"}
-                      onChange={onDietDateChange}
-                    />
-                    {Platform.OS === "ios" ? (
-                      <Pressable
-                        onPress={() => setShowDietDatePicker(false)}
-                        style={{
-                          height: 38,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
-                          Cerrar calendario
-                        </Text>
-                      </Pressable>
-                    ) : null}
-                  </View>
-                  )
-                ) : null}
-              </View>
-
-              <View
-                style={{
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgSurface,
-                  borderRadius: 18,
-                  paddingHorizontal: 14,
-                  paddingVertical: 14,
-                  gap: 10,
-                }}
-              >
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <View>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "800" }}>
-                      {formatNutritionNumber(dayCaloriesConsumed)}/{formatNutritionNumber(dietDailyCaloriesTarget)}
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}>
-                      kcal consumidas
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: 999,
-                      backgroundColor: "rgba(203,255,26,0.2)",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "800", fontSize: 14 }}>
-                      {dayCaloriesPercent}%
-                    </Text>
-                  </View>
-                </View>
-
-                <View
-                  style={{
-                    height: 8,
-                    borderRadius: mobileTheme.radius.pill,
-                    backgroundColor: "rgba(255,255,255,0.09)",
-                    overflow: "hidden",
-                  }}
-                >
-                  <View
-                    style={{
-                      height: "100%",
-                      width: `${Math.max(0, Math.min(dayCaloriesProgress * 100, 100))}%`,
-                      backgroundColor: mobileTheme.color.brandPrimary,
-                      borderRadius: mobileTheme.radius.pill,
-                    }}
-                  />
-                </View>
-
-                <View style={{ flexDirection: "row", gap: 10 }}>
-                  {dietMacroOverview.map((macro) => {
-                    const progress =
-                      macro.total > 0 ? Math.max(0, Math.min(macro.consumed / macro.total, 1)) : 0;
-                    return (
-                      <View key={macro.key} style={{ flex: 1, gap: 3 }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
-                          {formatNutritionNumber(macro.consumed)}/{formatNutritionNumber(macro.total)}g
-                        </Text>
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{macro.label}</Text>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                            {macro.total > 0 ? Math.round((macro.consumed / macro.total) * 100) : 0}%
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            height: 5,
-                            borderRadius: mobileTheme.radius.pill,
-                            backgroundColor: "rgba(255,255,255,0.09)",
-                            overflow: "hidden",
-                          }}
-                        >
-                          <View
-                            style={{
-                              height: "100%",
-                              width: `${Math.max(0, Math.min(progress * 100, 100))}%`,
-                              backgroundColor: macro.accent,
-                            }}
-                          />
-                        </View>
-                      </View>
-                    );
-                  })}
-                </View>
-              </View>
-
               {orderedDietMeals.map((meal) => {
                 const category = meal.title as DietMealCategory;
                 const meta = DIET_MEAL_META[category];
@@ -18357,6 +18257,7 @@ export default function App() {
             </View>
           ) : null}
         </ScrollView>
+        </View>
         )}
         </KeyboardAvoidingView>
       )}
