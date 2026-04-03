@@ -25,7 +25,7 @@ concurrency:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     permissions:
       contents: write
 
@@ -54,7 +54,7 @@ jobs:
           PROFILE="${{ github.event.inputs.profile || 'preview' }}"
           echo "profile=$PROFILE" >> "$GITHUB_OUTPUT"
 
-      - name: Build APK on EAS
+      - name: Build APK on EAS (waits for completion)
         id: build
         run: |
           cd apps/mobile
@@ -63,37 +63,20 @@ jobs:
             --profile ${{ steps.profile.outputs.profile }} \
             --non-interactive \
             --json > /tmp/eas-build.json
-          BUILD_ID=$(jq -r '.[0].id' /tmp/eas-build.json)
-          echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
-          echo "Build started: $BUILD_ID"
-
-      - name: Wait for build to finish
-        id: wait
-        run: |
-          cd apps/mobile
-          BUILD_ID="${{ steps.build.outputs.build_id }}"
-          echo "Waiting for build $BUILD_ID..."
-          for i in $(seq 1 60); do
-            eas build:view "$BUILD_ID" --json > /tmp/eas-status.json 2>/dev/null || true
-            STATUS=$(jq -r '.status' /tmp/eas-status.json 2>/dev/null || echo "unknown")
-            echo "  [$i/60] Status: $STATUS"
-            if [ "$STATUS" = "finished" ]; then
-              APK_URL=$(jq -r '.artifacts.applicationArchiveUrl' /tmp/eas-status.json)
-              echo "apk_url=$APK_URL" >> "$GITHUB_OUTPUT"
-              echo "Build finished! APK: $APK_URL"
-              exit 0
-            elif [ "$STATUS" = "errored" ] || [ "$STATUS" = "canceled" ]; then
-              echo "Build failed with status: $STATUS"
-              exit 1
-            fi
-            sleep 30
-          done
-          echo "Timed out waiting for build"
-          exit 1
+          cat /tmp/eas-build.json | jq .
+          APK_URL=$(jq -r '.[0].artifacts.buildUrl // .[0].artifacts.applicationArchiveUrl // empty' /tmp/eas-build.json)
+          if [ -z "$APK_URL" ]; then
+            BUILD_ID=$(jq -r '.[0].id' /tmp/eas-build.json)
+            echo "Build finished but no artifact URL in JSON. Fetching from build:view..."
+            eas build:view "$BUILD_ID" --json > /tmp/eas-view.json
+            APK_URL=$(jq -r '.artifacts.applicationArchiveUrl // .artifacts.buildUrl // empty' /tmp/eas-view.json)
+          fi
+          echo "apk_url=$APK_URL" >> "$GITHUB_OUTPUT"
+          echo "APK URL: $APK_URL"
 
       - name: Download APK
         run: |
-          curl -L "${{ steps.wait.outputs.apk_url }}" -o gymnasia.apk
+          curl -L "${{ steps.build.outputs.apk_url }}" -o gymnasia.apk
           ls -lh gymnasia.apk
 
       - name: Get version info
