@@ -17607,20 +17607,32 @@ export default function App() {
                             borderBottomColor: mobileTheme.color.borderSubtle,
                           }}
                         >
-                          <View
-                            style={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: 8,
-                              backgroundColor: "rgba(203,255,26,0.1)",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Text style={{ fontSize: 16 }}>
-                              {food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️"}
-                            </Text>
-                          </View>
+                          {food.image ? (
+                            <Image
+                              source={{ uri: `${FOODS_IMAGES_BASE_URL}/${food.image}` }}
+                              style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 8,
+                                backgroundColor: mobileTheme.color.bgSurface,
+                              }}
+                            />
+                          ) : (
+                            <View
+                              style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(203,255,26,0.1)",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text style={{ fontSize: 16 }}>
+                                {food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️"}
+                              </Text>
+                            </View>
+                          )}
                           <View style={{ flex: 1 }}>
                             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
                               {food.name}
