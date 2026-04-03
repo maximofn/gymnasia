@@ -8,5 +8,6 @@
   "fat_per_100g": 1,
   "fiber_per_100g": 1.8,
   "serving_size_g": 150,
-  "serving_description": "1 ración (150g cocido)"
+  "serving_description": "1 ración (150g cocido)",
+  "image": "arroz-integral.webp"
 }
