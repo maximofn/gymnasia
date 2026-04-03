@@ -6150,6 +6150,62 @@ function SharedChatPanel({
   );
 }
 
+function DietItemThumbnail({ uri, dotColor, size = 36 }: { uri?: string | null; dotColor: string; size?: number }) {
+  const [failed, setFailed] = useState(false);
+  if (uri && !failed) {
+    return (
+      <Image
+        source={{ uri }}
+        onError={() => setFailed(true)}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: 8,
+          backgroundColor: mobileTheme.color.bgSurface,
+        }}
+      />
+    );
+  }
+  return (
+    <View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />
+  );
+}
+
+function FoodThumbnail({ food, size = 36 }: { food: FoodRepoEntry; size?: number }) {
+  const [failed, setFailed] = useState(false);
+  const uri = food.image ? `${FOODS_IMAGES_BASE_URL}/${food.image}` : null;
+  if (uri && !failed) {
+    return (
+      <Image
+        source={{ uri }}
+        onError={() => setFailed(true)}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: 8,
+          backgroundColor: mobileTheme.color.bgSurface,
+        }}
+      />
+    );
+  }
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: 8,
+        backgroundColor: "rgba(203,255,26,0.1)",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Text style={{ fontSize: size * 0.44 }}>
+        {food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️"}
+      </Text>
+    </View>
+  );
+}
+
 export default function App() {
   const [tab, setTab] = useState<TabKey>("home");
   const [loading, setLoading] = useState(true);
@@ -14573,27 +14629,7 @@ export default function App() {
                                 }}
                               >
                                 <View style={{ flexDirection: "row", gap: 8, flex: 1 }}>
-                                  {item.image_uri ? (
-                                    <Image
-                                      source={{ uri: item.image_uri }}
-                                      style={{
-                                        width: 36,
-                                        height: 36,
-                                        borderRadius: 8,
-                                        backgroundColor: mobileTheme.color.bgSurface,
-                                      }}
-                                    />
-                                  ) : (
-                                    <View
-                                      style={{
-                                        width: 7,
-                                        height: 7,
-                                        borderRadius: 999,
-                                        backgroundColor: meta.dot,
-                                        marginTop: 8,
-                                      }}
-                                    />
-                                  )}
+                                  <DietItemThumbnail uri={item.image_uri} dotColor={meta.dot} />
                                   <View style={{ flex: 1 }}>
                                     <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
                                       {item.title}
@@ -17607,32 +17643,7 @@ export default function App() {
                             borderBottomColor: mobileTheme.color.borderSubtle,
                           }}
                         >
-                          {food.image ? (
-                            <Image
-                              source={{ uri: `${FOODS_IMAGES_BASE_URL}/${food.image}` }}
-                              style={{
-                                width: 36,
-                                height: 36,
-                                borderRadius: 8,
-                                backgroundColor: mobileTheme.color.bgSurface,
-                              }}
-                            />
-                          ) : (
-                            <View
-                              style={{
-                                width: 36,
-                                height: 36,
-                                borderRadius: 8,
-                                backgroundColor: "rgba(203,255,26,0.1)",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <Text style={{ fontSize: 16 }}>
-                                {food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️"}
-                              </Text>
-                            </View>
-                          )}
+                          <FoodThumbnail food={food} />
                           <View style={{ flex: 1 }}>
                             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
                               {food.name}
