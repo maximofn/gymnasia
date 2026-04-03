@@ -6,6 +6,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import Svg, { Path, Circle, Defs, LinearGradient, Stop } from "react-native-svg";
 import ConfettiCannon from "react-native-confetti-cannon";
 import * as SecureStore from "expo-secure-store";
+import Constants from "expo-constants";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 import DateTimePicker, {
@@ -18255,6 +18256,10 @@ export default function App() {
               ) : null}
 
               {/* Exercise detail rendered as fullscreen overlay below */}
+
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, textAlign: "center", marginTop: 8, opacity: 0.6 }}>
+                Gymnasia v{Constants.expoConfig?.version ?? "?"}
+              </Text>
             </View>
           ) : null}
         </ScrollView>
