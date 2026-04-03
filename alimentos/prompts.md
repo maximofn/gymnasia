@@ -8,6 +8,10 @@
 
 ## Alimentos
 
+### Aceite de girasol
+- **ID:** `aceite-girasol`
+- **Food:** `a small glass bottle of pale golden sunflower oil with a bright yellow sunflower beside it`
+
 ### Aceite de oliva
 - **ID:** `aceite-oliva`
 - **Food:** `a small glass bottle of golden-green extra virgin olive oil with a thin stream pouring`

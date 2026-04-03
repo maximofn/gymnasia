@@ -101,6 +101,7 @@ FOOD_PROMPT_TEMPLATE = (
 
 # Map food id -> english description (visually specific for small thumbnails)
 FOOD_PROMPTS = {
+    "aceite-girasol": "a small glass bottle of pale golden sunflower oil with a bright yellow sunflower beside it",
     "aceite-oliva": "a small glass bottle of golden-green extra virgin olive oil with a thin stream pouring",
     "aguacate": "a ripe avocado cut in half showing the green flesh and brown pit",
     "almendras": "a handful of whole raw almonds with brown skin, scattered loosely",

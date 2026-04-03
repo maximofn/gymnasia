@@ -1,5 +1,18 @@
 [
   {
+    "id": "aceite-girasol",
+    "name": "Aceite de girasol",
+    "category": "grasa",
+    "calories_per_100g": 884,
+    "protein_per_100g": 0,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 100,
+    "fiber_per_100g": 0,
+    "serving_size_g": 10,
+    "serving_description": "1 cucharada (10ml)",
+    "image": "aceite-girasol.webp"
+  },
+  {
     "id": "aceite-oliva-refinado",
     "name": "Aceite de oliva refinado",
     "category": "grasa",
