@@ -26,6 +26,7 @@ import {
   ScrollView,
   Text,
   TextInput,
+  Linking,
   Vibration,
   View,
 } from "react-native";
@@ -379,6 +380,46 @@ const OPENAI_REASONING_EFFORT_LABELS: Record<OpenAIReasoningEffort, string> = {
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
+
+const GITHUB_RELEASES_API = "https://api.github.com/repos/maximofn/gymnasia/releases/latest";
+const UPDATE_CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000; // 4 hours
+const UPDATE_CHECK_KEY = "gymnasia.mobile.lastUpdateCheck";
+
+function compareVersions(a: string, b: string): number {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < 3; i++) {
+    const diff = (pb[i] ?? 0) - (pa[i] ?? 0);
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
+
+async function checkForUpdate(): Promise<{ available: boolean; version: string; url: string } | null> {
+  try {
+    const currentVersion = Constants.expoConfig?.version ?? "0.0.0";
+    const lastCheck = await AsyncStorage.getItem(UPDATE_CHECK_KEY);
+    if (lastCheck) {
+      const elapsed = Date.now() - Number(lastCheck);
+      if (elapsed < UPDATE_CHECK_INTERVAL_MS) return null;
+    }
+    await AsyncStorage.setItem(UPDATE_CHECK_KEY, String(Date.now()));
+    const res = await fetch(GITHUB_RELEASES_API, {
+      headers: { Accept: "application/vnd.github+json" },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const tagName: string = data.tag_name ?? "";
+    const remoteVersion = tagName.replace(/^v/, "");
+    if (!remoteVersion || compareVersions(currentVersion, remoteVersion) <= 0) return null;
+    const apkAsset = (data.assets ?? []).find((a: { name: string }) => a.name.endsWith(".apk"));
+    if (!apkAsset) return null;
+    return { available: true, version: remoteVersion, url: apkAsset.browser_download_url };
+  } catch {
+    return null;
+  }
+}
+
 const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
 const EXERCISES_ALL_URL = `${EXERCISES_REPO_BASE_URL}/all.json`;
@@ -6213,6 +6254,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
+  const [updateInfo, setUpdateInfo] = useState<{ version: string; url: string } | null>(null);
 
   const [store, setStore] = useState<LocalStore>(() => createInitialStore());
   const [threads, setThreads] = useState<ChatThread[]>([]);
@@ -7495,6 +7537,13 @@ export default function App() {
       ignore = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    checkForUpdate().then((info) => {
+      if (info?.available) setUpdateInfo({ version: info.version, url: info.url });
+    });
+  }, [isHydrated]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -18989,6 +19038,75 @@ export default function App() {
             ) : null}
           </View>
         </KeyboardAvoidingView>
+      ) : null}
+
+      {updateInfo ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.76)",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 900,
+            elevation: 90,
+          }}
+        >
+          <View
+            style={{
+              width: "85%",
+              maxWidth: 380,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.08)",
+              backgroundColor: mobileTheme.color.bgSurface,
+              padding: 24,
+              alignItems: "center",
+              gap: 16,
+            }}
+          >
+            <Feather name="download" size={40} color={mobileTheme.color.brandPrimary} />
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800", textAlign: "center" }}>
+              Nueva versión disponible
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>
+              Gymnasia v{updateInfo.version} está disponible.{"\n"}Tu versión actual es v{Constants.expoConfig?.version ?? "?"}.
+            </Text>
+            <Pressable
+              onPress={() => {
+                Linking.openURL(updateInfo.url);
+                setUpdateInfo(null);
+              }}
+              style={{
+                width: "100%",
+                height: 48,
+                borderRadius: mobileTheme.radius.md,
+                backgroundColor: mobileTheme.color.brandPrimary,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>Descargar</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setUpdateInfo(null)}
+              style={{
+                width: "100%",
+                height: 44,
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Ahora no</Text>
+            </Pressable>
+          </View>
+        </View>
       ) : null}
 
       {providerDeleteModal ? (
