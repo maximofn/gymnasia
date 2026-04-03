@@ -147,6 +147,7 @@ type DietItem = {
   protein_g: number;
   carbs_g: number;
   fat_g: number;
+  image_uri?: string | null;
 };
 type DietMeal = { id: string; title: string; items: DietItem[] };
 type DietDay = { day_date: string; meals: DietMeal[] };
@@ -384,6 +385,7 @@ const EXERCISES_CACHE_KEY = "gymnasia.mobile.exercises_repo.v2";
 const FOODS_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos";
 const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
+const FOODS_IMAGES_BASE_URL = `${FOODS_REPO_BASE_URL}/images`;
 const FOODS_CACHE_KEY = "gymnasia.mobile.foods_repo.v1";
 const PERSONAL_FOODS_STORAGE_KEY = "gymnasia.mobile.personal_foods.v1";
 
@@ -623,7 +625,13 @@ type FoodRepoEntry = {
   fiber_per_100g: number;
   serving_size_g: number;
   serving_description: string;
+  image?: string;
 };
+
+function foodRepoImageUri(entry: FoodRepoEntry | null | undefined): string | null {
+  if (!entry?.image) return null;
+  return `${FOODS_IMAGES_BASE_URL}/${entry.image}`;
+}
 
 async function loadFoodsRepo(): Promise<FoodRepoEntry[]> {
   try {
@@ -7928,6 +7936,7 @@ export default function App() {
         protein_g: Math.round(repoMatch.protein_per_100g * ratio * 10) / 10,
         carbs_g: Math.round(repoMatch.carbs_per_100g * ratio * 10) / 10,
         fat_g: Math.round(repoMatch.fat_per_100g * ratio * 10) / 10,
+        image_uri: foodRepoImageUri(repoMatch),
       };
     } else {
       newItem = {
@@ -8587,7 +8596,7 @@ export default function App() {
       const aiName = parsed.dish_name || "Alimento estimado IA";
       const aiGrams = parsed.grams ?? 0;
       const repoMatch = findFoodInRepo(aiName, foodsRepo, personalFoods);
-      let updatedFields: { title: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number };
+      let updatedFields: { title: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number; image_uri?: string | null };
       if (repoMatch && aiGrams > 0) {
         const ratio = aiGrams / 100;
         updatedFields = {
@@ -8597,6 +8606,7 @@ export default function App() {
           protein_g: Math.round(repoMatch.protein_per_100g * ratio * 10) / 10,
           carbs_g: Math.round(repoMatch.carbs_per_100g * ratio * 10) / 10,
           fat_g: Math.round(repoMatch.fat_per_100g * ratio * 10) / 10,
+          image_uri: foodRepoImageUri(repoMatch),
         };
       } else {
         updatedFields = {
@@ -14563,15 +14573,27 @@ export default function App() {
                                 }}
                               >
                                 <View style={{ flexDirection: "row", gap: 8, flex: 1 }}>
-                                  <View
-                                    style={{
-                                      width: 7,
-                                      height: 7,
-                                      borderRadius: 999,
-                                      backgroundColor: meta.dot,
-                                      marginTop: 8,
-                                    }}
-                                  />
+                                  {item.image_uri ? (
+                                    <Image
+                                      source={{ uri: item.image_uri }}
+                                      style={{
+                                        width: 36,
+                                        height: 36,
+                                        borderRadius: 8,
+                                        backgroundColor: mobileTheme.color.bgSurface,
+                                      }}
+                                    />
+                                  ) : (
+                                    <View
+                                      style={{
+                                        width: 7,
+                                        height: 7,
+                                        borderRadius: 999,
+                                        backgroundColor: meta.dot,
+                                        marginTop: 8,
+                                      }}
+                                    />
+                                  )}
                                   <View style={{ flex: 1 }}>
                                     <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
                                       {item.title}
@@ -14788,6 +14810,7 @@ export default function App() {
                                       protein_g: prot,
                                       carbs_g: carbs,
                                       fat_g: fat,
+                                      image_uri: foodRepoImageUri(dietSelectedFood),
                                     };
                                     const activeDietDate = selectedDietDate;
                                     const cat = dietMealEditorCategory;
