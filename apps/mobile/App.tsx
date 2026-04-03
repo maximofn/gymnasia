@@ -5846,7 +5846,7 @@ function SharedChatPanel({
   const hasStreamingMessage = messages.some((message) => message.is_streaming);
 
   return (
-    <View style={{ gap: isEstimator ? 8 : 12 }}>
+    <View style={{ gap: isEstimator ? 8 : 12, flex: isEstimator ? 1 : undefined, minHeight: isEstimator ? 0 : undefined }}>
       {isEstimator ? (
         <View
           style={{
@@ -5854,14 +5854,14 @@ function SharedChatPanel({
             borderColor: mobileTheme.color.borderSubtle,
             borderRadius: mobileTheme.radius.md,
             backgroundColor: mobileTheme.color.bgApp,
-            minHeight: 180,
-            maxHeight: 260,
+            flex: 1,
+            minHeight: 80,
             padding: 8,
           }}
         >
           <ScrollView
             ref={scrollRef}
-            style={{ maxHeight: 244 }}
+            style={{ flex: 1 }}
             contentContainerStyle={{ gap: 8, paddingBottom: 6 }}
             nestedScrollEnabled
             onContentSizeChange={() => scrollRef?.current?.scrollToEnd({ animated: true })}
@@ -18795,79 +18795,46 @@ export default function App() {
 
       {foodEstimatorModalOpen ? (
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior="padding"
           style={{
             position: "absolute",
             top: 0,
             right: 0,
             bottom: 0,
             left: 0,
-            backgroundColor: "rgba(0,0,0,0.76)",
-            paddingHorizontal: 14,
-            paddingVertical: 18,
-            alignItems: "center",
-            justifyContent: "center",
+            backgroundColor: mobileTheme.color.bgApp,
             zIndex: 610,
             elevation: 61,
           }}
         >
           <View
             style={{
-              width: "100%",
-              maxWidth: 620,
-              maxHeight: "95%",
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.08)",
-              backgroundColor: "#12151C",
-              paddingHorizontal: 12,
-              paddingTop: 12,
-              paddingBottom: 10,
-              gap: 10,
+              paddingHorizontal: mobileTheme.spacing[4],
+              paddingTop: mobileTheme.spacing[4],
+              paddingBottom: 12,
+              borderBottomWidth: 1,
+              borderBottomColor: mobileTheme.color.borderSubtle,
+              backgroundColor: mobileTheme.color.bgApp,
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
-                Estimar con IA
-              </Text>
-              <Pressable
-                onPress={closeFoodEstimatorModal}
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: 10,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
-              </Pressable>
-            </View>
-
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: mobileTheme.color.borderSubtle,
-                borderRadius: mobileTheme.radius.md,
-                backgroundColor: mobileTheme.color.bgApp,
-                padding: 10,
-                gap: 4,
-              }}
-            >
-              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
-                Proveedor estimador:{" "}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <Pressable onPress={closeFoodEstimatorModal} hitSlop={8}>
+                  <Feather name="arrow-left" size={22} color={mobileTheme.color.textPrimary} />
+                </Pressable>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800" }}>
+                  Estimar con IA
+                </Text>
+              </View>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
                 {foodEstimatorProvider
                   ? PROVIDER_UI_META[foodEstimatorProvider.provider].label
-                  : "Sin API key disponible"}
-              </Text>
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                Cada vez que abres este panel se inicia una conversación nueva.
+                  : "Sin API key"}
               </Text>
             </View>
+          </View>
 
+          <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4], paddingTop: 10, gap: 10 }}>
             <View style={{ flexDirection: "row", gap: 8 }}>
               <Pressable
                 onPress={addFoodEstimatorImageFromLibrary}
@@ -18877,17 +18844,17 @@ export default function App() {
                   minHeight: 40,
                   borderRadius: mobileTheme.radius.md,
                   borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
+                  borderColor: "rgba(203,255,26,0.45)",
+                  backgroundColor: "rgba(203,255,26,0.10)",
                   alignItems: "center",
                   justifyContent: "center",
                   flexDirection: "row",
                   gap: 6,
-                  opacity: foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES ? 0.6 : 1,
+                  opacity: foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES ? 0.5 : 1,
                 }}
               >
-                <Ionicons name="image-outline" size={16} color={mobileTheme.color.textPrimary} />
-                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>Subir foto</Text>
+                <Ionicons name="image-outline" size={16} color={mobileTheme.color.brandPrimary} />
+                <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 13 }}>Subir foto</Text>
               </Pressable>
               <Pressable
                 onPress={addFoodEstimatorImageFromCamera}
@@ -18897,79 +18864,56 @@ export default function App() {
                   minHeight: 40,
                   borderRadius: mobileTheme.radius.md,
                   borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  backgroundColor: mobileTheme.color.bgApp,
+                  borderColor: "rgba(203,255,26,0.45)",
+                  backgroundColor: "rgba(203,255,26,0.10)",
                   alignItems: "center",
                   justifyContent: "center",
                   flexDirection: "row",
                   gap: 6,
-                  opacity: foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES ? 0.6 : 1,
+                  opacity: foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES ? 0.5 : 1,
                 }}
               >
-                <Ionicons name="camera-outline" size={16} color={mobileTheme.color.textPrimary} />
-                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>Cámara</Text>
+                <Ionicons name="camera-outline" size={16} color={mobileTheme.color.brandPrimary} />
+                <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 13 }}>Cámara</Text>
               </Pressable>
             </View>
 
-            <View style={{ gap: 6 }}>
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                Fotos adjuntas: {foodEstimatorImages.length}/{FOOD_ESTIMATOR_MAX_IMAGES}
-              </Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-                {foodEstimatorImages.length === 0 ? (
+            {foodEstimatorImages.length > 0 ? (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ gap: 8 }}>
+                {foodEstimatorImages.map((image) => (
                   <View
+                    key={image.id}
                     style={{
-                      minHeight: 74,
-                      minWidth: 210,
-                      borderRadius: mobileTheme.radius.md,
+                      width: 68,
+                      height: 68,
+                      borderRadius: 12,
                       borderWidth: 1,
                       borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      paddingHorizontal: 12,
+                      overflow: "hidden",
+                      backgroundColor: mobileTheme.color.bgSurface,
                     }}
                   >
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                      Añade fotos para mejorar la estimación.
-                    </Text>
-                  </View>
-                ) : (
-                  foodEstimatorImages.map((image) => (
-                    <View
-                      key={image.id}
+                    <Image source={{ uri: image.uri }} style={{ width: "100%", height: "100%" }} />
+                    <Pressable
+                      onPress={() => removeFoodEstimatorImage(image.id)}
                       style={{
-                        width: 78,
-                        height: 78,
-                        borderRadius: 12,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        overflow: "hidden",
-                        backgroundColor: mobileTheme.color.bgApp,
+                        position: "absolute",
+                        top: 3,
+                        right: 3,
+                        width: 18,
+                        height: 18,
+                        borderRadius: 999,
+                        backgroundColor: "rgba(0,0,0,0.65)",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      <Image source={{ uri: image.uri }} style={{ width: "100%", height: "100%" }} />
-                      <Pressable
-                        onPress={() => removeFoodEstimatorImage(image.id)}
-                        style={{
-                          position: "absolute",
-                          top: 4,
-                          right: 4,
-                          width: 20,
-                          height: 20,
-                          borderRadius: 999,
-                          backgroundColor: "rgba(0,0,0,0.65)",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Feather name="x" size={11} color="#FFFFFF" />
-                      </Pressable>
-                    </View>
-                  ))
-                )}
+                      <Feather name="x" size={10} color="#FFFFFF" />
+                    </Pressable>
+                  </View>
+                ))}
               </ScrollView>
-            </View>
+            ) : null}
 
             <SharedChatPanel
               variant="estimator"
@@ -18990,44 +18934,52 @@ export default function App() {
               pendingStatusMessage={foodEstimatorSending ? (foodEstimatorStatus || `${foodThinkingLabel}...`) : null}
               scrollRef={foodEstimatorScrollRef}
             />
+          </View>
 
+          <View
+            style={{
+              paddingHorizontal: mobileTheme.spacing[4],
+              paddingVertical: 10,
+              borderTopWidth: 1,
+              borderTopColor: mobileTheme.color.borderSubtle,
+              backgroundColor: mobileTheme.color.bgApp,
+              gap: 6,
+            }}
+          >
             <Pressable
               onPress={() => {
                 void addFoodFromEstimatorJSON();
               }}
               disabled={!foodEstimatorHasLLMResponse || foodEstimatorSending || !dietMealEditorCategory}
               style={{
-                minHeight: 42,
+                minHeight: 46,
                 borderRadius: mobileTheme.radius.md,
-                borderWidth: 1,
-                borderColor: foodEstimatorHasLLMResponse && dietMealEditorCategory
-                  ? "rgba(203,255,26,0.45)"
-                  : mobileTheme.color.borderSubtle,
                 backgroundColor: foodEstimatorHasLLMResponse && dietMealEditorCategory
-                  ? "rgba(203,255,26,0.12)"
-                  : mobileTheme.color.bgApp,
+                  ? mobileTheme.color.brandPrimary
+                  : mobileTheme.color.bgSurface,
                 alignItems: "center",
                 justifyContent: "center",
                 opacity:
                   !foodEstimatorHasLLMResponse || foodEstimatorSending || !dietMealEditorCategory
-                    ? 0.65
+                    ? 0.5
                     : 1,
               }}
             >
               <Text
                 style={{
                   color: foodEstimatorHasLLMResponse && dietMealEditorCategory
-                    ? mobileTheme.color.brandPrimary
+                    ? "#06090D"
                     : mobileTheme.color.textSecondary,
                   fontWeight: "700",
+                  fontSize: 15,
                 }}
               >
                 Añadir alimento
               </Text>
             </Pressable>
             {!dietMealEditorCategory ? (
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                Abre primero "Añadir alimento" en una comida para rellenar los campos desde IA.
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, textAlign: "center" }}>
+                Abre primero "Añadir alimento" en una comida.
               </Text>
             ) : null}
           </View>
