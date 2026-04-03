@@ -1,7 +1,19 @@
 [
   {
-    "id": "aceite-oliva",
+    "id": "aceite-oliva-refinado",
+    "name": "Aceite de oliva refinado"
+  },
+  {
+    "id": "aceite-oliva-virgen-extra",
     "name": "Aceite de oliva virgen extra"
+  },
+  {
+    "id": "aceite-oliva-virgen",
+    "name": "Aceite de oliva virgen"
+  },
+  {
+    "id": "aceite-oliva",
+    "name": "Aceite de oliva"
   },
   {
     "id": "aguacate",

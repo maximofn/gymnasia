@@ -11,6 +11,7 @@
 ### Aceite de oliva
 - **ID:** `aceite-oliva`
 - **Food:** `a small glass bottle of golden-green extra virgin olive oil with a thin stream pouring`
+- **Imagen compartida por:** `aceite-oliva-virgen-extra`, `aceite-oliva-virgen`, `aceite-oliva-refinado`
 
 ### Aguacate
 - **ID:** `aguacate`
