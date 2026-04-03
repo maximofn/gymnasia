@@ -1,0 +1,126 @@
+name: Build APK & Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "EAS build profile"
+        required: true
+        default: "preview"
+        type: choice
+        options:
+          - preview
+          - production
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - "!apps/mobile/scripts/**"
+      - "!apps/mobile/**/*.md"
+
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Resolve build profile
+        id: profile
+        run: |
+          PROFILE="${{ github.event.inputs.profile || 'preview' }}"
+          echo "profile=$PROFILE" >> "$GITHUB_OUTPUT"
+
+      - name: Build APK on EAS
+        id: build
+        run: |
+          cd apps/mobile
+          BUILD_JSON=$(npx eas-cli build \
+            --platform android \
+            --profile ${{ steps.profile.outputs.profile }} \
+            --non-interactive \
+            --json)
+          echo "build_json=$BUILD_JSON" >> "$GITHUB_OUTPUT"
+          BUILD_ID=$(echo "$BUILD_JSON" | jq -r '.[0].id')
+          echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
+          echo "Build started: $BUILD_ID"
+
+      - name: Wait for build to finish
+        id: wait
+        run: |
+          cd apps/mobile
+          BUILD_ID="${{ steps.build.outputs.build_id }}"
+          echo "Waiting for build $BUILD_ID..."
+          for i in $(seq 1 60); do
+            STATUS_JSON=$(npx eas-cli build:view "$BUILD_ID" --json 2>/dev/null || true)
+            STATUS=$(echo "$STATUS_JSON" | jq -r '.status' 2>/dev/null || echo "unknown")
+            echo "  [$i/60] Status: $STATUS"
+            if [ "$STATUS" = "finished" ]; then
+              APK_URL=$(echo "$STATUS_JSON" | jq -r '.artifacts.applicationArchiveUrl')
+              echo "apk_url=$APK_URL" >> "$GITHUB_OUTPUT"
+              echo "Build finished! APK: $APK_URL"
+              exit 0
+            elif [ "$STATUS" = "errored" ] || [ "$STATUS" = "canceled" ]; then
+              echo "Build failed with status: $STATUS"
+              exit 1
+            fi
+            sleep 30
+          done
+          echo "Timed out waiting for build"
+          exit 1
+
+      - name: Download APK
+        run: |
+          curl -L "${{ steps.wait.outputs.apk_url }}" -o gymnasia.apk
+          ls -lh gymnasia.apk
+
+      - name: Get version info
+        id: version
+        run: |
+          VERSION=$(jq -r '.expo.version' apps/mobile/app.json)
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          TAG="v${VERSION}-${SHORT_SHA}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION, Tag: $TAG"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "Gymnasia ${{ steps.version.outputs.version }} (${{ steps.version.outputs.tag }})"
+          body: |
+            ## Gymnasia APK - ${{ steps.version.outputs.version }}
+
+            **Build profile:** `${{ steps.profile.outputs.profile }}`
+            **Commit:** ${{ github.sha }}
+
+            ### Install
+            Download `gymnasia.apk` and install on your Android device.
+            You may need to enable "Install from unknown sources" in Android settings.
+          files: gymnasia.apk
+          draft: false
+          prerelease: ${{ steps.profile.outputs.profile == 'preview' }}
