@@ -44,8 +44,12 @@
     "name": "Arroz integral (cocido)"
   },
   {
+    "id": "atun-lata",
+    "name": "Atún en lata (al natural, escurrido)"
+  },
+  {
     "id": "atun",
-    "name": "Atún"
+    "name": "Atún fresco"
   },
   {
     "id": "avena",

@@ -109,6 +109,7 @@ FOOD_PROMPTS = {
     "arroz-blanco": "a small bowl of cooked white rice, fluffy separated grains",
     "arroz-integral": "a small bowl of cooked brown rice, slightly nutty-looking grains",
     "atun": "a fresh raw tuna steak, deep red-pink flesh with clean cut",
+    "atun-lata": "an open tin can of tuna in water, flaky light-pink chunks visible from above",
     "avena": "a small bowl of dry rolled oats, golden flakes",
     "boniato": "a baked sweet potato cut open showing bright orange flesh",
     "brocoli": "a single fresh broccoli floret, vibrant deep green",

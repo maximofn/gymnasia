@@ -42,6 +42,10 @@
 - **ID:** `atun`
 - **Food:** `a fresh raw tuna steak, deep red-pink flesh with clean cut`
 
+### Atún en lata
+- **ID:** `atun-lata`
+- **Food:** `an open tin can of tuna in water, flaky light-pink chunks visible from above`
+
 ### Avena
 - **ID:** `avena`
 - **Food:** `a small bowl of dry rolled oats, golden flakes`

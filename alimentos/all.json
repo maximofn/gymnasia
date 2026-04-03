@@ -143,16 +143,30 @@
     "image": "arroz-integral.webp"
   },
   {
+    "id": "atun-lata",
+    "name": "Atún en lata (al natural, escurrido)",
+    "category": "proteína",
+    "calories_per_100g": 116,
+    "protein_per_100g": 26,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 1,
+    "fiber_per_100g": 0,
+    "serving_size_g": 80,
+    "serving_description": "1 lata escurrida (80g)",
+    "image": "atun-lata.webp"
+  },
+  {
     "id": "atun",
-    "name": "Atún",
+    "name": "Atún fresco",
     "category": "proteína",
     "calories_per_100g": 130,
     "protein_per_100g": 29,
     "carbs_per_100g": 0,
     "fat_per_100g": 1,
     "fiber_per_100g": 0,
-    "serving_size_g": 80,
-    "serving_description": "1 lata escurrida (80g)"
+    "serving_size_g": 150,
+    "serving_description": "1 filete (150g)",
+    "image": "atun.webp"
   },
   {
     "id": "avena",
