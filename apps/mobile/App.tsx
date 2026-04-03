@@ -10633,10 +10633,11 @@ export default function App() {
                   <Ionicons color={tabTextColor} name="settings-sharp" size={18} />
                 ) : (
                   <Text
+                    numberOfLines={1}
                     style={{
                       color: tabTextColor,
                       fontWeight: "700",
-                      fontSize: 12,
+                      fontSize: 11,
                     }}
                   >
                     {tabLabel(key)}
