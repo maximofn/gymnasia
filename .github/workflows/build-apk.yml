@@ -105,4 +105,4 @@ jobs:
             You may need to enable "Install from unknown sources" in Android settings.
           files: gymnasia.apk
           draft: false
-          prerelease: ${{ steps.profile.outputs.profile == 'preview' }}
+          prerelease: false
