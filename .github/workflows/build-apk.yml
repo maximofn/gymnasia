@@ -58,7 +58,7 @@ jobs:
         id: build
         run: |
           cd apps/mobile
-          BUILD_JSON=$(npx eas-cli build \
+          BUILD_JSON=$(eas build \
             --platform android \
             --profile ${{ steps.profile.outputs.profile }} \
             --non-interactive \
@@ -75,7 +75,7 @@ jobs:
           BUILD_ID="${{ steps.build.outputs.build_id }}"
           echo "Waiting for build $BUILD_ID..."
           for i in $(seq 1 60); do
-            STATUS_JSON=$(npx eas-cli build:view "$BUILD_ID" --json 2>/dev/null || true)
+            STATUS_JSON=$(eas build:view "$BUILD_ID" --json 2>/dev/null || true)
             STATUS=$(echo "$STATUS_JSON" | jq -r '.status' 2>/dev/null || echo "unknown")
             echo "  [$i/60] Status: $STATUS"
             if [ "$STATUS" = "finished" ]; then
