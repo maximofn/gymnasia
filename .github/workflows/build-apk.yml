@@ -11,12 +11,8 @@ on:
         options:
           - preview
           - production
-  push:
-    branches: [main]
-    paths:
-      - "apps/mobile/**"
-      - "!apps/mobile/scripts/**"
-      - "!apps/mobile/**/*.md"
+  # Only triggers manually or when merging develop -> main
+  # (push trigger removed to avoid builds on every commit)
 
 concurrency:
   group: build-apk-${{ github.ref }}
