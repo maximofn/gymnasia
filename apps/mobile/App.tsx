@@ -11052,14 +11052,21 @@ export default function App() {
                   <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "800", fontSize: 14 }}>{dayCaloriesPercent}%</Text>
                 </View>
               </Animated.View>
-              {/* Calories bar — always visible */}
-              <View style={{ height: 8, borderRadius: mobileTheme.radius.pill, backgroundColor: "rgba(255,255,255,0.09)", overflow: "hidden" }}>
-                <View style={{ height: "100%", width: `${Math.max(0, Math.min(dayCaloriesProgress * 100, 100))}%`, backgroundColor: mobileTheme.color.brandPrimary, borderRadius: mobileTheme.radius.pill }} />
+              {/* Calories bar — always visible, overflow shown in red */}
+              <View style={{ height: 8, borderRadius: mobileTheme.radius.pill, backgroundColor: "rgba(255,255,255,0.09)", overflow: "hidden", flexDirection: "row" }}>
+                {dayCaloriesProgress > 1 ? (
+                  <>
+                    <View style={{ height: "100%", width: `${(1 / dayCaloriesProgress) * 100}%`, backgroundColor: mobileTheme.color.brandPrimary }} />
+                    <View style={{ height: "100%", flex: 1, backgroundColor: "#FF4444" }} />
+                  </>
+                ) : (
+                  <View style={{ height: "100%", width: `${Math.max(0, dayCaloriesProgress * 100)}%`, backgroundColor: mobileTheme.color.brandPrimary, borderRadius: mobileTheme.radius.pill }} />
+                )}
               </View>
               {/* Macro bars */}
               <View style={{ flexDirection: "row", gap: 10 }}>
                 {dietMacroOverview.map((macro) => {
-                  const progress = macro.total > 0 ? Math.max(0, Math.min(macro.consumed / macro.total, 1)) : 0;
+                  const progress = macro.total > 0 ? Math.max(0, macro.consumed / macro.total) : 0;
                   return (
                     <View key={macro.key} style={{ flex: 1, gap: 3 }}>
                       {/* Macro text — fades out */}
@@ -11069,7 +11076,7 @@ export default function App() {
                         overflow: "hidden",
                         gap: 1,
                       }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "800" }}>
                           {formatNutritionNumber(macro.consumed)}/{formatNutritionNumber(macro.total)}g
                         </Text>
                         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
@@ -11079,9 +11086,16 @@ export default function App() {
                           </Text>
                         </View>
                       </Animated.View>
-                      {/* Macro bar — always visible, uses accent color */}
-                      <View style={{ height: 5, borderRadius: mobileTheme.radius.pill, backgroundColor: "rgba(255,255,255,0.09)", overflow: "hidden" }}>
-                        <View style={{ height: "100%", width: `${Math.max(0, Math.min(progress * 100, 100))}%`, backgroundColor: macro.accent, borderRadius: mobileTheme.radius.pill }} />
+                      {/* Macro bar — always visible, uses accent color, overflow in red */}
+                      <View style={{ height: 5, borderRadius: mobileTheme.radius.pill, backgroundColor: "rgba(255,255,255,0.09)", overflow: "hidden", flexDirection: "row" }}>
+                        {progress > 1 ? (
+                          <>
+                            <View style={{ height: "100%", width: `${(1 / progress) * 100}%`, backgroundColor: macro.accent }} />
+                            <View style={{ height: "100%", flex: 1, backgroundColor: "#FF4444" }} />
+                          </>
+                        ) : (
+                          <View style={{ height: "100%", width: `${Math.max(0, progress * 100)}%`, backgroundColor: macro.accent, borderRadius: mobileTheme.radius.pill }} />
+                        )}
                       </View>
                     </View>
                   );
