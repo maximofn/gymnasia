@@ -33,6 +33,8 @@ htmlcov/
 dist/
 build/
 *.js.map
+apps/mobile/App.js
+apps/mobile/theme.js
 .next/
 out/
 .expo/
