@@ -32,6 +32,8 @@ htmlcov/
 # Build outputs
 dist/
 build/
+*.js.map
+apps/mobile/*.js
 .next/
 out/
 .expo/
