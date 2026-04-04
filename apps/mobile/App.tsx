@@ -6833,7 +6833,7 @@ export default function App() {
       label: "Proteína",
       consumed: dayProteinConsumed,
       total: proteinDailyTargetGrams,
-      accent: "#FF6E6E",
+      accent: "#B266FF",
     },
     {
       key: "carbs",
