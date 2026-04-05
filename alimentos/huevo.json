@@ -8,5 +8,6 @@
   "fat_per_100g": 11,
   "fiber_per_100g": 0,
   "serving_size_g": 60,
-  "serving_description": "1 huevo grande (60g)"
+  "serving_description": "1 huevo grande (60g)",
+  "image": "huevo.webp"
 }
