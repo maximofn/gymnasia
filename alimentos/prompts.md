@@ -61,7 +61,7 @@
 
 ### Claras de huevo
 - **ID:** `claras-huevo`
-- **Food:** `a small glass bowl of liquid egg whites, translucent and slightly glossy`
+- **Food:** `a carton bottle of liquid egg whites pouring a stream of translucent glossy egg whites into the void`
 
 ### Espinacas
 - **ID:** `espinacas`

@@ -113,7 +113,7 @@ FOOD_PROMPTS = {
     "avena": "a small bowl of dry rolled oats, golden flakes",
     "boniato": "a baked sweet potato cut open showing bright orange flesh",
     "brocoli": "a single fresh broccoli floret, vibrant deep green",
-    "claras-huevo": "a small glass bowl of liquid egg whites, translucent and slightly glossy",
+    "claras-huevo": "a carton bottle of liquid egg whites pouring a stream of translucent glossy egg whites into the void",
     "espinacas": "a bunch of fresh baby spinach leaves, bright green and tender",
     "garbanzos": "a small bowl of cooked chickpeas, round beige-golden legumes",
     "huevo": "a whole brown egg next to a fried egg with bright yellow yolk",
