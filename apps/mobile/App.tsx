@@ -6824,7 +6824,7 @@ export default function App() {
   const fatDailyTargetGrams =
     dietSettings.macro_mode === "manual_calories" ? manualFatGrams : fatGramsFromWeightPlan;
   const dayCaloriesProgress =
-    dietDailyCaloriesTarget > 0 ? Math.min(dayCaloriesConsumed / dietDailyCaloriesTarget, 1) : 0;
+    dietDailyCaloriesTarget > 0 ? dayCaloriesConsumed / dietDailyCaloriesTarget : 0;
   const dayCaloriesPercent =
     dietDailyCaloriesTarget > 0 ? Math.round(Math.min((dayCaloriesConsumed / dietDailyCaloriesTarget) * 100, 999)) : 0;
   const dietMacroOverview = [
