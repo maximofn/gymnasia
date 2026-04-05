@@ -88,8 +88,16 @@
     "name": "Huevo entero"
   },
   {
-    "id": "leche",
+    "id": "leche-desnatada",
+    "name": "Leche desnatada"
+  },
+  {
+    "id": "leche-entera",
     "name": "Leche entera"
+  },
+  {
+    "id": "leche-semidesnatada",
+    "name": "Leche semidesnatada"
   },
   {
     "id": "lentejas",

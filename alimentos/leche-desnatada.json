@@ -1,0 +1,13 @@
+{
+  "id": "leche-desnatada",
+  "name": "Leche desnatada",
+  "category": "lácteo",
+  "calories_per_100g": 34,
+  "protein_per_100g": 3.4,
+  "carbs_per_100g": 4.9,
+  "fat_per_100g": 0.1,
+  "fiber_per_100g": 0,
+  "serving_size_g": 250,
+  "serving_description": "1 vaso (250ml)",
+  "image": "leche.webp"
+}

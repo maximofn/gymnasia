@@ -75,9 +75,10 @@
 - **ID:** `huevo`
 - **Food:** `a whole brown egg next to a fried egg with bright yellow yolk`
 
-### Leche
-- **ID:** `leche`
+### Leche entera
+- **ID:** `leche-entera`
 - **Food:** `a glass of whole white milk, creamy and opaque`
+- **Imagen compartida por:** `leche-semidesnatada`, `leche-desnatada`
 
 ### Lentejas
 - **ID:** `lentejas`
