@@ -8,5 +8,6 @@
   "fat_per_100g": 0.038,
   "fiber_per_100g": 0,
   "serving_size_g": 250,
-  "serving_description": "1 vaso (250ml)"
+  "serving_description": "1 vaso (250ml)",
+  "image": "leche.webp"
 }
