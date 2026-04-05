@@ -8,5 +8,6 @@
   "fat_per_100g": 0.2,
   "fiber_per_100g": 0,
   "serving_size_g": 100,
-  "serving_description": "3 claras (~100g)"
+  "serving_description": "3 claras (~100g)",
+  "image": "claras-huevo.webp"
 }
