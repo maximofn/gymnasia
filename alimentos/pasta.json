@@ -8,5 +8,6 @@
   "fat_per_100g": 1.1,
   "fiber_per_100g": 1.8,
   "serving_size_g": 180,
-  "serving_description": "1 ración (180g cocida)"
+  "serving_description": "1 ración (180g cocida)",
+  "image": "pasta.webp"
 }

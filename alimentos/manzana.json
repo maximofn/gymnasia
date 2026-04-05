@@ -8,5 +8,6 @@
   "fat_per_100g": 0.2,
   "fiber_per_100g": 2.4,
   "serving_size_g": 180,
-  "serving_description": "1 manzana mediana (180g)"
+  "serving_description": "1 manzana mediana (180g)",
+  "image": "manzana.webp"
 }

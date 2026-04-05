@@ -347,7 +347,8 @@
     "fat_per_100g": 0.2,
     "fiber_per_100g": 2.4,
     "serving_size_g": 180,
-    "serving_description": "1 manzana mediana (180g)"
+    "serving_description": "1 manzana mediana (180g)",
+    "image": "manzana.webp"
   },
   {
     "id": "nueces",
@@ -359,7 +360,8 @@
     "fat_per_100g": 65,
     "fiber_per_100g": 6.7,
     "serving_size_g": 30,
-    "serving_description": "1 puñado (30g)"
+    "serving_description": "1 puñado (30g)",
+    "image": "nueces.webp"
   },
   {
     "id": "pan-integral",
@@ -371,7 +373,8 @@
     "fat_per_100g": 3.4,
     "fiber_per_100g": 7,
     "serving_size_g": 40,
-    "serving_description": "1 rebanada (40g)"
+    "serving_description": "1 rebanada (40g)",
+    "image": "pan-integral.webp"
   },
   {
     "id": "pasta",
@@ -383,7 +386,8 @@
     "fat_per_100g": 1.1,
     "fiber_per_100g": 1.8,
     "serving_size_g": 180,
-    "serving_description": "1 ración (180g cocida)"
+    "serving_description": "1 ración (180g cocida)",
+    "image": "pasta.webp"
   },
   {
     "id": "patata",
@@ -395,7 +399,8 @@
     "fat_per_100g": 0.1,
     "fiber_per_100g": 1.8,
     "serving_size_g": 200,
-    "serving_description": "1 patata mediana (200g)"
+    "serving_description": "1 patata mediana (200g)",
+    "image": "patata.webp"
   },
   {
     "id": "pechuga-pavo",
@@ -407,7 +412,8 @@
     "fat_per_100g": 1.5,
     "fiber_per_100g": 0,
     "serving_size_g": 150,
-    "serving_description": "1 filete mediano (150g)"
+    "serving_description": "1 filete mediano (150g)",
+    "image": "pechuga-pavo.webp"
   },
   {
     "id": "pechuga-pollo",
@@ -419,7 +425,8 @@
     "fat_per_100g": 3.6,
     "fiber_per_100g": 0,
     "serving_size_g": 150,
-    "serving_description": "1 filete mediano (150g)"
+    "serving_description": "1 filete mediano (150g)",
+    "image": "pechuga-pollo.webp"
   },
   {
     "id": "platano",
@@ -431,7 +438,8 @@
     "fat_per_100g": 0.3,
     "fiber_per_100g": 2.6,
     "serving_size_g": 120,
-    "serving_description": "1 plátano mediano (120g)"
+    "serving_description": "1 plátano mediano (120g)",
+    "image": "platano.webp"
   },
   {
     "id": "queso-fresco",

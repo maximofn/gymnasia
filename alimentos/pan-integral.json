@@ -8,5 +8,6 @@
   "fat_per_100g": 3.4,
   "fiber_per_100g": 7,
   "serving_size_g": 40,
-  "serving_description": "1 rebanada (40g)"
+  "serving_description": "1 rebanada (40g)",
+  "image": "pan-integral.webp"
 }

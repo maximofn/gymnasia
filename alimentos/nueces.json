@@ -8,5 +8,6 @@
   "fat_per_100g": 65,
   "fiber_per_100g": 6.7,
   "serving_size_g": 30,
-  "serving_description": "1 puñado (30g)"
+  "serving_description": "1 puñado (30g)",
+  "image": "nueces.webp"
 }
