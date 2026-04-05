@@ -8,5 +8,6 @@
   "fat_per_100g": 0.1,
   "fiber_per_100g": 3.3,
   "serving_size_g": 200,
-  "serving_description": "1 boniato mediano (200g)"
+  "serving_description": "1 boniato mediano (200g)",
+  "image": "boniato.webp"
 }
