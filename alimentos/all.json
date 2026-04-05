@@ -334,7 +334,8 @@
     "fat_per_100g": 0.4,
     "fiber_per_100g": 7.9,
     "serving_size_g": 200,
-    "serving_description": "1 ración (200g cocidas)"
+    "serving_description": "1 ración (200g cocidas)",
+    "image": "lentejas.webp"
   },
   {
     "id": "manzana",
