@@ -1,0 +1,11 @@
+{
+  "id": "elevaciones-frontales-barra",
+  "name": "Elevaciones frontales con barra",
+  "image_male": "elevaciones-frontales-barra-male.webp",
+  "image_female": "elevaciones-frontales-barra-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["deltoides anterior", "trapecio"],
+  "equipment": "barra",
+  "difficulty": "beginner",
+  "instructions": "De pie con los pies a la anchura de los hombros, sujeta una barra con ambas manos en agarre prono (palmas hacia abajo) a la anchura de los hombros. Con los brazos casi extendidos y una ligera flexión en los codos, eleva la barra por delante del cuerpo hasta la altura de los hombros. Baja de forma controlada a la posición inicial."
+}

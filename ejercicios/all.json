@@ -65,6 +65,20 @@
     "instructions": "Siéntate en un banco inclinado con la espalda apoyada y una mancuerna en cada mano, los brazos extendidos a los lados del cuerpo. Flexiona ambos codos llevando las mancuernas hacia los hombros, apretando los bíceps en la parte alta del movimiento. Baja de forma controlada."
   },
   {
+    "id": "elevaciones-frontales-barra",
+    "name": "Elevaciones frontales con barra",
+    "image_male": "elevaciones-frontales-barra-male.webp",
+    "image_female": "elevaciones-frontales-barra-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "deltoides anterior",
+      "trapecio"
+    ],
+    "equipment": "barra",
+    "difficulty": "beginner",
+    "instructions": "De pie con los pies a la anchura de los hombros, sujeta una barra con ambas manos en agarre prono (palmas hacia abajo) a la anchura de los hombros. Con los brazos casi extendidos y una ligera flexión en los codos, eleva la barra por delante del cuerpo hasta la altura de los hombros. Baja de forma controlada a la posición inicial."
+  },
+  {
     "id": "elevaciones-frontales-mancuernas",
     "name": "Elevaciones frontales con mancuernas",
     "image_male": "images/elevaciones-frontales-mancuernas-male.webp",

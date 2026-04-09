@@ -79,6 +79,7 @@ EXERCISE_PROMPTS = {
     "crunch-abdominales": ("a crunch exercise lying on the floor, knees bent with feet flat on the ground, hands behind the head, upper back and shoulders lifted off the floor contracting the abs", "side view"),
     "extension-cuadriceps": ("a seated leg extension machine, person sitting upright with back against the pad, ankles hooked behind a roller pad, legs extended forward and upward contracting the quadriceps", "side view"),
     "gemelos-prensa-horizontal": ("a calf press on a horizontal seated leg press machine, person sitting upright with legs almost fully extended, only the toes and balls of the feet on the edge of the vertical platform, pushing the platform by pointing the toes and extending the ankles to contract the calves", "side view"),
+    "elevaciones-frontales-barra": ("a standing barbell front raise, standing upright holding a barbell with both hands at hip level with an overhand grip, arms raised straight forward to shoulder height in front of the body", "3/4 diagonal view"),
 }
 
 # ---------------------------------------------------------------------------
