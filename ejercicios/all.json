@@ -317,8 +317,8 @@
   {
     "id": "press-hombro-unilateral-maquina",
     "name": "Press de hombro unilateral en máquina",
-    "image_male": "images/press-hombro-unilateral-maquina-male.webp",
-    "image_female": "images/press-hombro-unilateral-maquina-female.webp",
+    "image_male": "press-hombro-unilateral-maquina-male.webp",
+    "image_female": "press-hombro-unilateral-maquina-female.webp",
     "muscle_group": "hombro",
     "secondary_muscles": [
       "tríceps",
