@@ -1,8 +1,8 @@
 {
   "id": "elevaciones-laterales-mancuernas",
   "name": "Elevaciones laterales con mancuernas",
-  "image_male": "images/elevaciones-laterales-mancuernas-male.webp",
-  "image_female": "images/elevaciones-laterales-mancuernas-female.webp",
+  "image_male": "elevaciones-laterales-mancuernas-male.webp",
+  "image_female": "elevaciones-laterales-mancuernas-female.webp",
   "muscle_group": "hombro",
   "secondary_muscles": ["deltoides lateral", "trapecio"],
   "equipment": "mancuernas",
