@@ -77,6 +77,7 @@ EXERCISE_PROMPTS = {
     "elevaciones-laterales-mancuernas": ("a standing dumbbell lateral raise, standing upright holding a dumbbell in each hand, arms raised out to the sides at shoulder height forming a T shape, slight bend in the elbows", "front view"),
     "elevaciones-frontales-mancuernas": ("a standing dumbbell front raise, standing upright holding a dumbbell in each hand, one arm raised straight forward to shoulder height in front of the body, palms facing down", "3/4 diagonal view"),
     "crunch-abdominales": ("a crunch exercise lying on the floor, knees bent with feet flat on the ground, hands behind the head, upper back and shoulders lifted off the floor contracting the abs", "side view"),
+    "extension-cuadriceps": ("a seated leg extension machine, person sitting upright with back against the pad, ankles hooked behind a roller pad, legs extended forward and upward contracting the quadriceps", "side view"),
 }
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,11 @@
+{
+  "id": "extension-cuadriceps",
+  "name": "Extensión de cuádriceps",
+  "image_male": "extension-cuadriceps-male.webp",
+  "image_female": "extension-cuadriceps-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en la máquina de extensión de cuádriceps con la espalda apoyada en el respaldo y las rodillas alineadas con el eje de rotación. Coloca los tobillos detrás del rodillo inferior. Extiende las piernas hacia arriba hasta que queden casi completamente rectas, contrayendo los cuádriceps en la parte superior del movimiento. Baja de forma controlada hasta la posición inicial sin dejar que el peso descanse completamente."
+}

@@ -93,6 +93,17 @@
     "instructions": "De pie con una mancuerna en cada mano a los lados del cuerpo. Con los codos ligeramente flexionados, eleva los brazos lateralmente hasta la altura de los hombros formando una T. Baja de forma controlada a la posición inicial."
   },
   {
+    "id": "extension-cuadriceps",
+    "name": "Extensión de cuádriceps",
+    "image_male": "extension-cuadriceps-male.webp",
+    "image_female": "extension-cuadriceps-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [],
+    "equipment": "máquina",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en la máquina de extensión de cuádriceps con la espalda apoyada en el respaldo y las rodillas alineadas con el eje de rotación. Coloca los tobillos detrás del rodillo inferior. Extiende las piernas hacia arriba hasta que queden casi completamente rectas, contrayendo los cuádriceps en la parte superior del movimiento. Baja de forma controlada hasta la posición inicial sin dejar que el peso descanse completamente."
+  },
+  {
     "id": "extensiones-triceps-barra",
     "name": "Extensiones de tríceps con barra",
     "image_male": "images/extensiones-triceps-barra-male.webp",
