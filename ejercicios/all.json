@@ -259,6 +259,21 @@
     "instructions": "Siéntate en la máquina de jalón con la espalda recta y los pies apoyados. Agarra el asa con una mano y tira hacia abajo llevando el codo hacia la cadera, apretando el dorsal en la parte baja del movimiento. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
   },
   {
+    "id": "pajaro-mancuernas",
+    "name": "Pájaro con mancuernas",
+    "image_male": "pajaro-mancuernas-male.webp",
+    "image_female": "pajaro-mancuernas-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "deltoides posterior",
+      "trapecio",
+      "romboides"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "De pie con los pies a la anchura de los hombros, inclina el torso hacia delante hasta que quede casi paralelo al suelo, con las rodillas ligeramente flexionadas. Sujeta una mancuerna en cada mano con los brazos colgando hacia abajo y las palmas enfrentadas. Con una ligera flexión en los codos, eleva los brazos hacia los lados hasta la altura de los hombros, apretando los omóplatos en la parte superior. Baja de forma controlada."
+  },
+  {
     "id": "prensa-horizontal",
     "name": "Prensa horizontal",
     "image_male": "images/prensa-horizontal-male.webp",

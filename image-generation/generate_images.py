@@ -80,6 +80,7 @@ EXERCISE_PROMPTS = {
     "extension-cuadriceps": ("a seated leg extension machine, person sitting upright with back against the pad, ankles hooked behind a roller pad, legs extended forward and upward contracting the quadriceps", "side view"),
     "gemelos-prensa-horizontal": ("a calf press on a horizontal seated leg press machine, person sitting upright with legs almost fully extended, only the toes and balls of the feet on the edge of the vertical platform, pushing the platform by pointing the toes and extending the ankles to contract the calves", "side view"),
     "elevaciones-frontales-barra": ("a standing barbell front raise, standing upright holding a barbell with both hands at hip level with an overhand grip, arms raised straight forward to shoulder height in front of the body", "3/4 diagonal view"),
+    "pajaro-mancuernas": ("a bent-over dumbbell reverse fly, standing with torso bent forward nearly parallel to the floor, knees slightly bent, holding a dumbbell in each hand with arms raised out to the sides at shoulder height, squeezing the shoulder blades together", "3/4 diagonal view"),
 }
 
 # ---------------------------------------------------------------------------

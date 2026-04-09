@@ -1,0 +1,11 @@
+{
+  "id": "pajaro-mancuernas",
+  "name": "Pájaro con mancuernas",
+  "image_male": "pajaro-mancuernas-male.webp",
+  "image_female": "pajaro-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["deltoides posterior", "trapecio", "romboides"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "De pie con los pies a la anchura de los hombros, inclina el torso hacia delante hasta que quede casi paralelo al suelo, con las rodillas ligeramente flexionadas. Sujeta una mancuerna en cada mano con los brazos colgando hacia abajo y las palmas enfrentadas. Con una ligera flexión en los codos, eleva los brazos hacia los lados hasta la altura de los hombros, apretando los omóplatos en la parte superior. Baja de forma controlada."
+}
