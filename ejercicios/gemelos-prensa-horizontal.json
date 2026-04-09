@@ -1,0 +1,11 @@
+{
+  "id": "gemelos-prensa-horizontal",
+  "name": "Gemelos en prensa horizontal",
+  "image_male": "gemelos-prensa-horizontal-male.webp",
+  "image_female": "gemelos-prensa-horizontal-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["sóleo"],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en la prensa horizontal con la espalda apoyada en el respaldo. Coloca solo las puntas de los pies y la parte anterior de la planta en el borde inferior de la plataforma, dejando los talones fuera. Con las piernas casi completamente extendidas, empuja la plataforma extendiendo los tobillos (puntillas) contrayendo los gemelos. Vuelve lentamente a la posición inicial dejando que los talones desciendan para estirar los gemelos."
+}
