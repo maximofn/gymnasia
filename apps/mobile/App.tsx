@@ -10032,6 +10032,40 @@ export default function App() {
     setError(null);
   }
 
+  function moveExerciseInSession(exerciseId: string, direction: "up" | "down") {
+    if (!activeWorkoutSession) return;
+    const templateId = activeWorkoutSession.template_id;
+    const template = store.templates.find((t) => t.id === templateId);
+    if (!template) return;
+    const index = template.exercises.findIndex((e) => e.id === exerciseId);
+    if (index < 0) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= template.exercises.length) return;
+
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((t) => {
+        if (t.id !== templateId) return t;
+        const next = [...t.exercises];
+        const tmp = next[index];
+        next[index] = next[targetIndex];
+        next[targetIndex] = tmp;
+        return { ...t, exercises: next };
+      }),
+    }));
+
+    const currentIdx = activeWorkoutSession.current_exercise_index;
+    let newIdx = currentIdx;
+    if (currentIdx === index) newIdx = targetIndex;
+    else if (currentIdx === targetIndex) newIdx = index;
+    if (newIdx !== currentIdx) {
+      setActiveWorkoutSession({
+        ...activeWorkoutSession,
+        current_exercise_index: newIdx,
+      });
+    }
+  }
+
   function pauseWorkoutSession() {
     if (!activeWorkoutSession) return;
     setActiveWorkoutSession({
@@ -11939,9 +11973,24 @@ export default function App() {
                               {sessionExercise.totalSeriesCount} series
                             </Text>
                           </View>
-                          <Text style={{ color: "#8C94A5", fontSize: 20, fontWeight: "700" }}>
-                            ˅
-                          </Text>
+                          <View style={{ flexDirection: "column", alignItems: "center", gap: 2, marginLeft: 4 }}>
+                            <Pressable
+                              onPress={() => moveExerciseInSession(sessionExercise.exercise.id, "up")}
+                              disabled={sessionExercise.exerciseIndex === 0}
+                              hitSlop={6}
+                              style={{ opacity: sessionExercise.exerciseIndex === 0 ? 0.25 : 1 }}
+                            >
+                              <Feather name="chevron-up" size={18} color="#8C94A5" />
+                            </Pressable>
+                            <Pressable
+                              onPress={() => moveExerciseInSession(sessionExercise.exercise.id, "down")}
+                              disabled={sessionExercise.exerciseIndex === activeSessionExercises.length - 1}
+                              hitSlop={6}
+                              style={{ opacity: sessionExercise.exerciseIndex === activeSessionExercises.length - 1 ? 0.25 : 1 }}
+                            >
+                              <Feather name="chevron-down" size={18} color="#8C94A5" />
+                            </Pressable>
+                          </View>
                         </View>
 
                         {isExpanded ? (
