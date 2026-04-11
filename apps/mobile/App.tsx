@@ -11876,9 +11876,6 @@ export default function App() {
                     >
                       {activeWorkoutSession.template_name}
                     </Text>
-                    <Text style={{ color: "#8892A2", fontSize: 13 }}>
-                      Estado {activeWorkoutSession.status === "running" ? "Activo" : "Pausado"}
-                    </Text>
 	                  </View>
 	                  <View style={{ alignItems: "flex-end", gap: 10 }}>
 	                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
