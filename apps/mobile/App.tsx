@@ -1386,7 +1386,7 @@ const BODY_FAT_ZONES_MALE = [
   { min: 8, max: 12, color: "rgba(203,255,26,0.10)" },
   { min: 12, max: 17, color: "rgba(0,198,107,0.10)" },
   { min: 17, max: 22, color: "rgba(203,255,26,0.10)" },
-  { min: 22, max: 27, color: "rgba(255,200,0,0.10)" },
+  { min: 22, max: 27, color: "rgba(255,140,0,0.12)" },
   { min: 27, max: 60, color: "rgba(255,75,75,0.12)" },
 ];
 const BODY_FAT_ZONES_FEMALE = [
@@ -1394,7 +1394,7 @@ const BODY_FAT_ZONES_FEMALE = [
   { min: 15, max: 18, color: "rgba(203,255,26,0.10)" },
   { min: 18, max: 23, color: "rgba(0,198,107,0.10)" },
   { min: 23, max: 28, color: "rgba(203,255,26,0.10)" },
-  { min: 28, max: 33, color: "rgba(255,200,0,0.10)" },
+  { min: 28, max: 33, color: "rgba(255,140,0,0.12)" },
   { min: 33, max: 60, color: "rgba(255,75,75,0.12)" },
 ];
 const TRAINING_STATS_METRIC_OPTIONS: Array<{
@@ -15751,7 +15751,7 @@ export default function App() {
                                   { label: "Atlético", color: "rgba(203,255,26,0.45)" },
                                   { label: "Saludable", color: "rgba(0,198,107,0.45)" },
                                   { label: "Aceptable", color: "rgba(203,255,26,0.45)" },
-                                  { label: "Obesidad", color: "rgba(255,200,0,0.45)" },
+                                  { label: "Obesidad", color: "rgba(255,140,0,0.45)" },
                                   { label: "Sobre obesidad", color: "rgba(255,75,75,0.45)" },
                                 ].map((z) => (
                                   <View key={z.label} style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
