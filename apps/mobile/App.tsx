@@ -8958,7 +8958,8 @@ export default function App() {
       return toolBlock.input as { dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number; food_type: "producto_comercial" | "receta" | "alimento" };
     }
 
-    // Google
+    // Google — responseSchema does not support additionalProperties
+    const { additionalProperties: _ap, ...googleSchema } = jsonSchema;
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${provider.api_key}`,
       {
@@ -8968,12 +8969,15 @@ export default function App() {
           contents: [{ role: "user", parts: [{ text: extractPrompt }] }],
           generationConfig: {
             responseMimeType: "application/json",
-            responseSchema: jsonSchema,
+            responseSchema: googleSchema,
           },
         }),
       },
     );
-    if (!response.ok) throw new Error(`Google error: ${response.status}`);
+    if (!response.ok) {
+      const errBody = await response.text().catch(() => "");
+      throw new Error(`Google error: ${response.status} ${errBody}`);
+    }
     const data = await response.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) throw new Error("No se recibió respuesta de Google");
