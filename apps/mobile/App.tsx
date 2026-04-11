@@ -8829,6 +8829,32 @@ export default function App() {
     }
   }
 
+  async function takeMeasurementPhoto() {
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        setError("Necesitas permitir acceso a la cámara para capturar fotos.");
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.8,
+      });
+      if (result.canceled) return;
+
+      const asset = result.assets?.[0];
+      if (!asset?.uri) {
+        setError("No se pudo leer la foto capturada.");
+        return;
+      }
+      setMeasurementPhotoUri(asset.uri);
+      setError(null);
+    } catch {
+      setError("No se pudo abrir la cámara para capturar foto.");
+    }
+  }
+
   function onMeasurementDateChange(event: DateTimePickerEvent, selectedDate?: Date) {
     if (Platform.OS === "android") {
       setShowMeasurementDatePicker(false);
@@ -18917,17 +18943,40 @@ export default function App() {
                     onPress={pickMeasurementPhoto}
                     style={{
                       flex: 1,
-                      height: 40,
+                      minHeight: 40,
                       borderRadius: mobileTheme.radius.md,
                       borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgApp,
+                      borderColor: "rgba(203,255,26,0.45)",
+                      backgroundColor: "rgba(203,255,26,0.10)",
                       alignItems: "center",
                       justifyContent: "center",
+                      flexDirection: "row",
+                      gap: 6,
                     }}
                   >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
-                      Seleccionar foto
+                    <Ionicons name="image-outline" size={16} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 13 }}>
+                      Subir foto
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={takeMeasurementPhoto}
+                    style={{
+                      flex: 1,
+                      minHeight: 40,
+                      borderRadius: mobileTheme.radius.md,
+                      borderWidth: 1,
+                      borderColor: "rgba(203,255,26,0.45)",
+                      backgroundColor: "rgba(203,255,26,0.10)",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "row",
+                      gap: 6,
+                    }}
+                  >
+                    <Ionicons name="camera-outline" size={16} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 13 }}>
+                      Cámara
                     </Text>
                   </Pressable>
                   {measurementPhotoUri ? (
