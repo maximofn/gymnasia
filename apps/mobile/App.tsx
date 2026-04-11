@@ -15442,7 +15442,7 @@ export default function App() {
                             <TextInput
                               value={dietMealEditorCategory === category ? dietFoodSearch : ""}
                               onChangeText={(t) => { setDietFoodSearch(t); if (t.trim()) { setDietAddMode("search"); openDietMealEditor(category); } else { setDietAddMode(null); setDietMealEditorCategory(null); } }}
-                              onFocus={() => { if (dietMealEditorCategory !== category) { setDietFoodSearch(""); openDietMealEditor(category); } }}
+                              onFocus={() => { setDietFoodSearch(""); }}
                               placeholder="Buscar alimento..."
                               placeholderTextColor={mobileTheme.color.textSecondary}
                               style={{ flex: 1, minHeight: 42, color: mobileTheme.color.textPrimary, fontSize: 14 }}
