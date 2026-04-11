@@ -18649,7 +18649,7 @@ export default function App() {
 
                   {/* Category filter chips */}
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-                    {["all", ...Array.from(new Set(foodsRepo.map((f) => f.category))).sort()].map((cat) => {
+                    {["all", ...Array.from(new Set(foodsRepo.filter((f) => !f.source || f.source === "alimento").map((f) => f.category))).sort()].map((cat) => {
                       const isActive = foodCategoryFilter === cat;
                       const label = cat === "all" ? "Todos" : cat.charAt(0).toUpperCase() + cat.slice(1);
                       return (
@@ -18686,153 +18686,120 @@ export default function App() {
                       gap: 10,
                     }}
                   >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                      Alimentos ({foodsRepo.length})
-                    </Text>
                     {(() => {
-                      const filtered = foodsRepo.filter((f) => {
+                      const onlyFoods = foodsRepo.filter((f) => !f.source || f.source === "alimento");
+                      const filtered = onlyFoods.filter((f) => {
                         const matchesSearch = !foodSearch || f.name.toLowerCase().includes(foodSearch.toLowerCase()) || f.category.toLowerCase().includes(foodSearch.toLowerCase());
                         const matchesCategory = foodCategoryFilter === "all" || f.category === foodCategoryFilter;
                         return matchesSearch && matchesCategory;
                       });
-                      if (filtered.length === 0) {
-                        return (
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                            No se encontraron alimentos.
+                      return (
+                        <>
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                            Alimentos ({onlyFoods.length})
                           </Text>
-                        );
-                      }
-                      return filtered.map((food) => (
-                        <Pressable
-                          key={food.id}
-                          onPress={() => setSelectedFoodDetail(food)}
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 10,
-                            paddingVertical: 6,
-                            borderBottomWidth: 1,
-                            borderBottomColor: mobileTheme.color.borderSubtle,
-                          }}
-                        >
-                          <FoodThumbnail food={food} />
-                          <View style={{ flex: 1 }}>
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
-                              {food.name}
+                          {filtered.length === 0 ? (
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                              No se encontraron alimentos.
                             </Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                              {food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g
-                            </Text>
-                          </View>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
-                            {food.category}
-                          </Text>
-                        </Pressable>
-                      ));
+                          ) : filtered.map((food) => (
+                            <View key={food.id}>
+                              <Pressable
+                                onPress={() => setSelectedFoodDetail(selectedFoodDetail?.id === food.id ? null : food)}
+                                style={{
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  paddingVertical: 6,
+                                  borderBottomWidth: 1,
+                                  borderBottomColor: mobileTheme.color.borderSubtle,
+                                }}
+                              >
+                                <FoodThumbnail food={food} />
+                                <View style={{ flex: 1 }}>
+                                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
+                                    {food.name}
+                                  </Text>
+                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                                    {food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g
+                                  </Text>
+                                </View>
+                                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
+                                  {food.category}
+                                </Text>
+                              </Pressable>
+                              {selectedFoodDetail?.id === food.id ? (
+                                <View
+                                  style={{
+                                    backgroundColor: mobileTheme.color.bgSurface,
+                                    borderRadius: 12,
+                                    padding: 16,
+                                    gap: 12,
+                                    marginTop: 6,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                  }}
+                                >
+                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+                                    Por 100g
+                                  </Text>
+                                  <View style={{ flexDirection: "row", gap: 8 }}>
+                                    {[
+                                      { label: "Calorías", value: `${food.calories_per_100g}`, unit: "kcal", color: "#FF6B6B" },
+                                      { label: "Proteína", value: `${food.protein_per_100g}`, unit: "g", color: "#4ECDC4" },
+                                      { label: "Carbos", value: `${food.carbs_per_100g}`, unit: "g", color: "#FFE66D" },
+                                      { label: "Grasa", value: `${food.fat_per_100g}`, unit: "g", color: "#FF8A5C" },
+                                    ].map((macro) => (
+                                      <View
+                                        key={macro.label}
+                                        style={{
+                                          flex: 1,
+                                          backgroundColor: macro.color + "15",
+                                          borderRadius: 8,
+                                          padding: 8,
+                                          alignItems: "center",
+                                          gap: 2,
+                                        }}
+                                      >
+                                        <Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>
+                                          {macro.value}
+                                        </Text>
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
+                                          {macro.unit}
+                                        </Text>
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
+                                          {macro.label}
+                                        </Text>
+                                      </View>
+                                    ))}
+                                  </View>
+                                  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text>
+                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
+                                      {food.fiber_per_100g}g
+                                    </Text>
+                                  </View>
+                                  {food.serving_size_g > 0 ? (
+                                    <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}>
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+                                        Ración típica
+                                      </Text>
+                                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>
+                                        {food.serving_description || `${food.serving_size_g}g`}
+                                      </Text>
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                                        {Math.round(food.calories_per_100g * food.serving_size_g / 100)} kcal · P:{(food.protein_per_100g * food.serving_size_g / 100).toFixed(1)}g · C:{(food.carbs_per_100g * food.serving_size_g / 100).toFixed(1)}g · G:{(food.fat_per_100g * food.serving_size_g / 100).toFixed(1)}g
+                                      </Text>
+                                    </View>
+                                  ) : null}
+                                </View>
+                              ) : null}
+                            </View>
+                          ))}
+                        </>
+                      );
                     })()}
                   </View>
-
-                  {/* Food detail modal */}
-                  {selectedFoodDetail ? (
-                    <View
-                      style={{
-                        backgroundColor: mobileTheme.color.cardBg,
-                        borderRadius: 12,
-                        padding: 16,
-                        gap: 12,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                      }}
-                    >
-                      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>
-                          {selectedFoodDetail.name}
-                        </Text>
-                        <Pressable onPress={() => setSelectedFoodDetail(null)} style={{ padding: 4 }}>
-                          <Feather name="x" size={20} color={mobileTheme.color.textSecondary} />
-                        </Pressable>
-                      </View>
-
-                      {/* Category tag */}
-                      <View style={{ flexDirection: "row", gap: 6 }}>
-                        <View
-                          style={{
-                            backgroundColor: mobileTheme.color.accent + "22",
-                            paddingHorizontal: 8,
-                            paddingVertical: 3,
-                            borderRadius: 6,
-                          }}
-                        >
-                          <Text style={{ color: mobileTheme.color.accent, fontSize: 11, fontWeight: "600" }}>
-                            {selectedFoodDetail.category}
-                          </Text>
-                        </View>
-                      </View>
-
-                      {/* Macros per 100g */}
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
-                        Por 100g
-                      </Text>
-                      <View style={{ flexDirection: "row", gap: 8 }}>
-                        {[
-                          { label: "Calorías", value: `${selectedFoodDetail.calories_per_100g}`, unit: "kcal", color: "#FF6B6B" },
-                          { label: "Proteína", value: `${selectedFoodDetail.protein_per_100g}`, unit: "g", color: "#4ECDC4" },
-                          { label: "Carbos", value: `${selectedFoodDetail.carbs_per_100g}`, unit: "g", color: "#FFE66D" },
-                          { label: "Grasa", value: `${selectedFoodDetail.fat_per_100g}`, unit: "g", color: "#FF8A5C" },
-                        ].map((macro) => (
-                          <View
-                            key={macro.label}
-                            style={{
-                              flex: 1,
-                              backgroundColor: macro.color + "15",
-                              borderRadius: 8,
-                              padding: 8,
-                              alignItems: "center",
-                              gap: 2,
-                            }}
-                          >
-                            <Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>
-                              {macro.value}
-                            </Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
-                              {macro.unit}
-                            </Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
-                              {macro.label}
-                            </Text>
-                          </View>
-                        ))}
-                      </View>
-
-                      {/* Fiber */}
-                      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
-                          {selectedFoodDetail.fiber_per_100g}g
-                        </Text>
-                      </View>
-
-                      {/* Serving info */}
-                      <View
-                        style={{
-                          backgroundColor: "#ffffff08",
-                          borderRadius: 8,
-                          padding: 10,
-                          gap: 4,
-                        }}
-                      >
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
-                          Ración típica
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>
-                          {selectedFoodDetail.serving_description}
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                          {Math.round(selectedFoodDetail.calories_per_100g * selectedFoodDetail.serving_size_g / 100)} kcal · P:{(selectedFoodDetail.protein_per_100g * selectedFoodDetail.serving_size_g / 100).toFixed(1)}g · C:{(selectedFoodDetail.carbs_per_100g * selectedFoodDetail.serving_size_g / 100).toFixed(1)}g · G:{(selectedFoodDetail.fat_per_100g * selectedFoodDetail.serving_size_g / 100).toFixed(1)}g
-                        </Text>
-                      </View>
-                    </View>
-                  ) : null}
                 </View>
               ) : null}
 
