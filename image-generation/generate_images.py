@@ -1,13 +1,19 @@
 """
-Generate images for exercises and foods using Nano Banana 2 via Hugging Face Gradio API.
+Generate images for exercises and foods using Hugging Face Gradio API.
+
+Supported backends (in order of preference):
+  1. nano-banana   — Nano Banana 2 (multimodalart/nano-banana, HF PRO)
+  2. z-image-turbo — Z-Image-Turbo (mrfakename/Z-Image-Turbo, free)
+  3. flux2-dev     — FLUX.2-dev   (black-forest-labs/FLUX.2-dev, free)
 
 Usage:
     uv run generate_images.py exercises                          # all exercises
     uv run generate_images.py exercises --id press-banca         # single exercise
     uv run generate_images.py foods                              # all foods
     uv run generate_images.py foods --id arroz-blanco            # single food
+    uv run generate_images.py foods --id arroz-blanco --backend z-image-turbo
 
-Requires HF_TOKEN in root .env file (Hugging Face PRO account).
+Requires HF_TOKEN in root .env file (Hugging Face PRO account for nano-banana).
 """
 
 import json
@@ -27,6 +33,12 @@ SCRIPT_DIR = Path(__file__).parent
 
 MODEL = "Nano Banana 2"
 RESOLUTION = "1K"
+
+# ---------------------------------------------------------------------------
+# Backend definitions
+# ---------------------------------------------------------------------------
+
+BACKENDS = ["nano-banana", "z-image-turbo", "flux2-dev"]
 
 # ---------------------------------------------------------------------------
 # Exercise config
@@ -152,15 +164,51 @@ def get_hf_token() -> str:
     return token
 
 
-def generate_image(client: Client, token: str, prompt: str, output_path: Path, aspect_ratio: str) -> None:
-    if output_path.exists():
-        print(f"  Skipping (already exists): {output_path.name}")
-        return
+def connect_backend(backend: str, token: str) -> tuple[Client, str]:
+    """Connect to a Gradio backend. Returns (client, backend_name)."""
+    if backend == "nano-banana":
+        print("Connecting to Nano Banana 2...")
+        client = Client("multimodalart/nano-banana", token=token)
+        ep = client.endpoints[2]
+        ep.is_valid = True
+        return client, backend
+    elif backend == "z-image-turbo":
+        print("Connecting to Z-Image-Turbo...")
+        client = Client("mrfakename/Z-Image-Turbo")
+        return client, backend
+    elif backend == "flux2-dev":
+        print("Connecting to FLUX.2-dev...")
+        client = Client("black-forest-labs/FLUX.2-dev")
+        return client, backend
+    else:
+        print(f"Error: unknown backend '{backend}'")
+        sys.exit(1)
 
-    print(f"  Generating: {output_path.name}")
-    print(f"  Prompt: {prompt[:120]}...")
 
-    result = client.predict(
+def connect_with_fallback(backend: str | None, token: str) -> tuple[Client, str]:
+    """Try the requested backend, fall back through the list on failure."""
+    if backend:
+        try:
+            return connect_backend(backend, token)
+        except Exception as e:
+            print(f"  Failed to connect to {backend}: {e}")
+            sys.exit(1)
+
+    # Auto mode: try each backend in order
+    for b in BACKENDS:
+        try:
+            return connect_backend(b, token)
+        except Exception as e:
+            print(f"  Failed to connect to {b}: {e}")
+            continue
+
+    print("Error: all backends unavailable.")
+    sys.exit(1)
+
+
+def _predict_nano_banana(client: Client, token: str, prompt: str, aspect_ratio: str):
+    """Call Nano Banana 2 predict."""
+    return client.predict(
         prompt,
         None,           # gallery
         aspect_ratio,
@@ -170,8 +218,75 @@ def generate_image(client: Client, token: str, prompt: str, output_path: Path, a
         fn_index=2,
     )
 
-    if result and isinstance(result, str):
-        shutil.copy(result, str(output_path))
+
+def _predict_z_image_turbo(client: Client, prompt: str):
+    """Call Z-Image-Turbo predict."""
+    return client.predict(
+        prompt=prompt,
+        height=1024,
+        width=1024,
+        num_inference_steps=9,
+        seed=42,
+        randomize_seed=True,
+        api_name="/generate_image",
+    )
+
+
+def _predict_flux2_dev(client: Client, prompt: str):
+    """Call FLUX.2-dev predict."""
+    return client.predict(
+        prompt=prompt,
+        input_images=[],
+        seed=0,
+        randomize_seed=True,
+        width=1024,
+        height=1024,
+        num_inference_steps=30,
+        guidance_scale=4,
+        prompt_upsampling=True,
+        api_name="/infer",
+    )
+
+
+def _extract_image_path(result) -> str | None:
+    """Extract a local file path from various Gradio result formats."""
+    # Simple string path (nano-banana)
+    if isinstance(result, str):
+        return result
+    # Tuple of (image_info, seed) — z-image-turbo & flux2-dev
+    if isinstance(result, (list, tuple)) and len(result) >= 1:
+        item = result[0]
+        if isinstance(item, str):
+            return item
+        if isinstance(item, dict) and item.get("path"):
+            return item["path"]
+    # Single dict
+    if isinstance(result, dict) and result.get("path"):
+        return result["path"]
+    return None
+
+
+def generate_image(client: Client, backend: str, token: str, prompt: str, output_path: Path, aspect_ratio: str) -> None:
+    if output_path.exists():
+        print(f"  Skipping (already exists): {output_path.name}")
+        return
+
+    print(f"  Generating: {output_path.name}  [backend: {backend}]")
+    print(f"  Prompt: {prompt[:120]}...")
+
+    if backend == "nano-banana":
+        result = _predict_nano_banana(client, token, prompt, aspect_ratio)
+    elif backend == "z-image-turbo":
+        result = _predict_z_image_turbo(client, prompt)
+    elif backend == "flux2-dev":
+        result = _predict_flux2_dev(client, prompt)
+    else:
+        print(f"  Error: unknown backend '{backend}'")
+        return
+
+    image_path = _extract_image_path(result)
+    if image_path:
+        shutil.copy(image_path, str(output_path))
         print(f"  Saved: {output_path.name}")
     else:
         print(f"  Warning: unexpected result: {result}")
@@ -181,7 +296,7 @@ def generate_image(client: Client, token: str, prompt: str, output_path: Path, a
 # Exercise generation
 # ---------------------------------------------------------------------------
 
-def generate_exercises(client: Client, token: str, exercise_id: str | None):
+def generate_exercises(client: Client, backend: str, token: str, exercise_id: str | None):
     EXERCISES_IMAGES_DIR.mkdir(exist_ok=True)
 
     json_files = sorted(EXERCISES_DIR.glob("*.json"))
@@ -216,7 +331,7 @@ def generate_exercises(client: Client, token: str, exercise_id: str | None):
                 view=view,
             )
             output_path = EXERCISES_IMAGES_DIR / f"{eid}-{label}.webp"
-            generate_image(client, token, prompt, output_path, EXERCISE_ASPECT_RATIO)
+            generate_image(client, backend, token, prompt, output_path, EXERCISE_ASPECT_RATIO)
 
     # Rebuild all.json and index.json
     all_exercises = []
@@ -239,7 +354,7 @@ def generate_exercises(client: Client, token: str, exercise_id: str | None):
 # Food generation
 # ---------------------------------------------------------------------------
 
-def generate_foods(client: Client, token: str, food_id: str | None):
+def generate_foods(client: Client, backend: str, token: str, food_id: str | None):
     FOODS_IMAGES_DIR.mkdir(exist_ok=True)
 
     json_files = sorted(FOODS_DIR.glob("*.json"))
@@ -269,7 +384,7 @@ def generate_foods(client: Client, token: str, food_id: str | None):
 
         prompt = FOOD_PROMPT_TEMPLATE.format(food_description=food_description)
         output_path = FOODS_IMAGES_DIR / f"{fid}.webp"
-        generate_image(client, token, prompt, output_path, FOOD_ASPECT_RATIO)
+        generate_image(client, backend, token, prompt, output_path, FOOD_ASPECT_RATIO)
 
     # Rebuild all.json and index.json
     all_foods = []
@@ -294,6 +409,13 @@ def generate_foods(client: Client, token: str, food_id: str | None):
 
 def main():
     parser = argparse.ArgumentParser(description="Generate images for exercises or foods")
+    parser.add_argument(
+        "--backend",
+        type=str,
+        choices=BACKENDS,
+        default=None,
+        help="Backend to use (default: auto-detect with fallback)",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     ex_parser = subparsers.add_parser("exercises", help="Generate exercise images")
@@ -305,16 +427,13 @@ def main():
     args = parser.parse_args()
 
     token = get_hf_token()
-
-    print("Connecting to Nano Banana 2...")
-    client = Client("multimodalart/nano-banana", token=token)
-    ep = client.endpoints[2]
-    ep.is_valid = True
+    client, backend = connect_with_fallback(args.backend, token)
+    print(f"Using backend: {backend}")
 
     if args.command == "exercises":
-        generate_exercises(client, token, args.id)
+        generate_exercises(client, backend, token, args.id)
     elif args.command == "foods":
-        generate_foods(client, token, args.id)
+        generate_foods(client, backend, token, args.id)
 
     print("\nDone!")
 
