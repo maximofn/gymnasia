@@ -15744,6 +15744,23 @@ export default function App() {
                                 <Text style={{ color: "#2B5C8A", fontSize: 8, fontWeight: "600" }}>Media 30 valores</Text>
                               </View>
                             </View>
+                            {measuresChartMetric === "bodyFat" && (
+                              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 6, paddingLeft: padL }}>
+                                {[
+                                  { label: "Subatlético", color: "rgba(255,75,75,0.45)" },
+                                  { label: "Atlético", color: "rgba(203,255,26,0.45)" },
+                                  { label: "Saludable", color: "rgba(0,198,107,0.45)" },
+                                  { label: "Aceptable", color: "rgba(203,255,26,0.45)" },
+                                  { label: "Obesidad", color: "rgba(255,200,0,0.45)" },
+                                  { label: "Sobre obesidad", color: "rgba(255,75,75,0.45)" },
+                                ].map((z) => (
+                                  <View key={z.label} style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+                                    <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: z.color }} />
+                                    <Text style={{ color: "#8B94A3", fontSize: 7, fontWeight: "600" }}>{z.label}</Text>
+                                  </View>
+                                ))}
+                              </View>
+                            )}
                             <Svg width="100%" height={chartH} viewBox={`0 0 ${chartW} ${chartH}`}>
                               <Defs>
                                 <LinearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
@@ -15783,7 +15800,9 @@ export default function App() {
                                 });
                               })()}
 
-                              <Path d={areaPath} fill="url(#areaGrad)" />
+                              {measuresChartMetric !== "bodyFat" && (
+                                <Path d={areaPath} fill="url(#areaGrad)" />
+                              )}
                               <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.5} />
                               {pts.length >= 3 ? (
                                 <Path d={maPath} fill="none" stroke="#7EC8FF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} strokeDasharray="6,4" />
