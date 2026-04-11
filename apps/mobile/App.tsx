@@ -9077,7 +9077,7 @@ export default function App() {
           ? err.message
           : "No se pudo añadir el alimento.";
       console.error("[FoodEstimator] addFoodFromEstimatorJSON error:", err);
-      setError(message);
+      Alert.alert("Error al añadir alimento", message);
     } finally {
       setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     }
