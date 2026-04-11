@@ -8981,16 +8981,23 @@ export default function App() {
   }
 
   async function addFoodFromEstimatorJSON() {
-    if (foodEstimatorSending) return;
+    const debugMsg = (text: string) => {
+      setFoodEstimatorMessages((prev) => [
+        ...prev,
+        { id: uid("food_est_msg"), role: "assistant" as const, content: text, created_at: new Date().toISOString() },
+      ]);
+    };
+    if (foodEstimatorSending) { debugMsg("[DEBUG] Bloqueado: foodEstimatorSending=true"); return; }
     if (!dietMealEditorCategory) {
-      setError("Abre primero 'Añadir alimento' en una comida para rellenar los campos.");
+      debugMsg("[DEBUG] Bloqueado: dietMealEditorCategory es null");
       return;
     }
     const resolvedProvider = resolveFoodEstimatorProviderFromState();
     if (!resolvedProvider) {
-      setError("Configura una API key en Proveedor IA para usar esta función.");
+      debugMsg("[DEBUG] Bloqueado: no hay proveedor IA configurado");
       return;
     }
+    debugMsg(`[DEBUG] Iniciando extracción con ${resolvedProvider.provider} / ${resolvedProvider.model}`);
 
     setError(null);
     setFoodEstimatorSending(true);
@@ -9004,9 +9011,10 @@ export default function App() {
         .join("\n");
 
       const parsed = await requestStructuredNutritionJSON(resolvedProvider, conversationSummary);
+      debugMsg(`[DEBUG] Parsed JSON: ${JSON.stringify(parsed)}`);
 
       if (!parsed.dish_name || parsed.calories_kcal == null) {
-        setError("El modelo no devolvió datos nutricionales válidos.");
+        debugMsg("[DEBUG] Validación fallida: dish_name o calories_kcal vacíos");
         return;
       }
 
@@ -9077,7 +9085,15 @@ export default function App() {
           ? err.message
           : "No se pudo añadir el alimento.";
       console.error("[FoodEstimator] addFoodFromEstimatorJSON error:", err);
-      Alert.alert("Error al añadir alimento", message);
+      setFoodEstimatorMessages((prev) => [
+        ...prev,
+        {
+          id: uid("food_est_msg"),
+          role: "assistant" as const,
+          content: `[DEBUG ERROR] ${message}`,
+          created_at: new Date().toISOString(),
+        },
+      ]);
     } finally {
       setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     }
