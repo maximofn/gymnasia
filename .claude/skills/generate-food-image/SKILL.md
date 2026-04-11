@@ -24,7 +24,13 @@ El script soporta 3 backends de generación de imagen (en orden de preferencia):
 .claude/skills/generate-food-image/scripts/generate.sh --backend flux2-dev --id <id>
 ```
 
-Guardar las imágenes con sufijo temporal (`<id>-z.webp`, `<id>-flux.webp`), mostrarlas al usuario, y renombrar la elegida a `<id>.webp` eliminando la otra.
+Guardar las imágenes con sufijo temporal (`<id>-z.webp`, `<id>-flux.webp`), mostrarlas al usuario, y cuando el usuario elija una:
+
+1. Renombrar la imagen elegida a `<id>.webp` (quitar el sufijo `-z` o `-flux`)
+2. Eliminar la imagen descartada
+3. Añadir o actualizar el campo `"image": "<id>.webp"` en `alimentos/<id>.json`
+4. Regenerar `alimentos/all.json` ejecutando el script (saltará la imagen ya existente pero reconstruirá los JSON)
+5. Commit y push de los cambios
 
 ## Requisitos
 
