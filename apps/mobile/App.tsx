@@ -826,15 +826,24 @@ async function createGitHubFoodIssue(food: {
 async function createGitHubExerciseIssue(exercise: {
   name: string;
   muscle_group: string;
+  secondary_muscles?: string[];
   equipment: string;
+  difficulty?: string;
+  instructions?: string;
 }): Promise<void> {
   try {
+    const secondaryLabel = exercise.secondary_muscles?.length
+      ? exercise.secondary_muscles.join(", ")
+      : "Sin especificar";
     const body = [
       `Se ha añadido un ejercicio que no está en la base de datos.\n`,
       `### Datos del ejercicio`,
       `- **Nombre**: ${exercise.name}`,
       `- **Grupo muscular**: ${exercise.muscle_group || "Sin especificar"}`,
+      `- **Músculos secundarios**: ${secondaryLabel}`,
       `- **Equipamiento**: ${exercise.equipment || "Sin especificar"}`,
+      `- **Dificultad**: ${exercise.difficulty || "Sin especificar"}`,
+      `- **Instrucciones**: ${exercise.instructions || "Sin especificar"}`,
       `\n### JSON sugerido`,
       "```json",
       JSON.stringify(
@@ -849,10 +858,10 @@ async function createGitHubExerciseIssue(exercise: {
           image_male: "",
           image_female: "",
           muscle_group: exercise.muscle_group || "",
-          secondary_muscles: [],
+          secondary_muscles: exercise.secondary_muscles ?? [],
           equipment: exercise.equipment || "",
-          difficulty: "",
-          instructions: "",
+          difficulty: exercise.difficulty || "",
+          instructions: exercise.instructions || "",
         },
         null,
         2,
@@ -9773,7 +9782,10 @@ export default function App() {
     createGitHubExerciseIssue({
       name: draft.name.trim(),
       muscle_group: draft.muscle_group,
+      secondary_muscles: draft.secondary_muscles,
       equipment: draft.equipment,
+      difficulty: draft.difficulty,
+      instructions: draft.instructions,
     });
   }
 
