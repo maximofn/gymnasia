@@ -11887,39 +11887,41 @@ export default function App() {
 	                        {formatClock(activeWorkoutSession.elapsed_seconds)}
 	                      </Text>
 	                    </View>
-	                    <Pressable
-	                      onPress={finishActiveWorkoutSession}
-	                      testID="training-session-finish"
-	                      style={{
-	                        minHeight: 44,
-	                        borderRadius: 14,
-	                        backgroundColor: "#FF4B4B",
-	                        paddingHorizontal: 18,
-	                        flexDirection: "row",
-	                        alignItems: "center",
-	                        justifyContent: "center",
-	                        gap: 8,
-	                      }}
-	                    >
-	                      <Feather name="flag" size={14} color="#FFFFFF" />
-	                      <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
-	                    </Pressable>
-                      <Pressable
-                        onPress={() => setExercisePickerOpen(true)}
-                        style={{
-                          minHeight: 44,
-                          borderRadius: 14,
-                          backgroundColor: "rgba(203,255,26,0.15)",
-                          paddingHorizontal: 18,
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: 8,
-                        }}
-                      >
-                        <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
-                        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "800" }}>Añadir</Text>
-                      </Pressable>
+                      <View style={{ flexDirection: "row", gap: 8 }}>
+                        <Pressable
+                          onPress={() => setExercisePickerOpen(true)}
+                          style={{
+                            minHeight: 44,
+                            borderRadius: 14,
+                            backgroundColor: "rgba(203,255,26,0.15)",
+                            paddingHorizontal: 14,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 6,
+                          }}
+                        >
+                          <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
+                          <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "800" }}>Añadir</Text>
+                        </Pressable>
+                        <Pressable
+                          onPress={finishActiveWorkoutSession}
+                          testID="training-session-finish"
+                          style={{
+                            minHeight: 44,
+                            borderRadius: 14,
+                            backgroundColor: "#FF4B4B",
+                            paddingHorizontal: 14,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 6,
+                          }}
+                        >
+                          <Feather name="flag" size={14} color="#FFFFFF" />
+                          <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
+                        </Pressable>
+                      </View>
 	                  </View>
 	                </View>
 
