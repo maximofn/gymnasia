@@ -15803,6 +15803,22 @@ export default function App() {
                                   );
                                 });
                               })()}
+                              {measuresChartMetric === "bodyFat" && (() => {
+                                const zones = userSex === "female" ? BODY_FAT_ZONES_FEMALE : BODY_FAT_ZONES_MALE;
+                                return zones.slice(0, -1).map((zone, i) => {
+                                  const y = padT + plotH - ((zone.max - minV) / rangeV) * plotH;
+                                  if (y < padT || y > padT + plotH) return null;
+                                  return (
+                                    <Path
+                                      key={`zone-line-${i}`}
+                                      d={`M${padL},${y}L${padL + plotW},${y}`}
+                                      stroke="rgba(255,255,255,0.15)"
+                                      strokeWidth={0.8}
+                                      strokeDasharray="3,3"
+                                    />
+                                  );
+                                });
+                              })()}
 
                               <Path d={areaPath} fill="url(#areaGrad)" opacity={measuresChartMetric === "bodyFat" ? 0.3 : 1} />
                               <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.5} />
