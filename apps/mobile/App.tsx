@@ -664,10 +664,12 @@ type CustomExerciseDraft = {
   equipment: string;
   difficulty: string;
   instructions: string;
+  image_uri: string | null;
+  image_base64: string | null;
 };
 
 const EMPTY_CUSTOM_EXERCISE_DRAFT: CustomExerciseDraft = {
-  name: "", muscle_group: "", secondary_muscles: [], equipment: "", difficulty: "", instructions: "",
+  name: "", muscle_group: "", secondary_muscles: [], equipment: "", difficulty: "", instructions: "", image_uri: null, image_base64: null,
 };
 
 type ExerciseRepoEntry = {
@@ -823,30 +825,79 @@ async function createGitHubFoodIssue(food: {
   }
 }
 
+async function uploadImageToGitHub(
+  base64: string,
+  fileName: string,
+): Promise<string | null> {
+  try {
+    const path = `ejercicios/images/${fileName}`;
+    const res = await fetch(
+      `https://api.github.com/repos/maximofn/gymnasia/contents/${path}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${GITHUB_FOOD_ISSUE_TOKEN}`,
+          Accept: "application/vnd.github+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `feat(ejercicios): add image for ${fileName}`,
+          content: base64,
+          branch: "develop",
+        }),
+      },
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.content?.download_url ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function createGitHubExerciseIssue(exercise: {
   name: string;
   muscle_group: string;
   equipment: string;
+  image_base64?: string | null;
 }): Promise<void> {
   try {
-    const body = [
+    const exerciseId = exercise.name
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    // Upload image if provided
+    let imageUrl = "";
+    if (exercise.image_base64) {
+      const fileName = `${exerciseId}.jpg`;
+      const url = await uploadImageToGitHub(exercise.image_base64, fileName);
+      if (url) imageUrl = url;
+    }
+
+    const bodyParts = [
       `Se ha añadido un ejercicio que no está en la base de datos.\n`,
       `### Datos del ejercicio`,
       `- **Nombre**: ${exercise.name}`,
       `- **Grupo muscular**: ${exercise.muscle_group || "Sin especificar"}`,
       `- **Equipamiento**: ${exercise.equipment || "Sin especificar"}`,
+    ];
+
+    if (imageUrl) {
+      bodyParts.push(`\n### Imagen`);
+      bodyParts.push(`![${exercise.name}](${imageUrl})`);
+    }
+
+    bodyParts.push(
       `\n### JSON sugerido`,
       "```json",
       JSON.stringify(
         {
-          id: exercise.name
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-|-$/g, ""),
+          id: exerciseId,
           name: exercise.name,
-          image_male: "",
+          image_male: imageUrl || "",
           image_female: "",
           muscle_group: exercise.muscle_group || "",
           secondary_muscles: [],
@@ -858,7 +909,9 @@ async function createGitHubExerciseIssue(exercise: {
         2,
       ),
       "```",
-    ].join("\n");
+    );
+
+    const body = bodyParts.join("\n");
     await fetch("https://api.github.com/repos/maximofn/gymnasia/issues", {
       method: "POST",
       headers: {
@@ -9729,7 +9782,7 @@ export default function App() {
     const newExercise = {
       id: exerciseId,
       name: draft.name.trim(),
-      image_uri: null as string | null,
+      image_uri: draft.image_uri ?? (null as string | null),
       sets: seriesToLegacySets([firstSeries]),
       series: [firstSeries],
       muscle,
@@ -9774,6 +9827,7 @@ export default function App() {
       name: draft.name.trim(),
       muscle_group: draft.muscle_group,
       equipment: draft.equipment,
+      image_base64: draft.image_base64,
     });
   }
 
@@ -20535,6 +20589,96 @@ export default function App() {
                       minHeight: 48,
                     }}
                   />
+                </View>
+
+                {/* Foto */}
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Foto del ejercicio</Text>
+                  {customExerciseDraft.image_uri ? (
+                    <View style={{ alignItems: "center", gap: 10 }}>
+                      <Image
+                        source={{ uri: customExerciseDraft.image_uri }}
+                        style={{ width: "100%", height: 200, borderRadius: mobileTheme.radius.md, backgroundColor: "#171B23" }}
+                        resizeMode="cover"
+                      />
+                      <Pressable
+                        onPress={() => setCustomExerciseDraft((d) => ({ ...d, image_uri: null, image_base64: null }))}
+                        style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                      >
+                        <Feather name="trash-2" size={16} color="#FF6B6B" />
+                        <Text style={{ color: "#FF6B6B", fontSize: 14, fontWeight: "600" }}>Eliminar foto</Text>
+                      </Pressable>
+                    </View>
+                  ) : (
+                    <View style={{ flexDirection: "row", gap: 10 }}>
+                      <Pressable
+                        onPress={async () => {
+                          const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                          if (!permission.granted) return;
+                          const result = await ImagePicker.launchImageLibraryAsync({
+                            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                            quality: 0.7,
+                            base64: true,
+                          });
+                          if (!result.canceled && result.assets?.[0]) {
+                            setCustomExerciseDraft((d) => ({
+                              ...d,
+                              image_uri: result.assets[0].uri,
+                              image_base64: result.assets[0].base64 ?? null,
+                            }));
+                          }
+                        }}
+                        style={{
+                          flex: 1,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 8,
+                          backgroundColor: "#171B23",
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          paddingVertical: 14,
+                        }}
+                      >
+                        <Feather name="image" size={18} color={mobileTheme.color.textSecondary} />
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, fontWeight: "600" }}>Galería</Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={async () => {
+                          const permission = await ImagePicker.requestCameraPermissionsAsync();
+                          if (!permission.granted) return;
+                          const result = await ImagePicker.launchCameraAsync({
+                            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                            quality: 0.7,
+                            base64: true,
+                          });
+                          if (!result.canceled && result.assets?.[0]) {
+                            setCustomExerciseDraft((d) => ({
+                              ...d,
+                              image_uri: result.assets[0].uri,
+                              image_base64: result.assets[0].base64 ?? null,
+                            }));
+                          }
+                        }}
+                        style={{
+                          flex: 1,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 8,
+                          backgroundColor: "#171B23",
+                          borderRadius: mobileTheme.radius.md,
+                          borderWidth: 1,
+                          borderColor: mobileTheme.color.borderSubtle,
+                          paddingVertical: 14,
+                        }}
+                      >
+                        <Feather name="camera" size={18} color={mobileTheme.color.textSecondary} />
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, fontWeight: "600" }}>Cámara</Text>
+                      </Pressable>
+                    </View>
+                  )}
                 </View>
 
                 {/* Grupo muscular */}
