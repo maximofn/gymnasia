@@ -561,7 +561,16 @@ const DEFAULT_CHAT_SYSTEM_PROMPT =
   "  4) Usa add_meal_food con la fecha, comida y el JSON con name, grams, calories_kcal, protein_g, carbs_g, fat_g.\n" +
   "- Si el alimento no está en la base de datos, pregunta al usuario los datos nutricionales o estímalos.\n" +
   "- Si el usuario no especifica la fecha, usa la fecha de hoy.\n" +
-  "- Si el usuario no especifica los gramos, usa el serving_size_g del alimento encontrado.";
+  "- Si el usuario no especifica los gramos, usa el serving_size_g del alimento encontrado.\n\n" +
+  "## Herramientas de entrenamiento\n\n" +
+  "Tienes herramientas para gestionar rutinas: search_exercises, read_routines, create_routine.\n" +
+  "- Cuando el usuario pida crear una rutina, SIEMPRE sigue este flujo:\n" +
+  "  1) Pregunta qué tipo de rutina quiere (fuerza, hipertrofia, cardio, flexibilidad) y qué músculos o enfoque.\n" +
+  "  2) Usa search_exercises para buscar los ejercicios apropiados en la base de datos.\n" +
+  "  3) Propón la rutina al usuario con ejercicios, series, repeticiones y peso antes de crearla.\n" +
+  "  4) Una vez confirmada, usa create_routine con los datos.\n" +
+  "- Usa nombres exactos de ejercicios obtenidos de search_exercises para que se vinculen correctamente con imágenes.\n" +
+  "- Si el usuario no especifica series/reps/peso, usa valores por defecto razonables según el tipo de rutina.";
 const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
   "Anthropic en navegador necesita un proxy HTTP por CORS. " +
   "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
@@ -1240,6 +1249,20 @@ const READ_ROUTINES_DESC =
   "Lee las rutinas de entrenamiento del usuario. Devuelve todas las rutinas con sus ejercicios, series, repeticiones, peso y descanso. " +
   "Usa esta herramienta cuando el usuario pregunte por sus rutinas, entrenamientos, o quiera revisar sus ejercicios programados.";
 
+const CREATE_ROUTINE_TOOL = "create_routine";
+const CREATE_ROUTINE_DESC =
+  "Crea una nueva rutina de entrenamiento. IMPORTANTE: Antes de usar esta herramienta DEBES haber buscado los ejercicios con search_exercises " +
+  "para obtener los nombres exactos de la base de datos. Pasa el JSON con los datos de la rutina.";
+const CREATE_ROUTINE_DATA_PARAM_DESC =
+  'JSON con los datos de la rutina. Campos: name (string, nombre de la rutina), ' +
+  'category (string: "strength", "hypertrophy", "cardio" o "flexibility"), ' +
+  'icon (string: "activity", "heart", "zap", "target", "wind", "shield", "compass", "crosshair", "award", "star", "sun", "moon", "sliders" o "trending-up"), ' +
+  'exercises (array de objetos con: name (string, nombre exacto del ejercicio de search_exercises), ' +
+  'muscle (string, músculo principal), ' +
+  'series (array de objetos con: type (string: "normal", "warmup", "failure", "amrap", "partial", "negative", "forced", "tempo", "isometric", "dropset", "restpause", "myoreps", "cluster", "superset"), ' +
+  'reps (string, número de repeticiones), weight_kg (string, peso en kg), rest_seconds (string, descanso en segundos))). ' +
+  'Ejemplo: {"name": "Push Day", "category": "hypertrophy", "icon": "zap", "exercises": [{"name": "Press banca con barra", "muscle": "pecho", "series": [{"type": "normal", "reps": "10", "weight_kg": "60", "rest_seconds": "90"}]}]}';
+
 const ADD_MEAL_FOOD_TOOL = "add_meal_food";
 const ADD_MEAL_FOOD_DESC =
   "Añade un alimento a una comida del usuario en una fecha específica. " +
@@ -1539,6 +1562,68 @@ async function handleToolCall(
       racion_g: f.serving_size_g,
       descripcion_racion: f.serving_description,
     })));
+  }
+  if (name === CREATE_ROUTINE_TOOL) {
+    if (!setStore) return "No se pudo acceder al almacenamiento.";
+    let data: Record<string, unknown> = {};
+    if (typeof args.data === "string") {
+      try { data = JSON.parse(args.data); } catch { return "El JSON de la rutina no es válido."; }
+    } else if (typeof args.data === "object" && args.data) {
+      data = args.data as Record<string, unknown>;
+    } else {
+      return "No se proporcionaron datos de la rutina.";
+    }
+    const routineName = (data.name as string) ?? "Rutina";
+    const category = (data.category as string) ?? "hypertrophy";
+    const icon = (data.icon as string) ?? "activity";
+    const exercisesData = (data.exercises as Array<Record<string, unknown>>) ?? [];
+    if (exercisesData.length === 0) return "La rutina debe tener al menos un ejercicio.";
+
+    // Match exercises with repo to get images
+    const repoExercises = exercisesRepo ?? [];
+
+    const templateExercises = exercisesData.map((ex) => {
+      const exName = (ex.name as string) ?? "Ejercicio";
+      const exMuscle = (ex.muscle as string) ?? "";
+      const seriesData = (ex.series as Array<Record<string, unknown>>) ?? [];
+      const repoMatch = repoExercises.find(
+        (r) => r.name.toLowerCase() === exName.toLowerCase(),
+      );
+      const imageUri = repoMatch ? getExerciseImageUrl(repoMatch, "male") : null;
+
+      const series: ExerciseSeries[] = seriesData.map((s) => ({
+        id: uid("series"),
+        type: ((s.type as string) ?? "normal") as SeriesType,
+        reps: String(s.reps ?? "10"),
+        weight_kg: String(s.weight_kg ?? "0"),
+        rest_seconds: String(s.rest_seconds ?? "60"),
+      }));
+
+      return {
+        id: uid("exercise"),
+        name: exName,
+        muscle: exMuscle || (repoMatch?.muscle_group ?? ""),
+        image_uri: imageUri,
+        sets: series.map((_, i) => i),
+        series,
+      };
+    });
+
+    const newTemplate: WorkoutTemplate = {
+      id: uid("template"),
+      name: routineName,
+      category: category as TrainingCategory,
+      icon: icon as RoutineIconName,
+      exercises: templateExercises,
+    };
+
+    setStore((prev) => ({
+      ...prev,
+      templates: [...prev.templates, newTemplate],
+    }));
+
+    const exercisesSummary = templateExercises.map((e) => `${e.name} (${e.series.length} series)`).join(", ");
+    return `Rutina "${routineName}" creada con ${templateExercises.length} ejercicios: ${exercisesSummary}.`;
   }
   if (name === READ_ROUTINES_TOOL) {
     if (!store) return "No se pudo acceder a los datos de rutinas.";
@@ -3913,6 +3998,12 @@ async function callProviderChatAPIWithTools(
         description: READ_ROUTINES_DESC,
         parameters: { type: "object", properties: {} },
       },
+      {
+        type: "function",
+        name: CREATE_ROUTINE_TOOL,
+        description: CREATE_ROUTINE_DESC,
+        parameters: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
+      },
     ],
     anthropic: [
       {
@@ -3973,6 +4064,11 @@ async function callProviderChatAPIWithTools(
         name: READ_ROUTINES_TOOL,
         description: READ_ROUTINES_DESC,
         input_schema: { type: "object", properties: {} },
+      },
+      {
+        name: CREATE_ROUTINE_TOOL,
+        description: CREATE_ROUTINE_DESC,
+        input_schema: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
       },
     ],
     google: [
@@ -4036,6 +4132,11 @@ async function callProviderChatAPIWithTools(
             name: READ_ROUTINES_TOOL,
             description: READ_ROUTINES_DESC,
             parameters: { type: "object", properties: {} },
+          },
+          {
+            name: CREATE_ROUTINE_TOOL,
+            description: CREATE_ROUTINE_DESC,
+            parameters: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
           },
         ],
       },
