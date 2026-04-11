@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import Svg, { Path, Circle, Rect, Line, Defs, LinearGradient, Stop, Pattern } from "react-native-svg";
+import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
 import ConfettiCannon from "react-native-confetti-cannon";
 import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
@@ -1382,20 +1382,20 @@ const MEASURES_CHART_METRIC_OPTIONS: Array<{
   { key: "calf", label: "Gemelo", unit: "cm", field: "calf_cm" },
 ];
 const BODY_FAT_ZONES_MALE = [
-  { min: 0, max: 8, color: "rgba(255,75,75,0.12)", pattern: "bfz-diag-left" },
-  { min: 8, max: 12, color: "rgba(203,255,26,0.10)", pattern: "bfz-diag-right" },
-  { min: 12, max: 17, color: "rgba(0,198,107,0.10)", pattern: "bfz-dots" },
-  { min: 17, max: 22, color: "rgba(203,255,26,0.10)", pattern: "bfz-horiz" },
-  { min: 22, max: 27, color: "rgba(255,200,0,0.10)", pattern: "bfz-cross" },
-  { min: 27, max: 60, color: "rgba(255,75,75,0.12)", pattern: "bfz-vert" },
+  { min: 0, max: 8, color: "rgba(255,75,75,0.12)" },
+  { min: 8, max: 12, color: "rgba(203,255,26,0.10)" },
+  { min: 12, max: 17, color: "rgba(0,198,107,0.10)" },
+  { min: 17, max: 22, color: "rgba(203,255,26,0.10)" },
+  { min: 22, max: 27, color: "rgba(255,200,0,0.10)" },
+  { min: 27, max: 60, color: "rgba(255,75,75,0.12)" },
 ];
 const BODY_FAT_ZONES_FEMALE = [
-  { min: 0, max: 15, color: "rgba(255,75,75,0.12)", pattern: "bfz-diag-left" },
-  { min: 15, max: 18, color: "rgba(203,255,26,0.10)", pattern: "bfz-diag-right" },
-  { min: 18, max: 23, color: "rgba(0,198,107,0.10)", pattern: "bfz-dots" },
-  { min: 23, max: 28, color: "rgba(203,255,26,0.10)", pattern: "bfz-horiz" },
-  { min: 28, max: 33, color: "rgba(255,200,0,0.10)", pattern: "bfz-cross" },
-  { min: 33, max: 60, color: "rgba(255,75,75,0.12)", pattern: "bfz-vert" },
+  { min: 0, max: 15, color: "rgba(255,75,75,0.12)" },
+  { min: 15, max: 18, color: "rgba(203,255,26,0.10)" },
+  { min: 18, max: 23, color: "rgba(0,198,107,0.10)" },
+  { min: 23, max: 28, color: "rgba(203,255,26,0.10)" },
+  { min: 28, max: 33, color: "rgba(255,200,0,0.10)" },
+  { min: 33, max: 60, color: "rgba(255,75,75,0.12)" },
 ];
 const TRAINING_STATS_METRIC_OPTIONS: Array<{
   key: TrainingStatsMetricKey;
@@ -15744,100 +15744,29 @@ export default function App() {
                                 <Text style={{ color: "#2B5C8A", fontSize: 8, fontWeight: "600" }}>Media 30 valores</Text>
                               </View>
                             </View>
-                            {measuresChartMetric === "bodyFat" && (() => {
-                              const zones = userSex === "female" ? BODY_FAT_ZONES_FEMALE : BODY_FAT_ZONES_MALE;
-                              const legendItems = [
-                                { label: "Subatlético", zone: zones[0] },
-                                { label: "Atlético", zone: zones[1] },
-                                { label: "Saludable", zone: zones[2] },
-                                { label: "Aceptable", zone: zones[3] },
-                                { label: "Obesidad", zone: zones[4] },
-                                { label: "Sobre obesidad", zone: zones[5] },
-                              ];
-                              return (
-                                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 6, paddingLeft: padL }}>
-                                  {legendItems.map((item) => (
-                                    <View key={item.label} style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
-                                      <Svg width={8} height={8}>
-                                        <Rect width={8} height={8} rx={2} fill={item.zone.color} />
-                                        {item.zone.pattern === "bfz-dots" && <Circle cx={4} cy={4} r={1.2} fill="rgba(255,255,255,0.3)" />}
-                                        {item.zone.pattern === "bfz-diag-right" && <Line x1={0} y1={8} x2={8} y2={0} stroke="rgba(255,255,255,0.3)" strokeWidth={1} />}
-                                        {item.zone.pattern === "bfz-diag-left" && <Line x1={0} y1={0} x2={8} y2={8} stroke="rgba(255,255,255,0.3)" strokeWidth={1} />}
-                                        {item.zone.pattern === "bfz-horiz" && <Line x1={0} y1={4} x2={8} y2={4} stroke="rgba(255,255,255,0.3)" strokeWidth={1} />}
-                                        {item.zone.pattern === "bfz-vert" && <Line x1={4} y1={0} x2={4} y2={8} stroke="rgba(255,255,255,0.3)" strokeWidth={1} />}
-                                        {item.zone.pattern === "bfz-cross" && (
-                                          <>
-                                            <Line x1={0} y1={0} x2={8} y2={8} stroke="rgba(255,255,255,0.25)" strokeWidth={0.8} />
-                                            <Line x1={0} y1={8} x2={8} y2={0} stroke="rgba(255,255,255,0.25)" strokeWidth={0.8} />
-                                          </>
-                                        )}
-                                      </Svg>
-                                      <Text style={{ color: "#8B94A3", fontSize: 7, fontWeight: "600" }}>{item.label}</Text>
-                                    </View>
-                                  ))}
-                                </View>
-                              );
-                            })()}
+                            {measuresChartMetric === "bodyFat" && (
+                              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 6, paddingLeft: padL }}>
+                                {[
+                                  { label: "Subatlético", color: "rgba(255,75,75,0.45)" },
+                                  { label: "Atlético", color: "rgba(203,255,26,0.45)" },
+                                  { label: "Saludable", color: "rgba(0,198,107,0.45)" },
+                                  { label: "Aceptable", color: "rgba(203,255,26,0.45)" },
+                                  { label: "Obesidad", color: "rgba(255,200,0,0.45)" },
+                                  { label: "Sobre obesidad", color: "rgba(255,75,75,0.45)" },
+                                ].map((z) => (
+                                  <View key={z.label} style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+                                    <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: z.color }} />
+                                    <Text style={{ color: "#8B94A3", fontSize: 7, fontWeight: "600" }}>{z.label}</Text>
+                                  </View>
+                                ))}
+                              </View>
+                            )}
                             <Svg width="100%" height={chartH} viewBox={`0 0 ${chartW} ${chartH}`}>
                               <Defs>
                                 <LinearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
                                   <Stop offset="0" stopColor={mobileTheme.color.brandPrimary} stopOpacity="0.35" />
                                   <Stop offset="1" stopColor={mobileTheme.color.brandPrimary} stopOpacity="0.02" />
                                 </LinearGradient>
-                                {measuresChartMetric === "bodyFat" && (() => {
-                                  const zones = userSex === "female" ? BODY_FAT_ZONES_FEMALE : BODY_FAT_ZONES_MALE;
-                                  return zones.map((zone) => {
-                                    const s = 6;
-                                    if (zone.pattern === "bfz-dots") {
-                                      return (
-                                        <Pattern key={zone.pattern} id={zone.pattern} width={s} height={s} patternUnits="userSpaceOnUse">
-                                          <Rect width={s} height={s} fill={zone.color} />
-                                          <Circle cx={s / 2} cy={s / 2} r={1} fill="rgba(255,255,255,0.15)" />
-                                        </Pattern>
-                                      );
-                                    }
-                                    if (zone.pattern === "bfz-diag-right") {
-                                      return (
-                                        <Pattern key={zone.pattern} id={zone.pattern} width={s} height={s} patternUnits="userSpaceOnUse">
-                                          <Rect width={s} height={s} fill={zone.color} />
-                                          <Line x1={0} y1={s} x2={s} y2={0} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
-                                        </Pattern>
-                                      );
-                                    }
-                                    if (zone.pattern === "bfz-diag-left") {
-                                      return (
-                                        <Pattern key={zone.pattern} id={zone.pattern} width={s} height={s} patternUnits="userSpaceOnUse">
-                                          <Rect width={s} height={s} fill={zone.color} />
-                                          <Line x1={0} y1={0} x2={s} y2={s} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
-                                        </Pattern>
-                                      );
-                                    }
-                                    if (zone.pattern === "bfz-horiz") {
-                                      return (
-                                        <Pattern key={zone.pattern} id={zone.pattern} width={s} height={s} patternUnits="userSpaceOnUse">
-                                          <Rect width={s} height={s} fill={zone.color} />
-                                          <Line x1={0} y1={s / 2} x2={s} y2={s / 2} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
-                                        </Pattern>
-                                      );
-                                    }
-                                    if (zone.pattern === "bfz-vert") {
-                                      return (
-                                        <Pattern key={zone.pattern} id={zone.pattern} width={s} height={s} patternUnits="userSpaceOnUse">
-                                          <Rect width={s} height={s} fill={zone.color} />
-                                          <Line x1={s / 2} y1={0} x2={s / 2} y2={s} stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
-                                        </Pattern>
-                                      );
-                                    }
-                                    // bfz-cross
-                                    return (
-                                      <Pattern key={zone.pattern} id={zone.pattern} width={s} height={s} patternUnits="userSpaceOnUse">
-                                        <Rect width={s} height={s} fill={zone.color} />
-                                        <Line x1={0} y1={0} x2={s} y2={s} stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
-                                        <Line x1={0} y1={s} x2={s} y2={0} stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
-                                      </Pattern>
-                                    );
-                                  });
-                                })()}
                               </Defs>
 
                               {gridLines.map((gl, i) => (
@@ -15865,7 +15794,7 @@ export default function App() {
                                       y={clampY1}
                                       width={plotW}
                                       height={h}
-                                      fill={`url(#${zone.pattern})`}
+                                      fill={zone.color}
                                     />
                                   );
                                 });
