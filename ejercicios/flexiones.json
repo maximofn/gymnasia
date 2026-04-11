@@ -1,0 +1,11 @@
+{
+  "id": "flexiones",
+  "name": "Flexiones",
+  "image_male": "images/flexiones-male.webp",
+  "image_female": "images/flexiones-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["triceps"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Colócate boca abajo con las manos separadas a la anchura de los hombros y los brazos extendidos. Mantén el cuerpo recto desde la cabeza hasta los talones, con el core activado. Baja el cuerpo flexionando los codos hasta que el pecho casi toque el suelo, y empuja hacia arriba hasta la posición inicial extendiendo los brazos completamente."
+}
