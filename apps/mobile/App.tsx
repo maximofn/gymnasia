@@ -157,6 +157,7 @@ type Measurement = {
   id: string;
   measured_at: string;
   weight_kg: number | null;
+  body_fat_pct: number | null;
   photo_uri: string | null;
   neck_cm: number | null;
   chest_cm: number | null;
@@ -865,6 +866,101 @@ async function saveMeasurementsToStorage(measurements: Measurement[]): Promise<v
   }
 }
 
+const BODY_FAT_MIGRATION_KEY = "gymnasia.mobile.body_fat_migration_done";
+const BODY_FAT_HISTORY_DATA: Array<{ date: string; pct: number }> = [
+  { date: "2025-07-06", pct: 16.1 }, { date: "2025-07-07", pct: 16.1 },
+  { date: "2025-09-03", pct: 18.2 }, { date: "2025-09-04", pct: 18.1 },
+  { date: "2025-09-05", pct: 17.8 }, { date: "2025-09-06", pct: 17.9 },
+  { date: "2025-09-07", pct: 17.8 }, { date: "2025-09-08", pct: 17.7 },
+  { date: "2025-09-10", pct: 17.7 }, { date: "2025-09-11", pct: 17.4 },
+  { date: "2025-09-12", pct: 17.6 }, { date: "2025-09-13", pct: 16.9 },
+  { date: "2025-09-14", pct: 17.5 }, { date: "2025-09-15", pct: 18.2 },
+  { date: "2025-09-16", pct: 18.6 }, { date: "2025-09-18", pct: 17.2 },
+  { date: "2025-09-19", pct: 17.9 }, { date: "2025-09-20", pct: 18.0 },
+  { date: "2025-09-22", pct: 18.6 }, { date: "2025-09-23", pct: 17.7 },
+  { date: "2025-09-25", pct: 17.6 }, { date: "2025-09-26", pct: 18.0 },
+  { date: "2025-09-27", pct: 17.6 }, { date: "2025-09-28", pct: 17.5 },
+  { date: "2025-09-29", pct: 17.7 }, { date: "2025-09-30", pct: 17.6 },
+  { date: "2025-10-02", pct: 17.7 }, { date: "2025-10-03", pct: 17.4 },
+  { date: "2025-10-05", pct: 17.1 }, { date: "2025-10-06", pct: 17.4 },
+  { date: "2025-10-07", pct: 17.8 }, { date: "2025-10-08", pct: 17.9 },
+  { date: "2025-10-09", pct: 17.9 }, { date: "2025-10-17", pct: 18.1 },
+  { date: "2025-10-26", pct: 18.2 }, { date: "2025-12-27", pct: 20.3 },
+  { date: "2025-12-28", pct: 20.8 }, { date: "2025-12-30", pct: 20.2 },
+  { date: "2026-01-05", pct: 20.4 }, { date: "2026-01-07", pct: 20.4 },
+  { date: "2026-01-09", pct: 20.3 }, { date: "2026-01-11", pct: 19.5 },
+  { date: "2026-01-12", pct: 20.2 }, { date: "2026-01-13", pct: 19.7 },
+  { date: "2026-01-14", pct: 19.7 }, { date: "2026-01-15", pct: 19.6 },
+  { date: "2026-01-16", pct: 19.3 }, { date: "2026-01-17", pct: 19.2 },
+  { date: "2026-01-18", pct: 19.6 }, { date: "2026-01-19", pct: 20.2 },
+  { date: "2026-01-20", pct: 19.9 }, { date: "2026-01-22", pct: 19.0 },
+  { date: "2026-01-24", pct: 19.6 }, { date: "2026-01-25", pct: 19.5 },
+  { date: "2026-01-27", pct: 19.5 }, { date: "2026-01-29", pct: 19.1 },
+  { date: "2026-01-30", pct: 20.0 }, { date: "2026-01-31", pct: 18.9 },
+  { date: "2026-02-01", pct: 19.5 }, { date: "2026-02-04", pct: 19.3 },
+  { date: "2026-02-05", pct: 18.3 }, { date: "2026-02-07", pct: 19.3 },
+  { date: "2026-02-08", pct: 19.6 }, { date: "2026-02-09", pct: 20.2 },
+  { date: "2026-02-10", pct: 18.7 }, { date: "2026-02-11", pct: 18.9 },
+  { date: "2026-02-13", pct: 19.0 }, { date: "2026-02-14", pct: 19.0 },
+  { date: "2026-02-15", pct: 19.2 }, { date: "2026-02-16", pct: 19.1 },
+  { date: "2026-02-17", pct: 18.6 }, { date: "2026-02-18", pct: 18.8 },
+  { date: "2026-02-19", pct: 18.8 }, { date: "2026-02-20", pct: 19.3 },
+  { date: "2026-02-24", pct: 19.0 }, { date: "2026-02-25", pct: 19.0 },
+  { date: "2026-02-27", pct: 19.5 }, { date: "2026-03-03", pct: 18.4 },
+  { date: "2026-03-04", pct: 18.8 }, { date: "2026-03-06", pct: 19.5 },
+  { date: "2026-03-12", pct: 18.6 }, { date: "2026-03-13", pct: 18.8 },
+  { date: "2026-03-14", pct: 18.2 }, { date: "2026-03-16", pct: 19.3 },
+  { date: "2026-03-17", pct: 19.1 }, { date: "2026-03-18", pct: 18.6 },
+  { date: "2026-03-20", pct: 18.5 }, { date: "2026-03-22", pct: 18.6 },
+  { date: "2026-03-23", pct: 18.1 }, { date: "2026-03-24", pct: 18.6 },
+  { date: "2026-03-25", pct: 17.9 }, { date: "2026-03-26", pct: 18.0 },
+];
+
+async function migrateBodyFatHistory(
+  setStore: (updater: (prev: LocalStore) => LocalStore) => void,
+): Promise<void> {
+  try {
+    const done = await AsyncStorage.getItem(BODY_FAT_MIGRATION_KEY);
+    if (done === "1") return;
+    const measurements = await loadMeasurementsFromStorage();
+    let changed = false;
+    for (const entry of BODY_FAT_HISTORY_DATA) {
+      const existing = measurements.find((m) => m.measured_at.startsWith(entry.date));
+      if (existing) {
+        if (existing.body_fat_pct === null || existing.body_fat_pct === undefined) {
+          existing.body_fat_pct = entry.pct;
+          changed = true;
+        }
+      } else {
+        measurements.push({
+          id: uid("measurement"),
+          measured_at: new Date(entry.date + "T12:00:00").toISOString(),
+          weight_kg: null,
+          body_fat_pct: entry.pct,
+          photo_uri: null,
+          neck_cm: null,
+          chest_cm: null,
+          waist_cm: null,
+          hips_cm: null,
+          biceps_cm: null,
+          quadriceps_cm: null,
+          calf_cm: null,
+          height_cm: null,
+        });
+        changed = true;
+      }
+    }
+    if (changed) {
+      const sorted = sortMeasurementsDesc(measurements);
+      await saveMeasurementsToStorage(sorted);
+      setStore((prev) => ({ ...prev, measurements: sorted }));
+    }
+    await AsyncStorage.setItem(BODY_FAT_MIGRATION_KEY, "1");
+  } catch {
+    /* silently fail */
+  }
+}
+
 function parsePersonalDataInput(input: unknown): PersonalDataField[] {
   if (typeof input === "string") {
     try {
@@ -924,8 +1020,8 @@ const WRITE_MEASUREMENT_DESC =
 const WRITE_MEASUREMENT_DATE_PARAM_DESC =
   "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-03-30)";
 const WRITE_MEASUREMENT_DATA_PARAM_DESC =
-  'JSON con las medidas a guardar. Campos posibles: weight_kg, neck_cm, chest_cm, waist_cm, hips_cm, biceps_cm, quadriceps_cm, calf_cm, height_cm. ' +
-  'Ejemplo: {"weight_kg": 75.5, "waist_cm": 82}';
+  'JSON con las medidas a guardar. Campos posibles: weight_kg, body_fat_pct, neck_cm, chest_cm, waist_cm, hips_cm, biceps_cm, quadriceps_cm, calf_cm, height_cm. ' +
+  'Ejemplo: {"weight_kg": 75.5, "body_fat_pct": 18.5, "waist_cm": 82}';
 
 const SCAN_BARCODE_TOOL = "scan_barcode";
 const SCAN_BARCODE_DESC =
@@ -1041,6 +1137,7 @@ async function handleToolCall(
       id: existing?.id ?? uid("measurement"),
       measured_at: existing?.measured_at ?? new Date(date + "T12:00:00").toISOString(),
       weight_kg: data.weight_kg !== undefined ? toNum(data.weight_kg) : (existing?.weight_kg ?? null),
+      body_fat_pct: data.body_fat_pct !== undefined ? toNum(data.body_fat_pct) : (existing?.body_fat_pct ?? null),
       photo_uri: existing?.photo_uri ?? null,
       neck_cm: data.neck_cm !== undefined ? toNum(data.neck_cm) : (existing?.neck_cm ?? null),
       chest_cm: data.chest_cm !== undefined ? toNum(data.chest_cm) : (existing?.chest_cm ?? null),
@@ -1275,7 +1372,7 @@ const MEASURES_CHART_METRIC_OPTIONS: Array<{
   field: keyof Measurement | null;
 }> = [
   { key: "weight", label: "Peso", unit: "kg", field: "weight_kg" },
-  { key: "bodyFat", label: "% Grasa", unit: "%", field: null },
+  { key: "bodyFat", label: "% Grasa", unit: "%", field: "body_fat_pct" },
   { key: "chest", label: "Pecho", unit: "cm", field: "chest_cm" },
   { key: "waist", label: "Cintura", unit: "cm", field: "waist_cm" },
   { key: "hips", label: "Cadera", unit: "cm", field: "hips_cm" },
@@ -4315,6 +4412,7 @@ function normalizeMeasurement(rawValue: unknown, index: number): Measurement {
     id: typeof maybe.id === "string" && maybe.id ? maybe.id : uid(`measurement_${index}`),
     measured_at: parsedDate,
     weight_kg: normalizePositiveNumber(maybe.weight_kg),
+    body_fat_pct: normalizePositiveNumber(maybe.body_fat_pct),
     photo_uri:
       typeof maybe.photo_uri === "string" && maybe.photo_uri.trim() ? maybe.photo_uri.trim() : null,
     neck_cm: normalizePositiveNumber(maybe.neck_cm),
@@ -4372,6 +4470,9 @@ function estimateMeasurementBodyFatPercentage(
   fallbackHeightCm: number | null,
   sex: UserSex = "male",
 ): number | null {
+  if (measurement.body_fat_pct !== null && measurement.body_fat_pct !== undefined) {
+    return measurement.body_fat_pct;
+  }
   const heightCm = measurement.height_cm ?? fallbackHeightCm;
   if (heightCm === null || measurement.waist_cm === null || measurement.neck_cm === null) {
     return null;
@@ -6316,6 +6417,7 @@ export default function App() {
   const [showAllMeasurementsHistory, setShowAllMeasurementsHistory] = useState(false);
   const [expandedPhotoUri, setExpandedPhotoUri] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState("");
+  const [bodyFatInput, setBodyFatInput] = useState("");
   const [neckInput, setNeckInput] = useState("");
   const [chestInput, setChestInput] = useState("");
   const [waistInput, setWaistInput] = useState("");
@@ -7550,6 +7652,7 @@ export default function App() {
     loadExercisesRepo().then(setExercisesRepo);
     loadFoodsRepo().then(setFoodsRepo);
     loadPersonalFoods().then(setPersonalFoods);
+    migrateBodyFatHistory(setStore);
   }, [isHydrated]);
 
   useEffect(() => {
@@ -8865,6 +8968,7 @@ export default function App() {
 
   function resetMeasurementForm() {
     setWeightInput("");
+    setBodyFatInput("");
     setMeasurementPhotoUri(null);
     setHeightInput("");
     setNeckInput("");
@@ -8880,6 +8984,7 @@ export default function App() {
 
   function openMeasurementForEdit(m: Measurement) {
     setWeightInput(m.weight_kg !== null ? String(m.weight_kg) : "");
+    setBodyFatInput(m.body_fat_pct !== null ? String(m.body_fat_pct) : "");
     setHeightInput(m.height_cm !== null ? String(m.height_cm) : "");
     setNeckInput(m.neck_cm !== null ? String(m.neck_cm) : "");
     setChestInput(m.chest_cm !== null ? String(m.chest_cm) : "");
@@ -8908,6 +9013,11 @@ export default function App() {
     const weightResult = parseOptionalPositiveMetricInput(weightInput);
     if (weightResult.invalid) {
       setError("Introduce un valor válido para peso.");
+      return;
+    }
+    const bodyFatResult = parseOptionalPositiveMetricInput(bodyFatInput);
+    if (bodyFatResult.invalid) {
+      setError("Introduce un valor válido para % grasa corporal.");
       return;
     }
     const neckResult = parseOptionalPositiveMetricInput(neckInput);
@@ -8953,6 +9063,7 @@ export default function App() {
 
     const hasAnyMetric =
       weightResult.value !== null ||
+      bodyFatResult.value !== null ||
       neckResult.value !== null ||
       chestResult.value !== null ||
       waistResult.value !== null ||
@@ -8972,6 +9083,7 @@ export default function App() {
       id: editingMeasurementId ?? uid("measurement"),
       measured_at: measurementDateFromSelection(measurementDate).toISOString(),
       weight_kg: weightResult.value,
+      body_fat_pct: bodyFatResult.value,
       photo_uri: measurementPhotoUri,
       neck_cm: neckResult.value,
       chest_cm: chestResult.value,
@@ -19015,6 +19127,25 @@ export default function App() {
                   }}
                   value={weightInput}
                   onChangeText={setWeightInput}
+                  placeholder="—"
+                  placeholderTextColor={mobileTheme.color.textSecondary}
+                  keyboardType="decimal-pad"
+                />
+              </View>
+              <View style={{ gap: 2 }}>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>% Grasa corporal</Text>
+                <TextInput
+                  style={{
+                    minHeight: 42,
+                    borderRadius: mobileTheme.radius.md,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgApp,
+                    color: mobileTheme.color.textPrimary,
+                    paddingHorizontal: 12,
+                  }}
+                  value={bodyFatInput}
+                  onChangeText={setBodyFatInput}
                   placeholder="—"
                   placeholderTextColor={mobileTheme.color.textSecondary}
                   keyboardType="decimal-pad"
