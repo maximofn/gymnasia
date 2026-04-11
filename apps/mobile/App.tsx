@@ -432,6 +432,8 @@ const FOODS_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos";
 const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
 const FOODS_IMAGES_BASE_URL = `${FOODS_REPO_BASE_URL}/images`;
+const PRODUCTS_IMAGES_BASE_URL = `${PRODUCTS_REPO_BASE_URL}/images`;
+const RECIPES_IMAGES_BASE_URL = `${RECIPES_REPO_BASE_URL}/images`;
 const FOODS_CACHE_KEY = "gymnasia.mobile.foods_repo.v1";
 const PRODUCTS_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/productos_comerciales";
@@ -725,7 +727,11 @@ type FoodRepoEntry = {
 
 function foodRepoImageUri(entry: FoodRepoEntry | null | undefined): string | null {
   if (!entry?.image) return null;
-  return `${FOODS_IMAGES_BASE_URL}/${entry.image}`;
+  const base =
+    entry.source === "producto_comercial" ? PRODUCTS_IMAGES_BASE_URL
+    : entry.source === "receta" ? RECIPES_IMAGES_BASE_URL
+    : FOODS_IMAGES_BASE_URL;
+  return `${base}/${entry.image}`;
 }
 
 async function loadFoodsRepo(): Promise<FoodRepoEntry[]> {
@@ -6755,7 +6761,7 @@ function DietItemThumbnail({ uri, dotColor, size = 36 }: { uri?: string | null; 
 
 function FoodThumbnail({ food, size = 36 }: { food: FoodRepoEntry; size?: number }) {
   const [failed, setFailed] = useState(false);
-  const uri = food.image ? `${FOODS_IMAGES_BASE_URL}/${food.image}` : null;
+  const uri = foodRepoImageUri(food);
   if (uri && !failed) {
     return (
       <Image
