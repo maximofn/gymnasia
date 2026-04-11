@@ -8,5 +8,6 @@
   "fat_per_100g": 5,
   "fiber_per_100g": 0,
   "serving_size_g": 170,
-  "serving_description": "1 yogur (170g)"
+  "serving_description": "1 yogur (170g)",
+  "image": "yogur-griego.webp"
 }
