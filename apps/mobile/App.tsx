@@ -1235,6 +1235,11 @@ const SEARCH_EXERCISES_PARAMS_SCHEMA = {
   difficulty: { type: "string" as const, description: "Filtrar por dificultad: principiante, intermedio, avanzado (opcional)" },
 };
 
+const READ_ROUTINES_TOOL = "read_routines";
+const READ_ROUTINES_DESC =
+  "Lee las rutinas de entrenamiento del usuario. Devuelve todas las rutinas con sus ejercicios, series, repeticiones, peso y descanso. " +
+  "Usa esta herramienta cuando el usuario pregunte por sus rutinas, entrenamientos, o quiera revisar sus ejercicios programados.";
+
 const ADD_MEAL_FOOD_TOOL = "add_meal_food";
 const ADD_MEAL_FOOD_DESC =
   "Añade un alimento a una comida del usuario en una fecha específica. " +
@@ -1533,6 +1538,31 @@ async function handleToolCall(
       fibra_por_100g: f.fiber_per_100g,
       racion_g: f.serving_size_g,
       descripcion_racion: f.serving_description,
+    })));
+  }
+  if (name === READ_ROUTINES_TOOL) {
+    if (!store) return "No se pudo acceder a los datos de rutinas.";
+    const templates = store.templates;
+    if (templates.length === 0) return "No hay rutinas de entrenamiento creadas.";
+    return JSON.stringify(templates.map((t) => ({
+      id: t.id,
+      nombre: t.name,
+      categoria: t.category ?? "",
+      duracion_minutos: t.duration_minutes ?? "",
+      ejercicios: t.exercises.map((e) => ({
+        nombre: e.name ?? "Sin nombre",
+        musculo: e.muscle ?? "",
+        series: (e.series ?? []).map((s) => ({
+          tipo: s.type ?? "normal",
+          repeticiones: s.reps,
+          peso_kg: s.weight_kg,
+          descanso_segundos: s.rest_seconds,
+          tempo_contraccion: s.tempo_contraction ?? "",
+          tempo_pausa: s.tempo_pause ?? "",
+          tempo_relajacion: s.tempo_relaxation ?? "",
+          sub_series: s.sub_series ?? [],
+        })),
+      })),
     })));
   }
   if (name === SEARCH_EXERCISES_TOOL) {
@@ -3877,6 +3907,12 @@ async function callProviderChatAPIWithTools(
         description: SEARCH_EXERCISES_DESC,
         parameters: searchExercisesSchema,
       },
+      {
+        type: "function",
+        name: READ_ROUTINES_TOOL,
+        description: READ_ROUTINES_DESC,
+        parameters: { type: "object", properties: {} },
+      },
     ],
     anthropic: [
       {
@@ -3932,6 +3968,11 @@ async function callProviderChatAPIWithTools(
         name: SEARCH_EXERCISES_TOOL,
         description: SEARCH_EXERCISES_DESC,
         input_schema: searchExercisesSchema,
+      },
+      {
+        name: READ_ROUTINES_TOOL,
+        description: READ_ROUTINES_DESC,
+        input_schema: { type: "object", properties: {} },
       },
     ],
     google: [
@@ -3990,6 +4031,11 @@ async function callProviderChatAPIWithTools(
             name: SEARCH_EXERCISES_TOOL,
             description: SEARCH_EXERCISES_DESC,
             parameters: searchExercisesSchema,
+          },
+          {
+            name: READ_ROUTINES_TOOL,
+            description: READ_ROUTINES_DESC,
+            parameters: { type: "object", properties: {} },
           },
         ],
       },
