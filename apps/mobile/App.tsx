@@ -11848,8 +11848,8 @@ export default function App() {
               </View>
             ) : activeWorkoutSession ? (
               <View style={{ gap: 12, paddingBottom: 110 }}>
-                <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
-                  <View style={{ flex: 1, gap: 10, paddingRight: 10 }}>
+                <View style={{ gap: 10 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                       <View
                         style={{
@@ -11870,56 +11870,54 @@ export default function App() {
                         Sesión activa
                       </Text>
                     </View>
-                    <Text
-                      style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}
-                      numberOfLines={2}
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                      <Ionicons name="timer-outline" size={20} color="#F2F5FA" />
+                      <Text style={{ color: "#F2F5FA", fontSize: 26, fontWeight: "700" }}>
+                        {formatClock(activeWorkoutSession.elapsed_seconds)}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text
+                    style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}
+                    numberOfLines={2}
+                  >
+                    {activeWorkoutSession.template_name}
+                  </Text>
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    <Pressable
+                      onPress={() => setExercisePickerOpen(true)}
+                      style={{
+                        flex: 1,
+                        minHeight: 44,
+                        borderRadius: 14,
+                        backgroundColor: "rgba(203,255,26,0.15)",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 6,
+                      }}
                     >
-                      {activeWorkoutSession.template_name}
-                    </Text>
-	                  </View>
-	                  <View style={{ alignItems: "flex-end", gap: 10 }}>
-	                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-	                      <Ionicons name="timer-outline" size={20} color="#F2F5FA" />
-	                      <Text style={{ color: "#F2F5FA", fontSize: 26, fontWeight: "700" }}>
-	                        {formatClock(activeWorkoutSession.elapsed_seconds)}
-	                      </Text>
-	                    </View>
-                      <View style={{ flexDirection: "row", gap: 8 }}>
-                        <Pressable
-                          onPress={() => setExercisePickerOpen(true)}
-                          style={{
-                            minHeight: 44,
-                            borderRadius: 14,
-                            backgroundColor: "rgba(203,255,26,0.15)",
-                            paddingHorizontal: 14,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 6,
-                          }}
-                        >
-                          <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
-                          <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "800" }}>Añadir</Text>
-                        </Pressable>
-                        <Pressable
-                          onPress={finishActiveWorkoutSession}
-                          testID="training-session-finish"
-                          style={{
-                            minHeight: 44,
-                            borderRadius: 14,
-                            backgroundColor: "#FF4B4B",
-                            paddingHorizontal: 14,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 6,
-                          }}
-                        >
-                          <Feather name="flag" size={14} color="#FFFFFF" />
-                          <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
-                        </Pressable>
-                      </View>
-	                  </View>
+                      <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
+                      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "800" }}>Añadir ejercicio</Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={finishActiveWorkoutSession}
+                      testID="training-session-finish"
+                      style={{
+                        flex: 1,
+                        minHeight: 44,
+                        borderRadius: 14,
+                        backgroundColor: "#FF4B4B",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 6,
+                      }}
+                    >
+                      <Feather name="flag" size={14} color="#FFFFFF" />
+                      <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
+                    </Pressable>
+                  </View>
 	                </View>
 
                 <View style={{ gap: 6 }}>
