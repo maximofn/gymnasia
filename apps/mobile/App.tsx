@@ -548,7 +548,17 @@ const DEFAULT_CHAT_SYSTEM_PROMPT =
   "Tienes 4 herramientas: list_personal_data_keys, read_field_description(key), read_field_value(key), save_personal_data(personal_data).\n" +
   "- Al saludar: 1) list_personal_data_keys, 2) read_field_description de keys candidatas, 3) read_field_value del campo correcto, 4) saluda con su nombre.\n" +
   "- Al guardar datos: 1) list keys existentes, 2) lee datos actuales, 3) save_personal_data con array completo [{key,description,value}].\n" +
-  "- No menciones las herramientas al usuario.";
+  "- No menciones las herramientas al usuario.\n\n" +
+  "## Herramientas de dieta\n\n" +
+  "Tienes herramientas para gestionar la dieta del usuario: search_foods, read_meal_foods, add_meal_food.\n" +
+  "- Cuando el usuario pida añadir un alimento a una comida, SIEMPRE sigue este flujo:\n" +
+  "  1) Usa search_foods para buscar el alimento en la base de datos.\n" +
+  "  2) Si hay varios resultados similares, pregunta al usuario cuál quiere.\n" +
+  "  3) Una vez claro el alimento, calcula las calorías y macros según los gramos indicados (los datos de search_foods son por 100g).\n" +
+  "  4) Usa add_meal_food con la fecha, comida y el JSON con name, grams, calories_kcal, protein_g, carbs_g, fat_g.\n" +
+  "- Si el alimento no está en la base de datos, pregunta al usuario los datos nutricionales o estímalos.\n" +
+  "- Si el usuario no especifica la fecha, usa la fecha de hoy.\n" +
+  "- Si el usuario no especifica los gramos, usa el serving_size_g del alimento encontrado.";
 const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
   "Anthropic en navegador necesita un proxy HTTP por CORS. " +
   "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
@@ -1192,6 +1202,17 @@ const SEARCH_FOODS_DESC =
   "quiera saber si un alimento está en la base de datos, o necesite información calórica/macros.";
 const SEARCH_FOODS_PARAM_DESC = "Texto de búsqueda (nombre o parte del nombre del alimento)";
 
+const ADD_MEAL_FOOD_TOOL = "add_meal_food";
+const ADD_MEAL_FOOD_DESC =
+  "Añade un alimento a una comida del usuario en una fecha específica. " +
+  "IMPORTANTE: Antes de usar esta herramienta DEBES haber buscado el alimento con search_foods. " +
+  "Pasa los datos nutricionales exactos obtenidos de la búsqueda.";
+const ADD_MEAL_FOOD_DATE_PARAM_DESC = "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-04-11)";
+const ADD_MEAL_FOOD_MEAL_PARAM_DESC = "Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena";
+const ADD_MEAL_FOOD_DATA_PARAM_DESC =
+  'JSON con los datos del alimento. Campos requeridos: name (string), grams (number), calories_kcal (number), protein_g (number), carbs_g (number), fat_g (number). ' +
+  'Ejemplo: {"name": "Arroz blanco", "grams": 150, "calories_kcal": 195, "protein_g": 4.1, "carbs_g": 43.4, "fat_g": 0.4}';
+
 const SCAN_BARCODE_TOOL = "scan_barcode";
 const SCAN_BARCODE_DESC =
   "Busca un producto alimentario por su código de barras (EAN/UPC) en OpenFoodFacts. " +
@@ -1350,6 +1371,61 @@ async function handleToolCall(
     }));
     return JSON.stringify(summary);
   }
+  if (name === ADD_MEAL_FOOD_TOOL) {
+    const date = (args.date as string) ?? "";
+    const meal = (args.meal as string) ?? "";
+    if (!date) return "No se proporcionó una fecha.";
+    if (!meal) return "No se proporcionó una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).";
+    if (!setStore) return "No se pudo acceder al almacenamiento.";
+    let data: Record<string, unknown> = {};
+    if (typeof args.data === "string") {
+      try { data = JSON.parse(args.data); } catch { return "El JSON del alimento no es válido."; }
+    } else if (typeof args.data === "object" && args.data) {
+      data = args.data as Record<string, unknown>;
+    } else {
+      return "No se proporcionaron datos del alimento.";
+    }
+    const foodName = (data.name as string) ?? "Alimento";
+    const grams = Number(data.grams) || 0;
+    const caloriesKcal = Number(data.calories_kcal) || 0;
+    const proteinG = Number(data.protein_g) || 0;
+    const carbsG = Number(data.carbs_g) || 0;
+    const fatG = Number(data.fat_g) || 0;
+    const newItem: DietItem = {
+      id: uid("food"),
+      title: foodName,
+      grams,
+      calories_kcal: caloriesKcal,
+      protein_g: proteinG,
+      carbs_g: carbsG,
+      fat_g: fatG,
+    };
+    setStore((prev) => {
+      const currentDay = prev.dietByDate[date] ?? { day_date: date, meals: [] };
+      const existingMeal = currentDay.meals.find(
+        (m) => m.title.toLowerCase() === meal.toLowerCase(),
+      );
+      const mealCategories: string[] = ["Desayuno", "Almuerzo", "Comida", "Merienda", "Cena"];
+      const updatedMeals = existingMeal
+        ? currentDay.meals.map((m) =>
+            m.title.toLowerCase() === meal.toLowerCase()
+              ? { ...m, items: [...m.items, newItem] }
+              : m,
+          )
+        : [...currentDay.meals, { id: uid("meal"), title: meal, items: [newItem] }].sort(
+            (a, b) =>
+              mealCategories.indexOf(a.title) - mealCategories.indexOf(b.title),
+          );
+      return {
+        ...prev,
+        dietByDate: {
+          ...prev.dietByDate,
+          [date]: { ...currentDay, meals: updatedMeals },
+        },
+      };
+    });
+    return `Alimento "${foodName}" (${grams}g, ${caloriesKcal} kcal) añadido a ${meal} del ${date}.`;
+  }
   if (name === SEARCH_FOODS_TOOL) {
     const query = (args.query as string) ?? "";
     if (!query.trim()) return "No se proporcionó un texto de búsqueda.";
@@ -1362,6 +1438,7 @@ async function handleToolCall(
     }).slice(0, 10);
     if (results.length === 0) return `No se encontraron alimentos que coincidan con "${query}".`;
     return JSON.stringify(results.map((f) => ({
+      id: f.id,
       nombre: f.name,
       calorias_por_100g: f.calories_per_100g,
       proteina_por_100g: f.protein_per_100g,
@@ -3592,6 +3669,12 @@ async function callProviderChatAPIWithTools(
     query: { type: "string" as const, description: SEARCH_FOODS_PARAM_DESC },
   };
   const searchFoodsRequired = ["query"];
+  const addMealFoodProps = {
+    date: { type: "string" as const, description: ADD_MEAL_FOOD_DATE_PARAM_DESC },
+    meal: { type: "string" as const, description: ADD_MEAL_FOOD_MEAL_PARAM_DESC },
+    data: { type: "string" as const, description: ADD_MEAL_FOOD_DATA_PARAM_DESC },
+  };
+  const addMealFoodRequired = ["date", "meal", "data"];
   const toolStoreSetter = options?.setStore;
   const toolStore = options?.store;
   const toolFoodsRepo = options?.foodsRepo;
@@ -3650,6 +3733,12 @@ async function callProviderChatAPIWithTools(
         description: SEARCH_FOODS_DESC,
         parameters: { type: "object", properties: searchFoodsProps, required: searchFoodsRequired },
       },
+      {
+        type: "function",
+        name: ADD_MEAL_FOOD_TOOL,
+        description: ADD_MEAL_FOOD_DESC,
+        parameters: { type: "object", properties: addMealFoodProps, required: addMealFoodRequired },
+      },
     ],
     anthropic: [
       {
@@ -3695,6 +3784,11 @@ async function callProviderChatAPIWithTools(
         name: SEARCH_FOODS_TOOL,
         description: SEARCH_FOODS_DESC,
         input_schema: { type: "object", properties: searchFoodsProps, required: searchFoodsRequired },
+      },
+      {
+        name: ADD_MEAL_FOOD_TOOL,
+        description: ADD_MEAL_FOOD_DESC,
+        input_schema: { type: "object", properties: addMealFoodProps, required: addMealFoodRequired },
       },
     ],
     google: [
@@ -3743,6 +3837,11 @@ async function callProviderChatAPIWithTools(
             name: SEARCH_FOODS_TOOL,
             description: SEARCH_FOODS_DESC,
             parameters: { type: "object", properties: searchFoodsProps, required: searchFoodsRequired },
+          },
+          {
+            name: ADD_MEAL_FOOD_TOOL,
+            description: ADD_MEAL_FOOD_DESC,
+            parameters: { type: "object", properties: addMealFoodProps, required: addMealFoodRequired },
           },
         ],
       },
