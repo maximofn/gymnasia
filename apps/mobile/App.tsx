@@ -252,6 +252,7 @@ type ChatProviderCallOptions = StreamingHandlers & {
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>;
   store?: LocalStore;
   foodsRepo?: FoodRepoEntry[];
+  exercisesRepo?: ExerciseRepoEntry[];
 };
 type AnthropicTextBlock = { type: "text"; text: string };
 type AnthropicThinkingBlock = { type: "thinking"; thinking: string; signature?: string };
@@ -1222,6 +1223,18 @@ const SEARCH_FOODS_PARAMS_SCHEMA = {
   sort_by: { type: "string" as const, description: "Ordenar por: 'calories_asc', 'calories_desc', 'protein_asc', 'protein_desc', 'carbs_asc', 'carbs_desc', 'fat_asc', 'fat_desc' (opcional)" },
 };
 
+const SEARCH_EXERCISES_TOOL = "search_exercises";
+const SEARCH_EXERCISES_DESC =
+  "Busca ejercicios en la base de datos local. Soporta búsqueda por nombre, músculo principal, músculos secundarios, equipamiento y dificultad. " +
+  "Todos los parámetros son opcionales y combinables.";
+const SEARCH_EXERCISES_PARAMS_SCHEMA = {
+  query: { type: "string" as const, description: "Texto de búsqueda por nombre del ejercicio (opcional)" },
+  muscle_group: { type: "string" as const, description: "Filtrar por músculo principal, por ejemplo: pecho, espalda, piernas, hombros, biceps, triceps, core, gluteos (opcional)" },
+  secondary_muscle: { type: "string" as const, description: "Filtrar por músculo secundario (opcional)" },
+  equipment: { type: "string" as const, description: "Filtrar por equipamiento, por ejemplo: mancuernas, barra, máquina, cable, peso corporal, kettlebell, banda elástica (opcional)" },
+  difficulty: { type: "string" as const, description: "Filtrar por dificultad: principiante, intermedio, avanzado (opcional)" },
+};
+
 const ADD_MEAL_FOOD_TOOL = "add_meal_food";
 const ADD_MEAL_FOOD_DESC =
   "Añade un alimento a una comida del usuario en una fecha específica. " +
@@ -1292,6 +1305,7 @@ async function handleToolCall(
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
   store?: LocalStore,
   foodsRepo?: FoodRepoEntry[],
+  exercisesRepo?: ExerciseRepoEntry[],
 ): Promise<string> {
   if (name === SAVE_PERSONAL_DATA_TOOL) {
     const fields = parsePersonalDataInput(args.personal_data);
@@ -1519,6 +1533,52 @@ async function handleToolCall(
       fibra_por_100g: f.fiber_per_100g,
       racion_g: f.serving_size_g,
       descripcion_racion: f.serving_description,
+    })));
+  }
+  if (name === SEARCH_EXERCISES_TOOL) {
+    if (!exercisesRepo || exercisesRepo.length === 0) return "La base de datos de ejercicios no está cargada.";
+    const normalize = (s: string) => s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const query = (args.query as string) ?? "";
+    const muscleGroup = (args.muscle_group as string) ?? "";
+    const secondaryMuscle = (args.secondary_muscle as string) ?? "";
+    const equipment = (args.equipment as string) ?? "";
+    const difficulty = (args.difficulty as string) ?? "";
+
+    let results = [...exercisesRepo];
+
+    if (query.trim()) {
+      const needle = normalize(query);
+      results = results.filter((e) => normalize(e.name).includes(needle));
+    }
+    if (muscleGroup.trim()) {
+      const needle = normalize(muscleGroup);
+      results = results.filter((e) => normalize(e.muscle_group).includes(needle));
+    }
+    if (secondaryMuscle.trim()) {
+      const needle = normalize(secondaryMuscle);
+      results = results.filter((e) =>
+        e.secondary_muscles.some((m) => normalize(m).includes(needle)),
+      );
+    }
+    if (equipment.trim()) {
+      const needle = normalize(equipment);
+      results = results.filter((e) => normalize(e.equipment).includes(needle));
+    }
+    if (difficulty.trim()) {
+      const needle = normalize(difficulty);
+      results = results.filter((e) => normalize(e.difficulty).includes(needle));
+    }
+
+    results = results.slice(0, 15);
+    if (results.length === 0) return "No se encontraron ejercicios con esos criterios.";
+    return JSON.stringify(results.map((e) => ({
+      id: e.id,
+      nombre: e.name,
+      musculo_principal: e.muscle_group,
+      musculos_secundarios: e.secondary_muscles,
+      equipamiento: e.equipment,
+      dificultad: e.difficulty,
+      instrucciones: e.instructions,
     })));
   }
   return "Herramienta no reconocida.";
@@ -3739,6 +3799,7 @@ async function callProviderChatAPIWithTools(
   };
   const readMealFoodsRequired = ["date", "meal"];
   const searchFoodsSchema = { type: "object" as const, properties: SEARCH_FOODS_PARAMS_SCHEMA };
+  const searchExercisesSchema = { type: "object" as const, properties: SEARCH_EXERCISES_PARAMS_SCHEMA };
   const addMealFoodProps = {
     date: { type: "string" as const, description: ADD_MEAL_FOOD_DATE_PARAM_DESC },
     meal: { type: "string" as const, description: ADD_MEAL_FOOD_MEAL_PARAM_DESC },
@@ -3748,6 +3809,7 @@ async function callProviderChatAPIWithTools(
   const toolStoreSetter = options?.setStore;
   const toolStore = options?.store;
   const toolFoodsRepo = options?.foodsRepo;
+  const toolExercisesRepo = options?.exercisesRepo;
 
   const chatTools = {
     openai: [
@@ -3809,6 +3871,12 @@ async function callProviderChatAPIWithTools(
         description: ADD_MEAL_FOOD_DESC,
         parameters: { type: "object", properties: addMealFoodProps, required: addMealFoodRequired },
       },
+      {
+        type: "function",
+        name: SEARCH_EXERCISES_TOOL,
+        description: SEARCH_EXERCISES_DESC,
+        parameters: searchExercisesSchema,
+      },
     ],
     anthropic: [
       {
@@ -3859,6 +3927,11 @@ async function callProviderChatAPIWithTools(
         name: ADD_MEAL_FOOD_TOOL,
         description: ADD_MEAL_FOOD_DESC,
         input_schema: { type: "object", properties: addMealFoodProps, required: addMealFoodRequired },
+      },
+      {
+        name: SEARCH_EXERCISES_TOOL,
+        description: SEARCH_EXERCISES_DESC,
+        input_schema: searchExercisesSchema,
       },
     ],
     google: [
@@ -3912,6 +3985,11 @@ async function callProviderChatAPIWithTools(
             name: ADD_MEAL_FOOD_TOOL,
             description: ADD_MEAL_FOOD_DESC,
             parameters: { type: "object", properties: addMealFoodProps, required: addMealFoodRequired },
+          },
+          {
+            name: SEARCH_EXERCISES_TOOL,
+            description: SEARCH_EXERCISES_DESC,
+            parameters: searchExercisesSchema,
           },
         ],
       },
@@ -3996,7 +4074,7 @@ async function callProviderChatAPIWithTools(
       const toolOutputs: Array<Record<string, unknown>> = [];
       for (const toolCall of toolCalls) {
         const args = parseOpenAIFunctionArguments(toolCall.arguments);
-        const toolResult = await handleToolCall(toolCall.name, args, toolStoreSetter, toolStore, toolFoodsRepo);
+        const toolResult = await handleToolCall(toolCall.name, args, toolStoreSetter, toolStore, toolFoodsRepo, toolExercisesRepo);
         toolOutputs.push({
           type: "function_call_output",
           call_id: toolCall.call_id,
@@ -4080,7 +4158,7 @@ async function callProviderChatAPIWithTools(
 
       const toolResults: any[] = [];
       for (const block of toolUseBlocks) {
-        const result = await handleToolCall(block.name, block.input ?? {}, toolStoreSetter, toolStore, toolFoodsRepo);
+        const result = await handleToolCall(block.name, block.input ?? {}, toolStoreSetter, toolStore, toolFoodsRepo, toolExercisesRepo);
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
       }
       currentMessages = [
@@ -4175,6 +4253,7 @@ async function callProviderChatAPIWithTools(
         toolStoreSetter,
         toolStore,
         toolFoodsRepo,
+        toolExercisesRepo,
       );
       responseParts.push({
         functionResponse: {
@@ -8585,6 +8664,7 @@ export default function App() {
             setStore,
             store,
             foodsRepo: [...foodsRepo, ...personalFoods],
+            exercisesRepo,
             onContentDelta: (_delta, aggregate) => {
               draftContent = aggregate;
               flushAssistantDraft();
