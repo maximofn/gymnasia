@@ -464,7 +464,8 @@
     "fat_per_100g": 13,
     "fiber_per_100g": 0,
     "serving_size_g": 125,
-    "serving_description": "1 filete (125g)"
+    "serving_description": "1 filete (125g)",
+    "image": "salmon.webp"
   },
   {
     "id": "tomate",
