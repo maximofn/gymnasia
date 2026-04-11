@@ -11524,7 +11524,7 @@ export default function App() {
                     }}
                     value={chatInput}
                     onChangeText={setChatInput}
-                    placeholder="Pregunta al coach (API proveedor)"
+                    placeholder="Pregunta al coach"
                     placeholderTextColor={mobileTheme.color.textSecondary}
                     multiline
                     blurOnSubmit={false}
