@@ -15736,18 +15736,24 @@ export default function App() {
                                       openDietMealEditor(category);
                                     }}
                                     style={{
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      gap: 10,
                                       paddingVertical: 10,
                                       paddingHorizontal: 8,
                                       borderBottomWidth: 1,
                                       borderBottomColor: mobileTheme.color.borderSubtle,
                                     }}
                                   >
-                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
-                                      {entry.name}
-                                    </Text>
-                                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>
-                                      {entry.calories_per_100g} kcal/100g · {entry.serving_description || `${entry.serving_size_g}g`}
-                                    </Text>
+                                    <FoodThumbnail food={entry} size={36} />
+                                    <View style={{ flex: 1 }}>
+                                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
+                                        {entry.name}
+                                      </Text>
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>
+                                        {entry.calories_per_100g} kcal/100g · {entry.serving_description || `${entry.serving_size_g}g`}
+                                      </Text>
+                                    </View>
                                   </Pressable>
                                 ))}
                               {[...foodsRepo, ...personalFoods].filter((f) => f.name.toLowerCase().includes(dietFoodSearch.trim().toLowerCase())).length === 0 ? (
