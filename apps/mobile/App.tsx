@@ -15800,9 +15800,7 @@ export default function App() {
                                 });
                               })()}
 
-                              {measuresChartMetric !== "bodyFat" && (
-                                <Path d={areaPath} fill="url(#areaGrad)" />
-                              )}
+                              <Path d={areaPath} fill="url(#areaGrad)" opacity={measuresChartMetric === "bodyFat" ? 0.3 : 1} />
                               <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.5} />
                               {pts.length >= 3 ? (
                                 <Path d={maPath} fill="none" stroke="#7EC8FF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} strokeDasharray="6,4" />
