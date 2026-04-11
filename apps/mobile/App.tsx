@@ -8087,12 +8087,27 @@ export default function App() {
     setConfirmDiscardSession(false);
   }, [activeWorkoutSession]);
 
+  const chatSessionInitRef = useRef(false);
   useEffect(() => {
+    if (!isHydrated) return;
     setThreads(store.threads);
+    if (!chatSessionInitRef.current) {
+      chatSessionInitRef.current = true;
+      // Start a fresh chat session on every app launch
+      const id = uid("thread");
+      const thread: ChatThread = { id, title: "Coach" };
+      setStore((prev) => ({
+        ...prev,
+        threads: [...prev.threads, thread],
+        messagesByThread: { ...prev.messagesByThread, [id]: [] },
+      }));
+      setActiveThreadId(id);
+      return;
+    }
     if (!activeThreadId && store.threads.length > 0) {
       setActiveThreadId(store.threads[0].id);
     }
-  }, [store.threads, activeThreadId]);
+  }, [store.threads, activeThreadId, isHydrated]);
 
   useEffect(() => {
     if (!activeThreadId) {
