@@ -7814,7 +7814,34 @@ export default function App() {
 
   useEffect(() => {
     if (!isHydrated) return;
-    loadExercisesRepo().then(setExercisesRepo);
+    loadExercisesRepo().then((repoExercises) => {
+      setExercisesRepo(repoExercises);
+      // Sync template exercises with repo data (image, muscle, etc.)
+      if (repoExercises.length === 0) return;
+      setStore((prev) => {
+        let changed = false;
+        const updatedTemplates = prev.templates.map((template) => {
+          const updatedExercises = template.exercises.map((exercise) => {
+            const name = (exercise.name ?? "").trim().toLowerCase();
+            if (!name) return exercise;
+            const match = repoExercises.find((r) => r.name.toLowerCase() === name);
+            if (!match) return exercise;
+            const repoImageUri = getExerciseImageUrl(match, "male");
+            const needsImage = !exercise.image_uri && repoImageUri;
+            const needsMuscle = !exercise.muscle && match.muscle_group;
+            if (!needsImage && !needsMuscle) return exercise;
+            changed = true;
+            return {
+              ...exercise,
+              image_uri: needsImage ? repoImageUri : exercise.image_uri,
+              muscle: needsMuscle ? match.muscle_group : exercise.muscle,
+            };
+          });
+          return updatedExercises === template.exercises ? template : { ...template, exercises: updatedExercises };
+        });
+        return changed ? { ...prev, templates: updatedTemplates } : prev;
+      });
+    });
     loadFoodsRepo().then(setFoodsRepo);
     loadPersonalFoods().then(setPersonalFoods);
     migrateBodyFatHistory(setStore);
