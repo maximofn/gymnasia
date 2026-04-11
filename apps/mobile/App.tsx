@@ -15441,14 +15441,14 @@ export default function App() {
                             <Feather name="search" size={14} color={mobileTheme.color.textSecondary} />
                             <TextInput
                               value={dietMealEditorCategory === category ? dietFoodSearch : ""}
-                              onChangeText={(t) => { setDietFoodSearch(t); if (t.trim()) { setDietAddMode("search"); openDietMealEditor(category); } else if (dietMealEditorCategory !== category) { openDietMealEditor(category); } }}
+                              onChangeText={(t) => { setDietFoodSearch(t); if (t.trim()) { setDietAddMode("search"); openDietMealEditor(category); } else { setDietAddMode(null); setDietMealEditorCategory(null); } }}
                               onFocus={() => { if (dietMealEditorCategory !== category) { setDietFoodSearch(""); openDietMealEditor(category); } }}
                               placeholder="Buscar alimento..."
                               placeholderTextColor={mobileTheme.color.textSecondary}
                               style={{ flex: 1, minHeight: 42, color: mobileTheme.color.textPrimary, fontSize: 14 }}
                             />
                             {dietMealEditorCategory === category && dietFoodSearch ? (
-                              <Pressable onPress={() => setDietFoodSearch("")}>
+                              <Pressable onPress={() => { setDietFoodSearch(""); setDietAddMode(null); setDietMealEditorCategory(null); }}>
                                 <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
                               </Pressable>
                             ) : null}
