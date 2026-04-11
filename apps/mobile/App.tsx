@@ -19169,34 +19169,6 @@ export default function App() {
         </KeyboardAvoidingView>
       )}
 
-      {tab === "diet" ? (
-        <View
-          style={{
-            position: "absolute",
-            right: 20,
-            bottom: 86,
-          }}
-        >
-          <Pressable
-            onPress={openFoodEstimatorModal}
-            style={{
-              width: 66,
-              height: 66,
-              borderRadius: 999,
-              backgroundColor: mobileTheme.color.brandPrimary,
-              alignItems: "center",
-              justifyContent: "center",
-              shadowColor: mobileTheme.color.brandPrimary,
-              shadowOpacity: 0.35,
-              shadowRadius: 10,
-              shadowOffset: { width: 0, height: 4 },
-              elevation: 9,
-            }}
-          >
-            <Ionicons name="camera-outline" size={30} color="#06090D" />
-          </Pressable>
-        </View>
-      ) : null}
 
       {tab === "training" &&
       !activeTrainingTemplate &&
