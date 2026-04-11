@@ -451,7 +451,8 @@
     "fat_per_100g": 13,
     "fiber_per_100g": 0,
     "serving_size_g": 60,
-    "serving_description": "1 porción (60g)"
+    "serving_description": "1 porción (60g)",
+    "image": "queso-fresco.webp"
   },
   {
     "id": "salmon",
