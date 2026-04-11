@@ -432,16 +432,16 @@ const FOODS_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos";
 const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
 const FOODS_IMAGES_BASE_URL = `${FOODS_REPO_BASE_URL}/images`;
-const PRODUCTS_IMAGES_BASE_URL = `${PRODUCTS_REPO_BASE_URL}/images`;
-const RECIPES_IMAGES_BASE_URL = `${RECIPES_REPO_BASE_URL}/images`;
 const FOODS_CACHE_KEY = "gymnasia.mobile.foods_repo.v1";
 const PRODUCTS_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/productos_comerciales";
 const PRODUCTS_ALL_URL = `${PRODUCTS_REPO_BASE_URL}/all.json`;
+const PRODUCTS_IMAGES_BASE_URL = `${PRODUCTS_REPO_BASE_URL}/images`;
 const PRODUCTS_CACHE_KEY = "gymnasia.mobile.products_repo.v1";
 const RECIPES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/recetas";
 const RECIPES_ALL_URL = `${RECIPES_REPO_BASE_URL}/all.json`;
+const RECIPES_IMAGES_BASE_URL = `${RECIPES_REPO_BASE_URL}/images`;
 const RECIPES_CACHE_KEY = "gymnasia.mobile.recipes_repo.v1";
 const PERSONAL_FOODS_STORAGE_KEY = "gymnasia.mobile.personal_foods.v1";
 
