@@ -15636,9 +15636,8 @@ export default function App() {
                         const vals = pts.map((p) => p.value);
                         const rawMin = Math.min(...vals);
                         const rawMax = Math.max(...vals);
-                        const isBodyFat = measuresChartMetric === "bodyFat";
-                        const minV = isBodyFat ? 5 : Math.floor(rawMin) - 1;
-                        const maxV = isBodyFat ? 35 : Math.ceil(rawMax) + 1;
+                        const minV = Math.floor(rawMin) - 1;
+                        const maxV = Math.ceil(rawMax) + 1;
                         const rangeV = Math.max(0.4, maxV - minV);
                         const minT = pts[0].timestamp;
                         const maxT = pts[pts.length - 1].timestamp;
