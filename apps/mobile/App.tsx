@@ -11437,43 +11437,6 @@ export default function App() {
             {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
             {store.keys.some((k) => k.api_key.trim()) ? (
               <View style={{ flex: 1, gap: 10 }}>
-                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                  {threads.map((thread) => (
-                    <Pressable
-                      key={thread.id}
-                      onPress={() => setActiveThreadId(thread.id)}
-                      style={{
-                        borderWidth: 1,
-                        borderColor:
-                          activeThreadId === thread.id ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                        backgroundColor:
-                          activeThreadId === thread.id ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
-                        paddingHorizontal: 10,
-                        height: 34,
-                        borderRadius: mobileTheme.radius.pill,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12 }}>{thread.title ?? "Hilo"}</Text>
-                    </Pressable>
-                  ))}
-                  <Pressable
-                    onPress={createThread}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      paddingHorizontal: 10,
-                      height: 34,
-                      borderRadius: mobileTheme.radius.pill,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>+ hilo</Text>
-                  </Pressable>
-                </View>
                 <ScrollView
                   ref={chatScrollRef}
                   style={{ flex: 1 }}
