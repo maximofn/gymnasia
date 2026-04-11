@@ -707,6 +707,7 @@ type ExerciseRepoEntry = {
   instructions: string;
 };
 
+type FoodSource = "alimento" | "producto_comercial" | "receta" | "personal";
 type FoodRepoEntry = {
   id: string;
   name: string;
@@ -719,6 +720,7 @@ type FoodRepoEntry = {
   serving_size_g: number;
   serving_description: string;
   image?: string;
+  source?: FoodSource;
 };
 
 function foodRepoImageUri(entry: FoodRepoEntry | null | undefined): string | null {
@@ -1197,10 +1199,22 @@ const READ_MEAL_FOODS_MEAL_PARAM_DESC = "Nombre de la comida: Desayuno, Almuerzo
 
 const SEARCH_FOODS_TOOL = "search_foods";
 const SEARCH_FOODS_DESC =
-  "Busca alimentos, productos comerciales o recetas en la base de datos local por nombre. " +
-  "Usa esta herramienta cuando el usuario pregunte por datos nutricionales de un alimento, " +
-  "quiera saber si un alimento está en la base de datos, o necesite información calórica/macros.";
-const SEARCH_FOODS_PARAM_DESC = "Texto de búsqueda (nombre o parte del nombre del alimento)";
+  "Busca alimentos en la base de datos local. Soporta búsqueda por nombre, categoría, tipo (alimento/producto_comercial/receta), " +
+  "filtros por rango de calorías/proteínas/carbohidratos/grasa por 100g, y ordenación. Todos los parámetros son opcionales, combínalos según lo que pida el usuario.";
+const SEARCH_FOODS_PARAMS_SCHEMA = {
+  query: { type: "string" as const, description: "Texto de búsqueda por nombre (opcional)" },
+  category: { type: "string" as const, description: "Filtrar por categoría del alimento, por ejemplo: grasa, proteina, carbohidrato, fruta, verdura, lacteo, cereal (opcional)" },
+  source: { type: "string" as const, description: "Filtrar por tipo: 'alimento', 'producto_comercial', 'receta' o 'personal' (opcional)" },
+  min_calories: { type: "number" as const, description: "Calorías mínimas por 100g (opcional)" },
+  max_calories: { type: "number" as const, description: "Calorías máximas por 100g (opcional)" },
+  min_protein: { type: "number" as const, description: "Proteínas mínimas por 100g en gramos (opcional)" },
+  max_protein: { type: "number" as const, description: "Proteínas máximas por 100g en gramos (opcional)" },
+  min_carbs: { type: "number" as const, description: "Carbohidratos mínimos por 100g en gramos (opcional)" },
+  max_carbs: { type: "number" as const, description: "Carbohidratos máximos por 100g en gramos (opcional)" },
+  min_fat: { type: "number" as const, description: "Grasa mínima por 100g en gramos (opcional)" },
+  max_fat: { type: "number" as const, description: "Grasa máxima por 100g en gramos (opcional)" },
+  sort_by: { type: "string" as const, description: "Ordenar por: 'calories_asc', 'calories_desc', 'protein_asc', 'protein_desc', 'carbs_asc', 'carbs_desc', 'fat_asc', 'fat_desc' (opcional)" },
+};
 
 const ADD_MEAL_FOOD_TOOL = "add_meal_food";
 const ADD_MEAL_FOOD_DESC =
@@ -1427,19 +1441,71 @@ async function handleToolCall(
     return `Alimento "${foodName}" (${grams}g, ${caloriesKcal} kcal) añadido a ${meal} del ${date}.`;
   }
   if (name === SEARCH_FOODS_TOOL) {
-    const query = (args.query as string) ?? "";
-    if (!query.trim()) return "No se proporcionó un texto de búsqueda.";
     if (!foodsRepo || foodsRepo.length === 0) return "La base de datos de alimentos no está cargada.";
-    const needle = query.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const all = foodsRepo;
-    const results = all.filter((f) => {
-      const hay = f.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      return hay.includes(needle) || needle.includes(hay);
-    }).slice(0, 10);
-    if (results.length === 0) return `No se encontraron alimentos que coincidan con "${query}".`;
+    const normalize = (s: string) => s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const query = (args.query as string) ?? "";
+    const category = (args.category as string) ?? "";
+    const source = (args.source as string) ?? "";
+    const minCal = args.min_calories != null ? Number(args.min_calories) : null;
+    const maxCal = args.max_calories != null ? Number(args.max_calories) : null;
+    const minProt = args.min_protein != null ? Number(args.min_protein) : null;
+    const maxProt = args.max_protein != null ? Number(args.max_protein) : null;
+    const minCarbs = args.min_carbs != null ? Number(args.min_carbs) : null;
+    const maxCarbs = args.max_carbs != null ? Number(args.max_carbs) : null;
+    const minFat = args.min_fat != null ? Number(args.min_fat) : null;
+    const maxFat = args.max_fat != null ? Number(args.max_fat) : null;
+    const sortBy = (args.sort_by as string) ?? "";
+
+    let results = [...foodsRepo];
+
+    // Filter by name
+    if (query.trim()) {
+      const needle = normalize(query);
+      results = results.filter((f) => {
+        const hay = normalize(f.name);
+        return hay.includes(needle) || needle.includes(hay);
+      });
+    }
+    // Filter by category
+    if (category.trim()) {
+      const needleCat = normalize(category);
+      results = results.filter((f) => normalize(f.category).includes(needleCat));
+    }
+    // Filter by source
+    if (source.trim()) {
+      const needleSrc = normalize(source);
+      results = results.filter((f) => normalize(f.source ?? "alimento") === needleSrc);
+    }
+    // Numeric filters
+    if (minCal != null) results = results.filter((f) => f.calories_per_100g >= minCal);
+    if (maxCal != null) results = results.filter((f) => f.calories_per_100g <= maxCal);
+    if (minProt != null) results = results.filter((f) => f.protein_per_100g >= minProt);
+    if (maxProt != null) results = results.filter((f) => f.protein_per_100g <= maxProt);
+    if (minCarbs != null) results = results.filter((f) => f.carbs_per_100g >= minCarbs);
+    if (maxCarbs != null) results = results.filter((f) => f.carbs_per_100g <= maxCarbs);
+    if (minFat != null) results = results.filter((f) => f.fat_per_100g >= minFat);
+    if (maxFat != null) results = results.filter((f) => f.fat_per_100g <= maxFat);
+
+    // Sort
+    if (sortBy) {
+      const [field, dir] = sortBy.split("_") as [string, string];
+      const asc = dir === "asc";
+      const getter = (f: FoodRepoEntry) =>
+        field === "calories" ? f.calories_per_100g
+        : field === "protein" ? f.protein_per_100g
+        : field === "carbs" ? f.carbs_per_100g
+        : field === "fat" ? f.fat_per_100g
+        : 0;
+      results.sort((a, b) => asc ? getter(a) - getter(b) : getter(b) - getter(a));
+    }
+
+    results = results.slice(0, 15);
+    if (results.length === 0) return "No se encontraron alimentos con esos criterios.";
     return JSON.stringify(results.map((f) => ({
       id: f.id,
       nombre: f.name,
+      categoria: f.category,
+      tipo: f.source ?? "alimento",
       calorias_por_100g: f.calories_per_100g,
       proteina_por_100g: f.protein_per_100g,
       carbohidratos_por_100g: f.carbs_per_100g,
@@ -3665,10 +3731,7 @@ async function callProviderChatAPIWithTools(
     meal: { type: "string" as const, description: READ_MEAL_FOODS_MEAL_PARAM_DESC },
   };
   const readMealFoodsRequired = ["date", "meal"];
-  const searchFoodsProps = {
-    query: { type: "string" as const, description: SEARCH_FOODS_PARAM_DESC },
-  };
-  const searchFoodsRequired = ["query"];
+  const searchFoodsSchema = { type: "object" as const, properties: SEARCH_FOODS_PARAMS_SCHEMA };
   const addMealFoodProps = {
     date: { type: "string" as const, description: ADD_MEAL_FOOD_DATE_PARAM_DESC },
     meal: { type: "string" as const, description: ADD_MEAL_FOOD_MEAL_PARAM_DESC },
@@ -3731,7 +3794,7 @@ async function callProviderChatAPIWithTools(
         type: "function",
         name: SEARCH_FOODS_TOOL,
         description: SEARCH_FOODS_DESC,
-        parameters: { type: "object", properties: searchFoodsProps, required: searchFoodsRequired },
+        parameters: searchFoodsSchema,
       },
       {
         type: "function",
@@ -3783,7 +3846,7 @@ async function callProviderChatAPIWithTools(
       {
         name: SEARCH_FOODS_TOOL,
         description: SEARCH_FOODS_DESC,
-        input_schema: { type: "object", properties: searchFoodsProps, required: searchFoodsRequired },
+        input_schema: searchFoodsSchema,
       },
       {
         name: ADD_MEAL_FOOD_TOOL,
@@ -3836,7 +3899,7 @@ async function callProviderChatAPIWithTools(
           {
             name: SEARCH_FOODS_TOOL,
             description: SEARCH_FOODS_DESC,
-            parameters: { type: "object", properties: searchFoodsProps, required: searchFoodsRequired },
+            parameters: searchFoodsSchema,
           },
           {
             name: ADD_MEAL_FOOD_TOOL,
@@ -8116,7 +8179,11 @@ export default function App() {
       });
     });
     Promise.all([loadFoodsRepo(), loadProductsRepo(), loadRecipesRepo()]).then(
-      ([foods, products, recipes]) => setFoodsRepo([...foods, ...products, ...recipes]),
+      ([foods, products, recipes]) => setFoodsRepo([
+        ...foods.map((f) => ({ ...f, source: "alimento" as FoodSource })),
+        ...products.map((f) => ({ ...f, source: "producto_comercial" as FoodSource })),
+        ...recipes.map((f) => ({ ...f, source: "receta" as FoodSource })),
+      ]),
     );
     loadPersonalFoods().then(setPersonalFoods);
     migrateBodyFatHistory(setStore);
