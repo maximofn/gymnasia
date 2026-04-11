@@ -6411,6 +6411,7 @@ export default function App() {
   const [foodEstimatorMessages, setFoodEstimatorMessages] = useState<ChatMessage[]>([]);
   const [foodEstimatorInput, setFoodEstimatorInput] = useState("");
   const [foodEstimatorSending, setFoodEstimatorSending] = useState(false);
+  const [bodyFatInfoModalOpen, setBodyFatInfoModalOpen] = useState(false);
   const [foodEstimatorStatus, setFoodEstimatorStatus] = useState("");
   const foodThinkingLabel = useThinkingLabel(foodEstimatorSending);
   const [foodEstimatorExpandedThinking, setFoodEstimatorExpandedThinking] = useState<Record<string, boolean>>({});
@@ -15759,6 +15760,9 @@ export default function App() {
                                     <Text style={{ color: "#8B94A3", fontSize: 7, fontWeight: "600" }}>{z.label}</Text>
                                   </View>
                                 ))}
+                                <Pressable onPress={() => setBodyFatInfoModalOpen(true)} hitSlop={8}>
+                                  <Ionicons name="information-circle-outline" size={14} color="#8B94A3" />
+                                </Pressable>
                               </View>
                             )}
                             <Svg width="100%" height={chartH} viewBox={`0 0 ${chartW} ${chartH}`}>
@@ -20396,6 +20400,112 @@ export default function App() {
           </Pressable>
         );
       })() : null}
+
+      {bodyFatInfoModalOpen && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.7)",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            padding: 20,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#141820",
+              borderRadius: 22,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.08)",
+              padding: 20,
+              width: "100%",
+              maxHeight: "85%",
+            }}
+          >
+            <ScrollView>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
+                  % Grasa corporal por edad
+                </Text>
+                <Pressable onPress={() => setBodyFatInfoModalOpen(false)} hitSlop={10}>
+                  <Ionicons name="close" size={22} color="#8B94A3" />
+                </Pressable>
+              </View>
+
+              <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700", marginBottom: 8 }}>Hombres</Text>
+              <View style={{ borderRadius: 12, overflow: "hidden", marginBottom: 16 }}>
+                {[
+                  { age: "Edad", sub: "Sub.", ath: "Atlético", fit: "Saludable", acc: "Aceptable", ob: "Obesidad" },
+                  { age: "20-29", sub: "<7%", ath: "7-10%", fit: "11-15%", acc: "16-20%", ob: ">20%" },
+                  { age: "30-39", sub: "<8%", ath: "8-12%", fit: "13-17%", acc: "18-22%", ob: ">22%" },
+                  { age: "40-49", sub: "<10%", ath: "10-14%", fit: "15-19%", acc: "20-24%", ob: ">24%" },
+                  { age: "50-59", sub: "<11%", ath: "11-15%", fit: "16-20%", acc: "21-25%", ob: ">25%" },
+                  { age: "60+", sub: "<12%", ath: "12-17%", fit: "18-21%", acc: "22-26%", ob: ">26%" },
+                ].map((row, i) => (
+                  <View key={row.age} style={{ flexDirection: "row", backgroundColor: i === 0 ? "rgba(255,255,255,0.06)" : i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent" }}>
+                    {[row.age, row.sub, row.ath, row.fit, row.acc, row.ob].map((cell, j) => (
+                      <Text
+                        key={j}
+                        style={{
+                          flex: j === 0 ? 1.2 : 1,
+                          color: i === 0 ? "#8B94A3" : j === 1 ? "#FF4B4B" : j === 2 ? "#CBFF1A" : j === 3 ? "#00C66B" : j === 4 ? "#CBFF1A" : j === 5 ? "#FF8C00" : mobileTheme.color.textPrimary,
+                          fontSize: 10,
+                          fontWeight: i === 0 ? "700" : "600",
+                          paddingVertical: 6,
+                          paddingHorizontal: 4,
+                          textAlign: "center",
+                        }}
+                      >
+                        {cell}
+                      </Text>
+                    ))}
+                  </View>
+                ))}
+              </View>
+
+              <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700", marginBottom: 8 }}>Mujeres</Text>
+              <View style={{ borderRadius: 12, overflow: "hidden", marginBottom: 16 }}>
+                {[
+                  { age: "Edad", sub: "Sub.", ath: "Atlético", fit: "Saludable", acc: "Aceptable", ob: "Obesidad" },
+                  { age: "20-29", sub: "<14%", ath: "14-17%", fit: "18-22%", acc: "23-27%", ob: ">27%" },
+                  { age: "30-39", sub: "<15%", ath: "15-18%", fit: "19-23%", acc: "24-28%", ob: ">28%" },
+                  { age: "40-49", sub: "<17%", ath: "17-20%", fit: "21-25%", acc: "26-30%", ob: ">30%" },
+                  { age: "50-59", sub: "<18%", ath: "18-22%", fit: "23-27%", acc: "28-32%", ob: ">32%" },
+                  { age: "60+", sub: "<19%", ath: "19-23%", fit: "24-28%", acc: "29-33%", ob: ">33%" },
+                ].map((row, i) => (
+                  <View key={row.age} style={{ flexDirection: "row", backgroundColor: i === 0 ? "rgba(255,255,255,0.06)" : i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent" }}>
+                    {[row.age, row.sub, row.ath, row.fit, row.acc, row.ob].map((cell, j) => (
+                      <Text
+                        key={j}
+                        style={{
+                          flex: j === 0 ? 1.2 : 1,
+                          color: i === 0 ? "#8B94A3" : j === 1 ? "#FF4B4B" : j === 2 ? "#CBFF1A" : j === 3 ? "#00C66B" : j === 4 ? "#CBFF1A" : j === 5 ? "#FF8C00" : mobileTheme.color.textPrimary,
+                          fontSize: 10,
+                          fontWeight: i === 0 ? "700" : "600",
+                          paddingVertical: 6,
+                          paddingHorizontal: 4,
+                          textAlign: "center",
+                        }}
+                      >
+                        {cell}
+                      </Text>
+                    ))}
+                  </View>
+                ))}
+              </View>
+
+              <Text style={{ color: "#8B94A3", fontSize: 11, lineHeight: 16 }}>
+                El cuerpo necesita al menos un 3-5% (hombres) o 10-13% (mujeres) de grasa esencial. Con la edad, es normal tener algo más de grasa. La distribución (visceral vs. subcutánea) también importa.
+              </Text>
+            </ScrollView>
+          </View>
+        </View>
+      )}
 
       <StatusBar style="light" />
     </SafeAreaView>
