@@ -431,6 +431,14 @@ const FOODS_REPO_BASE_URL =
 const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
 const FOODS_IMAGES_BASE_URL = `${FOODS_REPO_BASE_URL}/images`;
 const FOODS_CACHE_KEY = "gymnasia.mobile.foods_repo.v1";
+const PRODUCTS_REPO_BASE_URL =
+  "https://raw.githubusercontent.com/maximofn/gymnasia/main/productos_comerciales";
+const PRODUCTS_ALL_URL = `${PRODUCTS_REPO_BASE_URL}/all.json`;
+const PRODUCTS_CACHE_KEY = "gymnasia.mobile.products_repo.v1";
+const RECIPES_REPO_BASE_URL =
+  "https://raw.githubusercontent.com/maximofn/gymnasia/main/recetas";
+const RECIPES_ALL_URL = `${RECIPES_REPO_BASE_URL}/all.json`;
+const RECIPES_CACHE_KEY = "gymnasia.mobile.recipes_repo.v1";
 const PERSONAL_FOODS_STORAGE_KEY = "gymnasia.mobile.personal_foods.v1";
 
 function normalizeProviderModel(provider: Provider, rawModel: string | null | undefined): string {
@@ -716,6 +724,42 @@ async function loadFoodsRepo(): Promise<FoodRepoEntry[]> {
   } catch {
     try {
       const cached = await AsyncStorage.getItem(FOODS_CACHE_KEY);
+      if (cached) return JSON.parse(cached);
+      return [];
+    } catch {
+      return [];
+    }
+  }
+}
+
+async function loadProductsRepo(): Promise<FoodRepoEntry[]> {
+  try {
+    const response = await fetch(`${PRODUCTS_ALL_URL}?ts=${Date.now()}`);
+    if (!response.ok) throw new Error(`Products fetch error (${response.status})`);
+    const products: FoodRepoEntry[] = await response.json();
+    AsyncStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify(products)).catch(() => {});
+    return products;
+  } catch {
+    try {
+      const cached = await AsyncStorage.getItem(PRODUCTS_CACHE_KEY);
+      if (cached) return JSON.parse(cached);
+      return [];
+    } catch {
+      return [];
+    }
+  }
+}
+
+async function loadRecipesRepo(): Promise<FoodRepoEntry[]> {
+  try {
+    const response = await fetch(`${RECIPES_ALL_URL}?ts=${Date.now()}`);
+    if (!response.ok) throw new Error(`Recipes fetch error (${response.status})`);
+    const recipes: FoodRepoEntry[] = await response.json();
+    AsyncStorage.setItem(RECIPES_CACHE_KEY, JSON.stringify(recipes)).catch(() => {});
+    return recipes;
+  } catch {
+    try {
+      const cached = await AsyncStorage.getItem(RECIPES_CACHE_KEY);
       if (cached) return JSON.parse(cached);
       return [];
     } catch {
@@ -7858,7 +7902,9 @@ export default function App() {
         return changed ? { ...prev, templates: updatedTemplates } : prev;
       });
     });
-    loadFoodsRepo().then(setFoodsRepo);
+    Promise.all([loadFoodsRepo(), loadProductsRepo(), loadRecipesRepo()]).then(
+      ([foods, products, recipes]) => setFoodsRepo([...foods, ...products, ...recipes]),
+    );
     loadPersonalFoods().then(setPersonalFoods);
     migrateBodyFatHistory(setStore);
   }, [isHydrated]);
