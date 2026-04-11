@@ -646,6 +646,30 @@ async function loadChatSystemPrompt(): Promise<string> {
   }
 }
 
+const EXERCISE_EQUIPMENT_OPTIONS = [
+  "Peso corporal", "Barra", "Mancuernas", "Máquina", "Cable",
+  "Kettlebell", "Banda elástica", "Polea", "Otro",
+];
+const EXERCISE_DIFFICULTY_OPTIONS = ["Principiante", "Intermedio", "Avanzado"];
+const EXERCISE_MUSCLE_OPTIONS = [
+  "Pecho", "Espalda", "Hombros", "Bíceps", "Tríceps",
+  "Cuádriceps", "Isquiotibiales", "Glúteos", "Gemelos",
+  "Core", "Antebrazos", "Trapecio", "Aductores", "Abductores",
+];
+
+type CustomExerciseDraft = {
+  name: string;
+  muscle_group: string;
+  secondary_muscles: string[];
+  equipment: string;
+  difficulty: string;
+  instructions: string;
+};
+
+const EMPTY_CUSTOM_EXERCISE_DRAFT: CustomExerciseDraft = {
+  name: "", muscle_group: "", secondary_muscles: [], equipment: "", difficulty: "", instructions: "",
+};
+
 type ExerciseRepoEntry = {
   id: string;
   name: string;
@@ -6502,6 +6526,8 @@ export default function App() {
   const [exercisesRepo, setExercisesRepo] = useState<ExerciseRepoEntry[]>([]);
   const [exercisePickerOpen, setExercisePickerOpen] = useState(false);
   const [exercisePickerSearch, setExercisePickerSearch] = useState("");
+  const [customExerciseFormOpen, setCustomExerciseFormOpen] = useState(false);
+  const [customExerciseDraft, setCustomExerciseDraft] = useState<CustomExerciseDraft>(EMPTY_CUSTOM_EXERCISE_DRAFT);
   const [exercisePickerMuscleFilter, setExercisePickerMuscleFilter] = useState("all");
   const [supersetPickerTarget, setSupersetPickerTarget] = useState<{
     exerciseId: string;
@@ -7426,6 +7452,7 @@ export default function App() {
       if (confirmDiscardSession) { setConfirmDiscardSession(false); return true; }
       if (foodEstimatorModalOpen) { setFoodEstimatorModalOpen(false); return true; }
       if (bodyFatInfoModalOpen) { setBodyFatInfoModalOpen(false); return true; }
+      if (customExerciseFormOpen) { setCustomExerciseFormOpen(false); return true; }
       if (exercisePickerOpen) { setExercisePickerOpen(false); return true; }
       if (personalFoodAIChatOpen) { setPersonalFoodAIChatOpen(false); return true; }
       if (personalFoodFormVisible) { setPersonalFoodFormVisible(false); return true; }
@@ -9682,6 +9709,72 @@ export default function App() {
     setActiveExerciseMenuId(null);
     setExercisePickerOpen(false);
     setError(null);
+  }
+
+  function addCustomExerciseFromForm() {
+    const draft = customExerciseDraft;
+    if (!draft.name.trim()) return;
+
+    const exerciseId = uid("exercise");
+    const category = activeTrainingCategory ?? "strength";
+    const isLoadFocused = category === "strength" || category === "hypertrophy";
+    const muscle = draft.muscle_group.toLowerCase() || inferExerciseMuscle(draft.name, category);
+    const firstSeries: ExerciseSeries = {
+      id: uid("set"),
+      reps: category === "cardio" ? "12" : "10",
+      weight_kg: isLoadFocused ? "20" : "",
+      rest_seconds: isLoadFocused ? "120" : "75",
+    };
+
+    const newExercise = {
+      id: exerciseId,
+      name: draft.name.trim(),
+      image_uri: null as string | null,
+      sets: seriesToLegacySets([firstSeries]),
+      series: [firstSeries],
+      muscle,
+      load_kg: isLoadFocused ? 20 : null,
+      rest_seconds: isLoadFocused ? 120 : 75,
+    };
+
+    if (activeWorkoutSession) {
+      const templateId = activeWorkoutSession.template_id;
+      let updatedTemplate: WorkoutTemplate | null = null;
+      setStore((prev) => ({
+        ...prev,
+        templates: prev.templates.map((t) => {
+          if (t.id !== templateId) return t;
+          const updated = { ...t, exercises: [...t.exercises, newExercise] };
+          updatedTemplate = updated;
+          return updated;
+        }),
+      }));
+      if (updatedTemplate) {
+        const pointers = listTemplateSeriesPointers(updatedTemplate);
+        setActiveWorkoutSession({ ...activeWorkoutSession, total_series_count: pointers.length });
+      }
+    } else if (activeTrainingTemplateId) {
+      setStore((prev) => ({
+        ...prev,
+        templates: prev.templates.map((template) => {
+          if (template.id !== activeTrainingTemplateId) return template;
+          return { ...template, exercises: [...template.exercises, newExercise] };
+        }),
+      }));
+    }
+
+    setExpandedExerciseId(exerciseId);
+    setActiveExerciseMenuId(null);
+    setCustomExerciseFormOpen(false);
+    setExercisePickerOpen(false);
+    setError(null);
+
+    // Fire-and-forget: create GitHub issue for new exercise
+    createGitHubExerciseIssue({
+      name: draft.name.trim(),
+      muscle_group: draft.muscle_group,
+      equipment: draft.equipment,
+    });
   }
 
   function addSeriesToExercise(exerciseId: string) {
@@ -20366,7 +20459,10 @@ export default function App() {
               ) : null}
 
               <Pressable
-                onPress={addBlankExerciseToActiveTemplate}
+                onPress={() => {
+                  setCustomExerciseDraft(EMPTY_CUSTOM_EXERCISE_DRAFT);
+                  setCustomExerciseFormOpen(true);
+                }}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -20385,6 +20481,230 @@ export default function App() {
                 </Text>
               </Pressable>
             </ScrollView>
+          </SafeAreaView>
+        </View>
+      ) : null}
+
+      {customExerciseFormOpen ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0, right: 0, bottom: 0, left: 0,
+            backgroundColor: "#0D1117",
+            zIndex: 750,
+            elevation: 75,
+          }}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            >
+              {/* Header */}
+              <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
+                <Pressable onPress={() => setCustomExerciseFormOpen(false)} hitSlop={10}>
+                  <Feather name="arrow-left" size={24} color={mobileTheme.color.textPrimary} />
+                </Pressable>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700", flex: 1 }}>
+                  Nuevo ejercicio
+                </Text>
+              </View>
+
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ padding: 14, gap: 20, paddingBottom: 40 }}
+                keyboardShouldPersistTaps="handled"
+              >
+                {/* Nombre */}
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Nombre *</Text>
+                  <TextInput
+                    value={customExerciseDraft.name}
+                    onChangeText={(v) => setCustomExerciseDraft((d) => ({ ...d, name: v }))}
+                    placeholder="Ej: Flexiones, Sentadilla búlgara..."
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      borderRadius: mobileTheme.radius.md,
+                      paddingHorizontal: 12,
+                      paddingVertical: 10,
+                      color: mobileTheme.color.textPrimary,
+                      fontSize: 16,
+                      backgroundColor: "#171B23",
+                      minHeight: 48,
+                    }}
+                  />
+                </View>
+
+                {/* Grupo muscular */}
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Grupo muscular principal</Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                    {EXERCISE_MUSCLE_OPTIONS.map((muscle) => {
+                      const isActive = customExerciseDraft.muscle_group === muscle;
+                      return (
+                        <Pressable
+                          key={muscle}
+                          onPress={() => setCustomExerciseDraft((d) => ({ ...d, muscle_group: isActive ? "" : muscle }))}
+                          style={{
+                            paddingHorizontal: 14,
+                            paddingVertical: 7,
+                            borderRadius: mobileTheme.radius.pill,
+                            borderWidth: 1,
+                            borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
+                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                          }}
+                        >
+                          <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
+                            {muscle}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                {/* Músculos secundarios */}
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Músculos secundarios</Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                    {EXERCISE_MUSCLE_OPTIONS
+                      .filter((m) => m !== customExerciseDraft.muscle_group)
+                      .map((muscle) => {
+                        const isActive = customExerciseDraft.secondary_muscles.includes(muscle);
+                        return (
+                          <Pressable
+                            key={muscle}
+                            onPress={() =>
+                              setCustomExerciseDraft((d) => ({
+                                ...d,
+                                secondary_muscles: isActive
+                                  ? d.secondary_muscles.filter((m) => m !== muscle)
+                                  : [...d.secondary_muscles, muscle],
+                              }))
+                            }
+                            style={{
+                              paddingHorizontal: 14,
+                              paddingVertical: 7,
+                              borderRadius: mobileTheme.radius.pill,
+                              borderWidth: 1,
+                              borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
+                              backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                            }}
+                          >
+                            <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
+                              {muscle}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                  </View>
+                </View>
+
+                {/* Equipamiento */}
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Equipamiento</Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                    {EXERCISE_EQUIPMENT_OPTIONS.map((eq) => {
+                      const isActive = customExerciseDraft.equipment === eq;
+                      return (
+                        <Pressable
+                          key={eq}
+                          onPress={() => setCustomExerciseDraft((d) => ({ ...d, equipment: isActive ? "" : eq }))}
+                          style={{
+                            paddingHorizontal: 14,
+                            paddingVertical: 7,
+                            borderRadius: mobileTheme.radius.pill,
+                            borderWidth: 1,
+                            borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
+                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                          }}
+                        >
+                          <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
+                            {eq}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                {/* Dificultad */}
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Dificultad</Text>
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    {EXERCISE_DIFFICULTY_OPTIONS.map((diff) => {
+                      const isActive = customExerciseDraft.difficulty === diff;
+                      return (
+                        <Pressable
+                          key={diff}
+                          onPress={() => setCustomExerciseDraft((d) => ({ ...d, difficulty: isActive ? "" : diff }))}
+                          style={{
+                            paddingHorizontal: 14,
+                            paddingVertical: 7,
+                            borderRadius: mobileTheme.radius.pill,
+                            borderWidth: 1,
+                            borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
+                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                            flex: 1,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
+                            {diff}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                {/* Instrucciones */}
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Instrucciones</Text>
+                  <TextInput
+                    value={customExerciseDraft.instructions}
+                    onChangeText={(v) => setCustomExerciseDraft((d) => ({ ...d, instructions: v }))}
+                    placeholder="Describe cómo realizar el ejercicio..."
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                    style={{
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      borderRadius: mobileTheme.radius.md,
+                      paddingHorizontal: 12,
+                      paddingVertical: 10,
+                      color: mobileTheme.color.textPrimary,
+                      fontSize: 14,
+                      backgroundColor: "#171B23",
+                      minHeight: 100,
+                    }}
+                  />
+                </View>
+
+                {/* Guardar */}
+                <Pressable
+                  onPress={addCustomExerciseFromForm}
+                  disabled={!customExerciseDraft.name.trim()}
+                  style={{
+                    backgroundColor: customExerciseDraft.name.trim()
+                      ? mobileTheme.color.brandPrimary
+                      : "rgba(203,255,26,0.2)",
+                    borderRadius: mobileTheme.radius.lg,
+                    paddingVertical: 16,
+                    alignItems: "center",
+                    opacity: customExerciseDraft.name.trim() ? 1 : 0.5,
+                  }}
+                >
+                  <Text style={{ color: "#07090D", fontSize: 17, fontWeight: "800" }}>
+                    Guardar ejercicio
+                  </Text>
+                </Pressable>
+              </ScrollView>
+            </KeyboardAvoidingView>
           </SafeAreaView>
         </View>
       ) : null}
