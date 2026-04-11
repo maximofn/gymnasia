@@ -818,22 +818,28 @@ async function createGitHubFoodIssue(food: {
   carbs_g: number;
   fat_g: number;
   grams: number;
-  food_type?: "producto_comercial" | "receta" | "alimento";
+  food_type?: "producto_comercial" | "receta" | "alimento" | "manual";
 }): Promise<void> {
   try {
     const titlePrefix =
       food.food_type === "producto_comercial" ? "[Nuevo producto comercial]"
       : food.food_type === "receta" ? "[Nueva receta]"
+      : food.food_type === "manual" ? "[Alimento añadido a mano]"
       : "Nuevo alimento:";
     const label =
       food.food_type === "producto_comercial" ? "producto_comercial"
       : food.food_type === "receta" ? "receta"
       : "alimento";
+    const typeLabel =
+      food.food_type === "producto_comercial" ? "Producto comercial"
+      : food.food_type === "receta" ? "Receta"
+      : food.food_type === "manual" ? "Añadido a mano"
+      : "Alimento";
     const body = [
       `Se ha añadido un alimento que no está en la base de datos.\n`,
       `### Datos del alimento`,
       `- **Nombre**: ${food.name}`,
-      `- **Tipo**: ${food.food_type === "producto_comercial" ? "Producto comercial" : food.food_type === "receta" ? "Receta" : "Alimento"}`,
+      `- **Tipo**: ${typeLabel}`,
       `- **Gramos registrados**: ${food.grams} g`,
       `- **Calorías**: ${food.calories_kcal} kcal`,
       `- **Proteína**: ${food.protein_g} g`,
@@ -8419,6 +8425,7 @@ export default function App() {
           carbs_g: carbs ?? 0,
           fat_g: fat ?? 0,
           grams: grams ?? 0,
+          food_type: "manual",
         });
       }
     }
