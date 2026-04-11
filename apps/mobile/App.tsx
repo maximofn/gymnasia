@@ -8903,7 +8903,7 @@ export default function App() {
         protein_g: { type: "number" as const, description: "Proteínas en gramos" },
         carbs_g: { type: "number" as const, description: "Carbohidratos en gramos" },
         fat_g: { type: "number" as const, description: "Grasas en gramos" },
-        food_type: { type: "string" as const, enum: ["producto_comercial", "receta", "alimento"], description: "Tipo de alimento: 'producto_comercial' si es un producto de supermercado/tienda o se usó código de barras, 'receta' si es un plato elaborado o combinación de ingredientes, 'alimento' si es un alimento genérico simple" },
+        food_type: { type: "string" as const, description: "Tipo de alimento. DEBE ser exactamente uno de estos tres valores: 'producto_comercial' (producto de supermercado/tienda o si se usó código de barras), 'receta' (plato elaborado o combinación de ingredientes), 'alimento' (alimento genérico simple)" },
       },
       required: ["dish_name", "grams", "calories_kcal", "protein_g", "carbs_g", "fat_g", "food_type"] as string[],
       additionalProperties: false,
@@ -9076,6 +9076,7 @@ export default function App() {
         err instanceof Error
           ? err.message
           : "No se pudo añadir el alimento.";
+      console.error("[FoodEstimator] addFoodFromEstimatorJSON error:", err);
       setError(message);
     } finally {
       setFoodEstimatorSending(false); setFoodEstimatorStatus("");
