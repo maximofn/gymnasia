@@ -250,6 +250,7 @@ type StreamingHandlers = {
 };
 type ChatProviderCallOptions = StreamingHandlers & {
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>;
+  store?: LocalStore;
 };
 type AnthropicTextBlock = { type: "text"; text: string };
 type AnthropicThinkingBlock = { type: "thinking"; thinking: string; signature?: string };
@@ -1176,6 +1177,13 @@ const WRITE_MEASUREMENT_DATA_PARAM_DESC =
   'JSON con las medidas a guardar. Campos posibles: weight_kg, body_fat_pct, neck_cm, chest_cm, waist_cm, hips_cm, biceps_cm, quadriceps_cm, calf_cm, height_cm. ' +
   'Ejemplo: {"weight_kg": 75.5, "body_fat_pct": 18.5, "waist_cm": 82}';
 
+const READ_MEAL_FOODS_TOOL = "read_meal_foods";
+const READ_MEAL_FOODS_DESC =
+  "Lee los alimentos registrados en una comida específica de una fecha. " +
+  "Usa esta herramienta cuando el usuario pregunte qué ha comido, los alimentos de una comida, o quiera revisar su dieta.";
+const READ_MEAL_FOODS_DATE_PARAM_DESC = "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-04-11)";
+const READ_MEAL_FOODS_MEAL_PARAM_DESC = "Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena";
+
 const SCAN_BARCODE_TOOL = "scan_barcode";
 const SCAN_BARCODE_DESC =
   "Busca un producto alimentario por su código de barras (EAN/UPC) en OpenFoodFacts. " +
@@ -1233,6 +1241,7 @@ async function handleToolCall(
   name: string,
   args: Record<string, unknown>,
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
+  store?: LocalStore,
 ): Promise<string> {
   if (name === SAVE_PERSONAL_DATA_TOOL) {
     const fields = parsePersonalDataInput(args.personal_data);
@@ -1308,6 +1317,29 @@ async function handleToolCall(
       setStore((prev) => ({ ...prev, measurements: sorted }));
     }
     return "Medidas guardadas correctamente para " + date + ".";
+  }
+  if (name === READ_MEAL_FOODS_TOOL) {
+    const date = (args.date as string) ?? "";
+    const meal = (args.meal as string) ?? "";
+    if (!date) return "No se proporcionó una fecha.";
+    if (!meal) return "No se proporcionó una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).";
+    if (!store) return "No se pudo acceder a los datos de dieta.";
+    const day = store.dietByDate[date];
+    if (!day) return `No hay datos de dieta para la fecha "${date}".`;
+    const mealMatch = day.meals.find(
+      (m) => m.title.toLowerCase() === meal.toLowerCase(),
+    );
+    if (!mealMatch) return `No se encontró la comida "${meal}" para la fecha "${date}".`;
+    if (mealMatch.items.length === 0) return `La comida "${meal}" del ${date} no tiene alimentos registrados.`;
+    const summary = mealMatch.items.map((item) => ({
+      nombre: item.title,
+      gramos: item.grams,
+      calorias_kcal: item.calories_kcal,
+      proteina_g: item.protein_g,
+      carbohidratos_g: item.carbs_g,
+      grasa_g: item.fat_g,
+    }));
+    return JSON.stringify(summary);
   }
   return "Herramienta no reconocida.";
 }
@@ -3520,7 +3552,13 @@ async function callProviderChatAPIWithTools(
     data: { type: "string" as const, description: WRITE_MEASUREMENT_DATA_PARAM_DESC },
   };
   const writeMeasurementRequired = ["date", "data"];
+  const readMealFoodsProps = {
+    date: { type: "string" as const, description: READ_MEAL_FOODS_DATE_PARAM_DESC },
+    meal: { type: "string" as const, description: READ_MEAL_FOODS_MEAL_PARAM_DESC },
+  };
+  const readMealFoodsRequired = ["date", "meal"];
   const toolStoreSetter = options?.setStore;
+  const toolStore = options?.store;
 
   const chatTools = {
     openai: [
@@ -3564,6 +3602,12 @@ async function callProviderChatAPIWithTools(
         description: WRITE_MEASUREMENT_DESC,
         parameters: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
       },
+      {
+        type: "function",
+        name: READ_MEAL_FOODS_TOOL,
+        description: READ_MEAL_FOODS_DESC,
+        parameters: { type: "object", properties: readMealFoodsProps, required: readMealFoodsRequired },
+      },
     ],
     anthropic: [
       {
@@ -3599,6 +3643,11 @@ async function callProviderChatAPIWithTools(
         name: WRITE_MEASUREMENT_TOOL,
         description: WRITE_MEASUREMENT_DESC,
         input_schema: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
+      },
+      {
+        name: READ_MEAL_FOODS_TOOL,
+        description: READ_MEAL_FOODS_DESC,
+        input_schema: { type: "object", properties: readMealFoodsProps, required: readMealFoodsRequired },
       },
     ],
     google: [
@@ -3637,6 +3686,11 @@ async function callProviderChatAPIWithTools(
             name: WRITE_MEASUREMENT_TOOL,
             description: WRITE_MEASUREMENT_DESC,
             parameters: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
+          },
+          {
+            name: READ_MEAL_FOODS_TOOL,
+            description: READ_MEAL_FOODS_DESC,
+            parameters: { type: "object", properties: readMealFoodsProps, required: readMealFoodsRequired },
           },
         ],
       },
@@ -3721,7 +3775,7 @@ async function callProviderChatAPIWithTools(
       const toolOutputs: Array<Record<string, unknown>> = [];
       for (const toolCall of toolCalls) {
         const args = parseOpenAIFunctionArguments(toolCall.arguments);
-        const toolResult = await handleToolCall(toolCall.name, args, toolStoreSetter);
+        const toolResult = await handleToolCall(toolCall.name, args, toolStoreSetter, toolStore);
         toolOutputs.push({
           type: "function_call_output",
           call_id: toolCall.call_id,
@@ -3805,7 +3859,7 @@ async function callProviderChatAPIWithTools(
 
       const toolResults: any[] = [];
       for (const block of toolUseBlocks) {
-        const result = await handleToolCall(block.name, block.input ?? {}, toolStoreSetter);
+        const result = await handleToolCall(block.name, block.input ?? {}, toolStoreSetter, toolStore);
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
       }
       currentMessages = [
@@ -3898,6 +3952,7 @@ async function callProviderChatAPIWithTools(
         functionCall.name,
         functionCall.args ?? {},
         toolStoreSetter,
+        toolStore,
       );
       responseParts.push({
         functionResponse: {
@@ -8300,6 +8355,7 @@ export default function App() {
           }
           assistantResult = await callProviderChatAPIWithTools(activeProvider, chatMessages, {
             setStore,
+            store,
             onContentDelta: (_delta, aggregate) => {
               draftContent = aggregate;
               flushAssistantDraft();
