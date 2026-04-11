@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import Svg, { Path, Circle, Defs, LinearGradient, Stop } from "react-native-svg";
+import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
 import ConfettiCannon from "react-native-confetti-cannon";
 import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
@@ -1380,6 +1380,22 @@ const MEASURES_CHART_METRIC_OPTIONS: Array<{
   { key: "neck", label: "Cuello", unit: "cm", field: "neck_cm" },
   { key: "quadriceps", label: "Cuádriceps", unit: "cm", field: "quadriceps_cm" },
   { key: "calf", label: "Gemelo", unit: "cm", field: "calf_cm" },
+];
+const BODY_FAT_ZONES_MALE = [
+  { min: 0, max: 8, color: "rgba(255,75,75,0.18)" },
+  { min: 8, max: 12, color: "rgba(203,255,26,0.15)" },
+  { min: 12, max: 17, color: "rgba(0,198,107,0.18)" },
+  { min: 17, max: 22, color: "rgba(203,255,26,0.15)" },
+  { min: 22, max: 27, color: "rgba(255,200,0,0.18)" },
+  { min: 27, max: 60, color: "rgba(255,75,75,0.18)" },
+];
+const BODY_FAT_ZONES_FEMALE = [
+  { min: 0, max: 15, color: "rgba(255,75,75,0.18)" },
+  { min: 15, max: 18, color: "rgba(203,255,26,0.15)" },
+  { min: 18, max: 23, color: "rgba(0,198,107,0.18)" },
+  { min: 23, max: 28, color: "rgba(203,255,26,0.15)" },
+  { min: 28, max: 33, color: "rgba(255,200,0,0.18)" },
+  { min: 33, max: 60, color: "rgba(255,75,75,0.18)" },
 ];
 const TRAINING_STATS_METRIC_OPTIONS: Array<{
   key: TrainingStatsMetricKey;
@@ -15744,6 +15760,28 @@ export default function App() {
                                   strokeWidth={1}
                                 />
                               ))}
+
+                              {measuresChartMetric === "bodyFat" && (() => {
+                                const zones = userSex === "female" ? BODY_FAT_ZONES_FEMALE : BODY_FAT_ZONES_MALE;
+                                return zones.map((zone, i) => {
+                                  const y1 = padT + plotH - ((Math.min(zone.max, maxV) - minV) / rangeV) * plotH;
+                                  const y2 = padT + plotH - ((Math.max(zone.min, minV) - minV) / rangeV) * plotH;
+                                  const clampY1 = Math.max(padT, Math.min(padT + plotH, y1));
+                                  const clampY2 = Math.max(padT, Math.min(padT + plotH, y2));
+                                  const h = clampY2 - clampY1;
+                                  if (h <= 0) return null;
+                                  return (
+                                    <Rect
+                                      key={`zone-${i}`}
+                                      x={padL}
+                                      y={clampY1}
+                                      width={plotW}
+                                      height={h}
+                                      fill={zone.color}
+                                    />
+                                  );
+                                });
+                              })()}
 
                               <Path d={areaPath} fill="url(#areaGrad)" />
                               <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.5} />
