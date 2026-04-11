@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop } from "react-native-svg";
+import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop, Text as SvgText } from "react-native-svg";
 import ConfettiCannon from "react-native-confetti-cannon";
 import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
@@ -15806,10 +15806,12 @@ export default function App() {
                               })()}
                               {measuresChartMetric === "bodyFat" && (() => {
                                 const zones = userSex === "female" ? BODY_FAT_ZONES_FEMALE : BODY_FAT_ZONES_MALE;
-                                return zones.slice(0, -1).map((zone, i) => {
+                                const zoneLabels = ["Subatl.", "Atlético", "Saludable", "Aceptable", "Obesidad", "S. obes."];
+                                const elements: JSX.Element[] = [];
+                                zones.slice(0, -1).forEach((zone, i) => {
                                   const y = padT + plotH - ((zone.max - minV) / rangeV) * plotH;
-                                  if (y < padT || y > padT + plotH) return null;
-                                  return (
+                                  if (y < padT || y > padT + plotH) return;
+                                  elements.push(
                                     <Path
                                       key={`zone-line-${i}`}
                                       d={`M${padL},${y}L${padL + plotW},${y}`}
@@ -15818,7 +15820,36 @@ export default function App() {
                                       strokeDasharray="3,3"
                                     />
                                   );
+                                  if (y - 6 >= padT) {
+                                    elements.push(
+                                      <SvgText
+                                        key={`zone-lbl-above-${i}`}
+                                        x={padL + 3}
+                                        y={y - 3}
+                                        fill="rgba(255,255,255,0.35)"
+                                        fontSize={6}
+                                        fontWeight="600"
+                                      >
+                                        {zoneLabels[i + 1]}
+                                      </SvgText>
+                                    );
+                                  }
+                                  if (y + 8 <= padT + plotH) {
+                                    elements.push(
+                                      <SvgText
+                                        key={`zone-lbl-below-${i}`}
+                                        x={padL + 3}
+                                        y={y + 8}
+                                        fill="rgba(255,255,255,0.35)"
+                                        fontSize={6}
+                                        fontWeight="600"
+                                      >
+                                        {zoneLabels[i]}
+                                      </SvgText>
+                                    );
+                                  }
                                 });
+                                return elements;
                               })()}
 
                               <Path d={areaPath} fill="url(#areaGrad)" opacity={measuresChartMetric === "bodyFat" ? 0.3 : 1} />
