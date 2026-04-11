@@ -10066,6 +10066,109 @@ export default function App() {
     }
   }
 
+  function addExerciseToSession(entry: ExerciseRepoEntry) {
+    if (!activeWorkoutSession) return;
+    const templateId = activeWorkoutSession.template_id;
+    const category = activeWorkoutSession.category ?? "strength";
+    const isLoadFocused = category === "strength" || category === "hypertrophy";
+    const exerciseId = uid("exercise");
+    const imageUri = getExerciseImageUrl(entry, "male");
+    const firstSeries: ExerciseSeries = {
+      id: uid("set"),
+      reps: category === "cardio" ? "12" : "10",
+      weight_kg: isLoadFocused ? "20" : "",
+      rest_seconds: isLoadFocused ? "120" : "75",
+    };
+
+    let updatedTemplate: WorkoutTemplate | null = null;
+    setStore((prev) => {
+      const next = {
+        ...prev,
+        templates: prev.templates.map((t) => {
+          if (t.id !== templateId) return t;
+          const updated = {
+            ...t,
+            exercises: [
+              ...t.exercises,
+              {
+                id: exerciseId,
+                name: entry.name,
+                image_uri: imageUri,
+                sets: seriesToLegacySets([firstSeries]),
+                series: [firstSeries],
+                muscle: entry.muscle_group,
+                load_kg: isLoadFocused ? 20 : null,
+                rest_seconds: isLoadFocused ? 120 : 75,
+              },
+            ],
+          };
+          updatedTemplate = updated;
+          return updated;
+        }),
+      };
+      return next;
+    });
+
+    if (updatedTemplate) {
+      const pointers = listTemplateSeriesPointers(updatedTemplate);
+      setActiveWorkoutSession({
+        ...activeWorkoutSession,
+        total_series_count: pointers.length,
+      });
+    }
+    setExercisePickerOpen(false);
+    setError(null);
+  }
+
+  function removeExerciseFromSession(exerciseId: string) {
+    if (!activeWorkoutSession) return;
+    const templateId = activeWorkoutSession.template_id;
+    const template = store.templates.find((t) => t.id === templateId);
+    if (!template) return;
+    if (template.exercises.length <= 1) return;
+
+    let updatedTemplate: WorkoutTemplate | null = null;
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((t) => {
+        if (t.id !== templateId) return t;
+        const updated = {
+          ...t,
+          exercises: t.exercises.filter((e) => e.id !== exerciseId),
+        };
+        updatedTemplate = updated;
+        return updated;
+      }),
+    }));
+
+    if (updatedTemplate) {
+      const pointers = listTemplateSeriesPointers(updatedTemplate);
+      const validKeys = new Set(pointers.map(pointerKey));
+      const completedKeys = activeWorkoutSession.completed_series_keys.filter((k) => validKeys.has(k));
+      const currentValid = pointers.some(
+        (p) =>
+          p.exerciseIndex === activeWorkoutSession.current_exercise_index &&
+          p.seriesIndex === activeWorkoutSession.current_series_index,
+      );
+      const nextPointer = currentValid
+        ? null
+        : pointers.find((p) => !completedKeys.includes(pointerKey(p))) ?? pointers[0];
+      setActiveWorkoutSession({
+        ...activeWorkoutSession,
+        total_series_count: pointers.length,
+        completed_series_keys: completedKeys,
+        completed_series_count: completedKeys.length,
+        ...(nextPointer
+          ? {
+              current_exercise_index: nextPointer.exerciseIndex,
+              current_series_index: nextPointer.seriesIndex,
+            }
+          : {}),
+      });
+    }
+    setError(null);
+  }
+
   function pauseWorkoutSession() {
     if (!activeWorkoutSession) return;
     setActiveWorkoutSession({
@@ -11801,6 +11904,22 @@ export default function App() {
 	                      <Feather name="flag" size={14} color="#FFFFFF" />
 	                      <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
 	                    </Pressable>
+                      <Pressable
+                        onPress={() => setExercisePickerOpen(true)}
+                        style={{
+                          minHeight: 44,
+                          borderRadius: 14,
+                          backgroundColor: "rgba(203,255,26,0.15)",
+                          paddingHorizontal: 18,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
+                        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "800" }}>Añadir</Text>
+                      </Pressable>
 	                  </View>
 	                </View>
 
@@ -11991,6 +12110,15 @@ export default function App() {
                               <Feather name="chevron-down" size={18} color="#8C94A5" />
                             </Pressable>
                           </View>
+                          {activeSessionExercises.length > 1 && (
+                            <Pressable
+                              onPress={() => removeExerciseFromSession(sessionExercise.exercise.id)}
+                              hitSlop={6}
+                              style={{ marginLeft: 2 }}
+                            >
+                              <Feather name="trash-2" size={16} color="#FF4B4B" />
+                            </Pressable>
+                          )}
                         </View>
 
                         {isExpanded ? (
@@ -19751,7 +19879,11 @@ export default function App() {
                       setSupersetPickerTarget(null);
                       setExercisePickerOpen(false);
                     } else {
-                      addExerciseFromRepo(entry);
+                      if (activeWorkoutSession) {
+                        addExerciseToSession(entry);
+                      } else {
+                        addExerciseFromRepo(entry);
+                      }
                     }
                   }}
                   style={{
