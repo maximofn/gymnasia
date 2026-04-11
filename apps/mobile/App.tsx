@@ -16,6 +16,7 @@ import {
   ActivityIndicator,
   Alert,
   Animated,
+  BackHandler,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -7359,6 +7360,61 @@ export default function App() {
   const showTrainingEditorSkeleton =
     isTrainingTemplateScreenOpen &&
     (isTrainingEditorLoading || showGlobalScreenLoading);
+
+  // Android hardware back button: navigate back through UI layers instead of closing
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+      // Layer 1: close any open modal / overlay
+      if (workoutCompletionModal) { setWorkoutCompletionModal(null); return true; }
+      if (confirmDiscardSession) { setConfirmDiscardSession(false); return true; }
+      if (foodEstimatorModalOpen) { setFoodEstimatorModalOpen(false); return true; }
+      if (bodyFatInfoModalOpen) { setBodyFatInfoModalOpen(false); return true; }
+      if (exercisePickerOpen) { setExercisePickerOpen(false); return true; }
+      if (personalFoodAIChatOpen) { setPersonalFoodAIChatOpen(false); return true; }
+      if (personalFoodFormVisible) { setPersonalFoodFormVisible(false); return true; }
+      if (measurementEntryScreenOpen) { setMeasurementEntryScreenOpen(false); return true; }
+      if (showByokExplain) { setShowByokExplain(false); return true; }
+      if (providerDeleteModal) { setProviderDeleteModal(null); return true; }
+      if (showDietDatePicker) { setShowDietDatePicker(false); return true; }
+      if (showBirthDatePicker) { setShowBirthDatePicker(false); return true; }
+      if (showMeasurementDatePicker) { setShowMeasurementDatePicker(false); return true; }
+      if (showAllMeasurementsHistory) { setShowAllMeasurementsHistory(false); return true; }
+      // Close dropdowns
+      if (chatProviderDropdownOpen) { setChatProviderDropdownOpen(false); return true; }
+      if (foodAIProviderDropdownOpen) { setFoodAIProviderDropdownOpen(false); return true; }
+      if (anthropicModelDropdownOpen) { setAnthropicModelDropdownOpen(false); return true; }
+      if (openAIModelDropdownOpen) { setOpenAIModelDropdownOpen(false); return true; }
+      if (googleModelDropdownOpen) { setGoogleModelDropdownOpen(false); return true; }
+      if (measuresDashboardPeriodDropdownOpen) { setMeasuresDashboardPeriodDropdownOpen(false); return true; }
+      if (measuresChartMetricDropdownOpen) { setMeasuresChartMetricDropdownOpen(false); return true; }
+      if (trainingStatsPeriodDropdownOpen) { setTrainingStatsPeriodDropdownOpen(false); return true; }
+      if (trainingStatsMetricDropdownOpen) { setTrainingStatsMetricDropdownOpen(false); return true; }
+
+      // Layer 2: training template screen → close it
+      if (activeTrainingTemplateId) {
+        if (activeTrainingTemplateMode === "edit") {
+          setActiveTrainingTemplateMode("detail");
+          return true;
+        }
+        setActiveTrainingTemplateId(null);
+        return true;
+      }
+
+      // Layer 3: active workout session → ask to discard (don't just close)
+      if (activeWorkoutSession) {
+        setConfirmDiscardSession(true);
+        return true;
+      }
+
+      // Layer 4: non-home tab → go to home
+      if (tab !== "home") { setTab("home"); return true; }
+
+      // Home tab: let Android handle it (close app)
+      return false;
+    });
+    return () => handler.remove();
+  });
 
   useEffect(() => {
     if (tab !== "chat") return;
