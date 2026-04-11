@@ -1382,20 +1382,20 @@ const MEASURES_CHART_METRIC_OPTIONS: Array<{
   { key: "calf", label: "Gemelo", unit: "cm", field: "calf_cm" },
 ];
 const BODY_FAT_ZONES_MALE = [
-  { min: 0, max: 8, color: "rgba(255,75,75,0.35)", pattern: "bfz-diag-left" },
-  { min: 8, max: 12, color: "rgba(203,255,26,0.30)", pattern: "bfz-diag-right" },
-  { min: 12, max: 17, color: "rgba(0,198,107,0.30)", pattern: "bfz-dots" },
-  { min: 17, max: 22, color: "rgba(203,255,26,0.30)", pattern: "bfz-horiz" },
-  { min: 22, max: 27, color: "rgba(255,200,0,0.30)", pattern: "bfz-cross" },
-  { min: 27, max: 60, color: "rgba(255,75,75,0.35)", pattern: "bfz-vert" },
+  { min: 0, max: 8, color: "rgba(255,75,75,0.12)", pattern: "bfz-diag-left" },
+  { min: 8, max: 12, color: "rgba(203,255,26,0.10)", pattern: "bfz-diag-right" },
+  { min: 12, max: 17, color: "rgba(0,198,107,0.10)", pattern: "bfz-dots" },
+  { min: 17, max: 22, color: "rgba(203,255,26,0.10)", pattern: "bfz-horiz" },
+  { min: 22, max: 27, color: "rgba(255,200,0,0.10)", pattern: "bfz-cross" },
+  { min: 27, max: 60, color: "rgba(255,75,75,0.12)", pattern: "bfz-vert" },
 ];
 const BODY_FAT_ZONES_FEMALE = [
-  { min: 0, max: 15, color: "rgba(255,75,75,0.35)", pattern: "bfz-diag-left" },
-  { min: 15, max: 18, color: "rgba(203,255,26,0.30)", pattern: "bfz-diag-right" },
-  { min: 18, max: 23, color: "rgba(0,198,107,0.30)", pattern: "bfz-dots" },
-  { min: 23, max: 28, color: "rgba(203,255,26,0.30)", pattern: "bfz-horiz" },
-  { min: 28, max: 33, color: "rgba(255,200,0,0.30)", pattern: "bfz-cross" },
-  { min: 33, max: 60, color: "rgba(255,75,75,0.35)", pattern: "bfz-vert" },
+  { min: 0, max: 15, color: "rgba(255,75,75,0.12)", pattern: "bfz-diag-left" },
+  { min: 15, max: 18, color: "rgba(203,255,26,0.10)", pattern: "bfz-diag-right" },
+  { min: 18, max: 23, color: "rgba(0,198,107,0.10)", pattern: "bfz-dots" },
+  { min: 23, max: 28, color: "rgba(203,255,26,0.10)", pattern: "bfz-horiz" },
+  { min: 28, max: 33, color: "rgba(255,200,0,0.10)", pattern: "bfz-cross" },
+  { min: 33, max: 60, color: "rgba(255,75,75,0.12)", pattern: "bfz-vert" },
 ];
 const TRAINING_STATS_METRIC_OPTIONS: Array<{
   key: TrainingStatsMetricKey;
