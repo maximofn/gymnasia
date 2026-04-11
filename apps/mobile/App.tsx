@@ -799,6 +799,60 @@ async function createGitHubFoodIssue(food: {
   }
 }
 
+async function createGitHubExerciseIssue(exercise: {
+  name: string;
+  muscle_group: string;
+  equipment: string;
+}): Promise<void> {
+  try {
+    const body = [
+      `Se ha añadido un ejercicio que no está en la base de datos.\n`,
+      `### Datos del ejercicio`,
+      `- **Nombre**: ${exercise.name}`,
+      `- **Grupo muscular**: ${exercise.muscle_group || "Sin especificar"}`,
+      `- **Equipamiento**: ${exercise.equipment || "Sin especificar"}`,
+      `\n### JSON sugerido`,
+      "```json",
+      JSON.stringify(
+        {
+          id: exercise.name
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, ""),
+          name: exercise.name,
+          image_male: "",
+          image_female: "",
+          muscle_group: exercise.muscle_group || "",
+          secondary_muscles: [],
+          equipment: exercise.equipment || "",
+          difficulty: "",
+          instructions: "",
+        },
+        null,
+        2,
+      ),
+      "```",
+    ].join("\n");
+    await fetch("https://api.github.com/repos/maximofn/gymnasia/issues", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GITHUB_FOOD_ISSUE_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: `[Nuevo ejercicio] ${exercise.name}`,
+        body,
+        labels: ["ejercicio"],
+      }),
+    });
+  } catch {
+    // Fire-and-forget: do not block UI
+  }
+}
+
 async function loadExercisesRepo(): Promise<ExerciseRepoEntry[]> {
   try {
     const response = await fetch(`${EXERCISES_ALL_URL}?ts=${Date.now()}`);
@@ -6553,6 +6607,8 @@ export default function App() {
   const manualRestSkipRef = useRef(false);
   const restAlertLockRef = useRef(false);
   const providerSettingsInitializedRef = useRef(false);
+  const exerciseIssueDebounceRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const exerciseIssueSentRef = useRef<Set<string>>(new Set());
 
   const today = todayISO();
   const dietDateLabel = formatDietDayHeader(selectedDietDate);
@@ -9456,6 +9512,29 @@ export default function App() {
         exercise.id === exerciseId ? { ...exercise, name } : exercise,
       ),
     }));
+
+    // Debounced check: if the exercise name doesn't match any repo exercise, create a GitHub issue
+    if (exerciseIssueDebounceRef.current[exerciseId]) {
+      clearTimeout(exerciseIssueDebounceRef.current[exerciseId]);
+    }
+    exerciseIssueDebounceRef.current[exerciseId] = setTimeout(() => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      const key = trimmed.toLowerCase();
+      if (exerciseIssueSentRef.current.has(key)) return;
+      const repoMatch = exercisesRepo.find(
+        (r) => r.name.toLowerCase() === key,
+      );
+      if (!repoMatch) {
+        exerciseIssueSentRef.current.add(key);
+        const exercise = activeTrainingTemplate?.exercises.find((e) => e.id === exerciseId);
+        createGitHubExerciseIssue({
+          name: trimmed,
+          muscle_group: exercise?.muscle ?? "",
+          equipment: "",
+        });
+      }
+    }, 2000);
   }
 
   function updateExerciseSeriesFieldInActiveTemplate(
