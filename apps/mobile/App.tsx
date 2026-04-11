@@ -251,6 +251,7 @@ type StreamingHandlers = {
 type ChatProviderCallOptions = StreamingHandlers & {
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>;
   store?: LocalStore;
+  foodsRepo?: FoodRepoEntry[];
 };
 type AnthropicTextBlock = { type: "text"; text: string };
 type AnthropicThinkingBlock = { type: "thinking"; thinking: string; signature?: string };
@@ -1184,6 +1185,13 @@ const READ_MEAL_FOODS_DESC =
 const READ_MEAL_FOODS_DATE_PARAM_DESC = "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-04-11)";
 const READ_MEAL_FOODS_MEAL_PARAM_DESC = "Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena";
 
+const SEARCH_FOODS_TOOL = "search_foods";
+const SEARCH_FOODS_DESC =
+  "Busca alimentos, productos comerciales o recetas en la base de datos local por nombre. " +
+  "Usa esta herramienta cuando el usuario pregunte por datos nutricionales de un alimento, " +
+  "quiera saber si un alimento está en la base de datos, o necesite información calórica/macros.";
+const SEARCH_FOODS_PARAM_DESC = "Texto de búsqueda (nombre o parte del nombre del alimento)";
+
 const SCAN_BARCODE_TOOL = "scan_barcode";
 const SCAN_BARCODE_DESC =
   "Busca un producto alimentario por su código de barras (EAN/UPC) en OpenFoodFacts. " +
@@ -1242,6 +1250,7 @@ async function handleToolCall(
   args: Record<string, unknown>,
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
   store?: LocalStore,
+  foodsRepo?: FoodRepoEntry[],
 ): Promise<string> {
   if (name === SAVE_PERSONAL_DATA_TOOL) {
     const fields = parsePersonalDataInput(args.personal_data);
@@ -1340,6 +1349,28 @@ async function handleToolCall(
       grasa_g: item.fat_g,
     }));
     return JSON.stringify(summary);
+  }
+  if (name === SEARCH_FOODS_TOOL) {
+    const query = (args.query as string) ?? "";
+    if (!query.trim()) return "No se proporcionó un texto de búsqueda.";
+    if (!foodsRepo || foodsRepo.length === 0) return "La base de datos de alimentos no está cargada.";
+    const needle = query.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const all = foodsRepo;
+    const results = all.filter((f) => {
+      const hay = f.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return hay.includes(needle) || needle.includes(hay);
+    }).slice(0, 10);
+    if (results.length === 0) return `No se encontraron alimentos que coincidan con "${query}".`;
+    return JSON.stringify(results.map((f) => ({
+      nombre: f.name,
+      calorias_por_100g: f.calories_per_100g,
+      proteina_por_100g: f.protein_per_100g,
+      carbohidratos_por_100g: f.carbs_per_100g,
+      grasa_por_100g: f.fat_per_100g,
+      fibra_por_100g: f.fiber_per_100g,
+      racion_g: f.serving_size_g,
+      descripcion_racion: f.serving_description,
+    })));
   }
   return "Herramienta no reconocida.";
 }
@@ -3557,8 +3588,13 @@ async function callProviderChatAPIWithTools(
     meal: { type: "string" as const, description: READ_MEAL_FOODS_MEAL_PARAM_DESC },
   };
   const readMealFoodsRequired = ["date", "meal"];
+  const searchFoodsProps = {
+    query: { type: "string" as const, description: SEARCH_FOODS_PARAM_DESC },
+  };
+  const searchFoodsRequired = ["query"];
   const toolStoreSetter = options?.setStore;
   const toolStore = options?.store;
+  const toolFoodsRepo = options?.foodsRepo;
 
   const chatTools = {
     openai: [
@@ -3608,6 +3644,12 @@ async function callProviderChatAPIWithTools(
         description: READ_MEAL_FOODS_DESC,
         parameters: { type: "object", properties: readMealFoodsProps, required: readMealFoodsRequired },
       },
+      {
+        type: "function",
+        name: SEARCH_FOODS_TOOL,
+        description: SEARCH_FOODS_DESC,
+        parameters: { type: "object", properties: searchFoodsProps, required: searchFoodsRequired },
+      },
     ],
     anthropic: [
       {
@@ -3648,6 +3690,11 @@ async function callProviderChatAPIWithTools(
         name: READ_MEAL_FOODS_TOOL,
         description: READ_MEAL_FOODS_DESC,
         input_schema: { type: "object", properties: readMealFoodsProps, required: readMealFoodsRequired },
+      },
+      {
+        name: SEARCH_FOODS_TOOL,
+        description: SEARCH_FOODS_DESC,
+        input_schema: { type: "object", properties: searchFoodsProps, required: searchFoodsRequired },
       },
     ],
     google: [
@@ -3691,6 +3738,11 @@ async function callProviderChatAPIWithTools(
             name: READ_MEAL_FOODS_TOOL,
             description: READ_MEAL_FOODS_DESC,
             parameters: { type: "object", properties: readMealFoodsProps, required: readMealFoodsRequired },
+          },
+          {
+            name: SEARCH_FOODS_TOOL,
+            description: SEARCH_FOODS_DESC,
+            parameters: { type: "object", properties: searchFoodsProps, required: searchFoodsRequired },
           },
         ],
       },
@@ -3775,7 +3827,7 @@ async function callProviderChatAPIWithTools(
       const toolOutputs: Array<Record<string, unknown>> = [];
       for (const toolCall of toolCalls) {
         const args = parseOpenAIFunctionArguments(toolCall.arguments);
-        const toolResult = await handleToolCall(toolCall.name, args, toolStoreSetter, toolStore);
+        const toolResult = await handleToolCall(toolCall.name, args, toolStoreSetter, toolStore, toolFoodsRepo);
         toolOutputs.push({
           type: "function_call_output",
           call_id: toolCall.call_id,
@@ -3859,7 +3911,7 @@ async function callProviderChatAPIWithTools(
 
       const toolResults: any[] = [];
       for (const block of toolUseBlocks) {
-        const result = await handleToolCall(block.name, block.input ?? {}, toolStoreSetter, toolStore);
+        const result = await handleToolCall(block.name, block.input ?? {}, toolStoreSetter, toolStore, toolFoodsRepo);
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
       }
       currentMessages = [
@@ -3953,6 +4005,7 @@ async function callProviderChatAPIWithTools(
         functionCall.args ?? {},
         toolStoreSetter,
         toolStore,
+        toolFoodsRepo,
       );
       responseParts.push({
         functionResponse: {
@@ -8356,6 +8409,7 @@ export default function App() {
           assistantResult = await callProviderChatAPIWithTools(activeProvider, chatMessages, {
             setStore,
             store,
+            foodsRepo: [...foodsRepo, ...personalFoods],
             onContentDelta: (_delta, aggregate) => {
               draftContent = aggregate;
               flushAssistantDraft();
