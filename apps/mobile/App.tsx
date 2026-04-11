@@ -552,7 +552,12 @@ const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Lee los dígitos del código de barras de la imagen y pásalos como parámetro. Con los datos de OpenFoodFacts, presenta la información nutricional exacta del producto. " +
   "Si el usuario pide 'Devuelve json' o 'Devuelve el json', responde únicamente con JSON válido y sin texto adicional, " +
   "con estas claves exactas: dish_name, calories_kcal, protein_g, carbs_g, fat_g. " +
-  "Cuando el usuario pregunte o debata, responde usando el contexto previo de la conversación y las fotos adjuntas.";
+  "Cuando el usuario pregunte o debata, responde usando el contexto previo de la conversación y las fotos adjuntas. " +
+  "CLASIFICACIÓN: Cuando estimes un alimento, determina siempre si es un 'producto_comercial' o una 'receta'. " +
+  "Un producto comercial es cualquier producto que se pueda comprar en un supermercado, tienda o establecimiento (por ejemplo: yogur Danone, galletas Digestive, Coca-Cola, etc.). " +
+  "Si has usado la herramienta scan_barcode, es SIEMPRE un producto comercial. " +
+  "Una receta es cualquier plato elaborado o combinación de ingredientes preparada por el usuario (por ejemplo: tortilla de patatas, ensalada César, arroz con pollo, etc.). " +
+  "Los alimentos genéricos simples (arroz, pollo, huevo, aceite, fruta...) NO son ni producto comercial ni receta, son alimentos base.";
 const FOOD_AI_SYSTEM_PROMPT =
   "Eres un nutricionista experto. El usuario te va a decir un alimento, plato o receta. " +
   "Tu objetivo es determinar los valores nutricionales exactos por unidad base (100g, 1ml, 1 unidad, etc.). " +
@@ -769,12 +774,22 @@ async function createGitHubFoodIssue(food: {
   carbs_g: number;
   fat_g: number;
   grams: number;
+  food_type?: "producto_comercial" | "receta" | "alimento";
 }): Promise<void> {
   try {
+    const titlePrefix =
+      food.food_type === "producto_comercial" ? "[Nuevo producto comercial]"
+      : food.food_type === "receta" ? "[Nueva receta]"
+      : "Nuevo alimento:";
+    const label =
+      food.food_type === "producto_comercial" ? "producto_comercial"
+      : food.food_type === "receta" ? "receta"
+      : "alimento";
     const body = [
       `Se ha añadido un alimento que no está en la base de datos.\n`,
       `### Datos del alimento`,
       `- **Nombre**: ${food.name}`,
+      `- **Tipo**: ${food.food_type === "producto_comercial" ? "Producto comercial" : food.food_type === "receta" ? "Receta" : "Alimento"}`,
       `- **Gramos registrados**: ${food.grams} g`,
       `- **Calorías**: ${food.calories_kcal} kcal`,
       `- **Proteína**: ${food.protein_g} g`,
@@ -813,9 +828,9 @@ async function createGitHubFoodIssue(food: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: `Nuevo alimento: ${food.name}`,
+        title: `${titlePrefix} ${food.name}`,
         body,
-        labels: ["alimento"],
+        labels: [label],
       }),
     });
   } catch {
@@ -8876,6 +8891,7 @@ export default function App() {
 
   async function requestStructuredNutritionJSON(provider: AIKey, conversationSummary: string): Promise<{
     dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number;
+    food_type: "producto_comercial" | "receta" | "alimento";
   }> {
     const model = normalizeProviderModel(provider.provider, provider.model);
     const jsonSchema = {
@@ -8887,8 +8903,9 @@ export default function App() {
         protein_g: { type: "number" as const, description: "Proteínas en gramos" },
         carbs_g: { type: "number" as const, description: "Carbohidratos en gramos" },
         fat_g: { type: "number" as const, description: "Grasas en gramos" },
+        food_type: { type: "string" as const, enum: ["producto_comercial", "receta", "alimento"], description: "Tipo de alimento: 'producto_comercial' si es un producto de supermercado/tienda o se usó código de barras, 'receta' si es un plato elaborado o combinación de ingredientes, 'alimento' si es un alimento genérico simple" },
       },
-      required: ["dish_name", "grams", "calories_kcal", "protein_g", "carbs_g", "fat_g"] as string[],
+      required: ["dish_name", "grams", "calories_kcal", "protein_g", "carbs_g", "fat_g", "food_type"] as string[],
       additionalProperties: false,
     };
     const extractPrompt = "Basándote en la conversación anterior, devuelve ÚNICAMENTE un JSON con los datos nutricionales estimados. " + conversationSummary;
@@ -8938,7 +8955,7 @@ export default function App() {
       const data = await response.json();
       const toolBlock = data.content?.find((b: Record<string, unknown>) => b.type === "tool_use");
       if (!toolBlock?.input) throw new Error("No se recibió respuesta estructurada de Anthropic");
-      return toolBlock.input as { dish_name: string; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number };
+      return toolBlock.input as { dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number; food_type: "producto_comercial" | "receta" | "alimento" };
     }
 
     // Google
@@ -9019,7 +9036,7 @@ export default function App() {
           carbs_g: parsed.carbs_g ?? 0,
           fat_g: parsed.fat_g ?? 0,
         };
-        if (!repoMatch) {
+        if (!repoMatch && parsed.food_type !== "alimento") {
           createGitHubFoodIssue({
             name: aiName,
             calories_kcal: parsed.calories_kcal,
@@ -9027,6 +9044,7 @@ export default function App() {
             carbs_g: parsed.carbs_g ?? 0,
             fat_g: parsed.fat_g ?? 0,
             grams: aiGrams,
+            food_type: parsed.food_type,
           });
         }
       }
