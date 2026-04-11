@@ -12478,23 +12478,41 @@ export default function App() {
                   })
                 )}
 
-                <Pressable
-                  onPress={finishActiveWorkoutSession}
-                  testID="training-session-finish-bottom"
-                  style={{
-                    minHeight: 44,
-                    borderRadius: 14,
-                    backgroundColor: "#FF4B4B",
-                    paddingHorizontal: 18,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 8,
-                  }}
-                >
-                  <Feather name="flag" size={14} color="#FFFFFF" />
-                  <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
-                </Pressable>
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  <Pressable
+                    onPress={() => setExercisePickerOpen(true)}
+                    style={{
+                      flex: 1,
+                      minHeight: 44,
+                      borderRadius: 14,
+                      backgroundColor: "rgba(203,255,26,0.15)",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "800" }}>Añadir ejercicio</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={finishActiveWorkoutSession}
+                    testID="training-session-finish-bottom"
+                    style={{
+                      flex: 1,
+                      minHeight: 44,
+                      borderRadius: 14,
+                      backgroundColor: "#FF4B4B",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <Feather name="flag" size={14} color="#FFFFFF" />
+                    <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
+                  </Pressable>
+                </View>
               </View>
             ) : isTrainingDetailOpen && activeTrainingTemplate ? (
               <View style={{ gap: 16, paddingBottom: 110 }}>
