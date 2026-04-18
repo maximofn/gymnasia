@@ -8588,6 +8588,10 @@ export default function App() {
             return { ...prev, elapsed_seconds: nextElapsed };
           }
           const nextRest = Math.max(0, prev.rest_seconds_left - elapsedSeconds);
+          if (nextRest === 0) {
+            // Notification already alerted the user — skip foreground sound on return
+            manualRestSkipRef.current = true;
+          }
           return {
             ...prev,
             elapsed_seconds: nextElapsed,
