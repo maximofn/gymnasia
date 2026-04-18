@@ -124,6 +124,7 @@ type WorkoutSession = {
   elapsed_seconds: number;
   is_resting: boolean;
   rest_seconds_left: number;
+  rest_seconds_total: number;
   status: WorkoutSessionStatus;
 };
 type WorkoutSessionSummary = {
@@ -5783,6 +5784,9 @@ function normalizeWorkoutSession(
   const restSecondsLeft = Number.isFinite(Number(maybe.rest_seconds_left))
     ? Math.max(0, Math.round(Number(maybe.rest_seconds_left)))
     : 0;
+  const restSecondsTotal = Number.isFinite(Number(maybe.rest_seconds_total))
+    ? Math.max(0, Math.round(Number(maybe.rest_seconds_total)))
+    : restSecondsLeft;
   const completedCountRaw = Number(maybe.completed_series_count);
   const completedCount = Number.isFinite(completedCountRaw)
     ? Math.max(0, Math.min(pointers.length, Math.round(completedCountRaw)))
@@ -5806,6 +5810,7 @@ function normalizeWorkoutSession(
     elapsed_seconds: elapsedSeconds,
     is_resting: isResting,
     rest_seconds_left: restSecondsLeft,
+    rest_seconds_total: restSecondsTotal,
     status,
   };
 }
@@ -7985,16 +7990,13 @@ export default function App() {
     activeWorkoutSession,
   ]);
   const activeSessionRestTargetSeconds = useMemo(() => {
-    if (activeWorkoutSession?.is_resting && activeSessionCurrentPointerIndex > 0) {
-      // During rest, the target comes from the completed series (one pointer back)
-      const prevPointer = activeSessionPointers[activeSessionCurrentPointerIndex - 1];
-      return parseRestSecondsInput(prevPointer?.series.rest_seconds ?? "");
+    if (activeWorkoutSession?.is_resting) {
+      return activeWorkoutSession.rest_seconds_total ?? 0;
     }
     return parseRestSecondsInput(activeSessionCurrentPointer?.series.rest_seconds ?? "");
   }, [
     activeWorkoutSession?.is_resting,
-    activeSessionCurrentPointerIndex,
-    activeSessionPointers,
+    activeWorkoutSession?.rest_seconds_total,
     activeSessionCurrentPointer?.series.rest_seconds,
   ]);
   const activeSessionRestProgressRatio = useMemo(() => {
@@ -10965,6 +10967,7 @@ export default function App() {
       elapsed_seconds: 0,
       is_resting: false,
       rest_seconds_left: 0,
+      rest_seconds_total: 0,
       status: "running",
     };
     setActiveWorkoutSession(session);
@@ -11072,6 +11075,7 @@ export default function App() {
       current_series_index: nextPointer.seriesIndex,
       is_resting: restSeconds > 0,
       rest_seconds_left: restSeconds,
+      rest_seconds_total: restSeconds,
     });
     setConfirmDiscardSession(false);
     setError(null);
@@ -11111,6 +11115,7 @@ export default function App() {
         current_series_index: targetPointer.seriesIndex,
         is_resting: restSeconds > 0,
         rest_seconds_left: restSeconds,
+        rest_seconds_total: restSeconds,
       });
       return;
     }
@@ -11133,6 +11138,7 @@ export default function App() {
       current_series_index: nextPointer.seriesIndex,
       is_resting: restSeconds > 0,
       rest_seconds_left: restSeconds,
+      rest_seconds_total: restSeconds,
     });
     setConfirmDiscardSession(false);
     setError(null);
