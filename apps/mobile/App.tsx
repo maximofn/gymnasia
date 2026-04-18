@@ -7984,10 +7984,19 @@ export default function App() {
     activeSessionTemplate,
     activeWorkoutSession,
   ]);
-  const activeSessionRestTargetSeconds = useMemo(
-    () => parseRestSecondsInput(activeSessionCurrentPointer?.series.rest_seconds ?? ""),
-    [activeSessionCurrentPointer?.series.rest_seconds],
-  );
+  const activeSessionRestTargetSeconds = useMemo(() => {
+    if (activeWorkoutSession?.is_resting && activeSessionCurrentPointerIndex > 0) {
+      // During rest, the target comes from the completed series (one pointer back)
+      const prevPointer = activeSessionPointers[activeSessionCurrentPointerIndex - 1];
+      return parseRestSecondsInput(prevPointer?.series.rest_seconds ?? "");
+    }
+    return parseRestSecondsInput(activeSessionCurrentPointer?.series.rest_seconds ?? "");
+  }, [
+    activeWorkoutSession?.is_resting,
+    activeSessionCurrentPointerIndex,
+    activeSessionPointers,
+    activeSessionCurrentPointer?.series.rest_seconds,
+  ]);
   const activeSessionRestProgressRatio = useMemo(() => {
     if (!activeWorkoutSession?.is_resting) return 0;
     const total = Math.max(1, activeSessionRestTargetSeconds);
