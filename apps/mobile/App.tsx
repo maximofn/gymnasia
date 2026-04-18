@@ -8672,7 +8672,7 @@ export default function App() {
     const exercise = template?.exercises[activeWorkoutSession.current_exercise_index];
     const exerciseName = exercise?.name?.trim() || `Ejercicio ${activeWorkoutSession.current_exercise_index + 1}`;
     const seriesNumber = activeWorkoutSession.current_series_index + 1;
-    restNotifBodyRef.current = `${exerciseName} · Serie ${seriesNumber}`;
+    restNotifBodyRef.current = `${exerciseName} · ¡A por la serie ${seriesNumber}!`;
   }, [
     activeWorkoutSession?.is_resting,
     activeWorkoutSession?.current_exercise_index,
