@@ -48,7 +48,7 @@
     "plugins": [
       "expo-secure-store",
       ["expo-notifications", {
-        "sounds": ["./assets/rest-finished.wav"]
+        "sounds": ["./assets/rest_finished.wav"]
       }]
     ]
   }

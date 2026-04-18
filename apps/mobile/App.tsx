@@ -8153,7 +8153,7 @@ export default function App() {
       console.log("[audio] setAudioModeAsync ok");
       if (!restFinishSoundRef.current) {
         const { sound } = await Audio.Sound.createAsync(
-          require("./assets/rest-finished.wav"),
+          require("./assets/rest_finished.wav"),
           { shouldPlay: false, volume: 1 },
         );
         restFinishSoundRef.current = sound;
@@ -8162,10 +8162,10 @@ export default function App() {
       // Request notification permissions and set up Android channel
       await Notifications.requestPermissionsAsync();
       if (Platform.OS === "android") {
-        await Notifications.setNotificationChannelAsync("rest-finished", {
+        await Notifications.setNotificationChannelAsync("rest_finished", {
           name: "Descanso terminado",
           importance: Notifications.AndroidImportance.HIGH,
-          sound: "rest-finished.wav",
+          sound: "rest_finished.wav",
           vibrationPattern: [0, 300, 150, 300],
           enableVibrate: true,
         });
@@ -8183,7 +8183,7 @@ export default function App() {
         content: {
           title: "Gymnasia",
           body: "¡Descanso terminado! 💪",
-          sound: "rest-finished.wav",
+          sound: "rest_finished.wav",
           vibrate: [0, 300, 150, 300],
         },
         trigger: {
