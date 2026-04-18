@@ -8113,7 +8113,6 @@ export default function App() {
   }, [tab]);
 
   const playRestFinishedAlert = useCallback(async () => {
-    console.log("[audio] playRestFinishedAlert called, soundLoaded=", !!restFinishSoundRef.current);
     if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
     try {
@@ -8121,7 +8120,6 @@ export default function App() {
 
       try {
         if (restFinishSoundRef.current) {
-          console.log("[audio] playing sound");
           // Release audio focus when done so ducked music recovers
           restFinishSoundRef.current.setOnPlaybackStatusUpdate((status) => {
             if (!status.isLoaded || !status.didJustFinish) return;
@@ -8130,12 +8128,9 @@ export default function App() {
           });
           await restFinishSoundRef.current.setPositionAsync(0);
           await restFinishSoundRef.current.playAsync();
-          console.log("[audio] sound played ok");
         } else {
-          console.log("[audio] sound not loaded, skipping");
         }
       } catch (e) {
-        console.log("[audio] error playing sound:", e);
         // best effort: vibration still notifies the user
       }
     } finally {
@@ -8146,7 +8141,6 @@ export default function App() {
   }, []);
 
   const initWorkoutAudio = useCallback(async () => {
-    console.log("[audio] initWorkoutAudio called");
     try {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
@@ -8156,14 +8150,12 @@ export default function App() {
         interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
         staysActiveInBackground: false,
       });
-      console.log("[audio] setAudioModeAsync ok");
       if (!restFinishSoundRef.current) {
         const { sound } = await Audio.Sound.createAsync(
           require("./assets/rest_finished.wav"),
           { shouldPlay: false, volume: 1 },
         );
         restFinishSoundRef.current = sound;
-        console.log("[audio] sound pre-loaded ok");
       }
       // Request notification permissions and set up Android channel
       await Notifications.requestPermissionsAsync();
@@ -8178,7 +8170,6 @@ export default function App() {
       }
       audioWorkoutInitializedRef.current = true;
     } catch (e) {
-      console.log("[audio] initWorkoutAudio error:", e);
     }
   }, []);
 
@@ -8198,9 +8189,7 @@ export default function App() {
         },
       });
       restNotificationIdRef.current = id;
-      console.log("[audio] notification scheduled id=", id, "seconds=", seconds);
     } catch (e) {
-      console.log("[audio] scheduleRestEndNotification error:", e);
     }
   }, []);
 
@@ -8208,7 +8197,6 @@ export default function App() {
     if (restNotificationIdRef.current) {
       try {
         await Notifications.cancelScheduledNotificationAsync(restNotificationIdRef.current);
-        console.log("[audio] notification cancelled");
       } catch { /* ignore */ }
       restNotificationIdRef.current = null;
     }
@@ -8231,7 +8219,6 @@ export default function App() {
   }, []);
 
   const startBackgroundSilence = useCallback(async (seconds: number) => {
-    console.log("[audio] startBackgroundSilence seconds=", seconds);
     await stopBackgroundSilence();
     if (seconds <= 0) return;
     try {
@@ -8258,10 +8245,8 @@ export default function App() {
       bgHeartbeatRef.current = setInterval(() => {
         if (bgRestFiredRef.current) return;
         const remaining = bgRestDeadlineRef.current ? bgRestDeadlineRef.current - Date.now() : null;
-        console.log("[audio] heartbeat remaining=", remaining);
         if (bgRestDeadlineRef.current && Date.now() >= bgRestDeadlineRef.current) {
           bgRestFiredRef.current = true;
-          console.log("[audio] deadline reached via HEARTBEAT, firing alert");
           void playRestFinishedAlert();
           void stopBackgroundSilence();
         }
@@ -8637,7 +8622,6 @@ export default function App() {
       !activeWorkoutSession.is_resting &&
       activeWorkoutSession.rest_seconds_left === 0;
     if (endedRestThisTick) {
-      console.log("[audio] rest ended via FOREGROUND effect");
       void stopBackgroundSilence();
       void cancelRestEndNotification();
       if (!manualRestSkipRef.current) {
@@ -8673,7 +8657,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    console.log("[audio] session effect id=", activeWorkoutSession?.id, "initialized=", audioWorkoutInitializedRef.current);
     if (!activeWorkoutSession) {
       audioWorkoutInitializedRef.current = false;
       return;
