@@ -8122,6 +8122,12 @@ export default function App() {
       try {
         if (restFinishSoundRef.current) {
           console.log("[audio] playing sound");
+          // Release audio focus when done so ducked music recovers
+          restFinishSoundRef.current.setOnPlaybackStatusUpdate((status) => {
+            if (!status.isLoaded || !status.didJustFinish) return;
+            restFinishSoundRef.current?.setOnPlaybackStatusUpdate(null);
+            restFinishSoundRef.current?.stopAsync().catch(() => {});
+          });
           await restFinishSoundRef.current.setPositionAsync(0);
           await restFinishSoundRef.current.playAsync();
           console.log("[audio] sound played ok");
