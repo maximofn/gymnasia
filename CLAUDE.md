@@ -150,6 +150,14 @@ Only non-obvious gotchas that could recur are kept here.
 - Gotcha: `setInterval` stops ticking when the app goes to background or the screen locks. A naive `elapsed += 1` per tick will drift or freeze.
 - Fix: store `clock_last_tick_ms` (real timestamp) on each tick and on AppState transitions. On resume, compute delta from wall clock instead of counting ticks. Applied in `syncWorkoutSessionClock(...)` in `apps/mobile/App.tsx`.
 
+### useRef values don't survive app restarts — persist to AsyncStorage if needed across launches
+- Gotcha: a `useRef` initialized in a component is reset to its initial value whenever the app process is killed and relaunched. Any logic that compares "state at session start" vs "state now" will silently fail if the ref was set in a previous launch.
+- Fix: if the ref's value must survive a restart (e.g. `workoutTemplateBeforeSessionRef`), persist it to `AsyncStorage` alongside the related state, and restore it during hydration. See `SESSION_TEMPLATE_SNAPSHOT_KEY` in `App.tsx`.
+
+### Android asset filenames must not contain hyphens
+- Gotcha: `expo-notifications` (and other native modules) reference sound/image assets as Android resource names. Android resource names only allow `[a-z0-9_]` — hyphens are invalid and cause build failures.
+- Fix: rename files using underscores (e.g. `rest-finished.wav` → `rest_finished.wav`) and update every reference in code and `app.json`.
+
 ## Post-Modification Workflow
 After each modification, always commit and push changes:
 ```bash
