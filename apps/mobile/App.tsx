@@ -7215,6 +7215,7 @@ export default function App() {
   const restAlertLockRef = useRef(false);
   const audioWorkoutInitializedRef = useRef(false);
   const restNotificationIdRef = useRef<string | null>(null);
+  const restNotifBodyRef = useRef<string>("");
   const providerSettingsInitializedRef = useRef(false);
   const exerciseIssueDebounceRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const exerciseIssueSentRef = useRef<Set<string>>(new Set());
@@ -8178,8 +8179,8 @@ export default function App() {
       await Notifications.cancelAllScheduledNotificationsAsync();
       const id = await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Gymnasia",
-          body: "¡Descanso terminado! 💪",
+          title: "¡Descanso terminado! 💪",
+          body: restNotifBodyRef.current || "Es hora de continuar",
           sound: "rest_finished.wav",
           vibrate: [0, 300, 150, 300],
         },
@@ -8664,6 +8665,21 @@ export default function App() {
     if (audioWorkoutInitializedRef.current && restFinishSoundRef.current) return;
     void initWorkoutAudio();
   }, [activeWorkoutSession?.id, initWorkoutAudio]);
+
+  useEffect(() => {
+    if (!activeWorkoutSession?.is_resting) return;
+    const template = store.templates.find((t) => t.id === activeWorkoutSession.template_id);
+    const exercise = template?.exercises[activeWorkoutSession.current_exercise_index];
+    const exerciseName = exercise?.name?.trim() || `Ejercicio ${activeWorkoutSession.current_exercise_index + 1}`;
+    const seriesNumber = activeWorkoutSession.current_series_index + 1;
+    restNotifBodyRef.current = `${exerciseName} · Serie ${seriesNumber}`;
+  }, [
+    activeWorkoutSession?.is_resting,
+    activeWorkoutSession?.current_exercise_index,
+    activeWorkoutSession?.current_series_index,
+    activeWorkoutSession?.template_id,
+    store.templates,
+  ]);
 
   useEffect(() => {
     if (activeWorkoutSession) return;
