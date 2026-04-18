@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Gymnasia",
+    "slug": "gymnasia",
+    "version": "1.6.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0E14"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.maximofn.gymnasia",
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0A0E14"
+      },
+      "package": "com.maximofn.gymnasia",
+      "permissions": [
+        "FOREGROUND_SERVICE",
+        "WAKE_LOCK",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "SCHEDULE_EXACT_ALARM"
+      ]
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "939caf71-3ed8-49a4-a3e9-d60c2a8da194"
+      }
+    },
+    "plugins": [
+      "expo-secure-store",
+      ["expo-notifications", {
+        "sounds": ["./assets/rest_finished.wav"]
+      }]
+    ]
+  }
+}
