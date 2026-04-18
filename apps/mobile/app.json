@@ -32,7 +32,9 @@
       "permissions": [
         "FOREGROUND_SERVICE",
         "WAKE_LOCK",
-        "VIBRATE"
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "SCHEDULE_EXACT_ALARM"
       ]
     },
     "web": {
@@ -44,7 +46,10 @@
       }
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      ["expo-notifications", {
+        "sounds": ["./assets/rest-finished.wav"]
+      }]
     ]
   }
 }

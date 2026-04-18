@@ -9,6 +9,7 @@ import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
+import * as Notifications from "expo-notifications";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -7213,6 +7214,7 @@ export default function App() {
   const manualRestSkipRef = useRef(false);
   const restAlertLockRef = useRef(false);
   const audioWorkoutInitializedRef = useRef(false);
+  const restNotificationIdRef = useRef<string | null>(null);
   const providerSettingsInitializedRef = useRef(false);
   const exerciseIssueDebounceRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const exerciseIssueSentRef = useRef<Set<string>>(new Set());
@@ -8111,6 +8113,7 @@ export default function App() {
   }, [tab]);
 
   const playRestFinishedAlert = useCallback(async () => {
+    console.log("[audio] playRestFinishedAlert called, soundLoaded=", !!restFinishSoundRef.current);
     if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
     try {
@@ -8118,10 +8121,15 @@ export default function App() {
 
       try {
         if (restFinishSoundRef.current) {
+          console.log("[audio] playing sound");
           await restFinishSoundRef.current.setPositionAsync(0);
           await restFinishSoundRef.current.playAsync();
+          console.log("[audio] sound played ok");
+        } else {
+          console.log("[audio] sound not loaded, skipping");
         }
-      } catch {
+      } catch (e) {
+        console.log("[audio] error playing sound:", e);
         // best effort: vibration still notifies the user
       }
     } finally {
@@ -8132,6 +8140,7 @@ export default function App() {
   }, []);
 
   const initWorkoutAudio = useCallback(async () => {
+    console.log("[audio] initWorkoutAudio called");
     try {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
@@ -8139,17 +8148,64 @@ export default function App() {
         shouldDuckAndroid: true,
         interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
         interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
-        staysActiveInBackground: true,
+        staysActiveInBackground: false,
       });
+      console.log("[audio] setAudioModeAsync ok");
       if (!restFinishSoundRef.current) {
         const { sound } = await Audio.Sound.createAsync(
           require("./assets/rest-finished.wav"),
           { shouldPlay: false, volume: 1 },
         );
         restFinishSoundRef.current = sound;
+        console.log("[audio] sound pre-loaded ok");
+      }
+      // Request notification permissions and set up Android channel
+      await Notifications.requestPermissionsAsync();
+      if (Platform.OS === "android") {
+        await Notifications.setNotificationChannelAsync("rest-finished", {
+          name: "Descanso terminado",
+          importance: Notifications.AndroidImportance.HIGH,
+          sound: "rest-finished.wav",
+          vibrationPattern: [0, 300, 150, 300],
+          enableVibrate: true,
+        });
       }
       audioWorkoutInitializedRef.current = true;
-    } catch { /* vibration still fires if this fails */ }
+    } catch (e) {
+      console.log("[audio] initWorkoutAudio error:", e);
+    }
+  }, []);
+
+  const scheduleRestEndNotification = useCallback(async (seconds: number) => {
+    try {
+      await Notifications.cancelAllScheduledNotificationsAsync();
+      const id = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Gymnasia",
+          body: "¡Descanso terminado! 💪",
+          sound: "rest-finished.wav",
+          vibrate: [0, 300, 150, 300],
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: Math.max(1, seconds),
+        },
+      });
+      restNotificationIdRef.current = id;
+      console.log("[audio] notification scheduled id=", id, "seconds=", seconds);
+    } catch (e) {
+      console.log("[audio] scheduleRestEndNotification error:", e);
+    }
+  }, []);
+
+  const cancelRestEndNotification = useCallback(async () => {
+    if (restNotificationIdRef.current) {
+      try {
+        await Notifications.cancelScheduledNotificationAsync(restNotificationIdRef.current);
+        console.log("[audio] notification cancelled");
+      } catch { /* ignore */ }
+      restNotificationIdRef.current = null;
+    }
   }, []);
 
   const stopBackgroundSilence = useCallback(async () => {
@@ -8169,6 +8225,7 @@ export default function App() {
   }, []);
 
   const startBackgroundSilence = useCallback(async (seconds: number) => {
+    console.log("[audio] startBackgroundSilence seconds=", seconds);
     await stopBackgroundSilence();
     if (seconds <= 0) return;
     try {
@@ -8186,7 +8243,7 @@ export default function App() {
 
       const { sound } = await Audio.Sound.createAsync(
         require("./assets/silence.wav"),
-        { isLooping: true, volume: 0, shouldPlay: true },
+        { isLooping: true, volume: 0.001, shouldPlay: true },
       );
       bgSilenceRef.current = sound;
 
@@ -8194,8 +8251,11 @@ export default function App() {
       // Android process (and JS timers) alive so the interval should fire.
       bgHeartbeatRef.current = setInterval(() => {
         if (bgRestFiredRef.current) return;
+        const remaining = bgRestDeadlineRef.current ? bgRestDeadlineRef.current - Date.now() : null;
+        console.log("[audio] heartbeat remaining=", remaining);
         if (bgRestDeadlineRef.current && Date.now() >= bgRestDeadlineRef.current) {
           bgRestFiredRef.current = true;
+          console.log("[audio] deadline reached via HEARTBEAT, firing alert");
           void playRestFinishedAlert();
           void stopBackgroundSilence();
         }
@@ -8520,6 +8580,7 @@ export default function App() {
         const elapsedSeconds = Math.floor((Date.now() - backgroundTimestampRef.current) / 1000);
         backgroundTimestampRef.current = null;
         void stopBackgroundSilence();
+        void cancelRestEndNotification();
         setActiveWorkoutSession((prev) => {
           if (!prev || prev.status !== "running") return prev;
           const nextElapsed = prev.elapsed_seconds + elapsedSeconds;
@@ -8539,7 +8600,7 @@ export default function App() {
         backgroundTimestampRef.current = Date.now();
         setActiveWorkoutSession((prev) => {
           if (prev?.is_resting && prev.rest_seconds_left > 0) {
-            void startBackgroundSilence(prev.rest_seconds_left);
+            void scheduleRestEndNotification(prev.rest_seconds_left);
           }
           return prev;
         });
@@ -8550,7 +8611,7 @@ export default function App() {
     return () => {
       subscription.remove();
     };
-  }, [startBackgroundSilence, stopBackgroundSilence]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, stopBackgroundSilence]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -8566,7 +8627,9 @@ export default function App() {
       !activeWorkoutSession.is_resting &&
       activeWorkoutSession.rest_seconds_left === 0;
     if (endedRestThisTick) {
+      console.log("[audio] rest ended via FOREGROUND effect");
       void stopBackgroundSilence();
+      void cancelRestEndNotification();
       if (!manualRestSkipRef.current) {
         void playRestFinishedAlert();
       }
@@ -8582,6 +8645,7 @@ export default function App() {
     activeWorkoutSession?.is_resting,
     activeWorkoutSession?.rest_seconds_left,
     stopBackgroundSilence,
+    cancelRestEndNotification,
     playRestFinishedAlert,
   ]);
 
@@ -8599,11 +8663,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    console.log("[audio] session effect id=", activeWorkoutSession?.id, "initialized=", audioWorkoutInitializedRef.current);
     if (!activeWorkoutSession) {
       audioWorkoutInitializedRef.current = false;
       return;
     }
-    if (audioWorkoutInitializedRef.current) return;
+    if (audioWorkoutInitializedRef.current && restFinishSoundRef.current) return;
     void initWorkoutAudio();
   }, [activeWorkoutSession?.id, initWorkoutAudio]);
 
@@ -11072,6 +11137,7 @@ export default function App() {
 
     if (activeWorkoutSession.is_resting) {
       manualRestSkipRef.current = true;
+      void cancelRestEndNotification();
     }
 
     const completedSeriesKeys = activeWorkoutSession.completed_series_keys.filter(
@@ -11248,6 +11314,7 @@ export default function App() {
   function skipSessionRest() {
     if (!activeWorkoutSession) return;
     manualRestSkipRef.current = true;
+    void cancelRestEndNotification();
     setActiveWorkoutSession({
       ...activeWorkoutSession,
       is_resting: false,
