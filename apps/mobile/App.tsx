@@ -9,6 +9,7 @@ import * as SecureStore from "expo-secure-store";
 import Constants from "expo-constants";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
+import * as Notifications from "expo-notifications";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -123,6 +124,7 @@ type WorkoutSession = {
   elapsed_seconds: number;
   is_resting: boolean;
   rest_seconds_left: number;
+  rest_seconds_total: number;
   status: WorkoutSessionStatus;
 };
 type WorkoutSessionSummary = {
@@ -342,6 +344,7 @@ type LocalStore = {
 
 const STORAGE_KEY = "gymnasia.mobile.local.v3";
 const SESSION_STORAGE_KEY = "gymnasia.mobile.training.session.v1";
+const SESSION_TEMPLATE_SNAPSHOT_KEY = "gymnasia.mobile.training.session_template_snapshot.v1";
 const CHAT_SYSTEM_PROMPT_CACHE_KEY = "gymnasia.mobile.chat.system_prompt.v1";
 const PERSONAL_DATA_STORAGE_KEY = "gymnasia.mobile.personal_data.v1";
 const USER_PREFS_STORAGE_KEY = "gymnasia.mobile.user_prefs.v1";
@@ -981,6 +984,39 @@ async function createGitHubExerciseIssue(exercise: {
   }
 }
 
+async function createGitHubFeatureIssue(params: {
+  title_summary: string;
+  conversation_excerpt: string;
+  interpretation: string;
+}): Promise<void> {
+  try {
+    const body = [
+      `### Fragmento de la conversación`,
+      ``,
+      params.conversation_excerpt,
+      ``,
+      `### Interpretación del agente`,
+      ``,
+      params.interpretation,
+    ].join("\n");
+    await fetch("https://api.github.com/repos/maximofn/gymnasia/issues", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GITHUB_FOOD_ISSUE_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: `[FEATURE] ${params.title_summary}`,
+        body,
+        labels: ["enhancement"],
+      }),
+    });
+  } catch {
+    // Fire-and-forget: do not block UI
+  }
+}
+
 async function loadExercisesRepo(): Promise<ExerciseRepoEntry[]> {
   try {
     const response = await fetch(`${EXERCISES_ALL_URL}?ts=${Date.now()}`);
@@ -1273,6 +1309,15 @@ const ADD_MEAL_FOOD_MEAL_PARAM_DESC = "Nombre de la comida: Desayuno, Almuerzo, 
 const ADD_MEAL_FOOD_DATA_PARAM_DESC =
   'JSON con los datos del alimento. Campos requeridos: name (string), grams (number), calories_kcal (number), protein_g (number), carbs_g (number), fat_g (number). ' +
   'Ejemplo: {"name": "Arroz blanco", "grams": 150, "calories_kcal": 195, "protein_g": 4.1, "carbs_g": 43.4, "fat_g": 0.4}';
+
+const CREATE_FEATURE_ISSUE_TOOL = "create_feature_issue";
+const CREATE_FEATURE_ISSUE_DESC =
+  "Crea una issue en GitHub con el prefijo [FEATURE] cuando el usuario solicita una mejora o nueva funcionalidad para la app. " +
+  "Usa esta herramienta siempre que el usuario exprese un deseo de mejora, nueva característica o cambio en la app. " +
+  "El agente debe generar un título conciso y un resumen de lo interpretado.";
+const CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC = "Título corto y descriptivo de la mejora solicitada (sin el prefijo [FEATURE], se añade automáticamente)";
+const CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC = "Fragmento literal de la conversación donde el usuario pide la mejora";
+const CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC = "Resumen en español de lo que ha interpretado el agente que el usuario quiere";
 
 const SCAN_BARCODE_TOOL = "scan_barcode";
 const SCAN_BARCODE_DESC =
@@ -1695,6 +1740,14 @@ async function handleToolCall(
       dificultad: e.difficulty,
       instrucciones: e.instructions,
     })));
+  }
+  if (name === CREATE_FEATURE_ISSUE_TOOL) {
+    const title_summary = (args.title_summary as string) ?? "";
+    const conversation_excerpt = (args.conversation_excerpt as string) ?? "";
+    const interpretation = (args.interpretation as string) ?? "";
+    if (!title_summary) return "Falta el título de la mejora.";
+    await createGitHubFeatureIssue({ title_summary, conversation_excerpt, interpretation });
+    return "Issue de mejora creada en GitHub correctamente.";
   }
   return "Herramienta no reconocida.";
 }
@@ -4004,6 +4057,20 @@ async function callProviderChatAPIWithTools(
         description: CREATE_ROUTINE_DESC,
         parameters: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
       },
+      {
+        type: "function",
+        name: CREATE_FEATURE_ISSUE_TOOL,
+        description: CREATE_FEATURE_ISSUE_DESC,
+        parameters: {
+          type: "object",
+          properties: {
+            title_summary: { type: "string", description: CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC },
+            conversation_excerpt: { type: "string", description: CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC },
+            interpretation: { type: "string", description: CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC },
+          },
+          required: ["title_summary", "conversation_excerpt", "interpretation"],
+        },
+      },
     ],
     anthropic: [
       {
@@ -4069,6 +4136,19 @@ async function callProviderChatAPIWithTools(
         name: CREATE_ROUTINE_TOOL,
         description: CREATE_ROUTINE_DESC,
         input_schema: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
+      },
+      {
+        name: CREATE_FEATURE_ISSUE_TOOL,
+        description: CREATE_FEATURE_ISSUE_DESC,
+        input_schema: {
+          type: "object",
+          properties: {
+            title_summary: { type: "string", description: CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC },
+            conversation_excerpt: { type: "string", description: CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC },
+            interpretation: { type: "string", description: CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC },
+          },
+          required: ["title_summary", "conversation_excerpt", "interpretation"],
+        },
       },
     ],
     google: [
@@ -4137,6 +4217,19 @@ async function callProviderChatAPIWithTools(
             name: CREATE_ROUTINE_TOOL,
             description: CREATE_ROUTINE_DESC,
             parameters: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
+          },
+          {
+            name: CREATE_FEATURE_ISSUE_TOOL,
+            description: CREATE_FEATURE_ISSUE_DESC,
+            parameters: {
+              type: "object",
+              properties: {
+                title_summary: { type: "string", description: CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC },
+                conversation_excerpt: { type: "string", description: CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC },
+                interpretation: { type: "string", description: CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC },
+              },
+              required: ["title_summary", "conversation_excerpt", "interpretation"],
+            },
           },
         ],
       },
@@ -4962,7 +5055,6 @@ function parseRestSecondsInput(rawValue: string): number {
 
   const numeric = Number(normalized.replace(/[^\d.]/g, ""));
   if (!Number.isFinite(numeric) || numeric <= 0) return 0;
-  if (numeric <= 10) return Math.round(numeric * 60);
   return Math.round(numeric);
 }
 
@@ -5782,6 +5874,9 @@ function normalizeWorkoutSession(
   const restSecondsLeft = Number.isFinite(Number(maybe.rest_seconds_left))
     ? Math.max(0, Math.round(Number(maybe.rest_seconds_left)))
     : 0;
+  const restSecondsTotal = Number.isFinite(Number(maybe.rest_seconds_total))
+    ? Math.max(0, Math.round(Number(maybe.rest_seconds_total)))
+    : restSecondsLeft;
   const completedCountRaw = Number(maybe.completed_series_count);
   const completedCount = Number.isFinite(completedCountRaw)
     ? Math.max(0, Math.min(pointers.length, Math.round(completedCountRaw)))
@@ -5805,6 +5900,7 @@ function normalizeWorkoutSession(
     elapsed_seconds: elapsedSeconds,
     is_resting: isResting,
     rest_seconds_left: restSecondsLeft,
+    rest_seconds_total: restSecondsTotal,
     status,
   };
 }
@@ -7212,6 +7308,9 @@ export default function App() {
   });
   const manualRestSkipRef = useRef(false);
   const restAlertLockRef = useRef(false);
+  const audioWorkoutInitializedRef = useRef(false);
+  const restNotificationIdRef = useRef<string | null>(null);
+  const restNotifBodyRef = useRef<string>("");
   const providerSettingsInitializedRef = useRef(false);
   const exerciseIssueDebounceRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const exerciseIssueSentRef = useRef<Set<string>>(new Set());
@@ -7980,10 +8079,16 @@ export default function App() {
     activeSessionTemplate,
     activeWorkoutSession,
   ]);
-  const activeSessionRestTargetSeconds = useMemo(
-    () => parseRestSecondsInput(activeSessionCurrentPointer?.series.rest_seconds ?? ""),
-    [activeSessionCurrentPointer?.series.rest_seconds],
-  );
+  const activeSessionRestTargetSeconds = useMemo(() => {
+    if (activeWorkoutSession?.is_resting) {
+      return activeWorkoutSession.rest_seconds_total ?? 0;
+    }
+    return parseRestSecondsInput(activeSessionCurrentPointer?.series.rest_seconds ?? "");
+  }, [
+    activeWorkoutSession?.is_resting,
+    activeWorkoutSession?.rest_seconds_total,
+    activeSessionCurrentPointer?.series.rest_seconds,
+  ]);
   const activeSessionRestProgressRatio = useMemo(() => {
     if (!activeWorkoutSession?.is_resting) return 0;
     const total = Math.max(1, activeSessionRestTargetSeconds);
@@ -8116,32 +8221,86 @@ export default function App() {
       Vibration.vibrate([0, 300, 150, 300]);
 
       try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          playsInSilentModeIOS: true,
-          shouldDuckAndroid: true,
-          interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-          interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-          staysActiveInBackground: true,
-        });
-
-        if (!restFinishSoundRef.current) {
-          const { sound } = await Audio.Sound.createAsync(
-            require("./assets/rest-finished.wav"),
-            { shouldPlay: false, volume: 1 },
-          );
-          restFinishSoundRef.current = sound;
+        if (restFinishSoundRef.current) {
+          // Release audio focus when done so ducked music recovers
+          restFinishSoundRef.current.setOnPlaybackStatusUpdate((status) => {
+            if (!status.isLoaded || !status.didJustFinish) return;
+            restFinishSoundRef.current?.setOnPlaybackStatusUpdate(null);
+            restFinishSoundRef.current?.stopAsync().catch(() => {});
+          });
+          await restFinishSoundRef.current.setPositionAsync(0);
+          await restFinishSoundRef.current.playAsync();
+        } else {
         }
-
-        await restFinishSoundRef.current.setPositionAsync(0);
-        await restFinishSoundRef.current.playAsync();
-      } catch {
+      } catch (e) {
         // best effort: vibration still notifies the user
       }
     } finally {
       setTimeout(() => {
         restAlertLockRef.current = false;
       }, 450);
+    }
+  }, []);
+
+  const initWorkoutAudio = useCallback(async () => {
+    try {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+        interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
+        staysActiveInBackground: false,
+      });
+      if (!restFinishSoundRef.current) {
+        const { sound } = await Audio.Sound.createAsync(
+          require("./assets/rest_finished.wav"),
+          { shouldPlay: false, volume: 1 },
+        );
+        restFinishSoundRef.current = sound;
+      }
+      // Request notification permissions and set up Android channel
+      await Notifications.requestPermissionsAsync();
+      if (Platform.OS === "android") {
+        await Notifications.setNotificationChannelAsync("rest_finished", {
+          name: "Descanso terminado",
+          importance: Notifications.AndroidImportance.HIGH,
+          sound: "rest_finished.wav",
+          vibrationPattern: [0, 300, 150, 300],
+          enableVibrate: true,
+        });
+      }
+      audioWorkoutInitializedRef.current = true;
+    } catch (e) {
+    }
+  }, []);
+
+  const scheduleRestEndNotification = useCallback(async (seconds: number) => {
+    try {
+      await Notifications.cancelAllScheduledNotificationsAsync();
+      const id = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "¡Descanso terminado! 💪",
+          body: restNotifBodyRef.current || "Es hora de continuar",
+          sound: "rest_finished.wav",
+          vibrate: [0, 300, 150, 300],
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: Math.max(1, seconds),
+        },
+      });
+      restNotificationIdRef.current = id;
+    } catch (e) {
+    }
+  }, []);
+
+  const cancelRestEndNotification = useCallback(async () => {
+    if (restNotificationIdRef.current) {
+      try {
+        await Notifications.cancelScheduledNotificationAsync(restNotificationIdRef.current);
+      } catch { /* ignore */ }
+      restNotificationIdRef.current = null;
     }
   }, []);
 
@@ -8170,7 +8329,7 @@ export default function App() {
         playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
         interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+        interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
         staysActiveInBackground: true,
       });
 
@@ -8179,7 +8338,7 @@ export default function App() {
 
       const { sound } = await Audio.Sound.createAsync(
         require("./assets/silence.wav"),
-        { isLooping: true, volume: 0, shouldPlay: true },
+        { isLooping: true, volume: 0.001, shouldPlay: true },
       );
       bgSilenceRef.current = sound;
 
@@ -8187,6 +8346,7 @@ export default function App() {
       // Android process (and JS timers) alive so the interval should fire.
       bgHeartbeatRef.current = setInterval(() => {
         if (bgRestFiredRef.current) return;
+        const remaining = bgRestDeadlineRef.current ? bgRestDeadlineRef.current - Date.now() : null;
         if (bgRestDeadlineRef.current && Date.now() >= bgRestDeadlineRef.current) {
           bgRestFiredRef.current = true;
           void playRestFinishedAlert();
@@ -8319,10 +8479,11 @@ export default function App() {
 
         await clearLegacyStorageData(secureAvailable);
 
-        const [rawStore, secureApiKeys, rawSession, rawPrefs] = await Promise.all([
+        const [rawStore, secureApiKeys, rawSession, rawSessionTemplateSnapshot, rawPrefs] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEY),
           readProviderApiKeysFromSecureStore(secureAvailable),
           AsyncStorage.getItem(SESSION_STORAGE_KEY),
+          AsyncStorage.getItem(SESSION_TEMPLATE_SNAPSHOT_KEY),
           AsyncStorage.getItem(USER_PREFS_STORAGE_KEY),
         ]);
 
@@ -8352,6 +8513,15 @@ export default function App() {
         if (!ignore) {
           setStore(mergedStore);
           setActiveWorkoutSession(hydratedSession);
+          if (hydratedSession) {
+            const snapshotTemplate = rawSessionTemplateSnapshot
+              ? (JSON.parse(rawSessionTemplateSnapshot) as WorkoutTemplate | null)
+              : null;
+            const fallbackTemplate = mergedStore.templates.find(
+              (t) => t.id === hydratedSession.template_id,
+            ) ?? null;
+            workoutTemplateBeforeSessionRef.current = snapshotTemplate ?? (fallbackTemplate ? cloneWorkoutTemplate(fallbackTemplate) : null);
+          }
           const parsedPrefs: UserPreferences = rawPrefs
             ? { ...DEFAULT_USER_PREFS, ...JSON.parse(rawPrefs) }
             : { ...DEFAULT_USER_PREFS };
@@ -8460,11 +8630,18 @@ export default function App() {
       AsyncStorage.removeItem(SESSION_STORAGE_KEY).catch(() => {
         setError("No se pudo limpiar la sesión de entrenamiento.");
       });
+      AsyncStorage.removeItem(SESSION_TEMPLATE_SNAPSHOT_KEY).catch(() => {});
       return;
     }
     AsyncStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeWorkoutSession)).catch(() => {
       setError("No se pudo guardar la sesión de entrenamiento.");
     });
+    if (workoutTemplateBeforeSessionRef.current) {
+      AsyncStorage.setItem(
+        SESSION_TEMPLATE_SNAPSHOT_KEY,
+        JSON.stringify(workoutTemplateBeforeSessionRef.current),
+      ).catch(() => {});
+    }
   }, [activeWorkoutSession, isHydrated]);
 
   useEffect(() => {
@@ -8513,6 +8690,7 @@ export default function App() {
         const elapsedSeconds = Math.floor((Date.now() - backgroundTimestampRef.current) / 1000);
         backgroundTimestampRef.current = null;
         void stopBackgroundSilence();
+        void cancelRestEndNotification();
         setActiveWorkoutSession((prev) => {
           if (!prev || prev.status !== "running") return prev;
           const nextElapsed = prev.elapsed_seconds + elapsedSeconds;
@@ -8520,6 +8698,10 @@ export default function App() {
             return { ...prev, elapsed_seconds: nextElapsed };
           }
           const nextRest = Math.max(0, prev.rest_seconds_left - elapsedSeconds);
+          if (nextRest === 0) {
+            // Notification already alerted the user — skip foreground sound on return
+            manualRestSkipRef.current = true;
+          }
           return {
             ...prev,
             elapsed_seconds: nextElapsed,
@@ -8532,7 +8714,7 @@ export default function App() {
         backgroundTimestampRef.current = Date.now();
         setActiveWorkoutSession((prev) => {
           if (prev?.is_resting && prev.rest_seconds_left > 0) {
-            void startBackgroundSilence(prev.rest_seconds_left);
+            void scheduleRestEndNotification(prev.rest_seconds_left);
           }
           return prev;
         });
@@ -8543,7 +8725,7 @@ export default function App() {
     return () => {
       subscription.remove();
     };
-  }, [startBackgroundSilence, stopBackgroundSilence]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, stopBackgroundSilence]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -8560,6 +8742,7 @@ export default function App() {
       activeWorkoutSession.rest_seconds_left === 0;
     if (endedRestThisTick) {
       void stopBackgroundSilence();
+      void cancelRestEndNotification();
       if (!manualRestSkipRef.current) {
         void playRestFinishedAlert();
       }
@@ -8575,6 +8758,7 @@ export default function App() {
     activeWorkoutSession?.is_resting,
     activeWorkoutSession?.rest_seconds_left,
     stopBackgroundSilence,
+    cancelRestEndNotification,
     playRestFinishedAlert,
   ]);
 
@@ -8590,6 +8774,30 @@ export default function App() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!activeWorkoutSession) {
+      audioWorkoutInitializedRef.current = false;
+      return;
+    }
+    if (audioWorkoutInitializedRef.current && restFinishSoundRef.current) return;
+    void initWorkoutAudio();
+  }, [activeWorkoutSession?.id, initWorkoutAudio]);
+
+  useEffect(() => {
+    if (!activeWorkoutSession?.is_resting) return;
+    const template = store.templates.find((t) => t.id === activeWorkoutSession.template_id);
+    const exercise = template?.exercises[activeWorkoutSession.current_exercise_index];
+    const exerciseName = exercise?.name?.trim() || `Ejercicio ${activeWorkoutSession.current_exercise_index + 1}`;
+    const seriesNumber = activeWorkoutSession.current_series_index + 1;
+    restNotifBodyRef.current = `${exerciseName} · ¡A por la serie ${seriesNumber}!`;
+  }, [
+    activeWorkoutSession?.is_resting,
+    activeWorkoutSession?.current_exercise_index,
+    activeWorkoutSession?.current_series_index,
+    activeWorkoutSession?.template_id,
+    store.templates,
+  ]);
 
   useEffect(() => {
     if (activeWorkoutSession) return;
@@ -10469,6 +10677,43 @@ export default function App() {
     }));
   }
 
+  function addSeriesToExerciseInActiveSession(exerciseId: string) {
+    if (!activeWorkoutSession) return;
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((template) => {
+        if (template.id !== activeWorkoutSession.template_id) return template;
+        return {
+          ...template,
+          exercises: template.exercises.map((exercise) => {
+            if (exercise.id !== exerciseId) return exercise;
+            const existingSeries = exercise.series ?? [];
+            const lastSeries = existingSeries[existingSeries.length - 1];
+            const nextSeries = [
+              ...existingSeries,
+              {
+                id: uid("set"),
+                type: lastSeries?.type,
+                reps: lastSeries?.reps || "10",
+                weight_kg: lastSeries?.weight_kg || "",
+                rest_seconds: lastSeries?.rest_seconds || "",
+              },
+            ];
+            return {
+              ...exercise,
+              series: nextSeries,
+              sets: seriesToLegacySets(nextSeries),
+            };
+          }),
+        };
+      }),
+    }));
+    setActiveWorkoutSession((prev) => {
+      if (!prev) return prev;
+      return { ...prev, total_series_count: prev.total_series_count + 1 };
+    });
+  }
+
   function removeSeriesFromExercise(exerciseId: string, seriesId: string) {
     if (!activeTrainingTemplateId) return;
     setStore((prev) => ({
@@ -10866,6 +11111,7 @@ export default function App() {
       elapsed_seconds: 0,
       is_resting: false,
       rest_seconds_left: 0,
+      rest_seconds_total: 0,
       status: "running",
     };
     setActiveWorkoutSession(session);
@@ -10973,6 +11219,7 @@ export default function App() {
       current_series_index: nextPointer.seriesIndex,
       is_resting: restSeconds > 0,
       rest_seconds_left: restSeconds,
+      rest_seconds_total: restSeconds,
     });
     setConfirmDiscardSession(false);
     setError(null);
@@ -11012,6 +11259,7 @@ export default function App() {
         current_series_index: targetPointer.seriesIndex,
         is_resting: restSeconds > 0,
         rest_seconds_left: restSeconds,
+        rest_seconds_total: restSeconds,
       });
       return;
     }
@@ -11034,6 +11282,7 @@ export default function App() {
       current_series_index: nextPointer.seriesIndex,
       is_resting: restSeconds > 0,
       rest_seconds_left: restSeconds,
+      rest_seconds_total: restSeconds,
     });
     setConfirmDiscardSession(false);
     setError(null);
@@ -11056,6 +11305,7 @@ export default function App() {
 
     if (activeWorkoutSession.is_resting) {
       manualRestSkipRef.current = true;
+      void cancelRestEndNotification();
     }
 
     const completedSeriesKeys = activeWorkoutSession.completed_series_keys.filter(
@@ -11232,6 +11482,7 @@ export default function App() {
   function skipSessionRest() {
     if (!activeWorkoutSession) return;
     manualRestSkipRef.current = true;
+    void cancelRestEndNotification();
     setActiveWorkoutSession({
       ...activeWorkoutSession,
       is_resting: false,
@@ -13438,6 +13689,30 @@ export default function App() {
                                 </Pressable>
                               </View>
                             ))}
+
+                            <Pressable
+                              onPress={(event) => {
+                                event.stopPropagation();
+                                addSeriesToExerciseInActiveSession(sessionExercise.exercise.id);
+                              }}
+                              style={{
+                                marginTop: 4,
+                                minHeight: 32,
+                                borderRadius: 10,
+                                borderWidth: 1,
+                                borderColor: "rgba(255,255,255,0.08)",
+                                backgroundColor: "#171B23",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 6,
+                              }}
+                            >
+                              <Feather name="plus" size={12} color="#7F8896" />
+                              <Text style={{ color: "#7F8896", fontSize: 13, fontWeight: "700" }}>
+                                Añadir serie
+                              </Text>
+                            </Pressable>
 
                             {activeWorkoutSession.is_resting ? (
                               <View

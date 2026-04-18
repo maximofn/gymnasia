@@ -2,7 +2,7 @@
   "expo": {
     "name": "Gymnasia",
     "slug": "gymnasia",
-    "version": "1.6.1",
+    "version": "1.7.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -32,7 +32,9 @@
       "permissions": [
         "FOREGROUND_SERVICE",
         "WAKE_LOCK",
-        "VIBRATE"
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "SCHEDULE_EXACT_ALARM"
       ]
     },
     "web": {
@@ -44,7 +46,10 @@
       }
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      ["expo-notifications", {
+        "sounds": ["./assets/rest_finished.wav"]
+      }]
     ]
   }
 }
