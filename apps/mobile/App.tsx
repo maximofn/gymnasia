@@ -10587,6 +10587,43 @@ export default function App() {
     }));
   }
 
+  function addSeriesToExerciseInActiveSession(exerciseId: string) {
+    if (!activeWorkoutSession) return;
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((template) => {
+        if (template.id !== activeWorkoutSession.template_id) return template;
+        return {
+          ...template,
+          exercises: template.exercises.map((exercise) => {
+            if (exercise.id !== exerciseId) return exercise;
+            const existingSeries = exercise.series ?? [];
+            const lastSeries = existingSeries[existingSeries.length - 1];
+            const nextSeries = [
+              ...existingSeries,
+              {
+                id: uid("set"),
+                type: lastSeries?.type,
+                reps: lastSeries?.reps || "10",
+                weight_kg: lastSeries?.weight_kg || "",
+                rest_seconds: lastSeries?.rest_seconds || "",
+              },
+            ];
+            return {
+              ...exercise,
+              series: nextSeries,
+              sets: seriesToLegacySets(nextSeries),
+            };
+          }),
+        };
+      }),
+    }));
+    setActiveWorkoutSession((prev) => {
+      if (!prev) return prev;
+      return { ...prev, total_series_count: prev.total_series_count + 1 };
+    });
+  }
+
   function removeSeriesFromExercise(exerciseId: string, seriesId: string) {
     if (!activeTrainingTemplateId) return;
     setStore((prev) => ({
@@ -13562,6 +13599,30 @@ export default function App() {
                                 </Pressable>
                               </View>
                             ))}
+
+                            <Pressable
+                              onPress={(event) => {
+                                event.stopPropagation();
+                                addSeriesToExerciseInActiveSession(sessionExercise.exercise.id);
+                              }}
+                              style={{
+                                marginTop: 4,
+                                minHeight: 32,
+                                borderRadius: 10,
+                                borderWidth: 1,
+                                borderColor: "rgba(255,255,255,0.08)",
+                                backgroundColor: "#171B23",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 6,
+                              }}
+                            >
+                              <Feather name="plus" size={12} color="#7F8896" />
+                              <Text style={{ color: "#7F8896", fontSize: 13, fontWeight: "700" }}>
+                                Añadir serie
+                              </Text>
+                            </Pressable>
 
                             {activeWorkoutSession.is_resting ? (
                               <View
