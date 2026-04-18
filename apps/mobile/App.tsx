@@ -7212,6 +7212,7 @@ export default function App() {
   });
   const manualRestSkipRef = useRef(false);
   const restAlertLockRef = useRef(false);
+  const audioWorkoutInitializedRef = useRef(false);
   const providerSettingsInitializedRef = useRef(false);
   const exerciseIssueDebounceRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const exerciseIssueSentRef = useRef<Set<string>>(new Set());
@@ -8116,25 +8117,10 @@ export default function App() {
       Vibration.vibrate([0, 300, 150, 300]);
 
       try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          playsInSilentModeIOS: true,
-          shouldDuckAndroid: true,
-          interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-          interruptionModeIOS: InterruptionModeIOS.DoNotMix,
-          staysActiveInBackground: true,
-        });
-
-        if (!restFinishSoundRef.current) {
-          const { sound } = await Audio.Sound.createAsync(
-            require("./assets/rest-finished.wav"),
-            { shouldPlay: false, volume: 1 },
-          );
-          restFinishSoundRef.current = sound;
+        if (restFinishSoundRef.current) {
+          await restFinishSoundRef.current.setPositionAsync(0);
+          await restFinishSoundRef.current.playAsync();
         }
-
-        await restFinishSoundRef.current.setPositionAsync(0);
-        await restFinishSoundRef.current.playAsync();
       } catch {
         // best effort: vibration still notifies the user
       }
@@ -8143,6 +8129,27 @@ export default function App() {
         restAlertLockRef.current = false;
       }, 450);
     }
+  }, []);
+
+  const initWorkoutAudio = useCallback(async () => {
+    try {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+        interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
+        staysActiveInBackground: true,
+      });
+      if (!restFinishSoundRef.current) {
+        const { sound } = await Audio.Sound.createAsync(
+          require("./assets/rest-finished.wav"),
+          { shouldPlay: false, volume: 1 },
+        );
+        restFinishSoundRef.current = sound;
+      }
+      audioWorkoutInitializedRef.current = true;
+    } catch { /* vibration still fires if this fails */ }
   }, []);
 
   const stopBackgroundSilence = useCallback(async () => {
@@ -8170,7 +8177,7 @@ export default function App() {
         playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
         interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+        interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
         staysActiveInBackground: true,
       });
 
@@ -8590,6 +8597,15 @@ export default function App() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!activeWorkoutSession) {
+      audioWorkoutInitializedRef.current = false;
+      return;
+    }
+    if (audioWorkoutInitializedRef.current) return;
+    void initWorkoutAudio();
+  }, [activeWorkoutSession?.id, initWorkoutAudio]);
 
   useEffect(() => {
     if (activeWorkoutSession) return;
