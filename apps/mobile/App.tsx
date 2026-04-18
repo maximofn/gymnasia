@@ -984,6 +984,39 @@ async function createGitHubExerciseIssue(exercise: {
   }
 }
 
+async function createGitHubFeatureIssue(params: {
+  title_summary: string;
+  conversation_excerpt: string;
+  interpretation: string;
+}): Promise<void> {
+  try {
+    const body = [
+      `### Fragmento de la conversación`,
+      ``,
+      params.conversation_excerpt,
+      ``,
+      `### Interpretación del agente`,
+      ``,
+      params.interpretation,
+    ].join("\n");
+    await fetch("https://api.github.com/repos/maximofn/gymnasia/issues", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GITHUB_FOOD_ISSUE_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: `[FEATURE] ${params.title_summary}`,
+        body,
+        labels: ["enhancement"],
+      }),
+    });
+  } catch {
+    // Fire-and-forget: do not block UI
+  }
+}
+
 async function loadExercisesRepo(): Promise<ExerciseRepoEntry[]> {
   try {
     const response = await fetch(`${EXERCISES_ALL_URL}?ts=${Date.now()}`);
@@ -1276,6 +1309,15 @@ const ADD_MEAL_FOOD_MEAL_PARAM_DESC = "Nombre de la comida: Desayuno, Almuerzo, 
 const ADD_MEAL_FOOD_DATA_PARAM_DESC =
   'JSON con los datos del alimento. Campos requeridos: name (string), grams (number), calories_kcal (number), protein_g (number), carbs_g (number), fat_g (number). ' +
   'Ejemplo: {"name": "Arroz blanco", "grams": 150, "calories_kcal": 195, "protein_g": 4.1, "carbs_g": 43.4, "fat_g": 0.4}';
+
+const CREATE_FEATURE_ISSUE_TOOL = "create_feature_issue";
+const CREATE_FEATURE_ISSUE_DESC =
+  "Crea una issue en GitHub con el prefijo [FEATURE] cuando el usuario solicita una mejora o nueva funcionalidad para la app. " +
+  "Usa esta herramienta siempre que el usuario exprese un deseo de mejora, nueva característica o cambio en la app. " +
+  "El agente debe generar un título conciso y un resumen de lo interpretado.";
+const CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC = "Título corto y descriptivo de la mejora solicitada (sin el prefijo [FEATURE], se añade automáticamente)";
+const CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC = "Fragmento literal de la conversación donde el usuario pide la mejora";
+const CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC = "Resumen en español de lo que ha interpretado el agente que el usuario quiere";
 
 const SCAN_BARCODE_TOOL = "scan_barcode";
 const SCAN_BARCODE_DESC =
@@ -1698,6 +1740,14 @@ async function handleToolCall(
       dificultad: e.difficulty,
       instrucciones: e.instructions,
     })));
+  }
+  if (name === CREATE_FEATURE_ISSUE_TOOL) {
+    const title_summary = (args.title_summary as string) ?? "";
+    const conversation_excerpt = (args.conversation_excerpt as string) ?? "";
+    const interpretation = (args.interpretation as string) ?? "";
+    if (!title_summary) return "Falta el título de la mejora.";
+    await createGitHubFeatureIssue({ title_summary, conversation_excerpt, interpretation });
+    return "Issue de mejora creada en GitHub correctamente.";
   }
   return "Herramienta no reconocida.";
 }
@@ -4007,6 +4057,20 @@ async function callProviderChatAPIWithTools(
         description: CREATE_ROUTINE_DESC,
         parameters: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
       },
+      {
+        type: "function",
+        name: CREATE_FEATURE_ISSUE_TOOL,
+        description: CREATE_FEATURE_ISSUE_DESC,
+        parameters: {
+          type: "object",
+          properties: {
+            title_summary: { type: "string", description: CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC },
+            conversation_excerpt: { type: "string", description: CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC },
+            interpretation: { type: "string", description: CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC },
+          },
+          required: ["title_summary", "conversation_excerpt", "interpretation"],
+        },
+      },
     ],
     anthropic: [
       {
@@ -4072,6 +4136,19 @@ async function callProviderChatAPIWithTools(
         name: CREATE_ROUTINE_TOOL,
         description: CREATE_ROUTINE_DESC,
         input_schema: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
+      },
+      {
+        name: CREATE_FEATURE_ISSUE_TOOL,
+        description: CREATE_FEATURE_ISSUE_DESC,
+        input_schema: {
+          type: "object",
+          properties: {
+            title_summary: { type: "string", description: CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC },
+            conversation_excerpt: { type: "string", description: CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC },
+            interpretation: { type: "string", description: CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC },
+          },
+          required: ["title_summary", "conversation_excerpt", "interpretation"],
+        },
       },
     ],
     google: [
@@ -4140,6 +4217,19 @@ async function callProviderChatAPIWithTools(
             name: CREATE_ROUTINE_TOOL,
             description: CREATE_ROUTINE_DESC,
             parameters: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
+          },
+          {
+            name: CREATE_FEATURE_ISSUE_TOOL,
+            description: CREATE_FEATURE_ISSUE_DESC,
+            parameters: {
+              type: "object",
+              properties: {
+                title_summary: { type: "string", description: CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC },
+                conversation_excerpt: { type: "string", description: CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC },
+                interpretation: { type: "string", description: CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC },
+              },
+              required: ["title_summary", "conversation_excerpt", "interpretation"],
+            },
           },
         ],
       },
