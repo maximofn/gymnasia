@@ -4964,7 +4964,6 @@ function parseRestSecondsInput(rawValue: string): number {
 
   const numeric = Number(normalized.replace(/[^\d.]/g, ""));
   if (!Number.isFinite(numeric) || numeric <= 0) return 0;
-  if (numeric <= 10) return Math.round(numeric * 60);
   return Math.round(numeric);
 }
 
