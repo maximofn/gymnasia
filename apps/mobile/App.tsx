@@ -344,6 +344,7 @@ type LocalStore = {
 
 const STORAGE_KEY = "gymnasia.mobile.local.v3";
 const SESSION_STORAGE_KEY = "gymnasia.mobile.training.session.v1";
+const SESSION_TEMPLATE_SNAPSHOT_KEY = "gymnasia.mobile.training.session_template_snapshot.v1";
 const CHAT_SYSTEM_PROMPT_CACHE_KEY = "gymnasia.mobile.chat.system_prompt.v1";
 const PERSONAL_DATA_STORAGE_KEY = "gymnasia.mobile.personal_data.v1";
 const USER_PREFS_STORAGE_KEY = "gymnasia.mobile.user_prefs.v1";
@@ -8388,10 +8389,11 @@ export default function App() {
 
         await clearLegacyStorageData(secureAvailable);
 
-        const [rawStore, secureApiKeys, rawSession, rawPrefs] = await Promise.all([
+        const [rawStore, secureApiKeys, rawSession, rawSessionTemplateSnapshot, rawPrefs] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEY),
           readProviderApiKeysFromSecureStore(secureAvailable),
           AsyncStorage.getItem(SESSION_STORAGE_KEY),
+          AsyncStorage.getItem(SESSION_TEMPLATE_SNAPSHOT_KEY),
           AsyncStorage.getItem(USER_PREFS_STORAGE_KEY),
         ]);
 
@@ -8421,6 +8423,15 @@ export default function App() {
         if (!ignore) {
           setStore(mergedStore);
           setActiveWorkoutSession(hydratedSession);
+          if (hydratedSession) {
+            const snapshotTemplate = rawSessionTemplateSnapshot
+              ? (JSON.parse(rawSessionTemplateSnapshot) as WorkoutTemplate | null)
+              : null;
+            const fallbackTemplate = mergedStore.templates.find(
+              (t) => t.id === hydratedSession.template_id,
+            ) ?? null;
+            workoutTemplateBeforeSessionRef.current = snapshotTemplate ?? (fallbackTemplate ? cloneWorkoutTemplate(fallbackTemplate) : null);
+          }
           const parsedPrefs: UserPreferences = rawPrefs
             ? { ...DEFAULT_USER_PREFS, ...JSON.parse(rawPrefs) }
             : { ...DEFAULT_USER_PREFS };
@@ -8529,11 +8540,18 @@ export default function App() {
       AsyncStorage.removeItem(SESSION_STORAGE_KEY).catch(() => {
         setError("No se pudo limpiar la sesión de entrenamiento.");
       });
+      AsyncStorage.removeItem(SESSION_TEMPLATE_SNAPSHOT_KEY).catch(() => {});
       return;
     }
     AsyncStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeWorkoutSession)).catch(() => {
       setError("No se pudo guardar la sesión de entrenamiento.");
     });
+    if (workoutTemplateBeforeSessionRef.current) {
+      AsyncStorage.setItem(
+        SESSION_TEMPLATE_SNAPSHOT_KEY,
+        JSON.stringify(workoutTemplateBeforeSessionRef.current),
+      ).catch(() => {});
+    }
   }, [activeWorkoutSession, isHydrated]);
 
   useEffect(() => {
