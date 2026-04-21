@@ -365,6 +365,10 @@ const DEFAULT_MODELS: Record<Provider, string> = {
 };
 const LEGACY_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 const LEGACY_GOOGLE_DEFAULT_MODEL = "gemini-1.5-flash";
+
+function googleWebSearchTool(model: string): Record<string, unknown> {
+  return model.startsWith("gemini-1") ? { googleSearchRetrieval: {} } : { googleSearch: {} };
+}
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
 const DEFAULT_OPENAI_REASONING_EFFORT: OpenAIReasoningEffort = "medium";
@@ -4042,6 +4046,7 @@ async function callProviderChatAPIWithTools(
           required: ["title_summary", "conversation_excerpt", "interpretation"],
         },
       },
+      { type: "web_search_preview" },
     ],
     anthropic: [
       {
@@ -4121,6 +4126,7 @@ async function callProviderChatAPIWithTools(
           required: ["title_summary", "conversation_excerpt", "interpretation"],
         },
       },
+      { type: "web_search_20250305", name: "web_search", max_uses: 5 },
     ],
     google: [
       {
@@ -4403,7 +4409,8 @@ async function callProviderChatAPIWithTools(
       options?.onThinkingDelta?.(delta, streamedThinking);
     },
   };
-  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(normalizeProviderModel("google", provider.model))}:streamGenerateContent?alt=sse&key=${encodeURIComponent(provider.api_key)}`;
+  const googleModel = normalizeProviderModel("google", provider.model);
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(googleModel)}:streamGenerateContent?alt=sse&key=${encodeURIComponent(provider.api_key)}`;
 
   const makeGoogleRequest = async (msgs: any[], includeTools: boolean) => {
     const body: any = {
@@ -4416,7 +4423,7 @@ async function callProviderChatAPIWithTools(
         },
       },
     };
-    if (includeTools) body.tools = chatTools.google;
+    if (includeTools) body.tools = [...chatTools.google, googleWebSearchTool(googleModel)];
     if (Platform.OS === "web") {
       return streamGoogleRequestViaFetch(
         googleUrl,
@@ -4496,6 +4503,7 @@ const foodEstimatorTools = {
         required: ["barcode"],
       },
     },
+    { type: "web_search_preview" },
   ],
   anthropic: [
     {
@@ -4507,6 +4515,7 @@ const foodEstimatorTools = {
         required: ["barcode"],
       },
     },
+    { type: "web_search_20250305", name: "web_search", max_uses: 5 },
   ],
   google: [
     {
@@ -4828,7 +4837,7 @@ async function callFoodEstimatorAPI(
     const body = {
       contents,
       systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }] },
-      tools: foodEstimatorTools.google,
+      tools: [...foodEstimatorTools.google, googleWebSearchTool(model)],
       generationConfig: {
         thinkingConfig: {
           includeThoughts: true,
