@@ -593,20 +593,6 @@ const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Si has usado la herramienta scan_barcode, es SIEMPRE un producto comercial. " +
   "Una receta es cualquier plato elaborado o combinación de ingredientes preparada por el usuario (por ejemplo: tortilla de patatas, ensalada César, arroz con pollo, etc.). " +
   "Los alimentos genéricos simples (arroz, pollo, huevo, aceite, fruta...) NO son ni producto comercial ni receta, son alimentos base.";
-const FOOD_AI_SYSTEM_PROMPT =
-  "Eres un nutricionista experto. El usuario te va a decir un alimento, plato o receta. " +
-  "Tu objetivo es determinar los valores nutricionales exactos por unidad base (100g, 1ml, 1 unidad, etc.). " +
-  "Flujo: 1) El usuario te dice un alimento, plato o receta. " +
-  "2) Si necesitas más datos (ingredientes, cantidades, modo de preparación), pregúntale. " +
-  "3) Cuando tengas toda la información, calcula los valores nutricionales. " +
-  "4) Presenta los valores al usuario y pregúntale si son correctos. " +
-  "5) Cuando el usuario confirme, devuelve EXACTAMENTE un bloque JSON con este formato:\n" +
-  "```json\n" +
-  '{"name":"Nombre del alimento","category":"categoría","calories_per_100g":0,"protein_per_100g":0,' +
-  '"carbs_per_100g":0,"fat_per_100g":0,"fiber_per_100g":0,"serving_size_g":0,"serving_description":"descripción de ración"}\n' +
-  "```\n" +
-  "Categorías válidas: proteína, carbohidrato, grasa, fruta, verdura, lácteo, legumbre, fruto-seco, receta, suplemento, bebida, otro. " +
-  "Responde siempre en español. Sé conciso pero preciso.";
 const PROVIDER_UI_META: Record<
   Provider,
   {
@@ -1750,21 +1736,6 @@ async function handleToolCall(
     return "Issue de mejora creada en GitHub correctamente.";
   }
   return "Herramienta no reconocida.";
-}
-
-function resolveProviderByPriority(keys: AIKey[], priority: Provider[]): AIKey | null {
-  for (const provider of priority) {
-    const configured = keys.find((item) => item.provider === provider);
-    if (!configured) continue;
-    const apiKey = configured.api_key.trim();
-    if (!apiKey) continue;
-    return {
-      ...configured,
-      api_key: apiKey,
-      model: normalizeProviderModel(provider, configured.model),
-    };
-  }
-  return null;
 }
 
 function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
@@ -6444,201 +6415,6 @@ function normalizeStore(raw: LocalStore): LocalStore {
   };
 }
 
-type MiniChatProps = {
-  systemPrompt: string;
-  providerKeys: AIKey[];
-  providerPriority?: Provider[];
-  preferredProvider?: Provider;
-  onJsonResult?: (json: Record<string, unknown>) => void;
-  onClose: () => void;
-  visible: boolean;
-  title: string;
-};
-
-function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvider, onJsonResult, onClose, visible, title }: MiniChatProps) {
-  const [mcMessages, setMcMessages] = useState<ChatMessage[]>([]);
-  const [mcInput, setMcInput] = useState("");
-  const [mcSending, setMcSending] = useState(false);
-  const mcScrollRef = useRef<ScrollView>(null);
-
-  if (!visible) return null;
-
-  const resolvedProvider = (() => {
-    if (preferredProvider) {
-      const match = providerKeys.find((k) => k.provider === preferredProvider && k.api_key.trim());
-      if (match) return { ...match, api_key: match.api_key.trim(), model: normalizeProviderModel(match.provider, match.model) };
-    }
-    return resolveProviderByPriority(providerKeys, providerPriority ?? FOOD_ESTIMATOR_PROVIDER_PRIORITY);
-  })();
-  const providerLabel = resolvedProvider
-    ? `${resolvedProvider.provider.charAt(0).toUpperCase() + resolvedProvider.provider.slice(1)} · ${resolvedProvider.model}`
-    : "Sin proveedor";
-
-  function extractJson(text: string): Record<string, unknown> | null {
-    const match = text.match(/```json\s*([\s\S]*?)```/);
-    if (match) {
-      try { return JSON.parse(match[1].trim()); } catch { return null; }
-    }
-    const braceMatch = text.match(/\{[\s\S]*"name"\s*:[\s\S]*\}/);
-    if (braceMatch) {
-      try { return JSON.parse(braceMatch[0]); } catch { return null; }
-    }
-    return null;
-  }
-
-  async function sendMcMessage() {
-    const text = mcInput.trim();
-    if (!text || mcSending) return;
-
-    const provider = resolvedProvider;
-    if (!provider) {
-      setMcMessages((prev) => [...prev, { id: uid("msg"), role: "assistant", content: "No hay proveedor de IA configurado. Ve a Configuración → Proveedor IA para añadir una API key.", created_at: new Date().toISOString() }]);
-      return;
-    }
-
-    const userMsg: ChatMessage = { id: uid("msg"), role: "user", content: text, created_at: new Date().toISOString() };
-    setMcMessages((prev) => [...prev, userMsg]);
-    setMcInput("");
-    setMcSending(true);
-
-    try {
-      const history: ChatInputMessage[] = [
-        { role: "system", content: systemPrompt },
-        ...mcMessages.map((m) => ({ role: m.role, content: m.content })),
-        { role: "user" as const, content: text },
-      ];
-      const response = await callProviderChatAPI(provider, history);
-      const assistantMsg: ChatMessage = { id: uid("msg"), role: "assistant", content: response, created_at: new Date().toISOString() };
-      setMcMessages((prev) => [...prev, assistantMsg]);
-    } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : "Error desconocido";
-      setMcMessages((prev) => [...prev, { id: uid("msg"), role: "assistant", content: `Error: ${errMsg}`, created_at: new Date().toISOString() }]);
-    } finally {
-      setMcSending(false);
-      setTimeout(() => mcScrollRef.current?.scrollToEnd({ animated: true }), 100);
-    }
-  }
-
-  const lastAssistantMsg = [...mcMessages].reverse().find((m) => m.role === "assistant");
-  const detectedJson = lastAssistantMsg ? extractJson(lastAssistantMsg.content) : null;
-
-  return (
-    <View
-      style={{
-        borderWidth: 1,
-        borderColor: mobileTheme.color.borderSubtle,
-        backgroundColor: mobileTheme.color.bgSurface,
-        borderRadius: mobileTheme.radius.lg,
-        padding: 12,
-        gap: 10,
-      }}
-    >
-      <View>
-        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, marginBottom: 2 }}>{providerLabel}</Text>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>{title}</Text>
-          <Pressable
-            onPress={() => { setMcMessages([]); setMcInput(""); onClose(); }}
-            style={{ padding: 4 }}
-          >
-            <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
-          </Pressable>
-        </View>
-      </View>
-
-      <ScrollView
-        ref={mcScrollRef}
-        style={{ maxHeight: 320 }}
-        onContentSizeChange={() => mcScrollRef.current?.scrollToEnd({ animated: true })}
-      >
-        {mcMessages.length === 0 ? (
-          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontStyle: "italic" }}>
-            Escribe un alimento, plato o receta para obtener sus macros...
-          </Text>
-        ) : null}
-        {mcMessages.map((msg) => (
-          <View
-            key={msg.id}
-            style={{
-              alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-              maxWidth: "85%",
-              marginBottom: 8,
-              borderRadius: 10,
-              padding: 10,
-              backgroundColor: msg.role === "user" ? "rgba(203,255,26,0.1)" : mobileTheme.color.cardBg,
-              borderWidth: 1,
-              borderColor: msg.role === "user" ? "rgba(203,255,26,0.25)" : mobileTheme.color.borderSubtle,
-            }}
-          >
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, lineHeight: 19 }}>
-              {msg.content}
-            </Text>
-          </View>
-        ))}
-        {mcSending ? (
-          <View style={{ alignSelf: "flex-start", marginBottom: 8 }}>
-            <ActivityIndicator size="small" color={mobileTheme.color.brandPrimary} />
-          </View>
-        ) : null}
-      </ScrollView>
-
-      {detectedJson && onJsonResult ? (
-        <Pressable
-          onPress={() => { onJsonResult(detectedJson); setMcMessages([]); setMcInput(""); }}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-            paddingVertical: 10,
-            borderRadius: mobileTheme.radius.md,
-            backgroundColor: mobileTheme.color.brandPrimary,
-          }}
-        >
-          <Feather name="plus-circle" size={16} color="#000" />
-          <Text style={{ color: "#000", fontSize: 14, fontWeight: "700" }}>Añadir a mis alimentos</Text>
-        </Pressable>
-      ) : null}
-
-      <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
-        <TextInput
-          value={mcInput}
-          onChangeText={setMcInput}
-          placeholder="Ej: tortilla de patatas..."
-          placeholderTextColor={mobileTheme.color.textSecondary}
-          onSubmitEditing={sendMcMessage}
-          multiline
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderColor: mobileTheme.color.borderSubtle,
-            borderRadius: mobileTheme.radius.md,
-            paddingHorizontal: 10,
-            paddingVertical: 8,
-            color: mobileTheme.color.textPrimary,
-            fontSize: 14,
-            backgroundColor: mobileTheme.color.cardBg,
-            maxHeight: 120,
-          }}
-        />
-        <Pressable
-          onPress={sendMcMessage}
-          disabled={mcSending || !mcInput.trim()}
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: 14,
-            borderRadius: mobileTheme.radius.md,
-            backgroundColor: mcSending || !mcInput.trim() ? "#333" : mobileTheme.color.brandPrimary,
-          }}
-        >
-          <Feather name="send" size={16} color={mcSending || !mcInput.trim() ? "#666" : "#000"} />
-        </Pressable>
-      </View>
-    </View>
-  );
-}
-
 function SwipeableSetRow({
   children,
   onDelete,
@@ -7159,6 +6935,7 @@ export default function App() {
     () => createDietMealExpandedState(),
   );
   const [foodEstimatorModalOpen, setFoodEstimatorModalOpen] = useState(false);
+  const [foodEstimatorTarget, setFoodEstimatorTarget] = useState<"meal" | "personal-repo">("meal");
   const [foodEstimatorProvider, setFoodEstimatorProvider] = useState<AIKey | null>(null);
   const [foodEstimatorImages, setFoodEstimatorImages] = useState<FoodEstimatorImage[]>([]);
   const [foodEstimatorMessages, setFoodEstimatorMessages] = useState<ChatMessage[]>([]);
@@ -7220,7 +6997,6 @@ export default function App() {
   const [personalFoodFormVisible, setPersonalFoodFormVisible] = useState(false);
   const [personalFoodDraft, setPersonalFoodDraft] = useState<Partial<FoodRepoEntry>>({});
   const [editingPersonalFoodId, setEditingPersonalFoodId] = useState<string | null>(null);
-  const [personalFoodAIChatOpen, setPersonalFoodAIChatOpen] = useState(false);
   const [memoryFields, setMemoryFields] = useState<PersonalDataField[]>([]);
   const [memoryNewKey, setMemoryNewKey] = useState("");
   const [memoryNewDesc, setMemoryNewDesc] = useState("");
@@ -8139,7 +7915,6 @@ export default function App() {
       if (bodyFatInfoModalOpen) { setBodyFatInfoModalOpen(false); return true; }
       if (customExerciseFormOpen) { setCustomExerciseFormOpen(false); return true; }
       if (exercisePickerOpen) { setExercisePickerOpen(false); return true; }
-      if (personalFoodAIChatOpen) { setPersonalFoodAIChatOpen(false); return true; }
       if (personalFoodFormVisible) { setPersonalFoodFormVisible(false); return true; }
       if (measurementEntryScreenOpen) { setMeasurementEntryScreenOpen(false); return true; }
       if (showByokExplain) { setShowByokExplain(false); return true; }
@@ -9385,10 +9160,12 @@ export default function App() {
     return resolveFoodEstimatorProvider(store.keys);
   }
 
-  function openFoodEstimatorModal() {
+  function openFoodEstimatorModal(options?: { target?: "meal" | "personal-repo" }) {
+    const target = options?.target ?? "meal";
     const provider = store.foodAIProvider
       ? store.keys.find((k) => k.provider === store.foodAIProvider && k.api_key.trim()) ?? resolveFoodEstimatorProvider(store.keys)
       : resolveFoodEstimatorProvider(store.keys);
+    setFoodEstimatorTarget(target);
     setFoodEstimatorProvider(provider);
     setFoodEstimatorImages([]);
     setFoodEstimatorInput("");
@@ -9400,7 +9177,9 @@ export default function App() {
         id: uid("food_est_msg"),
         role: "assistant",
         content: provider
-          ? "Sube fotos o describe la comida para comenzar la estimación."
+          ? (target === "personal-repo"
+              ? "Sube fotos o describe el alimento que quieres añadir a tu repositorio personal."
+              : "Sube fotos o describe la comida para comenzar la estimación.")
           : "No hay API key disponible para estimar. Configura Google, OpenAI o Anthropic en Configuración > Proveedor IA.",
         created_at: new Date().toISOString(),
       },
@@ -9679,6 +9458,7 @@ export default function App() {
 
   async function requestStructuredNutritionJSON(provider: AIKey, conversationSummary: string): Promise<{
     dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number;
+    fiber_g: number; category: string; serving_description: string;
     food_type: "producto_comercial" | "receta" | "alimento";
   }> {
     const model = normalizeProviderModel(provider.provider, provider.model);
@@ -9691,9 +9471,12 @@ export default function App() {
         protein_g: { type: "number" as const, description: "Proteínas en gramos" },
         carbs_g: { type: "number" as const, description: "Carbohidratos en gramos" },
         fat_g: { type: "number" as const, description: "Grasas en gramos" },
+        fiber_g: { type: "number" as const, description: "Fibra total en gramos. Si no hay fibra relevante, devuelve 0" },
+        category: { type: "string" as const, description: "Categoría del alimento en minúscula (ej: 'fruta', 'verdura', 'proteína', 'cereal', 'lácteo', 'bebida', 'receta', 'suplemento', 'otro')" },
+        serving_description: { type: "string" as const, description: "Descripción textual de la ración típica (ej: '1 tortilla mediana', '1 vaso (250ml)', '1 unidad'). Si no aplica, devuelve cadena vacía" },
         food_type: { type: "string" as const, description: "Tipo de alimento. DEBE ser exactamente uno de estos tres valores: 'producto_comercial' (producto de supermercado/tienda o si se usó código de barras), 'receta' (plato elaborado o combinación de ingredientes), 'alimento' (alimento genérico simple)" },
       },
-      required: ["dish_name", "grams", "calories_kcal", "protein_g", "carbs_g", "fat_g", "food_type"] as string[],
+      required: ["dish_name", "grams", "calories_kcal", "protein_g", "carbs_g", "fat_g", "fiber_g", "category", "serving_description", "food_type"] as string[],
       additionalProperties: false,
     };
     const extractPrompt = "Basándote en la conversación anterior, devuelve ÚNICAMENTE un JSON con los datos nutricionales estimados. " + conversationSummary;
@@ -9743,7 +9526,7 @@ export default function App() {
       const data = await response.json();
       const toolBlock = data.content?.find((b: Record<string, unknown>) => b.type === "tool_use");
       if (!toolBlock?.input) throw new Error("No se recibió respuesta estructurada de Anthropic");
-      return toolBlock.input as { dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number; food_type: "producto_comercial" | "receta" | "alimento" };
+      return toolBlock.input as { dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number; fiber_g: number; category: string; serving_description: string; food_type: "producto_comercial" | "receta" | "alimento" };
     }
 
     // Google — responseSchema does not support additionalProperties
@@ -9780,7 +9563,7 @@ export default function App() {
       ]);
     };
     if (foodEstimatorSending) { debugMsg("[DEBUG] Bloqueado: foodEstimatorSending=true"); return; }
-    if (!dietMealEditorCategory) {
+    if (foodEstimatorTarget === "meal" && !dietMealEditorCategory) {
       debugMsg("[DEBUG] Bloqueado: dietMealEditorCategory es null");
       return;
     }
@@ -9810,10 +9593,30 @@ export default function App() {
         return;
       }
 
-      // Search food in repository before adding
-      const cat = dietMealEditorCategory;
       const aiName = parsed.dish_name || "Alimento estimado IA";
       const aiGrams = parsed.grams ?? 0;
+
+      if (foodEstimatorTarget === "personal-repo") {
+        const ratio = aiGrams > 0 ? 100 / aiGrams : 1;
+        const repoEntry: FoodRepoEntry = {
+          id: uid("food"),
+          name: aiName,
+          category: (parsed.category || "otro").trim() || "otro",
+          calories_per_100g: Math.round((parsed.calories_kcal ?? 0) * ratio),
+          protein_per_100g: Math.round(((parsed.protein_g ?? 0) * ratio) * 10) / 10,
+          carbs_per_100g: Math.round(((parsed.carbs_g ?? 0) * ratio) * 10) / 10,
+          fat_per_100g: Math.round(((parsed.fat_g ?? 0) * ratio) * 10) / 10,
+          fiber_per_100g: Math.round(((parsed.fiber_g ?? 0) * ratio) * 10) / 10,
+          serving_size_g: aiGrams > 0 ? aiGrams : 100,
+          serving_description: (parsed.serving_description ?? "").trim(),
+        };
+        setPersonalFoods((prev) => [...prev, repoEntry]);
+        closeFoodEstimatorModal();
+        return;
+      }
+
+      // Search food in repository before adding
+      const cat = dietMealEditorCategory!;
       const repoMatch = findFoodInRepo(aiName, foodsRepo, personalFoods);
       let updatedFields: { title: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number; image_uri?: string | null };
       if (repoMatch && aiGrams > 0) {
@@ -12190,7 +11993,7 @@ export default function App() {
               return (
                 <Pressable
                   key={option.key}
-                  onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); setPersonalFoodAIChatOpen(false); }}
+                  onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); }}
                   style={{
                     borderWidth: 1,
                     borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
@@ -19490,7 +19293,6 @@ export default function App() {
                         setEditingPersonalFoodId(null);
                         setPersonalFoodFormVisible(true);
                         setSelectedPersonalFoodDetail(null);
-                        setPersonalFoodAIChatOpen(false);
                       }}
                       style={{
                         flex: 1,
@@ -19512,9 +19314,9 @@ export default function App() {
                     </Pressable>
                     <Pressable
                       onPress={() => {
-                        setPersonalFoodAIChatOpen(true);
                         setPersonalFoodFormVisible(false);
                         setSelectedPersonalFoodDetail(null);
+                        openFoodEstimatorModal({ target: "personal-repo" });
                       }}
                       style={{
                         flex: 1,
@@ -19535,33 +19337,6 @@ export default function App() {
                       </Text>
                     </Pressable>
                   </View>
-
-                  {/* AI Chat */}
-                  <MiniChat
-                    visible={personalFoodAIChatOpen}
-                    title="Asistente de alimentos"
-                    systemPrompt={FOOD_AI_SYSTEM_PROMPT}
-                    providerKeys={store.keys}
-                    preferredProvider={store.foodAIProvider}
-                    providerPriority={FOOD_ESTIMATOR_PROVIDER_PRIORITY}
-                    onJsonResult={(json) => {
-                      const entry: FoodRepoEntry = {
-                        id: uid("food"),
-                        name: String(json.name ?? ""),
-                        category: String(json.category ?? "otro"),
-                        calories_per_100g: Number(json.calories_per_100g) || 0,
-                        protein_per_100g: Number(json.protein_per_100g) || 0,
-                        carbs_per_100g: Number(json.carbs_per_100g) || 0,
-                        fat_per_100g: Number(json.fat_per_100g) || 0,
-                        fiber_per_100g: Number(json.fiber_per_100g) || 0,
-                        serving_size_g: Number(json.serving_size_g) || 100,
-                        serving_description: String(json.serving_description ?? ""),
-                      };
-                      setPersonalFoods((prev) => [...prev, entry]);
-                      setPersonalFoodAIChatOpen(false);
-                    }}
-                    onClose={() => setPersonalFoodAIChatOpen(false)}
-                  />
 
                   {/* Add/Edit form */}
                   {personalFoodFormVisible ? (
