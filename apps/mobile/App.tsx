@@ -10714,6 +10714,88 @@ export default function App() {
     });
   }
 
+  function removeSeriesFromExerciseInActiveSession(exerciseId: string, seriesId: string) {
+    if (!activeWorkoutSession) return;
+    const templateId = activeWorkoutSession.template_id;
+    const template = store.templates.find((t) => t.id === templateId);
+    if (!template) return;
+    const exercise = template.exercises.find((e) => e.id === exerciseId);
+    if (!exercise) return;
+    if ((exercise.series ?? []).length <= 1) return;
+
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((t) => {
+        if (t.id !== templateId) return t;
+        return {
+          ...t,
+          exercises: t.exercises.map((ex) => {
+            if (ex.id !== exerciseId) return ex;
+            const series = ex.series ?? [];
+            if (series.length <= 1) return ex;
+            const nextSeries = series.filter((s) => s.id !== seriesId);
+            return {
+              ...ex,
+              series: nextSeries,
+              sets: seriesToLegacySets(nextSeries),
+            };
+          }),
+        };
+      }),
+    }));
+
+    // Completion is tracked by `${exerciseId}:${seriesId}` keys (index-independent),
+    // so drop the removed series' key and recompute counts from what remains.
+    const removedKey = `${exerciseId}:${seriesId}`;
+    setActiveWorkoutSession((prev) => {
+      if (!prev) return prev;
+      const completedSeriesKeys = prev.completed_series_keys.filter((k) => k !== removedKey);
+      return {
+        ...prev,
+        completed_series_keys: completedSeriesKeys,
+        completed_series_count: completedSeriesKeys.length,
+        total_series_count: Math.max(0, prev.total_series_count - 1),
+      };
+    });
+  }
+
+  function moveSeriesInActiveSession(
+    exerciseId: string,
+    seriesId: string,
+    direction: "up" | "down",
+  ) {
+    if (!activeWorkoutSession) return;
+    const templateId = activeWorkoutSession.template_id;
+    // Reordering only swaps positions within an exercise. Completion keys are
+    // index-independent (`exerciseId:seriesId`), so session counts stay valid.
+    setStore((prev) => ({
+      ...prev,
+      templates: prev.templates.map((t) => {
+        if (t.id !== templateId) return t;
+        return {
+          ...t,
+          exercises: t.exercises.map((ex) => {
+            if (ex.id !== exerciseId) return ex;
+            const series = ex.series ?? [];
+            const index = series.findIndex((s) => s.id === seriesId);
+            if (index < 0) return ex;
+            const targetIndex = direction === "up" ? index - 1 : index + 1;
+            if (targetIndex < 0 || targetIndex >= series.length) return ex;
+            const nextSeries = [...series];
+            const tmp = nextSeries[index];
+            nextSeries[index] = nextSeries[targetIndex];
+            nextSeries[targetIndex] = tmp;
+            return {
+              ...ex,
+              series: nextSeries,
+              sets: seriesToLegacySets(nextSeries),
+            };
+          }),
+        };
+      }),
+    }));
+  }
+
   function removeSeriesFromExercise(exerciseId: string, seriesId: string) {
     if (!activeTrainingTemplateId) return;
     setStore((prev) => ({
@@ -13456,9 +13538,19 @@ export default function App() {
                               </Text>
                             </View>
 
-                            {sessionExercise.seriesStates.map((seriesState) => (
+                            {sessionExercise.seriesStates.map((seriesState) => {
+                              const seriesMenuKey = `session:${sessionExercise.exercise.id}:${seriesState.series.id}`;
+                              const isSeriesMenuOpen = activeSeriesMenuId === seriesMenuKey;
+                              const canMoveUp = seriesState.seriesIndex > 0;
+                              const canMoveDown =
+                                seriesState.seriesIndex < sessionExercise.totalSeriesCount - 1;
+                              const canDeleteSeries = sessionExercise.totalSeriesCount > 1;
+                              return (
                               <View
                                 key={seriesState.key}
+                                style={{ position: "relative", zIndex: isSeriesMenuOpen ? 100 : 0 }}
+                              >
+                              <View
                                 style={{
                                   minHeight: 42,
                                   borderRadius: 10,
@@ -13687,8 +13779,127 @@ export default function App() {
                                     color={seriesState.isCompleted ? "#06090D" : "#6E7787"}
                                   />
                                 </Pressable>
+                                <Pressable
+                                  onPress={(event) => {
+                                    event.stopPropagation();
+                                    setActiveSeriesMenuId(isSeriesMenuOpen ? null : seriesMenuKey);
+                                  }}
+                                  hitSlop={8}
+                                  style={{
+                                    width: 22,
+                                    height: 30,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginLeft: 4,
+                                  }}
+                                >
+                                  <Feather name="more-vertical" size={16} color="#7F8896" />
+                                </Pressable>
                               </View>
-                            ))}
+                              {isSeriesMenuOpen && (
+                                <View
+                                  style={{
+                                    position: "absolute",
+                                    top: 40,
+                                    right: 4,
+                                    width: 190,
+                                    borderRadius: 16,
+                                    borderWidth: 1,
+                                    borderColor: "rgba(255,255,255,0.1)",
+                                    backgroundColor: "rgba(12,14,19,0.98)",
+                                    paddingVertical: 8,
+                                    zIndex: 240,
+                                    elevation: 24,
+                                    shadowColor: "#000",
+                                    shadowOpacity: 0.36,
+                                    shadowRadius: 10,
+                                    shadowOffset: { width: 0, height: 6 },
+                                  }}
+                                >
+                                  <Pressable
+                                    onPress={() => {
+                                      setActiveSeriesMenuId(null);
+                                      if (!canMoveUp) return;
+                                      moveSeriesInActiveSession(
+                                        sessionExercise.exercise.id,
+                                        seriesState.series.id,
+                                        "up",
+                                      );
+                                    }}
+                                    disabled={!canMoveUp}
+                                    style={{
+                                      minHeight: 40,
+                                      paddingHorizontal: 12,
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      opacity: canMoveUp ? 1 : 0.35,
+                                    }}
+                                  >
+                                    <Feather name="arrow-up" size={14} color={mobileTheme.color.textSecondary} />
+                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16 }}>
+                                      Subir serie
+                                    </Text>
+                                  </Pressable>
+                                  <Pressable
+                                    onPress={() => {
+                                      setActiveSeriesMenuId(null);
+                                      if (!canMoveDown) return;
+                                      moveSeriesInActiveSession(
+                                        sessionExercise.exercise.id,
+                                        seriesState.series.id,
+                                        "down",
+                                      );
+                                    }}
+                                    disabled={!canMoveDown}
+                                    style={{
+                                      minHeight: 40,
+                                      paddingHorizontal: 12,
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      opacity: canMoveDown ? 1 : 0.35,
+                                    }}
+                                  >
+                                    <Feather name="arrow-down" size={14} color={mobileTheme.color.textSecondary} />
+                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16 }}>
+                                      Bajar serie
+                                    </Text>
+                                  </Pressable>
+                                  <Pressable
+                                    onPress={() => {
+                                      setActiveSeriesMenuId(null);
+                                      if (!canDeleteSeries) return;
+                                      Vibration.vibrate(50);
+                                      removeSeriesFromExerciseInActiveSession(
+                                        sessionExercise.exercise.id,
+                                        seriesState.series.id,
+                                      );
+                                    }}
+                                    disabled={!canDeleteSeries}
+                                    style={{
+                                      minHeight: 40,
+                                      borderTopWidth: 1,
+                                      borderTopColor: "rgba(255,255,255,0.2)",
+                                      marginTop: 4,
+                                      paddingTop: 8,
+                                      paddingHorizontal: 12,
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      opacity: canDeleteSeries ? 1 : 0.35,
+                                    }}
+                                  >
+                                    <Feather name="trash-2" size={14} color="#FF4A4A" />
+                                    <Text style={{ color: "#FF4A4A", fontSize: 16, fontWeight: "600" }}>
+                                      Eliminar serie
+                                    </Text>
+                                  </Pressable>
+                                </View>
+                              )}
+                              </View>
+                              );
+                            })}
 
                             <Pressable
                               onPress={(event) => {
