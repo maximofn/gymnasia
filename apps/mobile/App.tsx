@@ -7137,6 +7137,16 @@ export default function App() {
   const chatScrollRef = useRef<ScrollView>(null);
   const mainScrollRef = useRef<ScrollView>(null);
   const dietScrollY = useRef(new Animated.Value(0)).current;
+  // Tracks the live scroll value so the header only re-measures its expanded
+  // height while pinned at the top (scroll ~0), ignoring collapsed heights.
+  const dietScrollYValueRef = useRef(0);
+  const [dietHeaderHeight, setDietHeaderHeight] = useState(220);
+  useEffect(() => {
+    const id = dietScrollY.addListener(({ value }) => {
+      dietScrollYValueRef.current = value;
+    });
+    return () => dietScrollY.removeListener(id);
+  }, [dietScrollY]);
 
   const [mealTitleInput, setMealTitleInput] = useState("");
   const [mealCaloriesInput, setMealCaloriesInput] = useState("");
@@ -12434,7 +12444,17 @@ export default function App() {
         ) : (
         <View style={{ flex: 1 }}>
         {tab === "diet" ? (
-          <View style={{ paddingHorizontal: mobileTheme.spacing[4], paddingTop: 4, paddingBottom: 8, backgroundColor: mobileTheme.color.bgApp, overflow: "hidden" }}>
+          <View
+            onLayout={(e) => {
+              // Only capture the height while expanded (pinned at top); collapsed
+              // measurements during scroll must not shrink the content's paddingTop.
+              if (dietScrollYValueRef.current <= 1) {
+                const h = e.nativeEvent.layout.height;
+                if (h > 0) setDietHeaderHeight(h);
+              }
+            }}
+            style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 20, paddingHorizontal: mobileTheme.spacing[4], paddingTop: 4, paddingBottom: 8, backgroundColor: mobileTheme.color.bgApp, overflow: "hidden" }}
+          >
             {/* Date selector — slides up and fades out */}
             <Animated.View style={{
               opacity: dietScrollY.interpolate({ inputRange: [0, 50], outputRange: [1, 0], extrapolate: "clamp" }),
@@ -12580,8 +12600,8 @@ export default function App() {
         ) : null}
         <Animated.ScrollView
           ref={mainScrollRef as React.RefObject<Animated.ScrollView>}
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90 }}
+          style={{ flex: 1, backgroundColor: mobileTheme.color.bgApp }}
+          contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90, paddingTop: tab === "diet" ? dietHeaderHeight : 0 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
