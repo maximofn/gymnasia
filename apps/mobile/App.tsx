@@ -4556,6 +4556,7 @@ const foodEstimatorTools = {
 
 type FoodEstimatorCallOptions = StreamingHandlers & {
   onStatus?: (status: string) => void;
+  onToolUsed?: (toolName: string) => void;
 };
 
 async function callFoodEstimatorAPI(
@@ -4694,6 +4695,7 @@ async function callFoodEstimatorAPI(
       for (const toolCall of toolCalls) {
         const toolName = toolCall.name ?? "";
         options?.onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
+        options?.onToolUsed?.(toolName);
         const args = parseOpenAIFunctionArguments(toolCall.arguments);
         const result = await handleFoodEstimatorToolCall(toolName, args);
         toolOutputs.push({
@@ -4803,6 +4805,7 @@ async function callFoodEstimatorAPI(
       for (const block of toolUseBlocks) {
         const toolName = block.name ?? "";
         options?.onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
+        options?.onToolUsed?.(toolName);
         const result = await handleFoodEstimatorToolCall(toolName, block.input ?? {});
         toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
       }
@@ -4910,6 +4913,7 @@ async function callFoodEstimatorAPI(
     for (const part of functionCalls) {
       const toolName = part.functionCall.name ?? "";
       options?.onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
+      options?.onToolUsed?.(toolName);
       const result = await handleFoodEstimatorToolCall(toolName, part.functionCall.args ?? {});
       functionResponseParts.push({
         functionResponse: { name: toolName, response: { result } },
@@ -7179,6 +7183,10 @@ export default function App() {
   const foodThinkingLabel = useThinkingLabel(foodEstimatorSending);
   const [foodEstimatorExpandedThinking, setFoodEstimatorExpandedThinking] = useState<Record<string, boolean>>({});
   const [foodEstimatorHasLLMResponse, setFoodEstimatorHasLLMResponse] = useState(false);
+  // Latches true when scan_barcode runs in the current estimator session, so the
+  // food issue is reliably classified as a commercial product regardless of how
+  // the structured-extraction LLM re-infers food_type. Reset on each new session.
+  const foodEstimatorUsedBarcodeRef = useRef(false);
   const foodEstimatorScrollRef = useRef<ScrollView>(null);
   const [weightInput, setWeightInput] = useState("");
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
@@ -9404,6 +9412,7 @@ export default function App() {
     setFoodEstimatorInput("");
     setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     setFoodEstimatorHasLLMResponse(false);
+    foodEstimatorUsedBarcodeRef.current = false;
     setFoodEstimatorExpandedThinking({});
     setFoodEstimatorMessages([
       {
@@ -9619,6 +9628,9 @@ export default function App() {
             foodEstimatorImages,
             {
               onStatus: setFoodEstimatorStatus,
+              onToolUsed: (toolName) => {
+                if (toolName === SCAN_BARCODE_TOOL) foodEstimatorUsedBarcodeRef.current = true;
+              },
               onContentDelta: (_delta, aggregate) => {
                 draftContent = aggregate;
                 flushAssistantDraft();
@@ -9846,7 +9858,12 @@ export default function App() {
           carbs_g: parsed.carbs_g ?? 0,
           fat_g: parsed.fat_g ?? 0,
         };
-        if (!repoMatch && parsed.food_type !== "alimento") {
+        // A scanned barcode is always a commercial product; trust the latch over
+        // the structured-extraction LLM, which may mislabel it as "alimento".
+        const effectiveFoodType = foodEstimatorUsedBarcodeRef.current
+          ? "producto_comercial"
+          : parsed.food_type;
+        if (!repoMatch && effectiveFoodType !== "alimento") {
           createGitHubFoodIssue({
             name: aiName,
             calories_kcal: parsed.calories_kcal,
@@ -9854,7 +9871,7 @@ export default function App() {
             carbs_g: parsed.carbs_g ?? 0,
             fat_g: parsed.fat_g ?? 0,
             grams: aiGrams,
-            food_type: parsed.food_type,
+            food_type: effectiveFoodType,
           });
         }
       }
