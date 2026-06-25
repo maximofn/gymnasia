@@ -13773,11 +13773,15 @@ export default function App() {
                                     marginLeft: 10,
                                   }}
                                 >
-                                  <Feather
-                                    name="check"
-                                    size={16}
-                                    color={seriesState.isCompleted ? "#06090D" : "#6E7787"}
-                                  />
+                                  <Text
+                                    style={{
+                                      color: seriesState.isCompleted ? "#06090D" : "#C7CED9",
+                                      fontSize: 15,
+                                      fontWeight: "800",
+                                    }}
+                                  >
+                                    ✓
+                                  </Text>
                                 </Pressable>
                                 <Pressable
                                   onPress={(event) => {
@@ -13791,12 +13795,33 @@ export default function App() {
                                     alignItems: "center",
                                     justifyContent: "center",
                                     marginLeft: 10,
+                                    gap: 2,
                                   }}
                                 >
-                                  <Feather name="more-vertical" size={16} color="#7F8896" />
+                                  {Array.from({ length: 3 }).map((_, dotRowIndex) => (
+                                    <View
+                                      key={`session_${sessionExercise.exercise.id}_${seriesState.series.id}_dot_${dotRowIndex}`}
+                                      style={{ flexDirection: "row", gap: 2 }}
+                                    >
+                                      <View style={{ width: 3, height: 3, borderRadius: 999, backgroundColor: "#9AA4B4" }} />
+                                      <View style={{ width: 3, height: 3, borderRadius: 999, backgroundColor: "#9AA4B4" }} />
+                                    </View>
+                                  ))}
                                 </Pressable>
                               </View>
                               {isSeriesMenuOpen && (
+                                <>
+                                <Pressable
+                                  onPress={() => setActiveSeriesMenuId(null)}
+                                  style={{
+                                    position: "absolute",
+                                    top: -1000,
+                                    left: -1000,
+                                    right: -1000,
+                                    bottom: -1000,
+                                    zIndex: 200,
+                                  }}
+                                />
                                 <View
                                   style={{
                                     position: "absolute",
@@ -13896,6 +13921,7 @@ export default function App() {
                                     </Text>
                                   </Pressable>
                                 </View>
+                                </>
                               )}
                               </View>
                               );
