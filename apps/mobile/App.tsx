@@ -13784,13 +13784,13 @@ export default function App() {
                                     event.stopPropagation();
                                     setActiveSeriesMenuId(isSeriesMenuOpen ? null : seriesMenuKey);
                                   }}
-                                  hitSlop={8}
+                                  hitSlop={{ top: 8, bottom: 8, right: 8, left: 0 }}
                                   style={{
-                                    width: 22,
+                                    width: 26,
                                     height: 30,
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    marginLeft: 4,
+                                    marginLeft: 10,
                                   }}
                                 >
                                   <Feather name="more-vertical" size={16} color="#7F8896" />
