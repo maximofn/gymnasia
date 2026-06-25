@@ -36,7 +36,7 @@ import {
 import { mobileTheme } from "./theme";
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "updates";
 
 type SeriesType =
   | "normal"
@@ -2081,6 +2081,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "personalFoods", label: "Alimentos personales" },
   { key: "measures", label: "Medidas" },
   { key: "preferences", label: "Preferencias" },
+  { key: "updates", label: "Actualizaciones" },
 ];
 
 const DIET_GOAL_OPTIONS: Array<{ key: DietGoal; label: string }> = [
@@ -7128,6 +7129,16 @@ export default function App() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
   const [updateInfo, setUpdateInfo] = useState<{ version: string; url: string } | null>(null);
+  // Manual update-check flow (Configuración → Actualizaciones), independent of the
+  // time-gated automatic check.
+  const [updatesChecking, setUpdatesChecking] = useState(false);
+  const [updatesCheckResult, setUpdatesCheckResult] = useState<
+    | null
+    | { status: "available"; remoteVersion: string; url: string }
+    | { status: "uptodate"; remoteVersion: string }
+    | { status: "error"; message: string }
+  >(null);
+  const [updatesConfirmInfo, setUpdatesConfirmInfo] = useState<{ remoteVersion: string; url: string } | null>(null);
 
   const [store, setStore] = useState<LocalStore>(() => createInitialStore());
   const [threads, setThreads] = useState<ChatThread[]>([]);
@@ -9401,6 +9412,36 @@ export default function App() {
       };
     }
     return resolveFoodEstimatorProvider(store.keys);
+  }
+
+  async function runManualUpdateCheck() {
+    setUpdatesChecking(true);
+    setUpdatesCheckResult(null);
+    try {
+      const currentVersion = Constants.expoConfig?.version ?? "0.0.0";
+      const res = await fetch(GITHUB_RELEASES_API, {
+        headers: { Accept: "application/vnd.github+json" },
+      });
+      if (!res.ok) throw new Error("No se pudo consultar GitHub. Inténtalo de nuevo.");
+      const data = await res.json();
+      const tagName: string = data.tag_name ?? "";
+      const remoteVersion = tagName.replace(/^v/, "");
+      if (!remoteVersion) throw new Error("No se encontró ninguna versión publicada.");
+      // Refresh the automatic-check timestamp so the background check doesn't fire again right away.
+      await AsyncStorage.setItem(UPDATE_CHECK_KEY, String(Date.now()));
+      if (compareVersions(currentVersion, remoteVersion) > 0) {
+        const apkAsset = (data.assets ?? []).find((a: { name: string }) => a.name.endsWith(".apk"));
+        if (apkAsset?.browser_download_url) {
+          setUpdatesCheckResult({ status: "available", remoteVersion, url: apkAsset.browser_download_url });
+          return;
+        }
+      }
+      setUpdatesCheckResult({ status: "uptodate", remoteVersion });
+    } catch (e) {
+      setUpdatesCheckResult({ status: "error", message: e instanceof Error ? e.message : "Error al comprobar actualizaciones." });
+    } finally {
+      setUpdatesChecking(false);
+    }
   }
 
   function openFoodEstimatorModal() {
@@ -20343,6 +20384,118 @@ export default function App() {
                 </View>
               ) : null}
 
+              {settingsTab === "updates" ? (
+                <View style={{ gap: 12 }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                    Actualizaciones
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: 12,
+                      padding: 14,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
+                      Versión actual
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
+                      v{Constants.expoConfig?.version ?? "?"}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={runManualUpdateCheck}
+                    disabled={updatesChecking}
+                    style={{
+                      height: 48,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.brandPrimary,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      opacity: updatesChecking ? 0.6 : 1,
+                    }}
+                  >
+                    {updatesChecking ? (
+                      <ActivityIndicator size="small" color="#06090D" />
+                    ) : (
+                      <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>
+                        Comprobar nuevas versiones
+                      </Text>
+                    )}
+                  </Pressable>
+
+                  {updatesCheckResult?.status === "available" ? (
+                    <View
+                      style={{
+                        gap: 12,
+                        backgroundColor: "rgba(203,255,26,0.10)",
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.5)",
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>
+                        Hay una nueva versión disponible
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                        Nueva versión: v{updatesCheckResult.remoteVersion}
+                      </Text>
+                      <Pressable
+                        onPress={() =>
+                          setUpdatesConfirmInfo({
+                            remoteVersion: updatesCheckResult.remoteVersion,
+                            url: updatesCheckResult.url,
+                          })
+                        }
+                        style={{
+                          height: 44,
+                          borderRadius: mobileTheme.radius.md,
+                          backgroundColor: mobileTheme.color.brandPrimary,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 14 }}>
+                          Actualizar app
+                        </Text>
+                      </Pressable>
+                    </View>
+                  ) : null}
+
+                  {updatesCheckResult?.status === "uptodate" ? (
+                    <View
+                      style={{
+                        gap: 6,
+                        backgroundColor: mobileTheme.color.bgSurface,
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>
+                        No hay ninguna versión nueva
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                        Versión en GitHub: v{updatesCheckResult.remoteVersion}
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  {updatesCheckResult?.status === "error" ? (
+                    <Text style={{ color: "#FF8A8A", fontSize: 13 }}>
+                      {updatesCheckResult.message}
+                    </Text>
+                  ) : null}
+                </View>
+              ) : null}
+
               {/* Exercise detail rendered as fullscreen overlay below */}
 
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, textAlign: "center", marginTop: 8, opacity: 0.6 }}>
@@ -21157,6 +21310,76 @@ export default function App() {
               }}
             >
               <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Ahora no</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
+      {updatesConfirmInfo ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.78)",
+            paddingHorizontal: 24,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 910,
+            elevation: 91,
+          }}
+        >
+          <View
+            style={{
+              width: "85%",
+              maxWidth: 380,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.08)",
+              backgroundColor: mobileTheme.color.bgSurface,
+              padding: 24,
+              alignItems: "center",
+              gap: 16,
+            }}
+          >
+            <Feather name="download" size={40} color={mobileTheme.color.brandPrimary} />
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800", textAlign: "center" }}>
+              ¿Actualizar la app?
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>
+              Se abrirá la descarga de Gymnasia v{updatesConfirmInfo.remoteVersion}.{"\n"}¿Seguro que quieres actualizar?
+            </Text>
+            <Pressable
+              onPress={() => {
+                Linking.openURL(updatesConfirmInfo.url);
+                setUpdatesConfirmInfo(null);
+              }}
+              style={{
+                width: "100%",
+                height: 48,
+                borderRadius: mobileTheme.radius.md,
+                backgroundColor: mobileTheme.color.brandPrimary,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>Sí, actualizar</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setUpdatesConfirmInfo(null)}
+              style={{
+                width: "100%",
+                height: 44,
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Cancelar</Text>
             </Pressable>
           </View>
         </View>
