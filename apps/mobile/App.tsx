@@ -5466,7 +5466,7 @@ function inferTemplateDurationMinutes(template: WorkoutTemplate): number {
   const totalSeconds = template.exercises.reduce((acc, item) => {
     const seriesItems = item.series ?? [];
     if (seriesItems.length === 0) return acc;
-    const name = item.name.toLowerCase();
+    const name = (item.name ?? "").toLowerCase();
     const isLegPress = name.includes("prensa") || name.includes("sentadilla") || name.includes("squat") || name.includes("leg press") || name.includes("pierna");
     const execSeconds = isLegPress ? 90 : 60;
     const seriesSeconds = seriesItems.reduce((seriesAcc, seriesItem) => {
@@ -6265,21 +6265,22 @@ function createWebSeedStore(): LocalStore {
     workoutHistory: [],
     dietByDate: {
       [today]: {
+        day_date: today,
         meals: [
           {
             id: uid("meal"),
-            label: "Desayuno",
+            title: "Desayuno",
             items: [
-              { id: uid("fi"), name: "Avena con leche", kcal: 350, protein_g: 12, carbs_g: 55, fat_g: 8, amount_g: 300 },
-              { id: uid("fi"), name: "Plátano", kcal: 105, protein_g: 1.3, carbs_g: 27, fat_g: 0.4, amount_g: 120 },
+              { id: uid("fi"), title: "Avena con leche", grams: 300, calories_kcal: 350, protein_g: 12, carbs_g: 55, fat_g: 8 },
+              { id: uid("fi"), title: "Plátano", grams: 120, calories_kcal: 105, protein_g: 1.3, carbs_g: 27, fat_g: 0.4 },
             ],
           },
           {
             id: uid("meal"),
-            label: "Almuerzo",
+            title: "Almuerzo",
             items: [
-              { id: uid("fi"), name: "Pechuga de pollo", kcal: 280, protein_g: 52, carbs_g: 0, fat_g: 6, amount_g: 200 },
-              { id: uid("fi"), name: "Arroz integral", kcal: 215, protein_g: 5, carbs_g: 45, fat_g: 2, amount_g: 180 },
+              { id: uid("fi"), title: "Pechuga de pollo", grams: 200, calories_kcal: 280, protein_g: 52, carbs_g: 0, fat_g: 6 },
+              { id: uid("fi"), title: "Arroz integral", grams: 180, calories_kcal: 215, protein_g: 5, carbs_g: 45, fat_g: 2 },
             ],
           },
         ],
@@ -6287,7 +6288,11 @@ function createWebSeedStore(): LocalStore {
     },
     dietSettings: createDefaultDietSettings(),
     measurements: [
-      { id: uid("m"), date: today, weight_kg: 78, body_fat_pct: 15, muscle_mass_kg: 35, notes: "" },
+      {
+        id: uid("m"), measured_at: today, weight_kg: 78, body_fat_pct: 15, photo_uri: null,
+        neck_cm: null, chest_cm: null, waist_cm: null, hips_cm: null, biceps_cm: null,
+        quadriceps_cm: null, calf_cm: null, height_cm: null,
+      },
     ],
     threads: [{ id: threadId, title: "Coach 1" }],
     messagesByThread: { [threadId]: [] },
@@ -12772,7 +12777,7 @@ export default function App() {
           </View>
         ) : null}
         <Animated.ScrollView
-          ref={mainScrollRef as React.RefObject<Animated.ScrollView>}
+          ref={mainScrollRef as React.RefObject<ScrollView>}
           style={{ flex: 1, backgroundColor: mobileTheme.color.bgApp }}
           contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90, paddingTop: tab === "diet" ? dietHeaderHeight : 0 }}
           keyboardShouldPersistTaps="handled"
@@ -17465,7 +17470,7 @@ export default function App() {
                               {measuresChartMetric === "bodyFat" && (() => {
                                 const zones = userSex === "female" ? BODY_FAT_ZONES_FEMALE : BODY_FAT_ZONES_MALE;
                                 const zoneLabels = ["Subatl.", "Atlético", "Saludable", "Aceptable", "Obesidad", "S. obes."];
-                                const elements: JSX.Element[] = [];
+                                const elements: React.JSX.Element[] = [];
                                 zones.slice(0, -1).forEach((zone, i) => {
                                   const y = padT + plotH - ((zone.max - minV) / rangeV) * plotH;
                                   if (y < padT || y > padT + plotH) return;
@@ -17920,7 +17925,7 @@ export default function App() {
                             <Feather name="calendar" size={14} color={mobileTheme.color.textSecondary} />
                           </Pressable>
                           {showBirthDatePicker ? (
-                            Platform.OS === "web" ? (
+                            (Platform.OS as string) === "web" ? (
                               <TextInput
                                 value={dietSettings.birth_date || ""}
                                 onChangeText={(text) => {
@@ -19546,7 +19551,6 @@ export default function App() {
                       exercisesRepo.map((ex) => (
                         <Pressable
                           key={ex.id}
-                          activeOpacity={0.7}
                           onPress={() => setSelectedExerciseDetail(ex)}
                           style={{
                             flexDirection: "row",

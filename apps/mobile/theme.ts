@@ -5,7 +5,9 @@ export const mobileTheme = {
     textPrimary: "#F4F7FB",
     textSecondary: "#A6AFBC",
     brandPrimary: "#CBFF1A",
+    accent: "#CBFF1A",
     borderSubtle: "#252B35",
+    cardBg: "#141820",
   },
   radius: {
     md: 12,
