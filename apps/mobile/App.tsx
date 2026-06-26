@@ -7957,6 +7957,29 @@ export default function App() {
     () => Array.from(new Set(exercisesRepo.map((e) => e.muscle_group))),
     [exercisesRepo],
   );
+  // Ejercicios que el usuario tiene en sus rutinas (base de datos local) pero que
+  // todavía no existen en la base de datos de la app (markdowns/JSON en GitHub).
+  const localOnlyExercises = useMemo(() => {
+    // Si el repo aún no se ha cargado, no podemos saber qué es "local" todavía.
+    if (exercisesRepo.length === 0) return [] as Array<{ name: string; muscle: string }>;
+    const normalize = (s: string) =>
+      s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const repoNames = new Set(exercisesRepo.map((e) => normalize(e.name)));
+    const seen = new Set<string>();
+    const result: Array<{ name: string; muscle: string }> = [];
+    for (const template of store.templates) {
+      for (const exercise of template.exercises) {
+        const name = exercise.name?.trim();
+        if (!name) continue;
+        const key = normalize(name);
+        if (repoNames.has(key) || seen.has(key)) continue;
+        seen.add(key);
+        result.push({ name, muscle: exercise.muscle?.trim() || "" });
+      }
+    }
+    result.sort((a, b) => a.name.localeCompare(b.name));
+    return result;
+  }, [store.templates, exercisesRepo]);
   const filteredExercisePickerEntries = useMemo(() => {
     const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const search = normalize(exercisePickerSearch.trim());
@@ -19501,7 +19524,7 @@ export default function App() {
                     )}
                   </View>
 
-                  {/* Exercises repository section */}
+                  {/* Exercises repository section (base de datos de la app, GitHub) */}
                   <View
                     style={{
                       borderWidth: 1,
@@ -19513,7 +19536,7 @@ export default function App() {
                     }}
                   >
                     <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                      Ejercicios ({exercisesRepo.length})
+                      Ejercicios de la app ({exercisesRepo.length})
                     </Text>
                     {exercisesRepo.length === 0 ? (
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
@@ -19567,6 +19590,58 @@ export default function App() {
                       ))
                     )}
                   </View>
+
+                  {/* Ejercicios locales (en tus rutinas) que aún no están en la base de datos de la app */}
+                  {localOnlyExercises.length > 0 ? (
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: mobileTheme.color.bgSurface,
+                        borderRadius: mobileTheme.radius.lg,
+                        padding: 12,
+                        gap: 10,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+                        Tus ejercicios (aún no en la app) ({localOnlyExercises.length})
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Ejercicios que tienes en tus rutinas pero que todavía no están en la base de
+                        datos de la app. Se añadirán en próximas actualizaciones.
+                      </Text>
+                      {localOnlyExercises.map((ex) => (
+                        <View
+                          key={ex.name}
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 10,
+                            paddingVertical: 4,
+                            borderBottomWidth: 1,
+                            borderBottomColor: mobileTheme.color.borderSubtle,
+                          }}
+                        >
+                          <View style={{ flexDirection: "row", gap: 2 }}>
+                            <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a", alignItems: "center", justifyContent: "center" }}>
+                              <Feather name="clock" size={16} color={mobileTheme.color.textSecondary} />
+                            </View>
+                          </View>
+                          <View style={{ flex: 1 }}>
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
+                              {ex.name}
+                            </Text>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                              Pendiente de añadir
+                            </Text>
+                          </View>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
+                            {ex.muscle}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : null}
                 </View>
               ) : null}
 
