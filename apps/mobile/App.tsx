@@ -14904,7 +14904,7 @@ export default function App() {
                           <View style={{ flex: 1 }}>
                             <Text
                               style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700" }}
-                              numberOfLines={1}
+                              numberOfLines={2}
                             >
                               {exercise.exerciseName}
                             </Text>

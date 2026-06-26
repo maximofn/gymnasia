@@ -95,7 +95,7 @@ When adding non-trivial logic, document manual verification steps explicitly.
 ## Commit & Pull Request Guidelines
 History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ...`, `chore(scope): ...`, `docs: ...`.
 - Keep commit subjects imperative and scoped (e.g., `fix(mobile): pin Metro module resolution for monorepo`).
-- After each modification, create a commit and push it to the remote before closing the task.
+- After each modification, create a local commit. Do NOT `git push` to `main` unless the user explicitly asks — pushing to `main` triggers a CI/CD pipeline that runs an Expo APK build, and the Expo monthly build quota is limited.
 - PR description should include: summary, impacted paths, commands executed, and screenshots for UI updates.
 
 ## Security & Configuration Tips
@@ -159,7 +159,10 @@ Only non-obvious gotchas that could recur are kept here.
 - Fix: rename files using underscores (e.g. `rest-finished.wav` → `rest_finished.wav`) and update every reference in code and `app.json`.
 
 ## Post-Modification Workflow
-After each modification, always commit and push changes:
+After each modification, create a local commit:
 ```bash
-git add -A && git commit -m '<description>' && git push
+git add -A && git commit -m '<description>'
 ```
+Do NOT `git push` to `main` unless the user explicitly asks for it. A push to `main`
+triggers a CI/CD pipeline that builds the Expo APK, and the Expo monthly build quota
+is limited, so accidental pushes waste builds. Push only on explicit request.
