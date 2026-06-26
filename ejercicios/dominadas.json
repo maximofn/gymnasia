@@ -1,0 +1,11 @@
+{
+  "id": "dominadas",
+  "name": "Dominadas",
+  "image_male": "images/dominadas-male.webp",
+  "image_female": "images/dominadas-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Cuélgate de una barra fija con las manos en pronación (palmas hacia adelante), algo más abiertas que el ancho de los hombros y los brazos completamente extendidos. Tira del cuerpo hacia arriba apretando los dorsales y llevando los codos hacia abajo y atrás, hasta que la barbilla supere la barra. Baja de forma controlada hasta extender por completo los brazos sin balancearte."
+}

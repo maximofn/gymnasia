@@ -47,3 +47,8 @@ Minimal flat illustration of a {man/woman} performing {exercise_en}, {view}. Sil
 - **ID:** `gemelos-sentado`
 - **Exercise:** `a seated calf raise machine, person sitting with a pad on top of the knees, feet on a platform with heels hanging off the edge, raising the heels upward by contracting the calves`
 - **View:** `3/4 diagonal view`
+
+### Dominadas
+- **ID:** `dominadas`
+- **Exercise:** `a pull-up hanging from a horizontal fixed bar overhead, gripping the bar with both hands in an overhand pronated grip slightly wider than shoulder-width, body pulled up until the chin is above the bar, arms bent, legs hanging straight`
+- **View:** `front view`

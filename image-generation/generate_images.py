@@ -94,6 +94,7 @@ EXERCISE_PROMPTS = {
     "elevaciones-frontales-barra": ("a standing barbell front raise, standing upright holding a barbell with both hands at hip level with an overhand grip, arms raised straight forward to shoulder height in front of the body", "3/4 diagonal view"),
     "pajaro-mancuernas": ("a bent-over dumbbell reverse fly, standing with torso bent forward nearly parallel to the floor, knees slightly bent, holding a dumbbell in each hand with arms raised out to the sides at shoulder height, squeezing the shoulder blades together", "3/4 diagonal view"),
     "flexiones": ("a push-up on the floor, body straight from head to heels in plank position, arms extended pushing the body up from the ground, hands shoulder-width apart", "side view"),
+    "dominadas": ("a pull-up hanging from a horizontal fixed bar overhead, gripping the bar with both hands in an overhand pronated grip slightly wider than shoulder-width, body pulled up until the chin is above the bar, arms bent, legs hanging straight", "front view"),
 }
 
 # ---------------------------------------------------------------------------
