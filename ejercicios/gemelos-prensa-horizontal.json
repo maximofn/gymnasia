@@ -1,8 +1,8 @@
 {
   "id": "gemelos-prensa-horizontal",
   "name": "Gemelos en prensa horizontal",
-  "image_male": "gemelos-prensa-horizontal-male.webp",
-  "image_female": "gemelos-prensa-horizontal-female.webp",
+  "image_male": "images/gemelos-prensa-horizontal-male.webp",
+  "image_female": "images/gemelos-prensa-horizontal-female.webp",
   "muscle_group": "gemelos",
   "secondary_muscles": ["sóleo"],
   "equipment": "máquina",

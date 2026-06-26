@@ -1,8 +1,8 @@
 {
   "id": "elevaciones-frontales-barra",
   "name": "Elevaciones frontales con barra",
-  "image_male": "elevaciones-frontales-barra-male.webp",
-  "image_female": "elevaciones-frontales-barra-female.webp",
+  "image_male": "images/elevaciones-frontales-barra-male.webp",
+  "image_female": "images/elevaciones-frontales-barra-female.webp",
   "muscle_group": "hombro",
   "secondary_muscles": ["deltoides anterior", "trapecio"],
   "equipment": "barra",

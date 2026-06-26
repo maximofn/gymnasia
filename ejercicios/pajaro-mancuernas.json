@@ -1,8 +1,8 @@
 {
   "id": "pajaro-mancuernas",
   "name": "Pájaro con mancuernas",
-  "image_male": "pajaro-mancuernas-male.webp",
-  "image_female": "pajaro-mancuernas-female.webp",
+  "image_male": "images/pajaro-mancuernas-male.webp",
+  "image_female": "images/pajaro-mancuernas-female.webp",
   "muscle_group": "hombro",
   "secondary_muscles": ["deltoides posterior", "trapecio", "romboides"],
   "equipment": "mancuernas",

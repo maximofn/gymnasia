@@ -1,8 +1,8 @@
 {
   "id": "extension-cuadriceps",
   "name": "Extensión de cuádriceps",
-  "image_male": "extension-cuadriceps-male.webp",
-  "image_female": "extension-cuadriceps-female.webp",
+  "image_male": "images/extension-cuadriceps-male.webp",
+  "image_female": "images/extension-cuadriceps-female.webp",
   "muscle_group": "cuádriceps",
   "secondary_muscles": [],
   "equipment": "máquina",

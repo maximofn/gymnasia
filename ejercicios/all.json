@@ -81,8 +81,8 @@
   {
     "id": "elevaciones-frontales-barra",
     "name": "Elevaciones frontales con barra",
-    "image_male": "elevaciones-frontales-barra-male.webp",
-    "image_female": "elevaciones-frontales-barra-female.webp",
+    "image_male": "images/elevaciones-frontales-barra-male.webp",
+    "image_female": "images/elevaciones-frontales-barra-female.webp",
     "muscle_group": "hombro",
     "secondary_muscles": [
       "deltoides anterior",
@@ -109,8 +109,8 @@
   {
     "id": "elevaciones-laterales-mancuernas",
     "name": "Elevaciones laterales con mancuernas",
-    "image_male": "elevaciones-laterales-mancuernas-male.webp",
-    "image_female": "elevaciones-laterales-mancuernas-female.webp",
+    "image_male": "images/elevaciones-laterales-mancuernas-male.webp",
+    "image_female": "images/elevaciones-laterales-mancuernas-female.webp",
     "muscle_group": "hombro",
     "secondary_muscles": [
       "deltoides lateral",
@@ -123,8 +123,8 @@
   {
     "id": "extension-cuadriceps",
     "name": "Extensión de cuádriceps",
-    "image_male": "extension-cuadriceps-male.webp",
-    "image_female": "extension-cuadriceps-female.webp",
+    "image_male": "images/extension-cuadriceps-male.webp",
+    "image_female": "images/extension-cuadriceps-female.webp",
     "muscle_group": "cuádriceps",
     "secondary_muscles": [],
     "equipment": "máquina",
@@ -221,8 +221,8 @@
   {
     "id": "gemelos-prensa-horizontal",
     "name": "Gemelos en prensa horizontal",
-    "image_male": "gemelos-prensa-horizontal-male.webp",
-    "image_female": "gemelos-prensa-horizontal-female.webp",
+    "image_male": "images/gemelos-prensa-horizontal-male.webp",
+    "image_female": "images/gemelos-prensa-horizontal-female.webp",
     "muscle_group": "gemelos",
     "secondary_muscles": [
       "sóleo"
@@ -288,8 +288,8 @@
   {
     "id": "pajaro-mancuernas",
     "name": "Pájaro con mancuernas",
-    "image_male": "pajaro-mancuernas-male.webp",
-    "image_female": "pajaro-mancuernas-female.webp",
+    "image_male": "images/pajaro-mancuernas-male.webp",
+    "image_female": "images/pajaro-mancuernas-female.webp",
     "muscle_group": "hombro",
     "secondary_muscles": [
       "deltoides posterior",
@@ -373,8 +373,8 @@
   {
     "id": "press-hombro-unilateral-maquina",
     "name": "Press de hombro unilateral en máquina",
-    "image_male": "press-hombro-unilateral-maquina-male.webp",
-    "image_female": "press-hombro-unilateral-maquina-female.webp",
+    "image_male": "images/press-hombro-unilateral-maquina-male.webp",
+    "image_female": "images/press-hombro-unilateral-maquina-female.webp",
     "muscle_group": "hombro",
     "secondary_muscles": [
       "tríceps",
