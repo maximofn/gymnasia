@@ -19484,7 +19484,7 @@ export default function App() {
                                           <Text style={{ color: "#555", fontSize: 10 }}>{i + 1}</Text>
                                         </View>
                                       )}
-                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, flex: 1 }} numberOfLines={1}>
+                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, flex: 1 }} numberOfLines={2}>
                                         {ex.name ?? `Ejercicio ${i + 1}`}
                                       </Text>
                                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
