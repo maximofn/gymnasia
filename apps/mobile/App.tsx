@@ -15283,11 +15283,14 @@ export default function App() {
                               onChangeText={(value) => updateExerciseNameInActiveTemplate(exercise.id, value)}
                               placeholder={`Ejercicio ${index + 1}`}
                               placeholderTextColor="#8B94A3"
+                              multiline
                               style={{
                                 color: mobileTheme.color.textPrimary,
                                 fontSize: 18,
                                 fontWeight: "700",
                                 minHeight: 30,
+                                paddingVertical: 0,
+                                textAlignVertical: "center",
                               }}
                             />
                             <Text style={{ color: "#8B94A3", fontSize: 13 }}>
