@@ -124,6 +124,10 @@
 - **ID:** `salmon`
 - **Food:** `a raw salmon fillet, vibrant orange-pink flesh with white fat lines`
 
+### Slim Pasta Fettuccine
+- **ID:** `slim-pasta-fettuccine`
+- **Food:** `a small nest of translucent glossy white konjac shirataki fettuccine noodles, flat wet ribbons`
+
 ### Tomate
 - **ID:** `tomate`
 - **Food:** `a single ripe red tomato with green stem, glossy skin`

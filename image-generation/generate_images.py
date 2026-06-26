@@ -148,6 +148,7 @@ FOOD_PROMPTS = {
     "platano": "a single ripe yellow banana with a few brown spots",
     "queso-fresco": "a wedge of fresh white cheese, soft and moist with a clean cut",
     "salmon": "a raw salmon fillet, vibrant orange-pink flesh with white fat lines",
+    "slim-pasta-fettuccine": "a small nest of translucent glossy white konjac shirataki fettuccine noodles, flat wet ribbons",
     "tomate": "a single ripe red tomato with green stem, glossy skin",
     "yogur-griego": "a small bowl of thick creamy white Greek yogurt with a smooth surface",
 }

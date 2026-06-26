@@ -1,0 +1,13 @@
+{
+  "id": "slim-pasta-fettuccine",
+  "name": "Slim Pasta Fettuccine",
+  "category": "carbohidrato",
+  "calories_per_100g": 9,
+  "protein_per_100g": 0.2,
+  "carbs_per_100g": 0,
+  "fat_per_100g": 0,
+  "fiber_per_100g": 0,
+  "serving_size_g": 200,
+  "serving_description": "1 paquete (200g escurrido)",
+  "image": "slim-pasta-fettuccine.webp"
+}
