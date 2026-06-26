@@ -19580,14 +19580,14 @@ export default function App() {
                             )}
                           </View>
                           <View style={{ flex: 1 }}>
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={2}>
                               {ex.name}
                             </Text>
                             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
                               {ex.equipment || ""}
                             </Text>
                           </View>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, flexShrink: 0, marginLeft: 6 }}>
                             {ex.muscle_group}
                           </Text>
                         </Pressable>
@@ -19632,14 +19632,14 @@ export default function App() {
                             </View>
                           </View>
                           <View style={{ flex: 1 }}>
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={2}>
                               {ex.name}
                             </Text>
                             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
                               Pendiente de añadir
                             </Text>
                           </View>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, flexShrink: 0, marginLeft: 6 }}>
                             {ex.muscle}
                           </Text>
                         </View>
