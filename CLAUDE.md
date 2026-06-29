@@ -100,6 +100,8 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 
 ## Security & Configuration Tips
 - Never commit secrets.
+- Secrets live in the root `.env` (git-ignored). Keys present: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `GITHUB_ISSUE_TOKEN`, `HF_TOKEN`.
+- **Hugging Face token**: `HF_TOKEN` in the root `.env`. Required (HF PRO) by the `nano-banana` backend for exercise image generation. The script loads it via `load_dotenv(<repo>/.env)` and reads `os.environ["HF_TOKEN"]` (see `image-generation/generate_images.py` and skill `generate-exercise-image`). The `z-image-turbo` and `flux2-dev` backends work without it.
 
 ## Documentation Maintenance
 - Keep `AGENTS.md` and root `CLAUDE.md` synchronized whenever repository instructions change.
