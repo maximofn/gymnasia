@@ -72,6 +72,7 @@ EXERCISE_PROMPTS = {
     "remo-cuello-polea-baja": ("a standing face pull on a low cable pulley, pulling a rope upward toward the neck with elbows high and wide, targeting rear deltoids", "3/4 diagonal view"),
     "curl-mancuernas-sentado": ("a seated incline dumbbell bicep curl, sitting on an incline bench with back supported, curling both dumbbells up toward the shoulders simultaneously", "3/4 diagonal view"),
     "curl-concentrado": ("a seated concentration curl, sitting on a bench with legs apart, elbow braced against inner thigh, curling a dumbbell up with one arm", "3/4 diagonal view"),
+    "curl-scott": ("a preacher curl on a Scott bench, seated with the back of the upper arms resting on the angled preacher pad, holding an EZ curl bar with both hands in an underhand grip, curling the bar up toward the shoulders", "3/4 diagonal view"),
     "sentadilla-barra": ("a barbell back squat, standing with a barbell on the upper back behind the neck, squatting down with thighs parallel to the floor, feet shoulder width apart", "3/4 diagonal view"),
     "prensa-inclinada": ("a 45-degree incline leg press machine, seated with back against pad, pushing a weighted platform upward with both legs, knees bent at 90 degrees", "3/4 diagonal view"),
     "prensa-horizontal": ("a horizontal seated leg press machine, sitting upright pushing a vertical platform forward with both legs, knees bent at 90 degrees", "3/4 diagonal view"),

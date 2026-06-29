@@ -1,0 +1,11 @@
+{
+  "id": "curl-scott",
+  "name": "Curl Scott",
+  "image_male": "images/curl-scott-male.webp",
+  "image_female": "images/curl-scott-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazo"],
+  "equipment": "barra z",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el banco Scott con la parte posterior de los brazos apoyada sobre el soporte inclinado. Sujeta una barra Z con ambas manos en agarre supino (palmas hacia arriba) y los brazos casi extendidos. Flexiona los codos llevando la barra hacia los hombros, apretando el bíceps en la parte alta. Baja de forma controlada hasta casi extender los brazos sin bloquear los codos."
+}
