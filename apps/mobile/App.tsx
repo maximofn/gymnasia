@@ -1040,6 +1040,43 @@ function getExerciseImageUrl(entry: ExerciseRepoEntry, gender: "male" | "female"
   return `${EXERCISES_REPO_BASE_URL}/${imagePath}`;
 }
 
+// Conectores que no aportan al identificar un ejercicio (para el match tolerante).
+const EXERCISE_MATCH_STOPWORDS = new Set([
+  "con", "de", "del", "en", "el", "la", "los", "las", "y", "a", "para", "sin",
+]);
+
+// Clave canónica de un nombre de ejercicio: insensible a mayúsculas, acentos,
+// puntuación/paréntesis, conectores y plurales. Así "Elevaciones laterales
+// (mancuernas)" y "Elevaciones laterales con mancuernas" comparten clave.
+function exerciseNameMatchKey(rawName: string | null | undefined): string {
+  return (rawName ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((tok) => tok && !EXERCISE_MATCH_STOPWORDS.has(tok))
+    .map((tok) => tok.replace(/s$/, ""))
+    .sort()
+    .join(" ");
+}
+
+// Busca el ejercicio del repo correspondiente a un nombre dado. Primero intenta
+// coincidencia exacta (más precisa) y si falla usa la clave canónica tolerante.
+function findRepoExerciseMatch(
+  repo: ExerciseRepoEntry[],
+  rawName: string | null | undefined,
+): ExerciseRepoEntry | null {
+  const name = (rawName ?? "").trim();
+  if (!name) return null;
+  const lower = name.toLowerCase();
+  const exact = repo.find((r) => r.name.toLowerCase() === lower);
+  if (exact) return exact;
+  const key = exerciseNameMatchKey(name);
+  if (!key) return null;
+  return repo.find((r) => exerciseNameMatchKey(r.name) === key) ?? null;
+}
+
 type PersonalDataField = { key: string; description: string; value: string };
 
 async function loadPersonalData(): Promise<PersonalDataField[]> {
@@ -7822,18 +7859,24 @@ export default function App() {
     if (!homeFeaturedTemplate || !homeFeaturedCategory) return [];
     return homeFeaturedTemplate.exercises.slice(0, 3).map((exercise, exerciseIndex) => {
       const exerciseName = exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`;
+      const repoMatch = findRepoExerciseMatch(exercisesRepo, exerciseName);
       const muscle =
         exercise.muscle?.trim() ||
+        repoMatch?.muscle_group ||
         inferExerciseMuscle(exerciseName, homeFeaturedCategory);
+      const storedImage = normalizeExerciseImageUri(exercise.image_uri);
+      const repoImageUri = repoMatch ? getExerciseImageUrl(repoMatch, "male") : null;
+      const isStoredRepoImage = !!storedImage && storedImage.startsWith(EXERCISES_REPO_BASE_URL);
+      const imageUri = (!storedImage || isStoredRepoImage) && repoImageUri ? repoImageUri : storedImage;
       return {
         id: exercise.id,
         exerciseName,
-        imageUri: normalizeExerciseImageUri(exercise.image_uri),
+        imageUri,
         volumeLabel: formatHomeExerciseVolume(exercise.series ?? []),
         previewMeta: resolveExercisePreviewMeta(exerciseName, muscle, homeFeaturedCategory),
       };
     });
-  }, [homeFeaturedCategory, homeFeaturedTemplate]);
+  }, [homeFeaturedCategory, homeFeaturedTemplate, exercisesRepo]);
   const homeFeaturedHeroImageUri = useMemo(
     () => homeFeaturedExercises.find((exercise) => exercise.imageUri)?.imageUri ?? null,
     [homeFeaturedExercises],
@@ -7914,8 +7957,10 @@ export default function App() {
     return activeTrainingTemplate.exercises.map((exercise, exerciseIndex) => {
       const exerciseName = exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`;
       const seriesItems = exercise.series ?? [];
+      const repoMatch = findRepoExerciseMatch(exercisesRepo, exerciseName);
       const muscle =
         exercise.muscle?.trim() ||
+        repoMatch?.muscle_group ||
         inferExerciseMuscle(exerciseName, activeTrainingCategory);
       const firstSeries = seriesItems[0] ?? null;
       const firstWeight =
@@ -7923,14 +7968,17 @@ export default function App() {
       const repsLabel = firstSeries?.reps.trim() || "--";
       const firstRest =
         seriesItems.find((seriesItem) => seriesItem.rest_seconds.trim())?.rest_seconds.trim() ?? "";
-      const repoMatch = exercisesRepo.find(
-        (r) => r.name.toLowerCase() === exerciseName.toLowerCase(),
-      );
+      // Imagen: prioriza la del repo cuando la guardada falta o es una URL del repo
+      // (posiblemente obsoleta); conserva imágenes propias del usuario.
+      const storedImage = normalizeExerciseImageUri(exercise.image_uri);
+      const repoImageUri = repoMatch ? getExerciseImageUrl(repoMatch, "male") : null;
+      const isStoredRepoImage = !!storedImage && storedImage.startsWith(EXERCISES_REPO_BASE_URL);
+      const imageUri = (!storedImage || isStoredRepoImage) && repoImageUri ? repoImageUri : storedImage;
       return {
         exercise,
         exerciseIndex,
         exerciseName,
-        imageUri: normalizeExerciseImageUri(exercise.image_uri),
+        imageUri,
         muscle,
         previewMeta: resolveExercisePreviewMeta(exerciseName, muscle, activeTrainingCategory),
         instructions: repoMatch?.instructions ?? "",
@@ -7967,17 +8015,17 @@ export default function App() {
   const localOnlyExercises = useMemo(() => {
     // Si el repo aún no se ha cargado, no podemos saber qué es "local" todavía.
     if (exercisesRepo.length === 0) return [] as Array<{ name: string; muscle: string }>;
-    const normalize = (s: string) =>
-      s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const repoNames = new Set(exercisesRepo.map((e) => normalize(e.name)));
     const seen = new Set<string>();
     const result: Array<{ name: string; muscle: string }> = [];
     for (const template of store.templates) {
       for (const exercise of template.exercises) {
         const name = exercise.name?.trim();
         if (!name) continue;
-        const key = normalize(name);
-        if (repoNames.has(key) || seen.has(key)) continue;
+        // Si el ejercicio coincide (incluso con nombre distinto) con uno del repo,
+        // no es "local"; se usa el mismo matcher tolerante que el sync de im\u00e1genes.
+        if (findRepoExerciseMatch(exercisesRepo, name)) continue;
+        const key = exerciseNameMatchKey(name);
+        if (seen.has(key)) continue;
         seen.add(key);
         result.push({ name, muscle: exercise.muscle?.trim() || "" });
       }
@@ -8630,12 +8678,16 @@ export default function App() {
         let changed = false;
         const updatedTemplates = prev.templates.map((template) => {
           const updatedExercises = template.exercises.map((exercise) => {
-            const name = (exercise.name ?? "").trim().toLowerCase();
-            if (!name) return exercise;
-            const match = repoExercises.find((r) => r.name.toLowerCase() === name);
+            const match = findRepoExerciseMatch(repoExercises, exercise.name);
             if (!match) return exercise;
             const repoImageUri = getExerciseImageUrl(match, "male");
-            const needsImage = !exercise.image_uri && repoImageUri;
+            // Refresca la imagen si falta o si apunta a una URL del repo (posiblemente
+            // obsoleta, p.ej. sin el prefijo images/). Conserva imágenes propias del
+            // usuario (file://, data:, content://, etc.).
+            const currentImage = exercise.image_uri ?? "";
+            const isRepoImage = currentImage.startsWith(EXERCISES_REPO_BASE_URL);
+            const needsImage =
+              !!repoImageUri && currentImage !== repoImageUri && (currentImage === "" || isRepoImage);
             const needsMuscle = !exercise.muscle && match.muscle_group;
             if (!needsImage && !needsMuscle) return exercise;
             changed = true;
