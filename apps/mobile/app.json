@@ -2,7 +2,7 @@
   "expo": {
     "name": "Gymnasia",
     "slug": "gymnasia",
-    "version": "1.14.0",
+    "version": "1.14.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -51,7 +51,11 @@
         "expo-notifications",
         {
           "sounds": [
-            "./assets/rest_finished.wav"
+            "./assets/rest_finished.wav",
+            "./assets/beep.wav",
+            "./assets/bell.wav",
+            "./assets/ascending.wav",
+            "./assets/buzzer.wav"
           ]
         }
       ]

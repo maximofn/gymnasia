@@ -336,10 +336,21 @@ type TrainingTemplateScreenMode = "detail" | "edit";
 type TrainingStatsPeriodKey = "3m" | "6m" | "12m" | "all";
 type TrainingStatsMetricKey = "volume" | "reps" | "duration";
 type MeasuresDashboardPeriodKey = "1m" | "3m" | "6m" | "all";
+type NotificationSoundKey = "rest_finished" | "beep" | "bell" | "ascending" | "buzzer";
+
+const NOTIFICATION_SOUND_OPTIONS: Array<{ key: NotificationSoundKey; label: string; file: string }> = [
+  { key: "rest_finished", label: "Descanso terminado (default)", file: "rest_finished.wav" },
+  { key: "beep", label: "Beep electrónico", file: "beep.wav" },
+  { key: "bell", label: "Campana", file: "bell.wav" },
+  { key: "ascending", label: "Ascendente (do-mi-sol)", file: "ascending.wav" },
+  { key: "buzzer", label: "Buzzer grave", file: "buzzer.wav" },
+];
+
 type NotificationSettings = {
   enabled: boolean;
   sound: boolean;
   vibrate: boolean;
+  soundKey: NotificationSoundKey;
 };
 
 type UserPreferences = {
@@ -380,7 +391,7 @@ const SESSION_TEMPLATE_SNAPSHOT_KEY = "gymnasia.mobile.training.session_template
 const CHAT_SYSTEM_PROMPT_CACHE_KEY = "gymnasia.mobile.chat.system_prompt.v1";
 const PERSONAL_DATA_STORAGE_KEY = "gymnasia.mobile.personal_data.v1";
 const USER_PREFS_STORAGE_KEY = "gymnasia.mobile.user_prefs.v1";
-const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: { enabled: true, sound: true, vibrate: true } };
+const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: { enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" } };
 const SECURE_STORE_API_KEY_PREFIX = "gymnasia.mobile.v3.provider.api_key";
 const LEGACY_STORAGE_KEYS = [
   "gymnasia.mobile.local.v1",
@@ -7540,6 +7551,7 @@ export default function App() {
     useState<WorkoutCompletionModalState | null>(null);
   const [confirmDiscardSession, setConfirmDiscardSession] = useState(false);
   const restFinishSoundRef = useRef<Audio.Sound | null>(null);
+  const restSoundCacheRef = useRef<Record<string, Audio.Sound>>({});
   const bgSilenceRef = useRef<Audio.Sound | null>(null);
   const bgRestDeadlineRef = useRef<number | null>(null);
   const bgRestFiredRef = useRef(false);
@@ -7556,7 +7568,7 @@ export default function App() {
   const audioWorkoutInitializedRef = useRef(false);
   const restNotificationIdRef = useRef<string | null>(null);
   const restNotifBodyRef = useRef<string>("");
-  const notifSettingsRef = useRef<NotificationSettings>({ enabled: true, sound: true, vibrate: true });
+  const notifSettingsRef = useRef<NotificationSettings>({ enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" });
   const providerSettingsInitializedRef = useRef(false);
   const exerciseIssueDebounceRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const exerciseIssueSentRef = useRef<Set<string>>(new Set());
@@ -8511,6 +8523,27 @@ export default function App() {
     restAlertLockRef.current = true;
     const settings = notifSettingsRef.current;
     void pushTrace("playAlert", "start", { platform: Platform.OS, hasSound: !!restFinishSoundRef.current, settings });
+
+    // Load the selected sound if not already cached
+    if (settings.sound && !restSoundCacheRef.current[settings.soundKey]) {
+      try {
+        const soundFile = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)?.file ?? "rest_finished.wav";
+        const { sound } = await Audio.Sound.createAsync(
+          require(`./assets/${soundFile}`),
+          { shouldPlay: false, volume: 1 },
+        );
+        restSoundCacheRef.current[settings.soundKey] = sound;
+        restFinishSoundRef.current = sound;
+        void pushTrace("playAlert", "loaded sound on demand", { soundKey: settings.soundKey });
+      } catch (e) {
+        void pushTrace("playAlert", "failed to load sound", { error: String(e) });
+      }
+    } else if (settings.sound && restFinishSoundRef.current !== restSoundCacheRef.current[settings.soundKey]) {
+      // Switch to the cached selected sound
+      restFinishSoundRef.current = restSoundCacheRef.current[settings.soundKey];
+      void pushTrace("playAlert", "switched to cached sound", { soundKey: settings.soundKey });
+    }
+
     try {
       if (settings.vibrate) {
         Vibration.vibrate([0, 300, 150, 300]);
@@ -8558,15 +8591,18 @@ export default function App() {
         staysActiveInBackground: false,
       });
       void pushTrace("initWorkoutAudio", "audio mode set");
+      const settings = notifSettingsRef.current;
+      const soundFile = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)?.file ?? "rest_finished.wav";
       if (!restFinishSoundRef.current) {
         const { sound } = await Audio.Sound.createAsync(
-          require("./assets/rest_finished.wav"),
+          require(`./assets/${soundFile}`),
           { shouldPlay: false, volume: 1 },
         );
         restFinishSoundRef.current = sound;
-        void pushTrace("initWorkoutAudio", "rest_finished.wav loaded");
+        restSoundCacheRef.current[settings.soundKey] = sound;
+        void pushTrace("initWorkoutAudio", `${soundFile} loaded`, { soundKey: settings.soundKey });
       } else {
-        void pushTrace("initWorkoutAudio", "rest_finished.wav already loaded");
+        void pushTrace("initWorkoutAudio", "sound already loaded", { soundKey: settings.soundKey });
       }
       // Request notification permissions and set up Android channel
       void pushTrace("initWorkoutAudio", "requesting permissions");
@@ -8602,14 +8638,15 @@ export default function App() {
         return;
       }
       const triggerDate = Date.now() + Math.max(1, seconds) * 1000;
-      void pushTrace("scheduleNotif", "entry", { seconds, platform: Platform.OS, triggerDateMs: triggerDate, triggerIso: new Date(triggerDate).toISOString(), settings });
+      const soundFile = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)?.file ?? "rest_finished.wav";
+      void pushTrace("scheduleNotif", "entry", { seconds, platform: Platform.OS, triggerDateMs: triggerDate, triggerIso: new Date(triggerDate).toISOString(), settings, soundFile });
       await Notifications.cancelAllScheduledNotificationsAsync();
       void pushTrace("scheduleNotif", "cancelled all previous");
       const id = await Notifications.scheduleNotificationAsync({
         content: {
           title: "¡Descanso terminado! 💪",
           body: restNotifBodyRef.current || "Es hora de continuar",
-          sound: settings.sound ? "rest_finished.wav" : false,
+          sound: settings.sound ? soundFile : false,
           vibrate: settings.vibrate ? [0, 300, 150, 300] : undefined,
           priority: Notifications.AndroidNotificationPriority.MAX,
           autoDismiss: true,
@@ -9230,6 +9267,11 @@ export default function App() {
         restFinishSoundRef.current.unloadAsync().catch(() => {});
         restFinishSoundRef.current = null;
       }
+      // Unload all cached sounds
+      for (const key of Object.keys(restSoundCacheRef.current)) {
+        restSoundCacheRef.current[key]?.unloadAsync().catch(() => {});
+      }
+      restSoundCacheRef.current = {};
       if (bgSilenceRef.current) {
         bgSilenceRef.current.unloadAsync().catch(() => {});
         bgSilenceRef.current = null;
@@ -21168,6 +21210,84 @@ export default function App() {
                       Con las notificaciones desactivadas, solo se avisará con sonido/vibración cuando la app esté abierta.
                     </Text>
                   ) : null}
+
+                  {/* Sound selector */}
+                  <View
+                    style={{
+                      gap: 8,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: 12,
+                      padding: 14,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      opacity: userPrefs.notifications.enabled ? 1 : 0.4,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                      <View style={{ flex: 1, gap: 2 }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
+                          Sonido de notificación
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                          Elige el tono que sonará al terminar el descanso
+                        </Text>
+                      </View>
+                      <Pressable
+                        onPress={() => setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, sound: !prev.notifications.sound } }))}
+                        disabled={!userPrefs.notifications.enabled}
+                        style={{
+                          width: 52,
+                          height: 30,
+                          borderRadius: 15,
+                          backgroundColor: userPrefs.notifications.sound ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <View style={{
+                          position: "absolute",
+                          left: userPrefs.notifications.sound ? 26 : 4,
+                          width: 22,
+                          height: 22,
+                          borderRadius: 11,
+                          backgroundColor: "#fff",
+                        }} />
+                      </Pressable>
+                    </View>
+
+                    {userPrefs.notifications.sound ? (
+                      <View style={{ gap: 6, marginTop: 4 }}>
+                        {NOTIFICATION_SOUND_OPTIONS.map((option) => {
+                          const isSelected = userPrefs.notifications.soundKey === option.key;
+                          return (
+                            <Pressable
+                              key={option.key}
+                              onPress={() => setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, soundKey: option.key } }))}
+                              disabled={!userPrefs.notifications.enabled}
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                paddingVertical: 10,
+                                paddingHorizontal: 12,
+                                borderRadius: mobileTheme.radius.md,
+                                borderWidth: 1,
+                                borderColor: isSelected ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                                backgroundColor: isSelected ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp,
+                              }}
+                            >
+                              <Text style={{ color: isSelected ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+                                {option.label}
+                              </Text>
+                              {isSelected ? (
+                                <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} />
+                              ) : null}
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                    ) : null}
+                  </View>
                 </View>
               ) : null}
 
