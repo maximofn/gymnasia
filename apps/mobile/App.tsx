@@ -34,9 +34,34 @@ import {
 } from "react-native";
 
 import { mobileTheme } from "./theme";
+import * as Clipboard from "expo-clipboard";
+import { pushTrace, clearTraces, getTraces, formatTraces, type TraceEntry } from "./trace";
+
+// Foreground notification presentation handler. Without this, scheduled
+// notifications delivered while the app is in the foreground are silently
+// dropped (no banner, no sound). We also trace every received notification
+// so we can debug "did the native scheduler actually fire it?".
+Notifications.setNotificationHandler({
+  handleNotification: async (notification) => {
+    void pushTrace("notifReceived", "handleNotification", {
+      id: notification.request.identifier,
+      title: notification.request.content.title,
+      body: notification.request.content.body,
+      trigger: notification.request.trigger,
+      appState: "foreground",
+    });
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    };
+  },
+});
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "updates";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "updates" | "traces";
 
 type SeriesType =
   | "normal"
@@ -2119,6 +2144,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "measures", label: "Medidas" },
   { key: "preferences", label: "Preferencias" },
   { key: "updates", label: "Actualizaciones" },
+  { key: "traces", label: "Trazas" },
 ];
 
 const DIET_GOAL_OPTIONS: Array<{ key: DietGoal; label: string }> = [
@@ -7164,6 +7190,138 @@ function FoodThumbnail({ food, size = 36 }: { food: FoodRepoEntry; size?: number
   );
 }
 
+function TracePanel() {
+  const [traces, setTraces] = useState<TraceEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const entries = await getTraces();
+      setTraces(entries);
+    } catch (e) {
+      // ignore
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      const text = formatTraces(traces);
+      await Clipboard.setStringAsync(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      // ignore
+    }
+  }, [traces]);
+
+  const handleClear = useCallback(async () => {
+    await clearTraces();
+    setTraces([]);
+  }, []);
+
+  const displayText = formatTraces(traces);
+
+  return (
+    <View style={{ gap: 10 }}>
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        <Pressable
+          onPress={handleCopy}
+          disabled={traces.length === 0}
+          style={{
+            flex: 1,
+            minHeight: 44,
+            borderRadius: mobileTheme.radius.md,
+            backgroundColor: mobileTheme.color.brandPrimary,
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: traces.length === 0 ? 0.5 : 1,
+          }}
+        >
+          <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 14 }}>
+            {copied ? "Copiado ✓" : "Copiar trazas"}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={handleClear}
+          disabled={traces.length === 0}
+          style={{
+            flex: 1,
+            minHeight: 44,
+            borderRadius: mobileTheme.radius.md,
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+            backgroundColor: mobileTheme.color.bgSurface,
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: traces.length === 0 ? 0.5 : 1,
+          }}
+        >
+          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 14 }}>
+            Borrar
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={reload}
+          style={{
+            minHeight: 44,
+            paddingHorizontal: 14,
+            borderRadius: mobileTheme.radius.md,
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+            backgroundColor: mobileTheme.color.bgSurface,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Feather name="refresh-cw" size={16} color={mobileTheme.color.textPrimary} />
+        </Pressable>
+      </View>
+
+      <View
+        style={{
+          borderWidth: 1,
+          borderColor: mobileTheme.color.borderSubtle,
+          backgroundColor: "#06090D",
+          borderRadius: mobileTheme.radius.md,
+          padding: 10,
+          minHeight: 200,
+          maxHeight: 420,
+        }}
+      >
+        {loading ? (
+          <Text style={{ color: "#888", fontSize: 12 }}>Cargando...</Text>
+        ) : traces.length === 0 ? (
+          <Text style={{ color: "#888", fontSize: 12 }}>Sin trazas todavía.</Text>
+        ) : (
+          <ScrollView style={{ flex: 1 }} nestedScrollEnabled>
+            <Text
+              style={{
+                color: "#c7ff1a",
+                fontSize: 11,
+                fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+                lineHeight: 15,
+              }}
+            >
+              {displayText}
+            </Text>
+          </ScrollView>
+        )}
+      </View>
+
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+        {traces.length} entrada(s)
+      </Text>
+    </View>
+  );
+}
+
 export default function App() {
   const [tab, setTab] = useState<TabKey>("home");
   const [loading, setLoading] = useState(true);
@@ -8311,6 +8469,13 @@ export default function App() {
   }, [tab]);
 
   useEffect(() => {
+    void pushTrace("app", "App mounted", {
+      platform: Platform.OS,
+      version: Constants.expoConfig?.version,
+    });
+  }, []);
+
+  useEffect(() => {
     if (settingsTab === "memory" && !memoryLoaded) {
       loadMemoryFields();
     }
@@ -8330,10 +8495,15 @@ export default function App() {
   }, [tab]);
 
   const playRestFinishedAlert = useCallback(async () => {
-    if (restAlertLockRef.current) return;
+    if (restAlertLockRef.current) {
+      void pushTrace("playAlert", "skipped, locked");
+      return;
+    }
     restAlertLockRef.current = true;
+    void pushTrace("playAlert", "start", { platform: Platform.OS, hasSound: !!restFinishSoundRef.current });
     try {
       Vibration.vibrate([0, 300, 150, 300]);
+      void pushTrace("playAlert", "vibrated");
 
       try {
         if (restFinishSoundRef.current) {
@@ -8344,21 +8514,27 @@ export default function App() {
             restFinishSoundRef.current?.stopAsync().catch(() => {});
           });
           await restFinishSoundRef.current.setPositionAsync(0);
+          void pushTrace("playAlert", "position reset to 0");
           await restFinishSoundRef.current.playAsync();
+          void pushTrace("playAlert", "playAsync called");
         } else {
+          void pushTrace("playAlert", "no sound ref available");
         }
       } catch (e) {
+        void pushTrace("playAlert", "sound error", { error: String(e) });
         // best effort: vibration still notifies the user
       }
     } finally {
       setTimeout(() => {
         restAlertLockRef.current = false;
       }, 450);
+      void pushTrace("playAlert", "done");
     }
   }, []);
 
   const initWorkoutAudio = useCallback(async () => {
     try {
+      void pushTrace("initWorkoutAudio", "start", { platform: Platform.OS });
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
@@ -8367,16 +8543,23 @@ export default function App() {
         interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
         staysActiveInBackground: false,
       });
+      void pushTrace("initWorkoutAudio", "audio mode set");
       if (!restFinishSoundRef.current) {
         const { sound } = await Audio.Sound.createAsync(
           require("./assets/rest_finished.wav"),
           { shouldPlay: false, volume: 1 },
         );
         restFinishSoundRef.current = sound;
+        void pushTrace("initWorkoutAudio", "rest_finished.wav loaded");
+      } else {
+        void pushTrace("initWorkoutAudio", "rest_finished.wav already loaded");
       }
       // Request notification permissions and set up Android channel
-      await Notifications.requestPermissionsAsync();
+      void pushTrace("initWorkoutAudio", "requesting permissions");
+      const permResult = await Notifications.requestPermissionsAsync();
+      void pushTrace("initWorkoutAudio", "permissions result", permResult);
       if (Platform.OS === "android") {
+        void pushTrace("initWorkoutAudio", "creating channel rest_finished");
         await Notifications.setNotificationChannelAsync("rest_finished", {
           name: "Descanso terminado",
           importance: Notifications.AndroidImportance.HIGH,
@@ -8384,15 +8567,21 @@ export default function App() {
           vibrationPattern: [0, 300, 150, 300],
           enableVibrate: true,
         });
+        const channelInfo = await Notifications.getNotificationChannelAsync("rest_finished");
+        void pushTrace("initWorkoutAudio", "channel created", channelInfo);
       }
       audioWorkoutInitializedRef.current = true;
+      void pushTrace("initWorkoutAudio", "done");
     } catch (e) {
+      void pushTrace("initWorkoutAudio", "error", { error: String(e) });
     }
   }, []);
 
   const scheduleRestEndNotification = useCallback(async (seconds: number) => {
     try {
+      void pushTrace("scheduleNotif", "entry", { seconds, platform: Platform.OS });
       await Notifications.cancelAllScheduledNotificationsAsync();
+      void pushTrace("scheduleNotif", "cancelled all previous");
       const id = await Notifications.scheduleNotificationAsync({
         content: {
           title: "¡Descanso terminado! 💪",
@@ -8407,20 +8596,36 @@ export default function App() {
         },
       });
       restNotificationIdRef.current = id;
+      void pushTrace("scheduleNotif", "scheduled", { id, seconds: Math.max(1, seconds) });
+      const all = await Notifications.getAllScheduledNotificationsAsync();
+      void pushTrace("scheduleNotif", "all scheduled", { count: all.length, list: all.map((n) => ({ id: n.identifier, trigger: n.trigger })) });
     } catch (e) {
+      void pushTrace("scheduleNotif", "error", { error: String(e) });
     }
   }, []);
 
   const cancelRestEndNotification = useCallback(async () => {
     if (restNotificationIdRef.current) {
+      const idToCancel = restNotificationIdRef.current;
       try {
-        await Notifications.cancelScheduledNotificationAsync(restNotificationIdRef.current);
-      } catch { /* ignore */ }
+        void pushTrace("cancelNotif", "entry", { id: idToCancel });
+        await Notifications.cancelScheduledNotificationAsync(idToCancel);
+        void pushTrace("cancelNotif", "cancelled", { id: idToCancel });
+      } catch (e) {
+        void pushTrace("cancelNotif", "error", { id: idToCancel, error: String(e) });
+      }
       restNotificationIdRef.current = null;
+    } else {
+      void pushTrace("cancelNotif", "no-op, no pending id");
     }
   }, []);
 
   const stopBackgroundSilence = useCallback(async () => {
+    void pushTrace("bgSilence", "stop entry", {
+      hasHeartbeat: !!bgHeartbeatRef.current,
+      hasSilence: !!bgSilenceRef.current,
+      fired: bgRestFiredRef.current,
+    });
     if (bgHeartbeatRef.current) {
       clearInterval(bgHeartbeatRef.current);
       bgHeartbeatRef.current = null;
@@ -8431,14 +8636,21 @@ export default function App() {
       try {
         await bgSilenceRef.current.stopAsync();
         await bgSilenceRef.current.unloadAsync();
-      } catch { /* ignore */ }
+      } catch (e) {
+        void pushTrace("bgSilence", "stop error", { error: String(e) });
+      }
       bgSilenceRef.current = null;
     }
+    void pushTrace("bgSilence", "stop done");
   }, []);
 
   const startBackgroundSilence = useCallback(async (seconds: number) => {
+    void pushTrace("bgSilence", "start entry", { seconds, platform: Platform.OS });
     await stopBackgroundSilence();
-    if (seconds <= 0) return;
+    if (seconds <= 0) {
+      void pushTrace("bgSilence", "start noop seconds<=0");
+      return;
+    }
     try {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
@@ -8448,15 +8660,22 @@ export default function App() {
         interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
         staysActiveInBackground: true,
       });
+      void pushTrace("bgSilence", "audio mode set (background=true)");
 
       bgRestDeadlineRef.current = Date.now() + seconds * 1000;
       bgRestFiredRef.current = false;
+      void pushTrace("bgSilence", "deadline set", {
+        deadlineMs: bgRestDeadlineRef.current,
+        nowMs: Date.now(),
+        iso: new Date(bgRestDeadlineRef.current).toISOString(),
+      });
 
       const { sound } = await Audio.Sound.createAsync(
         require("./assets/silence.wav"),
         { isLooping: true, volume: 0.001, shouldPlay: true },
       );
       bgSilenceRef.current = sound;
+      void pushTrace("bgSilence", "silence.wav playing (loop, vol 0.001)");
 
       // setInterval as heartbeat — the background audio session keeps the
       // Android process (and JS timers) alive so the interval should fire.
@@ -8464,9 +8683,20 @@ export default function App() {
         if (bgRestFiredRef.current) return;
         const remaining = bgRestDeadlineRef.current ? bgRestDeadlineRef.current - Date.now() : null;
         if (bgRestDeadlineRef.current && Date.now() >= bgRestDeadlineRef.current) {
+          void pushTrace("bgSilence", "heartbeat FIRED", {
+            deadlineMs: bgRestDeadlineRef.current,
+            nowMs: Date.now(),
+            fired: bgRestFiredRef.current,
+          });
           bgRestFiredRef.current = true;
           void playRestFinishedAlert();
           void stopBackgroundSilence();
+        } else {
+          // Log every ~5s to avoid flooding (interval runs each second).
+          const sec = Math.round((remaining ?? 0) / 1000);
+          if (sec % 5 === 0) {
+            void pushTrace("bgSilence", "heartbeat tick", { remainingSec: sec });
+          }
         }
       }, 1000);
     } catch {
@@ -8779,6 +9009,11 @@ export default function App() {
 
   useEffect(() => {
     if (!activeWorkoutSession || activeWorkoutSession.status !== "running") return;
+    void pushTrace("timer", "interval started", {
+      sessionId: activeWorkoutSession.id,
+      isResting: activeWorkoutSession.is_resting,
+      restLeft: activeWorkoutSession.rest_seconds_left,
+    });
     const interval = setInterval(() => {
       setActiveWorkoutSession((prev) => {
         if (!prev || prev.status !== "running") return prev;
@@ -8790,6 +9025,15 @@ export default function App() {
           };
         }
         const nextRest = Math.max(0, prev.rest_seconds_left - 1);
+        // Trace every rest tick (foreground only relevant — interval may be
+        // throttled when backgrounded, that's exactly what we want to see).
+        if (nextRest % 5 === 0 || nextRest <= 3) {
+          void pushTrace("timer", "rest tick", {
+            restLeft: nextRest,
+            elapsed: nextElapsed,
+            appState: appStateLastActiveRef.current,
+          });
+        }
         return {
           ...prev,
           elapsed_seconds: nextElapsed,
@@ -8799,15 +9043,39 @@ export default function App() {
       });
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [activeWorkoutSession?.id, activeWorkoutSession?.status]);  // AppState effect: recalculate timer when app comes to foreground
+    return () => {
+      clearInterval(interval);
+      void pushTrace("timer", "interval cleared");
+    };
+  }, [activeWorkoutSession?.id, activeWorkoutSession?.status]);
   const appStateLastActiveRef = useRef<string | null>(null);
   const backgroundTimestampRef = useRef<number | null>(null);
+  const restStateLogRef = useRef({ isResting: false, restLeft: 0 });
 
   useEffect(() => {
+    restStateLogRef.current = {
+      isResting: !!activeWorkoutSession?.is_resting,
+      restLeft: activeWorkoutSession?.rest_seconds_left ?? 0,
+    };
+  }, [activeWorkoutSession?.is_resting, activeWorkoutSession?.rest_seconds_left]);
+
+  useEffect(() => {
+    void pushTrace("appState", "effect mounted");
     const subscription = AppState.addEventListener("change", (nextAppState) => {
+      void pushTrace("appState", "change", {
+        next: nextAppState,
+        prev: appStateLastActiveRef.current,
+        hasBgTs: !!backgroundTimestampRef.current,
+        restLeft: restStateLogRef.current.restLeft,
+        isResting: restStateLogRef.current.isResting,
+      });
       if (nextAppState === "active" && backgroundTimestampRef.current) {
         const elapsedSeconds = Math.floor((Date.now() - backgroundTimestampRef.current) / 1000);
+        void pushTrace("appState", "foreground resume", {
+          elapsedSeconds,
+          bgStartMs: backgroundTimestampRef.current,
+          nowMs: Date.now(),
+        });
         backgroundTimestampRef.current = null;
         void stopBackgroundSilence();
         void cancelRestEndNotification();
@@ -8818,9 +9086,15 @@ export default function App() {
             return { ...prev, elapsed_seconds: nextElapsed };
           }
           const nextRest = Math.max(0, prev.rest_seconds_left - elapsedSeconds);
+          void pushTrace("appState", "resume rest calc", {
+            prevRest: prev.rest_seconds_left,
+            elapsedSeconds,
+            nextRest,
+          });
           if (nextRest === 0) {
             // Notification already alerted the user — skip foreground sound on return
             manualRestSkipRef.current = true;
+            void pushTrace("appState", "rest reached 0 during bg → skip foreground sound");
           }
           return {
             ...prev,
@@ -8832,9 +9106,19 @@ export default function App() {
       }
       if (/inactive|background/.test(nextAppState)) {
         backgroundTimestampRef.current = Date.now();
+        void pushTrace("appState", "going background", { bgStartMs: backgroundTimestampRef.current });
         setActiveWorkoutSession((prev) => {
           if (prev?.is_resting && prev.rest_seconds_left > 0) {
+            void pushTrace("appState", "scheduling rest notif on background", {
+              restLeft: prev.rest_seconds_left,
+            });
             void scheduleRestEndNotification(prev.rest_seconds_left);
+            void startBackgroundSilence(prev.rest_seconds_left);
+          } else {
+            void pushTrace("appState", "not resting, no notif scheduled", {
+              isResting: prev?.is_resting,
+              restLeft: prev?.rest_seconds_left,
+            });
           }
           return prev;
         });
@@ -8844,8 +9128,9 @@ export default function App() {
 
     return () => {
       subscription.remove();
+      void pushTrace("appState", "effect unmounted");
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification, stopBackgroundSilence]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, stopBackgroundSilence, startBackgroundSilence]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -8860,11 +9145,24 @@ export default function App() {
       previous.restLeft > 0 &&
       !activeWorkoutSession.is_resting &&
       activeWorkoutSession.rest_seconds_left === 0;
+    void pushTrace("restTransition", "tick", {
+      prevWasResting: previous.wasResting,
+      prevRestLeft: previous.restLeft,
+      nowIsResting: activeWorkoutSession.is_resting,
+      nowRestLeft: activeWorkoutSession.rest_seconds_left,
+      endedRestThisTick,
+      manualSkip: manualRestSkipRef.current,
+      appState: appStateLastActiveRef.current,
+    });
     if (endedRestThisTick) {
+      void pushTrace("restTransition", "rest ended this tick");
       void stopBackgroundSilence();
       void cancelRestEndNotification();
       if (!manualRestSkipRef.current) {
+        void pushTrace("restTransition", "playing foreground alert");
         void playRestFinishedAlert();
+      } else {
+        void pushTrace("restTransition", "skipping foreground alert (manualSkip)");
       }
       manualRestSkipRef.current = false;
     }
@@ -8903,6 +9201,31 @@ export default function App() {
     if (audioWorkoutInitializedRef.current && restFinishSoundRef.current) return;
     void initWorkoutAudio();
   }, [activeWorkoutSession?.id, initWorkoutAudio]);
+
+  // Notification listeners — trace when a scheduled notification is actually
+  // delivered (foreground) and when the user taps it (cold-launch or resume).
+  useEffect(() => {
+    void pushTrace("notifListener", "attaching received + response listeners");
+    const receivedSub = Notifications.addNotificationReceivedListener((event) => {
+      void pushTrace("notifReceived", "listener fired", {
+        id: event.request.identifier,
+        title: event.request.content.title,
+        body: event.request.content.body,
+        trigger: event.request.trigger,
+      });
+    });
+    const responseSub = Notifications.addNotificationResponseReceivedListener((event) => {
+      void pushTrace("notifResponse", "user tapped notification", {
+        id: event.notification.request.identifier,
+        title: event.notification.request.content.title,
+      });
+    });
+    return () => {
+      receivedSub.remove();
+      responseSub.remove();
+      void pushTrace("notifListener", "listeners removed");
+    };
+  }, []);
 
   useEffect(() => {
     if (!activeWorkoutSession?.is_resting) return;
@@ -20761,6 +21084,23 @@ export default function App() {
                       {updatesCheckResult.message}
                     </Text>
                   ) : null}
+                </View>
+              ) : null}
+
+              {settingsTab === "traces" ? (
+                <View style={{ gap: 12 }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                    Trazas de depuración
+                  </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                    Registro de eventos de notificaciones y descansos. Cada entrada lleva timestamp ISO. Útil para diagnosticar por qué no salta la notificación con el móvil bloqueado o en background.
+                  </Text>
+
+                  <TracePanel />
+
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
+                    Las trazas se guardan en AsyncStorage y sobreviven a reinicios de la app.
+                  </Text>
                 </View>
               ) : null}
 
