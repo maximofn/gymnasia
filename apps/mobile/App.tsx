@@ -338,12 +338,12 @@ type TrainingStatsMetricKey = "volume" | "reps" | "duration";
 type MeasuresDashboardPeriodKey = "1m" | "3m" | "6m" | "all";
 type NotificationSoundKey = "rest_finished" | "beep" | "bell" | "ascending" | "buzzer";
 
-const NOTIFICATION_SOUND_OPTIONS: Array<{ key: NotificationSoundKey; label: string; file: string }> = [
-  { key: "rest_finished", label: "Descanso terminado (default)", file: "rest_finished.wav" },
-  { key: "beep", label: "Beep electrónico", file: "beep.wav" },
-  { key: "bell", label: "Campana", file: "bell.wav" },
-  { key: "ascending", label: "Ascendente (do-mi-sol)", file: "ascending.wav" },
-  { key: "buzzer", label: "Buzzer grave", file: "buzzer.wav" },
+const NOTIFICATION_SOUND_OPTIONS: Array<{ key: NotificationSoundKey; label: string; file: string; asset: ReturnType<typeof require> }> = [
+  { key: "rest_finished", label: "Descanso terminado (default)", file: "rest_finished.wav", asset: require("./assets/rest_finished.wav") },
+  { key: "beep", label: "Beep electrónico", file: "beep.wav", asset: require("./assets/beep.wav") },
+  { key: "bell", label: "Campana", file: "bell.wav", asset: require("./assets/bell.wav") },
+  { key: "ascending", label: "Ascendente (do-mi-sol)", file: "ascending.wav", asset: require("./assets/ascending.wav") },
+  { key: "buzzer", label: "Buzzer grave", file: "buzzer.wav", asset: require("./assets/buzzer.wav") },
 ];
 
 type NotificationSettings = {
@@ -8527,9 +8527,9 @@ export default function App() {
     // Load the selected sound if not already cached
     if (settings.sound && !restSoundCacheRef.current[settings.soundKey]) {
       try {
-        const soundFile = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)?.file ?? "rest_finished.wav";
+        const soundOption = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey) ?? NOTIFICATION_SOUND_OPTIONS[0];
         const { sound } = await Audio.Sound.createAsync(
-          require(`./assets/${soundFile}`),
+          soundOption.asset,
           { shouldPlay: false, volume: 1 },
         );
         restSoundCacheRef.current[settings.soundKey] = sound;
@@ -8592,15 +8592,15 @@ export default function App() {
       });
       void pushTrace("initWorkoutAudio", "audio mode set");
       const settings = notifSettingsRef.current;
-      const soundFile = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)?.file ?? "rest_finished.wav";
+      const soundOption = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey) ?? NOTIFICATION_SOUND_OPTIONS[0];
       if (!restFinishSoundRef.current) {
         const { sound } = await Audio.Sound.createAsync(
-          require(`./assets/${soundFile}`),
+          soundOption.asset,
           { shouldPlay: false, volume: 1 },
         );
         restFinishSoundRef.current = sound;
         restSoundCacheRef.current[settings.soundKey] = sound;
-        void pushTrace("initWorkoutAudio", `${soundFile} loaded`, { soundKey: settings.soundKey });
+        void pushTrace("initWorkoutAudio", `${soundOption.file} loaded`, { soundKey: settings.soundKey });
       } else {
         void pushTrace("initWorkoutAudio", "sound already loaded", { soundKey: settings.soundKey });
       }
