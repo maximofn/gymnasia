@@ -61,7 +61,7 @@ Notifications.setNotificationHandler({
 });
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "updates" | "traces";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "updates" | "traces";
 
 type SeriesType =
   | "normal"
@@ -336,9 +336,16 @@ type TrainingTemplateScreenMode = "detail" | "edit";
 type TrainingStatsPeriodKey = "3m" | "6m" | "12m" | "all";
 type TrainingStatsMetricKey = "volume" | "reps" | "duration";
 type MeasuresDashboardPeriodKey = "1m" | "3m" | "6m" | "all";
+type NotificationSettings = {
+  enabled: boolean;
+  sound: boolean;
+  vibrate: boolean;
+};
+
 type UserPreferences = {
   chartPeriod: MeasuresDashboardPeriodKey;
   chartMetric?: MeasuresChartMetricKey;
+  notifications: NotificationSettings;
 };
 type TemplateSeriesPointer = {
   exerciseIndex: number;
@@ -373,7 +380,7 @@ const SESSION_TEMPLATE_SNAPSHOT_KEY = "gymnasia.mobile.training.session_template
 const CHAT_SYSTEM_PROMPT_CACHE_KEY = "gymnasia.mobile.chat.system_prompt.v1";
 const PERSONAL_DATA_STORAGE_KEY = "gymnasia.mobile.personal_data.v1";
 const USER_PREFS_STORAGE_KEY = "gymnasia.mobile.user_prefs.v1";
-const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m" };
+const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: { enabled: true, sound: true, vibrate: true } };
 const SECURE_STORE_API_KEY_PREFIX = "gymnasia.mobile.v3.provider.api_key";
 const LEGACY_STORAGE_KEYS = [
   "gymnasia.mobile.local.v1",
@@ -2143,6 +2150,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "personalFoods", label: "Alimentos personales" },
   { key: "measures", label: "Medidas" },
   { key: "preferences", label: "Preferencias" },
+  { key: "notifications", label: "Notificaciones" },
   { key: "updates", label: "Actualizaciones" },
   { key: "traces", label: "Trazas" },
 ];
@@ -7548,6 +7556,7 @@ export default function App() {
   const audioWorkoutInitializedRef = useRef(false);
   const restNotificationIdRef = useRef<string | null>(null);
   const restNotifBodyRef = useRef<string>("");
+  const notifSettingsRef = useRef<NotificationSettings>({ enabled: true, sound: true, vibrate: true });
   const providerSettingsInitializedRef = useRef(false);
   const exerciseIssueDebounceRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const exerciseIssueSentRef = useRef<Set<string>>(new Set());
@@ -8500,13 +8509,18 @@ export default function App() {
       return;
     }
     restAlertLockRef.current = true;
-    void pushTrace("playAlert", "start", { platform: Platform.OS, hasSound: !!restFinishSoundRef.current });
+    const settings = notifSettingsRef.current;
+    void pushTrace("playAlert", "start", { platform: Platform.OS, hasSound: !!restFinishSoundRef.current, settings });
     try {
-      Vibration.vibrate([0, 300, 150, 300]);
-      void pushTrace("playAlert", "vibrated");
+      if (settings.vibrate) {
+        Vibration.vibrate([0, 300, 150, 300]);
+        void pushTrace("playAlert", "vibrated");
+      } else {
+        void pushTrace("playAlert", "vibration disabled");
+      }
 
       try {
-        if (restFinishSoundRef.current) {
+        if (settings.sound && restFinishSoundRef.current) {
           // Release audio focus when done so ducked music recovers
           restFinishSoundRef.current.setOnPlaybackStatusUpdate((status) => {
             if (!status.isLoaded || !status.didJustFinish) return;
@@ -8518,7 +8532,7 @@ export default function App() {
           await restFinishSoundRef.current.playAsync();
           void pushTrace("playAlert", "playAsync called");
         } else {
-          void pushTrace("playAlert", "no sound ref available");
+          void pushTrace("playAlert", "sound skipped", { soundEnabled: settings.sound, hasSoundRef: !!restFinishSoundRef.current });
         }
       } catch (e) {
         void pushTrace("playAlert", "sound error", { error: String(e) });
@@ -8582,16 +8596,21 @@ export default function App() {
 
   const scheduleRestEndNotification = useCallback(async (seconds: number) => {
     try {
+      const settings = notifSettingsRef.current;
+      if (!settings.enabled) {
+        void pushTrace("scheduleNotif", "skipped, notifications disabled");
+        return;
+      }
       const triggerDate = Date.now() + Math.max(1, seconds) * 1000;
-      void pushTrace("scheduleNotif", "entry", { seconds, platform: Platform.OS, triggerDateMs: triggerDate, triggerIso: new Date(triggerDate).toISOString() });
+      void pushTrace("scheduleNotif", "entry", { seconds, platform: Platform.OS, triggerDateMs: triggerDate, triggerIso: new Date(triggerDate).toISOString(), settings });
       await Notifications.cancelAllScheduledNotificationsAsync();
       void pushTrace("scheduleNotif", "cancelled all previous");
       const id = await Notifications.scheduleNotificationAsync({
         content: {
           title: "¡Descanso terminado! 💪",
           body: restNotifBodyRef.current || "Es hora de continuar",
-          sound: "rest_finished.wav",
-          vibrate: [0, 300, 150, 300],
+          sound: settings.sound ? "rest_finished.wav" : false,
+          vibrate: settings.vibrate ? [0, 300, 150, 300] : undefined,
           priority: Notifications.AndroidNotificationPriority.MAX,
           autoDismiss: true,
         },
@@ -9110,10 +9129,16 @@ export default function App() {
             nextRest,
           });
           if (nextRest === 0) {
-            // Notification may or may not have fired (Doze can delay it).
-            // Don't skip the foreground alert — better to double-alert than
-            // to have no alert at all.
-            void pushTrace("appState", "rest reached 0 during bg, NOT skipping foreground sound");
+            // Notification already alerted the user via DATE trigger (bypasses
+            // Doze) — skip foreground sound on return to avoid double alert.
+            // But only if notifications are enabled; if disabled, there was no
+            // background alert, so we must play the foreground one.
+            if (notifSettingsRef.current.enabled) {
+              manualRestSkipRef.current = true;
+              void pushTrace("appState", "rest reached 0 during bg, skipping foreground sound (notif enabled)");
+            } else {
+              void pushTrace("appState", "rest reached 0 during bg, NOT skipping (notif disabled, need foreground alert)");
+            }
           }
           return {
             ...prev,
@@ -9170,16 +9195,20 @@ export default function App() {
       nowIsResting: activeWorkoutSession.is_resting,
       nowRestLeft: activeWorkoutSession.rest_seconds_left,
       endedRestThisTick,
+      manualSkip: manualRestSkipRef.current,
       appState: appStateLastActiveRef.current,
     });
     if (endedRestThisTick) {
       void pushTrace("restTransition", "rest ended this tick");
       void stopBackgroundSilence();
       void cancelRestEndNotification();
-      // Always play the foreground alert. We no longer use manualSkip
-      // because the notification may not have fired in background (Doze).
-      void pushTrace("restTransition", "playing foreground alert");
-      void playRestFinishedAlert();
+      if (!manualRestSkipRef.current) {
+        void pushTrace("restTransition", "playing foreground alert");
+        void playRestFinishedAlert();
+      } else {
+        void pushTrace("restTransition", "skipping foreground alert (notif already fired in bg)");
+      }
+      manualRestSkipRef.current = false;
     }
 
     restTransitionRef.current = {
@@ -9256,6 +9285,10 @@ export default function App() {
     activeWorkoutSession?.template_id,
     store.templates,
   ]);
+
+  useEffect(() => {
+    notifSettingsRef.current = userPrefs.notifications;
+  }, [userPrefs.notifications]);
 
   useEffect(() => {
     if (activeWorkoutSession) return;
@@ -20987,6 +21020,154 @@ export default function App() {
                       </View>
                     );
                   })}
+                </View>
+              ) : null}
+
+              {settingsTab === "notifications" ? (
+                <View style={{ gap: 12 }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                    Notificaciones de descanso
+                  </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                    Configura cómo quieres que te avise la app cuando termina un descanso.
+                  </Text>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: 12,
+                      padding: 14,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                    }}
+                  >
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
+                        Activar notificaciones
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Muestra una notificación al terminar el descanso
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, enabled: !prev.notifications.enabled } }))}
+                      style={{
+                        width: 52,
+                        height: 30,
+                        borderRadius: 15,
+                        backgroundColor: userPrefs.notifications.enabled ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <View style={{
+                        position: "absolute",
+                        left: userPrefs.notifications.enabled ? 26 : 4,
+                        width: 22,
+                        height: 22,
+                        borderRadius: 11,
+                        backgroundColor: "#fff",
+                      }} />
+                    </Pressable>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: 12,
+                      padding: 14,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      opacity: userPrefs.notifications.enabled ? 1 : 0.4,
+                    }}
+                  >
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
+                        Sonido
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Reproduce el sonido de descanso terminado
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => userPrefs.notifications.enabled && setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, sound: !prev.notifications.sound } }))}
+                      style={{
+                        width: 52,
+                        height: 30,
+                        borderRadius: 15,
+                        backgroundColor: userPrefs.notifications.sound ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <View style={{
+                        position: "absolute",
+                        left: userPrefs.notifications.sound ? 26 : 4,
+                        width: 22,
+                        height: 22,
+                        borderRadius: 11,
+                        backgroundColor: "#fff",
+                      }} />
+                    </Pressable>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: 12,
+                      padding: 14,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                      opacity: userPrefs.notifications.enabled ? 1 : 0.4,
+                    }}
+                  >
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
+                        Vibración
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Vibra el móvil al terminar el descanso
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => userPrefs.notifications.enabled && setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, vibrate: !prev.notifications.vibrate } }))}
+                      style={{
+                        width: 52,
+                        height: 30,
+                        borderRadius: 15,
+                        backgroundColor: userPrefs.notifications.vibrate ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <View style={{
+                        position: "absolute",
+                        left: userPrefs.notifications.vibrate ? 26 : 4,
+                        width: 22,
+                        height: 22,
+                        borderRadius: 11,
+                        backgroundColor: "#fff",
+                      }} />
+                    </Pressable>
+                  </View>
+
+                  {!userPrefs.notifications.enabled ? (
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontStyle: "italic" }}>
+                      Con las notificaciones desactivadas, solo se avisará con sonido/vibración cuando la app esté abierta.
+                    </Text>
+                  ) : null}
                 </View>
               ) : null}
 

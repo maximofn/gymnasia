@@ -160,6 +160,12 @@ Only non-obvious gotchas that could recur are kept here.
 - Gotcha: `expo-notifications` (and other native modules) reference sound/image assets as Android resource names. Android resource names only allow `[a-z0-9_]` — hyphens are invalid and cause build failures.
 - Fix: rename files using underscores (e.g. `rest-finished.wav` → `rest_finished.wav`) and update every reference in code and `app.json`.
 
+### Android Doze delays TIME_INTERVAL notifications — use DATE trigger for exact delivery
+- Gotcha: `Notifications.scheduleNotificationAsync` with `SchedulableTriggerInputTypes.TIME_INTERVAL` uses `AlarmManager.set()` on Android, which Doze mode defersres until the next maintenance window. Observed delays of ~20s or complete suppression when the user returns to the app before the delayed delivery.
+- Fix: use `SchedulableTriggerInputTypes.DATE` with an exact timestamp (`Date.now() + seconds * 1000`). DATE triggers use `AlarmManager.setExactAndAllowWhileIdle()` which bypasses Doze.
+- Also: channel `importance` must be `MAX` (not `HIGH`) with `bypassDnd: true` and `lockscreenVisibility: PUBLIC` for the notification to wake the screen when the phone is locked.
+- Note: Android caches notification channels by ID. If the channel already exists with lower importance from a previous app version, `setNotificationChannelAsync` will NOT upgrade it — the user must uninstall and reinstall the app to get the new channel settings.
+
 ## Post-Modification Workflow
 After each modification, create a local commit:
 ```bash
