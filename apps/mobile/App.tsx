@@ -8559,13 +8559,16 @@ export default function App() {
       const permResult = await Notifications.requestPermissionsAsync();
       void pushTrace("initWorkoutAudio", "permissions result", permResult);
       if (Platform.OS === "android") {
-        void pushTrace("initWorkoutAudio", "creating channel rest_finished");
+        void pushTrace("initWorkoutAudio", "creating channel rest_finished (MAX + bypassDnd)");
         await Notifications.setNotificationChannelAsync("rest_finished", {
           name: "Descanso terminado",
-          importance: Notifications.AndroidImportance.HIGH,
+          importance: Notifications.AndroidImportance.MAX,
           sound: "rest_finished.wav",
           vibrationPattern: [0, 300, 150, 300],
           enableVibrate: true,
+          bypassDnd: true,
+          lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+          showBadge: true,
         });
         const channelInfo = await Notifications.getNotificationChannelAsync("rest_finished");
         void pushTrace("initWorkoutAudio", "channel created", channelInfo);
@@ -8579,7 +8582,8 @@ export default function App() {
 
   const scheduleRestEndNotification = useCallback(async (seconds: number) => {
     try {
-      void pushTrace("scheduleNotif", "entry", { seconds, platform: Platform.OS });
+      const triggerDate = Date.now() + Math.max(1, seconds) * 1000;
+      void pushTrace("scheduleNotif", "entry", { seconds, platform: Platform.OS, triggerDateMs: triggerDate, triggerIso: new Date(triggerDate).toISOString() });
       await Notifications.cancelAllScheduledNotificationsAsync();
       void pushTrace("scheduleNotif", "cancelled all previous");
       const id = await Notifications.scheduleNotificationAsync({
@@ -8588,15 +8592,17 @@ export default function App() {
           body: restNotifBodyRef.current || "Es hora de continuar",
           sound: "rest_finished.wav",
           vibrate: [0, 300, 150, 300],
+          priority: Notifications.AndroidNotificationPriority.MAX,
+          autoDismiss: true,
         },
         trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: Math.max(1, seconds),
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
+          date: triggerDate,
           channelId: "rest_finished",
         },
       });
       restNotificationIdRef.current = id;
-      void pushTrace("scheduleNotif", "scheduled", { id, seconds: Math.max(1, seconds) });
+      void pushTrace("scheduleNotif", "scheduled (DATE trigger)", { id, triggerDateMs: triggerDate });
       const all = await Notifications.getAllScheduledNotificationsAsync();
       void pushTrace("scheduleNotif", "all scheduled", { count: all.length, list: all.map((n) => ({ id: n.identifier, trigger: n.trigger })) });
     } catch (e) {
@@ -9078,7 +9084,19 @@ export default function App() {
         });
         backgroundTimestampRef.current = null;
         void stopBackgroundSilence();
-        void cancelRestEndNotification();
+        // Don't cancel the notification if the rest deadline already passed
+        // while in background. Android Doze may still deliver it late, and
+        // cancelling it here would suppress the delayed alert entirely.
+        const restLog = restStateLogRef.current;
+        const restShouldHaveEnded =
+          restLog.isResting &&
+          restLog.restLeft > 0 &&
+          restLog.restLeft - elapsedSeconds <= 0;
+        if (restShouldHaveEnded) {
+          void pushTrace("appState", "rest ended in bg, NOT cancelling notification (let Doze deliver late)");
+        } else {
+          void cancelRestEndNotification();
+        }
         setActiveWorkoutSession((prev) => {
           if (!prev || prev.status !== "running") return prev;
           const nextElapsed = prev.elapsed_seconds + elapsedSeconds;
@@ -9092,9 +9110,10 @@ export default function App() {
             nextRest,
           });
           if (nextRest === 0) {
-            // Notification already alerted the user — skip foreground sound on return
-            manualRestSkipRef.current = true;
-            void pushTrace("appState", "rest reached 0 during bg → skip foreground sound");
+            // Notification may or may not have fired (Doze can delay it).
+            // Don't skip the foreground alert — better to double-alert than
+            // to have no alert at all.
+            void pushTrace("appState", "rest reached 0 during bg, NOT skipping foreground sound");
           }
           return {
             ...prev,
@@ -9151,20 +9170,16 @@ export default function App() {
       nowIsResting: activeWorkoutSession.is_resting,
       nowRestLeft: activeWorkoutSession.rest_seconds_left,
       endedRestThisTick,
-      manualSkip: manualRestSkipRef.current,
       appState: appStateLastActiveRef.current,
     });
     if (endedRestThisTick) {
       void pushTrace("restTransition", "rest ended this tick");
       void stopBackgroundSilence();
       void cancelRestEndNotification();
-      if (!manualRestSkipRef.current) {
-        void pushTrace("restTransition", "playing foreground alert");
-        void playRestFinishedAlert();
-      } else {
-        void pushTrace("restTransition", "skipping foreground alert (manualSkip)");
-      }
-      manualRestSkipRef.current = false;
+      // Always play the foreground alert. We no longer use manualSkip
+      // because the notification may not have fired in background (Doze).
+      void pushTrace("restTransition", "playing foreground alert");
+      void playRestFinishedAlert();
     }
 
     restTransitionRef.current = {
