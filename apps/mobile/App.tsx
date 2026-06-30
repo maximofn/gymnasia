@@ -8403,6 +8403,7 @@ export default function App() {
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
           seconds: Math.max(1, seconds),
+          channelId: "rest_finished",
         },
       });
       restNotificationIdRef.current = id;
