@@ -7552,6 +7552,7 @@ export default function App() {
   const [confirmDiscardSession, setConfirmDiscardSession] = useState(false);
   const restFinishSoundRef = useRef<Audio.Sound | null>(null);
   const restSoundCacheRef = useRef<Record<string, Audio.Sound>>({});
+  const previewSoundRef = useRef<Audio.Sound | null>(null);
   const bgSilenceRef = useRef<Audio.Sound | null>(null);
   const bgRestDeadlineRef = useRef<number | null>(null);
   const bgRestFiredRef = useRef(false);
@@ -8609,8 +8610,8 @@ export default function App() {
       const permResult = await Notifications.requestPermissionsAsync();
       void pushTrace("initWorkoutAudio", "permissions result", permResult);
       if (Platform.OS === "android") {
-        void pushTrace("initWorkoutAudio", "creating channel rest_finished (MAX + bypassDnd)");
-        await Notifications.setNotificationChannelAsync("rest_finished", {
+        void pushTrace("initWorkoutAudio", "creating channel rest_finished_v2 (MAX + bypassDnd)");
+        await Notifications.setNotificationChannelAsync("rest_finished_v2", {
           name: "Descanso terminado",
           importance: Notifications.AndroidImportance.MAX,
           sound: "rest_finished.wav",
@@ -8620,7 +8621,7 @@ export default function App() {
           lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
           showBadge: true,
         });
-        const channelInfo = await Notifications.getNotificationChannelAsync("rest_finished");
+        const channelInfo = await Notifications.getNotificationChannelAsync("rest_finished_v2");
         void pushTrace("initWorkoutAudio", "channel created", channelInfo);
       }
       audioWorkoutInitializedRef.current = true;
@@ -8654,7 +8655,7 @@ export default function App() {
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: triggerDate,
-          channelId: "rest_finished",
+          channelId: "rest_finished_v2",
         },
       });
       restNotificationIdRef.current = id;
@@ -8679,6 +8680,44 @@ export default function App() {
       restNotificationIdRef.current = null;
     } else {
       void pushTrace("cancelNotif", "no-op, no pending id");
+    }
+  }, []);
+
+  const previewSound = useCallback(async (soundKey: NotificationSoundKey) => {
+    try {
+      void pushTrace("previewSound", "start", { soundKey });
+      const option = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === soundKey);
+      if (!option) return;
+
+      // Stop previous preview if still playing
+      if (previewSoundRef.current) {
+        try {
+          await previewSoundRef.current.stopAsync();
+          await previewSoundRef.current.unloadAsync();
+        } catch { /* ignore */ }
+        previewSoundRef.current = null;
+      }
+
+      // Also vibrate so the user can preview the full experience
+      Vibration.vibrate([0, 300, 150, 300]);
+
+      const { sound } = await Audio.Sound.createAsync(
+        option.asset,
+        { shouldPlay: true, volume: 1 },
+      );
+      previewSoundRef.current = sound;
+
+      // Unload when playback finishes
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (!status.isLoaded || !status.didJustFinish) return;
+        previewSoundRef.current?.setOnPlaybackStatusUpdate(null);
+        previewSoundRef.current?.unloadAsync().catch(() => {});
+        previewSoundRef.current = null;
+      });
+
+      void pushTrace("previewSound", "playing", { soundKey });
+    } catch (e) {
+      void pushTrace("previewSound", "error", { error: String(e) });
     }
   }, []);
 
@@ -9272,6 +9311,10 @@ export default function App() {
         restSoundCacheRef.current[key]?.unloadAsync().catch(() => {});
       }
       restSoundCacheRef.current = {};
+      if (previewSoundRef.current) {
+        previewSoundRef.current.unloadAsync().catch(() => {});
+        previewSoundRef.current = null;
+      }
       if (bgSilenceRef.current) {
         bgSilenceRef.current.unloadAsync().catch(() => {});
         bgSilenceRef.current = null;
@@ -21262,7 +21305,10 @@ export default function App() {
                           return (
                             <Pressable
                               key={option.key}
-                              onPress={() => setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, soundKey: option.key } }))}
+                              onPress={() => {
+                                setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, soundKey: option.key } }));
+                                void previewSound(option.key);
+                              }}
                               disabled={!userPrefs.notifications.enabled}
                               style={{
                                 flexDirection: "row",
