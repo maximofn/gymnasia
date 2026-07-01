@@ -8586,7 +8586,7 @@ export default function App() {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
-        shouldDuckAndroid: true,
+        shouldDuckAndroid: false,
         interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
         interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
         staysActiveInBackground: false,
@@ -8610,8 +8610,14 @@ export default function App() {
       const permResult = await Notifications.requestPermissionsAsync();
       void pushTrace("initWorkoutAudio", "permissions result", permResult);
       if (Platform.OS === "android") {
-        void pushTrace("initWorkoutAudio", "creating channel rest_finished_v2 (MAX + bypassDnd)");
-        await Notifications.setNotificationChannelAsync("rest_finished_v2", {
+        // Delete any previous version of the channel to avoid Android's
+        // channel cache preventing settings upgrades.
+        try {
+          await Notifications.deleteNotificationChannelAsync("rest_finished");
+          await Notifications.deleteNotificationChannelAsync("rest_finished_v2");
+        } catch { /* ignore if doesn't exist */ }
+        void pushTrace("initWorkoutAudio", "creating channel rest_finished_v3 (MAX + bypassDnd + PUBLIC)");
+        await Notifications.setNotificationChannelAsync("rest_finished_v3", {
           name: "Descanso terminado",
           importance: Notifications.AndroidImportance.MAX,
           sound: "rest_finished.wav",
@@ -8620,8 +8626,9 @@ export default function App() {
           bypassDnd: true,
           lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
           showBadge: true,
+          enableLights: true,
         });
-        const channelInfo = await Notifications.getNotificationChannelAsync("rest_finished_v2");
+        const channelInfo = await Notifications.getNotificationChannelAsync("rest_finished_v3");
         void pushTrace("initWorkoutAudio", "channel created", channelInfo);
       }
       audioWorkoutInitializedRef.current = true;
@@ -8655,7 +8662,7 @@ export default function App() {
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: triggerDate,
-          channelId: "rest_finished_v2",
+          channelId: "rest_finished_v3",
         },
       });
       restNotificationIdRef.current = id;
@@ -9233,7 +9240,9 @@ export default function App() {
               restLeft: prev.rest_seconds_left,
             });
             void scheduleRestEndNotification(prev.rest_seconds_left);
-            void startBackgroundSilence(prev.rest_seconds_left);
+            // Don't start background silence — it ducks the user's music and
+            // is no longer needed since DATE triggers fire natively without
+            // requiring the JS thread to stay alive.
           } else {
             void pushTrace("appState", "not resting, no notif scheduled", {
               isResting: prev?.is_resting,
@@ -9250,7 +9259,7 @@ export default function App() {
       subscription.remove();
       void pushTrace("appState", "effect unmounted");
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification, stopBackgroundSilence, startBackgroundSilence]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, stopBackgroundSilence]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
