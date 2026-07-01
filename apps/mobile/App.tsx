@@ -10,6 +10,7 @@ import Constants from "expo-constants";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 import * as Notifications from "expo-notifications";
+import * as IntentLauncher from "expo-intent-launcher";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -20904,9 +20905,17 @@ export default function App() {
 
                   {Platform.OS === "android" ? (
                     <Pressable
-                      onPress={() => {
+                      onPress={async () => {
                         void pushTrace("notifPerm", "opening exact alarm settings");
-                        Linking.openSettings();
+                        try {
+                          await IntentLauncher.startActivityAsync(
+                            IntentLauncher.ActivityAction.REQUEST_SCHEDULE_EXACT_ALARM,
+                            { data: "package:com.maximofn.gymnasia" },
+                          );
+                        } catch (e) {
+                          void pushTrace("notifPerm", "exact alarm intent failed, fallback to app settings", { error: String(e) });
+                          Linking.openSettings();
+                        }
                       }}
                       style={{
                         flexDirection: "row",
