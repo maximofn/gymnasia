@@ -7553,10 +7553,6 @@ export default function App() {
   const restFinishSoundRef = useRef<Audio.Sound | null>(null);
   const restSoundCacheRef = useRef<Record<string, Audio.Sound>>({});
   const previewSoundRef = useRef<Audio.Sound | null>(null);
-  const bgSilenceRef = useRef<Audio.Sound | null>(null);
-  const bgRestDeadlineRef = useRef<number | null>(null);
-  const bgRestFiredRef = useRef(false);
-  const bgHeartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const workoutTemplateBeforeSessionRef = useRef<WorkoutTemplate | null>(null);
   const globalScreenLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const trainingEditorLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -8491,10 +8487,7 @@ export default function App() {
   }, [tab]);
 
   useEffect(() => {
-    void pushTrace("app", "App mounted", {
-      platform: Platform.OS,
-      version: Constants.expoConfig?.version,
-    });
+    void pushTrace("app", "App mounted", { platform: Platform.OS, version: Constants.expoConfig?.version });
   }, []);
 
   useEffect(() => {
@@ -8517,13 +8510,9 @@ export default function App() {
   }, [tab]);
 
   const playRestFinishedAlert = useCallback(async () => {
-    if (restAlertLockRef.current) {
-      void pushTrace("playAlert", "skipped, locked");
-      return;
-    }
+    if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
     const settings = notifSettingsRef.current;
-    void pushTrace("playAlert", "start", { platform: Platform.OS, hasSound: !!restFinishSoundRef.current, settings });
 
     // Load the selected sound if not already cached
     if (settings.sound && !restSoundCacheRef.current[settings.soundKey]) {
@@ -8535,54 +8524,40 @@ export default function App() {
         );
         restSoundCacheRef.current[settings.soundKey] = sound;
         restFinishSoundRef.current = sound;
-        void pushTrace("playAlert", "loaded sound on demand", { soundKey: settings.soundKey });
       } catch (e) {
         void pushTrace("playAlert", "failed to load sound", { error: String(e) });
       }
     } else if (settings.sound && restFinishSoundRef.current !== restSoundCacheRef.current[settings.soundKey]) {
-      // Switch to the cached selected sound
       restFinishSoundRef.current = restSoundCacheRef.current[settings.soundKey];
-      void pushTrace("playAlert", "switched to cached sound", { soundKey: settings.soundKey });
     }
 
     try {
       if (settings.vibrate) {
         Vibration.vibrate([0, 300, 150, 300]);
-        void pushTrace("playAlert", "vibrated");
-      } else {
-        void pushTrace("playAlert", "vibration disabled");
       }
 
       try {
         if (settings.sound && restFinishSoundRef.current) {
-          // Release audio focus when done so ducked music recovers
           restFinishSoundRef.current.setOnPlaybackStatusUpdate((status) => {
             if (!status.isLoaded || !status.didJustFinish) return;
             restFinishSoundRef.current?.setOnPlaybackStatusUpdate(null);
             restFinishSoundRef.current?.stopAsync().catch(() => {});
           });
           await restFinishSoundRef.current.setPositionAsync(0);
-          void pushTrace("playAlert", "position reset to 0");
           await restFinishSoundRef.current.playAsync();
-          void pushTrace("playAlert", "playAsync called");
-        } else {
-          void pushTrace("playAlert", "sound skipped", { soundEnabled: settings.sound, hasSoundRef: !!restFinishSoundRef.current });
         }
       } catch (e) {
         void pushTrace("playAlert", "sound error", { error: String(e) });
-        // best effort: vibration still notifies the user
       }
     } finally {
       setTimeout(() => {
         restAlertLockRef.current = false;
       }, 450);
-      void pushTrace("playAlert", "done");
     }
   }, []);
 
   const initWorkoutAudio = useCallback(async () => {
     try {
-      void pushTrace("initWorkoutAudio", "start", { platform: Platform.OS });
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
@@ -8591,7 +8566,6 @@ export default function App() {
         interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
         staysActiveInBackground: false,
       });
-      void pushTrace("initWorkoutAudio", "audio mode set");
       const settings = notifSettingsRef.current;
       const soundOption = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey) ?? NOTIFICATION_SOUND_OPTIONS[0];
       if (!restFinishSoundRef.current) {
@@ -8601,23 +8575,11 @@ export default function App() {
         );
         restFinishSoundRef.current = sound;
         restSoundCacheRef.current[settings.soundKey] = sound;
-        void pushTrace("initWorkoutAudio", `${soundOption.file} loaded`, { soundKey: settings.soundKey });
-      } else {
-        void pushTrace("initWorkoutAudio", "sound already loaded", { soundKey: settings.soundKey });
       }
-      // Request notification permissions and set up Android channel
-      void pushTrace("initWorkoutAudio", "requesting permissions");
-      const permResult = await Notifications.requestPermissionsAsync();
-      void pushTrace("initWorkoutAudio", "permissions result", permResult);
+      await Notifications.requestPermissionsAsync();
       if (Platform.OS === "android") {
-        // Delete any previous version of the channel to avoid Android's
-        // channel cache preventing settings upgrades.
-        try {
-          await Notifications.deleteNotificationChannelAsync("rest_finished");
-          await Notifications.deleteNotificationChannelAsync("rest_finished_v2");
-        } catch { /* ignore if doesn't exist */ }
-        void pushTrace("initWorkoutAudio", "creating channel rest_finished_v3 (MAX + bypassDnd + PUBLIC)");
-        await Notifications.setNotificationChannelAsync("rest_finished_v3", {
+        void pushTrace("initWorkoutAudio", "creating channel rest_end_alert");
+        await Notifications.setNotificationChannelAsync("rest_end_alert", {
           name: "Descanso terminado",
           importance: Notifications.AndroidImportance.MAX,
           sound: "rest_finished.wav",
@@ -8628,11 +8590,10 @@ export default function App() {
           showBadge: true,
           enableLights: true,
         });
-        const channelInfo = await Notifications.getNotificationChannelAsync("rest_finished_v3");
-        void pushTrace("initWorkoutAudio", "channel created", channelInfo);
+        const channelInfo = await Notifications.getNotificationChannelAsync("rest_end_alert");
+        void pushTrace("initWorkoutAudio", "channel", { importance: channelInfo?.importance, bypassDnd: channelInfo?.bypassDnd, visibility: channelInfo?.lockscreenVisibility });
       }
       audioWorkoutInitializedRef.current = true;
-      void pushTrace("initWorkoutAudio", "done");
     } catch (e) {
       void pushTrace("initWorkoutAudio", "error", { error: String(e) });
     }
@@ -8641,15 +8602,11 @@ export default function App() {
   const scheduleRestEndNotification = useCallback(async (seconds: number) => {
     try {
       const settings = notifSettingsRef.current;
-      if (!settings.enabled) {
-        void pushTrace("scheduleNotif", "skipped, notifications disabled");
-        return;
-      }
+      if (!settings.enabled) return;
       const triggerDate = Date.now() + Math.max(1, seconds) * 1000;
       const soundFile = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)?.file ?? "rest_finished.wav";
-      void pushTrace("scheduleNotif", "entry", { seconds, platform: Platform.OS, triggerDateMs: triggerDate, triggerIso: new Date(triggerDate).toISOString(), settings, soundFile });
+      void pushTrace("scheduleNotif", "entry", { seconds, triggerIso: new Date(triggerDate).toISOString(), soundKey: settings.soundKey, soundFile });
       await Notifications.cancelAllScheduledNotificationsAsync();
-      void pushTrace("scheduleNotif", "cancelled all previous");
       const id = await Notifications.scheduleNotificationAsync({
         content: {
           title: "¡Descanso terminado! 💪",
@@ -8662,13 +8619,11 @@ export default function App() {
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: triggerDate,
-          channelId: "rest_finished_v3",
+          channelId: "rest_end_alert",
         },
       });
       restNotificationIdRef.current = id;
-      void pushTrace("scheduleNotif", "scheduled (DATE trigger)", { id, triggerDateMs: triggerDate });
-      const all = await Notifications.getAllScheduledNotificationsAsync();
-      void pushTrace("scheduleNotif", "all scheduled", { count: all.length, list: all.map((n) => ({ id: n.identifier, trigger: n.trigger })) });
+      void pushTrace("scheduleNotif", "scheduled", { id, triggerIso: new Date(triggerDate).toISOString() });
     } catch (e) {
       void pushTrace("scheduleNotif", "error", { error: String(e) });
     }
@@ -8678,25 +8633,18 @@ export default function App() {
     if (restNotificationIdRef.current) {
       const idToCancel = restNotificationIdRef.current;
       try {
-        void pushTrace("cancelNotif", "entry", { id: idToCancel });
         await Notifications.cancelScheduledNotificationAsync(idToCancel);
-        void pushTrace("cancelNotif", "cancelled", { id: idToCancel });
       } catch (e) {
         void pushTrace("cancelNotif", "error", { id: idToCancel, error: String(e) });
       }
       restNotificationIdRef.current = null;
-    } else {
-      void pushTrace("cancelNotif", "no-op, no pending id");
     }
   }, []);
 
   const previewSound = useCallback(async (soundKey: NotificationSoundKey) => {
     try {
-      void pushTrace("previewSound", "start", { soundKey });
       const option = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === soundKey);
       if (!option) return;
-
-      // Stop previous preview if still playing
       if (previewSoundRef.current) {
         try {
           await previewSoundRef.current.stopAsync();
@@ -8704,113 +8652,22 @@ export default function App() {
         } catch { /* ignore */ }
         previewSoundRef.current = null;
       }
-
-      // Also vibrate so the user can preview the full experience
       Vibration.vibrate([0, 300, 150, 300]);
-
       const { sound } = await Audio.Sound.createAsync(
         option.asset,
         { shouldPlay: true, volume: 1 },
       );
       previewSoundRef.current = sound;
-
-      // Unload when playback finishes
       sound.setOnPlaybackStatusUpdate((status) => {
         if (!status.isLoaded || !status.didJustFinish) return;
         previewSoundRef.current?.setOnPlaybackStatusUpdate(null);
         previewSoundRef.current?.unloadAsync().catch(() => {});
         previewSoundRef.current = null;
       });
-
-      void pushTrace("previewSound", "playing", { soundKey });
     } catch (e) {
       void pushTrace("previewSound", "error", { error: String(e) });
     }
   }, []);
-
-  const stopBackgroundSilence = useCallback(async () => {
-    void pushTrace("bgSilence", "stop entry", {
-      hasHeartbeat: !!bgHeartbeatRef.current,
-      hasSilence: !!bgSilenceRef.current,
-      fired: bgRestFiredRef.current,
-    });
-    if (bgHeartbeatRef.current) {
-      clearInterval(bgHeartbeatRef.current);
-      bgHeartbeatRef.current = null;
-    }
-    bgRestDeadlineRef.current = null;
-    bgRestFiredRef.current = false;
-    if (bgSilenceRef.current) {
-      try {
-        await bgSilenceRef.current.stopAsync();
-        await bgSilenceRef.current.unloadAsync();
-      } catch (e) {
-        void pushTrace("bgSilence", "stop error", { error: String(e) });
-      }
-      bgSilenceRef.current = null;
-    }
-    void pushTrace("bgSilence", "stop done");
-  }, []);
-
-  const startBackgroundSilence = useCallback(async (seconds: number) => {
-    void pushTrace("bgSilence", "start entry", { seconds, platform: Platform.OS });
-    await stopBackgroundSilence();
-    if (seconds <= 0) {
-      void pushTrace("bgSilence", "start noop seconds<=0");
-      return;
-    }
-    try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        shouldDuckAndroid: false,
-        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-        interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
-        staysActiveInBackground: true,
-      });
-      void pushTrace("bgSilence", "audio mode set (background=true, no ducking)");
-
-      bgRestDeadlineRef.current = Date.now() + seconds * 1000;
-      bgRestFiredRef.current = false;
-      void pushTrace("bgSilence", "deadline set", {
-        deadlineMs: bgRestDeadlineRef.current,
-        nowMs: Date.now(),
-        iso: new Date(bgRestDeadlineRef.current).toISOString(),
-      });
-
-      const { sound } = await Audio.Sound.createAsync(
-        require("./assets/silence.wav"),
-        { isLooping: true, volume: 0.001, shouldPlay: true },
-      );
-      bgSilenceRef.current = sound;
-      void pushTrace("bgSilence", "silence.wav playing (loop, vol 0.001)");
-
-      // setInterval as heartbeat — the background audio session keeps the
-      // Android process (and JS timers) alive so the interval should fire.
-      bgHeartbeatRef.current = setInterval(() => {
-        if (bgRestFiredRef.current) return;
-        const remaining = bgRestDeadlineRef.current ? bgRestDeadlineRef.current - Date.now() : null;
-        if (bgRestDeadlineRef.current && Date.now() >= bgRestDeadlineRef.current) {
-          void pushTrace("bgSilence", "heartbeat FIRED", {
-            deadlineMs: bgRestDeadlineRef.current,
-            nowMs: Date.now(),
-            fired: bgRestFiredRef.current,
-          });
-          bgRestFiredRef.current = true;
-          void playRestFinishedAlert();
-          void stopBackgroundSilence();
-        } else {
-          // Log every ~5s to avoid flooding (interval runs each second).
-          const sec = Math.round((remaining ?? 0) / 1000);
-          if (sec % 5 === 0) {
-            void pushTrace("bgSilence", "heartbeat tick", { remainingSec: sec });
-          }
-        }
-      }, 1000);
-    } catch {
-      // best effort
-    }
-  }, [playRestFinishedAlert, stopBackgroundSilence]);
 
   useEffect(() => {
     if (globalScreenLoadTimeoutRef.current) {
@@ -9117,11 +8974,6 @@ export default function App() {
 
   useEffect(() => {
     if (!activeWorkoutSession || activeWorkoutSession.status !== "running") return;
-    void pushTrace("timer", "interval started", {
-      sessionId: activeWorkoutSession.id,
-      isResting: activeWorkoutSession.is_resting,
-      restLeft: activeWorkoutSession.rest_seconds_left,
-    });
     const interval = setInterval(() => {
       setActiveWorkoutSession((prev) => {
         if (!prev || prev.status !== "running") return prev;
@@ -9133,15 +8985,6 @@ export default function App() {
           };
         }
         const nextRest = Math.max(0, prev.rest_seconds_left - 1);
-        // Trace every rest tick (foreground only relevant — interval may be
-        // throttled when backgrounded, that's exactly what we want to see).
-        if (nextRest % 5 === 0 || nextRest <= 3) {
-          void pushTrace("timer", "rest tick", {
-            restLeft: nextRest,
-            elapsed: nextElapsed,
-            appState: appStateLastActiveRef.current,
-          });
-        }
         return {
           ...prev,
           elapsed_seconds: nextElapsed,
@@ -9151,10 +8994,7 @@ export default function App() {
       });
     }, 1000);
 
-    return () => {
-      clearInterval(interval);
-      void pushTrace("timer", "interval cleared");
-    };
+    return () => clearInterval(interval);
   }, [activeWorkoutSession?.id, activeWorkoutSession?.status]);
   const appStateLastActiveRef = useRef<string | null>(null);
   const backgroundTimestampRef = useRef<number | null>(null);
@@ -9168,35 +9008,17 @@ export default function App() {
   }, [activeWorkoutSession?.is_resting, activeWorkoutSession?.rest_seconds_left]);
 
   useEffect(() => {
-    void pushTrace("appState", "effect mounted");
     const subscription = AppState.addEventListener("change", (nextAppState) => {
-      void pushTrace("appState", "change", {
-        next: nextAppState,
-        prev: appStateLastActiveRef.current,
-        hasBgTs: !!backgroundTimestampRef.current,
-        restLeft: restStateLogRef.current.restLeft,
-        isResting: restStateLogRef.current.isResting,
-      });
       if (nextAppState === "active" && backgroundTimestampRef.current) {
         const elapsedSeconds = Math.floor((Date.now() - backgroundTimestampRef.current) / 1000);
-        void pushTrace("appState", "foreground resume", {
-          elapsedSeconds,
-          bgStartMs: backgroundTimestampRef.current,
-          nowMs: Date.now(),
-        });
+        void pushTrace("appState", "foreground", { elapsedSeconds, restLeft: restStateLogRef.current.restLeft });
         backgroundTimestampRef.current = null;
-        void stopBackgroundSilence();
-        // Don't cancel the notification if the rest deadline already passed
-        // while in background. Android Doze may still deliver it late, and
-        // cancelling it here would suppress the delayed alert entirely.
         const restLog = restStateLogRef.current;
         const restShouldHaveEnded =
           restLog.isResting &&
           restLog.restLeft > 0 &&
           restLog.restLeft - elapsedSeconds <= 0;
-        if (restShouldHaveEnded) {
-          void pushTrace("appState", "rest ended in bg, NOT cancelling notification (let Doze deliver late)");
-        } else {
+        if (!restShouldHaveEnded) {
           void cancelRestEndNotification();
         }
         setActiveWorkoutSession((prev) => {
@@ -9206,21 +9028,9 @@ export default function App() {
             return { ...prev, elapsed_seconds: nextElapsed };
           }
           const nextRest = Math.max(0, prev.rest_seconds_left - elapsedSeconds);
-          void pushTrace("appState", "resume rest calc", {
-            prevRest: prev.rest_seconds_left,
-            elapsedSeconds,
-            nextRest,
-          });
           if (nextRest === 0) {
-            // Notification already alerted the user via DATE trigger (bypasses
-            // Doze) — skip foreground sound on return to avoid double alert.
-            // But only if notifications are enabled; if disabled, there was no
-            // background alert, so we must play the foreground one.
             if (notifSettingsRef.current.enabled) {
               manualRestSkipRef.current = true;
-              void pushTrace("appState", "rest reached 0 during bg, skipping foreground sound (notif enabled)");
-            } else {
-              void pushTrace("appState", "rest reached 0 during bg, NOT skipping (notif disabled, need foreground alert)");
             }
           }
           return {
@@ -9233,24 +9043,10 @@ export default function App() {
       }
       if (/inactive|background/.test(nextAppState)) {
         backgroundTimestampRef.current = Date.now();
-        void pushTrace("appState", "going background", { bgStartMs: backgroundTimestampRef.current });
         setActiveWorkoutSession((prev) => {
           if (prev?.is_resting && prev.rest_seconds_left > 0) {
-            void pushTrace("appState", "scheduling rest notif on background", {
-              restLeft: prev.rest_seconds_left,
-            });
+            void pushTrace("appState", "background, scheduling", { restLeft: prev.rest_seconds_left });
             void scheduleRestEndNotification(prev.rest_seconds_left);
-            // Start background silence to keep the audio session active,
-            // which prevents Android from killing the process and allows
-            // the scheduled notification alarm to fire. No ducking — the
-            // silence track plays at volume 0.001 and shouldDuckAndroid
-            // is false, so the user's music/podcast is unaffected.
-            void startBackgroundSilence(prev.rest_seconds_left);
-          } else {
-            void pushTrace("appState", "not resting, no notif scheduled", {
-              isResting: prev?.is_resting,
-              restLeft: prev?.rest_seconds_left,
-            });
           }
           return prev;
         });
@@ -9260,9 +9056,8 @@ export default function App() {
 
     return () => {
       subscription.remove();
-      void pushTrace("appState", "effect unmounted");
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification, stopBackgroundSilence, startBackgroundSilence]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -9277,24 +9072,10 @@ export default function App() {
       previous.restLeft > 0 &&
       !activeWorkoutSession.is_resting &&
       activeWorkoutSession.rest_seconds_left === 0;
-    void pushTrace("restTransition", "tick", {
-      prevWasResting: previous.wasResting,
-      prevRestLeft: previous.restLeft,
-      nowIsResting: activeWorkoutSession.is_resting,
-      nowRestLeft: activeWorkoutSession.rest_seconds_left,
-      endedRestThisTick,
-      manualSkip: manualRestSkipRef.current,
-      appState: appStateLastActiveRef.current,
-    });
     if (endedRestThisTick) {
-      void pushTrace("restTransition", "rest ended this tick");
-      void stopBackgroundSilence();
       void cancelRestEndNotification();
       if (!manualRestSkipRef.current) {
-        void pushTrace("restTransition", "playing foreground alert");
         void playRestFinishedAlert();
-      } else {
-        void pushTrace("restTransition", "skipping foreground alert (notif already fired in bg)");
       }
       manualRestSkipRef.current = false;
     }
@@ -9307,7 +9088,6 @@ export default function App() {
     activeWorkoutSession?.id,
     activeWorkoutSession?.is_resting,
     activeWorkoutSession?.rest_seconds_left,
-    stopBackgroundSilence,
     cancelRestEndNotification,
     playRestFinishedAlert,
   ]);
@@ -9327,10 +9107,6 @@ export default function App() {
         previewSoundRef.current.unloadAsync().catch(() => {});
         previewSoundRef.current = null;
       }
-      if (bgSilenceRef.current) {
-        bgSilenceRef.current.unloadAsync().catch(() => {});
-        bgSilenceRef.current = null;
-      }
     };
   }, []);
 
@@ -9346,17 +9122,15 @@ export default function App() {
   // Notification listeners — trace when a scheduled notification is actually
   // delivered (foreground) and when the user taps it (cold-launch or resume).
   useEffect(() => {
-    void pushTrace("notifListener", "attaching received + response listeners");
     const receivedSub = Notifications.addNotificationReceivedListener((event) => {
-      void pushTrace("notifReceived", "listener fired", {
+      void pushTrace("notifReceived", "fired", {
         id: event.request.identifier,
         title: event.request.content.title,
         body: event.request.content.body,
-        trigger: event.request.trigger,
       });
     });
     const responseSub = Notifications.addNotificationResponseReceivedListener((event) => {
-      void pushTrace("notifResponse", "user tapped notification", {
+      void pushTrace("notifResponse", "tapped", {
         id: event.notification.request.identifier,
         title: event.notification.request.content.title,
       });
@@ -9364,7 +9138,6 @@ export default function App() {
     return () => {
       receivedSub.remove();
       responseSub.remove();
-      void pushTrace("notifListener", "listeners removed");
     };
   }, []);
 
@@ -21128,6 +20901,35 @@ export default function App() {
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
                     Configura cómo quieres que te avise la app cuando termina un descanso.
                   </Text>
+
+                  {Platform.OS === "android" ? (
+                    <Pressable
+                      onPress={() => {
+                        void pushTrace("notifPerm", "opening exact alarm settings");
+                        Linking.openSettings();
+                      }}
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        backgroundColor: "rgba(203,255,26,0.06)",
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.3)",
+                      }}
+                    >
+                      <View style={{ flex: 1, gap: 2 }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+                          Permiso de alarmas exactas
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                          Necesario para que las notificaciones salten a tiempo con el móvil bloqueado. Si no las recibes, abre los ajustes del sistema y activa "Alarmas y recordatorios".
+                        </Text>
+                      </View>
+                      <Feather name="chevron-right" size={18} color={mobileTheme.color.textSecondary} />
+                    </Pressable>
+                  ) : null}
 
                   <View
                     style={{
