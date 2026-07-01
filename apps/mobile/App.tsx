@@ -8763,12 +8763,12 @@ export default function App() {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         playsInSilentModeIOS: true,
-        shouldDuckAndroid: true,
+        shouldDuckAndroid: false,
         interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
         interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
         staysActiveInBackground: true,
       });
-      void pushTrace("bgSilence", "audio mode set (background=true)");
+      void pushTrace("bgSilence", "audio mode set (background=true, no ducking)");
 
       bgRestDeadlineRef.current = Date.now() + seconds * 1000;
       bgRestFiredRef.current = false;
@@ -9240,9 +9240,12 @@ export default function App() {
               restLeft: prev.rest_seconds_left,
             });
             void scheduleRestEndNotification(prev.rest_seconds_left);
-            // Don't start background silence — it ducks the user's music and
-            // is no longer needed since DATE triggers fire natively without
-            // requiring the JS thread to stay alive.
+            // Start background silence to keep the audio session active,
+            // which prevents Android from killing the process and allows
+            // the scheduled notification alarm to fire. No ducking — the
+            // silence track plays at volume 0.001 and shouldDuckAndroid
+            // is false, so the user's music/podcast is unaffected.
+            void startBackgroundSilence(prev.rest_seconds_left);
           } else {
             void pushTrace("appState", "not resting, no notif scheduled", {
               isResting: prev?.is_resting,
@@ -9259,7 +9262,7 @@ export default function App() {
       subscription.remove();
       void pushTrace("appState", "effect unmounted");
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification, stopBackgroundSilence]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, stopBackgroundSilence, startBackgroundSilence]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
