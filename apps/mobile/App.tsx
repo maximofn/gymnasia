@@ -36,6 +36,9 @@ import {
 
 import { mobileTheme } from "./theme";
 import * as Clipboard from "expo-clipboard";
+import { File, Paths } from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import * as DocumentPicker from "expo-document-picker";
 import { pushTrace, clearTraces, getTraces, formatTraces, type TraceEntry } from "./trace";
 
 // Foreground notification presentation handler. Without this, scheduled
@@ -62,7 +65,7 @@ Notifications.setNotificationHandler({
 });
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "updates" | "traces";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "backup" | "updates" | "traces";
 
 type SeriesType =
   | "normal"
@@ -492,6 +495,15 @@ const RECIPES_ALL_URL = `${RECIPES_REPO_BASE_URL}/all.json`;
 const RECIPES_IMAGES_BASE_URL = `${RECIPES_REPO_BASE_URL}/images`;
 const RECIPES_CACHE_KEY = "gymnasia.mobile.recipes_repo.v1";
 const PERSONAL_FOODS_STORAGE_KEY = "gymnasia.mobile.personal_foods.v1";
+
+// --- Copia de seguridad (export/import manual, GYM-5) ---
+// Almacena la fecha del último backup manual realizado por el usuario.
+const BACKUP_META_KEY = "gymnasia.mobile.backup_meta.v1";
+// Identificador y versión del formato de backup. Bump BACKUP_SCHEMA_VERSION si el
+// esquema de datos cambia de forma incompatible; el importador rechaza versiones
+// superiores a la que conoce esta build.
+const BACKUP_APP_ID = "gymnasia";
+const BACKUP_SCHEMA_VERSION = 1;
 
 function normalizeProviderModel(provider: Provider, rawModel: string | null | undefined): string {
   const trimmed = (rawModel ?? "").trim();
@@ -2163,6 +2175,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "measures", label: "Medidas" },
   { key: "preferences", label: "Preferencias" },
   { key: "notifications", label: "Notificaciones" },
+  { key: "backup", label: "Copia de seguridad" },
   { key: "updates", label: "Actualizaciones" },
   { key: "traces", label: "Trazas" },
 ];
@@ -2308,6 +2321,92 @@ async function clearLegacyStorageData(secureStoreAvailable: boolean): Promise<vo
       PROVIDERS.map((provider) => SecureStore.deleteItemAsync(`${prefix}.${provider}`)),
     ),
   );
+}
+
+// --- Copia de seguridad manual (GYM-5) ---
+// Formato de backup versionado. Local-first: el archivo es un JSON portable que
+// el usuario sube al proveedor de nube que quiera (o guarda donde sea). No incluye
+// API keys de proveedores IA (viven en SecureStore) ni las caches de repos remotos
+// (ejercicios/alimentos/productos/recetas), que se re-descargan solas.
+type BackupData = {
+  store: LocalStore;
+  userPrefs: UserPreferences;
+  personalFoods: FoodRepoEntry[];
+  personalData: PersonalDataField[];
+};
+
+type BackupPayload = {
+  app: typeof BACKUP_APP_ID;
+  type: "backup";
+  schemaVersion: number;
+  appVersion: string;
+  createdAt: string;
+  data: BackupData;
+};
+
+type BackupMeta = { lastBackupAt: string | null };
+
+function buildBackupPayload(data: BackupData): BackupPayload {
+  return {
+    app: BACKUP_APP_ID,
+    type: "backup",
+    schemaVersion: BACKUP_SCHEMA_VERSION,
+    appVersion: Constants.expoConfig?.version ?? "0.0.0",
+    createdAt: new Date().toISOString(),
+    data: {
+      // Nunca escribir API keys al archivo de backup.
+      store: stripSensitiveStoreData(data.store),
+      userPrefs: data.userPrefs,
+      personalFoods: data.personalFoods,
+      personalData: data.personalData,
+    },
+  };
+}
+
+// Valida y normaliza un objeto arbitrario como backup. Lanza Error con mensaje en
+// español para superficies de UI si el archivo no es un backup válido de Gymnasia.
+function parseBackupPayload(raw: unknown): BackupPayload {
+  if (!raw || typeof raw !== "object") {
+    throw new Error("El archivo no es un backup válido.");
+  }
+  const candidate = raw as Partial<BackupPayload>;
+  if (candidate.app !== BACKUP_APP_ID || candidate.type !== "backup") {
+    throw new Error("El archivo no es una copia de seguridad de Gymnasia.");
+  }
+  if (typeof candidate.schemaVersion !== "number") {
+    throw new Error("El backup no indica su versión de formato.");
+  }
+  if (candidate.schemaVersion > BACKUP_SCHEMA_VERSION) {
+    throw new Error(
+      "Este backup se creó con una versión más reciente de la app. Actualiza Gymnasia para restaurarlo.",
+    );
+  }
+  const data = candidate.data;
+  if (!data || typeof data !== "object" || !("store" in data)) {
+    throw new Error("El backup no contiene datos restaurables.");
+  }
+  return candidate as BackupPayload;
+}
+
+async function readBackupMeta(): Promise<BackupMeta> {
+  try {
+    const raw = await AsyncStorage.getItem(BACKUP_META_KEY);
+    if (!raw) return { lastBackupAt: null };
+    const parsed = JSON.parse(raw) as Partial<BackupMeta>;
+    return { lastBackupAt: typeof parsed.lastBackupAt === "string" ? parsed.lastBackupAt : null };
+  } catch {
+    return { lastBackupAt: null };
+  }
+}
+
+async function writeBackupMeta(meta: BackupMeta): Promise<void> {
+  await AsyncStorage.setItem(BACKUP_META_KEY, JSON.stringify(meta));
+}
+
+function backupFileName(now = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+  return `gymnasia_backup_${stamp}.json`;
 }
 
 function maskApiKey(value: string): string {
@@ -7360,6 +7459,16 @@ export default function App() {
   >(null);
   const [updatesConfirmInfo, setUpdatesConfirmInfo] = useState<{ remoteVersion: string; url: string } | null>(null);
 
+  // Copia de seguridad manual (Configuración → Copia de seguridad, GYM-5).
+  const [backupBusy, setBackupBusy] = useState<null | "export" | "import">(null);
+  const [backupResult, setBackupResult] = useState<
+    | null
+    | { status: "ok"; message: string }
+    | { status: "error"; message: string }
+  >(null);
+  const [lastBackupAt, setLastBackupAt] = useState<string | null>(null);
+  const [pendingImport, setPendingImport] = useState<BackupPayload | null>(null);
+
   const [store, setStore] = useState<LocalStore>(() => createInitialStore());
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
@@ -8907,6 +9016,7 @@ export default function App() {
       ]),
     );
     loadPersonalFoods().then(setPersonalFoods);
+    readBackupMeta().then((meta) => setLastBackupAt(meta.lastBackupAt));
     migrateBodyFatHistory(setStore);
   }, [isHydrated]);
 
@@ -9856,6 +9966,135 @@ export default function App() {
       setUpdatesCheckResult({ status: "error", message: e instanceof Error ? e.message : "Error al comprobar actualizaciones." });
     } finally {
       setUpdatesChecking(false);
+    }
+  }
+
+  // --- Copia de seguridad manual (GYM-5) ---
+  // Exporta todos los datos de usuario a un archivo JSON versionado y abre la hoja
+  // de compartir para que el usuario lo guarde donde quiera (Drive, Dropbox, etc.).
+  async function runBackupExport() {
+    setBackupBusy("export");
+    setBackupResult(null);
+    try {
+      const personalData = await loadPersonalData();
+      const payload = buildBackupPayload({ store, userPrefs, personalFoods, personalData });
+      const json = JSON.stringify(payload, null, 2);
+      const fileName = backupFileName();
+
+      if (Platform.OS === "web") {
+        // No hay hoja de compartir nativa en web: forzamos una descarga.
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = fileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      } else {
+        const file = new File(Paths.cache, fileName);
+        if (file.exists) file.delete();
+        file.create();
+        file.write(json);
+        const canShare = await Sharing.isAvailableAsync();
+        if (!canShare) {
+          throw new Error("El sistema no permite compartir archivos en este dispositivo.");
+        }
+        await Sharing.shareAsync(file.uri, {
+          mimeType: "application/json",
+          dialogTitle: "Guardar copia de seguridad de Gymnasia",
+          UTI: "public.json",
+        });
+      }
+
+      const now = new Date().toISOString();
+      await writeBackupMeta({ lastBackupAt: now });
+      setLastBackupAt(now);
+      setBackupResult({
+        status: "ok",
+        message: "Copia de seguridad creada. Guárdala en tu proveedor de nube o en un archivo.",
+      });
+    } catch (e) {
+      setBackupResult({
+        status: "error",
+        message: e instanceof Error ? e.message : "No se pudo crear la copia de seguridad.",
+      });
+    } finally {
+      setBackupBusy(null);
+    }
+  }
+
+  // Selecciona un archivo de backup, lo valida y lo deja preparado para confirmar
+  // la restauración (la escritura real ocurre en applyPendingImport).
+  async function pickBackupForImport() {
+    setBackupBusy("import");
+    setBackupResult(null);
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["application/json", "text/plain", "*/*"],
+        copyToCacheDirectory: true,
+        multiple: false,
+      });
+      if (result.canceled) return;
+      const asset = result.assets[0];
+      const content =
+        Platform.OS === "web" && asset.file
+          ? await asset.file.text()
+          : await new File(asset.uri).text();
+      const parsed = JSON.parse(content);
+      const payload = parseBackupPayload(parsed);
+      setPendingImport(payload);
+    } catch (e) {
+      const message =
+        e instanceof SyntaxError
+          ? "El archivo no es un JSON válido."
+          : e instanceof Error
+            ? e.message
+            : "No se pudo leer el archivo.";
+      setBackupResult({ status: "error", message });
+    } finally {
+      setBackupBusy(null);
+    }
+  }
+
+  // Restaura los datos del backup previamente validado, sobrescribiendo el estado
+  // actual. Preserva las API keys locales (el backup nunca las contiene).
+  async function applyPendingImport() {
+    const payload = pendingImport;
+    if (!payload) return;
+    setPendingImport(null);
+    setBackupBusy("import");
+    setBackupResult(null);
+    try {
+      const secureAvailable = await isSecureStoreAvailable();
+      const secureApiKeys = await readProviderApiKeysFromSecureStore(secureAvailable);
+      const importedStore = normalizeStore(payload.data.store);
+      const mergedStore = mergeStoreWithSecureApiKeys(importedStore, secureApiKeys);
+      setStore(mergedStore);
+
+      const importedPrefs: UserPreferences = payload.data.userPrefs
+        ? { ...DEFAULT_USER_PREFS, ...payload.data.userPrefs }
+        : { ...DEFAULT_USER_PREFS };
+      setUserPrefs(importedPrefs);
+      setMeasuresDashboardPeriod(importedPrefs.chartPeriod);
+      if (importedPrefs.chartMetric) setMeasuresChartMetric(importedPrefs.chartMetric);
+
+      setPersonalFoods(Array.isArray(payload.data.personalFoods) ? payload.data.personalFoods : []);
+      await savePersonalData(Array.isArray(payload.data.personalData) ? payload.data.personalData : []);
+
+      // El snapshot de sesión activa no se incluye en el backup; cerramos cualquier
+      // sesión en curso para no dejar un estado inconsistente con los datos nuevos.
+      setActiveWorkoutSession(null);
+
+      setBackupResult({ status: "ok", message: "Datos restaurados correctamente." });
+    } catch (e) {
+      setBackupResult({
+        status: "error",
+        message: e instanceof Error ? e.message : "No se pudo restaurar la copia de seguridad.",
+      });
+    } finally {
+      setBackupBusy(null);
     }
   }
 
@@ -21160,6 +21399,128 @@ export default function App() {
                 </View>
               ) : null}
 
+              {settingsTab === "backup" ? (
+                <View style={{ gap: 12 }}>
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                    Copia de seguridad
+                  </Text>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                    Exporta todos tus datos (rutinas, historial, dieta, medidas, alimentos personales, memoria y preferencias) a un archivo. Guárdalo en tu proveedor de nube (Drive, Dropbox, OneDrive…) o donde prefieras, y restáuralo cuando quieras. La copia no incluye tus API keys de proveedores IA.
+                  </Text>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      borderRadius: 12,
+                      padding: 14,
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.borderSubtle,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
+                      Última copia
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
+                      {lastBackupAt
+                        ? new Date(lastBackupAt).toLocaleString("es-ES", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "Nunca"}
+                    </Text>
+                  </View>
+
+                  <Pressable
+                    onPress={runBackupExport}
+                    disabled={backupBusy !== null}
+                    style={{
+                      height: 48,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.brandPrimary,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "row",
+                      gap: 8,
+                      opacity: backupBusy !== null ? 0.6 : 1,
+                    }}
+                  >
+                    {backupBusy === "export" ? (
+                      <ActivityIndicator size="small" color="#06090D" />
+                    ) : (
+                      <>
+                        <Feather name="upload" size={18} color="#06090D" />
+                        <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>
+                          Exportar copia de seguridad
+                        </Text>
+                      </>
+                    )}
+                  </Pressable>
+
+                  <Pressable
+                    onPress={pickBackupForImport}
+                    disabled={backupBusy !== null}
+                    style={{
+                      height: 48,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: "transparent",
+                      borderWidth: 1,
+                      borderColor: mobileTheme.color.brandPrimary,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "row",
+                      gap: 8,
+                      opacity: backupBusy !== null ? 0.6 : 1,
+                    }}
+                  >
+                    {backupBusy === "import" ? (
+                      <ActivityIndicator size="small" color={mobileTheme.color.brandPrimary} />
+                    ) : (
+                      <>
+                        <Feather name="download" size={18} color={mobileTheme.color.brandPrimary} />
+                        <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 15 }}>
+                          Restaurar desde archivo
+                        </Text>
+                      </>
+                    )}
+                  </Pressable>
+
+                  {backupResult ? (
+                    <View
+                      style={{
+                        gap: 4,
+                        backgroundColor:
+                          backupResult.status === "ok" ? "rgba(203,255,26,0.10)" : "rgba(255,138,138,0.10)",
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor:
+                          backupResult.status === "ok" ? "rgba(203,255,26,0.5)" : "rgba(255,138,138,0.5)",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: backupResult.status === "ok" ? mobileTheme.color.textPrimary : "#FF8A8A",
+                          fontSize: 13,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {backupResult.message}
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
+                    Restaurar sustituye por completo los datos actuales por los del archivo. Tus API keys se mantienen.
+                  </Text>
+                </View>
+              ) : null}
+
               {settingsTab === "updates" ? (
                 <View style={{ gap: 12 }}>
                   <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
@@ -22162,6 +22523,83 @@ export default function App() {
             </Pressable>
             <Pressable
               onPress={() => setUpdatesConfirmInfo(null)}
+              style={{
+                width: "100%",
+                height: 44,
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Cancelar</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
+      {pendingImport ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.78)",
+            paddingHorizontal: 24,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 910,
+            elevation: 91,
+          }}
+        >
+          <View
+            style={{
+              width: "85%",
+              maxWidth: 380,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.08)",
+              backgroundColor: mobileTheme.color.bgSurface,
+              padding: 24,
+              alignItems: "center",
+              gap: 16,
+            }}
+          >
+            <Feather name="alert-triangle" size={40} color="#FF8A8A" />
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800", textAlign: "center" }}>
+              ¿Restaurar copia?
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>
+              Se sustituirán TODOS tus datos actuales por los de la copia
+              {pendingImport.createdAt
+                ? ` del ${new Date(pendingImport.createdAt).toLocaleString("es-ES", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}`
+                : ""}
+              {pendingImport.appVersion ? ` (Gymnasia v${pendingImport.appVersion})` : ""}.{"\n"}Esta acción no se puede deshacer.
+            </Text>
+            <Pressable
+              onPress={applyPendingImport}
+              style={{
+                width: "100%",
+                height: 48,
+                borderRadius: mobileTheme.radius.md,
+                backgroundColor: "#FF8A8A",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>Sí, restaurar</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setPendingImport(null)}
               style={{
                 width: "100%",
                 height: 44,
