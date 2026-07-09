@@ -21753,6 +21753,8 @@ export default function App() {
                         autoCapitalize="none"
                         autoCorrect={false}
                         keyboardType="email-address"
+                        textContentType="emailAddress"
+                        autoComplete="email"
                       />
                     </View>
                   </View>
@@ -21786,6 +21788,8 @@ export default function App() {
                         autoCapitalize="none"
                         autoCorrect={false}
                         secureTextEntry={!vivagymShowPassword}
+                        textContentType="password"
+                        autoComplete="password"
                       />
                       <Pressable
                         onPress={() => setVivagymShowPassword((prev) => !prev)}
