@@ -166,6 +166,11 @@ Only non-obvious gotchas that could recur are kept here.
 - Also: channel `importance` must be `MAX` (not `HIGH`) with `bypassDnd: true` and `lockscreenVisibility: PUBLIC` for the notification to wake the screen when the phone is locked.
 - Note: Android caches notification channels by ID. If the channel already exists with lower importance from a previous app version, `setNotificationChannelAsync` will NOT upgrade it — the user must uninstall and reinstall the app to get the new channel settings.
 
+### CI APK build cancelled by job timeout while EAS build sits in the free-tier queue
+- Gotcha: `.github/workflows/build-apk.yml` runs `eas build` (waits for completion by default). On the Expo **free tier the build queue alone can exceed 60 min**, so a `timeout-minutes: 60` job gets cancelled mid-wait. Symptom: GitHub Actions run shows `cancelled` with `##[error]The operation was canceled` in the "Build APK on EAS" step; the later steps (Download APK / Create Release / Commit version bump) are `skipped`, so **no GitHub Release and no version-bump commit are produced** — but the EAS build itself keeps running/queued on Expo independently.
+- Check: `eas build:view <build-id>` (or the Expo build URL printed in the logs). If `Status` is still `in queue`/`in progress`, the APK will finish later on Expo and can be downloaded directly from there, even though the CI release step already gave up.
+- Fix: raised job `timeout-minutes` to 120 to give the queue margin. If it recurs, consider `eas build --no-wait` + publishing the release from an Expo build webhook, or build locally with the `build-apk` skill when in a hurry.
+
 ## Post-Modification Workflow
 After each modification, create a local commit:
 ```bash
