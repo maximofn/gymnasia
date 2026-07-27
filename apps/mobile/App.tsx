@@ -13182,7 +13182,11 @@ export default function App() {
       ) : (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
         {tab === "settings" ? (
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 12 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ flexDirection: "row", gap: 8, paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 12 }}
+          >
             {SETTINGS_TAB_OPTIONS.map((option) => {
               const isActive = settingsTab === option.key;
               return (
@@ -13206,7 +13210,7 @@ export default function App() {
                 </Pressable>
               );
             })}
-          </View>
+          </ScrollView>
         ) : null}
         {tab === "chat" ? (
           <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4] }}>
