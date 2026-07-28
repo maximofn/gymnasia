@@ -7675,6 +7675,20 @@ export default function App() {
   const [quadricepsInput, setQuadricepsInput] = useState("");
   const [calfInput, setCalfInput] = useState("");
   const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("diet");
+  const settingsTabsScrollRef = useRef<ScrollView>(null);
+  const settingsTabsScrollXRef = useRef(0);
+  const settingsTabsContainerWidthRef = useRef(0);
+  const settingsTabsContentWidthRef = useRef(0);
+  const [settingsTabsCanScrollLeft, setSettingsTabsCanScrollLeft] = useState(false);
+  const [settingsTabsCanScrollRight, setSettingsTabsCanScrollRight] = useState(false);
+  const updateSettingsTabsScrollArrows = useCallback(() => {
+    const containerWidth = settingsTabsContainerWidthRef.current;
+    const contentWidth = settingsTabsContentWidthRef.current;
+    const scrollX = settingsTabsScrollXRef.current;
+    const maxScrollX = Math.max(0, contentWidth - containerWidth);
+    setSettingsTabsCanScrollLeft(scrollX > 4);
+    setSettingsTabsCanScrollRight(scrollX < maxScrollX - 4);
+  }, []);
 
   // VivaGym (GYM-6): credenciales + QR de acceso
   const [vivagymCredsLoaded, setVivagymCredsLoaded] = useState(false);
@@ -13182,36 +13196,94 @@ export default function App() {
       ) : (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
         {tab === "settings" ? (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ flexGrow: 0 }}
-            contentContainerStyle={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 12 }}
-          >
-            {SETTINGS_TAB_OPTIONS.map((option) => {
-              const isActive = settingsTab === option.key;
-              return (
-                <Pressable
-                  key={option.key}
-                  onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); setPersonalFoodAIChatOpen(false); }}
-                  style={{
-                    borderWidth: 1,
-                    borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                    borderRadius: mobileTheme.radius.pill,
-                    paddingHorizontal: 12,
-                    minHeight: 34,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
-                  }}
-                >
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
-                    {option.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+          <View style={{ position: "relative" }}>
+            <ScrollView
+              ref={settingsTabsScrollRef}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ flexGrow: 0 }}
+              contentContainerStyle={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 12 }}
+              scrollEventThrottle={16}
+              onLayout={(e) => {
+                settingsTabsContainerWidthRef.current = e.nativeEvent.layout.width;
+                updateSettingsTabsScrollArrows();
+              }}
+              onContentSizeChange={(w) => {
+                settingsTabsContentWidthRef.current = w;
+                updateSettingsTabsScrollArrows();
+              }}
+              onScroll={(e) => {
+                settingsTabsScrollXRef.current = e.nativeEvent.contentOffset.x;
+                updateSettingsTabsScrollArrows();
+              }}
+            >
+              {SETTINGS_TAB_OPTIONS.map((option) => {
+                const isActive = settingsTab === option.key;
+                return (
+                  <Pressable
+                    key={option.key}
+                    onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); setPersonalFoodAIChatOpen(false); }}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                      borderRadius: mobileTheme.radius.pill,
+                      paddingHorizontal: 12,
+                      minHeight: 34,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+            {settingsTabsCanScrollLeft ? (
+              <Pressable
+                onPress={() => {
+                  const targetX = Math.max(0, settingsTabsScrollXRef.current - 160);
+                  settingsTabsScrollRef.current?.scrollTo({ x: targetX, animated: false });
+                }}
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  bottom: 12,
+                  width: 40,
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                  paddingLeft: 4,
+                  backgroundColor: "rgba(7,9,13,0.65)",
+                }}
+              >
+                <Ionicons name="chevron-back" size={20} color="rgba(244,247,251,0.85)" />
+              </Pressable>
+            ) : null}
+            {settingsTabsCanScrollRight ? (
+              <Pressable
+                onPress={() => {
+                  const targetX = settingsTabsScrollXRef.current + 160;
+                  settingsTabsScrollRef.current?.scrollTo({ x: targetX, animated: false });
+                }}
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                  bottom: 12,
+                  width: 40,
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  paddingRight: 4,
+                  backgroundColor: "rgba(7,9,13,0.65)",
+                }}
+              >
+                <Ionicons name="chevron-forward" size={20} color="rgba(244,247,251,0.85)" />
+              </Pressable>
+            ) : null}
+          </View>
         ) : null}
         {tab === "chat" ? (
           <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4] }}>
