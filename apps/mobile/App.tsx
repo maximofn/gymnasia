@@ -13185,7 +13185,8 @@ export default function App() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ flexDirection: "row", gap: 8, paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 12 }}
+            style={{ flexGrow: 0 }}
+            contentContainerStyle={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 12 }}
           >
             {SETTINGS_TAB_OPTIONS.map((option) => {
               const isActive = settingsTab === option.key;
