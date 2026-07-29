@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gymnasia — Arquitectura del Agente IA</title>
+<meta name="description" content="Documentación técnica de la arquitectura del agente general y del LLM de captura de alimentos en Gymnasia." />
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%2307090d%22/><text x=%2250%22 y=%2266%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22%23CBFF1A%22>G</text></svg>" />
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">Gimnasia</span>
+      <span class="sub">Arquitectura del Agente IA — Documentación técnica</span>
+    </div>
+    <div class="meta-badges">
+      <span class="badge"><span class="dot"></span> 100% local-first</span>
+      <span class="badge"><span class="dot"></span> BYOK · sin backend</span>
+      <span class="badge"><span class="dot"></span> apps/mobile/App.tsx</span>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="general">⚙ Agente general (Chat)</button>
+    <button class="tab-btn" data-tab="food">📷 Captura de alimentos (Food Estimator)</button>
+  </nav>
+
+  <!-- ======================= TAB 1: AGENTE GENERAL ======================= -->
+  <section class="tab-panel active" id="panel-general">
+    <p class="section-intro">
+      <strong>Gymnasia Coach</strong> es el agente conversacional general de la app (pestaña Chat IA). Es un
+      agente <strong>BYOK</strong> (Bring Your Own Key): el usuario configura su propia API key de OpenAI,
+      Anthropic o Google, y la app llama directamente al proveedor elegido desde el dispositivo. No existe
+      backend propio: toda la lógica de orquestación, herramientas y almacenamiento vive en <code>App.tsx</code>
+      y en <code>AsyncStorage</code> local.
+    </p>
+
+    <h2 class="section-title">1 · Configuración y proveedor activo</h2>
+    <div class="flow-row">
+      <div class="flow-node">
+        <span class="kicker">Ajustes BYOK</span>
+        <h3>El usuario guarda su API key</h3>
+        <p>Una de las 3 keys (OpenAI / Anthropic / Google) se marca como <code>is_active</code>. Solo esa se usa para el chat general.</p>
+        <div class="tag-row"><span class="tag">SecureStore / AsyncStorage</span></div>
+      </div>
+      <div class="flow-node accent">
+        <span class="kicker">System prompt remoto</span>
+        <h3>prompts/AGENTS.md en GitHub</h3>
+        <p>Se descarga desde <code>raw.githubusercontent.com/maximofn/gymnasia</code>, se cachea localmente y cae a un prompt por defecto embebido si falla la red.</p>
+        <div class="tag-row"><span class="tag lime">Editable sin publicar app</span></div>
+      </div>
+    </div>
+
+    <div class="arrow-down">↓</div>
+
+    <h2 class="section-title">2 · Llamada al proveedor (uno activo)</h2>
+    <div class="provider-row">
+      <div class="provider-card"><span class="pname">OpenAI</span><div class="pmodel">Responses API · streaming SSE/XHR</div></div>
+      <div class="provider-card"><span class="pname">Anthropic</span><div class="pmodel">Messages API · thinking habilitado</div></div>
+      <div class="provider-card"><span class="pname">Google</span><div class="pmodel">Gemini generateContent</div></div>
+    </div>
+    <p class="section-intro" style="margin-top:12px; font-size:13px;">
+      Cada proveedor tiene su propio adaptador de request/response (formatos de tools, streaming y bloques de contenido distintos), pero comparten el mismo bucle agentic descrito abajo.
+    </p>
+
+    <div class="arrow-down">↓</div>
+
+    <h2 class="section-title">3 · Bucle agentic (tool use)</h2>
+    <div class="flow-row">
+      <div class="flow-node">
+        <span class="kicker">Paso 1</span>
+        <h3>Modelo responde</h3>
+        <p>Texto en streaming y/o bloques <code>tool_use</code> / <code>function_call</code>.</p>
+      </div>
+      <div class="flow-node">
+        <span class="kicker">Paso 2</span>
+        <h3>handleToolCall()</h3>
+        <p>Se ejecuta 100% en local contra el estado de la app (AsyncStorage, repos JSON).</p>
+      </div>
+      <div class="flow-node">
+        <span class="kicker">Paso 3</span>
+        <h3>Resultado → modelo</h3>
+        <p>Se reinyecta como <code>tool_result</code> / <code>function_call_output</code>. Se repite hasta que no pide más tools.</p>
+      </div>
+    </div>
+
+    <div class="arrow-down">↓</div>
+
+    <h2 class="section-title">4 · Herramientas disponibles (12)</h2>
+
+    <div class="tool-group-label">🧠 Memoria personal</div>
+    <div class="tool-grid">
+      <div class="tool-card"><span class="name">list_personal_data_keys</span><div class="desc">Lista las claves de datos personales guardadas del usuario.</div></div>
+      <div class="tool-card"><span class="name">read_field_description</span><div class="desc">Lee la descripción de un campo antes de interpretarlo.</div></div>
+      <div class="tool-card"><span class="name">read_field_value</span><div class="desc">Lee el valor de un campo concreto (ej. nombre, objetivo).</div></div>
+      <div class="tool-card"><span class="name">save_personal_data</span><div class="desc">Guarda/actualiza un array de campos {key, description, value}.</div></div>
+    </div>
+
+    <div class="tool-group-label">🍽️ Dieta</div>
+    <div class="tool-grid">
+      <div class="tool-card"><span class="name">search_foods</span><div class="desc">Busca en el repositorio JSON de alimentos por nombre, categoría o rango de macros.</div></div>
+      <div class="tool-card"><span class="name">read_meal_foods</span><div class="desc">Lee los alimentos ya registrados en una comida/fecha.</div></div>
+      <div class="tool-card"><span class="name">add_meal_food</span><div class="desc">Añade un alimento (gramos + macros) a una comida y fecha concretas.</div></div>
+    </div>
+
+    <div class="tool-group-label">🏋️ Entrenamiento</div>
+    <div class="tool-grid">
+      <div class="tool-card"><span class="name">search_exercises</span><div class="desc">Busca ejercicios por músculo, equipamiento o dificultad en el repo local.</div></div>
+      <div class="tool-card"><span class="name">read_routines</span><div class="desc">Lee las rutinas (templates) ya creadas por el usuario.</div></div>
+      <div class="tool-card"><span class="name">create_routine</span><div class="desc">Crea una rutina nueva; vincula imágenes de ejercicio por nombre exacto del repo.</div></div>
+    </div>
+
+    <div class="tool-group-label">📏 Medidas &amp; meta</div>
+    <div class="tool-grid">
+      <div class="tool-card"><span class="name">read_measurement / write_measurement</span><div class="desc">Lee o guarda medidas corporales (peso, % grasa, perímetros) por fecha.</div></div>
+      <div class="tool-card"><span class="name">create_feature_issue</span><div class="desc">Única herramienta que sale del dispositivo: crea un issue en GitHub (maximofn/gymnasia) cuando detecta una petición de mejora.</div></div>
+    </div>
+
+    <h2 class="section-title">5 · Almacenamiento y salida</h2>
+    <div class="flow-row">
+      <div class="flow-node">
+        <span class="kicker">Sin base de datos</span>
+        <h3>LocalStore (AsyncStorage)</h3>
+        <p>Dieta, rutinas, medidas y datos personales viven en el dispositivo. Los repos de alimentos/ejercicios son JSON estáticos empaquetados con la app.</p>
+      </div>
+      <div class="flow-node">
+        <span class="kicker">Excepción</span>
+        <h3>GitHub Issues API</h3>
+        <p>Único punto de salida a un servicio externo distinto del proveedor LLM: <code>create_feature_issue</code>.</p>
+        <div class="tag-row"><span class="tag red">Externo</span></div>
+      </div>
+    </div>
+
+    <div class="note warn">
+      <strong>Caveat de plataforma:</strong> en navegador (web), Anthropic requiere un proxy CORS local
+      (<code>apps/anthropic_proxy/cors-proxy.py</code>) porque el navegador bloquea la llamada directa a
+      <code>api.anthropic.com</code>. OpenAI y Google funcionan directo desde el navegador.
+    </div>
+  </section>
+
+  <!-- ======================= TAB 2: FOOD ESTIMATOR ======================= -->
+  <section class="tab-panel" id="panel-food">
+    <p class="section-intro">
+      El <strong>Food Estimator</strong> es el sub-agente de visión que estima calorías y macros a partir de
+      fotos de comida (pestaña Dieta → Estimación IA). Es independiente del chat general: tiene su propio
+      system prompt, su propia herramienta y su propia política de selección de proveedor.
+    </p>
+
+    <h2 class="section-title">1 · Entrada</h2>
+    <div class="flow-row">
+      <div class="flow-node accent">
+        <span class="kicker">Input del usuario</span>
+        <h3>1–6 fotos de la comida</h3>
+        <p>Cámara o galería. También admite texto (preguntas de seguimiento sobre la estimación) reutilizando el contexto de la conversación.</p>
+      </div>
+    </div>
+
+    <div class="arrow-down">↓</div>
+
+    <h2 class="section-title">2 · Selección de proveedor (por prioridad, no por proveedor activo)</h2>
+    <p class="section-intro" style="font-size:13px;">A diferencia del chat general, aquí se prueba en orden hasta encontrar el primero con API key configurada:</p>
+    <div class="provider-row">
+      <div class="provider-card"><span class="pnum">1</span><div class="pname">Google</div><div class="pmodel">Gemini · visión</div></div>
+      <div class="provider-card"><span class="pnum">2</span><div class="pname">OpenAI</div><div class="pmodel">Responses API · visión</div></div>
+      <div class="provider-card"><span class="pnum">3</span><div class="pname">Anthropic</div><div class="pmodel">No admite imágenes en Web</div></div>
+    </div>
+
+    <div class="arrow-down">↓</div>
+
+    <h2 class="section-title">3 · System prompt especializado</h2>
+    <div class="flow-row">
+      <div class="flow-node">
+        <h3>Nutricionista visual</h3>
+        <p>Estima siempre: kcal, proteína (g), carbohidratos (g), grasa (g) y peso total (g). Da rangos si hay incertidumbre.</p>
+      </div>
+      <div class="flow-node">
+        <h3>Clasificación</h3>
+        <p>Determina si es <span class="tag">producto_comercial</span>, <span class="tag">receta</span> o alimento base genérico.</p>
+      </div>
+      <div class="flow-node">
+        <h3>Salida estructurada</h3>
+        <p>Si el usuario pide "Devuelve json", responde solo con JSON: <code>dish_name, calories_kcal, protein_g, carbs_g, fat_g</code>.</p>
+      </div>
+    </div>
+
+    <div class="arrow-down">↓</div>
+
+    <h2 class="section-title">4 · Bucle agentic con herramienta de código de barras</h2>
+    <div class="flow-row">
+      <div class="flow-node">
+        <span class="kicker">Detección</span>
+        <h3>¿Hay un código de barras en la foto?</h3>
+        <p>El prompt obliga al modelo a usar la herramienta si detecta un EAN/UPC en cualquiera de las imágenes.</p>
+      </div>
+      <div class="branch-wrap" style="justify-content:center;"><div class="branch-line"></div></div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-node accent">
+        <span class="kicker">Única tool</span>
+        <h3><span style="font-family:'SF Mono',monospace;">scan_barcode(barcode)</span></h3>
+        <p>Llama a <strong>OpenFoodFacts</strong> (API pública) con el código leído y devuelve datos nutricionales exactos del producto.</p>
+        <div class="tag-row"><span class="tag red">Externo · world.openfoodfacts.org</span></div>
+      </div>
+      <div class="flow-node">
+        <h3>Producto comercial confirmado</h3>
+        <p>Si se usó <code>scan_barcode</code>, la clasificación es siempre <code>producto_comercial</code>, con datos exactos en vez de estimados.</p>
+      </div>
+    </div>
+    <p class="section-intro" style="font-size:13px;">Igual que en el agente general, el resultado de la tool se reinyecta al modelo y el bucle se repite (máx. 5 rondas) hasta obtener una respuesta final.</p>
+
+    <div class="arrow-down">↓</div>
+
+    <h2 class="section-title">5 · Persistencia del resultado</h2>
+    <div class="flow-row">
+      <div class="flow-node">
+        <span class="kicker">requestStructuredNutritionJSON</span>
+        <h3>Confirmación del usuario</h3>
+        <p>Cuando el usuario acepta la estimación, se pide el bloque JSON final y se parsea.</p>
+      </div>
+      <div class="flow-node">
+        <h3>add_meal_food</h3>
+        <p>Se añade a la dieta local del día/comida seleccionados (mismo store que usa el agente general).</p>
+      </div>
+    </div>
+
+    <h2 class="section-title">Variante: estimación manual (sin foto)</h2>
+    <div class="flow-row">
+      <div class="flow-node">
+        <span class="kicker">MiniChat · FOOD_AI_SYSTEM_PROMPT</span>
+        <h3>El usuario describe un alimento/receta por texto</h3>
+        <p>Flujo conversacional: 1) el usuario nombra el alimento, 2) el modelo pregunta ingredientes/cantidades si faltan, 3) calcula valores por 100g/unidad, 4) el usuario confirma, 5) devuelve JSON para guardar en el repo de alimentos.</p>
+        <div class="tag-row"><span class="tag">Sin herramientas · sin imágenes</span></div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Diseño clave:</strong> el Food Estimator prioriza el proveedor con mejor relación coste/calidad
+      en visión (Google primero) en lugar de usar el proveedor "activo" del usuario, porque la estimación de
+      fotos es la operación más frecuente y sensible a coste de la app.
+    </div>
+  </section>
+
+  <footer>
+    <span>Generado a partir de <code>apps/mobile/App.tsx</code>, <code>apps/anthropic_proxy/</code> y <code>prompts/AGENTS.md</code>.</span>
+    <span>Gymnasia · arquitectura-agente</span>
+  </footer>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
