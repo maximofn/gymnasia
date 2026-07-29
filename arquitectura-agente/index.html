@@ -23,6 +23,177 @@
     </div>
   </header>
 
+  <!-- ======================= GRAFOS DE FUNCIONAMIENTO ======================= -->
+  <section class="graph-section">
+    <h2 class="section-title" style="margin-top:0;">Grafo de funcionamiento de cada agente</h2>
+    <p class="section-intro" style="margin-bottom:var(--sp-4);">
+      Vista de alto nivel del flujo real de cada agente: nodos = pasos/decisiones, líneas = paso de datos.
+      El ciclo (líneas lima discontinuas) representa el bucle agentic de uso de herramientas; las líneas
+      rojas discontinuas son las únicas llamadas que salen a un servicio externo distinto del proveedor LLM.
+    </p>
+
+    <div class="graph-grid">
+
+      <!-- ---- GRAFO 1: AGENTE GENERAL ---- -->
+      <div class="graph-card">
+        <h3>⚙ Agente general (Gymnasia Coach)</h3>
+        <div class="graph-desc">Chat BYOK con un único proveedor activo + 12 herramientas locales.</div>
+        <svg viewBox="0 0 760 500" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:100%;height:auto;display:block;" role="img" aria-label="Grafo de funcionamiento del agente general">
+          <defs>
+            <marker id="arrGray" markerWidth="9" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 z" fill="#5b6472"></path>
+            </marker>
+            <marker id="arrLime" markerWidth="9" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 z" fill="#cbff1a"></path>
+            </marker>
+            <marker id="arrRed" markerWidth="9" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 z" fill="#ff5c5c"></path>
+            </marker>
+          </defs>
+
+          <!-- edges -->
+          <path d="M380,63 L380,93" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray)"></path>
+          <path d="M235,120 L285,213" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray)"></path>
+          <path d="M380,147 L380,188" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray)"></path>
+          <path d="M380,242 L380,273" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray)"></path>
+          <path d="M480,315 L525,315" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray)"></path>
+          <path d="M380,357 L380,388" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray)"></path>
+          <path d="M620,342 L620,388" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray)"></path>
+          <path d="M620,288 C665,175 515,140 476,207" stroke="#cbff1a" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#arrLime)"></path>
+          <path d="M620,288 L620,242" stroke="#ff5c5c" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#arrRed)"></path>
+
+          <text x="500" y="308" font-size="11" fill="#a6afbc">sí</text>
+          <text x="392" y="378" font-size="11" fill="#a6afbc">no</text>
+          <text x="632" y="260" font-size="10.5" fill="#ff5c5c">create_feature_issue</text>
+          <text x="560" y="185" font-size="10.5" fill="#cbff1a">reintenta con tool_result</text>
+
+          <!-- node: Usuario -->
+          <rect x="285" y="9" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="9" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">Usuario (chat)</span></div></foreignObject>
+
+          <!-- node: System prompt -->
+          <rect x="45" y="93" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="45" y="93" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">System prompt</span><span class="gnode-sub">GitHub AGENTS.md + caché local</span></div></foreignObject>
+
+          <!-- node: Proveedor activo -->
+          <rect x="285" y="93" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="93" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">Proveedor activo</span><span class="gnode-sub">BYOK · 1 de 3 (is_active)</span></div></foreignObject>
+
+          <!-- node: Llamada al modelo -->
+          <rect x="285" y="188" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="188" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">Llamada al modelo</span><span class="gnode-sub">streaming SSE/XHR</span></div></foreignObject>
+
+          <!-- node: decision tool_use (diamond) -->
+          <polygon points="380,273 480,315 380,357 280,315" fill="#1b212c" stroke="#cbff1a"></polygon>
+          <foreignObject x="285" y="288" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title" style="font-size:11.5px;">¿Pide usar una herramienta?</span></div></foreignObject>
+
+          <!-- node: ejecutar herramienta -->
+          <rect x="525" y="288" width="190" height="54" rx="10" fill="#1b212c" stroke="#cbff1a"></rect>
+          <foreignObject x="525" y="288" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">handleToolCall()</span><span class="gnode-sub">12 herramientas, 100% local</span></div></foreignObject>
+
+          <!-- node: respuesta final -->
+          <rect x="285" y="388" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="388" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">Respuesta final</span><span class="gnode-sub">al usuario, en streaming</span></div></foreignObject>
+
+          <!-- node: AsyncStorage -->
+          <rect x="525" y="388" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="525" y="388" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">AsyncStorage</span><span class="gnode-sub">dieta · rutinas · medidas · memoria</span></div></foreignObject>
+
+          <!-- node: GitHub Issues API -->
+          <rect x="525" y="188" width="190" height="54" rx="10" fill="#1b212c" stroke="#ff5c5c"></rect>
+          <foreignObject x="525" y="188" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">GitHub Issues API</span><span class="gnode-sub">único destino externo</span></div></foreignObject>
+        </svg>
+        <div class="graph-legend">
+          <span class="legend-item"><span class="legend-swatch" style="border-color:#5b6472;"></span> Flujo normal</span>
+          <span class="legend-item"><span class="legend-swatch dashed" style="border-color:#cbff1a;"></span> Bucle agentic (tool result → modelo)</span>
+          <span class="legend-item"><span class="legend-swatch dashed" style="border-color:#ff5c5c;"></span> Llamada externa (no LLM)</span>
+        </div>
+      </div>
+
+      <!-- ---- GRAFO 2: FOOD ESTIMATOR ---- -->
+      <div class="graph-card">
+        <h3>📷 Captura de alimentos (Food Estimator)</h3>
+        <div class="graph-desc">Visión sobre fotos + fallback por prioridad de proveedor + código de barras.</div>
+        <svg viewBox="0 0 760 620" preserveAspectRatio="xMidYMid meet" style="width:100%;max-width:100%;height:auto;display:block;" role="img" aria-label="Grafo de funcionamiento del Food Estimator">
+          <defs>
+            <marker id="arrGray2" markerWidth="9" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 z" fill="#5b6472"></path>
+            </marker>
+            <marker id="arrLime2" markerWidth="9" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 z" fill="#cbff1a"></path>
+            </marker>
+            <marker id="arrRed2" markerWidth="9" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 z" fill="#ff5c5c"></path>
+            </marker>
+          </defs>
+
+          <!-- edges -->
+          <path d="M380,63 L380,93" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray2)"></path>
+          <path d="M235,120 L285,213" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray2)"></path>
+          <path d="M380,147 L380,188" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray2)"></path>
+          <path d="M380,242 L380,273" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray2)"></path>
+          <path d="M480,315 L525,315" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray2)"></path>
+          <path d="M380,357 L380,388" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray2)"></path>
+          <path d="M380,442 L380,468" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray2)"></path>
+          <path d="M380,522 L380,548" stroke="#5b6472" stroke-width="2" fill="none" marker-end="url(#arrGray2)"></path>
+          <path d="M620,288 C665,175 515,140 476,207" stroke="#cbff1a" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#arrLime2)"></path>
+          <path d="M235,468 C150,500 220,520 285,505" stroke="#a6afbc" stroke-width="2" fill="none" stroke-dasharray="3 3" marker-end="url(#arrGray2)"></path>
+
+          <text x="500" y="308" font-size="11" fill="#a6afbc">sí</text>
+          <text x="392" y="378" font-size="11" fill="#a6afbc">no</text>
+          <text x="560" y="185" font-size="10.5" fill="#cbff1a">reintenta con tool_result</text>
+          <text x="118" y="493" font-size="10" fill="#a6afbc">alternativa sin foto</text>
+
+          <!-- node: Usuario -->
+          <rect x="285" y="9" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="9" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">Usuario</span><span class="gnode-sub">1–6 fotos + texto opcional</span></div></foreignObject>
+
+          <!-- node: System prompt -->
+          <rect x="45" y="93" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="45" y="93" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">System prompt</span><span class="gnode-sub">Food Estimator (visión)</span></div></foreignObject>
+
+          <!-- node: selección proveedor -->
+          <rect x="285" y="93" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="93" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title" style="font-size:11.5px;">Selección por prioridad</span><span class="gnode-sub">Google → OpenAI → Anthropic</span></div></foreignObject>
+
+          <!-- node: modelo analiza -->
+          <rect x="285" y="188" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="188" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">Modelo analiza imágenes</span></div></foreignObject>
+
+          <!-- node: decision barcode (diamond) -->
+          <polygon points="380,273 480,315 380,357 280,315" fill="#1b212c" stroke="#cbff1a"></polygon>
+          <foreignObject x="285" y="288" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title" style="font-size:11.5px;">¿Detecta código de barras?</span></div></foreignObject>
+
+          <!-- node: scan_barcode -->
+          <rect x="525" y="288" width="190" height="54" rx="10" fill="#1b212c" stroke="#cbff1a"></rect>
+          <foreignObject x="525" y="288" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">scan_barcode()</span><span class="gnode-sub">→ OpenFoodFacts API</span></div></foreignObject>
+
+          <!-- node: respuesta/estimacion -->
+          <rect x="285" y="388" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="388" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">Estimación</span><span class="gnode-sub">texto libre o JSON si se pide</span></div></foreignObject>
+
+          <!-- node: confirmacion usuario -->
+          <rect x="285" y="468" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="468" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title" style="font-size:11.5px;">Confirmación usuario</span><span class="gnode-sub">requestStructuredNutritionJSON</span></div></foreignObject>
+
+          <!-- node: add_meal_food -->
+          <rect x="285" y="548" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="285" y="548" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title">add_meal_food()</span><span class="gnode-sub">→ Dieta local (AsyncStorage)</span></div></foreignObject>
+
+          <!-- node: MiniChat manual -->
+          <rect x="45" y="415" width="190" height="54" rx="10" fill="#1b212c" stroke="#252b35"></rect>
+          <foreignObject x="45" y="415" width="190" height="54"><div xmlns="http://www.w3.org/1999/xhtml" class="gnode-html"><span class="gnode-title" style="font-size:11.5px;">MiniChat manual</span><span class="gnode-sub">FOOD_AI_SYSTEM_PROMPT, sin fotos</span></div></foreignObject>
+        </svg>
+        <div class="graph-legend">
+          <span class="legend-item"><span class="legend-swatch" style="border-color:#5b6472;"></span> Flujo normal</span>
+          <span class="legend-item"><span class="legend-swatch dashed" style="border-color:#cbff1a;"></span> Bucle agentic (tool result → modelo)</span>
+          <span class="legend-item"><span class="legend-swatch dashed" style="border-color:#a6afbc;"></span> Ruta alternativa</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <nav class="tabs">
     <button class="tab-btn active" data-tab="general">⚙ Agente general (Chat)</button>
     <button class="tab-btn" data-tab="food">📷 Captura de alimentos (Food Estimator)</button>
