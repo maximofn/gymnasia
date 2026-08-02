@@ -171,6 +171,11 @@ Only non-obvious gotchas that could recur are kept here.
 - Check: `eas build:view <build-id>` (or the Expo build URL printed in the logs). If `Status` is still `in queue`/`in progress`, the APK will finish later on Expo and can be downloaded directly from there, even though the CI release step already gave up.
 - Fix: raised job `timeout-minutes` to 120 to give the queue margin. If it recurs, consider `eas build --no-wait` + publishing the release from an Expo build webhook, or build locally with the `build-apk` skill when in a hurry.
 
+### Clearing `localStorage` does NOT reset the app on web — it also persists to `.dev-store.json`
+- Gotcha: on web + `__DEV__`, `App.tsx` (`loadDevStoreFile` / `saveDevStoreFile`) mirrors the store to `apps/mobile/.dev-store.json` through a Metro middleware (`metro.config.js`, `/dev-store` endpoint) so data survives dev-server restarts. On boot it reads that file back, so wiping `localStorage` leaves the app fully populated. The file is served per dev server, not per origin, so `localhost:8081` and `127.0.0.1:8081` restore the *same* data even though their `localStorage` is separate.
+- Fix: to test a clean install on web, empty the file too (`printf '{}' > apps/mobile/.dev-store.json`) and make sure no tab still has the app running — a live instance re-persists its in-memory state on the way out, silently undoing the wipe.
+- Note: a fresh boot also re-runs the body-fat migration (`gymnasia.mobile.body_fat_migration_done`), which injects ~90 body-fat-only measurements. Expect the measurement count to differ from what you seeded.
+
 ## Post-Modification Workflow
 After each modification, create a local commit:
 ```bash
