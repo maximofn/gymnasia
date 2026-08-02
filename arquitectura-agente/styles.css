@@ -110,6 +110,51 @@ a { color: inherit; }
   background: var(--brand);
 }
 
+/* ---------- Language switch ---------- */
+.topbar-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-2);
+}
+
+.lang-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+.lang-btn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lang-btn:hover { color: var(--text-primary); }
+
+.lang-btn.active {
+  background: var(--brand);
+  color: #07090d;
+}
+
+.lang-btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
 /* ---------- Graph (embedded per tab) ---------- */
 .graph-solo {
   max-width: 700px;
@@ -493,4 +538,5 @@ footer {
 @media (max-width: 600px) {
   .brand .logo { font-size: 24px; }
   h2.section-title { margin-top: var(--sp-6); }
+  .topbar-right { align-items: flex-start; width: 100%; }
 }
