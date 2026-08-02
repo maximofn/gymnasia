@@ -110,15 +110,10 @@ a { color: inherit; }
   background: var(--brand);
 }
 
-/* ---------- Graph section ---------- */
-.graph-section {
-  margin-bottom: var(--sp-8);
-}
-
-.graph-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--sp-4);
+/* ---------- Graph (embedded per tab) ---------- */
+.graph-solo {
+  max-width: 700px;
+  margin: 0 auto var(--sp-6);
 }
 
 .graph-card {
@@ -201,12 +196,6 @@ a { color: inherit; }
 
 .legend-swatch.dashed {
   border-top-style: dashed;
-}
-
-@media (max-width: 900px) {
-  .graph-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ---------- Tabs ---------- */
