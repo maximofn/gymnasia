@@ -252,6 +252,38 @@ def cmd_update(args):
     print(f"Actualizado {res['issue']['identifier']} -> estado {res['issue']['state']['name']}")
 
 
+def cmd_replace(args):
+    """Sustitucion de texto en la descripcion de varios issues a la vez.
+
+    `update --description` reemplaza la descripcion entera, asi que para tocar
+    una linea concreta en muchos tickets hay que leer, sustituir y reescribir.
+    """
+    gql_get = "query($id:String!){ issue(id:$id){ description } }"
+    gql_set = """
+    mutation Update($id: String!, $input: IssueUpdateInput!) {
+      issueUpdate(id: $id, input: $input) { success }
+    }
+    """
+    find = args.find.replace("\\n", "\n")
+    repl = args.replace.replace("\\n", "\n")
+    changed = 0
+    for ident in args.ids:
+        uuid = resolve_issue_uuid(ident)
+        desc = query(gql_get, {"id": uuid})["issue"]["description"] or ""
+        new = desc.replace(find, repl)
+        if new == desc:
+            print(f"{ident:<10} sin coincidencias")
+            continue
+        hits = desc.count(find)
+        if args.dry_run:
+            print(f"{ident:<10} {hits} coincidencia(s) [dry-run]")
+        else:
+            query(gql_set, {"id": uuid, "input": {"description": new}})
+            print(f"{ident:<10} {hits} coincidencia(s) sustituida(s)")
+        changed += 1
+    print(f"\n{changed} issue(s) con cambios.")
+
+
 def cmd_comment(args):
     gql = """
     mutation Comment($input: CommentCreateInput!) {
@@ -302,6 +334,13 @@ def main():
     pu.add_argument("--priority", help="none|urgent|high|medium|low")
     pu.add_argument("--parent", help="identifier del issue padre, p.ej. GYM-12")
     pu.set_defaults(func=cmd_update)
+
+    pr = sub.add_parser("replace", help="sustituir texto en la descripcion de varios issues")
+    pr.add_argument("ids", nargs="+", help="identifiers, p.ej. GYM-12 GYM-13")
+    pr.add_argument("--find", required=True, help="texto exacto a buscar (\\n para salto de linea)")
+    pr.add_argument("--replace", required=True, help="texto de reemplazo (\\n para salto de linea)")
+    pr.add_argument("--dry-run", action="store_true", help="mostrar coincidencias sin escribir")
+    pr.set_defaults(func=cmd_replace)
 
     pm = sub.add_parser("comment", help="comentar un issue")
     pm.add_argument("id", help="identifier, p.ej. GYM-12")
