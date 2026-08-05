@@ -208,6 +208,8 @@ def cmd_create(args):
         inp["priority"] = priority_int(args.priority)
     if args.state:
         inp["stateId"] = resolve_state_id(args.team, args.state)
+    if args.parent:
+        inp["parentId"] = resolve_issue_uuid(args.parent)
     gql = """
     mutation Create($input: IssueCreateInput!) {
       issueCreate(input: $input) {
@@ -233,6 +235,8 @@ def cmd_update(args):
         inp["priority"] = priority_int(args.priority)
     if args.state:
         inp["stateId"] = resolve_state_id(team_key, args.state)
+    if args.parent:
+        inp["parentId"] = resolve_issue_uuid(args.parent)
     if not inp:
         sys.exit("Nada que actualizar. Usa --title/--description/--state/--priority.")
     gql = """
@@ -287,6 +291,7 @@ def main():
     pc.add_argument("--description")
     pc.add_argument("--state")
     pc.add_argument("--priority", help="none|urgent|high|medium|low")
+    pc.add_argument("--parent", help="identifier del issue padre, p.ej. GYM-12")
     pc.set_defaults(func=cmd_create)
 
     pu = sub.add_parser("update", help="modificar issue")
@@ -295,6 +300,7 @@ def main():
     pu.add_argument("--description")
     pu.add_argument("--state")
     pu.add_argument("--priority", help="none|urgent|high|medium|low")
+    pu.add_argument("--parent", help="identifier del issue padre, p.ej. GYM-12")
     pu.set_defaults(func=cmd_update)
 
     pm = sub.add_parser("comment", help="comentar un issue")

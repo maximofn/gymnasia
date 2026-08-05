@@ -44,6 +44,11 @@ python3 .claude/skills/linear-tickets/scripts/linear.py create \
   --team GYM --title "Título del ticket" \
   --description "Descripción en markdown" \
   --state "Todo" --priority high
+
+# Sub-issue: colgar de un issue padre (Linear no tiene "épicas";
+# lo más parecido es un issue padre con sub-issues)
+python3 .claude/skills/linear-tickets/scripts/linear.py create \
+  --team GYM --title "Sub-tarea" --parent GYM-25
 ```
 
 ### Modificación
@@ -53,6 +58,8 @@ python3 .claude/skills/linear-tickets/scripts/linear.py update GYM-12 --state "I
 # Cambiar prioridad / título / descripción
 python3 .claude/skills/linear-tickets/scripts/linear.py update GYM-12 --priority urgent
 python3 .claude/skills/linear-tickets/scripts/linear.py update GYM-12 --title "Nuevo título"
+# Reasignar el padre de un issue existente
+python3 .claude/skills/linear-tickets/scripts/linear.py update GYM-12 --parent GYM-25
 # Comentar
 python3 .claude/skills/linear-tickets/scripts/linear.py comment GYM-12 --body "Comentario"
 ```
