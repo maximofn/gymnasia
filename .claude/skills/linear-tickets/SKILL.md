@@ -136,6 +136,15 @@ Cuatro cosas que cuestan tiempo si no se saben:
 
 ## Flujo recomendado para el agente
 
+0. **Antes de crear nada, lista lo que ya existe.** Es el error más fácil y más
+   caro de esta skill: crear tickets que duplican otros de hace meses.
+   ```bash
+   python3 <ruta>/linear.py list --all --limit 80
+   ```
+   Busca por el tema, no solo por el título exacto: un ticket llamado "Crear
+   suite de tests" y otro "Infraestructura de tests para el agente" son el mismo
+   trabajo. Si encuentras solape, decide **antes de escribir** si amplías el
+   existente, lo cancelas como duplicado, o cuelgas el nuevo del viejo.
 1. Antes de escribir, confirma el equipo/estado con `teams` / `states GYM`.
 2. Tras crear o actualizar, el script imprime el identifier y (en update) el
    estado resultante — úsalo para confirmar al usuario.
