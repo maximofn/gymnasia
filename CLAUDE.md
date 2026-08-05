@@ -108,6 +108,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - `AGENTS.md` es un link de `CLAUDE.md` por lo que modificando uno se debe actualizar el otro.
 - Update `README.md` whenever the project structure, dependencies, or startup instructions change.
 
+## Skill Maintenance Rule (Linear)
+- **Cada descubrimiento nuevo sobre Linear implica actualizar la skill `linear-tickets`.**
+  No dejes el hallazgo solo en la conversación: la siguiente sesión no lo tendrá.
+- Aplica a: comportamientos no obvios de la API, trampas de shell o de formato,
+  campos o mutaciones que el script aún no soporta, y flujos de trabajo que hayan
+  funcionado bien (creación en lote, ediciones masivas, jerarquías).
+- Si el hallazgo es una **capacidad que falta**, añádela como subcomando en
+  `.claude/skills/linear-tickets/scripts/linear.py` y documéntala en `SKILL.md`.
+- Si es una **trampa**, va a la sección "Trampas conocidas" de `SKILL.md` explicando
+  el síntoma, no solo la solución — el síntoma es lo que permite reconocerla.
+- Commitea el cambio de la skill junto con el trabajo que lo provocó.
+
 ## Agent Maintenance Rule
 - Do NOT log feature implementations, UI changes, label renames, styling fixes, or any code change that is already reflected in the codebase. The code is the source of truth for those.
 - Only add entries to the Solved Problems Log when the problem is a **non-obvious gotcha that could recur** despite the code being correct — e.g., external API constraints, environment/tooling traps, platform-specific behaviors, or dependency quirks.
