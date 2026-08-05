@@ -95,7 +95,22 @@ When adding non-trivial logic, document manual verification steps explicitly.
 ## Commit & Pull Request Guidelines
 History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ...`, `chore(scope): ...`, `docs: ...`.
 - Keep commit subjects imperative and scoped (e.g., `fix(mobile): pin Metro module resolution for monorepo`).
-- After each modification, create a local commit. Do NOT `git push` to `main` unless the user explicitly asks — pushing to `main` triggers a CI/CD pipeline that runs an Expo APK build, and the Expo monthly build quota is limited.
+- After each modification, create a local commit. Do NOT `git push` to `main` unless the user explicitly asks.
+- **Qué dispara realmente el build de Expo**: no todo push a `main`. El workflow
+  `.github/workflows/build-apk.yml` filtra por rutas:
+  ```yaml
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - "!apps/mobile/scripts/**"
+      - "!apps/mobile/**/*.md"
+  ```
+  Es decir, solo compila si el push toca `apps/mobile/**`, y ni siquiera entonces
+  si son únicamente scripts o markdown. Cambios en `.claude/`, `CLAUDE.md`,
+  `arquitectura-agente/`, `ejercicios/`, `alimentos/` o `.github/` **no gastan
+  build**. La cuota mensual de Expo es limitada, así que verifica el filtro antes
+  de asumir que un push es caro — y pide confirmación igualmente.
 - PR description should include: summary, impacted paths, commands executed, and screenshots for UI updates.
 
 ## Security & Configuration Tips
@@ -193,6 +208,10 @@ After each modification, create a local commit:
 ```bash
 git add -A && git commit -m '<description>'
 ```
-Do NOT `git push` to `main` unless the user explicitly asks for it. A push to `main`
-triggers a CI/CD pipeline that builds the Expo APK, and the Expo monthly build quota
-is limited, so accidental pushes waste builds. Push only on explicit request.
+Do NOT `git push` to `main` unless the user explicitly asks for it. Push only on
+explicit request.
+
+Un push a `main` **solo** dispara el build de APK si toca `apps/mobile/**`
+(excluyendo `apps/mobile/scripts/**` y los `.md`). Ver el filtro de rutas en
+"Commit & Pull Request Guidelines". La cuota mensual de Expo es limitada, así que
+un push que sí entre en el filtro gasta build; el resto, no.
