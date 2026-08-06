@@ -369,6 +369,17 @@
           ]
         },
         {
+          "id": "GYM-52",
+          "title": "A2A (Agent2Agent): hablar con agentes de terceros",
+          "state": "backlog",
+          "summary": "Épica pendiente de desglosar. Protocolo para que agentes de distintos dueños intercambien tareas sin verse por dentro. No sirve para orquestar subagentes propios. Hoy la app no puede ser servidor A2A (sin backend), solo cliente.",
+          "dependsOn": [],
+          "related": [
+            "GYM-30",
+            "GYM-32"
+          ]
+        },
+        {
           "id": "GYM-49",
           "title": "Crear maximofn.com/gymnasia-agent: post principal del agente con los dos grafos",
           "state": "done",
