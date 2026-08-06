@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-06",
+    "updated": "2026-08-07",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -419,7 +419,7 @@
         {
           "id": "GYM-32",
           "title": "Front web de la app en gymnasia.maximofn.com",
-          "state": "in_progress",
+          "state": "done",
           "summary": "La app ya corre en navegador vía react-native-web: el trabajo es empaquetar, resolver el almacenamiento y desplegar.",
           "dependsOn": [],
           "related": [
