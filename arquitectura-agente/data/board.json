@@ -419,7 +419,7 @@
         {
           "id": "GYM-32",
           "title": "Front web de la app en gymnasia.maximofn.com",
-          "state": "backlog",
+          "state": "in_progress",
           "summary": "La app ya corre en navegador vía react-native-web: el trabajo es empaquetar, resolver el almacenamiento y desplegar.",
           "dependsOn": [],
           "related": [
