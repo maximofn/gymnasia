@@ -228,7 +228,7 @@
         {
           "id": "GYM-31",
           "title": "Tablero de seguimiento de épicas y tareas (espejo de Linear)",
-          "state": "backlog",
+          "state": "done",
           "summary": "Este tablero. Espejo manual de Linear en HTML/CSS/JS vanilla, sin API ni backend.",
           "dependsOn": ["GYM-49"],
           "related": ["GYM-32"]
