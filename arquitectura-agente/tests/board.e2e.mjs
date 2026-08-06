@@ -97,10 +97,60 @@ async function run() {
     const progressText = await page.locator(".epic .progress-text").first().innerText();
     assert.match(progressText, /^\d+\/\d+ · \d+%$/, "la barra de progreso no muestra el ratio");
 
-    // --- El enlace a Linear apunta al ticket real ---------------------------
+    // --- Solo el nombre del ticket lleva a Linear ---------------------------
     const firstTicketId = renderedIds[0];
-    const href = await page.locator("#view-epics .ticket .ticket-id").first().getAttribute("href");
+    const href = await page
+      .locator("#view-epics .ticket a.ticket-title")
+      .first()
+      .getAttribute("href");
     assert.equal(href, `${board.meta.linearBase}${firstTicketId}`, "enlace a Linear incorrecto");
+    assert.equal(
+      await page.locator("#view-epics .ticket .ticket-id a").count(),
+      0,
+      "el identifier no debe ser un enlace: solo el nombre lleva a Linear",
+    );
+
+    // --- Plegado de tickets -------------------------------------------------
+    const firstTicket = page.locator("#view-epics .ticket").first();
+    assert.equal(
+      await firstTicket.locator(".ticket-detail").isVisible(),
+      false,
+      "los tickets deben nacer plegados",
+    );
+    await firstTicket.locator(".ticket-id").click();
+    await firstTicket.locator(".ticket-detail").waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    assert.equal(
+      await firstTicket.locator(".toggle-caret").getAttribute("aria-expanded"),
+      "true",
+      "el aria-expanded del ticket no se actualiza",
+    );
+    await firstTicket.locator(".ticket-id").click();
+    await firstTicket.locator(".ticket-detail").waitFor({ state: "hidden", timeout: STEP_TIMEOUT_MS });
+
+    // Y el estado de plegado sobrevive a un re-render por filtro.
+    await firstTicket.locator(".ticket-id").click();
+    await firstTicket.locator(".ticket-detail").waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    await page.fill("#search", "GYM");
+    await page.fill("#search", "");
+    assert.equal(
+      await page.locator("#view-epics .ticket").first().locator(".ticket-detail").isVisible(),
+      true,
+      "el ticket expandido se pliega solo al filtrar",
+    );
+    await page.locator("#view-epics .ticket").first().locator(".ticket-id").click();
+
+    // --- Plegado de épicas --------------------------------------------------
+    const firstEpic = page.locator("#view-epics > .epic").first();
+    assert.equal(
+      await firstEpic.locator(".ticket-list").isVisible(),
+      true,
+      "las épicas deben nacer abiertas",
+    );
+    await firstEpic.locator(".epic-title-row .epic-kind").click();
+    await firstEpic.locator(".ticket-list").waitFor({ state: "hidden", timeout: STEP_TIMEOUT_MS });
+    await firstEpic.locator(".epic-title-row .epic-kind").click();
+    await firstEpic.locator(".ticket-list").waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    logStep("Plegado de tickets y épicas ok");
 
     // --- Filtro de búsqueda -------------------------------------------------
     await page.fill("#search", "tool_choice");

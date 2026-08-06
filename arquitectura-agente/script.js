@@ -22,6 +22,10 @@
     view: "epics",
     showRelated: false,
     selected: null,
+    // Los tickets nacen plegados (el tablero se lee de un vistazo) y las épicas
+    // abiertas. Ambos conjuntos sobreviven a los re-renders de filtro/búsqueda.
+    expandedTickets: new Set(),
+    collapsedEpics: new Set(),
   };
 
   // ------------------------------------------------------------------ utils
@@ -226,19 +230,41 @@
     return tags.childElementCount ? tags : null;
   }
 
-  function ticketRow(ticket) {
-    const row = el("li", `ticket is-${ticket.state}`);
+  /** Botón de plegado. El texto del nombre es un enlace, así que no puede serlo la fila. */
+  function toggleButton(label, expanded) {
+    const button = el("button", "toggle-caret");
+    button.type = "button";
+    button.textContent = "›";
+    setToggleState(button, label, expanded);
+    return button;
+  }
 
-    const id = el("a", "ticket-id", ticket.id);
-    id.href = linearUrl(ticket.id);
-    id.rel = "noopener";
-    id.title = `Abrir ${ticket.id} en Linear`;
+  function setToggleState(button, label, expanded) {
+    button.setAttribute("aria-expanded", String(expanded));
+    button.setAttribute("aria-label", `${expanded ? "Contraer" : "Expandir"} ${label}`);
+  }
+
+  function ticketRow(ticket) {
+    const expanded = state.expandedTickets.has(ticket.id);
+    const row = el("li", `ticket is-${ticket.state}${expanded ? " is-expanded" : ""}`);
+
+    const detail = el("div", "ticket-detail");
+    if (ticket.summary) detail.append(el("div", "ticket-summary", ticket.summary));
+    const tags = ticketTags(ticket);
+    if (tags) detail.append(tags);
+    const hasDetail = detail.childElementCount > 0;
+
+    const caret = hasDetail ? toggleButton(ticket.id, expanded) : el("span", "toggle-caret empty");
+
+    const id = el("span", "ticket-id", ticket.id);
 
     const main = el("div", "ticket-main");
-    main.append(el("div", "ticket-title", ticket.title));
-    if (ticket.summary) main.append(el("div", "ticket-summary", ticket.summary));
-    const tags = ticketTags(ticket);
-    if (tags) main.append(tags);
+    const title = el("a", "ticket-title", ticket.title);
+    title.href = linearUrl(ticket.id);
+    title.rel = "noopener";
+    title.title = `Abrir ${ticket.id} en Linear`;
+    main.append(title);
+    if (hasDetail) main.append(detail);
 
     const side = el("div", "ticket-side");
     side.append(statePill(ticket.state));
@@ -247,7 +273,18 @@
       side.append(el("span", "baseline", `${baseline.icon} ${baseline.label}`));
     }
 
-    row.append(id, main, side);
+    if (hasDetail) {
+      row.addEventListener("click", (event) => {
+        if (event.target.closest("a")) return; // el nombre lleva a Linear
+        const nowExpanded = !state.expandedTickets.has(ticket.id);
+        if (nowExpanded) state.expandedTickets.add(ticket.id);
+        else state.expandedTickets.delete(ticket.id);
+        row.classList.toggle("is-expanded", nowExpanded);
+        setToggleState(caret, ticket.id, nowExpanded);
+      });
+    }
+
+    row.append(caret, id, main, side);
     return row;
   }
 
@@ -264,21 +301,43 @@
       if (!tickets.length) continue;
       visible += tickets.length;
 
-      const card = el("section", "epic");
+      const collapsed = state.collapsedEpics.has(group.id);
+      const card = el("section", `epic${collapsed ? " is-collapsed" : ""}`);
       const head = el("div", "epic-head");
 
+      const caret = toggleButton(group.title, !collapsed);
+
       const titleRow = el("div", "epic-title-row");
+      titleRow.append(caret);
       if (group.kind === "epic") {
-        const link = el("a", "ticket-id", group.id);
+        titleRow.append(el("span", "ticket-id", group.id));
+      }
+
+      const heading = el("h2", "epic-title");
+      if (group.kind === "epic") {
+        const link = el("a", null, group.title);
         link.href = linearUrl(group.id);
         link.rel = "noopener";
-        titleRow.append(link);
+        link.title = `Abrir ${group.id} en Linear`;
+        heading.append(link);
+      } else {
+        heading.textContent = group.title;
       }
-      titleRow.append(el("h2", "epic-title", group.title));
+      titleRow.append(heading);
+
       titleRow.append(
         el("span", `epic-kind is-${group.kind}`, group.kind === "epic" ? "Épica" : "Sin épica"),
       );
       head.append(titleRow);
+
+      head.addEventListener("click", (event) => {
+        if (event.target.closest("a")) return; // el nombre lleva a Linear
+        const nowCollapsed = !state.collapsedEpics.has(group.id);
+        if (nowCollapsed) state.collapsedEpics.add(group.id);
+        else state.collapsedEpics.delete(group.id);
+        card.classList.toggle("is-collapsed", nowCollapsed);
+        setToggleState(caret, group.title, !nowCollapsed);
+      });
 
       if (group.summary) head.append(el("p", "epic-summary", group.summary));
 
@@ -333,7 +392,7 @@
       }
 
       for (const ticket of tickets) {
-        const card = el("a", "card");
+        const card = el("a", `card is-${ticket.state}`);
         card.href = linearUrl(ticket.id);
         card.rel = "noopener";
         card.style.borderLeftColor = `var(--state-${ticket.state})`;

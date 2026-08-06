@@ -81,6 +81,40 @@ Run from repo root unless noted.
   - SecureStore is not available in browser with the same guarantees as native.
   - Direct Anthropic chat from browser requires the CORS proxy above. OpenAI/Google can be used directly.
 
+## Tablero de seguimiento — Deploy Runbook (`arquitectura-agente/`)
+- Qué es: espejo manual de los tickets de Linear en <https://gymnasia-sable.vercel.app/>.
+  Sitio estático (HTML/CSS/JS vanilla), sin build y sin backend. Los datos viven en
+  `arquitectura-agente/data/board.json` y se actualizan a mano. Ver
+  `arquitectura-agente/README.md`.
+- **Un push a `main` NO despliega esta web.** La integración de Git de Vercel está
+  inactiva en este repo (ver el Solved Problems Log). Hay que desplegar a mano.
+- Desplegar a producción, desde la raíz del repo:
+  ```bash
+  npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
+  ```
+- La CLI de Vercel **no está instalada de forma permanente**; `npm exec` la baja al
+  vuelo. La sesión ya está autenticada en `~/Library/Application Support/com.vercel.cli`,
+  así que no hace falta `vercel login`. Comprobarlo sin desplegar:
+  ```bash
+  npm exec --yes -- vercel@latest whoami --cwd arquitectura-agente
+  ```
+- No usar `npx vercel`: el hook de rtk reescribe `npx` a `npm` y falla con
+  `Unknown command: "vercel@latest"`. Usar `npm exec --` siempre.
+- Antes de desplegar, pasar los tests:
+  ```bash
+  npm run test:board       # valida data/board.json (node --test, sin dependencias)
+  npm run test:board:e2e   # E2E con Playwright sobre el sitio estático
+  ```
+- Verificar el despliegue comparando lo servido con lo local (Playwright no tiene
+  salida a internet en el sandbox del agente, así que se valida con `curl`):
+  ```bash
+  curl -sS https://gymnasia-sable.vercel.app/ | grep -o '<title>[^<]*</title>'
+  shasum -a 256 arquitectura-agente/data/board.json
+  curl -sS https://gymnasia-sable.vercel.app/data/board.json | shasum -a 256
+  ```
+  `/index.html` devuelve un `Redirecting...` en vez del HTML: es `cleanUrls` de
+  `vercel.json` redirigiendo a `/`. Comprobar siempre contra `/`, no `/index.html`.
+
 ## Coding Style & Naming Conventions
 - TypeScript is `strict`; follow existing TS style: 2-space indentation, semicolons, double quotes.
 - React components/types: `PascalCase`; functions/variables: `camelCase`.
@@ -202,6 +236,21 @@ Only non-obvious gotchas that could recur are kept here.
 - Gotcha: on web + `__DEV__`, `App.tsx` (`loadDevStoreFile` / `saveDevStoreFile`) mirrors the store to `apps/mobile/.dev-store.json` through a Metro middleware (`metro.config.js`, `/dev-store` endpoint) so data survives dev-server restarts. On boot it reads that file back, so wiping `localStorage` leaves the app fully populated. The file is served per dev server, not per origin, so `localhost:8081` and `127.0.0.1:8081` restore the *same* data even though their `localStorage` is separate.
 - Fix: to test a clean install on web, empty the file too (`printf '{}' > apps/mobile/.dev-store.json`) and make sure no tab still has the app running — a live instance re-persists its in-memory state on the way out, silently undoing the wipe.
 - Note: a fresh boot also re-runs the body-fat migration (`gymnasia.mobile.body_fat_migration_done`), which injects ~90 body-fat-only measurements. Expect the measurement count to differ from what you seeded.
+
+### Vercel no despliega `arquitectura-agente/` en el push: la integración de Git está inactiva
+- Gotcha: el repo *parece* conectado a Vercel — hay deployments de `vercel[bot]` en
+  GitHub — pero los últimos son del **2 de marzo de 2026**. Todo lo publicado después
+  se subió con la CLI desde local. Un push a `main` que toque `arquitectura-agente/`
+  se queda en el repo: producción sigue sirviendo la versión anterior, sin ningún error
+  visible en ninguna parte.
+- Comprobar si un push ha desplegado algo:
+  ```bash
+  gh api repos/maximofn/gymnasia/deployments --jq '[.[].created_at] | max'
+  ```
+  Si esa fecha no se mueve tras el push, no ha desplegado: hay que lanzar la CLI a mano
+  (ver "Tablero de seguimiento — Deploy Runbook").
+- Fix definitivo pendiente: reconectar el proyecto en el dashboard de Vercel si se quiere
+  despliegue automático.
 
 ## Post-Modification Workflow
 After each modification, create a local commit:

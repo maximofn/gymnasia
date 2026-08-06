@@ -325,7 +325,14 @@ h2.section-title::before {
   padding: var(--sp-4);
   border-bottom: 1px solid var(--border-subtle);
   background: linear-gradient(180deg, rgba(203, 255, 26, 0.04), transparent);
+  cursor: pointer;
 }
+
+.epic-head:hover { background: rgba(203, 255, 26, 0.05); }
+
+.epic.is-collapsed .epic-head { border-bottom: 0; }
+
+.epic.is-collapsed .ticket-list { display: none; }
 
 .epic-title-row {
   display: flex;
@@ -340,6 +347,46 @@ h2.section-title::before {
   font-weight: 800;
   line-height: 1.3;
 }
+
+.epic-title a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.epic-title a:hover {
+  color: var(--brand);
+  border-bottom-color: var(--brand-dim);
+}
+
+/* ---------- Plegado ---------- */
+.toggle-caret {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 17px;
+  line-height: 1;
+  padding: 0;
+  width: 16px;
+  flex: 0 0 16px;
+  cursor: pointer;
+  transform: rotate(90deg);
+  transform-origin: center;
+  transition: transform 0.18s ease, color 0.15s ease;
+}
+
+.toggle-caret[aria-expanded="false"] { transform: rotate(0deg); }
+
+.toggle-caret:hover { color: var(--brand); }
+
+.toggle-caret:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.toggle-caret.empty { visibility: hidden; cursor: default; }
 
 .epic-kind {
   font-size: 10px;
@@ -403,28 +450,32 @@ h2.section-title::before {
 
 .ticket {
   display: grid;
-  grid-template-columns: 92px 1fr auto;
+  grid-template-columns: 16px 92px 1fr auto;
   gap: var(--sp-3);
   align-items: start;
   padding: var(--sp-3) var(--sp-4);
   border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
 }
 
 .ticket:last-child { border-bottom: 0; }
 
 .ticket:hover { background: rgba(255, 255, 255, 0.02); }
 
+.ticket .toggle-caret { padding-top: 3px; }
+
+.ticket-detail { display: none; }
+
+.ticket.is-expanded .ticket-detail { display: block; }
+
 .ticket-id {
   font-family: var(--font-mono);
   font-size: 12.5px;
   font-weight: 700;
   color: var(--brand);
-  text-decoration: none;
   padding-top: 2px;
   white-space: nowrap;
 }
-
-.ticket-id:hover { text-decoration: underline; }
 
 .ticket-main { min-width: 0; }
 
@@ -432,6 +483,23 @@ h2.section-title::before {
   font-size: 14.5px;
   font-weight: 600;
   line-height: 1.4;
+}
+
+a.ticket-title {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+a.ticket-title:hover {
+  color: var(--brand);
+  border-bottom-color: var(--brand-dim);
+}
+
+a.ticket-title:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
 }
 
 .ticket-summary {
@@ -450,15 +518,40 @@ h2.section-title::before {
 
 .ticket-side {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding-top: 1px;
 }
 
-.ticket.is-canceled .ticket-title,
-.ticket.is-canceled .ticket-summary { text-decoration: line-through; opacity: 0.6; }
+/* Lo cerrado se aparta de la vista: fondo más apagado que la superficie y texto
+   sin contraste, para que el ojo se vaya solo a lo que queda por hacer. */
+.ticket.is-done,
+.ticket.is-canceled {
+  background: rgba(7, 9, 13, 0.5);
+}
 
-.ticket.is-done .ticket-title { color: var(--text-secondary); }
+.ticket.is-done:hover,
+.ticket.is-canceled:hover { background: rgba(7, 9, 13, 0.35); }
+
+.ticket.is-done .ticket-id,
+.ticket.is-canceled .ticket-id { color: var(--brand-dim); opacity: 0.5; }
+
+.ticket.is-done .ticket-title,
+.ticket.is-canceled .ticket-title { color: var(--text-muted); font-weight: 500; }
+
+.ticket.is-done .ticket-summary,
+.ticket.is-canceled .ticket-summary { color: #575d68; }
+
+.ticket.is-done .state-pill,
+.ticket.is-done .tag,
+.ticket.is-canceled .state-pill,
+.ticket.is-canceled .tag { opacity: 0.6; }
+
+.ticket.is-canceled .ticket-title,
+.ticket.is-canceled .ticket-summary { text-decoration: line-through; }
 
 .tag {
   display: inline-flex;
@@ -581,6 +674,17 @@ h2.section-title::before {
   color: var(--text-muted);
   margin-top: 6px;
 }
+
+.card.is-done,
+.card.is-canceled { background: rgba(7, 9, 13, 0.5); }
+
+.card.is-done .card-id,
+.card.is-canceled .card-id { opacity: 0.5; }
+
+.card.is-done .card-title,
+.card.is-canceled .card-title { color: var(--text-muted); }
+
+.card.is-canceled .card-title { text-decoration: line-through; }
 
 /* ---------- Dependencias ---------- */
 .deps-head { margin-bottom: var(--sp-4); }
@@ -763,13 +867,14 @@ h2.section-title::before {
   .search { flex: 1 1 100%; }
 
   .ticket {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 16px 1fr auto;
     grid-template-areas:
-      "id side"
-      "main main";
+      "caret id   side"
+      ".     main main";
     row-gap: var(--sp-2);
   }
 
+  .ticket > .toggle-caret { grid-area: caret; }
   .ticket-id { grid-area: id; }
   .ticket-side { grid-area: side; flex-direction: row; align-items: center; }
   .ticket-main { grid-area: main; }

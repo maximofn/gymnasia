@@ -85,6 +85,17 @@ npx --yes serve arquitectura-agente
 
 ## Despliegue
 
-Proyecto de Vercel ya enlazado (`.vercel/project.json`, git-ignored). `vercel.json`
-solo activa `cleanUrls` y desactiva `trailingSlash`: no hay build, se sirven los
-ficheros tal cual.
+**Un push a `main` no despliega esto.** La integración de Git de Vercel está inactiva
+en el repo, así que hay que lanzar la CLI a mano desde la raíz:
+
+```bash
+npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
+```
+
+La CLI no está instalada de forma permanente (`npm exec` la baja al vuelo) pero la
+sesión sigue autenticada, así que no hace falta `vercel login`. Usar `npm exec --`
+y no `npx`: el hook de rtk reescribe `npx` a `npm` y falla.
+
+`vercel.json` solo activa `cleanUrls` y desactiva `trailingSlash`: no hay build, se
+sirven los ficheros tal cual. Por `cleanUrls`, `/index.html` responde con un
+`Redirecting...`; para verificar el despliegue hay que pedir `/`.
