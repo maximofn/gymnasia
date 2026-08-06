@@ -19,6 +19,28 @@
     missing: "sin código",
   };
 
+  // A diferencia del plegado de épicas, que es exploración pasajera, esto es una
+  // preferencia sobre un bloque fijo de la cabecera: si se contrae, debe seguir
+  // contraído al volver. De ahí que sí se persista.
+  const ROADMAP_COLLAPSED_KEY = "gymnasia.board.roadmapCollapsed";
+
+  function loadRoadmapCollapsed() {
+    try {
+      return localStorage.getItem(ROADMAP_COLLAPSED_KEY) === "1";
+    } catch {
+      return false; // modo privado o storage bloqueado: se abre, y ya está
+    }
+  }
+
+  function saveRoadmapCollapsed(collapsed) {
+    try {
+      if (collapsed) localStorage.setItem(ROADMAP_COLLAPSED_KEY, "1");
+      else localStorage.removeItem(ROADMAP_COLLAPSED_KEY);
+    } catch {
+      /* si no se puede guardar, el plegado dura lo que la sesión */
+    }
+  }
+
   const state = {
     data: null,
     tickets: new Map(), // id -> { ...ticket, group }
@@ -34,6 +56,7 @@
     // abiertas. Ambos conjuntos sobreviven a los re-renders de filtro/búsqueda.
     expandedTickets: new Set(),
     collapsedEpics: new Set(),
+    roadmapCollapsed: false, // se rellena en init desde localStorage
   };
 
   // ------------------------------------------------------------------ utils
@@ -172,8 +195,25 @@
     }
     container.hidden = false;
 
+    const pendingCount = pending.reduce((n, phase) => n + phase.tickets.length, 0);
+    container.classList.toggle("is-collapsed", state.roadmapCollapsed);
+
     const head = el("div", "roadmap-head");
-    head.append(el("h2", "roadmap-title", "Por dónde seguir"));
+
+    const titleRow = el("div", "roadmap-title-row");
+    const caret = toggleButton("el orden recomendado", !state.roadmapCollapsed);
+    titleRow.append(caret);
+    titleRow.append(el("h2", "roadmap-title", "Por dónde seguir"));
+    // El recuento se queda visible al contraer: plegado sigue diciendo algo.
+    titleRow.append(
+      el(
+        "span",
+        "roadmap-count",
+        `${pending.length} fases · ${pendingCount} pendientes`,
+      ),
+    );
+    head.append(titleRow);
+
     head.append(
       el(
         "p",
@@ -182,6 +222,14 @@
           "así que lo primero de arriba es siempre lo siguiente que toca.",
       ),
     );
+
+    head.addEventListener("click", () => {
+      state.roadmapCollapsed = !state.roadmapCollapsed;
+      container.classList.toggle("is-collapsed", state.roadmapCollapsed);
+      setToggleState(caret, "el orden recomendado", !state.roadmapCollapsed);
+      saveRoadmapCollapsed(state.roadmapCollapsed);
+    });
+
     container.append(head);
 
     const list = el("ol", "roadmap-phases");
@@ -884,6 +932,7 @@
 
     state.data = data;
     state.activeStates = new Set(data.states.map((s) => s.id));
+    state.roadmapCollapsed = loadRoadmapCollapsed();
     indexData(data);
 
     renderMeta();

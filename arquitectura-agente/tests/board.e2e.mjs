@@ -149,6 +149,47 @@ async function run() {
     );
     logStep(`Orden recomendado: ${expectedPhases.length} fases, ${roadmapIds.length} tickets`);
 
+    // --- Plegado del orden recomendado --------------------------------------
+    assert.equal(
+      await page.locator(".roadmap .toggle-caret").getAttribute("aria-expanded"),
+      "true",
+      "el orden recomendado debe nacer desplegado",
+    );
+
+    await page.click(".roadmap .roadmap-head");
+    await page.locator(".roadmap-phases").waitFor({ state: "hidden", timeout: STEP_TIMEOUT_MS });
+    assert.equal(
+      await page.locator(".roadmap .toggle-caret").getAttribute("aria-expanded"),
+      "false",
+      "el aria-expanded del orden recomendado no se actualiza",
+    );
+    // Plegado sigue informando de cuánto queda.
+    assert.match(
+      await page.locator(".roadmap-count").innerText(),
+      /^\d+ fases · \d+ pendientes$/,
+      "el recuento debe seguir visible al plegar",
+    );
+
+    // La preferencia sobrevive a una recarga: es un bloque fijo de la cabecera.
+    await page.reload();
+    await page.waitForSelector("body[data-ready=true]", { timeout: STEP_TIMEOUT_MS });
+    assert.equal(
+      await page.locator(".roadmap-phases").isVisible(),
+      false,
+      "el orden recomendado se despliega solo al recargar",
+    );
+
+    await page.click(".roadmap .roadmap-head");
+    await page.locator(".roadmap-phases").waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    await page.reload();
+    await page.waitForSelector("body[data-ready=true]", { timeout: STEP_TIMEOUT_MS });
+    assert.equal(
+      await page.locator(".roadmap-phases").isVisible(),
+      true,
+      "al desplegar y recargar debe seguir desplegado",
+    );
+    logStep("Plegado del orden recomendado ok (persiste entre recargas)");
+
     // --- Solo el nombre del ticket lleva a Linear ---------------------------
     const firstTicketId = renderedIds[0];
     const href = await page

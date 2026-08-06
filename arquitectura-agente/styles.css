@@ -140,7 +140,18 @@ a { color: inherit; }
 
 .roadmap[hidden] { display: none; }
 
-.roadmap-head { margin-bottom: var(--sp-4); }
+.roadmap-head {
+  margin-bottom: var(--sp-4);
+  cursor: pointer;
+  user-select: none;
+}
+
+.roadmap-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
 
 .roadmap-title {
   margin: 0;
@@ -148,12 +159,31 @@ a { color: inherit; }
   color: var(--text-primary);
 }
 
+.roadmap-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-alt);
+  white-space: nowrap;
+}
+
+.roadmap-head:hover .roadmap-title { color: var(--brand); }
+
 .roadmap-intro {
   margin: var(--sp-2) 0 0;
+  padding-left: 24px; /* alineado con el título, salvando el caret */
   font-size: 13px;
   color: var(--text-secondary);
   max-width: 70ch;
 }
+
+/* Plegado: se queda el título y el recuento, desaparece todo lo demás. */
+.roadmap.is-collapsed .roadmap-head { margin-bottom: 0; }
+.roadmap.is-collapsed .roadmap-intro { display: none; }
+.roadmap.is-collapsed .roadmap-phases { display: none; }
 
 .roadmap-phases {
   list-style: none;

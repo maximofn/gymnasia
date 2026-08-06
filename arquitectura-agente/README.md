@@ -45,6 +45,14 @@ La etiqueta de punto de partida se reetiqueta aquí ("código ya escrito" en vez
 "Hecho"): en una lista de tickets abiertos, un "Hecho" a secas se lee como ticket
 cerrado.
 
+**Se puede contraer** pinchando en la cabecera. Plegado deja una barra con el
+título y el recuento (`7 fases · 20 pendientes`), así que sigue informando. A
+diferencia del plegado de épicas, que dura lo que la sesión, este **se recuerda
+entre visitas** (`localStorage`, clave `gymnasia.board.roadmapCollapsed`): ocupa
+la cabecera de forma permanente, así que si alguien lo pliega es una preferencia,
+no una acción de exploración. Si `localStorage` no está disponible (modo privado),
+se abre y no falla nada.
+
 ## Las tres vistas
 
 - **Épicas** — agrupación de primer nivel con barra de progreso. Es la vista por
