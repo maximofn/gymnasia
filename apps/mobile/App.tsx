@@ -31,6 +31,7 @@ import {
   Text,
   TextInput,
   Linking,
+  useWindowDimensions,
   Vibration,
   View,
 } from "react-native";
@@ -692,7 +693,9 @@ const PROVIDER_UI_META: Record<
     avatar_text: "#EFF4FF",
   },
 };
-const DEFAULT_WEB_API_BASE_URL = "http://127.0.0.1:8000";
+// Production web is static and has no bundled backend. Keep the proxy opt-in so
+// the deployed app never tries to call a developer's localhost by accident.
+const DEFAULT_WEB_API_BASE_URL = "";
 const PROVIDER_STATUS_COPY = {
   success: "Conexión verificada.",
   warningNoKey: "Atención: guarda una API key para conectar el proveedor.",
@@ -714,7 +717,8 @@ function resolveWebApiBaseUrl(): string {
 }
 
 function buildWebProxyUrl(path: string): string {
-  return `${resolveWebApiBaseUrl()}${path}`;
+  const baseUrl = resolveWebApiBaseUrl();
+  return baseUrl ? `${baseUrl}${path}` : path;
 }
 
 function normalizeChatSystemPrompt(value: string | null | undefined): string {
@@ -899,7 +903,9 @@ function findFoodInRepo(
   return partial ?? null;
 }
 
-const GITHUB_FOOD_ISSUE_TOKEN = process.env.EXPO_PUBLIC_GITHUB_TOKEN ?? "";
+// A static client must never embed a GitHub write token. Issue creation needs a
+// trusted server/proxy and is intentionally disabled until one exists.
+const GITHUB_FOOD_ISSUE_TOKEN = "";
 
 async function createGitHubFoodIssue(food: {
   name: string;
@@ -910,6 +916,7 @@ async function createGitHubFoodIssue(food: {
   grams: number;
   food_type?: "producto_comercial" | "receta" | "alimento" | "manual";
 }): Promise<void> {
+  if (!GITHUB_FOOD_ISSUE_TOKEN) return;
   try {
     const titlePrefix =
       food.food_type === "producto_comercial" ? "[Nuevo producto comercial]"
@@ -986,6 +993,7 @@ async function createGitHubExerciseIssue(exercise: {
   difficulty?: string;
   instructions?: string;
 }): Promise<void> {
+  if (!GITHUB_FOOD_ISSUE_TOKEN) return;
   try {
     const secondaryLabel = exercise.secondary_muscles?.length
       ? exercise.secondary_muscles.join(", ")
@@ -1046,6 +1054,7 @@ async function createGitHubFeatureIssue(params: {
   conversation_excerpt: string;
   interpretation: string;
 }): Promise<void> {
+  if (!GITHUB_FOOD_ISSUE_TOKEN) return;
   try {
     const body = [
       `### Fragmento de la conversación`,
@@ -6338,6 +6347,108 @@ function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: stri
   );
 }
 
+function DesktopSidebar({ tab, onTabChange }: { tab: TabKey; onTabChange: (tab: TabKey) => void }) {
+  const navigation: Array<{ key: TabKey; icon: string }> = [
+    { key: "home", icon: "home-outline" },
+    { key: "training", icon: "barbell-outline" },
+    { key: "diet", icon: "restaurant-outline" },
+    { key: "measures", icon: "body-outline" },
+    { key: "chat", icon: "chatbubble-ellipses-outline" },
+    { key: "settings", icon: "settings-outline" },
+  ];
+
+  return (
+    <View
+      style={{
+        width: 246,
+        flexShrink: 0,
+        paddingHorizontal: 18,
+        paddingVertical: 24,
+        gap: 26,
+        borderRightWidth: 1,
+        borderRightColor: mobileTheme.color.borderSubtle,
+        backgroundColor: "#0A0E14",
+      }}
+    >
+      <View style={{ paddingHorizontal: 10, gap: 5 }}>
+        <Text
+          style={{
+            color: mobileTheme.color.brandPrimary,
+            fontSize: 23,
+            fontWeight: "900",
+            letterSpacing: 3,
+          }}
+        >
+          GYMNASIA
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, letterSpacing: 1.4 }}>
+          LOCAL-FIRST FITNESS
+        </Text>
+      </View>
+
+      <View style={{ gap: 8 }}>
+        {navigation.map(({ key, icon }) => {
+          const active = tab === key;
+          return (
+            <Pressable
+              key={key}
+              onPress={() => onTabChange(key)}
+              testID={`desktop-nav-${key}`}
+              accessibilityLabel={tabLabel(key)}
+              accessibilityRole="button"
+              style={{
+                minHeight: 48,
+                borderRadius: 12,
+                paddingHorizontal: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+                backgroundColor: active ? "rgba(203,255,26,0.12)" : "transparent",
+                borderWidth: 1,
+                borderColor: active ? "rgba(203,255,26,0.38)" : "transparent",
+              }}
+            >
+              <Ionicons
+                name={icon as keyof typeof Ionicons.glyphMap}
+                size={19}
+                color={active ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary}
+              />
+              <Text
+                style={{
+                  color: active ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary,
+                  fontSize: 14,
+                  fontWeight: active ? "800" : "600",
+                }}
+              >
+                {tabLabel(key)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <View
+        style={{
+          marginTop: "auto",
+          borderWidth: 1,
+          borderColor: "rgba(203,255,26,0.22)",
+          borderRadius: 14,
+          backgroundColor: "rgba(203,255,26,0.06)",
+          padding: 12,
+          gap: 5,
+        }}
+      >
+        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "800", letterSpacing: 1 }}>
+          LOCAL-FIRST
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 17 }}>
+          Tu progreso se queda en este navegador.
+        </Text>
+      </View>
+    </View>
+  );
+}
+
 function normalizeDietSettings(rawValue: unknown): DietSettings {
   const defaults = createDefaultDietSettings();
   if (!rawValue || typeof rawValue !== "object") return defaults;
@@ -7555,6 +7666,8 @@ function TracePanel() {
 }
 
 export default function App() {
+  const { width: viewportWidth } = useWindowDimensions();
+  const isDesktopWeb = Platform.OS === "web" && viewportWidth >= 960;
   const [tab, setTab] = useState<TabKey>("home");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -10644,15 +10757,18 @@ export default function App() {
     if (provider.provider === "anthropic") {
       const isWeb = Platform.OS === "web";
       const baseUrl = isWeb
-        ? (process.env.EXPO_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000") + "/chat/providers/anthropic/messages"
+        ? buildWebProxyUrl("/chat/providers/anthropic/messages")
         : "https://api.anthropic.com/v1/messages";
       const headers: Record<string, string> = { "Content-Type": "application/json" };
-      if (isWeb) { headers["x-anthropic-api-key"] = provider.api_key; }
-      else { headers["x-api-key"] = provider.api_key; headers["anthropic-version"] = ANTHROPIC_API_VERSION; }
+      if (!isWeb) {
+        headers["x-api-key"] = provider.api_key;
+        headers["anthropic-version"] = ANTHROPIC_API_VERSION;
+      }
       const response = await fetch(baseUrl, {
         method: "POST",
         headers,
         body: JSON.stringify({
+          ...(isWeb ? { api_key: provider.api_key } : {}),
           model,
           max_tokens: 1024,
           messages: [{ role: "user", content: extractPrompt }],
@@ -13046,10 +13162,26 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: mobileTheme.color.bgApp }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        minWidth: 0,
+        flexDirection: isDesktopWeb ? "row" : "column",
+        backgroundColor: mobileTheme.color.bgApp,
+      }}
+    >
+      {isDesktopWeb ? <DesktopSidebar tab={tab} onTabChange={setTab} /> : null}
       <View
         style={{
-          paddingHorizontal: mobileTheme.spacing[4],
+          flex: 1,
+          minWidth: 0,
+          width: "100%",
+          maxWidth: isDesktopWeb ? 1440 : undefined,
+        }}
+      >
+      <View
+        style={{
+          paddingHorizontal: isDesktopWeb ? 32 : mobileTheme.spacing[4],
           paddingTop: mobileTheme.spacing[4],
           paddingBottom: 10,
           gap: 12,
@@ -13086,59 +13218,61 @@ export default function App() {
         ) : (
           <TabTitle>{headerTitle}</TabTitle>
         )}
-        <View
-          style={{
-            minHeight: 54,
-            borderRadius: 14,
-            borderWidth: 1,
-            borderColor: mobileTheme.color.borderSubtle,
-            backgroundColor: mobileTheme.color.bgSurface,
-            flexDirection: "row",
-            padding: 4,
-            gap: 4,
-          }}
-        >
-          {(["home", "training", "diet", "measures", "chat", "settings"] as TabKey[]).map((key) => {
-            const isActiveTab = tab === key;
-            const tabTextColor = isActiveTab
-              ? mobileTheme.color.brandPrimary
-              : mobileTheme.color.textSecondary;
-            return (
-              <Pressable
-                key={key}
-                onPress={() => setTab(key)}
-                testID={`nav-tab-${key}`}
-                accessibilityLabel={tabLabel(key)}
-                accessibilityRole="button"
-                style={{
-                  flex: 1,
-                  minHeight: 44,
-                  borderRadius: 10,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: isActiveTab ? "rgba(203,255,26,0.14)" : "transparent",
-                  borderWidth: isActiveTab ? 1 : 0,
-                  borderColor: isActiveTab ? "rgba(203,255,26,0.5)" : "transparent",
-                }}
-              >
-                {key === "settings" ? (
-                  <Ionicons color={tabTextColor} name="settings-sharp" size={18} />
-                ) : (
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      color: tabTextColor,
-                      fontWeight: "700",
-                      fontSize: 11,
-                    }}
-                  >
-                    {tabLabel(key)}
-                  </Text>
-                )}
-              </Pressable>
-            );
-          })}
-        </View>
+        {!isDesktopWeb ? (
+          <View
+            style={{
+              minHeight: 54,
+              borderRadius: 14,
+              borderWidth: 1,
+              borderColor: mobileTheme.color.borderSubtle,
+              backgroundColor: mobileTheme.color.bgSurface,
+              flexDirection: "row",
+              padding: 4,
+              gap: 4,
+            }}
+          >
+            {(["home", "training", "diet", "measures", "chat", "settings"] as TabKey[]).map((key) => {
+              const isActiveTab = tab === key;
+              const tabTextColor = isActiveTab
+                ? mobileTheme.color.brandPrimary
+                : mobileTheme.color.textSecondary;
+              return (
+                <Pressable
+                  key={key}
+                  onPress={() => setTab(key)}
+                  testID={`nav-tab-${key}`}
+                  accessibilityLabel={tabLabel(key)}
+                  accessibilityRole="button"
+                  style={{
+                    flex: 1,
+                    minHeight: 44,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: isActiveTab ? "rgba(203,255,26,0.14)" : "transparent",
+                    borderWidth: isActiveTab ? 1 : 0,
+                    borderColor: isActiveTab ? "rgba(203,255,26,0.5)" : "transparent",
+                  }}
+                >
+                  {key === "settings" ? (
+                    <Ionicons color={tabTextColor} name="settings-sharp" size={18} />
+                  ) : (
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        color: tabTextColor,
+                        fontWeight: "700",
+                        fontSize: 11,
+                      }}
+                    >
+                      {tabLabel(key)}
+                    </Text>
+                  )}
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : null}
       </View>
 
       {loading ? (
@@ -14312,6 +14446,24 @@ export default function App() {
                       <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
                     </Pressable>
                   </View>
+
+                  <Pressable
+                    onPress={discardWorkoutSession}
+                    testID="training-session-discard"
+                    style={{
+                      minHeight: 38,
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      borderColor: confirmDiscardSession ? "rgba(255,138,138,0.72)" : "rgba(255,255,255,0.08)",
+                      backgroundColor: confirmDiscardSession ? "rgba(255,75,75,0.14)" : "transparent",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ color: confirmDiscardSession ? "#FF8A8A" : "#8B94A3", fontSize: 13, fontWeight: "700" }}>
+                      {confirmDiscardSession ? "Abandonar sesión definitivamente" : "Abandonar sesión"}
+                    </Text>
+                  </Pressable>
 	                </View>
 
                 <View style={{ gap: 6 }}>
@@ -14587,6 +14739,7 @@ export default function App() {
                                     );
                                   }}
                                   disabled={false}
+                                  testID={`training-session-complete-series-${seriesState.key}`}
                                   hitSlop={6}
                                   style={{
                                     width: 22,
@@ -15190,6 +15343,7 @@ export default function App() {
                   >
                     <Pressable
                       onPress={closeTrainingTemplateDetails}
+                      testID="training-detail-back"
                       style={{
                         width: 40,
                         height: 40,
@@ -24508,6 +24662,7 @@ export default function App() {
       )}
 
       <StatusBar style="light" />
+      </View>
     </SafeAreaView>
   );
 }

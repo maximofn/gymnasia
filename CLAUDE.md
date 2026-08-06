@@ -71,7 +71,9 @@ Run from repo root unless noted.
     `apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py`
   - If the virtualenv is missing, create/install it once:
     `cd apps/anthropic_proxy && uv venv .venv && .venv/bin/pip install fastapi uvicorn`
-  - It runs on `http://127.0.0.1:8000` (the default `EXPO_PUBLIC_API_BASE_URL`).
+  - It runs on `http://127.0.0.1:8000`; set `EXPO_PUBLIC_API_BASE_URL` to that
+    URL when you want Anthropic in the browser. Production web builds leave this
+    variable empty by default because no proxy is bundled.
   - Quick health check:
     `curl -sS http://127.0.0.1:8000/health`
   - The `/chat/providers/anthropic/messages` endpoint supports SSE streaming, so browser debugging can mirror the live Anthropic chat flow used by the mobile app.

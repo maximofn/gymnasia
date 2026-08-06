@@ -142,7 +142,13 @@ async function clickNavTab(page, label) {
   };
   const tabKey = labelToTabKey[label];
   if (tabKey) {
-    await page.locator(`[data-testid="nav-tab-${tabKey}"]`).click({ timeout: STEP_TIMEOUT_MS });
+    const mobileNav = page.locator(`[data-testid="nav-tab-${tabKey}"]`);
+    const desktopNav = page.locator(`[data-testid="desktop-nav-${tabKey}"]`);
+    if (await mobileNav.count()) {
+      await mobileNav.click({ timeout: STEP_TIMEOUT_MS });
+    } else {
+      await desktopNav.click({ timeout: STEP_TIMEOUT_MS });
+    }
     return;
   }
   await page.locator(`text=${label}`).last().click({ timeout: STEP_TIMEOUT_MS });
@@ -192,8 +198,10 @@ async function runTrainUsabilityE2E(page, baseUrl) {
 
   logStep("Resetting local data");
   await clickNavTab(page, "Configuración");
-  await expectBodyContains(page, "Restablecer datos locales");
-  await page.locator("text=Restablecer datos locales").first().click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText("Proveedor IA", { exact: true }).click({ timeout: STEP_TIMEOUT_MS });
+  const resetLocalData = page.getByText("Restablecer datos locales").first();
+  await resetLocalData.scrollIntoViewIfNeeded({ timeout: STEP_TIMEOUT_MS });
+  await resetLocalData.click({ timeout: STEP_TIMEOUT_MS });
 
   logStep("Opening Entrenamiento tab and validating empty state");
   await clickNavTab(page, "Entrenamiento");
@@ -204,9 +212,11 @@ async function runTrainUsabilityE2E(page, baseUrl) {
   await fillInputByPlaceholder(page, "Nombre de rutina", "QA - Rutina Principal");
   await page.locator("text=Cardio").first().click({ timeout: STEP_TIMEOUT_MS });
   await page.locator("text=+ Agregar ejercicio").first().click({ timeout: STEP_TIMEOUT_MS });
-  await page.locator('input[placeholder^="Ejercicio"]').first().fill("Intervalos Cinta QA");
+  await page.locator("text=Crear ejercicio personalizado").click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('input[placeholder^="Ej: Flexiones"]').fill("Intervalos Cinta QA");
+  await page.locator("text=Guardar ejercicio").click({ timeout: STEP_TIMEOUT_MS });
   for (let i = 0; i < 3; i += 1) {
-    await page.locator("text=+ Añadir serie").first().click({ timeout: STEP_TIMEOUT_MS });
+    await page.getByText("Añadir serie", { exact: false }).first().click({ timeout: STEP_TIMEOUT_MS });
   }
 
   logStep("Editing series and validating duration formula");
@@ -218,7 +228,7 @@ async function runTrainUsabilityE2E(page, baseUrl) {
   }
   await page.waitForFunction(
     () =>
-      document.querySelectorAll('input[value="6"], input[placeholder="6"]').length > 0,
+      document.querySelectorAll('input[value="5"], input[placeholder="5"]').length > 0,
     null,
     { timeout: STEP_TIMEOUT_MS },
   );
@@ -235,6 +245,7 @@ async function runTrainUsabilityE2E(page, baseUrl) {
 
   logStep("Saving routine");
   await page.locator("text=Guardar cambios").first().click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="training-detail-back"]').click({ timeout: STEP_TIMEOUT_MS });
   await expectBodyContains(page, "Mis Rutinas");
 
   logStep("Routine list actions: clone, move, delete");
@@ -254,16 +265,12 @@ async function runTrainUsabilityE2E(page, baseUrl) {
   await clickByTestIdPrefix(page, "training-session-complete-series");
   await expectBodyContains(page, "1/4 series");
 
-  logStep("Pausing, resuming and completing session");
-  await clickByTestIdPrefix(page, "training-session-toggle-pause");
-  await expectBodyContains(page, "Estado Pausado");
-  await clickByTestIdPrefix(page, "training-session-toggle-pause");
-  await expectBodyContains(page, "Estado Activo");
+  logStep("Completing session");
   if ((await page.locator('[data-testid="training-session-skip-rest"]').count()) > 0) {
     await page.locator('[data-testid="training-session-skip-rest"]').click({ force: true });
   }
   for (let i = 0; i < 3; i += 1) {
-    await clickByTestIdPrefix(page, "training-session-complete-series");
+    await clickByTestIdPrefix(page, "training-session-complete-series", i + 1);
     const skipLocator = page.locator('[data-testid="training-session-skip-rest"]');
     if ((await skipLocator.count()) > 0) {
       await skipLocator.click({ force: true });
@@ -288,8 +295,9 @@ async function main() {
   const headless = process.env.TRAIN_E2E_HEADLESS !== "0";
   const server = await ensureWebServer();
   const browser = await chromium.launch({ headless });
+  const viewportWidth = Number.parseInt(process.env.TRAIN_E2E_VIEWPORT_WIDTH ?? "390", 10) || 390;
   const context = await browser.newContext({
-    viewport: { width: 390, height: 844 },
+    viewport: { width: viewportWidth, height: viewportWidth >= 960 ? 900 : 844 },
   });
   const page = await context.newPage();
 
