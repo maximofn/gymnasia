@@ -345,6 +345,30 @@
           "related": []
         },
         {
+          "id": "GYM-50",
+          "title": "Memoria del agente",
+          "state": "backlog",
+          "summary": "Épica pendiente de desglosar. Hoy solo hay memoria semántica: falta episódica, timestamps, consolidación y defensa ante envenenamiento. El patrón JIT de las 4 tools de memoria ya está bien resuelto.",
+          "dependsOn": [],
+          "related": [
+            "GYM-45",
+            "GYM-51"
+          ]
+        },
+        {
+          "id": "GYM-51",
+          "title": "Context engineering",
+          "state": "backlog",
+          "summary": "Épica pendiente de desglosar. La app no recorta historial, no compacta y no usa prompt caching: el contexto crece sin techo y cada ronda paga tokens completos.",
+          "dependsOn": [],
+          "related": [
+            "GYM-41",
+            "GYM-46",
+            "GYM-30",
+            "GYM-50"
+          ]
+        },
+        {
           "id": "GYM-49",
           "title": "Crear maximofn.com/gymnasia-agent: post principal del agente con los dos grafos",
           "state": "done",
