@@ -8,6 +8,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa)
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
+- `arquitectura-agente/`: Tablero de seguimiento de epicas y tickets (espejo manual de Linear, sitio estatico en Vercel)
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
 
 ## Arranque rapido
@@ -30,6 +31,17 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
    ```
    npm --workspace apps/mobile exec tsc --noEmit
    ```
+
+## Tablero de seguimiento
+
+Espejo manual de los tickets de Linear en `arquitectura-agente/` (sitio estatico,
+sin backend). Los datos viven en `arquitectura-agente/data/board.json` y se
+actualizan a mano. Ver `arquitectura-agente/README.md`.
+
+```
+npm run test:board       # valida el JSON del tablero
+npm run test:board:e2e   # E2E con Playwright
+```
 
 ## Documentacion
 

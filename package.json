@@ -7,7 +7,10 @@
   "scripts": {
     "dev:mobile": "npm --workspace apps/mobile run start",
     "test:train:e2e": "node apps/mobile/scripts/train-usability.e2e.mjs",
-    "test:train:e2e:headed": "TRAIN_E2E_HEADLESS=0 npm run test:train:e2e"
+    "test:train:e2e:headed": "TRAIN_E2E_HEADLESS=0 npm run test:train:e2e",
+    "test:board": "node --test arquitectura-agente/tests/board-data.test.mjs",
+    "test:board:e2e": "node arquitectura-agente/tests/board.e2e.mjs",
+    "test:board:e2e:headed": "BOARD_E2E_HEADLESS=0 npm run test:board:e2e"
   },
   "devDependencies": {
     "playwright": "^1.58.2"
