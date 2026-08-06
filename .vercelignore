@@ -1,0 +1,12 @@
+.git
+.claude
+node_modules
+apps/*/node_modules
+apk-vivagym
+dist
+build
+.expo
+.dev-store.json
+.env
+__pycache__
+*.pyc
