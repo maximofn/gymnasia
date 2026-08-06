@@ -3,7 +3,8 @@
     "updated": "2026-08-06",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
-    "note": "Espejo manual de Linear. No hay conexión con la API: al mover un ticket de estado, actualizar aquí. Ver README.md."
+    "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
+    "ignore": ["GYM-1", "GYM-2", "GYM-3", "GYM-4"]
   },
   "states": [
     { "id": "backlog", "label": "Backlog" },
@@ -300,7 +301,7 @@
         },
         {
           "id": "GYM-10",
-          "title": "Fallback automático entre LLMs configurables",
+          "title": "Fallback automático entre LLMs configurables (chat general y estimador de comida)",
           "state": "backlog",
           "summary": "Si el proveedor activo falla, caer al siguiente configurado, en el chat general y en el estimador de comida.",
           "dependsOn": [],

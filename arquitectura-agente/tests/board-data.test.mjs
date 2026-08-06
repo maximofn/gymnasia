@@ -38,6 +38,18 @@ test("meta y catálogos están completos", () => {
   assert.ok(baselineIds.size >= 3, "faltan estados de partida en el catálogo");
 });
 
+test("meta.ignore no oculta tickets que sí están en el tablero", () => {
+  // `linear.py board` usa esta lista para no reportar el ruido de onboarding de
+  // Linear. Un id mal escrito aquí silenciaría un ticket real sin avisar.
+  for (const id of board.meta.ignore ?? []) {
+    assert.match(id, ID_PATTERN, `meta.ignore tiene un id inválido: ${id}`);
+    assert.ok(
+      !nodes.has(id),
+      `${id} está en meta.ignore y a la vez en el tablero: o se lista o se ignora`,
+    );
+  }
+});
+
 test("cada grupo tiene id, título, tipo válido y al menos un ticket", () => {
   assert.ok(board.groups.length > 0, "el tablero no tiene grupos");
   for (const group of board.groups) {

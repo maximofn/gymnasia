@@ -8,6 +8,47 @@ description: Leer, crear y modificar tickets (issues) en Linear del proyecto Gym
 Gestiona los issues de Linear (equipo **GYM / Gymnasia**) vía la API GraphQL,
 usando un script que lee `LINEAR_API_KEY` del `.env` de la raíz del repo.
 
+## Regla del espejo (obligatoria)
+
+**Cada vez que modifiques algo en Linear, actualiza el tablero espejo antes de
+terminar.** El tablero (`arquitectura-agente/`, publicado en
+<https://gymnasia-sable.vercel.app/>) es una página estática que no llama a la API:
+si no se actualiza a mano, se desincroniza en silencio y deja de servir para nada.
+
+Aplica a: cambios de estado, altas, bajas, cambios de título, de dependencias y de
+jerarquía. No aplica a comentarios (el tablero no los muestra).
+
+El ciclo completo, desde la raíz del repo:
+
+```bash
+# 1. Tras tocar Linear, ver qué ha quedado desincronizado
+python3 .claude/skills/linear-tickets/scripts/linear.py board
+
+# 2. Sincronizar los estados (lo demás se edita a mano, ver abajo)
+python3 .claude/skills/linear-tickets/scripts/linear.py board --apply
+
+# 3. Validar y desplegar
+npm run test:board
+npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
+```
+
+`board` sale con código 1 si hay diferencias, así que sirve tal cual como
+comprobación. **`--apply` solo escribe los estados y `meta.updated`**; lo demás lo
+reporta pero no lo toca, porque requiere criterio:
+
+- **Ticket nuevo** (`FALTA en el tablero`): añadirlo a mano al array `tickets` del
+  grupo que le corresponda, con `summary`, `dependsOn` y `related`. El resumen es
+  una línea escrita para quien no tiene contexto, no un copia-pega de la descripción.
+- **Título cambiado**: copiarlo tal cual de Linear. El tablero debe leerse igual
+  que Linear o deja de ser un espejo.
+- **`SOBRA`**: el ticket se borró en Linear. Quitarlo del tablero, y revisar que
+  nadie lo referencie en `dependsOn`/`related` (el test lo caza).
+- Un push a `main` **no despliega** el tablero: hay que lanzar la CLI de Vercel a
+  mano. Ver `arquitectura-agente/README.md`.
+
+El ruido de onboarding de Linear (GYM-1 a GYM-4) está en `meta.ignore` de
+`board.json` para que no se reporte en cada ejecución.
+
 ## Regla de seguridad (importante)
 
 - La key vive en el `.env` de la raíz (git-ignored). **Nunca** la imprimas
@@ -37,6 +78,13 @@ python3 .claude/skills/linear-tickets/scripts/linear.py get GYM-12              
 python3 .claude/skills/linear-tickets/scripts/linear.py teams                   # equipos
 python3 .claude/skills/linear-tickets/scripts/linear.py states GYM             # estados del flujo
 ```
+
+### Tablero espejo
+```bash
+python3 .claude/skills/linear-tickets/scripts/linear.py board            # informa de la deriva (exit 1 si hay)
+python3 .claude/skills/linear-tickets/scripts/linear.py board --apply    # sincroniza estados + meta.updated
+```
+Ver "Regla del espejo" arriba: es obligatorio tras cualquier modificación en Linear.
 
 ### Creación
 ```bash
@@ -159,3 +207,7 @@ Cuatro cosas que cuestan tiempo si no se saben:
    ticket no tendrá el contexto de la conversación: incluye rutas de fichero
    con línea (`App.tsx:4688`), comandos exactos, estado verificado con fecha,
    y las decisiones que quedan pendientes.
+6. **Antes de dar el trabajo por terminado, sincroniza el espejo.** `board`,
+   luego `board --apply`, luego desplegar. Ver "Regla del espejo". Es el paso
+   que más fácil se olvida porque Linear ya se ve correcto: el que se queda
+   desactualizado es el tablero, y nadie se entera hasta semanas después.

@@ -27,6 +27,7 @@ import json
 import re
 import sys
 import urllib.request
+from datetime import date
 from pathlib import Path
 
 API_URL = "https://api.linear.app/graphql"
@@ -284,6 +285,126 @@ def cmd_replace(args):
     print(f"\n{changed} issue(s) con cambios.")
 
 
+BOARD_PATH = ("arquitectura-agente", "data", "board.json")
+
+
+def board_state_id(linear_state_name: str) -> str:
+    """'In Progress' -> 'in_progress'. Los cinco estados del flujo GYM mapean asi."""
+    return linear_state_name.strip().lower().replace(" ", "_")
+
+
+def cmd_board(args):
+    """Compara el tablero espejo con Linear y, con --apply, sincroniza los estados.
+
+    El tablero (arquitectura-agente/) es una pagina estatica que no llama a la API:
+    los datos se generan aqui y se despliegan como JSON. Este comando solo toca los
+    estados y meta.updated; resumenes, dependencias y relaciones se escriben a mano
+    porque requieren criterio, asi que los tickets nuevos se reportan pero no se
+    inventan.
+    """
+    path = repo_root().joinpath(*BOARD_PATH)
+    if not path.exists():
+        sys.exit(f"No existe el tablero en {path}")
+
+    raw = path.read_text()
+    board = json.loads(raw)
+    ignore = set(board["meta"].get("ignore", []))
+
+    entries = {
+        t["id"]: (t, group)
+        for group in board["groups"]
+        for t in group["tickets"]
+    }
+    for group in board["groups"]:
+        if group.get("kind") == "epic":
+            entries.setdefault(group["id"], (group, None))
+
+    gql = """
+    query($key:String!,$first:Int){
+      issues(filter:{team:{key:{eq:$key}}}, first:$first){
+        nodes{ identifier title state{ name } }
+      }
+    }
+    """
+    nodes = query(gql, {"key": args.team.upper(), "first": 250})["issues"]["nodes"]
+    live = {n["identifier"]: n for n in nodes if n["identifier"] not in ignore}
+
+    drift_state, faltan, sobran, drift_title = [], [], [], []
+
+    for ident, node in sorted(live.items(), key=lambda kv: int(kv[0].split("-")[1])):
+        entry = entries.get(ident)
+        if entry is None:
+            faltan.append((ident, node["state"]["name"], node["title"]))
+            continue
+        item, _group = entry
+        expected = board_state_id(node["state"]["name"])
+        if item.get("state") != expected:
+            drift_state.append((ident, item.get("state"), expected))
+        if item.get("title") != node["title"]:
+            drift_title.append((ident, item.get("title"), node["title"]))
+
+    for ident in entries:
+        if ident not in live and ident not in ignore:
+            sobran.append(ident)
+
+    for ident, old, new in drift_state:
+        print(f"{ident:<10} estado  {old} -> {new}")
+    for ident, old, new in drift_title:
+        print(f"{ident:<10} titulo  {old!r}\n{'':<10}     -> {new!r}")
+    for ident, state, title in faltan:
+        print(f"{ident:<10} FALTA en el tablero [{state}] {title}")
+    for ident in sorted(sobran, key=lambda i: int(i.split("-")[1])):
+        print(f"{ident:<10} SOBRA: esta en el tablero pero no en Linear")
+
+    total = len(drift_state) + len(drift_title) + len(faltan) + len(sobran)
+    if not total:
+        print("El tablero coincide con Linear.")
+        return
+
+    if not args.apply:
+        print(f"\n{total} diferencia(s). Repite con --apply para sincronizar los estados.")
+        sys.exit(1)
+
+    # Escritura quirurgica: el JSON tiene objetos compactos escritos a mano y un
+    # json.dump completo los reformatearia entero. Se sustituye solo el valor de
+    # "state" que sigue al id, que es unico y no cruza el objeto (no hay llaves
+    # anidadas dentro de un ticket).
+    nuevo = raw
+    for ident, _old, new in drift_state:
+        pattern = re.compile(
+            r'("id":\s*"' + re.escape(ident) + r'"[^}]*?"state":\s*")[a-z_]+(")'
+        )
+        nuevo, hits = pattern.subn(r"\g<1>" + new + r"\g<2>", nuevo, count=1)
+        if not hits:
+            sys.exit(f"No se pudo localizar el estado de {ident} en el JSON; revisalo a mano.")
+
+    if drift_state:
+        nuevo = re.sub(r'("updated":\s*")\d{4}-\d{2}-\d{2}(")',
+                       r"\g<1>" + date.today().isoformat() + r"\g<2>", nuevo, count=1)
+
+    # Releer lo escrito antes de tocar el disco: una sustitucion mal hecha rompe
+    # el tablero entero y el fallo no se veria hasta desplegar.
+    check = json.loads(nuevo)
+    aplicados = {
+        t["id"]: t.get("state")
+        for group in check["groups"]
+        for t in group["tickets"]
+    }
+    for ident, _old, new in drift_state:
+        got = aplicados.get(ident, next(
+            (g.get("state") for g in check["groups"] if g["id"] == ident), None
+        ))
+        if got != new:
+            sys.exit(f"La sustitucion de {ident} no cuadra ({got!r} != {new!r}); no se ha escrito nada.")
+
+    path.write_text(nuevo)
+    print(f"\n{len(drift_state)} estado(s) sincronizado(s) en {path.relative_to(repo_root())}.")
+    pendiente = len(drift_title) + len(faltan) + len(sobran)
+    if pendiente:
+        print(f"Quedan {pendiente} diferencia(s) que requieren edicion a mano (titulos, altas y bajas).")
+    print("Recuerda desplegar: npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente")
+
+
 def cmd_comment(args):
     gql = """
     mutation Comment($input: CommentCreateInput!) {
@@ -341,6 +462,12 @@ def main():
     pr.add_argument("--replace", required=True, help="texto de reemplazo (\\n para salto de linea)")
     pr.add_argument("--dry-run", action="store_true", help="mostrar coincidencias sin escribir")
     pr.set_defaults(func=cmd_replace)
+
+    pb = sub.add_parser("board", help="comparar/sincronizar el tablero espejo con Linear")
+    pb.add_argument("--team", default="GYM", help="team key, por defecto GYM")
+    pb.add_argument("--apply", action="store_true",
+                    help="escribir los estados en board.json (sin esto, solo informa)")
+    pb.set_defaults(func=cmd_board)
 
     pm = sub.add_parser("comment", help="comentar un issue")
     pm.add_argument("id", help="identifier, p.ej. GYM-12")

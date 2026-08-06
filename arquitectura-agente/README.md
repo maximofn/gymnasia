@@ -32,13 +32,22 @@ el tablero.
 
 ## Actualizar el tablero
 
-Al mover un ticket en Linear, editar `data/board.json`:
+**Cada modificación en Linear obliga a actualizar el espejo.** El estado se
+sincroniza con la skill `linear-tickets`, desde la raíz del repo:
 
-1. Cambiar el `state` del ticket (`backlog`, `todo`, `in_progress`, `done`, `canceled`).
-2. Subir `meta.updated` a la fecha de hoy (`YYYY-MM-DD`).
-3. Pasar los tests: `npm run test:board`.
+```bash
+python3 .claude/skills/linear-tickets/scripts/linear.py board          # ¿qué ha derivado?
+python3 .claude/skills/linear-tickets/scripts/linear.py board --apply  # escribe estados + meta.updated
+npm run test:board
+npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
+```
 
-Para un ticket nuevo, añadirlo al array `tickets` de su grupo:
+`board` sale con código 1 si hay diferencias, así que vale como comprobación.
+`--apply` **solo** toca los estados y `meta.updated`: los títulos, las altas y las
+bajas los reporta pero no los escribe, porque un ticket nuevo necesita `summary`,
+`dependsOn` y `related` escritos con criterio.
+
+Para un ticket nuevo, añadirlo a mano al array `tickets` de su grupo:
 
 ```jsonc
 {
@@ -62,6 +71,8 @@ Notas sobre el modelo de datos:
 - Las épicas declaran su propio `dependsOn` y salen en el grafo con borde punteado.
 - El grupo `otros` (`kind: "group"`) recoge lo que en Linear no cuelga de ninguna
   épica. No lleva `state` ni enlace a Linear.
+- `meta.ignore` lista los tickets de Linear que el tablero no refleja a propósito
+  (el onboarding GYM-1 a GYM-4), para que `board` no los reporte en cada ejecución.
 
 ## Tests
 
