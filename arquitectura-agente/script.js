@@ -11,6 +11,14 @@
   const DATA_URL = "data/board.json";
   const VIEWS = ["epics", "states", "deps"];
 
+  // El punto de partida se reetiqueta en el orden recomendado: allí la lista es
+  // de tickets abiertos, y un "Hecho" a secas se leería como ticket cerrado.
+  const ROADMAP_BASELINE_LABEL = {
+    done: "código ya escrito",
+    partial: "código a medias",
+    missing: "sin código",
+  };
+
   const state = {
     data: null,
     tickets: new Map(), // id -> { ...ticket, group }
@@ -133,6 +141,98 @@
   }
 
   // ------------------------------------------------------------------ resumen
+
+  /**
+   * Orden recomendado de resolución. Va lo primero de la página porque responde
+   * a la única pregunta que se hace uno al abrir el tablero: "¿y ahora qué?".
+   *
+   * Se alimenta de `recommendedOrder` en board.json, pero filtra por el estado
+   * real de cada ticket: lo cerrado o cancelado desaparece, y una fase entera se
+   * oculta cuando ya no le queda nada. Así el orden se va vaciando solo según
+   * avanza el trabajo, sin tener que mantenerlo a mano.
+   */
+  function renderRoadmap() {
+    const container = $("#roadmap");
+    container.innerHTML = "";
+
+    const phases = state.data.recommendedOrder ?? [];
+    const pending = phases
+      .map((phase) => ({
+        ...phase,
+        tickets: phase.tickets.filter((id) => {
+          const st = nodeState(id);
+          return st && st !== "done" && st !== "canceled";
+        }),
+      }))
+      .filter((phase) => phase.tickets.length > 0);
+
+    if (pending.length === 0) {
+      container.hidden = true;
+      return;
+    }
+    container.hidden = false;
+
+    const head = el("div", "roadmap-head");
+    head.append(el("h2", "roadmap-title", "Por dónde seguir"));
+    head.append(
+      el(
+        "p",
+        "roadmap-intro",
+        "Orden recomendado de resolución. Lo cerrado desaparece de la lista, " +
+          "así que lo primero de arriba es siempre lo siguiente que toca.",
+      ),
+    );
+    container.append(head);
+
+    const list = el("ol", "roadmap-phases");
+
+    // La numeración es la de las fases que quedan, no la del JSON: al cerrar una
+    // fase entera el resto sube, en vez de dejar huecos.
+    pending.forEach((phase, index) => {
+      const item = el("li", "roadmap-phase");
+      item.dataset.phase = phase.id;
+
+      const header = el("div", "roadmap-phase-head");
+      header.append(el("span", "roadmap-step", String(index + 1)));
+      header.append(el("h3", "roadmap-phase-title", phase.title));
+      item.append(header);
+
+      const chips = el("div", "roadmap-tickets");
+      for (const id of phase.tickets) {
+        const chip = el("a", `roadmap-ticket state-${nodeState(id)}`);
+        chip.href = linearUrl(id);
+        chip.rel = "noopener";
+        chip.append(el("span", "dot"));
+        chip.append(el("span", "roadmap-ticket-id", id));
+        chip.append(el("span", "roadmap-ticket-title", nodeTitle(id)));
+
+        // El punto de partida es lo que decide si un ticket cuesta una tarde o
+        // una semana. Aquí se etiqueta como "código", no como "hecho": en una
+        // lista de pendientes, un "✅ Hecho" se lee como ticket cerrado y todos
+        // estos siguen abiertos (les faltan tests y artículo).
+        const baselineId = state.tickets.get(id)?.baseline;
+        const base = baselineId ? baselineInfo(baselineId) : null;
+        if (base) {
+          chip.append(
+            el(
+              "span",
+              `roadmap-ticket-base base-${base.id}`,
+              `${base.icon} ${ROADMAP_BASELINE_LABEL[base.id] ?? base.label}`,
+            ),
+          );
+        }
+
+        chips.append(chip);
+      }
+      item.append(chips);
+
+      if (phase.why) item.append(el("p", "roadmap-why", phase.why));
+
+      list.append(item);
+    });
+
+    container.append(list);
+  }
 
   function renderSummary() {
     const container = $("#summary");
@@ -787,6 +887,7 @@
     indexData(data);
 
     renderMeta();
+    renderRoadmap();
     renderSummary();
     renderStateFilters();
     renderEpics();

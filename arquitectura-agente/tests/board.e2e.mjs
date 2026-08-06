@@ -97,6 +97,58 @@ async function run() {
     const progressText = await page.locator(".epic .progress-text").first().innerText();
     assert.match(progressText, /^\d+\/\d+ · \d+%$/, "la barra de progreso no muestra el ratio");
 
+    // --- Orden recomendado --------------------------------------------------
+    // Es lo primero de la página, así que va antes que las pestañas en el DOM y
+    // solo enseña lo que queda por hacer.
+    const closed = new Set(
+      tickets.filter((t) => t.state === "done" || t.state === "canceled").map((t) => t.id),
+    );
+    const expectedPhases = board.recommendedOrder.filter((phase) =>
+      phase.tickets.some((id) => !closed.has(id)),
+    );
+
+    assert.equal(
+      await page.locator(".roadmap").isVisible(),
+      true,
+      "el orden recomendado no se muestra",
+    );
+    assert.equal(
+      await page.locator(".roadmap-phase").count(),
+      expectedPhases.length,
+      "el número de fases visibles no cuadra con lo pendiente",
+    );
+
+    const roadmapIds = await page.locator(".roadmap-ticket-id").allInnerTexts();
+    const closedShown = roadmapIds.filter((id) => closed.has(id));
+    assert.deepEqual(closedShown, [], `el orden muestra tickets ya cerrados: ${closedShown}`);
+
+    assert.deepEqual(
+      roadmapIds,
+      expectedPhases.flatMap((phase) => phase.tickets.filter((id) => !closed.has(id))),
+      "el orden de los tickets en pantalla no coincide con board.json",
+    );
+
+    // La numeración es la de las fases visibles: sin huecos aunque se cierre una entera.
+    assert.deepEqual(
+      await page.locator(".roadmap-step").allInnerTexts(),
+      expectedPhases.map((_, i) => String(i + 1)),
+      "la numeración de fases tiene huecos",
+    );
+
+    // Debe ir por delante de las pestañas en el orden del documento.
+    assert.equal(
+      await page.evaluate(() => {
+        const roadmap = document.querySelector(".roadmap");
+        const tabs = document.querySelector(".tabs");
+        return Boolean(
+          roadmap.compareDocumentPosition(tabs) & Node.DOCUMENT_POSITION_FOLLOWING,
+        );
+      }),
+      true,
+      "el orden recomendado debe ir antes que las pestañas",
+    );
+    logStep(`Orden recomendado: ${expectedPhases.length} fases, ${roadmapIds.length} tickets`);
+
     // --- Solo el nombre del ticket lleva a Linear ---------------------------
     const firstTicketId = renderedIds[0];
     const href = await page

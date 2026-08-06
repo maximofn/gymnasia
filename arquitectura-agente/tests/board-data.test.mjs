@@ -154,3 +154,64 @@ test("el estado de partida solo se declara donde tiene sentido", () => {
     );
   }
 });
+
+test("el orden recomendado solo referencia tickets que existen", () => {
+  assert.ok(Array.isArray(board.recommendedOrder), "falta recommendedOrder");
+  assert.ok(board.recommendedOrder.length > 0, "recommendedOrder está vacío");
+
+  for (const phase of board.recommendedOrder) {
+    assert.match(phase.id, /^[a-z0-9-]+$/, `fase con id inválido: ${phase.id}`);
+    assert.ok(phase.title?.length > 0, `fase ${phase.id} sin título`);
+    assert.ok(phase.why?.length > 0, `fase ${phase.id} sin justificación`);
+    assert.ok(phase.tickets.length > 0, `fase ${phase.id} sin tickets`);
+
+    for (const id of phase.tickets) {
+      assert.ok(nodes.has(id), `${id} (fase ${phase.id}) no existe en el tablero`);
+    }
+  }
+});
+
+test("ningún ticket aparece en dos fases del orden recomendado", () => {
+  const seen = new Map();
+  for (const phase of board.recommendedOrder) {
+    for (const id of phase.tickets) {
+      assert.ok(!seen.has(id), `${id} está en las fases ${seen.get(id)} y ${phase.id}`);
+      seen.set(id, phase.id);
+    }
+  }
+});
+
+test("todo ticket abierto de una épica está en el orden recomendado", () => {
+  // Si una épica crece y nadie toca recommendedOrder, el ticket nuevo quedaría
+  // fuera del "por dónde seguir" sin que se note. Este test lo caza.
+  const planned = new Set(board.recommendedOrder.flatMap((p) => p.tickets));
+  const epicIds = new Set(epics.map((e) => e.id));
+
+  const missing = tickets
+    .filter((t) => epicIds.has(t.groupId))
+    .filter((t) => t.state !== "done" && t.state !== "canceled")
+    .filter((t) => !planned.has(t.id))
+    .map((t) => t.id);
+
+  assert.deepEqual(missing, [], `tickets de épica fuera del orden recomendado: ${missing.join(", ")}`);
+});
+
+test("el orden recomendado respeta las dependencias declaradas", () => {
+  // Un ticket no puede aparecer antes que algo que lo bloquea.
+  const position = new Map();
+  board.recommendedOrder.forEach((phase, phaseIndex) => {
+    phase.tickets.forEach((id, ticketIndex) => {
+      position.set(id, phaseIndex * 1000 + ticketIndex);
+    });
+  });
+
+  for (const [id, pos] of position) {
+    for (const blocker of nodes.get(id).dependsOn ?? []) {
+      if (!position.has(blocker)) continue; // ya cerrado o fuera del plan
+      assert.ok(
+        position.get(blocker) < pos,
+        `${id} aparece antes que ${blocker}, que lo bloquea`,
+      );
+    }
+  }
+});

@@ -16,10 +16,34 @@ el tablero.
 | Fichero | Qué es |
 | --- | --- |
 | `data/board.json` | **El único sitio que se toca al actualizar.** Todos los datos. |
-| `index.html` | Esqueleto: cabecera, pestañas y contenedores vacíos. |
+| `index.html` | Esqueleto: cabecera, orden recomendado, pestañas y contenedores vacíos. |
 | `script.js` | Render de las tres vistas y layout del grafo. Vanilla, sin dependencias. |
 | `styles.css` | Estilos. Mismos tokens de color que el resto del proyecto. |
 | `tests/` | Tests del JSON y E2E del tablero. |
+
+## Orden recomendado ("Por dónde seguir")
+
+Es lo primero de la página, por encima de las pestañas: responde a la única
+pregunta que se hace uno al abrir el tablero, *¿y ahora qué?*.
+
+Sale de `recommendedOrder` en `board.json`: una lista ordenada de fases, cada una
+con `title`, `why` (por qué va en ese punto) y `tickets`.
+
+**Se filtra solo.** El render descarta los tickets en `done` o `canceled` y oculta
+la fase entera cuando se queda vacía, renumerando las que quedan. Así la lista se
+va vaciando según avanza el trabajo sin mantenerla a mano: basta con sincronizar
+los estados (`linear.py board --apply`).
+
+Lo único que hay que tocar a mano es cuando **entra un ticket nuevo en una épica**:
+hay que colocarlo en la fase que le toque. El test `todo ticket abierto de una
+épica está en el orden recomendado` falla si se olvida.
+
+Otros dos tests protegen el orden: que ningún ticket aparezca en dos fases, y que
+ninguno vaya antes que algo que lo bloquea según `dependsOn`.
+
+La etiqueta de punto de partida se reetiqueta aquí ("código ya escrito" en vez de
+"Hecho"): en una lista de tickets abiertos, un "Hecho" a secas se lee como ticket
+cerrado.
 
 ## Las tres vistas
 

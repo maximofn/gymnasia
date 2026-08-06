@@ -4,19 +4,51 @@
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
-    "ignore": ["GYM-1", "GYM-2", "GYM-3", "GYM-4"]
+    "ignore": [
+      "GYM-1",
+      "GYM-2",
+      "GYM-3",
+      "GYM-4"
+    ]
   },
   "states": [
-    { "id": "backlog", "label": "Backlog" },
-    { "id": "todo", "label": "Todo" },
-    { "id": "in_progress", "label": "In Progress" },
-    { "id": "done", "label": "Done" },
-    { "id": "canceled", "label": "Canceled" }
+    {
+      "id": "backlog",
+      "label": "Backlog"
+    },
+    {
+      "id": "todo",
+      "label": "Todo"
+    },
+    {
+      "id": "in_progress",
+      "label": "In Progress"
+    },
+    {
+      "id": "done",
+      "label": "Done"
+    },
+    {
+      "id": "canceled",
+      "label": "Canceled"
+    }
   ],
   "baselines": [
-    { "id": "done", "label": "Hecho", "icon": "✅" },
-    { "id": "partial", "label": "Parcial", "icon": "🟡" },
-    { "id": "missing", "label": "Sin hacer", "icon": "❌" }
+    {
+      "id": "done",
+      "label": "Hecho",
+      "icon": "✅"
+    },
+    {
+      "id": "partial",
+      "label": "Parcial",
+      "icon": "🟡"
+    },
+    {
+      "id": "missing",
+      "label": "Sin hacer",
+      "icon": "❌"
+    }
   ],
   "groups": [
     {
@@ -25,7 +57,9 @@
       "title": "Tool calling (tools de cliente)",
       "state": "backlog",
       "summary": "El ciclo de vida completo de una llamada a tool ejecutada por la app, no por el proveedor del LLM. Se excluyen las tools de servidor (web search, code execution, computer use).",
-      "dependsOn": ["GYM-34"],
+      "dependsOn": [
+        "GYM-34"
+      ],
       "tickets": [
         {
           "id": "GYM-34",
@@ -41,7 +75,9 @@
           "state": "backlog",
           "baseline": "done",
           "summary": "15 tools declaradas con input_schema en App.tsx:4375-4434.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -50,7 +86,9 @@
           "state": "backlog",
           "baseline": "done",
           "summary": "Resuelto para los tres proveedores: tool_use (Anthropic), tool_calls (OpenAI) y functionCall (Google).",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -59,7 +97,9 @@
           "state": "backlog",
           "baseline": "done",
           "summary": "input_json_delta acumulado en el bloque tool_use (App.tsx:3302).",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -68,7 +108,9 @@
           "state": "backlog",
           "baseline": "done",
           "summary": "handleToolCall en App.tsx:1469: cadena de if (name === X) sobre las 15 tools, siempre Promise<string>.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -77,7 +119,9 @@
           "state": "backlog",
           "baseline": "done",
           "summary": "Bucle de 10 rondas en App.tsx:4688-4705. Al agotarlas termina en seco, sin mensaje ni traza.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -86,7 +130,9 @@
           "state": "backlog",
           "baseline": "missing",
           "summary": "La validación es manual y distinta en cada tool; nunca se comprueba contra el input_schema declarado.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -95,7 +141,9 @@
           "state": "backlog",
           "baseline": "partial",
           "summary": "Todas devuelven string, pero unas prosa y otras un JSON.stringify completo. Sin truncado ni límite.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -104,7 +152,9 @@
           "state": "backlog",
           "baseline": "missing",
           "summary": "No se usa is_error: un fallo vuelve como texto normal, indistinguible de un resultado correcto.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -113,7 +163,9 @@
           "state": "backlog",
           "baseline": "missing",
           "summary": "El bucle las ejecuta en serie (App.tsx:4695-4699) aunque Anthropic las devuelva como independientes.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -122,7 +174,9 @@
           "state": "backlog",
           "baseline": "partial",
           "summary": "tool_choice se usa exactamente una vez, en App.tsx:10659. No hay control general.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -131,7 +185,9 @@
           "state": "backlog",
           "baseline": "missing",
           "summary": "La confirmación vive solo en el prompt (App.tsx:631): es una sugerencia, no un control de código.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -140,7 +196,9 @@
           "state": "backlog",
           "baseline": "missing",
           "summary": "Las 15 tools se envían en cada llamada y en todos los turnos. Nunca se ha medido el coste ni el acierto.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -149,8 +207,12 @@
           "state": "backlog",
           "baseline": "missing",
           "summary": "Hoy no hay forma de reconstruir qué tools pidió el modelo, con qué argumentos y qué devolvieron.",
-          "dependsOn": ["GYM-34"],
-          "related": ["GYM-13"]
+          "dependsOn": [
+            "GYM-34"
+          ],
+          "related": [
+            "GYM-13"
+          ]
         },
         {
           "id": "GYM-48",
@@ -184,14 +246,18 @@
       "title": "Planificación (planning) en arquitecturas de agentes",
       "state": "backlog",
       "summary": "Épica de estudio: los cinco patrones de planning, implementados desde cero sobre una misma tarea de referencia para poder compararlos.",
-      "dependsOn": ["GYM-34"],
+      "dependsOn": [
+        "GYM-34"
+      ],
       "tickets": [
         {
           "id": "GYM-26",
           "title": "ReAct (Reason + Act): planificación implícita e incremental",
           "state": "backlog",
           "summary": "Pensamiento → acción → observación en bucle, sin plan explícito. Es la línea base contra la que se compara el resto.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -199,7 +265,10 @@
           "title": "Plan-and-Execute: plan explícito por adelantado",
           "state": "backlog",
           "summary": "Un planner genera N pasos antes de ejecutar nada; un executor los recorre. Menos llamadas al modelo caro, pero rígido.",
-          "dependsOn": ["GYM-34", "GYM-26"],
+          "dependsOn": [
+            "GYM-34",
+            "GYM-26"
+          ],
           "related": []
         },
         {
@@ -207,15 +276,23 @@
           "title": "ReWOO: plan con variables y ejecución sin LLM intermedio",
           "state": "backlog",
           "summary": "Plan con variables (#E1, #E2…) que referencian salidas previas, así las tools se resuelven sin volver a llamar al LLM.",
-          "dependsOn": ["GYM-34", "GYM-27"],
-          "related": ["GYM-26"]
+          "dependsOn": [
+            "GYM-34",
+            "GYM-27"
+          ],
+          "related": [
+            "GYM-26"
+          ]
         },
         {
           "id": "GYM-29",
           "title": "Replanning / Reflection: re-evaluar y reescribir el plan",
           "state": "backlog",
           "summary": "La fase que convierte Plan-and-Execute en algo usable: se monta encima de la implementación de GYM-27.",
-          "dependsOn": ["GYM-34", "GYM-27"],
+          "dependsOn": [
+            "GYM-34",
+            "GYM-27"
+          ],
           "related": []
         },
         {
@@ -223,7 +300,9 @@
           "title": "Planificación jerárquica (orchestrator-worker) y delegación en subagentes",
           "state": "backlog",
           "summary": "Un supervisor descompone el objetivo y delega en subagentes con sus propias tools y contexto.",
-          "dependsOn": ["GYM-34"],
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         },
         {
@@ -231,8 +310,12 @@
           "title": "Tablero de seguimiento de épicas y tareas (espejo de Linear)",
           "state": "done",
           "summary": "Este tablero. Espejo manual de Linear en HTML/CSS/JS vanilla, sin API ni backend.",
-          "dependsOn": ["GYM-49"],
-          "related": ["GYM-32"]
+          "dependsOn": [
+            "GYM-49"
+          ],
+          "related": [
+            "GYM-32"
+          ]
         }
       ]
     },
@@ -248,7 +331,10 @@
           "state": "in_progress",
           "summary": "Respaldar entrenamientos, plantillas, historial y ajustes en la nube manteniendo el enfoque local-first.",
           "dependsOn": [],
-          "related": ["GYM-24", "GYM-32"]
+          "related": [
+            "GYM-24",
+            "GYM-32"
+          ]
         },
         {
           "id": "GYM-8",
@@ -273,14 +359,18 @@
           "state": "done",
           "summary": "Primera entrega de GYM-5: copia de seguridad local, sin depender de ninguna cuenta de nube.",
           "dependsOn": [],
-          "related": ["GYM-5"]
+          "related": [
+            "GYM-5"
+          ]
         },
         {
           "id": "GYM-7",
           "title": "Implementar QR de acceso VivaGym en Gymnasia",
           "state": "done",
           "summary": "Reproduce dentro de la app el flujo de QR documentado en GYM-6.",
-          "dependsOn": ["GYM-6"],
+          "dependsOn": [
+            "GYM-6"
+          ],
           "related": []
         },
         {
@@ -297,7 +387,10 @@
           "state": "backlog",
           "summary": "La app ya corre en navegador vía react-native-web: el trabajo es empaquetar, resolver el almacenamiento y desplegar.",
           "dependsOn": [],
-          "related": ["GYM-5", "GYM-31"]
+          "related": [
+            "GYM-5",
+            "GYM-31"
+          ]
         },
         {
           "id": "GYM-10",
@@ -305,7 +398,10 @@
           "state": "backlog",
           "summary": "Si el proveedor activo falla, caer al siguiente configurado, en el chat general y en el estimador de comida.",
           "dependsOn": [],
-          "related": ["GYM-11", "GYM-13"]
+          "related": [
+            "GYM-11",
+            "GYM-13"
+          ]
         },
         {
           "id": "GYM-11",
@@ -313,7 +409,9 @@
           "state": "backlog",
           "summary": "Más proveedores junto a OpenAI, Anthropic y Google. Los que no soporten visión quedan fuera del Food Estimator.",
           "dependsOn": [],
-          "related": ["GYM-10"]
+          "related": [
+            "GYM-10"
+          ]
         },
         {
           "id": "GYM-12",
@@ -329,7 +427,10 @@
           "state": "backlog",
           "summary": "Trazas de las dos rutas de agente. Opcional por feature flag y nunca bloqueante.",
           "dependsOn": [],
-          "related": ["GYM-10", "GYM-47"]
+          "related": [
+            "GYM-10",
+            "GYM-47"
+          ]
         },
         {
           "id": "GYM-14",
@@ -345,7 +446,11 @@
           "state": "backlog",
           "summary": "Matching tokenizado en vez de substring completo: hoy \"100 g de Cheerios\" no encuentra nada.",
           "dependsOn": [],
-          "related": ["GYM-16", "GYM-17", "GYM-18"]
+          "related": [
+            "GYM-16",
+            "GYM-17",
+            "GYM-18"
+          ]
         },
         {
           "id": "GYM-16",
@@ -353,7 +458,11 @@
           "state": "backlog",
           "summary": "Encontrar por significado y no por texto. Embeddings generados en CI, no en el dispositivo.",
           "dependsOn": [],
-          "related": ["GYM-15", "GYM-17", "GYM-19"]
+          "related": [
+            "GYM-15",
+            "GYM-17",
+            "GYM-19"
+          ]
         },
         {
           "id": "GYM-17",
@@ -361,7 +470,11 @@
           "state": "backlog",
           "summary": "Los filtros numéricos ya existen en la tool: el trabajo es prompt engineering para que el modelo los use.",
           "dependsOn": [],
-          "related": ["GYM-15", "GYM-16", "GYM-20"]
+          "related": [
+            "GYM-15",
+            "GYM-16",
+            "GYM-20"
+          ]
         },
         {
           "id": "GYM-18",
@@ -369,7 +482,11 @@
           "state": "backlog",
           "summary": "Mismo problema que GYM-15 pero sobre ejercicios: matching por palabras en vez de substring.",
           "dependsOn": [],
-          "related": ["GYM-15", "GYM-19", "GYM-20"]
+          "related": [
+            "GYM-15",
+            "GYM-19",
+            "GYM-20"
+          ]
         },
         {
           "id": "GYM-19",
@@ -377,7 +494,11 @@
           "state": "backlog",
           "summary": "Equivalente a GYM-16 sobre ejercicios/*.json, con la misma arquitectura y las mismas limitaciones.",
           "dependsOn": [],
-          "related": ["GYM-16", "GYM-18", "GYM-20"]
+          "related": [
+            "GYM-16",
+            "GYM-18",
+            "GYM-20"
+          ]
         },
         {
           "id": "GYM-20",
@@ -385,7 +506,11 @@
           "state": "backlog",
           "summary": "Como GYM-17 pero con parámetros categóricos en vez de numéricos. Los filtros ya existen en el código.",
           "dependsOn": [],
-          "related": ["GYM-17", "GYM-18", "GYM-19"]
+          "related": [
+            "GYM-17",
+            "GYM-18",
+            "GYM-19"
+          ]
         },
         {
           "id": "GYM-21",
@@ -393,7 +518,11 @@
           "state": "backlog",
           "summary": "Hoy no existe ninguna tool de búsqueda de rutinas: solo read_routines, que las devuelve todas.",
           "dependsOn": [],
-          "related": ["GYM-18", "GYM-22", "GYM-23"]
+          "related": [
+            "GYM-18",
+            "GYM-22",
+            "GYM-23"
+          ]
         },
         {
           "id": "GYM-22",
@@ -401,7 +530,11 @@
           "state": "backlog",
           "summary": "Sobre las rutinas propias del usuario, que a diferencia de alimentos y ejercicios cambian en runtime.",
           "dependsOn": [],
-          "related": ["GYM-19", "GYM-21", "GYM-23"]
+          "related": [
+            "GYM-19",
+            "GYM-21",
+            "GYM-23"
+          ]
         },
         {
           "id": "GYM-23",
@@ -409,7 +542,11 @@
           "state": "backlog",
           "summary": "Filtros sobre rutinas: nueva tool o ampliación de la search_routines de GYM-21.",
           "dependsOn": [],
-          "related": ["GYM-20", "GYM-21", "GYM-22"]
+          "related": [
+            "GYM-20",
+            "GYM-21",
+            "GYM-22"
+          ]
         },
         {
           "id": "GYM-9",
@@ -417,8 +554,81 @@
           "state": "canceled",
           "summary": "Cancelado por duplicado: el trabajo quedó absorbido por GYM-34.",
           "dependsOn": [],
-          "related": ["GYM-34"]
+          "related": [
+            "GYM-34"
+          ]
         }
+      ]
+    }
+  ],
+  "recommendedOrder": [
+    {
+      "id": "desbloquear",
+      "title": "Desbloquear",
+      "why": "GYM-34 bloquea a los otros 20 tickets de las dos épicas. Incluye extraer el despachador y los helpers de App.tsx a módulos importables: hasta que eso no esté, no hay nada que testear y ningún ticket se puede dar por cerrado.",
+      "tickets": [
+        "GYM-34"
+      ]
+    },
+    {
+      "id": "rodaje",
+      "title": "Rodar la infraestructura con lo que ya está hecho",
+      "why": "Estas cinco ya están implementadas en la app: solo piden tests y artículo. Son la forma más barata de estrenar la infraestructura de GYM-34 y de publicar los primeros posts sin tocar código de producción.",
+      "tickets": [
+        "GYM-35",
+        "GYM-36",
+        "GYM-37",
+        "GYM-38",
+        "GYM-39"
+      ]
+    },
+    {
+      "id": "arreglar",
+      "title": "Arreglar lo que está roto de verdad",
+      "why": "No son ejercicio: son fallos reales del agente hoy. Sin is_error el modelo confunde un error con un dato; sin validación acepta cualquier argumento alucinado; sin política de tamaño el contexto crece sin techo. En este orden, de más dañino a menos.",
+      "tickets": [
+        "GYM-42",
+        "GYM-40",
+        "GYM-41"
+      ]
+    },
+    {
+      "id": "control",
+      "title": "Control y rendimiento",
+      "why": "Una vez el ejecutor es fiable, toca hacerlo rápido y gobernable. GYM-43 va antes que GYM-45 porque la ejecución paralela cambia dónde tienen que ir los permisos.",
+      "tickets": [
+        "GYM-43",
+        "GYM-45",
+        "GYM-44"
+      ]
+    },
+    {
+      "id": "medir",
+      "title": "Ver qué está pasando",
+      "why": "Instrumentar antes de medir. GYM-47 aprovecha el pushTrace que ya existe y no se usa en el agente; GYM-46 necesita esas trazas para medir la degradación al crecer el número de tools.",
+      "tickets": [
+        "GYM-47",
+        "GYM-46"
+      ]
+    },
+    {
+      "id": "cerrar-tool-calling",
+      "title": "Cerrar tool calling",
+      "why": "Depende de los catorce anteriores: recoge en una suite única los casos que cada ticket ha ido dejando.",
+      "tickets": [
+        "GYM-48"
+      ]
+    },
+    {
+      "id": "planificacion",
+      "title": "Planificación",
+      "why": "Puede ir en paralelo a todo lo anterior en cuanto GYM-34 esté cerrado: no depende de tool calling. GYM-26 fija la línea base de tokens y latencia contra la que se comparan los demás, así que va primero. GYM-28 y GYM-29 solo necesitan GYM-27 y pueden hacerse en cualquier orden entre sí.",
+      "tickets": [
+        "GYM-26",
+        "GYM-27",
+        "GYM-29",
+        "GYM-28",
+        "GYM-30"
       ]
     }
   ]
