@@ -42,6 +42,21 @@ import { File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as DocumentPicker from "expo-document-picker";
 import { pushTrace, clearTraces, getTraces, formatTraces, type TraceEntry } from "./trace";
+import { CHAT_TOOLS } from "./agent/toolDefinitions";
+import {
+  createAgentToolExecutor,
+  type ToolExecutionContext,
+  type ToolMeasurement,
+  type ToolStore,
+} from "./agent/toolExecutor";
+import {
+  mapGoogleResponsePartToRequestPart,
+  parseOpenAIFunctionArguments,
+  runAnthropicToolLoop,
+  runGoogleToolLoop,
+  runOpenAIToolLoop,
+} from "./agent/providerToolLoop";
+import { parseSSEEvent, splitSSEEvents } from "./agent/sse";
 
 // Foreground notification presentation handler. Without this, scheduled
 // notifications delivered while the app is in the foreground are silently
@@ -1283,145 +1298,6 @@ async function migrateBodyFatHistory(
   }
 }
 
-function parsePersonalDataInput(input: unknown): PersonalDataField[] {
-  if (typeof input === "string") {
-    try {
-      const parsed = JSON.parse(input);
-      if (Array.isArray(parsed)) return parsed;
-    } catch {
-      return [];
-    }
-  }
-  if (Array.isArray(input)) return input;
-  return [];
-}
-
-const SAVE_PERSONAL_DATA_TOOL = "save_personal_data";
-const SAVE_PERSONAL_DATA_DESC =
-  "Guarda o actualiza los datos personales del usuario. " +
-  "Usa esta herramienta SIEMPRE que el usuario comparta informacion personal como nombre, edad, peso, altura, objetivos de fitness, lesiones, experiencia, etc. " +
-  "El campo personal_data debe contener TODOS los datos personales conocidos del usuario como un array JSON completo, no solo los nuevos. " +
-  'Cada elemento del array tiene: key (nombre del campo), description (para que sirve este campo), value (el valor). ' +
-  'Ejemplo: [{"key":"Nombre","description":"Nombre real del usuario","value":"Juan"}]';
-const SAVE_PERSONAL_DATA_PARAM_DESC =
-  'Array JSON completo con todos los datos personales. Cada objeto tiene key, description y value. ' +
-  'Ejemplo: [{"key":"Nombre","description":"Nombre real del usuario","value":"Juan"},{"key":"Objetivo","description":"Objetivo principal de fitness","value":"Ganar masa muscular"}]';
-
-const LIST_KEYS_TOOL = "list_personal_data_keys";
-const LIST_KEYS_DESC =
-  "Devuelve la lista de todos los campos (keys) guardados en la memoria personal del usuario. " +
-  "Usa esta herramienta como primer paso para descubrir que datos hay guardados.";
-
-const READ_DESCRIPTION_TOOL = "read_field_description";
-const READ_DESCRIPTION_DESC =
-  "Lee la descripcion de un campo especifico de la memoria personal. " +
-  "Recibe el key del campo y devuelve su description, que explica para que sirve ese campo. " +
-  "Usa esta herramienta para identificar en que campo esta la informacion que buscas.";
-const READ_DESCRIPTION_PARAM_DESC = "El key (nombre) del campo cuya descripcion quieres leer";
-
-const READ_VALUE_TOOL = "read_field_value";
-const READ_VALUE_DESC =
-  "Lee el valor de un campo especifico de la memoria personal. " +
-  "Recibe el key del campo y devuelve su value. " +
-  "Usa esta herramienta una vez que hayas identificado el campo correcto mediante su description.";
-const READ_VALUE_PARAM_DESC = "El key (nombre) del campo cuyo valor quieres leer";
-
-const READ_MEASUREMENT_TOOL = "read_measurement";
-const READ_MEASUREMENT_DESC =
-  "Lee las medidas corporales del usuario para una fecha específica. " +
-  "Devuelve el registro de medidas de ese día (peso, contornos, altura) si existe, o un mensaje indicando que no hay registro. " +
-  "Usa esta herramienta cuando el usuario pregunte por sus medidas de un día concreto.";
-const READ_MEASUREMENT_PARAM_DESC =
-  "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-03-30)";
-
-const WRITE_MEASUREMENT_TOOL = "write_measurement";
-const WRITE_MEASUREMENT_DESC =
-  "Guarda o actualiza las medidas corporales del usuario para una fecha específica. " +
-  "Usa esta herramienta cuando el usuario te diga sus medidas (peso, contornos, altura). " +
-  "Solo incluye en el JSON los campos que el usuario proporcione; los demás se mantendrán como null.";
-const WRITE_MEASUREMENT_DATE_PARAM_DESC =
-  "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-03-30)";
-const WRITE_MEASUREMENT_DATA_PARAM_DESC =
-  'JSON con las medidas a guardar. Campos posibles: weight_kg, body_fat_pct, neck_cm, chest_cm, waist_cm, hips_cm, biceps_cm, quadriceps_cm, calf_cm, height_cm. ' +
-  'Ejemplo: {"weight_kg": 75.5, "body_fat_pct": 18.5, "waist_cm": 82}';
-
-const READ_MEAL_FOODS_TOOL = "read_meal_foods";
-const READ_MEAL_FOODS_DESC =
-  "Lee los alimentos registrados en una comida específica de una fecha. " +
-  "Usa esta herramienta cuando el usuario pregunte qué ha comido, los alimentos de una comida, o quiera revisar su dieta.";
-const READ_MEAL_FOODS_DATE_PARAM_DESC = "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-04-11)";
-const READ_MEAL_FOODS_MEAL_PARAM_DESC = "Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena";
-
-const SEARCH_FOODS_TOOL = "search_foods";
-const SEARCH_FOODS_DESC =
-  "Busca alimentos en la base de datos local. Soporta búsqueda por nombre, categoría, tipo (alimento/producto_comercial/receta), " +
-  "filtros por rango de calorías/proteínas/carbohidratos/grasa por 100g, y ordenación. Todos los parámetros son opcionales, combínalos según lo que pida el usuario.";
-const SEARCH_FOODS_PARAMS_SCHEMA = {
-  query: { type: "string" as const, description: "Texto de búsqueda por nombre (opcional)" },
-  category: { type: "string" as const, description: "Filtrar por categoría del alimento, por ejemplo: grasa, proteina, carbohidrato, fruta, verdura, lacteo, cereal (opcional)" },
-  source: { type: "string" as const, description: "Filtrar por tipo: 'alimento', 'producto_comercial', 'receta' o 'personal' (opcional)" },
-  min_calories: { type: "number" as const, description: "Calorías mínimas por 100g (opcional)" },
-  max_calories: { type: "number" as const, description: "Calorías máximas por 100g (opcional)" },
-  min_protein: { type: "number" as const, description: "Proteínas mínimas por 100g en gramos (opcional)" },
-  max_protein: { type: "number" as const, description: "Proteínas máximas por 100g en gramos (opcional)" },
-  min_carbs: { type: "number" as const, description: "Carbohidratos mínimos por 100g en gramos (opcional)" },
-  max_carbs: { type: "number" as const, description: "Carbohidratos máximos por 100g en gramos (opcional)" },
-  min_fat: { type: "number" as const, description: "Grasa mínima por 100g en gramos (opcional)" },
-  max_fat: { type: "number" as const, description: "Grasa máxima por 100g en gramos (opcional)" },
-  sort_by: { type: "string" as const, description: "Ordenar por: 'calories_asc', 'calories_desc', 'protein_asc', 'protein_desc', 'carbs_asc', 'carbs_desc', 'fat_asc', 'fat_desc' (opcional)" },
-};
-
-const SEARCH_EXERCISES_TOOL = "search_exercises";
-const SEARCH_EXERCISES_DESC =
-  "Busca ejercicios en la base de datos local. Soporta búsqueda por nombre, músculo principal, músculos secundarios, equipamiento y dificultad. " +
-  "Todos los parámetros son opcionales y combinables.";
-const SEARCH_EXERCISES_PARAMS_SCHEMA = {
-  query: { type: "string" as const, description: "Texto de búsqueda por nombre del ejercicio (opcional)" },
-  muscle_group: { type: "string" as const, description: "Filtrar por músculo principal, por ejemplo: pecho, espalda, piernas, hombros, biceps, triceps, core, gluteos (opcional)" },
-  secondary_muscle: { type: "string" as const, description: "Filtrar por músculo secundario (opcional)" },
-  equipment: { type: "string" as const, description: "Filtrar por equipamiento, por ejemplo: mancuernas, barra, máquina, cable, peso corporal, kettlebell, banda elástica (opcional)" },
-  difficulty: { type: "string" as const, description: "Filtrar por dificultad: principiante, intermedio, avanzado (opcional)" },
-};
-
-const READ_ROUTINES_TOOL = "read_routines";
-const READ_ROUTINES_DESC =
-  "Lee las rutinas de entrenamiento del usuario. Devuelve todas las rutinas con sus ejercicios, series, repeticiones, peso y descanso. " +
-  "Usa esta herramienta cuando el usuario pregunte por sus rutinas, entrenamientos, o quiera revisar sus ejercicios programados.";
-
-const CREATE_ROUTINE_TOOL = "create_routine";
-const CREATE_ROUTINE_DESC =
-  "Crea una nueva rutina de entrenamiento. IMPORTANTE: Antes de usar esta herramienta DEBES haber buscado los ejercicios con search_exercises " +
-  "para obtener los nombres exactos de la base de datos. Pasa el JSON con los datos de la rutina.";
-const CREATE_ROUTINE_DATA_PARAM_DESC =
-  'JSON con los datos de la rutina. Campos: name (string, nombre de la rutina), ' +
-  'category (string: "strength", "hypertrophy", "cardio" o "flexibility"), ' +
-  'icon (string: "activity", "heart", "zap", "target", "wind", "shield", "compass", "crosshair", "award", "star", "sun", "moon", "sliders" o "trending-up"), ' +
-  'exercises (array de objetos con: name (string, nombre exacto del ejercicio de search_exercises), ' +
-  'muscle (string, músculo principal), ' +
-  'series (array de objetos con: type (string: "normal", "warmup", "failure", "amrap", "partial", "negative", "forced", "tempo", "isometric", "dropset", "restpause", "myoreps", "cluster", "superset"), ' +
-  'reps (string, número de repeticiones), weight_kg (string, peso en kg), rest_seconds (string, descanso en segundos))). ' +
-  'Ejemplo: {"name": "Push Day", "category": "hypertrophy", "icon": "zap", "exercises": [{"name": "Press banca con barra", "muscle": "pecho", "series": [{"type": "normal", "reps": "10", "weight_kg": "60", "rest_seconds": "90"}]}]}';
-
-const ADD_MEAL_FOOD_TOOL = "add_meal_food";
-const ADD_MEAL_FOOD_DESC =
-  "Añade un alimento a una comida del usuario en una fecha específica. " +
-  "IMPORTANTE: Antes de usar esta herramienta DEBES haber buscado el alimento con search_foods. " +
-  "Pasa los datos nutricionales exactos obtenidos de la búsqueda.";
-const ADD_MEAL_FOOD_DATE_PARAM_DESC = "Fecha en formato YYYY-MM-DD (por ejemplo: 2026-04-11)";
-const ADD_MEAL_FOOD_MEAL_PARAM_DESC = "Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena";
-const ADD_MEAL_FOOD_DATA_PARAM_DESC =
-  'JSON con los datos del alimento. Campos requeridos: name (string), grams (number), calories_kcal (number), protein_g (number), carbs_g (number), fat_g (number). ' +
-  'Ejemplo: {"name": "Arroz blanco", "grams": 150, "calories_kcal": 195, "protein_g": 4.1, "carbs_g": 43.4, "fat_g": 0.4}';
-
-const CREATE_FEATURE_ISSUE_TOOL = "create_feature_issue";
-const CREATE_FEATURE_ISSUE_DESC =
-  "Crea una issue en GitHub con el prefijo [FEATURE] cuando el usuario solicita una mejora o nueva funcionalidad para la app. " +
-  "Usa esta herramienta siempre que el usuario exprese un deseo de mejora, nueva característica o cambio en la app. " +
-  "El agente debe generar un título conciso y un resumen de lo interpretado.";
-const CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC = "Título corto y descriptivo de la mejora solicitada (sin el prefijo [FEATURE], se añade automáticamente)";
-const CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC = "Fragmento literal de la conversación donde el usuario pide la mejora";
-const CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC = "Resumen en español de lo que ha interpretado el agente que el usuario quiere";
-
 const SCAN_BARCODE_TOOL = "scan_barcode";
 const SCAN_BARCODE_DESC =
   "Busca un producto alimentario por su código de barras (EAN/UPC) en OpenFoodFacts. " +
@@ -1475,7 +1351,42 @@ async function handleFoodEstimatorToolCall(name: string, args: Record<string, un
   return "Herramienta no reconocida.";
 }
 
-async function handleToolCall(
+const executeAgentTool = createAgentToolExecutor({
+  loadPersonalData,
+  savePersonalData,
+  loadMeasurements: async () => loadMeasurementsFromStorage(),
+  saveMeasurements: async (measurements) => {
+    await saveMeasurementsToStorage(measurements as Measurement[]);
+  },
+  sortMeasurements: (measurements) => (
+    sortMeasurementsDesc(measurements as Measurement[]) as ToolMeasurement[]
+  ),
+  createId: uid,
+  getExerciseImageUrl: (exercise, gender) => (
+    getExerciseImageUrl(exercise as ExerciseRepoEntry, gender)
+  ),
+  createFeatureIssue: createGitHubFeatureIssue,
+});
+
+function createToolExecutionContext(
+  setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
+  store?: LocalStore,
+  foodsRepo?: FoodRepoEntry[],
+  exercisesRepo?: ExerciseRepoEntry[],
+): ToolExecutionContext {
+  return {
+    setStore: setStore
+      ? (updater) => setStore((previous) => (
+          updater(previous as unknown as ToolStore) as unknown as LocalStore
+        ))
+      : undefined,
+    store: store as unknown as ToolStore | undefined,
+    foodsRepo,
+    exercisesRepo,
+  };
+}
+
+async function executeChatTool(
   name: string,
   args: Record<string, unknown>,
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
@@ -1483,378 +1394,12 @@ async function handleToolCall(
   foodsRepo?: FoodRepoEntry[],
   exercisesRepo?: ExerciseRepoEntry[],
 ): Promise<string> {
-  if (name === SAVE_PERSONAL_DATA_TOOL) {
-    const fields = parsePersonalDataInput(args.personal_data);
-    await savePersonalData(fields);
-    return "Datos personales guardados correctamente.";
-  }
-  if (name === LIST_KEYS_TOOL) {
-    const fields = await loadPersonalData();
-    if (fields.length === 0) return "No hay campos guardados.";
-    return JSON.stringify(fields.map((f) => f.key));
-  }
-  if (name === READ_DESCRIPTION_TOOL) {
-    const key = (args.key as string) ?? "";
-    const fields = await loadPersonalData();
-    const field = fields.find((f) => f.key === key);
-    if (!field) return `Campo "${key}" no encontrado.`;
-    return field.description || "(sin descripcion)";
-  }
-  if (name === READ_VALUE_TOOL) {
-    const key = (args.key as string) ?? "";
-    const fields = await loadPersonalData();
-    const field = fields.find((f) => f.key === key);
-    if (!field) return `Campo "${key}" no encontrado.`;
-    return field.value || "(sin valor)";
-  }
-  if (name === READ_MEASUREMENT_TOOL) {
-    const date = (args.date as string) ?? "";
-    if (!date) return "No se proporcionó una fecha.";
-    const measurements = await loadMeasurementsFromStorage();
-    const match = measurements.find((m) => m.measured_at.startsWith(date));
-    if (!match) return `No hay registro de medidas para la fecha "${date}".`;
-    const { id, photo_uri, ...data } = match;
-    return JSON.stringify(data);
-  }
-  if (name === WRITE_MEASUREMENT_TOOL) {
-    const date = (args.date as string) ?? "";
-    if (!date) return "No se proporcionó una fecha.";
-    let data: Record<string, unknown> = {};
-    if (typeof args.data === "string") {
-      try { data = JSON.parse(args.data); } catch { return "El JSON de medidas no es válido."; }
-    } else if (typeof args.data === "object" && args.data) {
-      data = args.data as Record<string, unknown>;
-    } else {
-      return "No se proporcionaron medidas.";
-    }
-    const measurements = await loadMeasurementsFromStorage();
-    const existingIdx = measurements.findIndex((m) => m.measured_at.startsWith(date));
-    const existing = existingIdx >= 0 ? measurements[existingIdx] : null;
-    const toNum = (v: unknown): number | null => {
-      if (v === null || v === undefined) return null;
-      const n = Number(v);
-      return isFinite(n) && n > 0 ? n : null;
-    };
-    const measurement: Measurement = {
-      id: existing?.id ?? uid("measurement"),
-      measured_at: existing?.measured_at ?? new Date(date + "T12:00:00").toISOString(),
-      weight_kg: data.weight_kg !== undefined ? toNum(data.weight_kg) : (existing?.weight_kg ?? null),
-      body_fat_pct: data.body_fat_pct !== undefined ? toNum(data.body_fat_pct) : (existing?.body_fat_pct ?? null),
-      photo_uri: existing?.photo_uri ?? null,
-      neck_cm: data.neck_cm !== undefined ? toNum(data.neck_cm) : (existing?.neck_cm ?? null),
-      chest_cm: data.chest_cm !== undefined ? toNum(data.chest_cm) : (existing?.chest_cm ?? null),
-      waist_cm: data.waist_cm !== undefined ? toNum(data.waist_cm) : (existing?.waist_cm ?? null),
-      hips_cm: data.hips_cm !== undefined ? toNum(data.hips_cm) : (existing?.hips_cm ?? null),
-      biceps_cm: data.biceps_cm !== undefined ? toNum(data.biceps_cm) : (existing?.biceps_cm ?? null),
-      quadriceps_cm: data.quadriceps_cm !== undefined ? toNum(data.quadriceps_cm) : (existing?.quadriceps_cm ?? null),
-      calf_cm: data.calf_cm !== undefined ? toNum(data.calf_cm) : (existing?.calf_cm ?? null),
-      height_cm: data.height_cm !== undefined ? toNum(data.height_cm) : (existing?.height_cm ?? null),
-    };
-    const base = existingIdx >= 0 ? measurements.filter((_, i) => i !== existingIdx) : measurements;
-    const sorted = sortMeasurementsDesc([measurement, ...base]).slice(0, 1826);
-    await saveMeasurementsToStorage(sorted);
-    if (setStore) {
-      setStore((prev) => ({ ...prev, measurements: sorted }));
-    }
-    return "Medidas guardadas correctamente para " + date + ".";
-  }
-  if (name === READ_MEAL_FOODS_TOOL) {
-    const date = (args.date as string) ?? "";
-    const meal = (args.meal as string) ?? "";
-    if (!date) return "No se proporcionó una fecha.";
-    if (!meal) return "No se proporcionó una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).";
-    if (!store) return "No se pudo acceder a los datos de dieta.";
-    const day = store.dietByDate[date];
-    if (!day) return `No hay datos de dieta para la fecha "${date}".`;
-    const mealMatch = day.meals.find(
-      (m) => m.title.toLowerCase() === meal.toLowerCase(),
-    );
-    if (!mealMatch) return `No se encontró la comida "${meal}" para la fecha "${date}".`;
-    if (mealMatch.items.length === 0) return `La comida "${meal}" del ${date} no tiene alimentos registrados.`;
-    const summary = mealMatch.items.map((item) => ({
-      nombre: item.title,
-      gramos: item.grams,
-      calorias_kcal: item.calories_kcal,
-      proteina_g: item.protein_g,
-      carbohidratos_g: item.carbs_g,
-      grasa_g: item.fat_g,
-    }));
-    return JSON.stringify(summary);
-  }
-  if (name === ADD_MEAL_FOOD_TOOL) {
-    const date = (args.date as string) ?? "";
-    const meal = (args.meal as string) ?? "";
-    if (!date) return "No se proporcionó una fecha.";
-    if (!meal) return "No se proporcionó una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).";
-    if (!setStore) return "No se pudo acceder al almacenamiento.";
-    let data: Record<string, unknown> = {};
-    if (typeof args.data === "string") {
-      try { data = JSON.parse(args.data); } catch { return "El JSON del alimento no es válido."; }
-    } else if (typeof args.data === "object" && args.data) {
-      data = args.data as Record<string, unknown>;
-    } else {
-      return "No se proporcionaron datos del alimento.";
-    }
-    const foodName = (data.name as string) ?? "Alimento";
-    const grams = Number(data.grams) || 0;
-    const caloriesKcal = Number(data.calories_kcal) || 0;
-    const proteinG = Number(data.protein_g) || 0;
-    const carbsG = Number(data.carbs_g) || 0;
-    const fatG = Number(data.fat_g) || 0;
-    const newItem: DietItem = {
-      id: uid("food"),
-      title: foodName,
-      grams,
-      calories_kcal: caloriesKcal,
-      protein_g: proteinG,
-      carbs_g: carbsG,
-      fat_g: fatG,
-    };
-    setStore((prev) => {
-      const currentDay = prev.dietByDate[date] ?? { day_date: date, meals: [] };
-      const existingMeal = currentDay.meals.find(
-        (m) => m.title.toLowerCase() === meal.toLowerCase(),
-      );
-      const mealCategories: string[] = ["Desayuno", "Almuerzo", "Comida", "Merienda", "Cena"];
-      const updatedMeals = existingMeal
-        ? currentDay.meals.map((m) =>
-            m.title.toLowerCase() === meal.toLowerCase()
-              ? { ...m, items: [...m.items, newItem] }
-              : m,
-          )
-        : [...currentDay.meals, { id: uid("meal"), title: meal, items: [newItem] }].sort(
-            (a, b) =>
-              mealCategories.indexOf(a.title) - mealCategories.indexOf(b.title),
-          );
-      return {
-        ...prev,
-        dietByDate: {
-          ...prev.dietByDate,
-          [date]: { ...currentDay, meals: updatedMeals },
-        },
-      };
-    });
-    return `Alimento "${foodName}" (${grams}g, ${caloriesKcal} kcal) añadido a ${meal} del ${date}.`;
-  }
-  if (name === SEARCH_FOODS_TOOL) {
-    if (!foodsRepo || foodsRepo.length === 0) return "La base de datos de alimentos no está cargada.";
-    const normalize = (s: string) => s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const query = (args.query as string) ?? "";
-    const category = (args.category as string) ?? "";
-    const source = (args.source as string) ?? "";
-    const minCal = args.min_calories != null ? Number(args.min_calories) : null;
-    const maxCal = args.max_calories != null ? Number(args.max_calories) : null;
-    const minProt = args.min_protein != null ? Number(args.min_protein) : null;
-    const maxProt = args.max_protein != null ? Number(args.max_protein) : null;
-    const minCarbs = args.min_carbs != null ? Number(args.min_carbs) : null;
-    const maxCarbs = args.max_carbs != null ? Number(args.max_carbs) : null;
-    const minFat = args.min_fat != null ? Number(args.min_fat) : null;
-    const maxFat = args.max_fat != null ? Number(args.max_fat) : null;
-    const sortBy = (args.sort_by as string) ?? "";
-
-    let results = [...foodsRepo];
-
-    // Filter by name
-    if (query.trim()) {
-      const needle = normalize(query);
-      results = results.filter((f) => {
-        const hay = normalize(f.name);
-        return hay.includes(needle) || needle.includes(hay);
-      });
-    }
-    // Filter by category
-    if (category.trim()) {
-      const needleCat = normalize(category);
-      results = results.filter((f) => normalize(f.category).includes(needleCat));
-    }
-    // Filter by source
-    if (source.trim()) {
-      const needleSrc = normalize(source);
-      results = results.filter((f) => normalize(f.source ?? "alimento") === needleSrc);
-    }
-    // Numeric filters
-    if (minCal != null) results = results.filter((f) => f.calories_per_100g >= minCal);
-    if (maxCal != null) results = results.filter((f) => f.calories_per_100g <= maxCal);
-    if (minProt != null) results = results.filter((f) => f.protein_per_100g >= minProt);
-    if (maxProt != null) results = results.filter((f) => f.protein_per_100g <= maxProt);
-    if (minCarbs != null) results = results.filter((f) => f.carbs_per_100g >= minCarbs);
-    if (maxCarbs != null) results = results.filter((f) => f.carbs_per_100g <= maxCarbs);
-    if (minFat != null) results = results.filter((f) => f.fat_per_100g >= minFat);
-    if (maxFat != null) results = results.filter((f) => f.fat_per_100g <= maxFat);
-
-    // Sort
-    if (sortBy) {
-      const [field, dir] = sortBy.split("_") as [string, string];
-      const asc = dir === "asc";
-      const getter = (f: FoodRepoEntry) =>
-        field === "calories" ? f.calories_per_100g
-        : field === "protein" ? f.protein_per_100g
-        : field === "carbs" ? f.carbs_per_100g
-        : field === "fat" ? f.fat_per_100g
-        : 0;
-      results.sort((a, b) => asc ? getter(a) - getter(b) : getter(b) - getter(a));
-    }
-
-    results = results.slice(0, 15);
-    if (results.length === 0) return "No se encontraron alimentos con esos criterios.";
-    return JSON.stringify(results.map((f) => ({
-      id: f.id,
-      nombre: f.name,
-      categoria: f.category,
-      tipo: f.source ?? "alimento",
-      calorias_por_100g: f.calories_per_100g,
-      proteina_por_100g: f.protein_per_100g,
-      carbohidratos_por_100g: f.carbs_per_100g,
-      grasa_por_100g: f.fat_per_100g,
-      fibra_por_100g: f.fiber_per_100g,
-      racion_g: f.serving_size_g,
-      descripcion_racion: f.serving_description,
-    })));
-  }
-  if (name === CREATE_ROUTINE_TOOL) {
-    if (!setStore) return "No se pudo acceder al almacenamiento.";
-    let data: Record<string, unknown> = {};
-    if (typeof args.data === "string") {
-      try { data = JSON.parse(args.data); } catch { return "El JSON de la rutina no es válido."; }
-    } else if (typeof args.data === "object" && args.data) {
-      data = args.data as Record<string, unknown>;
-    } else {
-      return "No se proporcionaron datos de la rutina.";
-    }
-    const routineName = (data.name as string) ?? "Rutina";
-    const category = (data.category as string) ?? "hypertrophy";
-    const icon = (data.icon as string) ?? "activity";
-    const exercisesData = (data.exercises as Array<Record<string, unknown>>) ?? [];
-    if (exercisesData.length === 0) return "La rutina debe tener al menos un ejercicio.";
-
-    // Match exercises with repo to get images
-    const repoExercises = exercisesRepo ?? [];
-
-    const templateExercises = exercisesData.map((ex) => {
-      const exName = (ex.name as string) ?? "Ejercicio";
-      const exMuscle = (ex.muscle as string) ?? "";
-      const seriesData = (ex.series as Array<Record<string, unknown>>) ?? [];
-      const repoMatch = repoExercises.find(
-        (r) => r.name.toLowerCase() === exName.toLowerCase(),
-      );
-      const imageUri = repoMatch ? getExerciseImageUrl(repoMatch, "male") : null;
-
-      const series: ExerciseSeries[] = seriesData.map((s) => ({
-        id: uid("series"),
-        type: ((s.type as string) ?? "normal") as SeriesType,
-        reps: String(s.reps ?? "10"),
-        weight_kg: String(s.weight_kg ?? "0"),
-        rest_seconds: String(s.rest_seconds ?? "60"),
-      }));
-
-      return {
-        id: uid("exercise"),
-        name: exName,
-        muscle: exMuscle || (repoMatch?.muscle_group ?? ""),
-        image_uri: imageUri,
-        sets: series.map((_, i) => i),
-        series,
-      };
-    });
-
-    const newTemplate: WorkoutTemplate = {
-      id: uid("template"),
-      name: routineName,
-      category: category as TrainingCategory,
-      icon: icon as RoutineIconName,
-      exercises: templateExercises,
-    };
-
-    setStore((prev) => ({
-      ...prev,
-      templates: [...prev.templates, newTemplate],
-    }));
-
-    const exercisesSummary = templateExercises.map((e) => `${e.name} (${e.series.length} series)`).join(", ");
-    return `Rutina "${routineName}" creada con ${templateExercises.length} ejercicios: ${exercisesSummary}.`;
-  }
-  if (name === READ_ROUTINES_TOOL) {
-    if (!store) return "No se pudo acceder a los datos de rutinas.";
-    const templates = store.templates;
-    if (templates.length === 0) return "No hay rutinas de entrenamiento creadas.";
-    return JSON.stringify(templates.map((t) => ({
-      id: t.id,
-      nombre: t.name,
-      categoria: t.category ?? "",
-      duracion_minutos: t.duration_minutes ?? "",
-      ejercicios: t.exercises.map((e) => ({
-        nombre: e.name ?? "Sin nombre",
-        musculo: e.muscle ?? "",
-        series: (e.series ?? []).map((s) => ({
-          tipo: s.type ?? "normal",
-          repeticiones: s.reps,
-          peso_kg: s.weight_kg,
-          descanso_segundos: s.rest_seconds,
-          tempo_contraccion: s.tempo_contraction ?? "",
-          tempo_pausa: s.tempo_pause ?? "",
-          tempo_relajacion: s.tempo_relaxation ?? "",
-          sub_series: s.sub_series ?? [],
-        })),
-      })),
-    })));
-  }
-  if (name === SEARCH_EXERCISES_TOOL) {
-    if (!exercisesRepo || exercisesRepo.length === 0) return "La base de datos de ejercicios no está cargada.";
-    const normalize = (s: string) => s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const query = (args.query as string) ?? "";
-    const muscleGroup = (args.muscle_group as string) ?? "";
-    const secondaryMuscle = (args.secondary_muscle as string) ?? "";
-    const equipment = (args.equipment as string) ?? "";
-    const difficulty = (args.difficulty as string) ?? "";
-
-    let results = [...exercisesRepo];
-
-    if (query.trim()) {
-      const needle = normalize(query);
-      results = results.filter((e) => normalize(e.name).includes(needle));
-    }
-    if (muscleGroup.trim()) {
-      const needle = normalize(muscleGroup);
-      results = results.filter((e) => normalize(e.muscle_group).includes(needle));
-    }
-    if (secondaryMuscle.trim()) {
-      const needle = normalize(secondaryMuscle);
-      results = results.filter((e) =>
-        e.secondary_muscles.some((m) => normalize(m).includes(needle)),
-      );
-    }
-    if (equipment.trim()) {
-      const needle = normalize(equipment);
-      results = results.filter((e) => normalize(e.equipment).includes(needle));
-    }
-    if (difficulty.trim()) {
-      const needle = normalize(difficulty);
-      results = results.filter((e) => normalize(e.difficulty).includes(needle));
-    }
-
-    results = results.slice(0, 15);
-    if (results.length === 0) return "No se encontraron ejercicios con esos criterios.";
-    return JSON.stringify(results.map((e) => ({
-      id: e.id,
-      nombre: e.name,
-      musculo_principal: e.muscle_group,
-      musculos_secundarios: e.secondary_muscles,
-      equipamiento: e.equipment,
-      dificultad: e.difficulty,
-      instrucciones: e.instructions,
-    })));
-  }
-  if (name === CREATE_FEATURE_ISSUE_TOOL) {
-    const title_summary = (args.title_summary as string) ?? "";
-    const conversation_excerpt = (args.conversation_excerpt as string) ?? "";
-    const interpretation = (args.interpretation as string) ?? "";
-    if (!title_summary) return "Falta el título de la mejora.";
-    await createGitHubFeatureIssue({ title_summary, conversation_excerpt, interpretation });
-    return "Issue de mejora creada en GitHub correctamente.";
-  }
-  return "Herramienta no reconocida.";
+  return executeAgentTool(
+    name,
+    args,
+    createToolExecutionContext(setStore, store, foodsRepo, exercisesRepo),
+  );
 }
-
 function resolveProviderByPriority(keys: AIKey[], priority: Provider[]): AIKey | null {
   for (const provider of priority) {
     const configured = keys.find((item) => item.provider === provider);
@@ -3078,14 +2623,6 @@ function collectOpenAIThinking(outputItems: OpenAIResponseOutputItem[]): string 
   return thinking || null;
 }
 
-function parseOpenAIFunctionArguments(rawArguments: string): Record<string, unknown> {
-  const trimmed = rawArguments.trim();
-  if (!trimmed) return {};
-  const parsed = parseJsonSafely<unknown>(trimmed);
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-  return parsed as Record<string, unknown>;
-}
-
 function buildOpenAIReasoningConfig(
   provider: Pick<AIKey, "model" | "reasoning_effort">,
 ): { effort: OpenAIReasoningEffort; summary: string } | null {
@@ -3156,60 +2693,6 @@ function normalizeGoogleFunctionArgs(rawArgs: unknown): Record<string, unknown> 
     }
   }
   return {};
-}
-
-function mapGoogleResponsePartToRequestPart(part: GoogleResponsePart): Record<string, unknown> | null {
-  const nextPart: Record<string, unknown> = {};
-  if (typeof part.text === "string") {
-    nextPart.text = part.text;
-  }
-  if (part.functionCall) {
-    nextPart.functionCall = {
-      name: part.functionCall.name,
-      args: part.functionCall.args ?? {},
-    };
-  }
-  if (part.thought === true) {
-    nextPart.thought = true;
-  }
-  if (typeof part.thoughtSignature === "string" && part.thoughtSignature.trim().length > 0) {
-    nextPart.thoughtSignature = part.thoughtSignature;
-  }
-  return Object.keys(nextPart).length > 0 ? nextPart : null;
-}
-
-function splitSSEEvents(buffer: string): { events: string[]; rest: string } {
-  const normalized = buffer.replace(/\r\n/g, "\n");
-  const events: string[] = [];
-  let cursor = 0;
-  while (cursor < normalized.length) {
-    const boundary = normalized.indexOf("\n\n", cursor);
-    if (boundary === -1) break;
-    events.push(normalized.slice(cursor, boundary));
-    cursor = boundary + 2;
-  }
-  return { events, rest: normalized.slice(cursor) };
-}
-
-function parseSSEEvent(rawEvent: string): { event: string; data: string | null } | null {
-  const trimmed = rawEvent.trim();
-  if (!trimmed) return null;
-
-  let eventName = "message";
-  const dataLines: string[] = [];
-  for (const line of trimmed.split("\n")) {
-    if (!line || line.startsWith(":")) continue;
-    const separator = line.indexOf(":");
-    const field = separator === -1 ? line : line.slice(0, separator);
-    let value = separator === -1 ? "" : line.slice(separator + 1);
-    if (value.startsWith(" ")) value = value.slice(1);
-    if (field === "event") eventName = value || eventName;
-    if (field === "data") dataLines.push(value);
-  }
-  return {
-    event: eventName,
-    data: dataLines.length > 0 ? dataLines.join("\n") : null,
-  };
 }
 
 function createAnthropicStreamParser(
@@ -4257,290 +3740,10 @@ async function callProviderChatAPIWithTools(
       content: msg.content,
     }));
 
-  const keyParam = { key: { type: "string" as const } };
-  const keyRequired = ["key"];
-  const dateParam = { date: { type: "string" as const, description: READ_MEASUREMENT_PARAM_DESC } };
-  const dateRequired = ["date"];
-  const writeMeasurementProps = {
-    date: { type: "string" as const, description: WRITE_MEASUREMENT_DATE_PARAM_DESC },
-    data: { type: "string" as const, description: WRITE_MEASUREMENT_DATA_PARAM_DESC },
-  };
-  const writeMeasurementRequired = ["date", "data"];
-  const readMealFoodsProps = {
-    date: { type: "string" as const, description: READ_MEAL_FOODS_DATE_PARAM_DESC },
-    meal: { type: "string" as const, description: READ_MEAL_FOODS_MEAL_PARAM_DESC },
-  };
-  const readMealFoodsRequired = ["date", "meal"];
-  const searchFoodsSchema = { type: "object" as const, properties: SEARCH_FOODS_PARAMS_SCHEMA };
-  const searchExercisesSchema = { type: "object" as const, properties: SEARCH_EXERCISES_PARAMS_SCHEMA };
-  const addMealFoodProps = {
-    date: { type: "string" as const, description: ADD_MEAL_FOOD_DATE_PARAM_DESC },
-    meal: { type: "string" as const, description: ADD_MEAL_FOOD_MEAL_PARAM_DESC },
-    data: { type: "string" as const, description: ADD_MEAL_FOOD_DATA_PARAM_DESC },
-  };
-  const addMealFoodRequired = ["date", "meal", "data"];
   const toolStoreSetter = options?.setStore;
   const toolStore = options?.store;
   const toolFoodsRepo = options?.foodsRepo;
   const toolExercisesRepo = options?.exercisesRepo;
-
-  const chatTools = {
-    openai: [
-      {
-        type: "function",
-        name: SAVE_PERSONAL_DATA_TOOL,
-        description: SAVE_PERSONAL_DATA_DESC,
-        parameters: {
-          type: "object",
-          properties: { personal_data: { type: "string", description: SAVE_PERSONAL_DATA_PARAM_DESC } },
-          required: ["personal_data"],
-        },
-      },
-      {
-        type: "function",
-        name: LIST_KEYS_TOOL,
-        description: LIST_KEYS_DESC,
-        parameters: { type: "object", properties: {}, required: [] },
-      },
-      {
-        type: "function",
-        name: READ_DESCRIPTION_TOOL,
-        description: READ_DESCRIPTION_DESC,
-        parameters: { type: "object", properties: { key: { type: "string", description: READ_DESCRIPTION_PARAM_DESC } }, required: keyRequired },
-      },
-      {
-        type: "function",
-        name: READ_VALUE_TOOL,
-        description: READ_VALUE_DESC,
-        parameters: { type: "object", properties: { key: { type: "string", description: READ_VALUE_PARAM_DESC } }, required: keyRequired },
-      },
-      {
-        type: "function",
-        name: READ_MEASUREMENT_TOOL,
-        description: READ_MEASUREMENT_DESC,
-        parameters: { type: "object", properties: dateParam, required: dateRequired },
-      },
-      {
-        type: "function",
-        name: WRITE_MEASUREMENT_TOOL,
-        description: WRITE_MEASUREMENT_DESC,
-        parameters: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
-      },
-      {
-        type: "function",
-        name: READ_MEAL_FOODS_TOOL,
-        description: READ_MEAL_FOODS_DESC,
-        parameters: { type: "object", properties: readMealFoodsProps, required: readMealFoodsRequired },
-      },
-      {
-        type: "function",
-        name: SEARCH_FOODS_TOOL,
-        description: SEARCH_FOODS_DESC,
-        parameters: searchFoodsSchema,
-      },
-      {
-        type: "function",
-        name: ADD_MEAL_FOOD_TOOL,
-        description: ADD_MEAL_FOOD_DESC,
-        parameters: { type: "object", properties: addMealFoodProps, required: addMealFoodRequired },
-      },
-      {
-        type: "function",
-        name: SEARCH_EXERCISES_TOOL,
-        description: SEARCH_EXERCISES_DESC,
-        parameters: searchExercisesSchema,
-      },
-      {
-        type: "function",
-        name: READ_ROUTINES_TOOL,
-        description: READ_ROUTINES_DESC,
-        parameters: { type: "object", properties: {} },
-      },
-      {
-        type: "function",
-        name: CREATE_ROUTINE_TOOL,
-        description: CREATE_ROUTINE_DESC,
-        parameters: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
-      },
-      {
-        type: "function",
-        name: CREATE_FEATURE_ISSUE_TOOL,
-        description: CREATE_FEATURE_ISSUE_DESC,
-        parameters: {
-          type: "object",
-          properties: {
-            title_summary: { type: "string", description: CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC },
-            conversation_excerpt: { type: "string", description: CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC },
-            interpretation: { type: "string", description: CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC },
-          },
-          required: ["title_summary", "conversation_excerpt", "interpretation"],
-        },
-      },
-    ],
-    anthropic: [
-      {
-        name: SAVE_PERSONAL_DATA_TOOL,
-        description: SAVE_PERSONAL_DATA_DESC,
-        input_schema: {
-          type: "object",
-          properties: { personal_data: { type: "string", description: SAVE_PERSONAL_DATA_PARAM_DESC } },
-          required: ["personal_data"],
-        },
-      },
-      {
-        name: LIST_KEYS_TOOL,
-        description: LIST_KEYS_DESC,
-        input_schema: { type: "object", properties: {} },
-      },
-      {
-        name: READ_DESCRIPTION_TOOL,
-        description: READ_DESCRIPTION_DESC,
-        input_schema: { type: "object", properties: keyParam, required: keyRequired },
-      },
-      {
-        name: READ_VALUE_TOOL,
-        description: READ_VALUE_DESC,
-        input_schema: { type: "object", properties: keyParam, required: keyRequired },
-      },
-      {
-        name: READ_MEASUREMENT_TOOL,
-        description: READ_MEASUREMENT_DESC,
-        input_schema: { type: "object", properties: dateParam, required: dateRequired },
-      },
-      {
-        name: WRITE_MEASUREMENT_TOOL,
-        description: WRITE_MEASUREMENT_DESC,
-        input_schema: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
-      },
-      {
-        name: READ_MEAL_FOODS_TOOL,
-        description: READ_MEAL_FOODS_DESC,
-        input_schema: { type: "object", properties: readMealFoodsProps, required: readMealFoodsRequired },
-      },
-      {
-        name: SEARCH_FOODS_TOOL,
-        description: SEARCH_FOODS_DESC,
-        input_schema: searchFoodsSchema,
-      },
-      {
-        name: ADD_MEAL_FOOD_TOOL,
-        description: ADD_MEAL_FOOD_DESC,
-        input_schema: { type: "object", properties: addMealFoodProps, required: addMealFoodRequired },
-      },
-      {
-        name: SEARCH_EXERCISES_TOOL,
-        description: SEARCH_EXERCISES_DESC,
-        input_schema: searchExercisesSchema,
-      },
-      {
-        name: READ_ROUTINES_TOOL,
-        description: READ_ROUTINES_DESC,
-        input_schema: { type: "object", properties: {} },
-      },
-      {
-        name: CREATE_ROUTINE_TOOL,
-        description: CREATE_ROUTINE_DESC,
-        input_schema: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
-      },
-      {
-        name: CREATE_FEATURE_ISSUE_TOOL,
-        description: CREATE_FEATURE_ISSUE_DESC,
-        input_schema: {
-          type: "object",
-          properties: {
-            title_summary: { type: "string", description: CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC },
-            conversation_excerpt: { type: "string", description: CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC },
-            interpretation: { type: "string", description: CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC },
-          },
-          required: ["title_summary", "conversation_excerpt", "interpretation"],
-        },
-      },
-    ],
-    google: [
-      {
-        functionDeclarations: [
-          {
-            name: SAVE_PERSONAL_DATA_TOOL,
-            description: SAVE_PERSONAL_DATA_DESC,
-            parameters: {
-              type: "object",
-              properties: { personal_data: { type: "string", description: SAVE_PERSONAL_DATA_PARAM_DESC } },
-              required: ["personal_data"],
-            },
-          },
-          {
-            name: LIST_KEYS_TOOL,
-            description: LIST_KEYS_DESC,
-            parameters: { type: "object", properties: {} },
-          },
-          {
-            name: READ_DESCRIPTION_TOOL,
-            description: READ_DESCRIPTION_DESC,
-            parameters: { type: "object", properties: keyParam, required: keyRequired },
-          },
-          {
-            name: READ_VALUE_TOOL,
-            description: READ_VALUE_DESC,
-            parameters: { type: "object", properties: keyParam, required: keyRequired },
-          },
-          {
-            name: READ_MEASUREMENT_TOOL,
-            description: READ_MEASUREMENT_DESC,
-            parameters: { type: "object", properties: dateParam, required: dateRequired },
-          },
-          {
-            name: WRITE_MEASUREMENT_TOOL,
-            description: WRITE_MEASUREMENT_DESC,
-            parameters: { type: "object", properties: writeMeasurementProps, required: writeMeasurementRequired },
-          },
-          {
-            name: READ_MEAL_FOODS_TOOL,
-            description: READ_MEAL_FOODS_DESC,
-            parameters: { type: "object", properties: readMealFoodsProps, required: readMealFoodsRequired },
-          },
-          {
-            name: SEARCH_FOODS_TOOL,
-            description: SEARCH_FOODS_DESC,
-            parameters: searchFoodsSchema,
-          },
-          {
-            name: ADD_MEAL_FOOD_TOOL,
-            description: ADD_MEAL_FOOD_DESC,
-            parameters: { type: "object", properties: addMealFoodProps, required: addMealFoodRequired },
-          },
-          {
-            name: SEARCH_EXERCISES_TOOL,
-            description: SEARCH_EXERCISES_DESC,
-            parameters: searchExercisesSchema,
-          },
-          {
-            name: READ_ROUTINES_TOOL,
-            description: READ_ROUTINES_DESC,
-            parameters: { type: "object", properties: {} },
-          },
-          {
-            name: CREATE_ROUTINE_TOOL,
-            description: CREATE_ROUTINE_DESC,
-            parameters: { type: "object", properties: { data: { type: "string", description: CREATE_ROUTINE_DATA_PARAM_DESC } }, required: ["data"] },
-          },
-          {
-            name: CREATE_FEATURE_ISSUE_TOOL,
-            description: CREATE_FEATURE_ISSUE_DESC,
-            parameters: {
-              type: "object",
-              properties: {
-                title_summary: { type: "string", description: CREATE_FEATURE_ISSUE_TITLE_PARAM_DESC },
-                conversation_excerpt: { type: "string", description: CREATE_FEATURE_ISSUE_EXCERPT_PARAM_DESC },
-                interpretation: { type: "string", description: CREATE_FEATURE_ISSUE_INTERPRETATION_PARAM_DESC },
-              },
-              required: ["title_summary", "conversation_excerpt", "interpretation"],
-            },
-          },
-        ],
-      },
-    ],
-  };
-
   // --- OPENAI ---
   if (provider.provider === "openai") {
     let streamedContent = "";
@@ -4575,7 +3778,7 @@ async function callProviderChatAPIWithTools(
         body.previous_response_id = previousResponseId;
       }
       if (includeTools) {
-        body.tools = chatTools.openai;
+        body.tools = CHAT_TOOLS.openai;
       }
       if (Platform.OS === "web") {
         return streamOpenAIRequestViaFetch(
@@ -4605,29 +3808,20 @@ async function callProviderChatAPIWithTools(
       );
     };
 
-    let payload = await makeOpenAIRequest(nonSystemMessages, null, true);
-
-    for (let round = 0; round < 10; round++) {
-      const toolCalls = payload.outputItems.filter(
-        (item): item is OpenAIFunctionCallOutputItem => item.type === "function_call",
-      );
-      if (toolCalls.length === 0) break;
-      if (!payload.responseId) {
-        throw new Error("OpenAI no devolvio response_id para continuar las herramientas.");
-      }
-
-      const toolOutputs: Array<Record<string, unknown>> = [];
-      for (const toolCall of toolCalls) {
-        const args = parseOpenAIFunctionArguments(toolCall.arguments);
-        const toolResult = await handleToolCall(toolCall.name, args, toolStoreSetter, toolStore, toolFoodsRepo, toolExercisesRepo);
-        toolOutputs.push({
-          type: "function_call_output",
-          call_id: toolCall.call_id,
-          output: toolResult,
-        });
-      }
-      payload = await makeOpenAIRequest(toolOutputs, payload.responseId, true);
-    }
+    const payload = await runOpenAIToolLoop({
+      initialTurn: await makeOpenAIRequest(nonSystemMessages, null, true),
+      requestNextTurn: (outputs, previousResponseId) => (
+        makeOpenAIRequest(outputs, previousResponseId, true)
+      ),
+      executeTool: (name, args) => executeChatTool(
+        name,
+        args,
+        toolStoreSetter,
+        toolStore,
+        toolFoodsRepo,
+        toolExercisesRepo,
+      ),
+    });
 
     const content = streamedContent.trim() || payload.content;
     const thinking = streamedThinking.trim() || payload.thinking || null;
@@ -4658,7 +3852,7 @@ async function callProviderChatAPIWithTools(
         system: systemPrompt,
         messages: msgs,
       };
-      if (includeTools) body.tools = chatTools.anthropic;
+      if (includeTools) body.tools = CHAT_TOOLS.anthropic;
       if (Platform.OS === "web") {
         return streamAnthropicRequestViaXHR(
           buildWebProxyUrl("/chat/providers/anthropic/messages"),
@@ -4691,28 +3885,19 @@ async function callProviderChatAPIWithTools(
       );
     };
 
-    let currentMessages: any[] = [...nonSystemMessages];
-    let payload = await makeAnthropicRequest(currentMessages, true);
-
-    for (let round = 0; round < 10; round++) {
-      const contentBlocks = payload.contentBlocks;
-      const toolUseBlocks = contentBlocks.filter(
-        (block): block is AnthropicToolUseBlock => block.type === "tool_use",
-      );
-      if (toolUseBlocks.length === 0) break;
-
-      const toolResults: any[] = [];
-      for (const block of toolUseBlocks) {
-        const result = await handleToolCall(block.name, block.input ?? {}, toolStoreSetter, toolStore, toolFoodsRepo, toolExercisesRepo);
-        toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
-      }
-      currentMessages = [
-        ...currentMessages,
-        { role: "assistant", content: contentBlocks },
-        { role: "user", content: toolResults },
-      ];
-      payload = await makeAnthropicRequest(currentMessages, true);
-    }
+    const payload = await runAnthropicToolLoop({
+      initialTurn: await makeAnthropicRequest([...nonSystemMessages], true),
+      initialMessages: nonSystemMessages,
+      requestNextTurn: (currentMessages) => makeAnthropicRequest(currentMessages, true),
+      executeTool: (name, args) => executeChatTool(
+        name,
+        args,
+        toolStoreSetter,
+        toolStore,
+        toolFoodsRepo,
+        toolExercisesRepo,
+      ),
+    });
 
     const content = streamedContent.trim() || payload.content;
     const thinking = streamedThinking.trim() || payload.thinking || null;
@@ -4750,7 +3935,7 @@ async function callProviderChatAPIWithTools(
         },
       },
     };
-    if (includeTools) body.tools = chatTools.google;
+    if (includeTools) body.tools = CHAT_TOOLS.google;
     if (Platform.OS === "web") {
       return streamGoogleRequestViaFetch(
         googleUrl,
@@ -4777,40 +3962,19 @@ async function callProviderChatAPIWithTools(
     );
   };
 
-  let payload = await makeGoogleRequest(googleMessages, true);
-
-  for (let round = 0; round < 10; round++) {
-    const functionCalls = payload.modelParts.filter(
-      (part): part is GoogleResponsePart & { functionCall: GoogleFunctionCall } =>
-        Boolean(part.functionCall?.name),
-    );
-    if (functionCalls.length === 0) break;
-
-    const modelParts = payload.modelParts
-      .map(mapGoogleResponsePartToRequestPart)
-      .filter((part): part is Record<string, unknown> => Boolean(part));
-    const responseParts: any[] = [];
-    for (const part of functionCalls) {
-      const functionCall = part.functionCall;
-      const toolResult = await handleToolCall(
-        functionCall.name,
-        functionCall.args ?? {},
-        toolStoreSetter,
-        toolStore,
-        toolFoodsRepo,
-        toolExercisesRepo,
-      );
-      responseParts.push({
-        functionResponse: {
-          name: functionCall.name,
-          response: { result: toolResult },
-        },
-      });
-    }
-    googleMessages.push({ role: "model", parts: modelParts });
-    googleMessages.push({ role: "user", parts: responseParts });
-    payload = await makeGoogleRequest(googleMessages, true);
-  }
+  const payload = await runGoogleToolLoop({
+    initialTurn: await makeGoogleRequest(googleMessages, true),
+    initialMessages: googleMessages,
+    requestNextTurn: (currentMessages) => makeGoogleRequest(currentMessages, true),
+    executeTool: (name, args) => executeChatTool(
+      name,
+      args,
+      toolStoreSetter,
+      toolStore,
+      toolFoodsRepo,
+      toolExercisesRepo,
+    ),
+  });
 
   const content = streamedContent.trim() || payload.content;
   const thinking = streamedThinking.trim() || payload.thinking || null;
