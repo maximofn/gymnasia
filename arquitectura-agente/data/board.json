@@ -64,8 +64,8 @@
         {
           "id": "GYM-34",
           "title": "Infraestructura de tests para el agente",
-          "state": "backlog",
-          "summary": "El repo no tiene ningún test. Antes hay que extraer despachador y helpers de App.tsx a módulos importables.",
+          "state": "done",
+          "summary": "Vitest cubre tools, schemas, SSE y los bucles de OpenAI, Anthropic y Google con fixtures deterministas y CI sin LLM.",
           "dependsOn": [],
           "related": []
         },
