@@ -1,0 +1,43 @@
+name: Agent deterministic tests
+
+on:
+  pull_request:
+    paths:
+      - "apps/mobile/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/agent-tests.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/agent-tests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run deterministic agent suite
+        run: npm test
+
+      - name: Type-check mobile app
+        run: npm --workspace apps/mobile exec tsc --noEmit

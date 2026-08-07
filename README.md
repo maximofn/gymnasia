@@ -32,6 +32,19 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
    npm --workspace apps/mobile exec tsc --noEmit
    ```
 
+## Tests del agente
+
+La suite determinista del agente usa Vitest y proveedores falsos; no consume
+red, claves ni tokens:
+
+```bash
+npm test
+```
+
+Las evals con LLM están separadas de CI y reservadas para LangSmith. Consulta
+`docs/testing/agent-testing.md` para la arquitectura, los comandos y la plantilla
+de QA manual.
+
 ## Front web
 
 La app funciona en navegador con `react-native-web`, mantiene los datos en el

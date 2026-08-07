@@ -1,0 +1,72 @@
+# Pruebas del agente
+
+La lógica determinista del agente vive en `apps/mobile/agent/`, separada del
+runtime de Expo:
+
+- `toolDefinitions.ts`: catálogo y schemas canónicos; de él se derivan los
+  formatos de OpenAI, Anthropic y Google.
+- `toolExecutor.ts`: despachador y handlers con almacenamiento, IDs y efectos
+  externos inyectados.
+- `providerToolLoop.ts`: ciclos `tool call → ejecución → resultado → siguiente
+  ronda` de los tres proveedores.
+- `sse.ts`: helpers puros para procesar eventos SSE y reproducir fixtures.
+
+## Comandos
+
+Desde la raíz:
+
+```bash
+npm test                                      # suite determinista
+npm run test:deterministic                    # alias explícito de la anterior
+npm --workspace apps/mobile exec tsc --noEmit # type-check
+npm run test:llm                              # reserva para evals de LangSmith
+```
+
+`npm test` no usa red, claves ni modelos y es la única suite que bloquea CI.
+Los `.sse` de `apps/mobile/agent/__fixtures__/` son respuestas sanitizadas de
+proveedor falso; cada regresión determinista nueva debe añadirse como fixture o
+caso unitario.
+
+## LangSmith
+
+Se adopta el alcance A del ticket GYM-34: LangSmith se usará solo desde procesos
+locales o CI para implementaciones y evals. La app móvil de producción no se
+instrumenta y no contiene una API key de LangSmith, manteniendo el producto
+local-first y sin backend.
+
+Cuando se implemente la épica de observabilidad:
+
+- los datasets de evals se crearán directamente en LangSmith, no como JSONs en
+  el repositorio;
+- las trazas reales se anonimizarán antes de convertirlas en fixtures
+  deterministas;
+- las evals usarán la integración de LangSmith con el runner, no un runner
+  propio;
+- sus tasas de acierto se informarán por separado y nunca convertirán
+  `npm test` en una suite con red o coste.
+
+## Plantilla de QA por ticket
+
+Copiar esta lista al ticket y concretar los escenarios que apliquen:
+
+```markdown
+### QA manual
+- [ ] Flujo feliz: [entrada, acción esperada y estado final]
+- [ ] Cancelación/error: [fallo o acción del usuario y recuperación esperada]
+- [ ] Persistencia: [qué debe mantenerse tras cambiar de pantalla o reiniciar]
+- [ ] Tools: [tools esperadas, orden y tools que no deben llamarse]
+- [ ] Proveedores: [OpenAI / Anthropic / Google que deben probarse]
+- [ ] UX: respuesta comprensible, una sola confirmación y estados de carga claros
+- [ ] Regresión: [bug o flujo vecino que no debe romperse]
+```
+
+Una sesión exploratoria debe anotar fecha, build/commit, proveedor/modelo,
+escenarios recorridos y hallazgos. Cada hallazgo determinista se convierte en
+test de regresión; si depende del comportamiento del modelo pasa al dataset de
+evals.
+
+Bloquean el cierre: suite determinista o type-check en rojo, pérdida/corrupción
+de datos, tool equivocada con efecto de escritura, error no controlado, flujo
+crítico imposible o incumplimiento de seguridad/privacidad. Un problema menor
+de texto o una variación no determinista del modelo puede registrarse como
+deuda con ticket y evidencia, siempre que el flujo siga siendo seguro y útil.

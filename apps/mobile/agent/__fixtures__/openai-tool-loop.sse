@@ -1,0 +1,5 @@
+event: response.completed
+data: {"responseId":"resp_openai_1","content":"","thinking":null,"outputItems":[{"type":"function_call","id":"fc_1","call_id":"call_1","name":"read_field_value","arguments":"{\"key\":\"Objetivo\"}"}]}
+
+event: response.completed
+data: {"responseId":"resp_openai_2","content":"Tu objetivo es ganar masa muscular.","thinking":null,"outputItems":[{"type":"message","content":[{"type":"output_text","text":"Tu objetivo es ganar masa muscular."}]}]}

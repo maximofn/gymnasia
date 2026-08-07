@@ -1,0 +1,5 @@
+event: message
+data: {"content":"","thinking":null,"modelParts":[{"functionCall":{"name":"read_field_value","args":{"key":"Objetivo"}}}],"finishReason":"STOP"}
+
+event: message
+data: {"content":"Tu objetivo es ganar masa muscular.","thinking":null,"modelParts":[{"text":"Tu objetivo es ganar masa muscular."}],"finishReason":"STOP"}

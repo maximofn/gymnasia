@@ -1,0 +1,5 @@
+event: message_stop
+data: {"content":"","thinking":null,"contentBlocks":[{"type":"tool_use","id":"toolu_1","name":"read_field_value","input":{"key":"Objetivo"}}],"stopReason":"tool_use"}
+
+event: message_stop
+data: {"content":"Tu objetivo es ganar masa muscular.","thinking":null,"contentBlocks":[{"type":"text","text":"Tu objetivo es ganar masa muscular."}],"stopReason":"end_turn"}

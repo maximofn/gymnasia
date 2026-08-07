@@ -6,6 +6,9 @@
   ],
   "scripts": {
     "dev:mobile": "npm --workspace apps/mobile run start",
+    "test": "npm run test:deterministic",
+    "test:deterministic": "npm --workspace apps/mobile run test:deterministic",
+    "test:llm": "npm --workspace apps/mobile run test:llm",
     "test:train:e2e": "node apps/mobile/scripts/train-usability.e2e.mjs",
     "test:train:e2e:headed": "TRAIN_E2E_HEADLESS=0 npm run test:train:e2e",
     "test:board": "node --test arquitectura-agente/tests/board-data.test.mjs",
@@ -13,7 +16,8 @@
     "test:board:e2e:headed": "BOARD_E2E_HEADLESS=0 npm run test:board:e2e"
   },
   "devDependencies": {
-    "playwright": "^1.58.2"
+    "playwright": "^1.58.2",
+    "vitest": "^4.1.10"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

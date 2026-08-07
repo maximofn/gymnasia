@@ -123,10 +123,15 @@ Run from repo root unless noted.
 - No repo-wide ESLint/Prettier config is committed yet; keep diffs consistent with surrounding code.
 
 ## Testing Guidelines
-Automated unit/integration suites are not yet established. Minimum validation for PRs:
+The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
+- deterministic tests: `npm test`
 - mobile type-check: `npm --workspace apps/mobile exec tsc --noEmit`
+- LLM eval boundary: `npm run test:llm` (reserved for LangSmith; never part of commit-blocking CI)
 
-When adding non-trivial logic, document manual verification steps explicitly.
+CI runs `npm test` and the mobile type-check without network, provider keys, or
+LLM calls. Add deterministic bugs as regression fixtures/tests under
+`apps/mobile/agent/`. Use the reusable QA checklist and closure policy in
+`docs/testing/agent-testing.md` for non-trivial tickets.
 
 ## Commit & Pull Request Guidelines
 History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ...`, `chore(scope): ...`, `docs: ...`.
