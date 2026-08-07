@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-goblet-mancuerna",
+  "name": "Sentadilla goblet con mancuerna",
+  "image_male": "images/sentadilla-goblet-mancuerna-male.webp",
+  "image_female": "images/sentadilla-goblet-mancuerna-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Sujeta una mancuerna vertical contra el pecho con ambas manos y coloca los pies a la anchura de los hombros. Mantén el pecho erguido y el core activo mientras bajas las caderas entre las piernas, siguiendo la dirección de los pies con las rodillas. Desciende hasta una profundidad cómoda y empuja con todo el pie para volver a levantarte sin separar la mancuerna del cuerpo."
+}

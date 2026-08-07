@@ -1,0 +1,11 @@
+{
+  "id": "step-up-mancuernas",
+  "name": "Step-up con mancuernas",
+  "image_male": "images/step-up-mancuernas-male.webp",
+  "image_female": "images/step-up-mancuernas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte frente a un banco o cajón estable con una mancuerna en cada mano. Apoya por completo un pie sobre la superficie y empuja con su talón para elevar el cuerpo, evitando impulsarte con la pierna que queda abajo. Termina erguido sobre el banco, baja con control y repite. Alterna la pierna que inicia o completa primero todas las repeticiones de un lado."
+}

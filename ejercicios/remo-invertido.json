@@ -1,0 +1,11 @@
+{
+  "id": "remo-invertido",
+  "name": "Remo invertido",
+  "image_male": "images/remo-invertido-male.webp",
+  "image_female": "images/remo-invertido-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazo", "core"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Colócate debajo de una barra fija a la altura de la cintura y agárrala con las manos algo más abiertas que los hombros. Extiende las piernas y mantén el cuerpo recto desde la cabeza hasta los talones. Tira del pecho hacia la barra juntando los omóplatos y manteniendo los codos controlados. Baja lentamente sin perder la alineación corporal."
+}

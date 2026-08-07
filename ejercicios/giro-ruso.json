@@ -1,0 +1,11 @@
+{
+  "id": "giro-ruso",
+  "name": "Giro ruso",
+  "image_male": "images/giro-ruso-male.webp",
+  "image_female": "images/giro-ruso-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "flexores de cadera"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate con las rodillas flexionadas, eleva ligeramente los pies y reclina el torso manteniendo la espalda neutra. Junta las manos frente al pecho y equilibra el cuerpo sobre los isquiones. Gira el torso para llevar las manos hacia un lado sin mover las rodillas. Vuelve al centro y repite hacia el lado contrario con un movimiento controlado."
+}

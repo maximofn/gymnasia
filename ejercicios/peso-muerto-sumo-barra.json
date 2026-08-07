@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-sumo-barra",
+  "name": "Peso muerto sumo con barra",
+  "image_male": "images/peso-muerto-sumo-barra-male.webp",
+  "image_female": "images/peso-muerto-sumo-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "cuádriceps", "aductores"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca los pies bastante más abiertos que los hombros, con las puntas orientadas hacia fuera y la barra centrada sobre el mediopié. Baja las caderas y agarra la barra con las manos entre las piernas. Mantén el pecho elevado y la espalda neutra mientras empujas el suelo para extender rodillas y caderas. Termina erguido y baja la barra siguiendo el mismo recorrido de forma controlada."
+}

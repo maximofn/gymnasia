@@ -1,0 +1,11 @@
+{
+  "id": "buenos-dias-barra",
+  "name": "Buenos días con barra",
+  "image_male": "images/buenos-dias-barra-male.webp",
+  "image_female": "images/buenos-dias-barra-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "zona lumbar"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de las caderas y la barra apoyada sobre la parte superior de la espalda. Flexiona ligeramente las rodillas, activa el core y lleva las caderas hacia atrás mientras inclinas el torso manteniendo la espalda neutra. Baja hasta sentir tensión en los isquiotibiales. Empuja las caderas hacia delante y contrae los glúteos para regresar de forma controlada."
+}

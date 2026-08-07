@@ -2,7 +2,7 @@
   "source": "hasaneyldrm/exercises-dataset",
   "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
   "source_sha256": "656634224b8977b99a6d765470ee123260d4979715eaa4e7c0b7c8bb0d79f93d",
-  "batch_size": 10,
+  "batch_policy": "user-selected",
   "image_generation": {
     "provider": "openai-imagegen",
     "model": "gpt-image-2",
@@ -12,6 +12,7 @@
   "batches": [
     {
       "number": 1,
+      "size": 10,
       "status": "approved",
       "records": [
         {"source_id": "0032", "id": "peso-muerto-barra", "action": "create", "difficulty": "advanced", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
@@ -24,6 +25,33 @@
         {"source_id": "0251", "id": "fondos-paralelas", "action": "create", "difficulty": "intermediate", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "1409", "id": "puente-gluteos-barra", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "1160", "id": "burpee", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"}
+      ]
+    },
+    {
+      "number": 2,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0042", "id": "sentadilla-frontal-barra", "action": "create", "difficulty": "advanced", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0044", "id": "buenos-dias-barra", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0117", "id": "peso-muerto-sumo-barra", "action": "create", "difficulty": "advanced", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1760", "id": "sentadilla-goblet-mancuerna", "action": "create", "difficulty": "beginner", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0410", "id": "sentadilla-bulgara-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0431", "id": "step-up-mancuernas", "action": "create", "difficulty": "intermediate", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0292", "id": "remo-unilateral-mancuerna", "action": "create", "difficulty": "beginner", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0375", "id": "pullover-mancuerna", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1326", "id": "dominadas-supinas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0499", "id": "remo-invertido", "action": "create", "difficulty": "beginner", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0091", "id": "press-militar-barra-sentado", "action": "create", "difficulty": "intermediate", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0406", "id": "encogimientos-mancuernas", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0313", "id": "curl-martillo-mancuernas", "action": "create", "difficulty": "beginner", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0060", "id": "extension-triceps-tumbado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0333", "id": "patada-triceps-mancuernas", "action": "create", "difficulty": "beginner", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0283", "id": "flexiones-diamante", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0472", "id": "elevaciones-piernas-colgado", "action": "create", "difficulty": "advanced", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0687", "id": "giro-ruso", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0630", "id": "escalador", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0276", "id": "dead-bug", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
       ]
     }
   ]

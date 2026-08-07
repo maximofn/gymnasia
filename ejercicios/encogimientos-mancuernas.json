@@ -1,0 +1,11 @@
+{
+  "id": "encogimientos-mancuernas",
+  "name": "Encogimientos con mancuernas",
+  "image_male": "images/encogimientos-mancuernas-male.webp",
+  "image_female": "images/encogimientos-mancuernas-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["trapecio", "hombro"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con una mancuerna en cada mano y los brazos extendidos a los lados. Mantén el torso erguido y eleva ambos hombros directamente hacia las orejas sin flexionar los codos ni girarlos. Aprieta el trapecio durante una pausa breve en la parte alta. Baja los hombros lentamente hasta recuperar su posición natural."
+}

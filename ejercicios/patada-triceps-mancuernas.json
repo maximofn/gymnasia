@@ -1,0 +1,11 @@
+{
+  "id": "patada-triceps-mancuernas",
+  "name": "Patada de tríceps con mancuernas",
+  "image_male": "images/patada-triceps-mancuernas-male.webp",
+  "image_female": "images/patada-triceps-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombro"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con una mancuerna en cada mano, flexiona ligeramente las rodillas e inclina el torso desde las caderas con la espalda neutra. Lleva los brazos superiores junto al torso y flexiona los codos a unos 90 grados. Extiende ambos antebrazos hacia atrás hasta contraer los tríceps. Mantén los hombros quietos y vuelve despacio a la posición inicial."
+}

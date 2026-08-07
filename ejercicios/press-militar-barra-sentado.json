@@ -1,0 +1,11 @@
+{
+  "id": "press-militar-barra-sentado",
+  "name": "Press militar sentado con barra",
+  "image_male": "images/press-militar-barra-sentado-male.webp",
+  "image_female": "images/press-militar-barra-sentado-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["tríceps", "espalda"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido en un banco con respaldo y sujeta la barra un poco más abierta que los hombros. Colócala frente a la parte superior del pecho con los antebrazos verticales. Activa el core y empuja la barra por encima de la cabeza hasta extender los brazos sin arquear la zona lumbar. Baja con control hasta la posición inicial y repite."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "pullover-mancuerna",
+  "name": "Pullover con mancuerna",
+  "image_male": "images/pullover-mancuerna-male.webp",
+  "image_female": "images/pullover-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["espalda", "tríceps"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco y sujeta una mancuerna con ambas manos sobre el pecho. Mantén los brazos casi extendidos y baja la mancuerna en arco por detrás de la cabeza sin abrir los codos en exceso. Detente cuando notes un estiramiento cómodo en pecho y dorsales. Contrae el core y devuelve la mancuerna al punto inicial siguiendo el mismo recorrido."
+}

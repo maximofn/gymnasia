@@ -1,0 +1,11 @@
+{
+  "id": "flexiones-diamante",
+  "name": "Flexiones diamante",
+  "image_male": "images/flexiones-diamante-male.webp",
+  "image_female": "images/flexiones-diamante-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombro"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Adopta una posición de plancha alta y junta las manos bajo el pecho formando un diamante con pulgares e índices. Mantén el cuerpo alineado y baja el pecho hacia las manos con los codos cerca del torso. Detente antes de perder la postura. Empuja el suelo para extender los brazos mientras mantienes el core y los glúteos activos."
+}

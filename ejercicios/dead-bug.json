@@ -1,0 +1,11 @@
+{
+  "id": "dead-bug",
+  "name": "Dead bug",
+  "image_male": "images/dead-bug-male.webp",
+  "image_female": "images/dead-bug-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "zona lumbar"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con los brazos apuntando al techo y las caderas y rodillas flexionadas a 90 grados. Presiona suavemente la zona lumbar contra el suelo. Extiende a la vez un brazo por detrás de la cabeza y la pierna contraria sin que lleguen a tocar el suelo. Regresa al centro con control y alterna el lado manteniendo el abdomen activo."
+}

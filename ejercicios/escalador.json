@@ -1,0 +1,11 @@
+{
+  "id": "escalador",
+  "name": "Escalador",
+  "image_male": "images/escalador-male.webp",
+  "image_female": "images/escalador-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": ["abdomen", "cuádriceps", "hombro"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en plancha alta con las manos bajo los hombros y el cuerpo alineado. Lleva una rodilla hacia el pecho sin elevar las caderas y cambia rápidamente de pierna como si corrieras en el sitio. Mantén el core activo, los hombros estables y un ritmo que te permita conservar la postura durante toda la serie."
+}

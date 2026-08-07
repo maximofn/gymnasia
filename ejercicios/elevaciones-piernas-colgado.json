@@ -1,0 +1,11 @@
+{
+  "id": "elevaciones-piernas-colgado",
+  "name": "Elevaciones de piernas colgado",
+  "image_male": "images/elevaciones-piernas-colgado-male.webp",
+  "image_female": "images/elevaciones-piernas-colgado-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "antebrazo"],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de una barra con los brazos extendidos y estabiliza los hombros. Mantén las piernas juntas y eleva los pies por delante flexionando las caderas hasta que las piernas queden al menos paralelas al suelo. Evita balancearte o tomar impulso. Haz una pausa breve y baja las piernas lentamente hasta recuperar la posición inicial."
+}

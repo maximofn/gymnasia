@@ -1,0 +1,11 @@
+{
+  "id": "dominadas-supinas",
+  "name": "Dominadas supinas",
+  "image_male": "images/dominadas-supinas-male.webp",
+  "image_female": "images/dominadas-supinas-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazo"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Cuélgate de una barra con las palmas mirando hacia ti y las manos a la anchura de los hombros. Activa el core, baja los hombros y tira del pecho hacia la barra flexionando los codos. Sube hasta que la barbilla la sobrepase sin balancear las piernas. Haz una pausa breve y desciende de forma controlada hasta extender los brazos."
+}

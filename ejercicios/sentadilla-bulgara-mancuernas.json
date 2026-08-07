@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-bulgara-mancuernas",
+  "name": "Sentadilla búlgara con mancuernas",
+  "image_male": "images/sentadilla-bulgara-mancuernas-male.webp",
+  "image_female": "images/sentadilla-bulgara-mancuernas-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de espaldas a un banco y apoya sobre él el empeine de una pierna. Sujeta una mancuerna en cada mano con los brazos a los lados. Mantén el torso estable y baja flexionando la rodilla delantera hasta que el muslo se acerque a la horizontal. Empuja con el pie delantero para volver arriba. Completa las repeticiones y cambia de pierna."
+}

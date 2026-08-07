@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-frontal-barra",
+  "name": "Sentadilla frontal con barra",
+  "image_male": "images/sentadilla-frontal-barra-male.webp",
+  "image_female": "images/sentadilla-frontal-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "core"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y apoya la barra sobre la parte frontal de los hombros, manteniendo los codos elevados. Activa el core y baja flexionando caderas y rodillas con el pecho erguido. Desciende hasta que los muslos queden al menos paralelos al suelo sin perder la postura. Empuja con todo el pie para volver a la posición inicial y extiende las caderas al terminar."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "remo-unilateral-mancuerna",
+  "name": "Remo unilateral con mancuerna",
+  "image_male": "images/remo-unilateral-mancuerna-male.webp",
+  "image_female": "images/remo-unilateral-mancuerna-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Apoya una mano y la rodilla del mismo lado sobre un banco, con la otra pierna firme en el suelo. Sujeta una mancuerna con el brazo extendido y mantén la espalda neutra. Lleva el codo hacia la cadera hasta acercar la mancuerna al costado, juntando el omóplato sin girar el torso. Baja lentamente, completa las repeticiones y cambia de lado."
+}
