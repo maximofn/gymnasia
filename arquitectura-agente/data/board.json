@@ -451,7 +451,7 @@
         {
           "id": "GYM-12",
           "title": "Importar ejercicios del dataset hasaneyldrm/exercises-dataset",
-          "state": "backlog",
+          "state": "in_progress",
           "summary": "Ampliar el repo local de ejercicios (~39 hoy) sin introducir backend: sigue siendo JSON estático.",
           "dependsOn": [],
           "related": []

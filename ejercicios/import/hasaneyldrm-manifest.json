@@ -1,0 +1,30 @@
+{
+  "source": "hasaneyldrm/exercises-dataset",
+  "source_commit": "7455efae41b330c265e7cd4b78dfa848e7ce5ebd",
+  "source_sha256": "656634224b8977b99a6d765470ee123260d4979715eaa4e7c0b7c8bb0d79f93d",
+  "batch_size": 10,
+  "image_generation": {
+    "provider": "openai-imagegen",
+    "model": "gpt-image-2",
+    "generated_at": "2026-08-07",
+    "style_reference": "docs/design/Gimnasia Design System.png"
+  },
+  "batches": [
+    {
+      "number": 1,
+      "status": "approved",
+      "records": [
+        {"source_id": "0032", "id": "peso-muerto-barra", "action": "create", "difficulty": "advanced", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0085", "id": "peso-muerto-rumano-barra", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0027", "id": "remo-inclinado-barra", "action": "create", "difficulty": "intermediate", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0031", "id": "curl-biceps-barra", "action": "create", "difficulty": "beginner", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0336", "id": "zancadas-mancuernas", "action": "create", "difficulty": "intermediate", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "2137", "id": "press-arnold-mancuernas", "action": "create", "difficulty": "intermediate", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0549", "id": "swing-pesa-rusa", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0251", "id": "fondos-paralelas", "action": "create", "difficulty": "intermediate", "view": "3/4 diagonal view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1409", "id": "puente-gluteos-barra", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1160", "id": "burpee", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"}
+      ]
+    }
+  ]
+}

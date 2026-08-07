@@ -1,0 +1,11 @@
+{
+  "id": "puente-gluteos-barra",
+  "name": "Puente de glúteos con barra",
+  "image_male": "images/puente-gluteos-barra-male.webp",
+  "image_female": "images/puente-gluteos-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "zona lumbar"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies apoyados en el suelo. Coloca una barra acolchada sobre las caderas y sujétala con ambas manos. Contrae el core y los glúteos para elevar las caderas hasta formar una línea recta entre hombros, caderas y rodillas. Haz una pausa en la parte alta y baja lentamente sin perder el control de la barra."
+}

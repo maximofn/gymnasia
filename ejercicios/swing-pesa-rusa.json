@@ -1,0 +1,11 @@
+{
+  "id": "swing-pesa-rusa",
+  "name": "Swing con pesa rusa",
+  "image_male": "images/swing-pesa-rusa-male.webp",
+  "image_female": "images/swing-pesa-rusa-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "core"],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies algo más abiertos que las caderas y sujeta la pesa rusa con ambas manos. Lleva las caderas hacia atrás y deja que la pesa pase entre las piernas manteniendo la espalda neutra. Extiende las caderas de forma explosiva para impulsar la pesa hasta la altura del pecho, con los brazos relajados. Deja que vuelva a bajar y enlaza la siguiente repetición controlando el movimiento con las caderas."
+}

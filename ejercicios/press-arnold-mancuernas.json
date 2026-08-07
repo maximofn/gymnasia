@@ -1,0 +1,11 @@
+{
+  "id": "press-arnold-mancuernas",
+  "name": "Press Arnold con mancuernas",
+  "image_male": "images/press-arnold-mancuernas-male.webp",
+  "image_female": "images/press-arnold-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["tríceps", "pecho superior"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con respaldo y sujeta una mancuerna en cada mano a la altura de los hombros, con las palmas orientadas hacia el cuerpo y los codos por delante. Eleva las mancuernas mientras rotas las muñecas hasta que las palmas miren hacia delante y los brazos queden extendidos sobre la cabeza. Invierte la rotación al bajar de forma controlada."
+}

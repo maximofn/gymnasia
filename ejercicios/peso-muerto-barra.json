@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-barra",
+  "name": "Peso muerto con barra",
+  "image_male": "images/peso-muerto-barra-male.webp",
+  "image_female": "images/peso-muerto-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "zona lumbar"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y la barra en el suelo frente a ti. Flexiona las rodillas y las caderas para bajar el torso y agarra la barra con las manos algo más separadas que el ancho de los hombros. Mantén la espalda neutra y el pecho elevado mientras empujas con los pies para levantar la barra, extendiendo las caderas y las rodillas. Termina de pie con los glúteos contraídos y el core activado. Baja la barra flexionando de nuevo las caderas y las rodillas sin perder la posición de la espalda."
+}

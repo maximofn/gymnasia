@@ -1,0 +1,11 @@
+{
+  "id": "burpee",
+  "name": "Burpee",
+  "image_male": "images/burpee-male.webp",
+  "image_female": "images/burpee-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos", "hombro", "pecho"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza de pie y baja a una sentadilla para apoyar las manos en el suelo. Lleva los pies hacia atrás hasta quedar en posición de plancha y realiza una flexión manteniendo el cuerpo alineado. Acerca de nuevo los pies a las manos y salta verticalmente con los brazos por encima de la cabeza. Aterriza suavemente y enlaza la siguiente repetición."
+}

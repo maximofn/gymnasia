@@ -59,6 +59,16 @@ EXERCISE_PROMPT_TEMPLATE = (
 
 # Map exercise id -> (english description, view angle)
 EXERCISE_PROMPTS = {
+    "peso-muerto-barra": ("a conventional barbell deadlift at mid-pull, feet hip-width apart, both hands gripping the bar just outside the legs, bar close to the shins, neutral spine, hips and knees extending together", "3/4 diagonal view"),
+    "peso-muerto-rumano-barra": ("a standing barbell Romanian deadlift at the bottom of the hip hinge, hips pushed far back, knees slightly bent, neutral spine, bar held close to the lower legs, hamstrings under tension", "side view"),
+    "remo-inclinado-barra": ("a standing bent-over barbell row at the top position, torso hinged forward with a neutral spine, knees slightly bent, pulling the bar toward the lower chest with elbows behind the body", "3/4 diagonal view"),
+    "curl-biceps-barra": ("a standing barbell biceps curl at peak contraction, elbows fixed close to the torso, underhand grip, bar near shoulder height, no body swing", "3/4 diagonal view"),
+    "zancadas-mancuernas": ("a forward dumbbell lunge at the bottom position, one dumbbell in each hand at the sides, front knee bent about 90 degrees, rear knee close to the floor, torso upright", "3/4 diagonal view"),
+    "press-arnold-mancuernas": ("a seated Arnold dumbbell press on a bench with back support, dumbbells at shoulder level, elbows forward, palms rotating outward while pressing overhead", "3/4 diagonal view"),
+    "swing-pesa-rusa": ("a two-handed kettlebell swing driven by a powerful hip hinge, kettlebell floating at chest height, arms straight and relaxed, knees slightly bent, neutral spine", "side view"),
+    "fondos-paralelas": ("a chest-focused bodyweight dip on parallel bars at the lower position, torso leaning slightly forward, elbows bent, shoulders just below elbow height, feet suspended", "3/4 diagonal view"),
+    "puente-gluteos-barra": ("a barbell glute bridge on the floor at full hip extension, upper back and shoulders on the floor, knees bent, feet planted, padded barbell held securely across the hips", "side view"),
+    "burpee": ("the floor transition of a burpee, both hands planted shoulder-width apart, torso in a straight plank, both legs dynamically extending backward from a crouch", "side view"),
     "press-banca": ("a barbell bench press lying on a flat bench", "3/4 diagonal view"),
     "press-mancuernas": ("a dumbbell bench press lying on a flat bench, one dumbbell in each hand", "3/4 diagonal view"),
     "aperturas-mancuernas": ("dumbbell chest flyes lying on a flat bench, arms open wide with slight elbow bend", "3/4 diagonal view"),

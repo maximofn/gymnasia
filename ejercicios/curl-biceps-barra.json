@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-barra",
+  "name": "Curl de bíceps con barra",
+  "image_male": "images/curl-biceps-barra-male.webp",
+  "image_female": "images/curl-biceps-barra-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazo"],
+  "equipment": "barra",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta la barra con agarre supino. Mantén los codos cerca del torso y flexiónalos para elevar la barra hasta la altura de los hombros, evitando balancear el cuerpo. Contrae los bíceps en la parte alta y baja la barra lentamente hasta extender los brazos sin bloquear los codos."
+}

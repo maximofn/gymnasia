@@ -1,0 +1,11 @@
+{
+  "id": "fondos-paralelas",
+  "name": "Fondos en paralelas",
+  "image_male": "images/fondos-paralelas-male.webp",
+  "image_female": "images/fondos-paralelas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Sujétate sobre unas barras paralelas con los brazos extendidos. Inclina ligeramente el torso hacia delante y baja el cuerpo flexionando los codos hasta que los hombros queden aproximadamente a la altura de los codos. Empuja las barras para volver a subir hasta extender los brazos, manteniendo el movimiento estable y sin balanceos."
+}

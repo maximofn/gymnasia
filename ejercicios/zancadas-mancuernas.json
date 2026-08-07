@@ -1,0 +1,11 @@
+{
+  "id": "zancadas-mancuernas",
+  "name": "Zancadas con mancuernas",
+  "image_male": "images/zancadas-mancuernas-male.webp",
+  "image_female": "images/zancadas-mancuernas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una mancuerna en cada mano y los brazos a los lados. Da un paso amplio hacia delante y baja el cuerpo flexionando ambas rodillas, con el torso erguido y la rodilla delantera alineada con el pie. Empuja con el talón delantero para regresar a la posición inicial y repite con la otra pierna."
+}

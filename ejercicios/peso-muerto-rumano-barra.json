@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-rumano-barra",
+  "name": "Peso muerto rumano con barra",
+  "image_male": "images/peso-muerto-rumano-barra-male.webp",
+  "image_female": "images/peso-muerto-rumano-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "zona lumbar"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies a la anchura de las caderas y sujeta la barra con un agarre prono. Lleva las caderas hacia atrás manteniendo la espalda neutra y las rodillas ligeramente flexionadas. Baja la barra cerca de las piernas hasta sentir tensión en los isquiotibiales. Empuja las caderas hacia delante para volver a la posición erguida y contrae los glúteos al terminar el movimiento."
+}
