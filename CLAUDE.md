@@ -95,11 +95,14 @@ Run from repo root unless noted.
   npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
   ```
 - La CLI de Vercel **no está instalada de forma permanente**; `npm exec` la baja al
-  vuelo. La sesión ya está autenticada en `~/Library/Application Support/com.vercel.cli`,
-  así que no hace falta `vercel login`. Comprobarlo sin desplegar:
+  vuelo. La sesión suele estar autenticada en
+  `~/Library/Application Support/com.vercel.cli`. Comprobarlo sin desplegar:
   ```bash
   npm exec --yes -- vercel@latest whoami --cwd arquitectura-agente
   ```
+  Si devuelve `The specified token is not valid`, la sesión ha caducado: ejecutar
+  `npm exec --yes -- vercel@latest login`, completar el acceso interactivo y repetir
+  el deploy. Reintentar el despliegue sin renovar la sesión no lo corrige.
 - No usar `npx vercel`: el hook de rtk reescribe `npx` a `npm` y falla con
   `Unknown command: "vercel@latest"`. Usar `npm exec --` siempre.
 - Antes de desplegar, pasar los tests:
