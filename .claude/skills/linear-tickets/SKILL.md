@@ -162,7 +162,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Cuatro cosas que cuestan tiempo si no se saben:
+Cinco cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -184,6 +184,11 @@ Cuatro cosas que cuestan tiempo si no se saben:
    ```bash
    for i in 25 26 27; do python3 <ruta>/linear.py get GYM-$i; done | grep -ic "texto viejo"
    ```
+
+5. **Linear puede normalizar `[x]` a `[X]` al reescribir una descripción.** El
+   síntoma es que `replace --dry-run` devuelve `sin coincidencias` aunque el
+   checkbox aparezca marcado en la interfaz. Relee el ticket con `get` y usa la
+   capitalización que devuelva la API antes de repetir la sustitución.
 
 ## Notas
 
