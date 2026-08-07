@@ -1,6 +1,10 @@
+import argparse
+import io
 import importlib.util
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest import mock
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "linear.py"
@@ -8,6 +12,18 @@ SPEC = importlib.util.spec_from_file_location("linear", SCRIPT)
 linear = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 SPEC.loader.exec_module(linear)
+
+
+COMPLETE_PLAN = """Contexto del ticket.
+
+## Plan de pruebas
+- [X] Unitarios: cubren el parser.
+- [x] E2E: recorre el flujo principal.
+- [X] Integración con proveedor falso: simula dos rondas.
+- [x] Contrato: valida los schemas.
+- [ ] Regresión: No aplica: no corrige ningún bug existente.
+- [X] Fuzzing / property-based: genera argumentos arbitrarios.
+"""
 
 
 class TestPlanValidationTests(unittest.TestCase):
@@ -39,6 +55,177 @@ class TestPlanValidationTests(unittest.TestCase):
         self.assertIn("contrato", message)
         self.assertIn("regresión", message)
         self.assertIn("fuzzing", message)
+
+    def test_requires_categories_as_labels_not_mentions_in_another_explanation(self):
+        description = COMPLETE_PLAN.replace(
+            "- [x] E2E: recorre el flujo principal.\n",
+            "",
+        ).replace(
+            "cubren el parser.",
+            "cubren el parser usado por el E2E.",
+        )
+
+        with self.assertRaisesRegex(SystemExit, "E2E"):
+            linear.validate_test_plan(description)
+
+
+class ClosureValidationTests(unittest.TestCase):
+    def test_accepts_checked_items_and_justified_not_applicable(self):
+        linear.validate_closure_test_plan(COMPLETE_PLAN)
+
+    def test_rejects_unchecked_applicable_category(self):
+        description = COMPLETE_PLAN.replace(
+            "- [x] E2E: recorre el flujo principal.",
+            "- [ ] E2E: recorre el flujo principal.",
+        )
+
+        with self.assertRaisesRegex(SystemExit, "E2E"):
+            linear.validate_closure_test_plan(description)
+
+    def test_rejects_not_applicable_placeholder(self):
+        description = COMPLETE_PLAN.replace(
+            "No aplica: no corrige ningún bug existente.",
+            "No aplica: <motivo>",
+        )
+
+        with self.assertRaisesRegex(SystemExit, "regresión"):
+            linear.validate_closure_test_plan(description)
+
+    def test_evidence_must_include_check_and_result(self):
+        self.assertEqual(
+            linear.validate_closure_evidence([
+                " npm test: 16/16 tests verdes ",
+                "QA manual: Pixel 8, flujo feliz correcto",
+            ]),
+            [
+                "npm test: 16/16 tests verdes",
+                "QA manual: Pixel 8, flujo feliz correcto",
+            ],
+        )
+        with self.assertRaisesRegex(SystemExit, "Evidencia no concreta"):
+            linear.validate_closure_evidence(["todo verde"])
+
+    def test_update_cannot_bypass_protected_close(self):
+        args = argparse.Namespace(
+            id="GYM-99",
+            title=None,
+            description=None,
+            priority=None,
+            state="Done",
+            parent=None,
+        )
+        with mock.patch.object(
+            linear,
+            "resolve_issue_uuid",
+            side_effect=AssertionError("no debe consultar Linear"),
+        ):
+            with self.assertRaisesRegex(SystemExit, "cierre está protegido"):
+                linear.cmd_update(args)
+
+    def test_close_comments_evidence_before_moving_to_done(self):
+        calls = []
+
+        def fake_query(gql, variables=None):
+            if "issue(id:$id)" in gql:
+                return {
+                    "issue": {
+                        "identifier": "GYM-99",
+                        "description": COMPLETE_PLAN,
+                        "state": {"name": "In Progress", "type": "started"},
+                    }
+                }
+            if "commentCreate" in gql:
+                calls.append(("comment", variables))
+                return {"commentCreate": {"success": True}}
+            if "issueUpdate" in gql:
+                calls.append(("update", variables))
+                return {
+                    "issueUpdate": {
+                        "success": True,
+                        "issue": {
+                            "identifier": "GYM-99",
+                            "state": {"name": "Done"},
+                        },
+                    }
+                }
+            raise AssertionError("GraphQL inesperado")
+
+        args = argparse.Namespace(
+            id="GYM-99",
+            evidence=["npm test: 16/16 tests verdes"],
+            dry_run=False,
+        )
+        output = io.StringIO()
+        with (
+            mock.patch.object(linear, "resolve_issue_uuid", return_value="uuid-99"),
+            mock.patch.object(linear, "resolve_state_id", return_value="done-state"),
+            mock.patch.object(linear, "query", side_effect=fake_query),
+            redirect_stdout(output),
+        ):
+            linear.cmd_close(args)
+
+        self.assertEqual([kind for kind, _variables in calls], ["comment", "update"])
+        comment_input = calls[0][1]["input"]
+        self.assertEqual(comment_input["issueId"], "uuid-99")
+        self.assertIn("npm test: 16/16 tests verdes", comment_input["body"])
+        self.assertEqual(calls[1][1]["input"], {"stateId": "done-state"})
+        self.assertIn("Siguiente paso obligatorio", output.getvalue())
+
+    def test_close_dry_run_never_mutates_linear(self):
+        def fake_query(gql, _variables=None):
+            if "issue(id:$id)" not in gql:
+                raise AssertionError("dry-run no debe ejecutar mutaciones")
+            return {
+                "issue": {
+                    "identifier": "GYM-99",
+                    "description": COMPLETE_PLAN,
+                    "state": {"name": "Todo", "type": "unstarted"},
+                }
+            }
+
+        args = argparse.Namespace(
+            id="GYM-99",
+            evidence=["npm test: 16/16 tests verdes"],
+            dry_run=True,
+        )
+        output = io.StringIO()
+        with (
+            mock.patch.object(linear, "resolve_issue_uuid", return_value="uuid-99"),
+            mock.patch.object(linear, "query", side_effect=fake_query),
+            redirect_stdout(output),
+        ):
+            linear.cmd_close(args)
+
+        self.assertIn("cierre válido [dry-run]", output.getvalue())
+
+    def test_close_does_not_move_state_when_comment_fails(self):
+        def fake_query(gql, _variables=None):
+            if "issue(id:$id)" in gql:
+                return {
+                    "issue": {
+                        "identifier": "GYM-99",
+                        "description": COMPLETE_PLAN,
+                        "state": {"name": "In Progress", "type": "started"},
+                    }
+                }
+            if "commentCreate" in gql:
+                return {"commentCreate": {"success": False}}
+            if "issueUpdate" in gql:
+                raise AssertionError("no debe cerrar sin comentario de evidencia")
+            raise AssertionError("GraphQL inesperado")
+
+        args = argparse.Namespace(
+            id="GYM-99",
+            evidence=["npm test: 16/16 tests verdes"],
+            dry_run=False,
+        )
+        with (
+            mock.patch.object(linear, "resolve_issue_uuid", return_value="uuid-99"),
+            mock.patch.object(linear, "resolve_state_id", return_value="done-state"),
+            mock.patch.object(linear, "query", side_effect=fake_query),
+        ):
+            with self.assertRaisesRegex(SystemExit, "sigue abierto"):
+                linear.cmd_close(args)
 
 
 if __name__ == "__main__":

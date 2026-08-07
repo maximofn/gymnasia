@@ -129,6 +129,37 @@ python3 .claude/skills/linear-tickets/scripts/linear.py update GYM-12 --parent G
 python3 .claude/skills/linear-tickets/scripts/linear.py comment GYM-12 --body "Comentario"
 ```
 
+### Cierre protegido
+
+No cierres tickets con `update --state Done`: el script bloquea esa vía para que
+el plan de pruebas no se pueda saltar por accidente. Usa `close`, primero en
+modo de previsualización:
+
+```bash
+python3 .claude/skills/linear-tickets/scripts/linear.py close GYM-12 \
+  --evidence "npm test: 24/24 tests verdes" \
+  --evidence "npm --workspace apps/mobile exec tsc --noEmit: correcto" \
+  --dry-run
+
+# Si la previsualización es correcta, repetir sin --dry-run
+python3 .claude/skills/linear-tickets/scripts/linear.py close GYM-12 \
+  --evidence "npm test: 24/24 tests verdes" \
+  --evidence "QA manual: Pixel 8, flujo feliz y recuperación de error correctos"
+```
+
+`close` comprueba antes de escribir:
+
+- que están las seis categorías obligatorias;
+- que cada una tiene `[x]`/`[X]` y detalle, o `No aplica: <motivo>` real;
+- que cada `--evidence` usa `comprobación: resultado`, sin placeholders;
+- que el ticket no está ya completado ni cancelado.
+
+Si todo cuadra, añade primero un comentario `## Evidencia de cierre` y solo
+después mueve el ticket a `Done`. El comando **no ejecuta texto copiado desde
+Linear**: las pruebas y el QA se realizan explícitamente antes y sus resultados
+se pasan como evidencias. Tras cerrar sigue siendo obligatorio sincronizar,
+validar y desplegar el tablero espejo.
+
 ### Edición masiva
 
 `update --description` **reemplaza la descripción entera**. Para cambiar una
@@ -202,7 +233,9 @@ Cinco cosas que cuestan tiempo si no se saben:
 - El identifier (`GYM-12`) se traduce internamente al UUID que exige la API.
 - Los estados por defecto de un equipo Linear suelen ser: `Backlog`, `Todo`,
   `In Progress`, `In Review`, `Done`, `Canceled` (verifícalos con `states`).
-- Para cerrar un ticket, muévelo al estado `Done` (o `Canceled`) con `update`.
+- Para completar un ticket usa `close`; `update --state Done` está bloqueado.
+  Una cancelación sí se hace con `update --state Canceled`, porque no representa
+  trabajo validado ni necesita superar el plan de pruebas.
 
 ## Flujo recomendado para el agente
 
@@ -233,7 +266,10 @@ Cinco cosas que cuestan tiempo si no se saben:
    E2E, integración con proveedor falso, contrato, regresión y fuzzing /
    property-based. Si algo no procede, escribe `No aplica: <motivo>`. Tras el
    alta, usa `get GYM-N` para confirmar que Linear conservó la sección.
-7. **Antes de dar el trabajo por terminado, sincroniza el espejo.** `board`,
+7. **Cierra con evidencia, nunca con `update --state Done`.** Ejecuta primero
+   `close GYM-N ... --dry-run`; si valida, repite sin `--dry-run`. El comentario
+   se crea antes de cambiar el estado para que nunca haya un cierre sin evidencia.
+8. **Antes de dar el trabajo por terminado, sincroniza el espejo.** `board`,
    luego `board --apply`, luego desplegar. Ver "Regla del espejo". Es el paso
    que más fácil se olvida porque Linear ya se ve correcto: el que se queda
    desactualizado es el tablero, y nadie se entera hasta semanas después.

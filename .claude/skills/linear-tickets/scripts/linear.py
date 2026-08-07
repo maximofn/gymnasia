@@ -18,6 +18,7 @@ Escritura:
       --description "..." --state "Todo" --priority high
   uv run linear.py update GYM-12 --state "In Progress" --priority urgent
   uv run linear.py update GYM-12 --title "Nuevo título" --description "..."
+  uv run linear.py close GYM-12 --evidence "npm test: 24/24"
   uv run linear.py comment GYM-12 --body "Comentario"
 
 Prioridades: none | urgent | high | medium | low
@@ -53,6 +54,10 @@ TEST_PLAN_TEMPLATE = """## Plan de pruebas
 - [ ] Contrato: <casos concretos o No aplica: motivo>
 - [ ] Regresión: <casos concretos o No aplica: motivo>
 - [ ] Fuzzing / property-based: <casos concretos o No aplica: motivo>"""
+
+CHECKED_TEST_ITEM = re.compile(r"^\s*[-*]\s*\[[xX]\]")
+NOT_APPLICABLE = re.compile(r"(?i)\bno\s+aplica\s*:\s*(.+)$")
+PLACEHOLDER = re.compile(r"<[^>]+>")
 
 
 def repo_root() -> Path:
@@ -146,8 +151,8 @@ def priority_int(name: str) -> int:
     return PRIORITY_MAP[name.lower()]
 
 
-def validate_test_plan(description: str | None) -> str:
-    """Exige que cada ticket nuevo evalúe todas las capas de pruebas acordadas."""
+def extract_test_plan(description: str | None) -> str:
+    """Devuelve solo la sección de pruebas o termina con un mensaje accionable."""
     if not description:
         sys.exit(
             "Todo ticket nuevo necesita descripción y un plan de pruebas.\n\n"
@@ -166,9 +171,25 @@ def validate_test_plan(description: str | None) -> str:
     if next_heading:
         section = section[:next_heading.start()]
 
+    return section
+
+
+def test_plan_category_lines(section: str, pattern: re.Pattern) -> list[str]:
+    """Localiza la categoría en la etiqueta anterior a ':' y no en su explicación."""
+    return [
+        line.strip()
+        for line in section.splitlines()
+        if pattern.search(line.split(":", 1)[0])
+    ]
+
+
+def validate_test_plan(description: str | None) -> str:
+    """Exige que cada ticket nuevo evalúe todas las capas de pruebas acordadas."""
+    section = extract_test_plan(description)
+
     missing = [
         label for label, pattern in TEST_PLAN_REQUIREMENTS.items()
-        if not pattern.search(section)
+        if not test_plan_category_lines(section, pattern)
     ]
     if missing:
         sys.exit(
@@ -176,7 +197,75 @@ def validate_test_plan(description: str | None) -> str:
             "Añade un caso concreto o 'No aplica: <motivo>' para cada categoría.\n\n"
             + TEST_PLAN_TEMPLATE
         )
+    assert description is not None
     return description
+
+
+def test_plan_line_is_resolved(line: str) -> bool:
+    """Una categoría está resuelta si se completó o justifica por qué no aplica."""
+    not_applicable = NOT_APPLICABLE.search(line)
+    if not_applicable:
+        reason = not_applicable.group(1).strip()
+        return bool(reason) and not PLACEHOLDER.search(reason)
+
+    if not CHECKED_TEST_ITEM.search(line) or PLACEHOLDER.search(line):
+        return False
+    _label, separator, detail = line.partition(":")
+    return bool(separator and detail.strip())
+
+
+def validate_closure_test_plan(description: str | None) -> None:
+    """Impide cerrar si alguna categoría sigue pendiente o conserva placeholders."""
+    validate_test_plan(description)
+    section = extract_test_plan(description)
+    unresolved = [
+        label
+        for label, pattern in TEST_PLAN_REQUIREMENTS.items()
+        if not any(
+            test_plan_line_is_resolved(line)
+            for line in test_plan_category_lines(section, pattern)
+        )
+    ]
+    if unresolved:
+        sys.exit(
+            "No se puede cerrar: faltan por resolver " + ", ".join(unresolved) + ".\n"
+            "Marca cada caso completado con [x] o escribe 'No aplica: <motivo>'."
+        )
+
+
+def validate_closure_evidence(items: list[str] | None) -> list[str]:
+    """Normaliza evidencias y rechaza afirmaciones vacías o plantillas."""
+    if not items:
+        sys.exit(
+            "El cierre necesita al menos una --evidence concreta, por ejemplo: "
+            "--evidence 'npm test: 24/24 tests verdes'."
+        )
+    normalized = []
+    for raw in items:
+        item = raw.strip()
+        subject, separator, result = item.partition(":")
+        if (
+            not separator
+            or not subject.strip()
+            or not result.strip()
+            or PLACEHOLDER.search(item)
+        ):
+            sys.exit(
+                f"Evidencia no concreta: {raw!r}. Usa el formato 'comprobación: resultado'."
+            )
+        normalized.append(item)
+    return normalized
+
+
+def build_closure_comment(evidence: list[str]) -> str:
+    bullets = "\n".join(f"- {item}" for item in evidence)
+    return (
+        "## Evidencia de cierre\n\n"
+        f"Validado el {date.today().isoformat()}.\n\n"
+        f"{bullets}\n\n"
+        "El plan de pruebas está resuelto: cada categoría figura como completada "
+        "o como no aplicable con motivo."
+    )
 
 
 # ---------- comandos lectura ----------
@@ -281,6 +370,11 @@ def cmd_create(args):
 
 
 def cmd_update(args):
+    if args.state and args.state.strip().lower() == "done":
+        sys.exit(
+            "El cierre está protegido. Usa: linear.py close GYM-N "
+            "--evidence 'comprobación: resultado'."
+        )
     uuid = resolve_issue_uuid(args.id)
     team_key = args.id.split("-")[0].upper()
     inp = {}
@@ -307,6 +401,71 @@ def cmd_update(args):
     if not res["success"]:
         sys.exit("No se pudo actualizar el issue.")
     print(f"Actualizado {res['issue']['identifier']} -> estado {res['issue']['state']['name']}")
+
+
+def cmd_close(args):
+    """Valida el plan, comenta la evidencia y solo entonces mueve el issue a Done."""
+    uuid = resolve_issue_uuid(args.id)
+    team_key = args.id.split("-")[0].upper()
+    gql_get = """
+    query($id:String!) {
+      issue(id:$id) { identifier description state { name type } }
+    }
+    """
+    issue = query(gql_get, {"id": uuid})["issue"]
+    if issue["state"]["type"] == "completed":
+        sys.exit(f"{issue['identifier']} ya está completado.")
+    if issue["state"]["type"] == "canceled":
+        sys.exit(f"{issue['identifier']} está cancelado; reábrelo antes de cerrarlo.")
+
+    validate_closure_test_plan(issue["description"])
+    evidence = validate_closure_evidence(args.evidence)
+    comment_body = build_closure_comment(evidence)
+
+    if args.dry_run:
+        print(f"{issue['identifier']}: cierre válido [dry-run]")
+        print("\nComentario que se añadiría:\n")
+        print(comment_body)
+        return
+
+    done_state_id = resolve_state_id(team_key, "Done")
+    gql_comment = """
+    mutation Comment($input: CommentCreateInput!) {
+      commentCreate(input: $input) { success }
+    }
+    """
+    comment = query(
+        gql_comment,
+        {"input": {"issueId": uuid, "body": comment_body}},
+    )["commentCreate"]
+    if not comment["success"]:
+        sys.exit("No se añadió la evidencia; el issue sigue abierto.")
+
+    gql_update = """
+    mutation Update($id: String!, $input: IssueUpdateInput!) {
+      issueUpdate(id: $id, input: $input) {
+        success issue { identifier state { name } }
+      }
+    }
+    """
+    updated = query(
+        gql_update,
+        {"id": uuid, "input": {"stateId": done_state_id}},
+    )["issueUpdate"]
+    if not updated["success"]:
+        sys.exit(
+            "La evidencia quedó comentada, pero Linear no cambió el estado. "
+            "Revisa el ticket antes de reintentar."
+        )
+
+    print(
+        f"Cerrado {updated['issue']['identifier']} -> "
+        f"{updated['issue']['state']['name']} con evidencia."
+    )
+    print(
+        "Siguiente paso obligatorio: linear.py board --apply, "
+        "npm run test:board y desplegar arquitectura-agente."
+    )
 
 
 def cmd_replace(args):
@@ -515,6 +674,24 @@ def main():
     pu.add_argument("--priority", help="none|urgent|high|medium|low")
     pu.add_argument("--parent", help="identifier del issue padre, p.ej. GYM-12")
     pu.set_defaults(func=cmd_update)
+
+    pcl = sub.add_parser(
+        "close",
+        help="validar plan y evidencia antes de mover un issue a Done",
+    )
+    pcl.add_argument("id", help="identifier, p.ej. GYM-12")
+    pcl.add_argument(
+        "--evidence",
+        action="append",
+        required=True,
+        help="repetible; formato 'comprobación: resultado'",
+    )
+    pcl.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="validar y previsualizar el comentario sin modificar Linear",
+    )
+    pcl.set_defaults(func=cmd_close)
 
     pr = sub.add_parser("replace", help="sustituir texto en la descripcion de varios issues")
     pr.add_argument("ids", nargs="+", help="identifiers, p.ej. GYM-12 GYM-13")
