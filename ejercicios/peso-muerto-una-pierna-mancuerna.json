@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-una-pierna-mancuerna",
+  "name": "Peso muerto a una pierna con mancuerna",
+  "image_male": "images/peso-muerto-una-pierna-mancuerna-male.webp",
+  "image_female": "images/peso-muerto-una-pierna-mancuerna-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "abdomen"],
+  "equipment": "mancuerna",
+  "difficulty": "advanced",
+  "instructions": "Sostén una mancuerna en la mano contraria a la pierna de apoyo. Inclina el torso desde la cadera mientras extiendes la pierna libre hacia atrás, manteniendo la espalda neutra y una ligera flexión en la rodilla de apoyo. Baja hasta que torso y pierna libre se acerquen a la horizontal y vuelve apretando el glúteo, sin girar la pelvis."
+}

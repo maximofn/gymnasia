@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-gluteo-isquios",
+  "name": "Elevación de glúteo e isquios",
+  "image_male": "images/elevacion-gluteo-isquios-male.webp",
+  "image_female": "images/elevacion-gluteo-isquios-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "gemelos", "espalda baja"],
+  "equipment": "máquina",
+  "difficulty": "advanced",
+  "instructions": "Colócate en la máquina de glúteo e isquios con los tobillos asegurados y las rodillas apoyadas. Mantén el cuerpo alineado desde las rodillas hasta la cabeza y baja el torso de forma controlada. Contrae con fuerza los isquiotibiales y los glúteos para volver a elevarte sin arquear la espalda ni perder la alineación."
+}

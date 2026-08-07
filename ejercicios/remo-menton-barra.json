@@ -1,0 +1,11 @@
+{
+  "id": "remo-menton-barra",
+  "name": "Remo al mentón con barra",
+  "image_male": "images/remo-menton-barra-male.webp",
+  "image_female": "images/remo-menton-barra-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["trapecio", "bíceps"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie y sujeta la barra delante de los muslos con agarre prono. Eleva la barra cerca del cuerpo guiando el movimiento con los codos, que deben quedar por encima de las manos, hasta llegar a la parte alta del pecho. Baja de forma controlada sin balancear el torso ni encoger excesivamente los hombros."
+}

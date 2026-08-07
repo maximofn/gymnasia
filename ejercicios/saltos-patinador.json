@@ -1,0 +1,11 @@
+{
+  "id": "saltos-patinador",
+  "name": "Saltos de patinador",
+  "image_male": "images/saltos-patinador-male.webp",
+  "image_female": "images/saltos-patinador-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": ["glúteos", "cuádriceps", "gemelos"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Desde una posición atlética, impúlsate lateralmente y aterriza sobre una pierna con la rodilla alineada con el pie. Lleva la pierna libre por detrás sin cargar peso sobre ella y usa los brazos para equilibrarte. Salta inmediatamente hacia el lado contrario, amortiguando cada apoyo con la cadera atrás y el torso estable."
+}

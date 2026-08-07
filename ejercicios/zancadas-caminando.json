@@ -1,0 +1,11 @@
+{
+  "id": "zancadas-caminando",
+  "name": "Zancadas caminando",
+  "image_male": "images/zancadas-caminando-male.webp",
+  "image_female": "images/zancadas-caminando-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Da un paso largo hacia delante y baja hasta que ambas rodillas se acerquen a 90 grados, con el torso erguido y la rodilla delantera alineada con el pie. Impúlsate con la pierna adelantada y lleva la pierna trasera directamente al siguiente paso. Alterna lados avanzando con una cadencia controlada."
+}

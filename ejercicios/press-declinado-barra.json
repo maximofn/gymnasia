@@ -1,0 +1,11 @@
+{
+  "id": "press-declinado-barra",
+  "name": "Press declinado con barra",
+  "image_male": "images/press-declinado-barra-male.webp",
+  "image_female": "images/press-declinado-barra-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Asegura las piernas en un banco declinado y túmbate con la cabeza más baja que las caderas. Agarra la barra algo más abierta que los hombros y bájala de forma controlada hacia la parte baja del pecho. Mantén los antebrazos verticales y empuja la barra hasta extender los brazos sin rebotar ni perder la estabilidad."
+}

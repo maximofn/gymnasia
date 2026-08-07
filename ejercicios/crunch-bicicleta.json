@@ -1,0 +1,11 @@
+{
+  "id": "crunch-bicicleta",
+  "name": "Crunch bicicleta",
+  "image_male": "images/crunch-bicicleta-male.webp",
+  "image_female": "images/crunch-bicicleta-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "flexores de cadera"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con las manos detrás de la cabeza y eleva las piernas con las rodillas flexionadas. Acerca el codo derecho a la rodilla izquierda mientras extiendes la pierna derecha sin apoyar el talón. Alterna el movimiento hacia el otro lado con un pedaleo controlado, manteniendo la zona lumbar estable y evitando tirar del cuello."
+}

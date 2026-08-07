@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-polea-pie",
+  "name": "Aperturas de pie en polea",
+  "image_male": "images/aperturas-polea-pie-male.webp",
+  "image_female": "images/aperturas-polea-pie-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate entre dos poleas a la altura del pecho, da un paso al frente y adopta una postura estable. Con una ligera flexión fija en los codos, lleva ambas asas hacia delante hasta juntar las manos frente al pecho. Aprieta los pectorales y vuelve lentamente hasta notar un estiramiento cómodo, manteniendo el torso inmóvil."
+}

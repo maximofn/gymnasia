@@ -1,0 +1,11 @@
+{
+  "id": "saltar-comba",
+  "name": "Saltar a la comba",
+  "image_male": "images/saltar-comba-male.webp",
+  "image_female": "images/saltar-comba-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": ["gemelos", "cuádriceps", "hombro"],
+  "equipment": "cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta las asas con los codos cerca del cuerpo y coloca la cuerda detrás de los pies. Hazla girar principalmente con las muñecas y realiza saltos bajos cuando pase bajo tus pies. Aterriza con suavidad sobre la parte delantera del pie, mantén las rodillas ligeramente flexionadas y conserva un ritmo estable."
+}

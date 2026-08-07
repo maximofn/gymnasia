@@ -1,0 +1,11 @@
+{
+  "id": "crunch-inverso",
+  "name": "Crunch inverso",
+  "image_male": "images/crunch-inverso-male.webp",
+  "image_female": "images/crunch-inverso-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con los brazos junto al cuerpo y eleva las piernas con caderas y rodillas flexionadas a 90 grados. Contrae el abdomen para despegar suavemente las caderas y acercar las rodillas al pecho, sin impulsarte con los brazos. Baja la pelvis de forma controlada hasta recuperar la posición inicial."
+}

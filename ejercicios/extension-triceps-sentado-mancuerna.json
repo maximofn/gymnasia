@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-sentado-mancuerna",
+  "name": "Extensión de tríceps sentado con mancuerna",
+  "image_male": "images/extension-triceps-sentado-mancuerna-male.webp",
+  "image_female": "images/extension-triceps-sentado-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombro"],
+  "equipment": "mancuerna",
+  "difficulty": "beginner",
+  "instructions": "Siéntate erguido en un banco y sujeta una mancuerna con ambas manos por encima de la cabeza. Mantén los brazos superiores cerca de las orejas y flexiona los codos para bajar la mancuerna detrás de la cabeza. Extiende los codos contrayendo los tríceps sin abrirlos hacia los lados ni arquear la espalda."
+}

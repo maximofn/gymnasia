@@ -1,0 +1,11 @@
+{
+  "id": "plancha-lateral",
+  "name": "Plancha lateral",
+  "image_male": "images/plancha-lateral-male.webp",
+  "image_female": "images/plancha-lateral-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "glúteo medio", "hombro"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Apóyate de lado sobre un antebrazo, con el codo justo debajo del hombro y las piernas extendidas una sobre otra. Eleva las caderas hasta formar una línea recta desde la cabeza hasta los pies. Mantén el abdomen y los glúteos activos sin dejar caer la pelvis, respira con normalidad y repite el tiempo indicado en ambos lados."
+}

@@ -13,6 +13,20 @@
     "instructions": "Acuéstate en un banco inclinado (30-45°) con una mancuerna en cada mano y los brazos extendidos sobre el pecho. Con los codos ligeramente flexionados, abre los brazos hacia los lados en arco hasta sentir el estiramiento en la parte superior del pecho y vuelve a la posición inicial de forma controlada."
   },
   {
+    "id": "aperturas-inversas-polea",
+    "name": "Aperturas inversas en polea",
+    "image_male": "images/aperturas-inversas-polea-male.webp",
+    "image_female": "images/aperturas-inversas-polea-female.webp",
+    "muscle_group": "hombro posterior",
+    "secondary_muscles": [
+      "trapecio",
+      "espalda"
+    ],
+    "equipment": "polea",
+    "difficulty": "intermediate",
+    "instructions": "Colócate entre dos poleas bajas y cruza los cables para sujetar el asa opuesta con cada mano. Inclina ligeramente el torso con la espalda neutra y mantén una pequeña flexión de codos. Abre los brazos hacia atrás y hacia los lados hasta juntar los omóplatos, y regresa despacio sin encoger los hombros."
+  },
+  {
     "id": "aperturas-mancuernas",
     "name": "Aperturas con mancuernas",
     "image_male": "images/aperturas-mancuernas-male.webp",
@@ -24,6 +38,19 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Acuéstate en un banco plano con una mancuerna en cada mano y los brazos extendidos sobre el pecho. Con los codos ligeramente flexionados, abre los brazos hacia los lados en arco hasta sentir el estiramiento en el pecho y vuelve a la posición inicial."
+  },
+  {
+    "id": "aperturas-polea-pie",
+    "name": "Aperturas de pie en polea",
+    "image_male": "images/aperturas-polea-pie-male.webp",
+    "image_female": "images/aperturas-polea-pie-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombro anterior"
+    ],
+    "equipment": "polea",
+    "difficulty": "intermediate",
+    "instructions": "Colócate entre dos poleas a la altura del pecho, da un paso al frente y adopta una postura estable. Con una ligera flexión fija en los codos, lleva ambas asas hacia delante hasta juntar las manos frente al pecho. Aprieta los pectorales y vuelve lentamente hasta notar un estiramiento cómodo, manteniendo el torso inmóvil."
   },
   {
     "id": "buenos-dias-barra",
@@ -70,6 +97,33 @@
     "instructions": "Acuéstate boca arriba con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza o cruzadas sobre el pecho. Contrae el abdomen para elevar los hombros y la parte superior de la espalda del suelo. Baja de forma controlada sin apoyar completamente la cabeza."
   },
   {
+    "id": "crunch-bicicleta",
+    "name": "Crunch bicicleta",
+    "image_male": "images/crunch-bicicleta-male.webp",
+    "image_female": "images/crunch-bicicleta-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "oblicuos",
+      "flexores de cadera"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba con las manos detrás de la cabeza y eleva las piernas con las rodillas flexionadas. Acerca el codo derecho a la rodilla izquierda mientras extiendes la pierna derecha sin apoyar el talón. Alterna el movimiento hacia el otro lado con un pedaleo controlado, manteniendo la zona lumbar estable y evitando tirar del cuello."
+  },
+  {
+    "id": "crunch-inverso",
+    "name": "Crunch inverso",
+    "image_male": "images/crunch-inverso-male.webp",
+    "image_female": "images/crunch-inverso-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba con los brazos junto al cuerpo y eleva las piernas con caderas y rodillas flexionadas a 90 grados. Contrae el abdomen para despegar suavemente las caderas y acercar las rodillas al pecho, sin impulsarte con los brazos. Baja la pelvis de forma controlada hasta recuperar la posición inicial."
+  },
+  {
     "id": "curl-biceps-barra",
     "name": "Curl de bíceps con barra",
     "image_male": "images/curl-biceps-barra-male.webp",
@@ -83,6 +137,19 @@
     "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta la barra con agarre supino. Mantén los codos cerca del torso y flexiónalos para elevar la barra hasta la altura de los hombros, evitando balancear el cuerpo. Contrae los bíceps en la parte alta y baja la barra lentamente hasta extender los brazos sin bloquear los codos."
   },
   {
+    "id": "curl-biceps-polea",
+    "name": "Curl de bíceps en polea",
+    "image_male": "images/curl-biceps-polea-male.webp",
+    "image_female": "images/curl-biceps-polea-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo"
+    ],
+    "equipment": "polea",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie frente a una polea baja y sujeta la barra recta con agarre supino. Mantén los codos pegados a los costados y flexiona los brazos hasta acercar la barra a los hombros sin inclinar el torso. Aprieta los bíceps en la parte alta y extiende los codos de forma controlada, manteniendo tensión en el cable."
+  },
+  {
     "id": "curl-concentrado",
     "name": "Curl concentrado",
     "image_male": "images/curl-concentrado-male.webp",
@@ -94,6 +161,19 @@
     "equipment": "mancuernas",
     "difficulty": "beginner",
     "instructions": "Siéntate en un banco con las piernas abiertas. Apoya el codo del brazo que trabaja en la cara interna del muslo, con una mancuerna en la mano y el brazo extendido. Flexiona el codo llevando la mancuerna hacia el hombro, apretando el bíceps en la parte alta. Baja de forma controlada. Completa las repeticiones antes de cambiar de brazo."
+  },
+  {
+    "id": "curl-inclinado-mancuernas",
+    "name": "Curl inclinado con mancuernas",
+    "image_male": "images/curl-inclinado-mancuernas-male.webp",
+    "image_female": "images/curl-inclinado-mancuernas-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate con la espalda apoyada en un banco inclinado y deja los brazos extendidos a los lados con una mancuerna en cada mano. Mantén los brazos superiores quietos y flexiona los codos llevando las mancuernas hacia los hombros con las palmas hacia arriba. Contrae los bíceps y baja lentamente sin adelantar los hombros."
   },
   {
     "id": "curl-mancuernas-sentado",
@@ -176,6 +256,21 @@
     "equipment": "peso corporal",
     "difficulty": "intermediate",
     "instructions": "Cuélgate de una barra fija con las manos en pronación (palmas hacia adelante), algo más abiertas que el ancho de los hombros y los brazos completamente extendidos. Tira del cuerpo hacia arriba apretando los dorsales y llevando los codos hacia abajo y atrás, hasta que la barbilla supere la barra. Baja de forma controlada hasta extender por completo los brazos sin balancearte."
+  },
+  {
+    "id": "elevacion-gluteo-isquios",
+    "name": "Elevación de glúteo e isquios",
+    "image_male": "images/elevacion-gluteo-isquios-male.webp",
+    "image_female": "images/elevacion-gluteo-isquios-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos",
+      "gemelos",
+      "espalda baja"
+    ],
+    "equipment": "máquina",
+    "difficulty": "advanced",
+    "instructions": "Colócate en la máquina de glúteo e isquios con los tobillos asegurados y las rodillas apoyadas. Mantén el cuerpo alineado desde las rodillas hasta la cabeza y baja el torso de forma controlada. Contrae con fuerza los isquiotibiales y los glúteos para volver a elevarte sin arquear la espalda ni perder la alineación."
   },
   {
     "id": "elevaciones-frontales-barra",
@@ -272,6 +367,19 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Siéntate en la máquina de extensión de cuádriceps con la espalda apoyada en el respaldo y las rodillas alineadas con el eje de rotación. Coloca los tobillos detrás del rodillo inferior. Extiende las piernas hacia arriba hasta que queden casi completamente rectas, contrayendo los cuádriceps en la parte superior del movimiento. Baja de forma controlada hasta la posición inicial sin dejar que el peso descanse completamente."
+  },
+  {
+    "id": "extension-triceps-sentado-mancuerna",
+    "name": "Extensión de tríceps sentado con mancuerna",
+    "image_male": "images/extension-triceps-sentado-mancuerna-male.webp",
+    "image_female": "images/extension-triceps-sentado-mancuerna-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombro"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "beginner",
+    "instructions": "Siéntate erguido en un banco y sujeta una mancuerna con ambas manos por encima de la cabeza. Mantén los brazos superiores cerca de las orejas y flexiona los codos para bajar la mancuerna detrás de la cabeza. Extiende los codos contrayendo los tríceps sin abrirlos hacia los lados ni arquear la espalda."
   },
   {
     "id": "extension-triceps-tumbado-barra",
@@ -539,6 +647,20 @@
     "instructions": "Ponte de pie con los pies a la anchura de las caderas y sujeta la barra con un agarre prono. Lleva las caderas hacia atrás manteniendo la espalda neutra y las rodillas ligeramente flexionadas. Baja la barra cerca de las piernas hasta sentir tensión en los isquiotibiales. Empuja las caderas hacia delante para volver a la posición erguida y contrae los glúteos al terminar el movimiento."
   },
   {
+    "id": "peso-muerto-rumano-mancuernas",
+    "name": "Peso muerto rumano con mancuernas",
+    "image_male": "images/peso-muerto-rumano-mancuernas-male.webp",
+    "image_female": "images/peso-muerto-rumano-mancuernas-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "espalda baja"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con una mancuerna en cada mano delante de los muslos. Mantén una ligera flexión de rodillas y lleva las caderas hacia atrás mientras bajas las mancuernas cerca de las piernas con la espalda neutra. Detente al sentir tensión en los isquiotibiales y extiende las caderas apretando los glúteos para volver arriba."
+  },
+  {
     "id": "peso-muerto-sumo-barra",
     "name": "Peso muerto sumo con barra",
     "image_male": "images/peso-muerto-sumo-barra-male.webp",
@@ -552,6 +674,35 @@
     "equipment": "barra",
     "difficulty": "advanced",
     "instructions": "Coloca los pies bastante más abiertos que los hombros, con las puntas orientadas hacia fuera y la barra centrada sobre el mediopié. Baja las caderas y agarra la barra con las manos entre las piernas. Mantén el pecho elevado y la espalda neutra mientras empujas el suelo para extender rodillas y caderas. Termina erguido y baja la barra siguiendo el mismo recorrido de forma controlada."
+  },
+  {
+    "id": "peso-muerto-una-pierna-mancuerna",
+    "name": "Peso muerto a una pierna con mancuerna",
+    "image_male": "images/peso-muerto-una-pierna-mancuerna-male.webp",
+    "image_female": "images/peso-muerto-una-pierna-mancuerna-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "abdomen"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "advanced",
+    "instructions": "Sostén una mancuerna en la mano contraria a la pierna de apoyo. Inclina el torso desde la cadera mientras extiendes la pierna libre hacia atrás, manteniendo la espalda neutra y una ligera flexión en la rodilla de apoyo. Baja hasta que torso y pierna libre se acerquen a la horizontal y vuelve apretando el glúteo, sin girar la pelvis."
+  },
+  {
+    "id": "plancha-lateral",
+    "name": "Plancha lateral",
+    "image_male": "images/plancha-lateral-male.webp",
+    "image_female": "images/plancha-lateral-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "oblicuos",
+      "glúteo medio",
+      "hombro"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Apóyate de lado sobre un antebrazo, con el codo justo debajo del hombro y las piernas extendidas una sobre otra. Eleva las caderas hasta formar una línea recta desde la cabeza hasta los pies. Mantén el abdomen y los glúteos activos sin dejar caer la pelvis, respira con normalidad y repite el tiempo indicado en ambos lados."
   },
   {
     "id": "prensa-horizontal",
@@ -610,6 +761,20 @@
     "instructions": "Siéntate en un banco con respaldo y sujeta una mancuerna en cada mano a la altura de los hombros, con las palmas orientadas hacia el cuerpo y los codos por delante. Eleva las mancuernas mientras rotas las muñecas hasta que las palmas miren hacia delante y los brazos queden extendidos sobre la cabeza. Invierte la rotación al bajar de forma controlada."
   },
   {
+    "id": "press-banca-agarre-cerrado",
+    "name": "Press de banca con agarre cerrado",
+    "image_male": "images/press-banca-agarre-cerrado-male.webp",
+    "image_female": "images/press-banca-agarre-cerrado-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombro anterior"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Túmbate en un banco plano y agarra la barra con las manos algo más estrechas que los hombros, sin juntar en exceso las muñecas. Baja la barra hacia la parte baja del pecho manteniendo los codos cerca del torso. Empuja hasta extender los brazos y controla cada repetición sin perder la posición de los hombros ni despegar los pies."
+  },
+  {
     "id": "press-banca",
     "name": "Press de banca",
     "image_male": "images/press-banca-male.webp",
@@ -622,6 +787,20 @@
     "equipment": "barra",
     "difficulty": "intermediate",
     "instructions": "Acuéstate en un banco plano con los pies firmes en el suelo. Agarra la barra con las manos algo más abiertas que el ancho de los hombros. Baja la barra de forma controlada hasta el pecho y empuja hacia arriba hasta extender los brazos."
+  },
+  {
+    "id": "press-declinado-barra",
+    "name": "Press declinado con barra",
+    "image_male": "images/press-declinado-barra-male.webp",
+    "image_female": "images/press-declinado-barra-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombro anterior"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Asegura las piernas en un banco declinado y túmbate con la cabeza más baja que las caderas. Agarra la barra algo más abierta que los hombros y bájala de forma controlada hacia la parte baja del pecho. Mantén los antebrazos verticales y empuja la barra hasta extender los brazos sin rebotar ni perder la estabilidad."
   },
   {
     "id": "press-hombro-mancuernas",
@@ -650,6 +829,20 @@
     "equipment": "máquina",
     "difficulty": "intermediate",
     "instructions": "Siéntate en la máquina de press militar con la espalda apoyada en el respaldo. Agarra una de las asas con una mano a la altura del hombro. Empuja el asa hacia arriba hasta extender el brazo por encima de la cabeza. Baja de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
+  },
+  {
+    "id": "press-inclinado-barra",
+    "name": "Press inclinado con barra",
+    "image_male": "images/press-inclinado-barra-male.webp",
+    "image_female": "images/press-inclinado-barra-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombro anterior"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate en un banco inclinado con los pies firmes en el suelo y agarra la barra algo más abierta que los hombros. Baja la barra hacia la parte alta del pecho con los antebrazos verticales y los codos ligeramente recogidos. Empuja hasta extender los brazos sin despegar la espalda ni perder la posición de los hombros."
   },
   {
     "id": "press-inclinado-unilateral-maquina",
@@ -779,6 +972,20 @@
     "instructions": "Colócate debajo de una barra fija a la altura de la cintura y agárrala con las manos algo más abiertas que los hombros. Extiende las piernas y mantén el cuerpo recto desde la cabeza hasta los talones. Tira del pecho hacia la barra juntando los omóplatos y manteniendo los codos controlados. Baja lentamente sin perder la alineación corporal."
   },
   {
+    "id": "remo-menton-barra",
+    "name": "Remo al mentón con barra",
+    "image_male": "images/remo-menton-barra-male.webp",
+    "image_female": "images/remo-menton-barra-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "trapecio",
+      "bíceps"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie y sujeta la barra delante de los muslos con agarre prono. Eleva la barra cerca del cuerpo guiando el movimiento con los codos, que deben quedar por encima de las manos, hasta llegar a la parte alta del pecho. Baja de forma controlada sin balancear el torso ni encoger excesivamente los hombros."
+  },
+  {
     "id": "remo-polea",
     "name": "Remo en máquina de polea",
     "image_male": "images/remo-polea-male.webp",
@@ -819,6 +1026,52 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Siéntate en la máquina de remo con el pecho apoyado en el soporte. Agarra el asa con una mano y tira hacia atrás llevando el codo pegado al cuerpo, apretando la escápula en la parte final del movimiento. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
+  },
+  {
+    "id": "saltar-comba",
+    "name": "Saltar a la comba",
+    "image_male": "images/saltar-comba-male.webp",
+    "image_female": "images/saltar-comba-female.webp",
+    "muscle_group": "cardio",
+    "secondary_muscles": [
+      "gemelos",
+      "cuádriceps",
+      "hombro"
+    ],
+    "equipment": "cuerda",
+    "difficulty": "intermediate",
+    "instructions": "Sujeta las asas con los codos cerca del cuerpo y coloca la cuerda detrás de los pies. Hazla girar principalmente con las muñecas y realiza saltos bajos cuando pase bajo tus pies. Aterriza con suavidad sobre la parte delantera del pie, mantén las rodillas ligeramente flexionadas y conserva un ritmo estable."
+  },
+  {
+    "id": "saltos-estrella",
+    "name": "Saltos de estrella",
+    "image_male": "images/saltos-estrella-male.webp",
+    "image_female": "images/saltos-estrella-female.webp",
+    "muscle_group": "cardio",
+    "secondary_muscles": [
+      "cuádriceps",
+      "glúteos",
+      "gemelos",
+      "hombro"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los brazos junto al cuerpo y flexiona ligeramente caderas y rodillas. Salta de forma explosiva mientras abres las piernas y extiendes ambos brazos en diagonal, formando una estrella en el aire. Reúne las extremidades antes de aterrizar y amortigua con las rodillas flexionadas para enlazar la siguiente repetición."
+  },
+  {
+    "id": "saltos-patinador",
+    "name": "Saltos de patinador",
+    "image_male": "images/saltos-patinador-male.webp",
+    "image_female": "images/saltos-patinador-female.webp",
+    "muscle_group": "cardio",
+    "secondary_muscles": [
+      "glúteos",
+      "cuádriceps",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Desde una posición atlética, impúlsate lateralmente y aterriza sobre una pierna con la rodilla alineada con el pie. Lleva la pierna libre por detrás sin cargar peso sobre ella y usa los brazos para equilibrarte. Salta inmediatamente hacia el lado contrario, amortiguando cada apoyo con la cadera atrás y el torso estable."
   },
   {
     "id": "sentadilla-barra",
@@ -907,6 +1160,33 @@
     "equipment": "pesa rusa",
     "difficulty": "intermediate",
     "instructions": "Ponte de pie con los pies algo más abiertos que las caderas y sujeta la pesa rusa con ambas manos. Lleva las caderas hacia atrás y deja que la pesa pase entre las piernas manteniendo la espalda neutra. Extiende las caderas de forma explosiva para impulsar la pesa hasta la altura del pecho, con los brazos relajados. Deja que vuelva a bajar y enlaza la siguiente repetición controlando el movimiento con las caderas."
+  },
+  {
+    "id": "toques-talon-alternos",
+    "name": "Toques de talón alternos",
+    "image_male": "images/toques-talon-alternos-male.webp",
+    "image_female": "images/toques-talon-alternos-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "oblicuos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y los brazos junto al cuerpo. Eleva ligeramente los hombros y desplázate hacia un lado para tocar el talón derecho con la mano derecha. Vuelve al centro y repite hacia el talón izquierdo, alternando sin relajar el abdomen ni despegar la zona lumbar."
+  },
+  {
+    "id": "zancadas-caminando",
+    "name": "Zancadas caminando",
+    "image_male": "images/zancadas-caminando-male.webp",
+    "image_female": "images/zancadas-caminando-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "cuádriceps",
+      "isquiotibiales"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Da un paso largo hacia delante y baja hasta que ambas rodillas se acerquen a 90 grados, con el torso erguido y la rodilla delantera alineada con el pie. Impúlsate con la pierna adelantada y lleva la pierna trasera directamente al siguiente paso. Alterna lados avanzando con una cadencia controlada."
   },
   {
     "id": "zancadas-mancuernas",

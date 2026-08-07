@@ -1,0 +1,11 @@
+{
+  "id": "saltos-estrella",
+  "name": "Saltos de estrella",
+  "image_male": "images/saltos-estrella-male.webp",
+  "image_female": "images/saltos-estrella-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": ["cuádriceps", "glúteos", "gemelos", "hombro"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los brazos junto al cuerpo y flexiona ligeramente caderas y rodillas. Salta de forma explosiva mientras abres las piernas y extiendes ambos brazos en diagonal, formando una estrella en el aire. Reúne las extremidades antes de aterrizar y amortigua con las rodillas flexionadas para enlazar la siguiente repetición."
+}

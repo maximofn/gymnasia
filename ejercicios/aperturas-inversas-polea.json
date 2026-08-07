@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inversas-polea",
+  "name": "Aperturas inversas en polea",
+  "image_male": "images/aperturas-inversas-polea-male.webp",
+  "image_female": "images/aperturas-inversas-polea-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": ["trapecio", "espalda"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate entre dos poleas bajas y cruza los cables para sujetar el asa opuesta con cada mano. Inclina ligeramente el torso con la espalda neutra y mantén una pequeña flexión de codos. Abre los brazos hacia atrás y hacia los lados hasta juntar los omóplatos, y regresa despacio sin encoger los hombros."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-rumano-mancuernas",
+  "name": "Peso muerto rumano con mancuernas",
+  "image_male": "images/peso-muerto-rumano-mancuernas-male.webp",
+  "image_female": "images/peso-muerto-rumano-mancuernas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "espalda baja"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una mancuerna en cada mano delante de los muslos. Mantén una ligera flexión de rodillas y lleva las caderas hacia atrás mientras bajas las mancuernas cerca de las piernas con la espalda neutra. Detente al sentir tensión en los isquiotibiales y extiende las caderas apretando los glúteos para volver arriba."
+}

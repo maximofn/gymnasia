@@ -1,0 +1,11 @@
+{
+  "id": "press-banca-agarre-cerrado",
+  "name": "Press de banca con agarre cerrado",
+  "image_male": "images/press-banca-agarre-cerrado-male.webp",
+  "image_female": "images/press-banca-agarre-cerrado-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombro anterior"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano y agarra la barra con las manos algo más estrechas que los hombros, sin juntar en exceso las muñecas. Baja la barra hacia la parte baja del pecho manteniendo los codos cerca del torso. Empuja hasta extender los brazos y controla cada repetición sin perder la posición de los hombros ni despegar los pies."
+}

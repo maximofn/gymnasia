@@ -1,0 +1,11 @@
+{
+  "id": "toques-talon-alternos",
+  "name": "Toques de talón alternos",
+  "image_male": "images/toques-talon-alternos-male.webp",
+  "image_female": "images/toques-talon-alternos-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y los brazos junto al cuerpo. Eleva ligeramente los hombros y desplázate hacia un lado para tocar el talón derecho con la mano derecha. Vuelve al centro y repite hacia el talón izquierdo, alternando sin relajar el abdomen ni despegar la zona lumbar."
+}

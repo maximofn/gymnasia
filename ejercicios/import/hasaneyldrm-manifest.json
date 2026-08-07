@@ -53,6 +53,33 @@
         {"source_id": "0630", "id": "escalador", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0276", "id": "dead-bug", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 3,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0003", "id": "crunch-bicicleta", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0006", "id": "toques-talon-alternos", "action": "create", "difficulty": "beginner", "view": "slightly elevated front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0872", "id": "crunch-inverso", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0705", "id": "plancha-lateral", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "2612", "id": "saltar-comba", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3361", "id": "saltos-patinador", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3223", "id": "saltos-estrella", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1459", "id": "peso-muerto-rumano-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1757", "id": "peso-muerto-una-pierna-mancuerna", "action": "create", "difficulty": "advanced", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3193", "id": "elevacion-gluteo-isquios", "action": "create", "difficulty": "advanced", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1460", "id": "zancadas-caminando", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0047", "id": "press-inclinado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0154", "id": "aperturas-inversas-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0033", "id": "press-declinado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0120", "id": "remo-menton-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0227", "id": "aperturas-polea-pie", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0315", "id": "curl-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0868", "id": "curl-biceps-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0030", "id": "press-banca-agarre-cerrado", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "2188", "id": "extension-triceps-sentado-mancuerna", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-polea",
+  "name": "Curl de bíceps en polea",
+  "image_male": "images/curl-biceps-polea-male.webp",
+  "image_female": "images/curl-biceps-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazo"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a una polea baja y sujeta la barra recta con agarre supino. Mantén los codos pegados a los costados y flexiona los brazos hasta acercar la barra a los hombros sin inclinar el torso. Aprieta los bíceps en la parte alta y extiende los codos de forma controlada, manteniendo tensión en el cable."
+}
