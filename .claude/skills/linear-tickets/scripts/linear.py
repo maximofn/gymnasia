@@ -34,6 +34,26 @@ API_URL = "https://api.linear.app/graphql"
 
 PRIORITY_MAP = {"none": 0, "urgent": 1, "high": 2, "medium": 3, "low": 4}
 
+TEST_PLAN_HEADING = re.compile(r"(?im)^##\s+Plan de pruebas\s*$")
+TEST_PLAN_REQUIREMENTS = {
+    "unitarios": re.compile(r"(?i)\bunitari[oa]s?\b"),
+    "E2E": re.compile(r"(?i)\b(?:e2e|end[- ]to[- ]end)\b"),
+    "integración con proveedor falso": re.compile(
+        r"(?i)\b(?:proveedor(?:es)?\s+falso|fake provider)\b"
+    ),
+    "contrato": re.compile(r"(?i)\bcontrat(?:o|os)\b"),
+    "regresión": re.compile(r"(?i)\bregresi[oó]n\b"),
+    "fuzzing/property-based": re.compile(r"(?i)\b(?:fuzz(?:ing)?|property[- ]based)\b"),
+}
+
+TEST_PLAN_TEMPLATE = """## Plan de pruebas
+- [ ] Unitarios: <casos concretos o No aplica: motivo>
+- [ ] E2E: <casos concretos o No aplica: motivo>
+- [ ] Integración con proveedor falso: <casos concretos o No aplica: motivo>
+- [ ] Contrato: <casos concretos o No aplica: motivo>
+- [ ] Regresión: <casos concretos o No aplica: motivo>
+- [ ] Fuzzing / property-based: <casos concretos o No aplica: motivo>"""
+
 
 def repo_root() -> Path:
     # scripts/ -> <skill>/ -> skills/ -> .claude/ -> repo root
@@ -126,6 +146,39 @@ def priority_int(name: str) -> int:
     return PRIORITY_MAP[name.lower()]
 
 
+def validate_test_plan(description: str | None) -> str:
+    """Exige que cada ticket nuevo evalúe todas las capas de pruebas acordadas."""
+    if not description:
+        sys.exit(
+            "Todo ticket nuevo necesita descripción y un plan de pruebas.\n\n"
+            + TEST_PLAN_TEMPLATE
+        )
+
+    heading = TEST_PLAN_HEADING.search(description)
+    if not heading:
+        sys.exit(
+            "Falta la sección obligatoria '## Plan de pruebas'.\n\n"
+            + TEST_PLAN_TEMPLATE
+        )
+
+    section = description[heading.end():]
+    next_heading = re.search(r"(?m)^##\s+", section)
+    if next_heading:
+        section = section[:next_heading.start()]
+
+    missing = [
+        label for label, pattern in TEST_PLAN_REQUIREMENTS.items()
+        if not pattern.search(section)
+    ]
+    if missing:
+        sys.exit(
+            "El plan de pruebas no evalúa: " + ", ".join(missing) + ".\n"
+            "Añade un caso concreto o 'No aplica: <motivo>' para cada categoría.\n\n"
+            + TEST_PLAN_TEMPLATE
+        )
+    return description
+
+
 # ---------- comandos lectura ----------
 
 def cmd_list(args):
@@ -202,9 +255,12 @@ def cmd_states(args):
 # ---------- comandos escritura ----------
 
 def cmd_create(args):
-    inp = {"teamId": resolve_team_id(args.team), "title": args.title}
-    if args.description:
-        inp["description"] = args.description
+    description = validate_test_plan(args.description)
+    inp = {
+        "teamId": resolve_team_id(args.team),
+        "title": args.title,
+        "description": description,
+    }
     if args.priority:
         inp["priority"] = priority_int(args.priority)
     if args.state:
@@ -441,7 +497,11 @@ def main():
     pc = sub.add_parser("create", help="crear issue")
     pc.add_argument("--team", required=True, help="team key, p.ej. GYM")
     pc.add_argument("--title", required=True)
-    pc.add_argument("--description")
+    pc.add_argument(
+        "--description",
+        required=True,
+        help="markdown con sección obligatoria '## Plan de pruebas'",
+    )
     pc.add_argument("--state")
     pc.add_argument("--priority", help="none|urgent|high|medium|low")
     pc.add_argument("--parent", help="identifier del issue padre, p.ej. GYM-12")

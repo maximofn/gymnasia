@@ -87,16 +87,33 @@ python3 .claude/skills/linear-tickets/scripts/linear.py board --apply    # sincr
 Ver "Regla del espejo" arriba: es obligatorio tras cualquier modificación en Linear.
 
 ### Creación
+
+La descripción es obligatoria y debe incluir `## Plan de pruebas`. Para cada
+categoría hay que escribir casos concretos o `No aplica: <motivo>`; no basta con
+omitir lo que parezca innecesario. El script rechaza el alta si falta la sección
+o alguna categoría:
+
+```markdown
+## Plan de pruebas
+- [ ] Unitarios: <casos concretos o No aplica: motivo>
+- [ ] E2E: <casos concretos o No aplica: motivo>
+- [ ] Integración con proveedor falso: <casos concretos o No aplica: motivo>
+- [ ] Contrato: <casos concretos o No aplica: motivo>
+- [ ] Regresión: <casos concretos o No aplica: motivo>
+- [ ] Fuzzing / property-based: <casos concretos o No aplica: motivo>
+```
+
 ```bash
 python3 .claude/skills/linear-tickets/scripts/linear.py create \
   --team GYM --title "Título del ticket" \
-  --description "Descripción en markdown" \
+  --description "Descripción en markdown con ## Plan de pruebas" \
   --state "Todo" --priority high
 
 # Sub-issue: colgar de un issue padre (Linear no tiene "épicas";
 # lo más parecido es un issue padre con sub-issues)
 python3 .claude/skills/linear-tickets/scripts/linear.py create \
-  --team GYM --title "Sub-tarea" --parent GYM-25
+  --team GYM --title "Sub-tarea" --parent GYM-25 \
+  --description "Descripción y ## Plan de pruebas completos"
 ```
 
 ### Modificación
@@ -207,7 +224,11 @@ Cuatro cosas que cuestan tiempo si no se saben:
    ticket no tendrá el contexto de la conversación: incluye rutas de fichero
    con línea (`App.tsx:4688`), comandos exactos, estado verificado con fecha,
    y las decisiones que quedan pendientes.
-6. **Antes de dar el trabajo por terminado, sincroniza el espejo.** `board`,
+6. **Incluye y verifica el plan de pruebas obligatorio.** Evalúa unitarios,
+   E2E, integración con proveedor falso, contrato, regresión y fuzzing /
+   property-based. Si algo no procede, escribe `No aplica: <motivo>`. Tras el
+   alta, usa `get GYM-N` para confirmar que Linear conservó la sección.
+7. **Antes de dar el trabajo por terminado, sincroniza el espejo.** `board`,
    luego `board --apply`, luego desplegar. Ver "Regla del espejo". Es el paso
    que más fácil se olvida porque Linear ya se ve correcto: el que se queda
    desactualizado es el tablero, y nadie se entera hasta semanas después.

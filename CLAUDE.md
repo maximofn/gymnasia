@@ -125,6 +125,7 @@ Run from repo root unless noted.
 ## Testing Guidelines
 The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - deterministic tests: `npm test`
+- browser E2E with a fake OpenAI provider: `npm run test:agent:e2e`
 - mobile type-check: `npm --workspace apps/mobile exec tsc --noEmit`
 - LLM eval boundary: `npm run test:llm` (reserved for LangSmith; never part of commit-blocking CI)
 
@@ -132,6 +133,12 @@ CI runs `npm test` and the mobile type-check without network, provider keys, or
 LLM calls. Add deterministic bugs as regression fixtures/tests under
 `apps/mobile/agent/`. Use the reusable QA checklist and closure policy in
 `docs/testing/agent-testing.md` for non-trivial tickets.
+
+Every new Linear ticket must include a `## Plan de pruebas` section evaluating
+unit tests, E2E, fake-provider integration, contract tests, regression tests,
+and fuzzing/property-based tests. Use a concrete case or `No aplica: <motivo>`
+for every category; `.claude/skills/linear-tickets/scripts/linear.py create`
+enforces this before creating the issue.
 
 ## Commit & Pull Request Guidelines
 History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ...`, `chore(scope): ...`, `docs: ...`.
