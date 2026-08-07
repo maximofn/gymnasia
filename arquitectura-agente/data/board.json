@@ -64,8 +64,8 @@
         {
           "id": "GYM-34",
           "title": "Infraestructura de tests para el agente",
-          "state": "done",
-          "summary": "Vitest cubre tools, schemas, SSE y los bucles de OpenAI, Anthropic y Google con fixtures deterministas y CI sin LLM.",
+          "state": "in_progress",
+          "summary": "Completar la base Vitest con E2E de chat, streams crudos realistas, integración parser→tool→segunda ronda y fuzzing property-based.",
           "dependsOn": [],
           "related": []
         },
