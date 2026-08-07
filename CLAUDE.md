@@ -281,3 +281,20 @@ Un push a `main` **solo** dispara el build de APK si toca `apps/mobile/**`
 (excluyendo `apps/mobile/scripts/**` y los `.md`). Ver el filtro de rutas en
 "Commit & Pull Request Guidelines". La cuota mensual de Expo es limitada, así que
 un push que sí entre en el filtro gasta build; el resto, no.
+
+<!-- OPENWIKI:START -->
+
+## OpenWiki
+
+This repository has a generated `openwiki/` evidence index. It is optional just-in-time context, not required startup reading.
+
+- Treat source code and tests as authoritative. A brief's unknowns and review items are verification gaps, not automatic requirements.
+- Prefer the narrowest quiet validation that proves the changed behavior. Preserve complete failure output.
+
+The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki when an API-backed CI model credential is configured. Without `OPENROUTER_API_KEY`, the workflow exits successfully without generating a PR; local runs can use the configured ChatGPT subscription with `openwiki code --update --language es --print`.
+
+`openwiki cron` only manages local Personal Brain connector ingestion schedules. It does not list or schedule Code Brain repository updates; those use `.github/workflows/openwiki-update.yml`.
+
+Do not hand-edit generated OpenWiki pages unless explicitly asked; prefer updating source code/docs and letting OpenWiki regenerate.
+
+<!-- OPENWIKI:END -->

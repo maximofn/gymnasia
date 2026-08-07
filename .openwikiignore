@@ -1,0 +1,16 @@
+# Secrets and machine-local state
+.env
+.env.*
+!.env.example
+apps/mobile/.dev-store.json
+
+# Dependencies, build output, caches, and coverage
+**/node_modules/
+**/.expo/
+**/dist/
+**/coverage/
+*.log
+
+# Secondary worktrees and imported scratch material
+.claude/worktrees/
+ejercicios/import/

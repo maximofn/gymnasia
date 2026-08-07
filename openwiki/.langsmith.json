@@ -1,0 +1,19 @@
+{
+  "workspaces": [
+    {
+      "apiKeyEnv": "OPENWIKI_LANGSMITH_API_KEY",
+      "projects": [
+        {
+          "name": "gymnasia-app-agent"
+        },
+        {
+          "name": "gymnasia-food-agent"
+        },
+        {
+          "name": "openwiki"
+        }
+      ],
+      "apiBaseUrl": "https://eu.api.smith.langchain.com"
+    }
+  ]
+}
