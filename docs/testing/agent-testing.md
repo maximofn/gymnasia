@@ -9,6 +9,8 @@ runtime de Expo:
   externos inyectados.
 - `providerToolLoop.ts`: ciclos `tool call → ejecución → resultado → siguiente
   ronda` de los tres proveedores.
+- `providerStreamParsers.ts`: parsers de los streams crudos de OpenAI,
+  Anthropic y Google usados por la app y por las pruebas de integración.
 - `sse.ts`: helpers puros para procesar eventos SSE y reproducir fixtures.
 
 ## Comandos
@@ -18,14 +20,21 @@ Desde la raíz:
 ```bash
 npm test                                      # suite determinista
 npm run test:deterministic                    # alias explícito de la anterior
+npm run test:agent:e2e                        # app web + Playwright + OpenAI falso
 npm --workspace apps/mobile exec tsc --noEmit # type-check
 npm run test:llm                              # reserva para evals de LangSmith
 ```
 
 `npm test` no usa red, claves ni modelos y es la única suite que bloquea CI.
-Los `.sse` de `apps/mobile/agent/__fixtures__/` son respuestas sanitizadas de
-proveedor falso; cada regresión determinista nueva debe añadirse como fixture o
-caso unitario.
+Los `.sse` de `apps/mobile/agent/__fixtures__/raw/` reproducen de forma realista
+el dialecto crudo de cada proveedor, pero no son capturas de APIs de pago. Las
+pruebas recorren stream → parser de producción → tool → resultado → segunda
+ronda. Los schemas también se someten a propiedades generativas con `fast-check`.
+Cada regresión determinista nueva debe añadirse como fixture o caso unitario.
+
+El E2E exporta la app web, abre Chromium, intercepta OpenAI con esos fixtures y
+verifica el flujo visible completo. Es más lento y se ejecuta de forma explícita;
+no forma parte del CI determinista que bloquea commits.
 
 ## LangSmith
 
@@ -70,3 +79,11 @@ de datos, tool equivocada con efecto de escritura, error no controlado, flujo
 crítico imposible o incumplimiento de seguridad/privacidad. Un problema menor
 de texto o una variación no determinista del modelo puede registrarse como
 deuda con ticket y evidencia, siempre que el flujo siga siendo seguro y útil.
+
+## Plan de pruebas obligatorio en Linear
+
+Todo ticket nuevo debe evaluar estas seis categorías en su descripción, aunque
+la conclusión sea `No aplica: <motivo>`: unitarios, E2E, integración con
+proveedor falso, contrato, regresión y fuzzing / property-based. El comando
+`linear.py create` valida la sección `## Plan de pruebas` antes de llamar a la
+API para evitar que esta decisión dependa de la memoria de quien crea el ticket.

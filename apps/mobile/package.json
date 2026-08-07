@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "build:web": "expo export --platform web",
     "test:deterministic": "vitest run --config vitest.config.mts",
-    "test:llm": "node scripts/run-llm-evals.mjs"
+    "test:llm": "node scripts/run-llm-evals.mjs",
+    "test:agent:e2e": "node scripts/agent-chat.e2e.mjs"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",

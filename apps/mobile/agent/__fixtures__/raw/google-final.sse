@@ -1,0 +1,5 @@
+data: {"candidates":[{"content":{"role":"model","parts":[{"text":"Tu objetivo es "}]},"index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":4,"totalTokenCount":36}}
+
+data: {"candidates":[{"content":{"role":"model","parts":[{"text":"ganar masa muscular."}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":8,"totalTokenCount":40}}
+
+data: [DONE]

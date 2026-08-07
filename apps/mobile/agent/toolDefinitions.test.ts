@@ -1,3 +1,4 @@
+import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -47,17 +48,16 @@ describe("validateToolInput", () => {
     expect(wrongType.errors).toContain('El campo "date" debe ser de tipo string.');
   });
 
-  it("nunca lanza con argumentos malformados", () => {
+  it("nunca lanza con argumentos arbitrarios (property-based)", () => {
     expect(writeMeasurement).toBeDefined();
-    const primitives: unknown[] = [null, undefined, true, false, 0, 1, "", "{}", [], Symbol("x")];
-    const generated = Array.from({ length: 500 }, (_value, index) => ({
-      date: index % 3 === 0 ? index : `2026-04-${String((index % 28) + 1).padStart(2, "0")}`,
-      data: index % 5 === 0 ? [index] : index % 7 === 0 ? null : JSON.stringify({ weight_kg: index }),
-      extra: index % 2 === 0 ? { nested: [index] } : undefined,
-    }));
-
-    for (const input of [...primitives, ...generated]) {
-      expect(() => validateToolInput(writeMeasurement!.inputSchema, input)).not.toThrow();
-    }
+    fc.assert(
+      fc.property(fc.anything(), (input) => {
+        const result = validateToolInput(writeMeasurement!.inputSchema, input);
+        return typeof result.valid === "boolean"
+          && Array.isArray(result.errors)
+          && result.errors.every((error) => typeof error === "string");
+      }),
+      { numRuns: 1000, seed: 340034 },
+    );
   });
 });

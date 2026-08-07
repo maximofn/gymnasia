@@ -56,7 +56,11 @@ import {
   runGoogleToolLoop,
   runOpenAIToolLoop,
 } from "./agent/providerToolLoop";
-import { parseSSEEvent, splitSSEEvents } from "./agent/sse";
+import {
+  createAnthropicStreamParser,
+  createGoogleStreamParser,
+  createOpenAIStreamParser,
+} from "./agent/providerStreamParsers";
 
 // Foreground notification presentation handler. Without this, scheduled
 // notifications delivered while the app is in the foreground are silently
@@ -2674,191 +2678,6 @@ function parseJsonSafely<T>(value: string): T | null {
   }
 }
 
-function parseAnthropicToolInput(raw: string): Record<string, unknown> {
-  const trimmed = raw.trim();
-  if (!trimmed) return {};
-  const parsed = parseJsonSafely<unknown>(trimmed);
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-  return parsed as Record<string, unknown>;
-}
-
-function normalizeGoogleFunctionArgs(rawArgs: unknown): Record<string, unknown> {
-  if (rawArgs && typeof rawArgs === "object" && !Array.isArray(rawArgs)) {
-    return rawArgs as Record<string, unknown>;
-  }
-  if (typeof rawArgs === "string") {
-    const parsed = parseJsonSafely<unknown>(rawArgs);
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-      return parsed as Record<string, unknown>;
-    }
-  }
-  return {};
-}
-
-function createAnthropicStreamParser(
-  handlers?: StreamingHandlers,
-): {
-  push: (chunk: string) => void;
-  finish: () => AnthropicStreamTurnResult;
-} {
-  let rawBuffer = "";
-  let streamedContent = "";
-  let streamedThinking = "";
-  let stopReason: string | null = null;
-  const blocks = new Map<number, AnthropicResponseBlock>();
-
-  const processEvent = (parsedEvent: { event: string; data: string | null }) => {
-    if (!parsedEvent.data) return;
-    const payload = parseJsonSafely<{
-      type?: string;
-      index?: number;
-      delta?: {
-        type?: string;
-        text?: string;
-        thinking?: string;
-        signature?: string;
-        partial_json?: string;
-      };
-      content_block?: {
-        type?: string;
-        text?: string;
-        thinking?: string;
-        signature?: string;
-        id?: string;
-        name?: string;
-        input?: Record<string, unknown>;
-      };
-      error?: { message?: string };
-      message?: { stop_reason?: string | null };
-    }>(parsedEvent.data);
-    if (!payload || typeof payload !== "object") return;
-
-    const payloadType = typeof payload.type === "string" ? payload.type : parsedEvent.event;
-    if (payloadType === "error" || parsedEvent.event === "error") {
-      throw new Error(extractErrorMessage(payload, "Anthropic stream error"));
-    }
-
-    if (payloadType === "content_block_start") {
-      const index = typeof payload.index === "number" ? payload.index : -1;
-      if (index < 0 || !payload.content_block) return;
-      const block = payload.content_block;
-      if (block.type === "text") {
-        blocks.set(index, { type: "text", text: typeof block.text === "string" ? block.text : "" });
-      } else if (block.type === "thinking") {
-        blocks.set(index, {
-          type: "thinking",
-          thinking: typeof block.thinking === "string" ? block.thinking : "",
-          signature: typeof block.signature === "string" ? block.signature : undefined,
-        });
-      } else if (block.type === "tool_use") {
-        blocks.set(index, {
-          type: "tool_use",
-          id: typeof block.id === "string" ? block.id : "",
-          name: typeof block.name === "string" ? block.name : "",
-          input:
-            block.input && typeof block.input === "object" && !Array.isArray(block.input)
-              ? block.input
-              : {},
-          partial_json: "",
-        });
-      }
-      return;
-    }
-
-    if (payloadType === "content_block_delta") {
-      const index = typeof payload.index === "number" ? payload.index : -1;
-      const block = blocks.get(index);
-      if (!block || !payload.delta) return;
-      if (payload.delta.type === "text_delta" && block.type === "text") {
-        const nextText = typeof payload.delta.text === "string" ? payload.delta.text : "";
-        if (!nextText) return;
-        block.text += nextText;
-        streamedContent += nextText;
-        handlers?.onContentDelta?.(nextText, streamedContent);
-        return;
-      }
-      if (payload.delta.type === "thinking_delta" && block.type === "thinking") {
-        const nextThinking =
-          typeof payload.delta.thinking === "string" ? payload.delta.thinking : "";
-        if (!nextThinking) return;
-        block.thinking += nextThinking;
-        streamedThinking += nextThinking;
-        handlers?.onThinkingDelta?.(nextThinking, streamedThinking);
-        return;
-      }
-      if (payload.delta.type === "signature_delta" && block.type === "thinking") {
-        block.signature =
-          typeof payload.delta.signature === "string" ? payload.delta.signature : block.signature;
-        return;
-      }
-      if (payload.delta.type === "input_json_delta" && block.type === "tool_use") {
-        const partialJson =
-          typeof payload.delta.partial_json === "string" ? payload.delta.partial_json : "";
-        block.partial_json = (block.partial_json ?? "") + partialJson;
-      }
-      return;
-    }
-
-    if (payloadType === "content_block_stop") {
-      const index = typeof payload.index === "number" ? payload.index : -1;
-      const block = blocks.get(index);
-      if (block?.type === "tool_use") {
-        block.input = parseAnthropicToolInput(block.partial_json ?? "");
-      }
-      return;
-    }
-
-    if (payloadType === "message_delta") {
-      stopReason =
-        payload.message?.stop_reason ??
-        (payload as { delta?: { stop_reason?: string | null } }).delta?.stop_reason ??
-        stopReason;
-    }
-  };
-
-  const processChunk = (chunk: string) => {
-    if (!chunk) return;
-    rawBuffer += chunk;
-    const { events, rest } = splitSSEEvents(rawBuffer);
-    rawBuffer = rest;
-    events.forEach((eventChunk) => {
-      const parsedEvent = parseSSEEvent(eventChunk);
-      if (!parsedEvent) return;
-      processEvent(parsedEvent);
-    });
-  };
-
-  return {
-    push: processChunk,
-    finish: () => {
-      if (rawBuffer.trim()) {
-        const parsedEvent = parseSSEEvent(rawBuffer);
-        if (parsedEvent) processEvent(parsedEvent);
-        rawBuffer = "";
-      }
-      const contentBlocks = Array.from(blocks.entries())
-        .sort(([left], [right]) => left - right)
-        .map(([, block]) =>
-          block.type === "tool_use"
-            ? {
-                type: "tool_use" as const,
-                id: block.id,
-                name: block.name,
-                input: block.input,
-              }
-            : block,
-        );
-
-      return {
-        content: streamedContent.trim(),
-        thinking: streamedThinking.trim() || null,
-        contentBlocks,
-        stopReason,
-      };
-    },
-  };
-}
-
 async function streamAnthropicRequestViaXHR(
   url: string,
   headers: Record<string, string>,
@@ -2964,169 +2783,6 @@ async function streamAnthropicRequestViaXHR(
       }),
     );
   });
-}
-
-function createOpenAIStreamParser(
-  handlers?: StreamingHandlers,
-): {
-  push: (chunk: string) => void;
-  finish: () => OpenAIStreamTurnResult;
-} {
-  let rawBuffer = "";
-  let streamedContent = "";
-  let streamedThinking = "";
-  let responseId: string | null = null;
-  const outputItemsByIndex = new Map<number, OpenAIResponseOutputItem>();
-  const outputIndexesByItemId = new Map<string, number>();
-
-  const setOutputItem = (outputIndex: number, item: OpenAIResponseOutputItem) => {
-    outputItemsByIndex.set(outputIndex, item);
-    if ("id" in item && typeof item.id === "string" && item.id.trim().length > 0) {
-      outputIndexesByItemId.set(item.id, outputIndex);
-    }
-  };
-
-  const replaceOutputItems = (items: OpenAIResponseOutputItem[]) => {
-    outputItemsByIndex.clear();
-    outputIndexesByItemId.clear();
-    items.forEach((item, index) => {
-      setOutputItem(index, item);
-    });
-  };
-
-  const updateFunctionCallArguments = (
-    itemId: string,
-    updater: (currentArguments: string) => string,
-  ) => {
-    const outputIndex = outputIndexesByItemId.get(itemId);
-    if (typeof outputIndex !== "number") return;
-    const currentItem = outputItemsByIndex.get(outputIndex);
-    if (!currentItem || currentItem.type !== "function_call") return;
-    setOutputItem(outputIndex, {
-      ...currentItem,
-      arguments: updater(currentItem.arguments),
-    });
-  };
-
-  const processEvent = (parsedEvent: { event: string; data: string | null }) => {
-    if (!parsedEvent.data || parsedEvent.data.trim() === "[DONE]") return;
-    const payload = parseJsonSafely<{
-      type?: string;
-      delta?: string;
-      arguments?: string;
-      item_id?: string;
-      output_index?: number;
-      item?: unknown;
-      error?: { message?: string };
-      response?: {
-        id?: string;
-        output?: unknown[];
-        error?: { message?: string };
-      };
-    }>(parsedEvent.data);
-    if (!payload || typeof payload !== "object") return;
-
-    const payloadType = typeof payload.type === "string" ? payload.type : parsedEvent.event;
-    if (payloadType === "error" || parsedEvent.event === "error") {
-      throw new Error(extractErrorMessage(payload, "OpenAI stream error"));
-    }
-    if (payloadType === "response.failed") {
-      throw new Error(
-        payload.response?.error?.message
-        ?? extractErrorMessage(payload, "OpenAI stream error"),
-      );
-    }
-
-    if (payloadType === "response.created" || payloadType === "response.in_progress") {
-      responseId = payload.response?.id ?? responseId;
-      return;
-    }
-
-    if (payloadType === "response.output_text.delta") {
-      const delta = typeof payload.delta === "string" ? payload.delta : "";
-      if (!delta) return;
-      streamedContent += delta;
-      handlers?.onContentDelta?.(delta, streamedContent);
-      return;
-    }
-
-    if (payloadType === "response.reasoning_summary_text.delta") {
-      const delta = typeof payload.delta === "string" ? payload.delta : "";
-      if (!delta) return;
-      streamedThinking += delta;
-      handlers?.onThinkingDelta?.(delta, streamedThinking);
-      return;
-    }
-
-    if (payloadType === "response.output_item.added" || payloadType === "response.output_item.done") {
-      const outputIndex = typeof payload.output_index === "number" ? payload.output_index : null;
-      if (typeof outputIndex !== "number") return;
-      const item = normalizeOpenAIResponseOutputItem(payload.item);
-      if (!item) return;
-      setOutputItem(outputIndex, item);
-      return;
-    }
-
-    if (payloadType === "response.function_call_arguments.delta") {
-      const itemId = typeof payload.item_id === "string" ? payload.item_id : "";
-      const delta = typeof payload.delta === "string" ? payload.delta : "";
-      if (!itemId || !delta) return;
-      updateFunctionCallArguments(itemId, (currentArguments) => currentArguments + delta);
-      return;
-    }
-
-    if (payloadType === "response.function_call_arguments.done") {
-      const itemId = typeof payload.item_id === "string" ? payload.item_id : "";
-      const argumentsText = typeof payload.arguments === "string" ? payload.arguments : "";
-      if (!itemId) return;
-      updateFunctionCallArguments(itemId, () => argumentsText);
-      return;
-    }
-
-    if (payloadType === "response.completed") {
-      responseId = payload.response?.id ?? responseId;
-      const finalOutputItems = parseOpenAIResponseOutputItems(payload.response);
-      if (finalOutputItems.length > 0) {
-        replaceOutputItems(finalOutputItems);
-      }
-    }
-  };
-
-  const processChunk = (chunk: string) => {
-    if (!chunk) return;
-    rawBuffer += chunk;
-    const { events, rest } = splitSSEEvents(rawBuffer);
-    rawBuffer = rest;
-    events.forEach((eventChunk) => {
-      const parsedEvent = parseSSEEvent(eventChunk);
-      if (!parsedEvent) return;
-      processEvent(parsedEvent);
-    });
-  };
-
-  return {
-    push: processChunk,
-    finish: () => {
-      if (rawBuffer.trim()) {
-        const parsedEvent = parseSSEEvent(rawBuffer);
-        if (parsedEvent) processEvent(parsedEvent);
-        rawBuffer = "";
-      }
-
-      const outputItems = Array.from(outputItemsByIndex.entries())
-        .sort(([left], [right]) => left - right)
-        .map(([, item]) => item);
-      const content = streamedContent.trim() || collectOpenAIOutputText(outputItems) || "";
-      const thinking = streamedThinking.trim() || collectOpenAIThinking(outputItems) || null;
-
-      return {
-        responseId,
-        content,
-        thinking,
-        outputItems,
-      };
-    },
-  };
 }
 
 async function streamOpenAIRequestViaXHR(
@@ -3298,132 +2954,6 @@ async function streamOpenAIRequestViaFetch(
   } finally {
     clearTimeout(timeoutId);
   }
-}
-
-function createGoogleStreamParser(
-  handlers?: StreamingHandlers,
-): {
-  push: (chunk: string) => void;
-  finish: () => GoogleStreamTurnResult;
-} {
-  let rawBuffer = "";
-  let streamedContent = "";
-  let streamedThinking = "";
-  let finishReason: string | null = null;
-  const modelParts: GoogleResponsePart[] = [];
-
-  const processEvent = (parsedEvent: { event: string; data: string | null }) => {
-    if (!parsedEvent.data) return;
-    if (parsedEvent.data.trim() === "[DONE]") return;
-    const payload = parseJsonSafely<{
-      candidates?: Array<{
-        finishReason?: string;
-        finish_reason?: string;
-        content?: {
-          parts?: Array<{
-            text?: string;
-            thought?: boolean;
-            thoughtSignature?: string;
-            thought_signature?: string;
-            functionCall?: { name?: string; args?: unknown };
-            function_call?: { name?: string; args?: unknown };
-          }>;
-        };
-      }>;
-      error?: { message?: string };
-    }>(parsedEvent.data);
-    if (!payload || typeof payload !== "object") return;
-    if (payload.error) {
-      throw new Error(extractErrorMessage(payload, "Google AI stream error"));
-    }
-
-    const candidates = Array.isArray(payload.candidates) ? payload.candidates : [];
-    candidates.forEach((candidate) => {
-      const candidateFinishReason = candidate?.finishReason ?? candidate?.finish_reason;
-      if (typeof candidateFinishReason === "string" && candidateFinishReason.trim().length > 0) {
-        finishReason = candidateFinishReason;
-      }
-      const parts = Array.isArray(candidate?.content?.parts) ? candidate.content.parts : [];
-      parts.forEach((rawPart) => {
-        if (!rawPart || typeof rawPart !== "object") return;
-        const thought = rawPart.thought === true;
-        const thoughtSignature =
-          typeof rawPart.thoughtSignature === "string"
-            ? rawPart.thoughtSignature
-            : typeof rawPart.thought_signature === "string"
-              ? rawPart.thought_signature
-              : undefined;
-        const functionCall =
-          rawPart.functionCall && typeof rawPart.functionCall === "object"
-            ? rawPart.functionCall
-            : rawPart.function_call && typeof rawPart.function_call === "object"
-              ? rawPart.function_call
-              : null;
-        const text = typeof rawPart.text === "string" ? rawPart.text : undefined;
-
-        if (typeof text === "string" && text.length > 0) {
-          if (thought) {
-            streamedThinking += text;
-            handlers?.onThinkingDelta?.(text, streamedThinking);
-          } else {
-            streamedContent += text;
-            handlers?.onContentDelta?.(text, streamedContent);
-          }
-        }
-
-        if (functionCall) {
-          const name = typeof functionCall.name === "string" ? functionCall.name.trim() : "";
-          if (!name) return;
-          modelParts.push({
-            functionCall: {
-              name,
-              args: normalizeGoogleFunctionArgs(functionCall.args),
-            },
-            thought,
-            thoughtSignature,
-          });
-          return;
-        }
-
-        if ((typeof text === "string" && text.length > 0) || thoughtSignature) {
-          const nextPart: GoogleResponsePart = {};
-          if (typeof text === "string") nextPart.text = text;
-          if (thought) nextPart.thought = true;
-          if (thoughtSignature) nextPart.thoughtSignature = thoughtSignature;
-          modelParts.push(nextPart);
-        }
-      });
-    });
-  };
-
-  const processChunk = (chunk: string) => {
-    if (!chunk) return;
-    rawBuffer += chunk;
-    const { events, rest } = splitSSEEvents(rawBuffer);
-    rawBuffer = rest;
-    events.forEach((eventChunk) => {
-      const parsedEvent = parseSSEEvent(eventChunk);
-      if (!parsedEvent) return;
-      processEvent(parsedEvent);
-    });
-  };
-
-  return {
-    push: processChunk,
-    finish: () => {
-      if (rawBuffer.trim()) {
-        const parsedEvent = parseSSEEvent(rawBuffer);
-        if (parsedEvent) processEvent(parsedEvent);
-        rawBuffer = "";
-      }
-      return {
-        content: streamedContent.trim(),
-        thinking: streamedThinking.trim() || null,
-        modelParts,
-        finishReason,
-      };
-    },
-  };
 }
 
 async function streamGoogleRequestViaXHR(
@@ -12596,7 +12126,7 @@ export default function App() {
                   onContentSizeChange={() => chatScrollRef?.current?.scrollToEnd({ animated: true })}
                 >
                   {messages.map((msg) => (
-                    <View key={msg.id} style={{ gap: 4 }}>
+                    <View key={msg.id} testID={`chat-message-${msg.role}-${msg.id}`} style={{ gap: 4 }}>
                       {msg.role === "assistant" && msg.thinking ? (
                         <Pressable
                           onPress={() => setExpandedThinking((prev) => ({ ...prev, [msg.id]: !prev[msg.id] }))}
@@ -12661,6 +12191,7 @@ export default function App() {
                 </ScrollView>
                 <View style={{ paddingBottom: Platform.OS === "android" ? 24 : 16, gap: 8 }}>
                   <TextInput
+                    testID="chat-input"
                     style={{
                       minHeight: 44,
                       maxHeight: 120,
@@ -12680,7 +12211,12 @@ export default function App() {
                     multiline
                     blurOnSubmit={false}
                   />
-                  <PrimaryButton label={sendingChat ? "Enviando..." : "Enviar"} onPress={sendMessage} disabled={sendingChat} />
+                  <PrimaryButton
+                    label={sendingChat ? "Enviando..." : "Enviar"}
+                    onPress={sendMessage}
+                    disabled={sendingChat}
+                    testID="chat-send"
+                  />
                 </View>
               </View>
             ) : (

@@ -1,0 +1,16 @@
+event: response.created
+data: {"type":"response.created","response":{"id":"resp_openai_final"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":0,"item":{"type":"message","id":"msg_openai_1","content":[]}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","item_id":"msg_openai_1","output_index":0,"content_index":0,"delta":"Tu objetivo es "}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","item_id":"msg_openai_1","output_index":0,"content_index":0,"delta":"ganar masa muscular."}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"resp_openai_final","output":[{"type":"message","id":"msg_openai_1","content":[{"type":"output_text","text":"Tu objetivo es ganar masa muscular."}]}]}}
+
+data: [DONE]

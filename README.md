@@ -38,7 +38,8 @@ La suite determinista del agente usa Vitest y proveedores falsos; no consume
 red, claves ni tokens:
 
 ```bash
-npm test
+npm test                # unitarios, integración, contrato, regresión y fuzzing
+npm run test:agent:e2e  # app web + Playwright + proveedor OpenAI falso
 ```
 
 Las evals con LLM están separadas de CI y reservadas para LangSmith. Consulta
