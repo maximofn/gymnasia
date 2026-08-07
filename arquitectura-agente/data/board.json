@@ -64,8 +64,8 @@
         {
           "id": "GYM-34",
           "title": "Infraestructura de tests para el agente",
-          "state": "in_progress",
-          "summary": "Completar la base Vitest con E2E de chat, streams crudos realistas, integración parser→tool→segunda ronda y fuzzing property-based.",
+          "state": "done",
+          "summary": "Base Vitest completada con E2E de chat, streams crudos realistas, integración parser→tool→segunda ronda y fuzzing property-based.",
           "dependsOn": [],
           "related": []
         },
@@ -598,17 +598,9 @@
   ],
   "recommendedOrder": [
     {
-      "id": "desbloquear",
-      "title": "Desbloquear",
-      "why": "GYM-34 bloquea a los otros 20 tickets de las dos épicas. Incluye extraer el despachador y los helpers de App.tsx a módulos importables: hasta que eso no esté, no hay nada que testear y ningún ticket se puede dar por cerrado.",
-      "tickets": [
-        "GYM-34"
-      ]
-    },
-    {
       "id": "rodaje",
       "title": "Rodar la infraestructura con lo que ya está hecho",
-      "why": "Estas cinco ya están implementadas en la app: solo piden tests y artículo. Son la forma más barata de estrenar la infraestructura de GYM-34 y de publicar los primeros posts sin tocar código de producción.",
+      "why": "Estas cinco ya están implementadas en la app: solo piden tests y artículo. Son la forma más barata de estrenar la infraestructura ya disponible de GYM-34 y de publicar los primeros posts sin tocar código de producción.",
       "tickets": [
         "GYM-35",
         "GYM-36",
@@ -657,7 +649,7 @@
     {
       "id": "planificacion",
       "title": "Planificación",
-      "why": "Puede ir en paralelo a todo lo anterior en cuanto GYM-34 esté cerrado: no depende de tool calling. GYM-26 fija la línea base de tokens y latencia contra la que se comparan los demás, así que va primero. GYM-28 y GYM-29 solo necesitan GYM-27 y pueden hacerse en cualquier orden entre sí.",
+      "why": "GYM-34 ya está cerrado, así que puede ir en paralelo a todo lo anterior: no depende de tool calling. GYM-26 fija la línea base de tokens y latencia contra la que se comparan los demás, así que va primero. GYM-28 y GYM-29 solo necesitan GYM-27 y pueden hacerse en cualquier orden entre sí.",
       "tickets": [
         "GYM-26",
         "GYM-27",
