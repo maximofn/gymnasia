@@ -104,7 +104,16 @@ contraseña independiente para Personal Brain y `LANGSMITH_API_KEY`.
 
 Pendiente en GitHub: configurar un presupuesto de Actions de 0 EUR con
 `Stop usage when budget limit is reached` y cargar las credenciales indicadas
-en las secciones siguientes.
+en las secciones siguientes. `OpenWiki Update` y `OpenWiki Daily Report` están
+deshabilitados manualmente hasta completar esa configuración; `Tests` permanece
+activo. Tras una ejecución manual correcta se habilitan con:
+
+```bash
+gh workflow enable openwiki-update.yml \
+  --repo maximofn/gymnasia-openwiki-automation
+gh workflow enable openwiki-report.yml \
+  --repo maximofn/gymnasia-openwiki-automation
+```
 
 ### Permiso de PR
 
