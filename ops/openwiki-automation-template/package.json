@@ -1,0 +1,17 @@
+{
+  "name": "gymnasia-openwiki-automation",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Private GitHub Actions runner for Gymnasia OpenWiki updates.",
+  "engines": {
+    "node": ">=22.22.0 <23"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "jsdom": "29.1.1",
+    "mermaid": "11.16.1",
+    "openwiki": "0.3.1"
+  }
+}

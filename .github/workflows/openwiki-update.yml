@@ -20,6 +20,7 @@ jobs:
           # commit it last documented; a shallow clone hides that commit and the
           # update runs against an empty change summary.
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Check model credentials
         id: model_auth
@@ -30,23 +31,22 @@ jobs:
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::OpenWiki update skipped: configure OPENROUTER_API_KEY or replace the CI provider with another API-backed provider. A local ChatGPT subscription cannot be persisted safely on an ephemeral GitHub-hosted runner."
+            echo "::notice::OpenWiki update skipped: configure OPENROUTER_API_KEY or use the separate private automation repository documented in docs/openwiki-automation.md. ChatGPT OAuth must not be stored in this public repository."
           fi
 
       - name: Set up Node.js
         if: steps.model_auth.outputs.enabled == 'true'
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: "22"
+          node-version: "22.22.0"
 
-      - name: Install OpenWiki
+      - name: Install locked OpenWiki dependencies
         if: steps.model_auth.outputs.enabled == 'true'
-        # mermaid + jsdom are optional; they add high-fidelity validation of Mermaid diagrams. Remove if your wiki has none.
-        run: npm install --global openwiki@0.3.1 mermaid@11.16.0 jsdom@29.1.1
+        run: npm ci --prefix ops/openwiki-automation-template
 
       - name: Run OpenWiki
         if: steps.model_auth.outputs.enabled == 'true'
-        run: openwiki code --update --language es --print
+        run: ops/openwiki-automation-template/node_modules/.bin/openwiki code --update --language es --print
         env:
           OPENWIKI_PROVIDER: openrouter
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -59,6 +59,9 @@ jobs:
           LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
           LANGCHAIN_PROJECT: openwiki
           LANGCHAIN_TRACING_V2: "true"
+          LANGSMITH_HIDE_INPUTS: "true"
+          LANGSMITH_HIDE_OUTPUTS: "true"
+          LANGSMITH_HIDE_METADATA: "true"
 
       - name: Create OpenWiki update pull request
         if: steps.model_auth.outputs.enabled == 'true'

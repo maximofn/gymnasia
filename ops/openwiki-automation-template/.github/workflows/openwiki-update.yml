@@ -1,0 +1,467 @@
+name: OpenWiki Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * *"
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: openwiki-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      OPENWIKI_CODE_USER_HOME: ${{ runner.temp }}/openwiki-code-home
+      OPENWIKI_PERSONAL_USER_HOME: ${{ runner.temp }}/openwiki-personal-home
+    steps:
+      - name: Check out private automation repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+
+      - name: Require private repository and configuration
+        id: preflight
+        continue-on-error: true
+        shell: bash
+        env:
+          GYMNASIA_REPO_TOKEN: ${{ secrets.GYMNASIA_REPO_TOKEN }}
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+          OPENWIKI_LANGSMITH_API_KEY: ${{ secrets.OPENWIKI_LANGSMITH_API_KEY }}
+          OPENWIKI_OAUTH_PASSPHRASE: ${{ secrets.OPENWIKI_OAUTH_PASSPHRASE }}
+          REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
+        run: |
+          set -euo pipefail
+          if [ "$REPOSITORY_VISIBILITY" != "private" ]; then
+            echo "::error title=Unsafe repository visibility::ChatGPT OAuth automation is allowed only in a private automation repository."
+            exit 1
+          fi
+
+          missing=()
+          [ -n "$GYMNASIA_REPO_TOKEN" ] || missing+=(GYMNASIA_REPO_TOKEN)
+          [ -n "$LANGSMITH_API_KEY" ] || missing+=(LANGSMITH_API_KEY)
+          [ -n "$OPENWIKI_LANGSMITH_API_KEY" ] || missing+=(OPENWIKI_LANGSMITH_API_KEY)
+          [ -n "$OPENWIKI_OAUTH_PASSPHRASE" ] || missing+=(OPENWIKI_OAUTH_PASSPHRASE)
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error title=OpenWiki configuration missing::Missing required GitHub Actions secrets: ${missing[*]}"
+            exit 1
+          fi
+
+      - name: Mark OpenWiki configuration missing
+        if: steps.preflight.outcome == 'failure'
+        run: echo "::error title=OpenWiki configuration missing::Review the private repository and required secrets."
+
+      - name: Set up Node.js
+        if: steps.preflight.outcome == 'success'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22.22.0"
+          cache: npm
+
+      - name: Install locked dependencies
+        if: steps.preflight.outcome == 'success'
+        # OAuth is restored afterwards so dependency lifecycle scripts never
+        # share a filesystem with the plaintext refresh token.
+        run: npm ci
+
+      - name: Clone Gymnasia
+        if: steps.preflight.outcome == 'success'
+        run: git clone --no-tags https://github.com/maximofn/gymnasia.git target
+
+      - name: Prepare fixed update branch
+        id: branch
+        if: steps.preflight.outcome == 'success'
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          previous_sha="$(git ls-remote --heads origin refs/heads/openwiki/update | awk '{print $1}')"
+          echo "previous_sha=$previous_sha" >> "$GITHUB_OUTPUT"
+          git switch --force-create openwiki/update origin/main
+
+      - name: Restore encrypted OpenWiki OAuth state
+        id: oauth
+        if: steps.preflight.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GH_TOKEN: ${{ github.token }}
+          OPENWIKI_OAUTH_PASSPHRASE: ${{ secrets.OPENWIKI_OAUTH_PASSPHRASE }}
+          OPENWIKI_OAUTH_SEED: ${{ secrets.OPENWIKI_OAUTH_SEED }}
+        run: |
+          set -euo pipefail
+          state_file="$RUNNER_TEMP/openwiki-oauth-state.enc"
+          artifact_zip="$RUNNER_TEMP/openwiki-oauth-state.zip"
+          artifact_id="$(
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=openwiki-oauth-state&per_page=100" \
+              --jq ".artifacts | map(select(.expired == false and .workflow_run.head_branch == \"$DEFAULT_BRANCH\")) | sort_by(.created_at) | last | .id // empty"
+          )"
+
+          if [ -n "$artifact_id" ]; then
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" > "$artifact_zip"
+            unzip -p "$artifact_zip" openwiki-oauth-state.enc > "$state_file"
+            install -d -m 700 "$OPENWIKI_CODE_USER_HOME/.openwiki"
+            if node scripts/oauth-state.mjs decrypt \
+              "$state_file" "$OPENWIKI_CODE_USER_HOME/.openwiki/.env"; then
+              state_source="artifact"
+            elif [ -n "$OPENWIKI_OAUTH_SEED" ]; then
+              echo "::warning::The latest OAuth artifact could not be decrypted; trying the recovery seed."
+              printf '%s' "$OPENWIKI_OAUTH_SEED" > "$state_file"
+              node scripts/oauth-state.mjs decrypt "$state_file" "$OPENWIKI_CODE_USER_HOME/.openwiki/.env"
+              state_source="seed-recovery"
+            else
+              exit 1
+            fi
+          elif [ -n "$OPENWIKI_OAUTH_SEED" ]; then
+            printf '%s' "$OPENWIKI_OAUTH_SEED" > "$state_file"
+            install -d -m 700 "$OPENWIKI_CODE_USER_HOME/.openwiki"
+            node scripts/oauth-state.mjs decrypt "$state_file" "$OPENWIKI_CODE_USER_HOME/.openwiki/.env"
+            state_source="seed"
+          else
+            echo "::error title=OpenWiki OAuth missing::No encrypted artifact or bootstrap seed is available."
+            exit 1
+          fi
+
+          echo "source=$state_source" >> "$GITHUB_OUTPUT"
+
+      - name: Mark encrypted OAuth state failure
+        if: steps.oauth.outcome == 'failure'
+        run: echo "::error title=OpenWiki OAuth state failure::The encrypted state could not be restored or decrypted."
+
+      - name: Run OpenWiki
+        id: openwiki
+        if: steps.oauth.outcome == 'success'
+        working-directory: target
+        continue-on-error: true
+        shell: bash
+        env:
+          HOME: ${{ env.OPENWIKI_CODE_USER_HOME }}
+          LANGCHAIN_PROJECT: openwiki
+          LANGCHAIN_TRACING_V2: "true"
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+          LANGSMITH_HIDE_INPUTS: "true"
+          LANGSMITH_HIDE_METADATA: "true"
+          LANGSMITH_HIDE_OUTPUTS: "true"
+          OPENWIKI_LANGSMITH_API_KEY: ${{ secrets.OPENWIKI_LANGSMITH_API_KEY }}
+          OPENWIKI_MODEL_ID: gpt-5.6-terra
+          OPENWIKI_PROVIDER: openai-chatgpt
+        run: |
+          set +e
+          "../node_modules/.bin/openwiki" code --update --language es --print \
+            > "$RUNNER_TEMP/openwiki.log" 2>&1
+          exit_code="$?"
+          set -e
+
+          auth_status="unknown"
+          result="failure"
+          if [ "$exit_code" -eq 0 ]; then
+            auth_status="ok"
+            result="success"
+          elif grep -Eiq 'invalid_grant|refresh token|token refresh|unauthorized|authentication failed|oauth[^[:space:]]* (expired|invalid|failed)|(^|[^0-9])401([^0-9]|$)' "$RUNNER_TEMP/openwiki.log"; then
+            auth_status="error"
+          fi
+
+          echo "auth_status=$auth_status" >> "$GITHUB_OUTPUT"
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+
+      - name: Mark OpenAI OAuth failure
+        if: steps.openwiki.outputs.auth_status == 'error'
+        run: echo "::error title=OpenAI OAuth needs attention::The ChatGPT login could not be refreshed; seed a new local OpenWiki login."
+
+      - name: Mark OpenWiki non-auth failure
+        if: steps.openwiki.outputs.result == 'failure' && steps.openwiki.outputs.auth_status != 'error'
+        run: echo "::error title=OpenWiki update failed::The failure was not classified as an OAuth error."
+
+      - name: Prepare selected Personal Brain sources
+        id: personal_sources
+        if: steps.oauth.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        env:
+          LINEAR_READONLY_API_KEY: ${{ secrets.LINEAR_READONLY_API_KEY }}
+          MAXIMOFN_REPOSITORY: ${{ vars.MAXIMOFN_REPOSITORY }}
+          MAXIMOFN_REPO_TOKEN: ${{ secrets.MAXIMOFN_REPO_TOKEN }}
+          OPENWIKI_PERSONAL_STATE_PASSPHRASE: ${{ secrets.OPENWIKI_PERSONAL_STATE_PASSPHRASE }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+        run: |
+          set -euo pipefail
+          sources_root="$RUNNER_TEMP/personal-sources"
+          mkdir -p "$sources_root"
+          enabled=false
+
+          if [ -n "$LINEAR_READONLY_API_KEY" ]; then
+            linear_path="$sources_root/linear-export"
+            node scripts/export-linear.mjs "$linear_path"
+            git -C "$linear_path" init --initial-branch=main
+            git -C "$linear_path" config user.name "openwiki-linear-export"
+            git -C "$linear_path" config user.email "openwiki-linear-export@users.noreply.github.com"
+            git -C "$linear_path" add linear.md
+            git -C "$linear_path" commit -m "data: refresh read-only Linear metadata"
+            echo "linear_path=$linear_path" >> "$GITHUB_OUTPUT"
+            enabled=true
+          fi
+
+          if [ -n "$MAXIMOFN_REPOSITORY" ]; then
+            if [[ ! "$MAXIMOFN_REPOSITORY" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+              echo "::error::MAXIMOFN_REPOSITORY must use the owner/repository format."
+              exit 1
+            fi
+            maximofn_path="$sources_root/maximofn-com"
+            if ! git clone --quiet --no-tags "https://github.com/${MAXIMOFN_REPOSITORY}.git" "$maximofn_path"; then
+              if [ -z "$MAXIMOFN_REPO_TOKEN" ]; then
+                echo "::error::The maximofn.com repository could not be cloned; add MAXIMOFN_REPO_TOKEN if it is private."
+                exit 1
+              fi
+              GH_TOKEN="$MAXIMOFN_REPO_TOKEN" gh repo clone "$MAXIMOFN_REPOSITORY" "$maximofn_path" -- --quiet --no-tags
+            fi
+            echo "maximofn_path=$maximofn_path" >> "$GITHUB_OUTPUT"
+            enabled=true
+          fi
+
+          if [ -n "$TAVILY_API_KEY" ]; then
+            enabled=true
+          fi
+
+          if [ "$enabled" = "true" ] && [ -z "$OPENWIKI_PERSONAL_STATE_PASSPHRASE" ]; then
+            echo "::error::OPENWIKI_PERSONAL_STATE_PASSPHRASE is required when Personal Brain has sources."
+            exit 1
+          fi
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+
+      - name: Mark Personal Brain configuration failure
+        if: steps.personal_sources.outcome == 'failure'
+        run: echo "::error title=Personal Brain configuration failed::Review its read-only source credentials and repository setting."
+
+      - name: Mark Personal Brain sources missing
+        if: steps.personal_sources.outcome == 'success' && steps.personal_sources.outputs.enabled != 'true'
+        run: echo "::notice title=Personal Brain not configured::Add at least one selected read-only source."
+
+      - name: Restore encrypted Personal Brain state
+        id: personal_restore
+        if: steps.personal_sources.outcome == 'success' && steps.personal_sources.outputs.enabled == 'true'
+        continue-on-error: true
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GH_TOKEN: ${{ github.token }}
+          OPENWIKI_PERSONAL_STATE_PASSPHRASE: ${{ secrets.OPENWIKI_PERSONAL_STATE_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          artifact_id="$(
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=openwiki-personal-state&per_page=100" \
+              --jq ".artifacts | map(select(.expired == false and .workflow_run.head_branch == \"$DEFAULT_BRANCH\")) | sort_by(.created_at) | last | .id // empty"
+          )"
+          if [ -z "$artifact_id" ]; then
+            install -d -m 700 \
+              "$OPENWIKI_PERSONAL_USER_HOME/.openwiki/wiki" \
+              "$OPENWIKI_PERSONAL_USER_HOME/.openwiki/connectors"
+            echo "source=new" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" \
+            > "$RUNNER_TEMP/openwiki-personal-state.zip"
+          unzip -p "$RUNNER_TEMP/openwiki-personal-state.zip" openwiki-personal-state.enc \
+            > "$RUNNER_TEMP/openwiki-personal-state.enc"
+          node scripts/private-state.mjs decrypt \
+            "$RUNNER_TEMP/openwiki-personal-state.enc" \
+            "$RUNNER_TEMP/openwiki-personal-state.tar.gz"
+          install -d -m 700 "$OPENWIKI_PERSONAL_USER_HOME"
+          tar -xzf "$RUNNER_TEMP/openwiki-personal-state.tar.gz" \
+            -C "$OPENWIKI_PERSONAL_USER_HOME"
+          echo "source=artifact" >> "$GITHUB_OUTPUT"
+
+      - name: Mark Personal Brain state failure
+        if: steps.personal_restore.outcome == 'failure'
+        run: echo "::error title=Personal Brain state failure::The encrypted private wiki could not be restored."
+
+      - name: Seed Personal Brain with the refreshed OAuth state
+        if: steps.personal_restore.outcome == 'success'
+        run: |
+          install -d -m 700 "$OPENWIKI_PERSONAL_USER_HOME/.openwiki"
+          install -m 600 \
+            "$OPENWIKI_CODE_USER_HOME/.openwiki/.env" \
+            "$OPENWIKI_PERSONAL_USER_HOME/.openwiki/.env"
+
+      - name: Configure Personal Brain
+        id: personal_config
+        if: steps.personal_restore.outcome == 'success'
+        continue-on-error: true
+        env:
+          HOME: ${{ env.OPENWIKI_PERSONAL_USER_HOME }}
+          LINEAR_EXPORT_PATH: ${{ steps.personal_sources.outputs.linear_path }}
+          MAXIMOFN_REPO_PATH: ${{ steps.personal_sources.outputs.maximofn_path }}
+          OPENWIKI_HOME: ${{ env.OPENWIKI_PERSONAL_USER_HOME }}/.openwiki
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+        run: node scripts/configure-personal-brain.mjs
+
+      - name: Mark Personal Brain onboarding failure
+        if: steps.personal_config.outcome == 'failure'
+        run: echo "::error title=Personal Brain onboarding failed::The private source configuration could not be written."
+
+      - name: Update Personal Brain without LangSmith tracing
+        id: personal
+        if: steps.personal_config.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        env:
+          HOME: ${{ env.OPENWIKI_PERSONAL_USER_HOME }}
+          OPENWIKI_MODEL_ID: gpt-5.6-terra
+          OPENWIKI_PROVIDER: openai-chatgpt
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+        run: |
+          set +e
+          node_modules/.bin/openwiki ingest all --scheduled --print \
+            > "$RUNNER_TEMP/openwiki-personal.log" 2>&1
+          exit_code="$?"
+          set -e
+          if [ "$exit_code" -eq 0 ]; then
+            echo "result=success" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=failure" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Mark Personal Brain update failure
+        if: steps.personal.outputs.result == 'failure'
+        run: echo "::error title=Personal Brain update failed::No source content or private log data was printed."
+
+      - name: Encrypt Personal Brain state
+        id: encrypt_personal
+        if: always() && steps.personal_restore.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        env:
+          OPENWIKI_PERSONAL_STATE_PASSPHRASE: ${{ secrets.OPENWIKI_PERSONAL_STATE_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          tar -czf "$RUNNER_TEMP/openwiki-personal-state.tar.gz" \
+            -C "$OPENWIKI_PERSONAL_USER_HOME" \
+            .openwiki/wiki \
+            .openwiki/connectors \
+            .openwiki/onboarding.json \
+            .openwiki/INSTRUCTIONS.md
+          node scripts/private-state.mjs encrypt \
+            "$RUNNER_TEMP/openwiki-personal-state.tar.gz" \
+            "$RUNNER_TEMP/openwiki-personal-state.enc"
+
+      - name: Mark Personal Brain persistence failure
+        if: steps.encrypt_personal.outcome == 'failure'
+        run: echo "::error title=Personal Brain persistence failure::The private wiki could not be encrypted."
+
+      - name: Encrypt refreshed OAuth state
+        id: encrypt_oauth
+        if: always() && steps.oauth.outcome == 'success'
+        continue-on-error: true
+        env:
+          OPENWIKI_OAUTH_PASSPHRASE: ${{ secrets.OPENWIKI_OAUTH_PASSPHRASE }}
+        run: |
+          oauth_env="$OPENWIKI_CODE_USER_HOME/.openwiki/.env"
+          if [ -f "$OPENWIKI_PERSONAL_USER_HOME/.openwiki/.env" ]; then
+            oauth_env="$OPENWIKI_PERSONAL_USER_HOME/.openwiki/.env"
+          fi
+          node scripts/oauth-state.mjs encrypt \
+            "$oauth_env" "$RUNNER_TEMP/openwiki-oauth-state.enc"
+
+      - name: Mark OAuth persistence failure
+        if: steps.encrypt_oauth.outcome == 'failure'
+        run: echo "::error title=OpenWiki OAuth persistence failure::The refreshed state could not be encrypted."
+
+      - name: Remove plaintext OAuth state and private logs
+        if: always() && steps.oauth.outcome != 'skipped'
+        run: |
+          rm -f \
+            "$OPENWIKI_CODE_USER_HOME/.openwiki/.env" \
+            "$OPENWIKI_PERSONAL_USER_HOME/.openwiki/.env" \
+            "$RUNNER_TEMP/openwiki.log" \
+            "$RUNNER_TEMP/openwiki-personal.log" \
+            "$RUNNER_TEMP/openwiki-personal-state.tar.gz" \
+            "$RUNNER_TEMP/openwiki-personal-state.zip" \
+            "$RUNNER_TEMP/openwiki-oauth-state.zip"
+
+      - name: Persist encrypted OAuth state
+        if: always() && steps.encrypt_oauth.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: openwiki-oauth-state
+          path: ${{ runner.temp }}/openwiki-oauth-state.enc
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Persist encrypted Personal Brain state
+        if: always() && steps.encrypt_personal.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: openwiki-personal-state
+          path: ${{ runner.temp }}/openwiki-personal-state.enc
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit generated documentation
+        id: commit
+        if: steps.openwiki.outputs.result == 'success' && steps.encrypt_oauth.outcome == 'success'
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "openwiki-bot"
+          git config user.email "openwiki-bot@users.noreply.github.com"
+          git add -A -- openwiki .openwikiignore AGENTS.md CLAUDE.md
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "docs: update OpenWiki"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Push fixed branch and create or update pull request
+        id: pull_request
+        if: steps.commit.outputs.changed == 'true'
+        working-directory: target
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GYMNASIA_REPO_TOKEN }}
+          PREVIOUS_SHA: ${{ steps.branch.outputs.previous_sha }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          if [ -n "$PREVIOUS_SHA" ]; then
+            git push origin HEAD:refs/heads/openwiki/update \
+              --force-with-lease="refs/heads/openwiki/update:$PREVIOUS_SHA"
+          else
+            git push origin HEAD:refs/heads/openwiki/update
+          fi
+
+          pr_url="$(
+            gh pr list --repo maximofn/gymnasia --state open --head openwiki/update \
+              --limit 1 --json url --jq '.[0].url // empty'
+          )"
+          if [ -z "$pr_url" ]; then
+            pr_url="$(
+              gh pr create --repo maximofn/gymnasia --base main --head openwiki/update \
+                --title "docs: update OpenWiki" \
+                --body "Actualización diaria generada por el runner privado de OpenWiki."
+            )"
+          fi
+          echo "url=$pr_url" >> "$GITHUB_OUTPUT"
+          echo "OpenWiki PR: $pr_url"
+
+      - name: Fail unsuccessful update
+        if: >-
+          always() &&
+          (steps.preflight.outcome == 'failure' ||
+          steps.oauth.outcome == 'failure' ||
+          steps.openwiki.outputs.result == 'failure' ||
+          steps.encrypt_oauth.outcome == 'failure' ||
+          steps.personal_sources.outcome == 'failure' ||
+          steps.personal_restore.outcome == 'failure' ||
+          steps.personal_config.outcome == 'failure' ||
+          steps.personal.outputs.result == 'failure' ||
+          steps.encrypt_personal.outcome == 'failure')
+        run: exit 1

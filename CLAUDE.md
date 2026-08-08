@@ -291,7 +291,9 @@ This repository has a generated `openwiki/` evidence index. It is optional just-
 - Treat source code and tests as authoritative. A brief's unknowns and review items are verification gaps, not automatic requirements.
 - Prefer the narrowest quiet validation that proves the changed behavior. Preserve complete failure output.
 
-The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki when an API-backed CI model credential is configured. Without `OPENROUTER_API_KEY`, the workflow exits successfully without generating a PR; local runs can use the configured ChatGPT subscription with `openwiki code --update --language es --print`.
+ChatGPT OAuth automation must not run from this public repository. The reviewed template in `ops/openwiki-automation-template/` is intended to become the separate private repository `maximofn/gymnasia-openwiki-automation`; it refuses to run with non-private visibility. It uses a fixed `openwiki/update` branch, encrypted OAuth and Personal Brain artifacts, and a separate sanitized Telegram report. Setup, threat boundaries, pending credentials, and recovery instructions live in `docs/openwiki-automation.md`.
+
+The legacy public `.github/workflows/openwiki-update.yml` remains API-key gated and exits successfully without generating a PR when `OPENROUTER_API_KEY` is absent. Do not add ChatGPT OAuth secrets to this public repository. Once the private runner is active and verified, remove the legacy scheduled workflow to avoid redundant no-op runs.
 
 `openwiki cron` only manages local Personal Brain connector ingestion schedules. It does not list or schedule Code Brain repository updates; those use `.github/workflows/openwiki-update.yml`.
 

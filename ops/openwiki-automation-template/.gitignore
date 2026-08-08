@@ -1,0 +1,6 @@
+node_modules/
+*.log
+*.enc
+*.tar.gz
+*.zip
+.env

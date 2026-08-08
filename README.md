@@ -74,3 +74,4 @@ npm run test:board:e2e   # E2E con Playwright
 - Instrucciones para agentes IA: `AGENTS.md`
 - Documentacion central: `docs/README.md`
 - Referencia de diseno: `docs/design/README.md`
+- Automatizacion de OpenWiki: `docs/openwiki-automation.md`
