@@ -8,11 +8,11 @@ la persistencia de autenticación en CI como un patrón avanzado para
 infraestructura privada de confianza y desaconseja usarlo en repositorios
 públicos/open source.
 
-La automatización se alojará en un repositorio privado independiente,
-`maximofn/gymnasia-openwiki-automation`. El directorio
-`ops/openwiki-automation-template/` contiene la plantilla lista para convertirla
-en ese repositorio. La plantilla se niega a ejecutarse si detecta visibilidad
-distinta de `private`.
+La automatización se aloja en el repositorio privado independiente
+[`maximofn/gymnasia-openwiki-automation`](https://github.com/maximofn/gymnasia-openwiki-automation).
+El directorio `ops/openwiki-automation-template/` conserva su plantilla fuente.
+El workflow se niega a ejecutarse si detecta una visibilidad distinta de
+`private`.
 
 GitHub Free incluye 2.000 minutos mensuales de runners estándar para
 repositorios privados y 500 MB de almacenamiento. Una ejecución diaria cabe en
@@ -73,9 +73,11 @@ workspace:
   proyectos declarados: `gymnasia-app-agent`, `gymnasia-food-agent` y
   `openwiki`.
 
-Actualmente ambos nombres están configurados con el mismo valor. Antes de
-activar el runner hay que crear una segunda service key, guardar cada valor en
-su secreto correspondiente y rotar el valor compartido.
+En local ambos nombres siguen configurados con el mismo valor. El repositorio
+privado tiene ese valor únicamente como `LANGSMITH_API_KEY`; antes de activar el
+runner hay que crear una segunda service key distinta, guardarla como
+`OPENWIKI_LANGSMITH_API_KEY` tanto en `~/.openwiki/.env` como en Actions secrets
+y rotar el valor local compartido.
 
 Personal Brain ejecuta sin `LANGCHAIN_TRACING_V2`: sus datos de Linear,
 repositorios privados y búsquedas no se envían a LangSmith. Code Brain sí traza
@@ -93,22 +95,16 @@ defecto y permitir contenido parcial solo mediante una decisión explícita. Los
 proyectos `gymnasia-app-agent` y `gymnasia-food-agent` del workspace del
 propietario recibirán únicamente las ejecuciones realizadas con su propia clave.
 
-## Crear el repositorio privado
+## Estado del repositorio privado
 
-Requiere autorización explícita porque crea estado externo. Una vez autorizada:
+El repositorio ya está creado con visibilidad privada, permisos predeterminados
+de Actions de solo lectura y aprobación de PR deshabilitada para su
+`GITHUB_TOKEN`. También están cargados el OAuth cifrado, su contraseña, una
+contraseña independiente para Personal Brain y `LANGSMITH_API_KEY`.
 
-```bash
-private_repo_dir="$(mktemp -d)"
-cp -R ops/openwiki-automation-template/. "$private_repo_dir/"
-git -C "$private_repo_dir" init --initial-branch=main
-git -C "$private_repo_dir" add -A
-git -C "$private_repo_dir" commit -m "feat: automate Gymnasia OpenWiki"
-gh repo create maximofn/gymnasia-openwiki-automation \
-  --private --source "$private_repo_dir" --remote origin --push
-```
-
-Después, en GitHub, configurar un presupuesto de Actions de 0 EUR con
-`Stop usage when budget limit is reached`.
+Pendiente en GitHub: configurar un presupuesto de Actions de 0 EUR con
+`Stop usage when budget limit is reached` y cargar las credenciales indicadas
+en las secciones siguientes.
 
 ### Permiso de PR
 

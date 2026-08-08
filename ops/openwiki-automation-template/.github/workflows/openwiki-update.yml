@@ -17,10 +17,13 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 120
-    env:
-      OPENWIKI_CODE_USER_HOME: ${{ runner.temp }}/openwiki-code-home
-      OPENWIKI_PERSONAL_USER_HOME: ${{ runner.temp }}/openwiki-personal-home
     steps:
+      - name: Initialize isolated OpenWiki homes
+        shell: bash
+        run: |
+          echo "OPENWIKI_CODE_USER_HOME=$RUNNER_TEMP/openwiki-code-home" >> "$GITHUB_ENV"
+          echo "OPENWIKI_PERSONAL_USER_HOME=$RUNNER_TEMP/openwiki-personal-home" >> "$GITHUB_ENV"
+
       - name: Check out private automation repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
