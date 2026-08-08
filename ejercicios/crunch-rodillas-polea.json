@@ -1,0 +1,11 @@
+{
+  "id": "crunch-rodillas-polea",
+  "name": "Crunch de rodillas en polea",
+  "image_male": "images/crunch-rodillas-polea-male.webp",
+  "image_female": "images/crunch-rodillas-polea-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos"],
+  "equipment": "polea y cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Arrodíllate frente a una polea alta y sujeta la cuerda a ambos lados de la cabeza. Mantén las caderas casi inmóviles y flexiona la columna para acercar las costillas a la pelvis, llevando los codos hacia los muslos. Haz una pausa con el abdomen contraído y vuelve lentamente sin dejar que el peso te arquee la espalda."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "rotacion-landmine-180",
+  "name": "Rotación landmine 180",
+  "image_male": "images/rotacion-landmine-180-male.webp",
+  "image_female": "images/rotacion-landmine-180-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "hombros", "cuádriceps"],
+  "equipment": "barra y landmine",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta con ambas manos el extremo libre de una barra anclada al suelo. Con los brazos casi extendidos y las rodillas suaves, desplaza la barra en arco desde un hombro hacia la cadera contraria. Rota el torso y pivota los pies de forma coordinada, frena el extremo con el abdomen y repite hacia el otro lado."
+}

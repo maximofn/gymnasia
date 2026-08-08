@@ -1,0 +1,11 @@
+{
+  "id": "curl-femoral-inverso-banco",
+  "name": "Curl femoral inverso con banco",
+  "image_male": "images/curl-femoral-inverso-banco-male.webp",
+  "image_female": "images/curl-femoral-inverso-banco-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "gemelos"],
+  "equipment": "banco",
+  "difficulty": "advanced",
+  "instructions": "Arrodíllate sobre una superficie acolchada y fija los tobillos bajo un banco estable. Mantén caderas, tronco y cabeza alineados mientras desciendes el cuerpo hacia delante frenando con los isquiotibiales. Apoya las manos si necesitas amortiguar el final y empuja lo mínimo para iniciar el regreso hasta la posición vertical."
+}

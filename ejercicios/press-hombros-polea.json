@@ -1,0 +1,11 @@
+{
+  "id": "press-hombros-polea",
+  "name": "Press de hombros en polea",
+  "image_male": "images/press-hombros-polea-male.webp",
+  "image_female": "images/press-hombros-polea-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["tríceps", "espalda"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de espaldas entre dos poleas bajas y lleva las asas a la altura de los hombros. Activa abdomen y glúteos para evitar arquear la zona lumbar, y empuja las manos hacia arriba hasta dejar los brazos casi extendidos. Baja las asas lentamente hasta que los codos vuelvan a quedar por debajo de los hombros."
+}

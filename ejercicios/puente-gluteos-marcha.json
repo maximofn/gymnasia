@@ -1,0 +1,11 @@
+{
+  "id": "puente-gluteos-marcha",
+  "name": "Puente de glúteos con marcha",
+  "image_male": "images/puente-gluteos-marcha-male.webp",
+  "image_female": "images/puente-gluteos-marcha-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "abdomen"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas y eleva las caderas hasta alinear hombros, caderas y rodillas. Sin dejar que la pelvis caiga o rote, despega un pie y acerca esa rodilla al pecho. Vuelve a apoyar el pie, cambia de lado y continúa alternando mientras mantienes los glúteos y el abdomen activos."
+}

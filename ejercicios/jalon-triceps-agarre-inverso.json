@@ -1,0 +1,11 @@
+{
+  "id": "jalon-triceps-agarre-inverso",
+  "name": "Jalón de tríceps con agarre inverso",
+  "image_male": "images/jalon-triceps-agarre-inverso-male.webp",
+  "image_female": "images/jalon-triceps-agarre-inverso-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y barra",
+  "difficulty": "intermediate",
+  "instructions": "Colócate frente a una polea alta y agarra la barra con las palmas hacia arriba. Fija los codos junto al torso y empuja la barra hacia abajo extendiendo por completo los brazos, sin inclinar el cuerpo ni mover los hombros. Contrae los tríceps y deja que la barra suba despacio hasta flexionar de nuevo los codos."
+}

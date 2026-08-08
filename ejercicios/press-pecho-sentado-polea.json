@@ -1,0 +1,11 @@
+{
+  "id": "press-pecho-sentado-polea",
+  "name": "Press de pecho sentado en polea",
+  "image_male": "images/press-pecho-sentado-polea-male.webp",
+  "image_female": "images/press-pecho-sentado-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombros", "tríceps"],
+  "equipment": "polea y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate erguido entre dos poleas con los pies firmes y las asas a la altura del pecho. Lleva los codos ligeramente por debajo de los hombros y empuja ambas asas al frente hasta extender los brazos sin bloquearlos. Junta el pecho al final y permite que las manos regresen despacio, manteniendo el torso estable."
+}

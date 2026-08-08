@@ -1,0 +1,11 @@
+{
+  "id": "thruster-barra",
+  "name": "Thruster con barra",
+  "image_male": "images/thruster-barra-male.webp",
+  "image_female": "images/thruster-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "hombros", "tríceps"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Sostén la barra sobre la parte frontal de los hombros con los codos ligeramente adelantados. Desciende en sentadilla manteniendo el pecho elevado y, al subir, extiende caderas y rodillas con potencia para impulsar la barra por encima de la cabeza. Baja la barra de nuevo a los hombros antes de iniciar la siguiente repetición."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "rack-pull-barra",
+  "name": "Rack pull con barra",
+  "image_male": "images/rack-pull-barra-male.webp",
+  "image_female": "images/rack-pull-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "espalda baja", "espalda"],
+  "equipment": "barra y rack",
+  "difficulty": "advanced",
+  "instructions": "Coloca la barra sobre los soportes del rack justo por debajo de las rodillas. Agárrala con las manos por fuera de las piernas, activa el abdomen y conserva la espalda neutra. Extiende caderas y rodillas hasta quedar erguido, termina apretando los glúteos y devuelve la barra a los soportes con un descenso controlado."
+}

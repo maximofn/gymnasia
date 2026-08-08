@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-piernas-banco-plano",
+  "name": "Elevación de piernas en banco plano",
+  "image_male": "images/elevacion-piernas-banco-plano-male.webp",
+  "image_female": "images/elevacion-piernas-banco-plano-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "banco",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba en un banco plano y sujeta sus bordes para estabilizarte. Mantén las piernas juntas y casi extendidas mientras las elevas hasta aproximarlas a la vertical. Activa el abdomen para conservar la zona lumbar apoyada y baja las piernas lentamente sin arquear la espalda ni dejarlas caer."
+}

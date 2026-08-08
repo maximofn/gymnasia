@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-cuerda-polea",
+  "name": "Curl martillo con cuerda en polea",
+  "image_male": "images/curl-martillo-cuerda-polea-male.webp",
+  "image_female": "images/curl-martillo-cuerda-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y cuerda",
+  "difficulty": "beginner",
+  "instructions": "Ponte frente a una polea baja y sujeta los extremos de la cuerda con las palmas enfrentadas. Mantén el torso erguido y los codos pegados a los costados mientras flexionas los brazos hasta acercar las manos a los hombros. Aprieta los bíceps arriba y extiende los codos lentamente sin adelantar los hombros."
+}

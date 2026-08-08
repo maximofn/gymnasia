@@ -1,0 +1,11 @@
+{
+  "id": "press-pallof-banda",
+  "name": "Press Pallof con banda",
+  "image_male": "images/press-pallof-banda-male.webp",
+  "image_female": "images/press-pallof-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "glúteos"],
+  "equipment": "banda elástica",
+  "difficulty": "beginner",
+  "instructions": "Ancla la banda a la altura del pecho y colócate de lado al punto de sujeción. Lleva ambas manos al esternón, separa los pies y activa glúteos y abdomen. Extiende los brazos al frente sin permitir que el tronco gire hacia el anclaje, mantén un instante y regresa las manos al pecho con el mismo control."
+}

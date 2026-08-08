@@ -1,0 +1,11 @@
+{
+  "id": "dominadas-agarre-neutro",
+  "name": "Dominadas con agarre neutro",
+  "image_male": "images/dominadas-agarre-neutro-male.webp",
+  "image_female": "images/dominadas-agarre-neutro-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "barra de dominadas",
+  "difficulty": "intermediate",
+  "instructions": "Cuélgate de las asas paralelas con las palmas enfrentadas y los brazos extendidos. Activa el abdomen, baja los hombros y lleva los codos hacia las caderas para elevar el cuerpo hasta superar las manos con la barbilla. Evita balancearte y desciende con control hasta recuperar la extensión completa antes de repetir."
+}

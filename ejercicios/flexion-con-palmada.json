@@ -1,0 +1,11 @@
+{
+  "id": "flexion-con-palmada",
+  "name": "Flexión con palmada",
+  "image_male": "images/flexion-con-palmada-male.webp",
+  "image_female": "images/flexion-con-palmada-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en plancha alta con el cuerpo firme y baja el pecho flexionando los codos. Empuja el suelo de manera explosiva hasta despegar ambas manos, da una palmada rápida delante del pecho y vuelve a separarlas para aterrizar. Amortigua la caída con los codos flexionados y mantén la alineación antes de repetir."
+}

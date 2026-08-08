@@ -1,0 +1,11 @@
+{
+  "id": "pull-through-polea",
+  "name": "Pull-through en polea",
+  "image_male": "images/pull-through-polea-male.webp",
+  "image_female": "images/pull-through-polea-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "espalda baja"],
+  "equipment": "polea y cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de espaldas a una polea baja y sujeta la cuerda entre las piernas. Da unos pasos al frente para tensar el cable y lleva las caderas hacia atrás con las rodillas ligeramente flexionadas y la espalda neutra. Extiende las caderas hasta quedar erguido, aprieta los glúteos y regresa despacio a la bisagra inicial."
+}

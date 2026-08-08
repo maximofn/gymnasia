@@ -107,6 +107,33 @@
         {"source_id": "0129", "id": "fondos-en-banco", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0194", "id": "extension-triceps-polea-sobre-cabeza", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 5,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0054", "id": "zancada-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0074", "id": "rack-pull-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3305", "id": "thruster-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0128", "id": "cuerdas-batalla", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0196", "id": "pull-through-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0175", "id": "crunch-rodillas-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0979", "id": "press-pallof-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0562", "id": "rotacion-landmine-180", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1489", "id": "sentadilla-sissy", "action": "create", "difficulty": "advanced", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0496", "id": "curl-femoral-inverso-banco", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3561", "id": "puente-gluteos-marcha", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0620", "id": "elevacion-piernas-banco-plano", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3294", "id": "flexion-arquero", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1273", "id": "flexion-con-palmada", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0651", "id": "dominadas-agarre-neutro", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3017", "id": "remo-pendlay-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "2144", "id": "press-pecho-sentado-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0219", "id": "press-hombros-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0165", "id": "curl-martillo-cuerda-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0207", "id": "jalon-triceps-agarre-inverso", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

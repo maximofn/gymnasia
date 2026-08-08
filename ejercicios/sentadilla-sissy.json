@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-sissy",
+  "name": "Sentadilla sissy",
+  "image_male": "images/sentadilla-sissy-male.webp",
+  "image_female": "images/sentadilla-sissy-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["gemelos", "glúteos"],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Sujétate ligeramente a un soporte y eleva los talones mientras llevas las rodillas hacia delante. Inclina el cuerpo hacia atrás manteniendo una línea firme desde las rodillas hasta los hombros y baja solo hasta donde controles la posición. Extiende las rodillas para volver, sin rebotar ni descargar el peso sobre el brazo de apoyo."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "cuerdas-batalla",
+  "name": "Cuerdas de batalla",
+  "image_male": "images/cuerdas-batalla-male.webp",
+  "image_female": "images/cuerdas-batalla-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": ["hombros", "antebrazos", "abdomen"],
+  "equipment": "cuerdas de batalla",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta un extremo de cada cuerda y adopta una postura atlética con los pies separados, las rodillas flexionadas y el abdomen firme. Mueve los brazos arriba y abajo de forma alterna para crear ondas continuas hacia el anclaje. Mantén el torso estable, los hombros bajos y un ritmo uniforme durante todo el intervalo."
+}

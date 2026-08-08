@@ -1,0 +1,11 @@
+{
+  "id": "flexion-arquero",
+  "name": "Flexión arquero",
+  "image_male": "images/flexion-arquero-male.webp",
+  "image_female": "images/flexion-arquero-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros", "abdomen"],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Adopta una posición de flexión con las manos mucho más separadas que los hombros y el cuerpo alineado. Desplaza el pecho hacia una mano mientras flexionas ese codo y mantienes el brazo contrario casi extendido, como la cuerda de un arco. Empuja el suelo para volver al centro y repite hacia el otro lado sin girar la pelvis."
+}

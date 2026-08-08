@@ -1,0 +1,11 @@
+{
+  "id": "remo-pendlay-barra",
+  "name": "Remo Pendlay con barra",
+  "image_male": "images/remo-pendlay-barra-male.webp",
+  "image_female": "images/remo-pendlay-barra-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos", "espalda baja"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Sitúa la barra en el suelo, lleva las caderas atrás y coloca el torso casi paralelo al suelo con la espalda neutra. Agarra la barra algo más ancho que los hombros y tira de ella con potencia hacia la parte baja del pecho sin levantar el torso. Baja con control hasta apoyar de nuevo los discos y reinicia cada repetición desde reposo."
+}

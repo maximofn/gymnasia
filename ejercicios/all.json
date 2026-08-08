@@ -181,6 +181,34 @@
     "instructions": "Túmbate boca arriba con los brazos junto al cuerpo y eleva las piernas con caderas y rodillas flexionadas a 90 grados. Contrae el abdomen para despegar suavemente las caderas y acercar las rodillas al pecho, sin impulsarte con los brazos. Baja la pelvis de forma controlada hasta recuperar la posición inicial."
   },
   {
+    "id": "crunch-rodillas-polea",
+    "name": "Crunch de rodillas en polea",
+    "image_male": "images/crunch-rodillas-polea-male.webp",
+    "image_female": "images/crunch-rodillas-polea-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "oblicuos"
+    ],
+    "equipment": "polea y cuerda",
+    "difficulty": "intermediate",
+    "instructions": "Arrodíllate frente a una polea alta y sujeta la cuerda a ambos lados de la cabeza. Mantén las caderas casi inmóviles y flexiona la columna para acercar las costillas a la pelvis, llevando los codos hacia los muslos. Haz una pausa con el abdomen contraído y vuelve lentamente sin dejar que el peso te arquee la espalda."
+  },
+  {
+    "id": "cuerdas-batalla",
+    "name": "Cuerdas de batalla",
+    "image_male": "images/cuerdas-batalla-male.webp",
+    "image_female": "images/cuerdas-batalla-female.webp",
+    "muscle_group": "cardio",
+    "secondary_muscles": [
+      "hombros",
+      "antebrazos",
+      "abdomen"
+    ],
+    "equipment": "cuerdas de batalla",
+    "difficulty": "intermediate",
+    "instructions": "Sujeta un extremo de cada cuerda y adopta una postura atlética con los pies separados, las rodillas flexionadas y el abdomen firme. Mueve los brazos arriba y abajo de forma alterna para crear ondas continuas hacia el anclaje. Mantén el torso estable, los hombros bajos y un ritmo uniforme durante todo el intervalo."
+  },
+  {
     "id": "curl-biceps-barra",
     "name": "Curl de bíceps con barra",
     "image_male": "images/curl-biceps-barra-male.webp",
@@ -218,6 +246,20 @@
     "equipment": "mancuernas",
     "difficulty": "beginner",
     "instructions": "Siéntate en un banco con las piernas abiertas. Apoya el codo del brazo que trabaja en la cara interna del muslo, con una mancuerna en la mano y el brazo extendido. Flexiona el codo llevando la mancuerna hacia el hombro, apretando el bíceps en la parte alta. Baja de forma controlada. Completa las repeticiones antes de cambiar de brazo."
+  },
+  {
+    "id": "curl-femoral-inverso-banco",
+    "name": "Curl femoral inverso con banco",
+    "image_male": "images/curl-femoral-inverso-banco-male.webp",
+    "image_female": "images/curl-femoral-inverso-banco-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos",
+      "gemelos"
+    ],
+    "equipment": "banco",
+    "difficulty": "advanced",
+    "instructions": "Arrodíllate sobre una superficie acolchada y fija los tobillos bajo un banco estable. Mantén caderas, tronco y cabeza alineados mientras desciendes el cuerpo hacia delante frenando con los isquiotibiales. Apoya las manos si necesitas amortiguar el final y empuja lo mínimo para iniciar el regreso hasta la posición vertical."
   },
   {
     "id": "curl-inclinado-mancuernas",
@@ -258,6 +300,19 @@
     "equipment": "mancuernas",
     "difficulty": "beginner",
     "instructions": "Siéntate en un banco inclinado con la espalda apoyada y una mancuerna en cada mano, los brazos extendidos a los lados del cuerpo. Flexiona ambos codos llevando las mancuernas hacia los hombros, apretando los bíceps en la parte alta del movimiento. Baja de forma controlada."
+  },
+  {
+    "id": "curl-martillo-cuerda-polea",
+    "name": "Curl martillo con cuerda en polea",
+    "image_male": "images/curl-martillo-cuerda-polea-male.webp",
+    "image_female": "images/curl-martillo-cuerda-polea-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "polea y cuerda",
+    "difficulty": "beginner",
+    "instructions": "Ponte frente a una polea baja y sujeta los extremos de la cuerda con las palmas enfrentadas. Mantén el torso erguido y los codos pegados a los costados mientras flexionas los brazos hasta acercar las manos a los hombros. Aprieta los bíceps arriba y extiende los codos lentamente sin adelantar los hombros."
   },
   {
     "id": "curl-martillo-mancuernas",
@@ -315,6 +370,20 @@
     "instructions": "Túmbate boca arriba con los brazos apuntando al techo y las caderas y rodillas flexionadas a 90 grados. Presiona suavemente la zona lumbar contra el suelo. Extiende a la vez un brazo por detrás de la cabeza y la pierna contraria sin que lleguen a tocar el suelo. Regresa al centro con control y alterna el lado manteniendo el abdomen activo."
   },
   {
+    "id": "dominadas-agarre-neutro",
+    "name": "Dominadas con agarre neutro",
+    "image_male": "images/dominadas-agarre-neutro-male.webp",
+    "image_female": "images/dominadas-agarre-neutro-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "barra de dominadas",
+    "difficulty": "intermediate",
+    "instructions": "Cuélgate de las asas paralelas con las palmas enfrentadas y los brazos extendidos. Activa el abdomen, baja los hombros y lleva los codos hacia las caderas para elevar el cuerpo hasta superar las manos con la barbilla. Evita balancearte y desciende con control hasta recuperar la extensión completa antes de repetir."
+  },
+  {
     "id": "dominadas-supinas",
     "name": "Dominadas supinas",
     "image_male": "images/dominadas-supinas-male.webp",
@@ -370,6 +439,19 @@
     "equipment": "polea",
     "difficulty": "intermediate",
     "instructions": "Sitúate de lado a una polea baja y sujeta el asa con la mano más alejada, pasando el cable por delante del cuerpo. Eleva el brazo hacia el lateral con el codo ligeramente flexionado hasta alcanzar la altura del hombro. Baja lentamente sin girar el torso ni dejar que el peso pierda tensión."
+  },
+  {
+    "id": "elevacion-piernas-banco-plano",
+    "name": "Elevación de piernas en banco plano",
+    "image_male": "images/elevacion-piernas-banco-plano-male.webp",
+    "image_female": "images/elevacion-piernas-banco-plano-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "banco",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba en un banco plano y sujeta sus bordes para estabilizarte. Mantén las piernas juntas y casi extendidas mientras las elevas hasta aproximarlas a la vertical. Activa el abdomen para conservar la zona lumbar apoyada y baja las piernas lentamente sin arquear la espalda ni dejarlas caer."
   },
   {
     "id": "elevacion-rodillas-oblicua-colgado",
@@ -583,6 +665,35 @@
     "instructions": "Túmbate boca abajo en la máquina de femoral con los tobillos debajo del rodillo acolchado y las rodillas justo al borde del banco. Sujétate de las asas frontales. Flexiona las rodillas llevando los talones hacia los glúteos, apretando los isquiotibiales en la parte alta. Baja de forma controlada."
   },
   {
+    "id": "flexion-arquero",
+    "name": "Flexión arquero",
+    "image_male": "images/flexion-arquero-male.webp",
+    "image_female": "images/flexion-arquero-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombros",
+      "abdomen"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Adopta una posición de flexión con las manos mucho más separadas que los hombros y el cuerpo alineado. Desplaza el pecho hacia una mano mientras flexionas ese codo y mantienes el brazo contrario casi extendido, como la cuerda de un arco. Empuja el suelo para volver al centro y repite hacia el otro lado sin girar la pelvis."
+  },
+  {
+    "id": "flexion-con-palmada",
+    "name": "Flexión con palmada",
+    "image_male": "images/flexion-con-palmada-male.webp",
+    "image_female": "images/flexion-con-palmada-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Comienza en plancha alta con el cuerpo firme y baja el pecho flexionando los codos. Empuja el suelo de manera explosiva hasta despegar ambas manos, da una palmada rápida delante del pecho y vuelve a separarlas para aterrizar. Amortigua la caída con los codos flexionados y mantén la alineación antes de repetir."
+  },
+  {
     "id": "flexiones-declinadas",
     "name": "Flexiones declinadas",
     "image_male": "images/flexiones-declinadas-male.webp",
@@ -758,6 +869,19 @@
     "equipment": "polea",
     "difficulty": "beginner",
     "instructions": "Siéntate en la máquina de poleas con los muslos sujetos bajo las almohadillas y los pies firmes en el suelo. Agarra la barra ancha con ambas manos en pronación, algo más abiertas que el ancho de los hombros. Tira de la barra hacia abajo llevándola hasta la parte superior del pecho, apretando los dorsales. Vuelve de forma controlada hasta extender los brazos por completo."
+  },
+  {
+    "id": "jalon-triceps-agarre-inverso",
+    "name": "Jalón de tríceps con agarre inverso",
+    "image_male": "images/jalon-triceps-agarre-inverso-male.webp",
+    "image_female": "images/jalon-triceps-agarre-inverso-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "polea y barra",
+    "difficulty": "intermediate",
+    "instructions": "Colócate frente a una polea alta y agarra la barra con las palmas hacia arriba. Fija los codos junto al torso y empuja la barra hacia abajo extendiendo por completo los brazos, sin inclinar el cuerpo ni mover los hombros. Contrae los tríceps y deja que la barra suba despacio hasta flexionar de nuevo los codos."
   },
   {
     "id": "jalon-unilateral-maquina",
@@ -1029,6 +1153,20 @@
     "instructions": "Siéntate en la máquina de press militar con la espalda apoyada en el respaldo. Agarra una de las asas con una mano a la altura del hombro. Empuja el asa hacia arriba hasta extender el brazo por encima de la cabeza. Baja de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
   },
   {
+    "id": "press-hombros-polea",
+    "name": "Press de hombros en polea",
+    "image_male": "images/press-hombros-polea-male.webp",
+    "image_female": "images/press-hombros-polea-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "tríceps",
+      "espalda"
+    ],
+    "equipment": "polea",
+    "difficulty": "intermediate",
+    "instructions": "Colócate de espaldas entre dos poleas bajas y lleva las asas a la altura de los hombros. Activa abdomen y glúteos para evitar arquear la zona lumbar, y empuja las manos hacia arriba hasta dejar los brazos casi extendidos. Baja las asas lentamente hasta que los codos vuelvan a quedar por debajo de los hombros."
+  },
+  {
     "id": "press-inclinado-barra",
     "name": "Press inclinado con barra",
     "image_male": "images/press-inclinado-barra-male.webp",
@@ -1099,6 +1237,34 @@
     "instructions": "Siéntate erguido en un banco con respaldo y sujeta la barra un poco más abierta que los hombros. Colócala frente a la parte superior del pecho con los antebrazos verticales. Activa el core y empuja la barra por encima de la cabeza hasta extender los brazos sin arquear la zona lumbar. Baja con control hasta la posición inicial y repite."
   },
   {
+    "id": "press-pallof-banda",
+    "name": "Press Pallof con banda",
+    "image_male": "images/press-pallof-banda-male.webp",
+    "image_female": "images/press-pallof-banda-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "oblicuos",
+      "glúteos"
+    ],
+    "equipment": "banda elástica",
+    "difficulty": "beginner",
+    "instructions": "Ancla la banda a la altura del pecho y colócate de lado al punto de sujeción. Lleva ambas manos al esternón, separa los pies y activa glúteos y abdomen. Extiende los brazos al frente sin permitir que el tronco gire hacia el anclaje, mantén un instante y regresa las manos al pecho con el mismo control."
+  },
+  {
+    "id": "press-pecho-sentado-polea",
+    "name": "Press de pecho sentado en polea",
+    "image_male": "images/press-pecho-sentado-polea-male.webp",
+    "image_female": "images/press-pecho-sentado-polea-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombros",
+      "tríceps"
+    ],
+    "equipment": "polea y banco",
+    "difficulty": "beginner",
+    "instructions": "Siéntate erguido entre dos poleas con los pies firmes y las asas a la altura del pecho. Lleva los codos ligeramente por debajo de los hombros y empuja ambas asas al frente hasta extender los brazos sin bloquearlos. Junta el pecho al final y permite que las manos regresen despacio, manteniendo el torso estable."
+  },
+  {
     "id": "press-unilateral-maquina",
     "name": "Press plano unilateral sentado en máquina",
     "image_male": "images/press-unilateral-maquina-male.webp",
@@ -1127,6 +1293,34 @@
     "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies apoyados en el suelo. Coloca una barra acolchada sobre las caderas y sujétala con ambas manos. Contrae el core y los glúteos para elevar las caderas hasta formar una línea recta entre hombros, caderas y rodillas. Haz una pausa en la parte alta y baja lentamente sin perder el control de la barra."
   },
   {
+    "id": "puente-gluteos-marcha",
+    "name": "Puente de glúteos con marcha",
+    "image_male": "images/puente-gluteos-marcha-male.webp",
+    "image_female": "images/puente-gluteos-marcha-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "abdomen"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba con las rodillas flexionadas y eleva las caderas hasta alinear hombros, caderas y rodillas. Sin dejar que la pelvis caiga o rote, despega un pie y acerca esa rodilla al pecho. Vuelve a apoyar el pie, cambia de lado y continúa alternando mientras mantienes los glúteos y el abdomen activos."
+  },
+  {
+    "id": "pull-through-polea",
+    "name": "Pull-through en polea",
+    "image_male": "images/pull-through-polea-male.webp",
+    "image_female": "images/pull-through-polea-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "espalda baja"
+    ],
+    "equipment": "polea y cuerda",
+    "difficulty": "intermediate",
+    "instructions": "Colócate de espaldas a una polea baja y sujeta la cuerda entre las piernas. Da unos pasos al frente para tensar el cable y lleva las caderas hacia atrás con las rodillas ligeramente flexionadas y la espalda neutra. Extiende las caderas hasta quedar erguido, aprieta los glúteos y regresa despacio a la bisagra inicial."
+  },
+  {
     "id": "pullover-mancuerna",
     "name": "Pullover con mancuerna",
     "image_male": "images/pullover-mancuerna-male.webp",
@@ -1139,6 +1333,21 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Túmbate boca arriba en un banco y sujeta una mancuerna con ambas manos sobre el pecho. Mantén los brazos casi extendidos y baja la mancuerna en arco por detrás de la cabeza sin abrir los codos en exceso. Detente cuando notes un estiramiento cómodo en pecho y dorsales. Contrae el core y devuelve la mancuerna al punto inicial siguiendo el mismo recorrido."
+  },
+  {
+    "id": "rack-pull-barra",
+    "name": "Rack pull con barra",
+    "image_male": "images/rack-pull-barra-male.webp",
+    "image_female": "images/rack-pull-barra-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "espalda baja",
+      "espalda"
+    ],
+    "equipment": "barra y rack",
+    "difficulty": "advanced",
+    "instructions": "Coloca la barra sobre los soportes del rack justo por debajo de las rodillas. Agárrala con las manos por fuera de las piernas, activa el abdomen y conserva la espalda neutra. Extiende caderas y rodillas hasta quedar erguido, termina apretando los glúteos y devuelve la barra a los soportes con un descenso controlado."
   },
   {
     "id": "remo-cuello-polea-baja",
@@ -1196,6 +1405,21 @@
     "equipment": "barra",
     "difficulty": "intermediate",
     "instructions": "Ponte de pie y sujeta la barra delante de los muslos con agarre prono. Eleva la barra cerca del cuerpo guiando el movimiento con los codos, que deben quedar por encima de las manos, hasta llegar a la parte alta del pecho. Baja de forma controlada sin balancear el torso ni encoger excesivamente los hombros."
+  },
+  {
+    "id": "remo-pendlay-barra",
+    "name": "Remo Pendlay con barra",
+    "image_male": "images/remo-pendlay-barra-male.webp",
+    "image_female": "images/remo-pendlay-barra-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "bíceps",
+      "antebrazos",
+      "espalda baja"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Sitúa la barra en el suelo, lleva las caderas atrás y coloca el torso casi paralelo al suelo con la espalda neutra. Agarra la barra algo más ancho que los hombros y tira de ella con potencia hacia la parte baja del pecho sin levantar el torso. Baja con control hasta apoyar de nuevo los discos y reinicia cada repetición desde reposo."
   },
   {
     "id": "remo-polea",
@@ -1267,6 +1491,21 @@
     "equipment": "rodillo abdominal",
     "difficulty": "advanced",
     "instructions": "Arrodíllate con el rodillo bajo los hombros, los brazos extendidos y el abdomen activo. Hazlo avanzar lentamente mientras extiendes caderas y hombros, manteniendo el cuerpo alineado y evitando que la zona lumbar se hunda. Contrae el abdomen y lleva el rodillo de vuelta hacia las rodillas sin perder el control."
+  },
+  {
+    "id": "rotacion-landmine-180",
+    "name": "Rotación landmine 180",
+    "image_male": "images/rotacion-landmine-180-male.webp",
+    "image_female": "images/rotacion-landmine-180-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "oblicuos",
+      "hombros",
+      "cuádriceps"
+    ],
+    "equipment": "barra y landmine",
+    "difficulty": "intermediate",
+    "instructions": "Sujeta con ambas manos el extremo libre de una barra anclada al suelo. Con los brazos casi extendidos y las rodillas suaves, desplaza la barra en arco desde un hombro hacia la cadera contraria. Rota el torso y pivota los pies de forma coordinada, frena el extremo con el abdomen y repite hacia el otro lado."
   },
   {
     "id": "saltar-comba",
@@ -1404,6 +1643,20 @@
     "instructions": "Apoya la espalda y los hombros en la máquina hack con los pies separados al ancho de las caderas sobre la plataforma. Desbloquea el trineo y desciende flexionando rodillas y caderas sin despegar la espalda del respaldo. Empuja la plataforma con todo el pie hasta extender las piernas sin bloquear las rodillas."
   },
   {
+    "id": "sentadilla-sissy",
+    "name": "Sentadilla sissy",
+    "image_male": "images/sentadilla-sissy-male.webp",
+    "image_female": "images/sentadilla-sissy-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "gemelos",
+      "glúteos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Sujétate ligeramente a un soporte y eleva los talones mientras llevas las rodillas hacia delante. Inclina el cuerpo hacia atrás manteniendo una línea firme desde las rodillas hasta los hombros y baja solo hasta donde controles la posición. Extiende las rodillas para volver, sin rebotar ni descargar el peso sobre el brazo de apoyo."
+  },
+  {
     "id": "sit-up-declinado",
     "name": "Sit-up declinado",
     "image_male": "images/sit-up-declinado-male.webp",
@@ -1447,6 +1700,21 @@
     "instructions": "Ponte de pie con los pies algo más abiertos que las caderas y sujeta la pesa rusa con ambas manos. Lleva las caderas hacia atrás y deja que la pesa pase entre las piernas manteniendo la espalda neutra. Extiende las caderas de forma explosiva para impulsar la pesa hasta la altura del pecho, con los brazos relajados. Deja que vuelva a bajar y enlaza la siguiente repetición controlando el movimiento con las caderas."
   },
   {
+    "id": "thruster-barra",
+    "name": "Thruster con barra",
+    "image_male": "images/thruster-barra-male.webp",
+    "image_female": "images/thruster-barra-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "glúteos",
+      "hombros",
+      "tríceps"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Sostén la barra sobre la parte frontal de los hombros con los codos ligeramente adelantados. Desciende en sentadilla manteniendo el pecho elevado y, al subir, extiende caderas y rodillas con potencia para impulsar la barra por encima de la cabeza. Baja la barra de nuevo a los hombros antes de iniciar la siguiente repetición."
+  },
+  {
     "id": "toques-talon-alternos",
     "name": "Toques de talón alternos",
     "image_male": "images/toques-talon-alternos-male.webp",
@@ -1458,6 +1726,21 @@
     "equipment": "peso corporal",
     "difficulty": "beginner",
     "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y los brazos junto al cuerpo. Eleva ligeramente los hombros y desplázate hacia un lado para tocar el talón derecho con la mano derecha. Vuelve al centro y repite hacia el talón izquierdo, alternando sin relajar el abdomen ni despegar la zona lumbar."
+  },
+  {
+    "id": "zancada-barra",
+    "name": "Zancada con barra",
+    "image_male": "images/zancada-barra-male.webp",
+    "image_female": "images/zancada-barra-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "cuádriceps",
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Apoya la barra sobre la parte alta de la espalda y mantén el torso erguido. Da un paso amplio hacia delante y baja ambas rodillas hasta acercar la trasera al suelo, con la rodilla delantera alineada con el pie. Empuja el suelo con el talón delantero para regresar y alterna las piernas sin perder la estabilidad."
   },
   {
     "id": "zancadas-caminando",
