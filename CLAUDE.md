@@ -146,7 +146,7 @@ enforces this before creating the issue.
 ## Commit & Pull Request Guidelines
 History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ...`, `chore(scope): ...`, `docs: ...`.
 - Keep commit subjects imperative and scoped (e.g., `fix(mobile): pin Metro module resolution for monorepo`).
-- After each modification, create a local commit. Do NOT `git push` to `main` unless the user explicitly asks.
+- After each modification, create a local commit and push it to `main` automatically when the commit does not match the Expo APK build paths below. If it touches build-triggering files under `apps/mobile/**`, ask for explicit confirmation before pushing because Expo quota is limited.
 - **Qué dispara realmente el build de Expo**: no todo push a `main`. El workflow
   `.github/workflows/build-apk.yml` filtra por rutas:
   ```yaml
@@ -284,8 +284,10 @@ After each modification, create a local commit:
 ```bash
 git add -A && git commit -m '<description>'
 ```
-Do NOT `git push` to `main` unless the user explicitly asks for it. Push only on
-explicit request.
+After committing, push to `main` automatically when the commit does not match the
+Expo APK build paths below. If it touches build-triggering files under
+`apps/mobile/**`, ask for explicit confirmation before pushing because Expo quota
+is limited.
 
 Un push a `main` **solo** dispara el build de APK si toca `apps/mobile/**`
 (excluyendo `apps/mobile/scripts/**` y los `.md`). Ver el filtro de rutas en
