@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inversas-maquina",
+  "name": "Aperturas inversas en máquina",
+  "image_male": "images/aperturas-inversas-maquina-male.webp",
+  "image_female": "images/aperturas-inversas-maquina-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": ["trapecios", "romboides"],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Siéntate mirando al respaldo de la máquina y apoya el pecho contra la almohadilla. Sujeta las asas con los brazos casi extendidos y ábrelos hacia atrás hasta alinear las manos con los hombros. Junta las escápulas sin encoger los hombros y vuelve despacio a la posición frontal."
+}

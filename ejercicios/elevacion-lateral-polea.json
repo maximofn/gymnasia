@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-lateral-polea",
+  "name": "Elevación lateral en polea",
+  "image_male": "images/elevacion-lateral-polea-male.webp",
+  "image_female": "images/elevacion-lateral-polea-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["trapecios", "supraespinoso"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Sitúate de lado a una polea baja y sujeta el asa con la mano más alejada, pasando el cable por delante del cuerpo. Eleva el brazo hacia el lateral con el codo ligeramente flexionado hasta alcanzar la altura del hombro. Baja lentamente sin girar el torso ni dejar que el peso pierda tensión."
+}

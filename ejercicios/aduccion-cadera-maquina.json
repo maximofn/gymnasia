@@ -1,0 +1,11 @@
+{
+  "id": "aduccion-cadera-maquina",
+  "name": "Aducción de cadera en máquina",
+  "image_male": "images/aduccion-cadera-maquina-male.webp",
+  "image_female": "images/aduccion-cadera-maquina-female.webp",
+  "muscle_group": "aductores",
+  "secondary_muscles": ["isquiotibiales", "glúteos"],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Siéntate con la espalda apoyada y coloca la parte interior de las rodillas contra las almohadillas abiertas. Sujeta las asas y junta las piernas apretando la cara interna de los muslos sin levantar los pies. Pausa en la contracción y regresa lentamente a la apertura inicial sin dejar caer el peso."
+}

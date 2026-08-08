@@ -1,0 +1,11 @@
+{
+  "id": "paseo-granjero",
+  "name": "Paseo del granjero",
+  "image_male": "images/paseo-granjero-male.webp",
+  "image_female": "images/paseo-granjero-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["trapecios", "abdomen", "gemelos"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Sujeta una mancuerna pesada en cada mano con los brazos extendidos a los lados. Mantén el torso erguido, los hombros estables y el abdomen firme mientras avanzas con pasos cortos y regulares. Evita inclinarte o balancear las cargas y apóyalas con cuidado al terminar el recorrido."
+}

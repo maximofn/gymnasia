@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-rodillas-oblicua-colgado",
+  "name": "Elevación oblicua de rodillas colgado",
+  "image_male": "images/elevacion-rodillas-oblicua-colgado-male.webp",
+  "image_female": "images/elevacion-rodillas-oblicua-colgado-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "flexores de cadera"],
+  "equipment": "barra de dominadas",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de una barra con los brazos extendidos y estabiliza los hombros. Eleva las rodillas hacia un lado del pecho mientras flexionas ligeramente la pelvis y evitas balancearte. Baja con control hasta recuperar la vertical y alterna el giro hacia el lado contrario."
+}

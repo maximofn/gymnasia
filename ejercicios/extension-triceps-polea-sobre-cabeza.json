@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-polea-sobre-cabeza",
+  "name": "Extensión de tríceps por encima de la cabeza en polea",
+  "image_male": "images/extension-triceps-polea-sobre-cabeza-male.webp",
+  "image_female": "images/extension-triceps-polea-sobre-cabeza-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros", "abdomen"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de espaldas a una polea alta y lleva la cuerda detrás de la cabeza con los codos flexionados. Inclina ligeramente el torso y mantén los brazos superiores junto a las orejas mientras extiendes los codos hacia delante y arriba. Separa los extremos de la cuerda al final y regresa lentamente sin mover los hombros."
+}

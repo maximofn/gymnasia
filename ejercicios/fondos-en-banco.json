@@ -1,0 +1,11 @@
+{
+  "id": "fondos-en-banco",
+  "name": "Fondos en banco",
+  "image_male": "images/fondos-en-banco-male.webp",
+  "image_female": "images/fondos-en-banco-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombro anterior"],
+  "equipment": "banco",
+  "difficulty": "beginner",
+  "instructions": "Apoya las manos en el borde de un banco junto a las caderas y adelanta los pies con las rodillas flexionadas. Mantén la espalda cerca del banco y baja el cuerpo doblando los codos hacia atrás hasta acercarte a 90 grados. Empuja con las palmas para volver arriba sin encoger los hombros ni separarte del banco."
+}

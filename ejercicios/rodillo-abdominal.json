@@ -1,0 +1,11 @@
+{
+  "id": "rodillo-abdominal",
+  "name": "Rodillo abdominal",
+  "image_male": "images/rodillo-abdominal-male.webp",
+  "image_female": "images/rodillo-abdominal-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["espalda baja", "hombros"],
+  "equipment": "rodillo abdominal",
+  "difficulty": "advanced",
+  "instructions": "Arrodíllate con el rodillo bajo los hombros, los brazos extendidos y el abdomen activo. Hazlo avanzar lentamente mientras extiendes caderas y hombros, manteniendo el cuerpo alineado y evitando que la zona lumbar se hunda. Contrae el abdomen y lleva el rodillo de vuelta hacia las rodillas sin perder el control."
+}

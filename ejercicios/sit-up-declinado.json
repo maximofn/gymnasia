@@ -1,0 +1,11 @@
+{
+  "id": "sit-up-declinado",
+  "name": "Sit-up declinado",
+  "image_male": "images/sit-up-declinado-male.webp",
+  "image_female": "images/sit-up-declinado-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "espalda baja"],
+  "equipment": "banco declinado",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco declinado con los pies bien sujetos y las rodillas flexionadas. Activa el abdomen y eleva el torso hacia las rodillas sin impulsarte con los brazos ni tirar del cuello. Detente antes de perder tensión y desciende de forma controlada hasta apoyar de nuevo la espalda."
+}

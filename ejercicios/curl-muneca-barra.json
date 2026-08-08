@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-barra",
+  "name": "Curl de muñeca con barra",
+  "image_male": "images/curl-muneca-barra-male.webp",
+  "image_female": "images/curl-muneca-barra-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["flexores de muñeca", "agarre"],
+  "equipment": "barra",
+  "difficulty": "beginner",
+  "instructions": "Siéntate y apoya los antebrazos sobre un banco con las palmas hacia arriba y las muñecas fuera del borde. Deja que la barra baje de forma controlada hacia los dedos y flexiona las muñecas para elevarla todo lo posible. Mantén los antebrazos inmóviles durante todo el recorrido y evita impulsar el peso con los codos."
+}

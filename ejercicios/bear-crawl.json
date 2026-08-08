@@ -1,0 +1,11 @@
+{
+  "id": "bear-crawl",
+  "name": "Desplazamiento del oso",
+  "image_male": "images/bear-crawl-male.webp",
+  "image_female": "images/bear-crawl-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": ["abdomen", "hombros", "tríceps"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Colócate a cuatro apoyos con las manos bajo los hombros y las rodillas bajo las caderas. Eleva las rodillas unos centímetros, mantén la espalda plana y avanza a la vez con una mano y el pie contrario. Alterna los apoyos con pasos cortos, sin elevar la cadera ni perder la tensión abdominal."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "hiperextension-lumbar",
+  "name": "Hiperextensión lumbar",
+  "image_male": "images/hiperextension-lumbar-male.webp",
+  "image_female": "images/hiperextension-lumbar-female.webp",
+  "muscle_group": "espalda baja",
+  "secondary_muscles": ["glúteos", "isquiotibiales"],
+  "equipment": "banco de hiperextensiones",
+  "difficulty": "beginner",
+  "instructions": "Ajusta el banco para apoyar la parte alta de los muslos y fija bien los tobillos. Con la espalda neutra y los brazos cruzados, baja el torso desde la cadera hasta notar tensión en la cadena posterior. Extiende la cadera para volver a alinear el cuerpo, sin arquear la zona lumbar por encima de las piernas."
+}

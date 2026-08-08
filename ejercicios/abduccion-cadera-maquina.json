@@ -1,0 +1,11 @@
+{
+  "id": "abduccion-cadera-maquina",
+  "name": "Abducción de cadera en máquina",
+  "image_male": "images/abduccion-cadera-maquina-male.webp",
+  "image_female": "images/abduccion-cadera-maquina-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["abductores", "estabilizadores de cadera"],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Siéntate con la espalda apoyada y coloca la parte exterior de las rodillas contra las almohadillas. Mantén los pies en los soportes y abre las piernas empujando las almohadillas hacia fuera sin inclinar el torso. Haz una pausa en la apertura máxima y vuelve lentamente hasta mantener la tensión inicial."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-con-salto",
+  "name": "Sentadilla con salto",
+  "image_male": "images/sentadilla-con-salto-male.webp",
+  "image_female": "images/sentadilla-con-salto-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Separa los pies al ancho de los hombros y baja en sentadilla llevando la cadera atrás. Impúlsate de forma explosiva extendiendo caderas, rodillas y tobillos hasta despegar ambos pies del suelo. Aterriza suavemente con las rodillas alineadas y enlaza la siguiente repetición bajo control."
+}

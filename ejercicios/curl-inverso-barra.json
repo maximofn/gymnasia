@@ -1,0 +1,11 @@
+{
+  "id": "curl-inverso-barra",
+  "name": "Curl inverso con barra",
+  "image_male": "images/curl-inverso-barra-male.webp",
+  "image_female": "images/curl-inverso-barra-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["bíceps", "braquial"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie y sujeta la barra con agarre prono, palmas hacia abajo y manos al ancho de los hombros. Mantén los codos pegados al torso y flexiónalos para elevar la barra sin mover los brazos superiores. Aprieta arriba y baja lentamente hasta extender los codos sin perder la posición de las muñecas."
+}

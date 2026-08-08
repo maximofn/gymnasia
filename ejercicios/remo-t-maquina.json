@@ -1,0 +1,11 @@
+{
+  "id": "remo-t-maquina",
+  "name": "Remo en T en máquina",
+  "image_male": "images/remo-t-maquina-male.webp",
+  "image_female": "images/remo-t-maquina-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos", "hombro posterior"],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho en la almohadilla de la máquina y fija los pies en la plataforma. Agarra las asas con los brazos extendidos y tira de ellas hacia el torso juntando las escápulas sin despegar el pecho. Pausa en la contracción y extiende lentamente los brazos hasta recuperar la posición inicial."
+}

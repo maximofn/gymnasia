@@ -6,7 +6,7 @@
   "image_generation": {
     "provider": "openai-imagegen",
     "model": "gpt-image-2",
-    "generated_at": "2026-08-07",
+    "generated_at": "2026-08-08",
     "style_reference": "docs/design/Gimnasia Design System.png"
   },
   "batches": [
@@ -79,6 +79,33 @@
         {"source_id": "0868", "id": "curl-biceps-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0030", "id": "press-banca-agarre-cerrado", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "2188", "id": "extension-triceps-sentado-mancuerna", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
+      ]
+    },
+    {
+      "number": 4,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0857", "id": "rodillo-abdominal", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0282", "id": "sit-up-declinado", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1761", "id": "elevacion-rodillas-oblicua-colgado", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3360", "id": "bear-crawl", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0514", "id": "sentadilla-con-salto", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "2133", "id": "paseo-granjero", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0743", "id": "sentadilla-hack-maquina", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0597", "id": "abduccion-cadera-maquina", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0598", "id": "aduccion-cadera-maquina", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0489", "id": "hiperextension-lumbar", "action": "create", "difficulty": "beginner", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0314", "id": "press-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0279", "id": "flexiones-declinadas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0238", "id": "jalon-brazos-rectos-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0606", "id": "remo-t-maquina", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0178", "id": "elevacion-lateral-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0602", "id": "aperturas-inversas-maquina", "action": "create", "difficulty": "beginner", "view": "rear 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0080", "id": "curl-inverso-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1412", "id": "curl-muneca-barra", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0129", "id": "fondos-en-banco", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0194", "id": "extension-triceps-polea-sobre-cabeza", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
       ]
     }
   ]

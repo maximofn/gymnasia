@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-hack-maquina",
+  "name": "Sentadilla hack en máquina",
+  "image_male": "images/sentadilla-hack-maquina-male.webp",
+  "image_female": "images/sentadilla-hack-maquina-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos"],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la espalda y los hombros en la máquina hack con los pies separados al ancho de las caderas sobre la plataforma. Desbloquea el trineo y desciende flexionando rodillas y caderas sin despegar la espalda del respaldo. Empuja la plataforma con todo el pie hasta extender las piernas sin bloquear las rodillas."
+}

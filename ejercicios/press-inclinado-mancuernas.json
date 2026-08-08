@@ -1,0 +1,11 @@
+{
+  "id": "press-inclinado-mancuernas",
+  "name": "Press inclinado con mancuernas",
+  "image_male": "images/press-inclinado-mancuernas-male.webp",
+  "image_female": "images/press-inclinado-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco inclinado con una mancuerna a cada lado del pecho y los pies firmes en el suelo. Empuja ambas cargas hacia arriba y ligeramente hacia dentro manteniendo los hombros apoyados. Baja de forma controlada hasta que los codos queden algo por debajo del pecho y repite sin chocar las mancuernas."
+}

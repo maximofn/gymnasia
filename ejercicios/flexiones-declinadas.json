@@ -1,0 +1,11 @@
+{
+  "id": "flexiones-declinadas",
+  "name": "Flexiones declinadas",
+  "image_male": "images/flexiones-declinadas-male.webp",
+  "image_female": "images/flexiones-declinadas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Apoya los pies sobre un banco estable y coloca las manos en el suelo algo más abiertas que los hombros. Mantén el cuerpo en línea recta y baja el pecho flexionando los codos sin dejar caer la cadera. Empuja el suelo hasta extender los brazos mientras conservas el abdomen y los glúteos activos."
+}
