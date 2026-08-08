@@ -13,14 +13,14 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          # Full history so `openwiki code --update` can diff HEAD against the
-          # commit it last documented; a shallow clone hides that commit and the
-          # update runs against an empty change summary.
-          fetch-depth: 0
-          persist-credentials: false
+      - name: Check out full history without traversing legacy gitlinks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -c protocol.version=2 fetch --no-tags origin "$GITHUB_REF"
+          git checkout --force -B "$GITHUB_REF_NAME" FETCH_HEAD
 
       - name: Check model credentials
         id: model_auth

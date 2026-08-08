@@ -269,6 +269,16 @@ Only non-obvious gotchas that could recur are kept here.
 - Fix definitivo pendiente: reconectar el proyecto en el dashboard de Vercel si se quiere
   despliegue automático.
 
+### `actions/checkout` falla aunque `submodules: false` por gitlinks huérfanos
+- Gotcha: `.claude/worktrees/*` contiene entradas gitlink (`mode 160000`) heredadas,
+  pero el repositorio no tiene `.gitmodules`. `actions/checkout` ejecuta
+  `git submodule foreach` durante la limpieza de credenciales incluso con
+  `submodules: false`, y el job termina con `No url found for submodule path`.
+- Fix: los workflows del repositorio público hacen `git init` + `git fetch` del
+  ref exacto + `git checkout --detach FETCH_HEAD`, sin recorrer submódulos. La
+  plantilla del repositorio privado puede usar `actions/checkout` porque no
+  contiene esos gitlinks.
+
 ## Post-Modification Workflow
 After each modification, create a local commit:
 ```bash
