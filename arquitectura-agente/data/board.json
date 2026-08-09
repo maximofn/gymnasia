@@ -364,6 +364,26 @@
           ]
         },
         {
+          "id": "GYM-55",
+          "title": "Eliminar is_active y usar selectores explícitos de proveedor",
+          "state": "todo",
+          "summary": "Retirar el marcador heredado del estado persistido y conservarlo solo como entrada de migración para copias antiguas, usando chatProvider y foodAIProvider como fuentes explícitas.",
+          "dependsOn": [],
+          "related": [
+            "GYM-10"
+          ]
+        },
+        {
+          "id": "GYM-56",
+          "title": "Informar al usuario cuando se use un proveedor de fallback",
+          "state": "todo",
+          "summary": "Mostrar qué proveedor se eligió, cuál terminó ejecutando la petición y por qué, sin cambiar silenciosamente la preferencia ni exponer detalles sensibles.",
+          "dependsOn": [],
+          "related": [
+            "GYM-10"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
