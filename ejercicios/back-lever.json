@@ -1,0 +1,11 @@
+{
+  "id": "back-lever",
+  "name": "Back lever",
+  "image_male": "images/back-lever-male.webp",
+  "image_female": "images/back-lever-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos", "abdomen", "hombros"],
+  "equipment": "barra de dominadas",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de la barra con agarre prono y lleva las piernas entre los brazos hasta quedar invertido. Extiende progresivamente caderas y rodillas mientras bajas el cuerpo en bloque hasta mantenerlo horizontal, mirando al suelo. Aprieta abdomen y glúteos, conserva los codos extendidos y abandona la posición con control."
+}

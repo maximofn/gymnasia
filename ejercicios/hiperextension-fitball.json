@@ -1,0 +1,11 @@
+{
+  "id": "hiperextension-fitball",
+  "name": "Hiperextensión sobre fitball",
+  "image_male": "images/hiperextension-fitball-male.webp",
+  "image_female": "images/hiperextension-fitball-female.webp",
+  "muscle_group": "espalda baja",
+  "secondary_muscles": ["glúteos", "isquiotibiales"],
+  "equipment": "fitball",
+  "difficulty": "beginner",
+  "instructions": "Apoya las caderas y el abdomen sobre el fitball y fija los pies contra una superficie estable. Con las manos junto a la cabeza o cruzadas sobre el pecho, eleva el torso hasta formar una línea recta desde los talones. Evita hiperextender la zona lumbar y vuelve a bajar lentamente."
+}

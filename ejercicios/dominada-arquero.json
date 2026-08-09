@@ -1,0 +1,11 @@
+{
+  "id": "dominada-arquero",
+  "name": "Dominada arquero",
+  "image_male": "images/dominada-arquero-male.webp",
+  "image_female": "images/dominada-arquero-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos", "abdomen"],
+  "equipment": "barra de dominadas",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de la barra con un agarre prono muy amplio y activa el abdomen. Sube desplazando el pecho hacia una mano, flexionando ese codo mientras el brazo contrario se mantiene casi recto sobre la barra. Desciende con control y repite hacia el otro lado sin perder la estabilidad de los hombros."
+}

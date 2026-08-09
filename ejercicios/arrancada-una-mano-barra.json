@@ -1,0 +1,11 @@
+{
+  "id": "arrancada-una-mano-barra",
+  "name": "Arrancada con barra a una mano",
+  "image_male": "images/arrancada-una-mano-barra-male.webp",
+  "image_female": "images/arrancada-una-mano-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecio", "antebrazos", "abdomen", "glúteos"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca la barra en el suelo y agárrala por el centro con una sola mano. Extiende piernas y caderas de forma explosiva, guía la barra cerca del cuerpo y entra debajo de ella mientras el brazo sube. Recíbela estable sobre la cabeza con el codo extendido y bájala de forma controlada antes de cambiar de lado."
+}

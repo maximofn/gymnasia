@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-banda",
+  "name": "Sentadilla con banda",
+  "image_male": "images/sentadilla-banda-male.webp",
+  "image_female": "images/sentadilla-banda-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos"],
+  "equipment": "banda elástica",
+  "difficulty": "beginner",
+  "instructions": "Coloca una minibanda justo por encima de las rodillas y separa los pies al ancho de los hombros. Lleva las caderas atrás y baja manteniendo el pecho elevado y empujando las rodillas hacia fuera contra la banda. Extiende caderas y rodillas para volver arriba sin perder la alineación de los pies."
+}

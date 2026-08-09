@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-hack-barra",
+  "name": "Sentadilla hack con barra",
+  "image_male": "images/sentadilla-hack-barra-male.webp",
+  "image_female": "images/sentadilla-hack-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Colócate de pie con la barra en el suelo justo detrás de los talones. Baja flexionando caderas y rodillas, agarra la barra por detrás de las piernas y mantén el pecho elevado. Empuja con los pies para levantarte llevando la barra pegada a la parte posterior de las piernas, y desciende con control."
+}

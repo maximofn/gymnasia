@@ -1,0 +1,11 @@
+{
+  "id": "clean-and-press-barra",
+  "name": "Clean and press con barra",
+  "image_male": "images/clean-and-press-barra-male.webp",
+  "image_female": "images/clean-and-press-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["isquiotibiales", "glúteos", "hombros", "tríceps"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Parte con la barra en el suelo, espalda neutra y pies al ancho de las caderas. Extiende piernas y caderas de forma explosiva, mantén la barra cerca y recíbela sobre los hombros con los codos al frente. Desde esa posición, estabiliza el torso y presiona la barra por encima de la cabeza hasta extender los brazos."
+}

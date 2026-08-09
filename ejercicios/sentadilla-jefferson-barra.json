@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-jefferson-barra",
+  "name": "Sentadilla Jefferson con barra",
+  "image_male": "images/sentadilla-jefferson-barra-male.webp",
+  "image_female": "images/sentadilla-jefferson-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "aductores", "abdomen"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Colócate a horcajadas sobre la barra, con un pie delante y otro detrás. Agáchate y sujétala con una mano delante del cuerpo y la otra detrás, manteniendo el torso lo más erguido posible. Extiende caderas y rodillas para levantarte, evita que la barra gire y alterna la posición de pies y manos entre series."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-overhead-barra",
+  "name": "Sentadilla overhead con barra",
+  "image_male": "images/sentadilla-overhead-barra-male.webp",
+  "image_female": "images/sentadilla-overhead-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos", "abdomen", "hombros"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Sujeta la barra sobre la cabeza con agarre amplio y codos extendidos. Mantén el abdomen firme y baja en sentadilla llevando las caderas entre los talones, con la barra alineada sobre el centro de los pies. Empuja el suelo para subir sin permitir que la barra se desplace hacia delante."
+}

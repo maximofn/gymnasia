@@ -1,0 +1,11 @@
+{
+  "id": "sit-up-tres-cuartos",
+  "name": "Sit-up tres cuartos",
+  "image_male": "images/sit-up-tres-cuartos-male.webp",
+  "image_female": "images/sit-up-tres-cuartos-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "espalda baja"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies apoyados. Coloca las manos detrás de la cabeza sin tirar del cuello y eleva el torso contrayendo el abdomen hasta alcanzar unos 45 grados. Haz una pausa breve y desciende de forma controlada sin perder la tensión abdominal."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "curl-arrastre-barra",
+  "name": "Curl de arrastre con barra",
+  "image_male": "images/curl-arrastre-barra-male.webp",
+  "image_female": "images/curl-arrastre-barra-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta la barra con agarre supino delante de los muslos. Lleva los codos hacia atrás mientras deslizas la barra muy cerca del torso hasta la parte baja del pecho, sin adelantar los hombros. Contrae los bíceps arriba y baja siguiendo el mismo recorrido controlado."
+}

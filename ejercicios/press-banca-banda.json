@@ -1,0 +1,11 @@
+{
+  "id": "press-banca-banda",
+  "name": "Press de banca con banda",
+  "image_male": "images/press-banca-banda-male.webp",
+  "image_female": "images/press-banca-banda-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "banda elástica y banco",
+  "difficulty": "intermediate",
+  "instructions": "Pasa la banda por debajo del banco y túmbate con un extremo en cada mano. Coloca las manos a los lados del pecho, retrae los omóplatos y empuja contra la resistencia hasta extender los brazos sobre el torso. Regresa despacio hasta que los codos formen unos 90 grados, manteniendo los pies apoyados."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "jalon-unilateral-arrodillado-banda",
+  "name": "Jalón unilateral arrodillado con banda",
+  "image_male": "images/jalon-unilateral-arrodillado-banda-male.webp",
+  "image_female": "images/jalon-unilateral-arrodillado-banda-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "romboides"],
+  "equipment": "banda elástica",
+  "difficulty": "beginner",
+  "instructions": "Ancla la banda por encima de la cabeza y arrodíllate frente al punto de sujeción. Con un brazo extendido, tira del extremo hacia el costado llevando el codo abajo y atrás hasta acercarlo a las costillas. Vuelve lentamente a la extensión completa y cambia de brazo sin girar el torso."
+}

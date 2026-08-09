@@ -1,0 +1,11 @@
+{
+  "id": "dominadas-asistidas-banda",
+  "name": "Dominadas asistidas con banda",
+  "image_male": "images/dominadas-asistidas-banda-male.webp",
+  "image_female": "images/dominadas-asistidas-banda-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "barra y banda elástica",
+  "difficulty": "intermediate",
+  "instructions": "Ancla una banda a la barra y apoya un pie o una rodilla en su lazo. Cuélgate con agarre prono, activa los hombros y sube llevando los codos hacia las costillas hasta superar la barra con la barbilla. Desciende lentamente hasta extender los brazos, manteniendo el cuerpo estable dentro de la banda."
+}

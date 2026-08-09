@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-alterno-banda",
+  "name": "Curl de bíceps alterno con banda",
+  "image_male": "images/curl-biceps-alterno-banda-male.webp",
+  "image_female": "images/curl-biceps-alterno-banda-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "banda elástica",
+  "difficulty": "beginner",
+  "instructions": "Pisa el centro de la banda con ambos pies y sujeta un extremo en cada mano con las palmas hacia arriba. Flexiona un codo llevando la mano hacia el hombro mientras el otro brazo permanece extendido y pegado al costado. Baja con control y alterna los brazos sin balancear el cuerpo."
+}

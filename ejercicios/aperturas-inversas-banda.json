@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inversas-banda",
+  "name": "Aperturas inversas con banda",
+  "image_male": "images/aperturas-inversas-banda-male.webp",
+  "image_female": "images/aperturas-inversas-banda-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": ["espalda alta", "trapecio", "romboides"],
+  "equipment": "banda elástica",
+  "difficulty": "beginner",
+  "instructions": "Sujeta la banda frente al pecho con las manos separadas y los brazos casi extendidos. Abre los brazos hacia los lados estirando la banda hasta juntar los omóplatos, sin elevar los hombros. Regresa con control manteniendo el torso quieto y una ligera flexión de codos."
+}

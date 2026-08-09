@@ -1,0 +1,11 @@
+{
+  "id": "jalon-lateral-alterno-polea",
+  "name": "Jalón lateral alterno en polea",
+  "image_male": "images/jalon-lateral-alterno-polea-male.webp",
+  "image_female": "images/jalon-lateral-alterno-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "romboides"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido frente a una polea alta y sujeta las dos asas con agarre prono. Lleva un asa hacia la parte alta del pecho mientras el otro brazo permanece extendido, bajando el codo hacia el costado y juntando el omóplato. Regresa con control y alterna el lado sin balancear el torso."
+}

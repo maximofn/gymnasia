@@ -1,0 +1,11 @@
+{
+  "id": "fondos-pecho-asistidos",
+  "name": "Fondos de pecho asistidos",
+  "image_male": "images/fondos-pecho-asistidos-male.webp",
+  "image_female": "images/fondos-pecho-asistidos-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "máquina asistida",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la asistencia y apoya las rodillas sobre la plataforma de la máquina. Inclina ligeramente el torso hacia delante y baja flexionando los codos hasta que los brazos queden cerca de la horizontal. Empuja las asas para volver arriba sin bloquear los hombros ni dejar que la plataforma rebote."
+}

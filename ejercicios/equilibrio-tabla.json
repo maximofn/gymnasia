@@ -1,0 +1,11 @@
+{
+  "id": "equilibrio-tabla",
+  "name": "Equilibrio sobre tabla",
+  "image_male": "images/equilibrio-tabla-male.webp",
+  "image_female": "images/equilibrio-tabla-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["gemelos", "isquiotibiales", "glúteos", "tobillos"],
+  "equipment": "tabla de equilibrio",
+  "difficulty": "beginner",
+  "instructions": "Coloca la tabla sobre una superficie plana y sube un pie en el centro. Transfiere el peso poco a poco, manteniendo la rodilla ligeramente flexionada y el abdomen activo. Sostén la posición evitando que los bordes toquen el suelo y cambia de pierna."
+}
