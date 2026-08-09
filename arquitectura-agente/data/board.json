@@ -384,6 +384,20 @@
           ]
         },
         {
+          "id": "GYM-57",
+          "title": "Ampliar el catálogo de proveedores LLM y validar autenticaciones por suscripción",
+          "state": "todo",
+          "summary": "Añadir los proveedores API viables mediante un registro de adaptadores y clasificar las suscripciones según su autenticación y uso oficial, sin reutilizar tokens privados ni prometer cuotas incompatibles.",
+          "dependsOn": [],
+          "related": [
+            "GYM-10",
+            "GYM-11",
+            "GYM-13",
+            "GYM-55",
+            "GYM-56"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
