@@ -353,6 +353,17 @@
           "related": []
         },
         {
+          "id": "GYM-54",
+          "title": "Sustituir los escritores no-op de GitHub Issues por un flujo seguro y verificable",
+          "state": "todo",
+          "summary": "Eliminar el falso éxito de create_feature_issue y reemplazar los tres escritores inactivos por un handoff explícito y comprobable, sin incrustar tokens de escritura en la app.",
+          "dependsOn": [],
+          "related": [
+            "GYM-42",
+            "GYM-45"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
