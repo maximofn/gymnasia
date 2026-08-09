@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-07",
+    "updated": "2026-08-09",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -341,6 +341,14 @@
           "title": "Crear componentes",
           "state": "todo",
           "summary": "Unificar los muchos componentes repetidos de la interfaz en uno solo.",
+          "dependsOn": [],
+          "related": []
+        },
+        {
+          "id": "GYM-53",
+          "title": "Eliminar documentación de la arquitectura backend/web obsoleta",
+          "state": "todo",
+          "summary": "Retirar las fuentes que presentan FastAPI, apps/web y Supabase como arquitectura vigente, sanear sus referencias y regenerar OpenWiki sobre la app Expo local-first real.",
           "dependsOn": [],
           "related": []
         },
