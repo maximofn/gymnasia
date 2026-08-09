@@ -398,6 +398,20 @@
           ]
         },
         {
+          "id": "GYM-58",
+          "title": "Configurar el esfuerzo de razonamiento por proveedor y modelo",
+          "state": "todo",
+          "summary": "Generalizar el selector de esfuerzo de OpenAI para que cada proveedor y modelo compatible exponga sus niveles reales y los traduzca a su propio formato de API.",
+          "dependsOn": [
+            "GYM-57"
+          ],
+          "related": [
+            "GYM-11",
+            "GYM-13",
+            "GYM-56"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
