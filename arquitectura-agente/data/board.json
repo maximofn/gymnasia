@@ -415,7 +415,7 @@
           "id": "GYM-59",
           "title": "Verificar automáticamente las credenciales de proveedores al iniciar",
           "state": "todo",
-          "summary": "Comprobar en segundo plano las credenciales recuperadas de SecureStore mediante endpoints no facturables y distinguir claves inválidas de fallos temporales de red o proveedor.",
+          "summary": "Verificar primero los proveedores activos y dejar el resto en una cola ociosa de baja concurrencia, usando endpoints no facturables y distinguiendo claves inválidas de fallos temporales.",
           "dependsOn": [
             "GYM-57"
           ],
