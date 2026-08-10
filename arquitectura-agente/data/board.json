@@ -700,6 +700,78 @@
           ]
         },
         {
+          "id": "GYM-82",
+          "title": "Cubrir CRUD y persistencia de alimentos personales",
+          "state": "todo",
+          "summary": "Automatizar creación, edición, eliminación, búsqueda, reinicio y backup de alimentos personales, incluidos fallos de escritura y su disponibilidad en dieta y agente.",
+          "dependsOn": [],
+          "related": [
+            "GYM-24",
+            "GYM-34",
+            "GYM-63",
+            "GYM-64"
+          ]
+        },
+        {
+          "id": "GYM-83",
+          "title": "Cubrir CRUD, copia y reescalado manual de comidas",
+          "state": "todo",
+          "summary": "Probar los reducers y la interfaz de alta, edición, borrado, copia entre fechas y reescalado por gramos, preservando IDs, imágenes, procedencia y totales.",
+          "dependsOn": [],
+          "related": [
+            "GYM-34",
+            "GYM-60",
+            "GYM-61",
+            "GYM-70",
+            "GYM-84"
+          ]
+        },
+        {
+          "id": "GYM-84",
+          "title": "Cubrir coincidencias ambiguas de alimentos en UI y agente",
+          "state": "todo",
+          "summary": "Definir y probar coincidencias exactas, parciales y ambiguas con acentos y alimentos personales, garantizando resultados independientes del orden y paridad explícita entre UI y agente.",
+          "dependsOn": [],
+          "related": [
+            "GYM-15",
+            "GYM-16",
+            "GYM-17",
+            "GYM-34",
+            "GYM-64",
+            "GYM-83"
+          ]
+        },
+        {
+          "id": "GYM-85",
+          "title": "Cubrir el estimador de alimentos en los tres proveedores",
+          "state": "todo",
+          "summary": "Probar sin red los tres dialectos del estimador: streaming, tools, salidas estructuradas, reintentos, datos malformados e imágenes —incluido el rechazo de Anthropic web.",
+          "dependsOn": [],
+          "related": [
+            "GYM-34",
+            "GYM-57",
+            "GYM-58",
+            "GYM-67",
+            "GYM-68",
+            "GYM-86"
+          ]
+        },
+        {
+          "id": "GYM-86",
+          "title": "Cubrir OpenFoodFacts, códigos de barras y escrituras del estimador",
+          "state": "todo",
+          "summary": "Cubrir el flujo determinista desde OpenFoodFacts y scan_barcode hasta la clasificación, coincidencia y alta/edición persistida del alimento, con y sin respaldo del repositorio.",
+          "dependsOn": [],
+          "related": [
+            "GYM-34",
+            "GYM-54",
+            "GYM-60",
+            "GYM-61",
+            "GYM-64",
+            "GYM-85"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
