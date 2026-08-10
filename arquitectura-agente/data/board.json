@@ -819,6 +819,98 @@
       ]
     },
     {
+      "id": "GYM-114",
+      "kind": "epic",
+      "title": "Observabilidad",
+      "state": "backlog",
+      "summary": "Prometheus no puede raspar métricas de una app móvil, así que casi todo depende del servicio de GYM-107. Langfuse responde por qué el agente respondió mal; Prometheus y Grafana, por qué el servicio va lento.",
+      "dependsOn": [
+        "GYM-107"
+      ],
+      "tickets": [
+        {
+          "id": "GYM-115",
+          "title": "OpenTelemetry: instrumentar una vez, exportar a varios destinos",
+          "state": "backlog",
+          "summary": "Va primero porque condiciona a los demás. Primera comprobación: si Langfuse acepta ingesta OTLP, no hay que instrumentar dos veces.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-107"
+          ],
+          "related": [
+            "GYM-13",
+            "GYM-47"
+          ]
+        },
+        {
+          "id": "GYM-116",
+          "title": "Logs estructurados y trazas del agente",
+          "state": "backlog",
+          "summary": "trace.ts existe y se usa en 18 sitios, cero en agent/. Este ticket define el sistema (formato, niveles, redacción); GYM-47 lo usa para instrumentar el agente.",
+          "baseline": "partial",
+          "dependsOn": [
+            "GYM-115"
+          ],
+          "related": [
+            "GYM-47",
+            "GYM-80"
+          ]
+        },
+        {
+          "id": "GYM-117",
+          "title": "Métricas: qué se mide y cómo se expone",
+          "state": "backlog",
+          "summary": "Una traza cuenta una ejecución; una métrica cuenta todas. El error clásico es etiquetar por usuario o conversación y provocar explosión de cardinalidad.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-107",
+            "GYM-115"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-118",
+          "title": "Prometheus: recogida y almacenamiento de métricas",
+          "state": "backlog",
+          "summary": "Funciona por pull sobre un endpoint HTTP, así que la app móvil queda fuera por definición. Solo aplica al servicio.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-117",
+            "GYM-111"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-119",
+          "title": "Grafana: paneles y alertas",
+          "state": "backlog",
+          "summary": "Donde se juntan las trazas del agente y las métricas de infraestructura en la misma línea temporal. Paneles como código, no configurados a mano.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-118"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-120",
+          "title": "Monitorización de coste y latencia en el tiempo",
+          "state": "backlog",
+          "summary": "GYM-101 y GYM-102 miden; esto vigila la tendencia. En una app BYOK una degradación silenciosa se traduce en dinero de otra persona.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-101",
+            "GYM-102",
+            "GYM-119"
+          ],
+          "related": [
+            "GYM-51",
+            "GYM-103",
+            "GYM-46"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -1496,6 +1588,19 @@
         "GYM-110",
         "GYM-112",
         "GYM-113"
+      ]
+    },
+    {
+      "id": "observabilidad",
+      "title": "Observabilidad",
+      "why": "Va después de Backend Engineering porque sin el servicio de GYM-107 no hay nada que monitorizar ni a dónde exportar. GYM-115 (OTel) primero porque decide si hay que instrumentar una vez o dos, y eso condiciona todo lo demás. GYM-120 al final: necesita que existan las mediciones, Prometheus y Grafana.",
+      "tickets": [
+        "GYM-115",
+        "GYM-116",
+        "GYM-117",
+        "GYM-118",
+        "GYM-119",
+        "GYM-120"
       ]
     }
   ]
