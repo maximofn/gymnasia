@@ -691,6 +691,23 @@
       "dependsOn": [],
       "tickets": [
         {
+          "id": "GYM-137",
+          "title": "Alinear el fallback integrado con el prompt remoto en cada compilación",
+          "state": "todo",
+          "summary": "Usar prompts/AGENTS.md como única fuente editable y empaquetar automáticamente su snapshot en cada build, conservando la prioridad remoto → caché → versión compilada sin divergencias.",
+          "baseline": "partial",
+          "dependsOn": [],
+          "related": [
+            "GYM-47",
+            "GYM-73",
+            "GYM-76",
+            "GYM-78",
+            "GYM-103",
+            "GYM-105",
+            "GYM-116"
+          ]
+        },
+        {
           "id": "GYM-100",
           "title": "Tokenización: contar lo que se manda y lo que vuelve",
           "state": "backlog",
@@ -758,7 +775,9 @@
           "state": "backlog",
           "summary": "El prompt se descarga de una URL con caché local y fallback: se puede cambiar el agente sin publicar versión. Falta versionado y forma de evaluar cambios.",
           "baseline": "partial",
-          "dependsOn": [],
+          "dependsOn": [
+            "GYM-137"
+          ],
           "related": [
             "GYM-78",
             "GYM-79"
@@ -1707,6 +1726,14 @@
     }
   ],
   "recommendedOrder": [
+    {
+      "id": "seguridad-prompt",
+      "title": "Primero: alinear la política del agente",
+      "why": "GYM-137 elimina la divergencia entre la política remota y el fallback antes de continuar cualquier otro trabajo. Conserva el control remoto para correcciones sanitarias urgentes y garantiza que una instalación sin red use el prompt del commit con el que fue compilada.",
+      "tickets": [
+        "GYM-137"
+      ]
+    },
     {
       "id": "rodaje",
       "title": "Rodar la infraestructura con lo que ya está hecho",
