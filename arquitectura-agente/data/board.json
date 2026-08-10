@@ -637,6 +637,90 @@
       ]
     },
     {
+      "id": "GYM-99",
+      "kind": "epic",
+      "title": "LLM Engineering",
+      "state": "backlog",
+      "summary": "Lo que rodea a la llamada al modelo: qué se le manda, qué devuelve, cuánto cuesta y cuánto tarda. Structured outputs y prompting ya están montados; tokenización, coste, latencia y caching están a cero.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-100",
+          "title": "Tokenización: contar lo que se manda y lo que vuelve",
+          "state": "backlog",
+          "summary": "No se lee usage de ninguna respuesta. Es el ticket que habilita coste, presupuesto de contexto y medir la compactación.",
+          "baseline": "missing",
+          "dependsOn": [],
+          "related": [
+            "GYM-46",
+            "GYM-51"
+          ]
+        },
+        {
+          "id": "GYM-101",
+          "title": "Coste: saber lo que cuesta cada conversación",
+          "state": "backlog",
+          "summary": "La app es BYOK: paga el usuario con su key y hoy no puede saber cuánto le cuesta hablar con el agente.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-100"
+          ],
+          "related": [
+            "GYM-47"
+          ]
+        },
+        {
+          "id": "GYM-102",
+          "title": "Latencia: medir dónde se va el tiempo",
+          "state": "backlog",
+          "summary": "Ni un Date.now() en agent/. Sin medir por tramos, optimizar es adivinar. La métrica que importa en un chat es el time to first token.",
+          "baseline": "missing",
+          "dependsOn": [],
+          "related": [
+            "GYM-43",
+            "GYM-47"
+          ]
+        },
+        {
+          "id": "GYM-103",
+          "title": "Prompt caching",
+          "state": "backlog",
+          "summary": "cache_control tiene 0 apariciones pese a que el system prompt y las 15 tools son idénticos en cada petición. Mejor relación esfuerzo/beneficio del proyecto.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-100"
+          ],
+          "related": [
+            "GYM-46",
+            "GYM-51"
+          ]
+        },
+        {
+          "id": "GYM-104",
+          "title": "Structured outputs: documentar los tres mecanismos",
+          "state": "backlog",
+          "summary": "Implementado en los tres proveedores con tres mecanismos distintos. En Anthropic la salida estructurada es literalmente forzar una tool.",
+          "baseline": "done",
+          "dependsOn": [],
+          "related": [
+            "GYM-35"
+          ]
+        },
+        {
+          "id": "GYM-105",
+          "title": "Prompting: documentar la gestión del system prompt",
+          "state": "backlog",
+          "summary": "El prompt se descarga de una URL con caché local y fallback: se puede cambiar el agente sin publicar versión. Falta versionado y forma de evaluar cambios.",
+          "baseline": "partial",
+          "dependsOn": [],
+          "related": [
+            "GYM-78",
+            "GYM-79"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -1287,6 +1371,19 @@
         "GYM-96",
         "GYM-95",
         "GYM-97"
+      ]
+    },
+    {
+      "id": "llm-engineering",
+      "title": "LLM Engineering",
+      "why": "GYM-100 (tokenización) va primero porque habilita coste y caching: sin contar tokens no se puede calcular ni lo uno ni lo otro. GYM-103 (caching) es la mejor relación esfuerzo/beneficio de todo el proyecto y por eso va pronto. Los dos de documentar van al final: no bloquean a nadie.",
+      "tickets": [
+        "GYM-100",
+        "GYM-103",
+        "GYM-101",
+        "GYM-102",
+        "GYM-104",
+        "GYM-105"
       ]
     }
   ]
