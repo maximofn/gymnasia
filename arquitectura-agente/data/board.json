@@ -687,6 +687,19 @@
           ]
         },
         {
+          "id": "GYM-81",
+          "title": "Calcular objetivos con la medición válida más reciente",
+          "state": "todo",
+          "summary": "Seleccionar explícitamente por fecha el peso, la altura y las parejas actual/anterior para que los objetivos y tendencias sean correctos aunque el historial llegue desordenado.",
+          "dependsOn": [],
+          "related": [
+            "GYM-5",
+            "GYM-24",
+            "GYM-34",
+            "GYM-70"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
