@@ -437,6 +437,19 @@
           ]
         },
         {
+          "id": "GYM-61",
+          "title": "Conservar la procedencia y trazabilidad de los alimentos de la dieta",
+          "state": "todo",
+          "summary": "Guardar origen, evidencia y fórmula de cada DietItem para auditarlo, recalcular con su instantánea original y actualizar la fuente mediante revisiones confirmadas.",
+          "dependsOn": [],
+          "related": [
+            "GYM-5",
+            "GYM-24",
+            "GYM-57",
+            "GYM-60"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
