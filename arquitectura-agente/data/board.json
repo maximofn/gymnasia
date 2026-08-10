@@ -450,6 +450,19 @@
           ]
         },
         {
+          "id": "GYM-62",
+          "title": "Restaurar copias de seguridad de forma atómica y recuperable",
+          "state": "todo",
+          "summary": "Aplicar cada backup mediante una nueva generación verificada y un commit único recuperable, para que un cierre inesperado deje íntegramente el estado anterior o el restaurado, nunca una mezcla.",
+          "dependsOn": [],
+          "related": [
+            "GYM-5",
+            "GYM-24",
+            "GYM-60",
+            "GYM-61"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
