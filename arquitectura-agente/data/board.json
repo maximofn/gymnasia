@@ -463,6 +463,20 @@
           ]
         },
         {
+          "id": "GYM-63",
+          "title": "Informar y recuperar los fallos de persistencia local",
+          "state": "todo",
+          "summary": "Hacer visibles y reintentables los fallos al guardar datos duraderos, conservando los cambios pendientes y distinguiéndolos de cachés reconstruibles que pueden fallar sin bloquear la app.",
+          "dependsOn": [],
+          "related": [
+            "GYM-5",
+            "GYM-24",
+            "GYM-60",
+            "GYM-61",
+            "GYM-62"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
