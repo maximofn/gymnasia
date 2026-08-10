@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-09",
+    "updated": "2026-08-10",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -51,6 +51,147 @@
     }
   ],
   "groups": [
+    {
+      "id": "GYM-138",
+      "kind": "epic",
+      "title": "Gobierno y seguridad de la política remota del agente",
+      "state": "todo",
+      "summary": "Conservar el control remoto necesario para corregir riesgos sanitarios con rapidez, pero con aprobación exclusiva, entornos, firma, evals, guardrails, rollback y auditoría verificables.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-137",
+          "title": "Alinear el fallback integrado con el prompt remoto en cada compilación",
+          "state": "todo",
+          "summary": "Usar prompts/AGENTS.md como única fuente editable y empaquetar automáticamente su snapshot en cada build, conservando la prioridad remoto → caché → versión compilada sin divergencias.",
+          "baseline": "partial",
+          "dependsOn": [],
+          "related": [
+            "GYM-47",
+            "GYM-73",
+            "GYM-76",
+            "GYM-78",
+            "GYM-99",
+            "GYM-103",
+            "GYM-105",
+            "GYM-116"
+          ]
+        },
+        {
+          "id": "GYM-142",
+          "title": "Proteger los cambios sensibles de política y automatización",
+          "state": "todo",
+          "summary": "Bloquear cambios sensibles sin PR, checks y aprobación de @maximofn mediante ruleset, CODEOWNERS, CI sin secretos, Actions inmutables y un bypass de emergencia auditado.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-137"
+          ],
+          "related": [
+            "GYM-122",
+            "GYM-124",
+            "GYM-129"
+          ]
+        },
+        {
+          "id": "GYM-144",
+          "title": "Formalizar dev, staging y producción para la política del agente",
+          "state": "todo",
+          "summary": "Convertir los perfiles EAS existentes en entornos aislados de app, almacenamiento, secretos y canal de política, promocionando el mismo artefacto desde staging a producción.",
+          "baseline": "partial",
+          "dependsOn": [
+            "GYM-142"
+          ],
+          "related": [
+            "GYM-124"
+          ]
+        },
+        {
+          "id": "GYM-140",
+          "title": "Publicar y verificar bundles firmados de la política",
+          "state": "todo",
+          "summary": "Firmar bundles versionados e inmutables y hacer que el móvil rechace contenido alterado, incompatible o degradado sin perder la última política segura offline.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-137",
+            "GYM-144"
+          ],
+          "related": [
+            "GYM-105",
+            "GYM-129"
+          ]
+        },
+        {
+          "id": "GYM-145",
+          "title": "Crear una suite de seguridad sanitaria para cambios del agente",
+          "state": "todo",
+          "summary": "Bloquear regresiones sanitarias deterministas y añadir evaluación LLM solo informativa con casos como ayuno prolongado, pérdida extrema, trastornos y urgencias.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-142"
+          ],
+          "related": [
+            "GYM-73",
+            "GYM-76",
+            "GYM-77",
+            "GYM-78",
+            "GYM-124",
+            "GYM-143"
+          ]
+        },
+        {
+          "id": "GYM-139",
+          "title": "Eliminar la inyección persistente mediante debug en producción",
+          "state": "todo",
+          "summary": "Impedir que un campo de memoria editable por el usuario o el agente se anexe al system prompt; conservar depuración únicamente como configuración local explícita de development.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-137"
+          ],
+          "related": [
+            "GYM-50",
+            "GYM-82",
+            "GYM-105"
+          ]
+        },
+        {
+          "id": "GYM-143",
+          "title": "Añadir una barrera sanitaria independiente del system prompt",
+          "state": "todo",
+          "summary": "Aplicar una base sanitaria que la política remota no pueda desactivar y validar salidas de alto riesgo antes de mostrarlas, incluso sin conexión.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-139",
+            "GYM-145"
+          ],
+          "related": [
+            "GYM-68",
+            "GYM-73",
+            "GYM-76",
+            "GYM-77",
+            "GYM-87"
+          ]
+        },
+        {
+          "id": "GYM-141",
+          "title": "Añadir rollback, auditoría y alertas de la política",
+          "state": "todo",
+          "summary": "Atribuir cada ejecución a una versión, promocionar o revertir artefactos firmados y avisar por Telegram sin incluir prompts, conversaciones, claves ni datos de salud.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-140",
+            "GYM-143",
+            "GYM-144",
+            "GYM-145"
+          ],
+          "related": [
+            "GYM-47",
+            "GYM-80",
+            "GYM-105",
+            "GYM-116"
+          ]
+        }
+      ]
+    },
     {
       "id": "GYM-33",
       "kind": "epic",
@@ -691,23 +832,6 @@
       "dependsOn": [],
       "tickets": [
         {
-          "id": "GYM-137",
-          "title": "Alinear el fallback integrado con el prompt remoto en cada compilación",
-          "state": "todo",
-          "summary": "Usar prompts/AGENTS.md como única fuente editable y empaquetar automáticamente su snapshot en cada build, conservando la prioridad remoto → caché → versión compilada sin divergencias.",
-          "baseline": "partial",
-          "dependsOn": [],
-          "related": [
-            "GYM-47",
-            "GYM-73",
-            "GYM-76",
-            "GYM-78",
-            "GYM-103",
-            "GYM-105",
-            "GYM-116"
-          ]
-        },
-        {
           "id": "GYM-100",
           "title": "Tokenización: contar lo que se manda y lo que vuelve",
           "state": "backlog",
@@ -776,11 +900,15 @@
           "summary": "El prompt se descarga de una URL con caché local y fallback: se puede cambiar el agente sin publicar versión. Falta versionado y forma de evaluar cambios.",
           "baseline": "partial",
           "dependsOn": [
-            "GYM-137"
+            "GYM-137",
+            "GYM-140",
+            "GYM-141",
+            "GYM-144"
           ],
           "related": [
             "GYM-78",
-            "GYM-79"
+            "GYM-79",
+            "GYM-138"
           ]
         }
       ]
@@ -1728,10 +1856,17 @@
   "recommendedOrder": [
     {
       "id": "seguridad-prompt",
-      "title": "Primero: alinear la política del agente",
-      "why": "GYM-137 elimina la divergencia entre la política remota y el fallback antes de continuar cualquier otro trabajo. Conserva el control remoto para correcciones sanitarias urgentes y garantiza que una instalación sin red use el prompt del commit con el que fue compilada.",
+      "title": "Máxima prioridad: gobernar y asegurar la política del agente",
+      "why": "Este bloque va antes que cualquier otro trabajo abierto. Conserva el control remoto para emergencias sanitarias, pero añade una única fuente compilada, autorización exclusiva, entornos, firma, evals, eliminación de debug, guardrails, rollback y alertas en ese orden.",
       "tickets": [
-        "GYM-137"
+        "GYM-137",
+        "GYM-142",
+        "GYM-144",
+        "GYM-140",
+        "GYM-145",
+        "GYM-139",
+        "GYM-143",
+        "GYM-141"
       ]
     },
     {
