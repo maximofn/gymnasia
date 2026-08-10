@@ -958,6 +958,83 @@
       ]
     },
     {
+      "id": "GYM-125",
+      "kind": "epic",
+      "title": "Cloud",
+      "state": "backlog",
+      "summary": "Único uso con sentido: desplegar el back. La app es local-first y no necesita nube. Son unos diez contenedores entre el servicio, la observabilidad autoalojada, Prometheus y Grafana.",
+      "dependsOn": [
+        "GYM-107"
+      ],
+      "tickets": [
+        {
+          "id": "GYM-126",
+          "title": "1. Elegir nube y diseñar el despliegue",
+          "state": "backlog",
+          "summary": "Una nube en profundidad, no tres por encima. La restricción real es el coste: diez contenedores encendidos no son gratis y las capas gratuitas no dan para esto.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-107"
+          ],
+          "related": [
+            "GYM-108"
+          ]
+        },
+        {
+          "id": "GYM-127",
+          "title": "2. Desplegar el stack",
+          "state": "backlog",
+          "summary": "Servicio, observabilidad, Prometheus y Grafana. Lo que se rompe al salir del portátil: volúmenes, orden de arranque, certificados y la trampa de la zona horaria en UTC.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-126",
+            "GYM-111"
+          ],
+          "related": [
+            "GYM-108",
+            "GYM-118",
+            "GYM-119"
+          ]
+        },
+        {
+          "id": "GYM-128",
+          "title": "3. Infraestructura como código",
+          "state": "backlog",
+          "summary": "No está en la oferta pero es lo que hace reproducible el resto. Y permite destruir todo cuando no se usa y recrearlo después, que con coste mensual es la diferencia entre mantenerlo o abandonarlo.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-127"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-129",
+          "title": "4. Secretos, red y acceso",
+          "state": "backlog",
+          "summary": "El ingestor está expuesto a internet y el repo es público. Lo que más se falla: dejar abiertos los puertos de base de datos, Redis o Prometheus.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-127",
+            "GYM-128"
+          ],
+          "related": [
+            "GYM-107"
+          ]
+        },
+        {
+          "id": "GYM-130",
+          "title": "5. Equivalencias entre Azure, AWS y Google Cloud",
+          "state": "backlog",
+          "summary": "Permite hablar de las tres con honestidad habiendo desplegado en una. Lo valioso no es la tabla de equivalencias, es dónde la analogía se rompe.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-127"
+          ],
+          "related": []
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -1658,6 +1735,18 @@
         "GYM-122",
         "GYM-123",
         "GYM-124"
+      ]
+    },
+    {
+      "id": "cloud",
+      "title": "Cloud",
+      "why": "Va la última de todo el tablero porque necesita que el back exista (GYM-107) y esté empaquetado (GYM-111). Dentro, el orden es forzado: elegir y estimar coste, desplegar, hacerlo reproducible, asegurarlo, y cerrar con las equivalencias cuando ya se sabe qué se ha desplegado de verdad.",
+      "tickets": [
+        "GYM-126",
+        "GYM-127",
+        "GYM-128",
+        "GYM-129",
+        "GYM-130"
       ]
     }
   ]
