@@ -383,6 +383,22 @@
             "GYM-43",
             "GYM-45"
           ]
+        },
+        {
+          "id": "GYM-87",
+          "title": "Permitir al usuario parar la generación en curso",
+          "state": "backlog",
+          "summary": "El AbortController existe pero solo actúa como cronómetro: no hay camino desde la interfaz hasta abort(). Lo difícil no es el botón, son las fronteras seguras para cancelar dentro del bucle de tools.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-34",
+            "GYM-68"
+          ],
+          "related": [
+            "GYM-45",
+            "GYM-67",
+            "GYM-69"
+          ]
         }
       ]
     },
@@ -1039,12 +1055,13 @@
     {
       "id": "runtime",
       "title": "Runtime: documentar lo que ya funciona",
-      "why": "Tres de los cuatro ya están implementados y solo piden tests y artículo, así que son tan baratos como la fase anterior. GYM-69 sí es trabajo real y va el último porque conviene tener documentado antes dónde vive el estado (GYM-66).",
+      "why": "Tres de los cuatro ya están implementados y solo piden tests y artículo, así que son tan baratos como la fase anterior. GYM-69 sí es trabajo real y va el último porque conviene tener documentado antes dónde vive el estado (GYM-66). GYM-87 va después de GYM-68 porque necesita exponer el transporte que ese ticket documenta.",
       "tickets": [
         "GYM-66",
         "GYM-67",
         "GYM-68",
-        "GYM-69"
+        "GYM-69",
+        "GYM-87"
       ]
     },
     {
