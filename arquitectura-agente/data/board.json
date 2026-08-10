@@ -387,6 +387,121 @@
       ]
     },
     {
+      "id": "GYM-71",
+      "kind": "epic",
+      "title": "Evals",
+      "state": "backlog",
+      "summary": "Medir la calidad del agente, lo único que los tests deterministas no pueden verificar. La oferta lo marca como muy importante y es el punto más vacío: 0 hechos, 2 a medias, 9 sin empezar.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-72",
+          "title": "1. Elegir plataforma de evals y montar el esqueleto",
+          "state": "backlog",
+          "summary": "LangSmith vs Langfuse. El stub actual son 7 líneas que imprimen un mensaje.",
+          "baseline": "missing",
+          "dependsOn": [],
+          "related": [
+            "GYM-13"
+          ]
+        },
+        {
+          "id": "GYM-73",
+          "title": "2. Golden dataset del agente",
+          "state": "backlog",
+          "summary": "Entradas curadas con salida de referencia. Incluye casos de abstención, que son los que más se olvidan.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-72"
+          ],
+          "related": [
+            "GYM-46"
+          ]
+        },
+        {
+          "id": "GYM-74",
+          "title": "3. Datasets sintéticos",
+          "state": "backlog",
+          "summary": "Ampliar cobertura barata sin heredar los sesgos del modelo que los genera.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-73"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-75",
+          "title": "4. Benchmark design: qué se mide y cómo",
+          "state": "backlog",
+          "summary": "Decidir qué significa que el agente funcione bien antes de escribir métricas, separando lo determinista de lo subjetivo.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-73"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-76",
+          "title": "5. Offline evals en CI",
+          "state": "backlog",
+          "summary": "Ejecutar contra el dataset fijo y comparar con la pasada anterior. Nunca bloquean un commit.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-75"
+          ],
+          "related": [
+            "GYM-48"
+          ]
+        },
+        {
+          "id": "GYM-77",
+          "title": "6. LLM-as-a-judge",
+          "state": "backlog",
+          "summary": "Juez para lo que no tiene assert. Requiere rúbrica, calibración contra humano y control del sesgo de longitud.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-75"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-78",
+          "title": "7. Pairwise comparison",
+          "state": "backlog",
+          "summary": "Comparar dos respuestas es más fiable que puntuar una en abstracto. Cuidado con el sesgo posicional.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-77"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-79",
+          "title": "8. Experiment tracking y reproducibilidad",
+          "state": "backlog",
+          "summary": "Sin registrar qué produjo un resultado, el número no sirve. Incluye medir la varianza para distinguir mejora de ruido.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-76"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-80",
+          "title": "9. Online evals en producción",
+          "state": "backlog",
+          "summary": "Medir el tráfico real. El problema no es técnico: sacar conversaciones con datos personales del dispositivo contradice el planteamiento local-first.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-76"
+          ],
+          "related": [
+            "GYM-13"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -894,6 +1009,22 @@
         "GYM-29",
         "GYM-28",
         "GYM-30"
+      ]
+    },
+    {
+      "id": "evals",
+      "title": "Evals",
+      "why": "Va al final porque necesita que exista algo estable que medir, pero la oferta lo marca como el punto más importante y hoy está a cero. El orden interno no es negociable: sin dataset (GYM-73) no hay nada que evaluar, y sin decidir qué se mide (GYM-75) las métricas miden lo fácil en vez de lo que importa.",
+      "tickets": [
+        "GYM-72",
+        "GYM-73",
+        "GYM-75",
+        "GYM-74",
+        "GYM-76",
+        "GYM-77",
+        "GYM-78",
+        "GYM-79",
+        "GYM-80"
       ]
     }
   ]
