@@ -1305,6 +1305,23 @@
           ]
         },
         {
+          "id": "GYM-131",
+          "title": "Registrar la fibra de extremo a extremo en la dieta",
+          "state": "todo",
+          "summary": "Conservar la fibra total de cada porción desde catálogo, entrada manual, agente y estimador hasta la UI, agregados, hidratación y backups, sin confundirla con el valor por 100 g ni inventar ceros desconocidos.",
+          "dependsOn": [],
+          "related": [
+            "GYM-24",
+            "GYM-60",
+            "GYM-61",
+            "GYM-62",
+            "GYM-70",
+            "GYM-83",
+            "GYM-85",
+            "GYM-86"
+          ]
+        },
+        {
           "id": "GYM-88",
           "title": "Mostrar uso de tokens y costes por proveedor en Ajustes",
           "state": "todo",
