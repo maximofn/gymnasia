@@ -477,6 +477,20 @@
           ]
         },
         {
+          "id": "GYM-64",
+          "title": "Detectar y comunicar catálogos de alimentos degradados",
+          "state": "todo",
+          "summary": "Conservar el estado y la fecha de cada catálogo remoto para distinguir datos actuales, cacheados, parciales o ausentes, mostrarlo en la UI y evitar conclusiones falsas del agente.",
+          "dependsOn": [],
+          "related": [
+            "GYM-15",
+            "GYM-16",
+            "GYM-17",
+            "GYM-61",
+            "GYM-63"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
