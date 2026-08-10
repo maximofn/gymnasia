@@ -426,6 +426,17 @@
           ]
         },
         {
+          "id": "GYM-60",
+          "title": "Conservar las imágenes de alimentos tras reiniciar o importar una copia",
+          "state": "todo",
+          "summary": "Preservar y validar DietItem.image_uri durante la normalización para que las miniaturas sobrevivan a la hidratación y al round-trip de una copia de seguridad.",
+          "dependsOn": [],
+          "related": [
+            "GYM-24",
+            "GYM-5"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
