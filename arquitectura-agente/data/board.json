@@ -193,6 +193,69 @@
       ]
     },
     {
+      "id": "GYM-146",
+      "kind": "epic",
+      "title": "Internacionalizar la app con idiomas independientes por superficie",
+      "state": "todo",
+      "summary": "Separar el idioma de la interfaz y del agente de los idiomas de los catálogos de alimentos y ejercicios, empezando por español e inglés sin usar textos traducidos como identidad.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-147",
+          "title": "Configurar de forma independiente el idioma de la aplicación",
+          "state": "todo",
+          "summary": "Localizar interfaz, formatos, accesibilidad, notificaciones y conversación del agente mediante una preferencia persistente que no cambie los idiomas de los catálogos.",
+          "dependsOn": [],
+          "related": [
+            "GYM-24",
+            "GYM-105",
+            "GYM-137",
+            "GYM-139",
+            "GYM-143"
+          ]
+        },
+        {
+          "id": "GYM-148",
+          "title": "Configurar el idioma del catálogo de alimentos",
+          "state": "todo",
+          "summary": "Mostrar y buscar alimentos en el idioma elegido conservando por ID los nutrientes, imágenes, procedencia y snapshots históricos, sin traducir alimentos personales.",
+          "dependsOn": [
+            "GYM-147"
+          ],
+          "related": [
+            "GYM-15",
+            "GYM-16",
+            "GYM-17",
+            "GYM-24",
+            "GYM-61",
+            "GYM-64",
+            "GYM-82",
+            "GYM-84",
+            "GYM-132",
+            "GYM-133"
+          ]
+        },
+        {
+          "id": "GYM-149",
+          "title": "Configurar el idioma del catálogo de ejercicios",
+          "state": "todo",
+          "summary": "Localizar nombres, instrucciones y filtros de ejercicios y enlazar rutinas, imágenes y tools mediante IDs estables en vez de nombres traducidos.",
+          "dependsOn": [
+            "GYM-147"
+          ],
+          "related": [
+            "GYM-12",
+            "GYM-18",
+            "GYM-19",
+            "GYM-20",
+            "GYM-21",
+            "GYM-23",
+            "GYM-24"
+          ]
+        }
+      ]
+    },
+    {
       "id": "GYM-33",
       "kind": "epic",
       "title": "Tool calling (tools de cliente)",
@@ -1867,6 +1930,16 @@
         "GYM-139",
         "GYM-143",
         "GYM-141"
+      ]
+    },
+    {
+      "id": "internacionalizacion",
+      "title": "Internacionalización con tres idiomas independientes",
+      "why": "Después de cerrar el bloque sanitario, GYM-147 crea el contrato compartido de locales, preferencias y fallback. Con esa base, alimentos y ejercicios pueden localizarse en paralelo sin convertir los nombres traducidos en IDs ni romper datos guardados.",
+      "tickets": [
+        "GYM-147",
+        "GYM-148",
+        "GYM-149"
       ]
     },
     {
