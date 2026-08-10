@@ -1322,6 +1322,22 @@
           ]
         },
         {
+          "id": "GYM-132",
+          "title": "Usar IDs estables y migraciones para las categorías de comida",
+          "state": "todo",
+          "summary": "Separar la identidad persistente de las etiquetas visibles de desayuno, almuerzo, comida, merienda y cena mediante IDs estables, un registro único y migraciones/alias sin pérdida para datos y tools antiguos.",
+          "dependsOn": [],
+          "related": [
+            "GYM-5",
+            "GYM-24",
+            "GYM-35",
+            "GYM-40",
+            "GYM-62",
+            "GYM-70",
+            "GYM-83"
+          ]
+        },
+        {
           "id": "GYM-88",
           "title": "Mostrar uso de tokens y costes por proveedor en Ajustes",
           "state": "todo",
