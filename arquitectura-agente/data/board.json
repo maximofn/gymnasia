@@ -324,7 +324,7 @@
       "kind": "epic",
       "title": "Runtime de agentes",
       "state": "backlog",
-      "summary": "Los doce puntos del runtime: bucle de ejecución y lo que lo rodea en producción. La mayor parte ya está construida, así que es sobre todo documentar lo que funciona y cerrar el hueco de checkpointing.",
+      "summary": "Los doce puntos del runtime: documentar lo construido, cerrar checkpointing y cancelación, y compartir el bucle tipado entre el agente general y el estimador sin ocultar su semántica nutricional.",
       "dependsOn": [
         "GYM-34"
       ],
@@ -398,6 +398,32 @@
             "GYM-45",
             "GYM-67",
             "GYM-69"
+          ]
+        },
+        {
+          "id": "GYM-134",
+          "title": "Compartir un runtime tipado entre el agente y el estimador",
+          "state": "todo",
+          "summary": "Reutilizar un runtime tipado de rondas, tools, correlación y adaptadores en el agente y el estimador, manteniendo explícitas las imágenes, la extracción nutricional y la frontera segura de escritura.",
+          "baseline": "partial",
+          "dependsOn": [
+            "GYM-85",
+            "GYM-86"
+          ],
+          "related": [
+            "GYM-35",
+            "GYM-36",
+            "GYM-37",
+            "GYM-38",
+            "GYM-39",
+            "GYM-40",
+            "GYM-47",
+            "GYM-57",
+            "GYM-58",
+            "GYM-61",
+            "GYM-67",
+            "GYM-68",
+            "GYM-87"
           ]
         }
       ]
@@ -1659,6 +1685,16 @@
         "GYM-68",
         "GYM-69",
         "GYM-87"
+      ]
+    },
+    {
+      "id": "runtime-estimador",
+      "title": "Fijar y compartir el runtime del estimador",
+      "why": "Primero GYM-85 congela los contratos de transporte y extracción del estimador; después GYM-86 protege la tool de código de barras y la frontera de escritura. Con esas redes de seguridad, GYM-134 puede eliminar el bucle duplicado y reutilizar el runtime tipado sin cambiar la semántica nutricional.",
+      "tickets": [
+        "GYM-85",
+        "GYM-86",
+        "GYM-134"
       ]
     },
     {
