@@ -518,6 +518,125 @@
       ]
     },
     {
+      "id": "GYM-92",
+      "kind": "epic",
+      "title": "RAG",
+      "state": "backlog",
+      "summary": "Recuperar por significado y no solo por coincidencia de texto. Hoy la búsqueda es léxica pura: subcadena sobre texto normalizado, sin ranking ni tolerancia a erratas.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-93",
+          "title": "Base de datos vectorial local",
+          "state": "backlog",
+          "summary": "Corrige la suposición de GYM-16/19/22 de que basta con coseno sobre un array: el corpus va camino de 1500+ ejercicios y se añadirán embeddings de conversaciones.",
+          "baseline": "missing",
+          "dependsOn": [],
+          "related": [
+            "GYM-50"
+          ]
+        },
+        {
+          "id": "GYM-94",
+          "title": "Búsqueda híbrida: vectores más filtros de metadatos",
+          "state": "backlog",
+          "summary": "Semántica y filtro numérico en una sola consulta. No estaba contemplado en ningún ticket: los actuales tratan las estrategias como tools separadas.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-93"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-95",
+          "title": "Agentic RAG: el agente decide, reformula e itera",
+          "state": "backlog",
+          "summary": "GYM-16/19/22 ya lo describen de pasada en su punto 4. Aquí pasa a ser decisión de diseño propia y coherente entre los tres repos.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-94"
+          ],
+          "related": [
+            "GYM-46",
+            "GYM-50"
+          ]
+        },
+        {
+          "id": "GYM-96",
+          "title": "Reranking",
+          "state": "backlog",
+          "summary": "El coseno mide parecido en el espacio de embeddings, no relevancia. Medir primero cuánto se pierde antes de meter un modelo.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-93"
+          ],
+          "related": [
+            "GYM-98"
+          ]
+        },
+        {
+          "id": "GYM-97",
+          "title": "Chunking de conversaciones para memoria episódica",
+          "state": "backlog",
+          "summary": "Con datos estructurados el chunking apenas aplica; con conversaciones sí. Trocear una conversación no es trocear texto corrido.",
+          "baseline": "missing",
+          "dependsOn": [],
+          "related": [
+            "GYM-50"
+          ]
+        },
+        {
+          "id": "GYM-98",
+          "title": "Retrieval quality: medir la calidad de la recuperación",
+          "state": "backlog",
+          "summary": "Sin medir, todo lo demás de la épica es fe. Conviene fijar la línea base léxica antes de implementar embeddings.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-71"
+          ],
+          "related": [
+            "GYM-75"
+          ]
+        },
+        {
+          "id": "GYM-16",
+          "title": "Búsqueda semántica de alimentos con embeddings (RAG)",
+          "state": "backlog",
+          "summary": "Encontrar por significado y no por texto. Embeddings generados en CI, no en el dispositivo.",
+          "dependsOn": [],
+          "related": [
+            "GYM-15",
+            "GYM-17",
+            "GYM-19"
+          ]
+        },
+        {
+          "id": "GYM-19",
+          "title": "Búsqueda semántica de ejercicios con embeddings (RAG)",
+          "state": "backlog",
+          "summary": "Equivalente a GYM-16 sobre ejercicios/*.json, con la misma arquitectura y las mismas limitaciones.",
+          "dependsOn": [],
+          "related": [
+            "GYM-16",
+            "GYM-18",
+            "GYM-20"
+          ]
+        },
+        {
+          "id": "GYM-22",
+          "title": "Búsqueda semántica de rutinas con embeddings (RAG)",
+          "state": "backlog",
+          "summary": "Sobre las rutinas propias del usuario, que a diferencia de alimentos y ejercicios cambian en runtime.",
+          "dependsOn": [],
+          "related": [
+            "GYM-19",
+            "GYM-21",
+            "GYM-23"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -992,18 +1111,6 @@
           ]
         },
         {
-          "id": "GYM-16",
-          "title": "Búsqueda semántica de alimentos con embeddings (RAG)",
-          "state": "backlog",
-          "summary": "Encontrar por significado y no por texto. Embeddings generados en CI, no en el dispositivo.",
-          "dependsOn": [],
-          "related": [
-            "GYM-15",
-            "GYM-17",
-            "GYM-19"
-          ]
-        },
-        {
           "id": "GYM-17",
           "title": "Búsqueda de alimentos por parámetros nutricionales (múltiple)",
           "state": "backlog",
@@ -1028,18 +1135,6 @@
           ]
         },
         {
-          "id": "GYM-19",
-          "title": "Búsqueda semántica de ejercicios con embeddings (RAG)",
-          "state": "backlog",
-          "summary": "Equivalente a GYM-16 sobre ejercicios/*.json, con la misma arquitectura y las mismas limitaciones.",
-          "dependsOn": [],
-          "related": [
-            "GYM-16",
-            "GYM-18",
-            "GYM-20"
-          ]
-        },
-        {
           "id": "GYM-20",
           "title": "Búsqueda de ejercicios por parámetros (músculo, equipamiento, dificultad)",
           "state": "backlog",
@@ -1060,18 +1155,6 @@
           "related": [
             "GYM-18",
             "GYM-22",
-            "GYM-23"
-          ]
-        },
-        {
-          "id": "GYM-22",
-          "title": "Búsqueda semántica de rutinas con embeddings (RAG)",
-          "state": "backlog",
-          "summary": "Sobre las rutinas propias del usuario, que a diferencia de alimentos y ejercicios cambian en runtime.",
-          "dependsOn": [],
-          "related": [
-            "GYM-19",
-            "GYM-21",
             "GYM-23"
           ]
         },
@@ -1188,6 +1271,22 @@
         "GYM-78",
         "GYM-79",
         "GYM-80"
+      ]
+    },
+    {
+      "id": "rag",
+      "title": "RAG",
+      "why": "GYM-98 va primero a propósito: hay que medir la línea base de la búsqueda léxica actual antes de tocar nada, o no habrá contra qué comparar. Después la base vectorial, que es la que habilita el resto, y el chunking al final porque depende de que la épica de memoria decida guardar conversaciones.",
+      "tickets": [
+        "GYM-98",
+        "GYM-93",
+        "GYM-16",
+        "GYM-19",
+        "GYM-22",
+        "GYM-94",
+        "GYM-96",
+        "GYM-95",
+        "GYM-97"
       ]
     }
   ]
