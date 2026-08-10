@@ -721,6 +721,104 @@
       ]
     },
     {
+      "id": "GYM-106",
+      "kind": "epic",
+      "title": "Backend Engineering",
+      "state": "backlog",
+      "summary": "CLAUDE.md prohíbe backend, así que este bloque solo encaja como servicio OPCIONAL: la app sigue funcionando entera sin él. Lo justifican A2A, las online evals y la ingesta de trazas.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-107",
+          "title": "Servicio backend opcional en FastAPI",
+          "state": "backlog",
+          "summary": "Parte del proxy CORS existente (155 líneas, ya resuelve el reenvío de SSE). Incluye cambiar CLAUDE.md de 'sin backend' a 'sin backend obligatorio'.",
+          "baseline": "partial",
+          "dependsOn": [],
+          "related": [
+            "GYM-52",
+            "GYM-80",
+            "GYM-13"
+          ]
+        },
+        {
+          "id": "GYM-108",
+          "title": "Autoalojar Langfuse",
+          "state": "backlog",
+          "summary": "Seis contenedores: web, worker, PostgreSQL 17, ClickHouse, Redis 7 y MinIO. Cubre Docker, Postgres y Redis con necesidad real, no inventada.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-72"
+          ],
+          "related": [
+            "GYM-110",
+            "GYM-111"
+          ]
+        },
+        {
+          "id": "GYM-109",
+          "title": "PostgreSQL: modelo de datos del servicio",
+          "state": "backlog",
+          "summary": "La app usa JSON en clave-valor; el servicio usa una relacional. Dos modelos para el mismo dominio con restricciones distintas.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-107"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-110",
+          "title": "Redis: colas y caché del servicio",
+          "state": "backlog",
+          "summary": "A esta escala no es imprescindible y el artículo debe decirlo. Los dos usos que sí se sostienen son la cola del ingestor y el rate limiting.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-107"
+          ],
+          "related": [
+            "GYM-108"
+          ]
+        },
+        {
+          "id": "GYM-111",
+          "title": "Docker: empaquetar y desplegar el servicio propio",
+          "state": "backlog",
+          "summary": "GYM-108 es consumir Docker; este es producirlo: Dockerfile multi-etapa, usuario sin privilegios y versiones fijadas.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-107"
+          ],
+          "related": [
+            "GYM-108"
+          ]
+        },
+        {
+          "id": "GYM-112",
+          "title": "Kafka (ejercicio de estudio, fuera de la app)",
+          "state": "backlog",
+          "summary": "No tiene encaje real: un servicio con el tráfico de una persona no necesita un bus distribuido. Va como estudio, y el artículo explica por qué no hace falta.",
+          "baseline": "missing",
+          "dependsOn": [],
+          "related": [
+            "GYM-110"
+          ]
+        },
+        {
+          "id": "GYM-113",
+          "title": "Kubernetes (ejercicio de estudio, fuera de la app)",
+          "state": "backlog",
+          "summary": "Mismo caso que Kafka. El escenario útil es desplegar y romperlo a propósito para documentar la recuperación.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-111"
+          ],
+          "related": [
+            "GYM-112"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -1384,6 +1482,20 @@
         "GYM-102",
         "GYM-104",
         "GYM-105"
+      ]
+    },
+    {
+      "id": "backend",
+      "title": "Backend Engineering",
+      "why": "GYM-107 va primero porque incluye cambiar la regla de CLAUDE.md: sin eso, todo lo demás contradice el repo. GYM-108 (autoalojar Langfuse) es la justificación más sólida de Docker, Postgres y Redis, pero depende de que en GYM-72 se elija Langfuse. Kafka y Kubernetes van al final y marcados como estudio: no tienen encaje real en este proyecto.",
+      "tickets": [
+        "GYM-107",
+        "GYM-108",
+        "GYM-109",
+        "GYM-111",
+        "GYM-110",
+        "GYM-112",
+        "GYM-113"
       ]
     }
   ]
