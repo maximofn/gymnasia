@@ -1187,15 +1187,37 @@
             "GYM-5",
             "GYM-24",
             "GYM-57",
-            "GYM-60"
+            "GYM-60",
+            "GYM-135"
+          ]
+        },
+        {
+          "id": "GYM-135",
+          "title": "Unificar los datos duraderos en un almacén versionado",
+          "state": "todo",
+          "summary": "Dar a dieta, preferencias, alimentos personales, memoria y sesión una única frontera lógica de versión y commit, conservando snapshots históricos y recuperando siempre una generación completa.",
+          "dependsOn": [
+            "GYM-60",
+            "GYM-61"
+          ],
+          "related": [
+            "GYM-5",
+            "GYM-24",
+            "GYM-62",
+            "GYM-63",
+            "GYM-70",
+            "GYM-82",
+            "GYM-133"
           ]
         },
         {
           "id": "GYM-62",
           "title": "Restaurar copias de seguridad de forma atómica y recuperable",
           "state": "todo",
-          "summary": "Aplicar cada backup mediante una nueva generación verificada y un commit único recuperable, para que un cierre inesperado deje íntegramente el estado anterior o el restaurado, nunca una mezcla.",
-          "dependsOn": [],
+          "summary": "Aplicar cada backup mediante el almacén versionado de GYM-135 y un commit único recuperable, para que un cierre inesperado deje íntegramente el estado anterior o el restaurado, nunca una mezcla.",
+          "dependsOn": [
+            "GYM-135"
+          ],
           "related": [
             "GYM-5",
             "GYM-24",
@@ -1207,8 +1229,10 @@
           "id": "GYM-63",
           "title": "Informar y recuperar los fallos de persistencia local",
           "state": "todo",
-          "summary": "Hacer visibles y reintentables los fallos al guardar datos duraderos, conservando los cambios pendientes y distinguiéndolos de cachés reconstruibles que pueden fallar sin bloquear la app.",
-          "dependsOn": [],
+          "summary": "Hacer visibles y reintentables los fallos del almacén versionado, conservando la versión pendiente y distinguiéndola de cachés reconstruibles que pueden fallar sin bloquear la app.",
+          "dependsOn": [
+            "GYM-135"
+          ],
           "related": [
             "GYM-5",
             "GYM-24",
