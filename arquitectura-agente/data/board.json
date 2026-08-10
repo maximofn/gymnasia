@@ -324,7 +324,7 @@
       "kind": "epic",
       "title": "Runtime de agentes",
       "state": "backlog",
-      "summary": "Los doce puntos del runtime: documentar lo construido, cerrar checkpointing y cancelación, y compartir el bucle tipado entre el agente general y el estimador sin ocultar su semántica nutricional.",
+      "summary": "Los doce puntos del runtime: documentar lo construido, cerrar checkpointing y cancelación, tipar las capacidades de cada tool y compartir el bucle entre el agente general y el estimador sin ocultar su semántica nutricional.",
       "dependsOn": [
         "GYM-34"
       ],
@@ -401,6 +401,25 @@
           ]
         },
         {
+          "id": "GYM-136",
+          "title": "Tipar y validar las capacidades requeridas por cada herramienta",
+          "state": "todo",
+          "summary": "Hacer que cada tool declare y reciba solo las capacidades que necesita, ocultarla si el runtime no puede proporcionarlas y detectar el cableado incompleto antes de ejecutar el handler.",
+          "baseline": "partial",
+          "dependsOn": [
+            "GYM-42"
+          ],
+          "related": [
+            "GYM-35",
+            "GYM-38",
+            "GYM-40",
+            "GYM-45",
+            "GYM-48",
+            "GYM-134",
+            "GYM-135"
+          ]
+        },
+        {
           "id": "GYM-134",
           "title": "Compartir un runtime tipado entre el agente y el estimador",
           "state": "todo",
@@ -408,7 +427,8 @@
           "baseline": "partial",
           "dependsOn": [
             "GYM-85",
-            "GYM-86"
+            "GYM-86",
+            "GYM-136"
           ],
           "related": [
             "GYM-35",
@@ -1712,16 +1732,6 @@
       ]
     },
     {
-      "id": "runtime-estimador",
-      "title": "Fijar y compartir el runtime del estimador",
-      "why": "Primero GYM-85 congela los contratos de transporte y extracción del estimador; después GYM-86 protege la tool de código de barras y la frontera de escritura. Con esas redes de seguridad, GYM-134 puede eliminar el bucle duplicado y reutilizar el runtime tipado sin cambiar la semántica nutricional.",
-      "tickets": [
-        "GYM-85",
-        "GYM-86",
-        "GYM-134"
-      ]
-    },
-    {
       "id": "arreglar",
       "title": "Arreglar lo que está roto de verdad",
       "why": "No son ejercicio: son fallos reales del agente hoy. Sin is_error el modelo confunde un error con un dato; sin validación acepta cualquier argumento alucinado; sin política de tamaño el contexto crece sin techo. En este orden, de más dañino a menos.",
@@ -1729,6 +1739,17 @@
         "GYM-42",
         "GYM-40",
         "GYM-41"
+      ]
+    },
+    {
+      "id": "runtime-estimador",
+      "title": "Fijar y compartir el runtime del estimador",
+      "why": "Primero GYM-85 congela los contratos de transporte y extracción del estimador; después GYM-86 protege la tool de código de barras y la frontera de escritura. GYM-136 tipa y valida las capacidades que cada tool necesita. Con esas redes de seguridad, GYM-134 puede eliminar el bucle duplicado sin cambiar la semántica nutricional.",
+      "tickets": [
+        "GYM-85",
+        "GYM-86",
+        "GYM-136",
+        "GYM-134"
       ]
     },
     {
