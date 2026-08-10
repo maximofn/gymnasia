@@ -1338,6 +1338,28 @@
           ]
         },
         {
+          "id": "GYM-133",
+          "title": "Definir un registro extensible de fuentes de alimentos",
+          "state": "todo",
+          "summary": "Separar repositorio, tipo y propiedad de cada alimento y centralizar carga, caché, imágenes, composición, filtros, prioridades, incidencias y backups sin mezclar valores por 100 g con totales de porción.",
+          "dependsOn": [],
+          "related": [
+            "GYM-15",
+            "GYM-16",
+            "GYM-17",
+            "GYM-24",
+            "GYM-54",
+            "GYM-61",
+            "GYM-62",
+            "GYM-63",
+            "GYM-64",
+            "GYM-82",
+            "GYM-84",
+            "GYM-86",
+            "GYM-131"
+          ]
+        },
+        {
           "id": "GYM-88",
           "title": "Mostrar uso de tokens y costes por proveedor en Ajustes",
           "state": "todo",
