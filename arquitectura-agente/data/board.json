@@ -911,6 +911,53 @@
       ]
     },
     {
+      "id": "GYM-121",
+      "kind": "epic",
+      "title": "Testing",
+      "state": "backlog",
+      "summary": "El bloque mejor cubierto: 44 tests en 12 ficheros y CI real en cada pull request. Lo que falta son tres agujeros del CI y el pipeline específico de IA. Unit e integration ya los documentan GYM-48 y GYM-35 a GYM-39.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-122",
+          "title": "Cerrar los agujeros del CI",
+          "state": "backlog",
+          "summary": "El filtro de rutas no incluye arquitectura-agente/, así que los 13 tests del tablero no corren nunca en CI. Y solo se dispara en pull request, no en push a main.",
+          "baseline": "partial",
+          "dependsOn": [],
+          "related": [
+            "GYM-48"
+          ]
+        },
+        {
+          "id": "GYM-123",
+          "title": "Suites E2E en CI",
+          "state": "backlog",
+          "summary": "Existen tres suites E2E y ninguna corre automáticamente. Lo difícil no es instalarlas, es decidir la cadencia sin acabar con tests intermitentes que nadie se cree.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-122"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-124",
+          "title": "Pipeline de CI/CD para IA",
+          "state": "backlog",
+          "summary": "Las piezas están en GYM-76, GYM-79 y GYM-120, pero nadie las orquesta. Las evals no pueden bloquear un commit: avisan, no paran.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-76",
+            "GYM-79"
+          ],
+          "related": [
+            "GYM-105",
+            "GYM-120"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -1601,6 +1648,16 @@
         "GYM-118",
         "GYM-119",
         "GYM-120"
+      ]
+    },
+    {
+      "id": "testing",
+      "title": "Testing",
+      "why": "GYM-122 es el más barato y el más urgente de todo el tablero: hoy los tests del tablero no corren en CI y eso depende de que alguien se acuerde de lanzarlos. GYM-124 va al final porque necesita que las evals existan (GYM-76 y GYM-79).",
+      "tickets": [
+        "GYM-122",
+        "GYM-123",
+        "GYM-124"
       ]
     }
   ]
