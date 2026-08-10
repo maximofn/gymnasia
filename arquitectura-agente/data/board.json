@@ -320,6 +320,73 @@
       ]
     },
     {
+      "id": "GYM-65",
+      "kind": "epic",
+      "title": "Runtime de agentes",
+      "state": "backlog",
+      "summary": "Los doce puntos del runtime: bucle de ejecución y lo que lo rodea en producción. La mayor parte ya está construida, así que es sobre todo documentar lo que funciona y cerrar el hueco de checkpointing.",
+      "dependsOn": [
+        "GYM-34"
+      ],
+      "tickets": [
+        {
+          "id": "GYM-66",
+          "title": "State management: documentar dónde vive el estado del agente",
+          "state": "backlog",
+          "summary": "Las conversaciones se persisten en messagesByThread dentro del store. Falta documentar qué estado es del agente, cuál del producto y cuál efímero.",
+          "baseline": "done",
+          "dependsOn": [
+            "GYM-34"
+          ],
+          "related": [
+            "GYM-69"
+          ]
+        },
+        {
+          "id": "GYM-67",
+          "title": "Retries: documentar la clasificación de errores y el backoff",
+          "state": "backlog",
+          "summary": "3 intentos con backoff lineal y clasificación por regex de lo reintentable. La lógica está duplicada en chat y estimador, y las dos regex ya han divergido.",
+          "baseline": "done",
+          "dependsOn": [
+            "GYM-34"
+          ],
+          "related": [
+            "GYM-10",
+            "GYM-29"
+          ]
+        },
+        {
+          "id": "GYM-68",
+          "title": "Streaming: documentar el transporte SSE y el agrupado de deltas",
+          "state": "backlog",
+          "summary": "SSE sobre XHR en los tres proveedores, con deltas separados de contenido y thinking y agrupado a 40 ms. No hay cancelación por parte del usuario.",
+          "baseline": "done",
+          "dependsOn": [
+            "GYM-34"
+          ],
+          "related": [
+            "GYM-37"
+          ]
+        },
+        {
+          "id": "GYM-69",
+          "title": "Checkpointing: reanudar una ejecución interrumpida",
+          "state": "backlog",
+          "summary": "Los datos sobreviven al reinicio pero la ejecución en curso no: se pierde la ronda, las tools pendientes y los resultados ya obtenidos. En Android importa más porque el sistema mata procesos en segundo plano.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-34",
+            "GYM-66"
+          ],
+          "related": [
+            "GYM-43",
+            "GYM-45"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -487,6 +554,20 @@
             "GYM-16",
             "GYM-17",
             "GYM-61",
+            "GYM-63"
+          ]
+        },
+        {
+          "id": "GYM-70",
+          "title": "Validar y reportar datos de dieta dañados al hidratar",
+          "state": "todo",
+          "summary": "Validar fechas, IDs, comidas y nutrientes al hidratar o importar, aplicar solo reparaciones deterministas y conservar un informe recuperable en vez de ocultar daños o sobrescribir registros.",
+          "dependsOn": [],
+          "related": [
+            "GYM-24",
+            "GYM-60",
+            "GYM-61",
+            "GYM-62",
             "GYM-63"
           ]
         },
@@ -753,6 +834,17 @@
         "GYM-37",
         "GYM-38",
         "GYM-39"
+      ]
+    },
+    {
+      "id": "runtime",
+      "title": "Runtime: documentar lo que ya funciona",
+      "why": "Tres de los cuatro ya están implementados y solo piden tests y artículo, así que son tan baratos como la fase anterior. GYM-69 sí es trabajo real y va el último porque conviene tener documentado antes dónde vive el estado (GYM-66).",
+      "tickets": [
+        "GYM-66",
+        "GYM-67",
+        "GYM-68",
+        "GYM-69"
       ]
     },
     {

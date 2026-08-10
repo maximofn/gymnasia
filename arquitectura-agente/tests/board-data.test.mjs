@@ -143,14 +143,20 @@ test("un ticket cerrado no puede estar bloqueado por uno abierto", () => {
 });
 
 test("el estado de partida solo se declara donde tiene sentido", () => {
-  // Es información de la épica de tool calling: si aparece suelta, es un copia-pega.
+  // El punto de partida (cuánto código hay ya escrito) solo significa algo en las
+  // épicas que auditan la app existente. En un ticket suelto es un copia-pega.
+  const epicIds = new Set(epics.map((e) => e.id));
   const withBaseline = tickets.filter((t) => t.baseline !== undefined);
+
   assert.ok(withBaseline.length > 0, "ningún ticket declara estado de partida");
   for (const ticket of withBaseline) {
-    assert.equal(
-      ticket.groupId,
-      "GYM-33",
-      `${ticket.id} declara estado de partida fuera de la épica de tool calling`,
+    assert.ok(
+      epicIds.has(ticket.groupId),
+      `${ticket.id} declara estado de partida fuera de una épica (grupo ${ticket.groupId})`,
+    );
+    assert.ok(
+      baselineIds.has(ticket.baseline),
+      `${ticket.id} declara un estado de partida desconocido: ${ticket.baseline}`,
     );
   }
 });
