@@ -412,9 +412,9 @@
       "tickets": [
         {
           "id": "GYM-72",
-          "title": "1. Elegir plataforma de evals y montar el esqueleto",
+          "title": "1. Integrar LangSmith y Langfuse, compararlas con datos propios y elegir",
           "state": "backlog",
-          "summary": "LangSmith vs Langfuse. El stub actual son 7 líneas que imprimen un mensaje.",
+          "summary": "Se integran las dos, se pasa el mismo conjunto de ~10 casos por ambas y se decide al final con datos propios. El entregable más duradero no es la elección, es la interfaz propia del runner que deja la plataforma detrás de un adaptador.",
           "baseline": "missing",
           "dependsOn": [],
           "related": [
