@@ -788,6 +788,67 @@
           ]
         },
         {
+          "id": "GYM-88",
+          "title": "Mostrar uso de tokens y costes por proveedor en Ajustes",
+          "state": "todo",
+          "summary": "Añadir en Proveedor IA un panel por periodo, proveedor, modelo y agente que separe coste API estimado de equivalente API de suscripción no cobrado por uso.",
+          "dependsOn": [
+            "GYM-89",
+            "GYM-90"
+          ],
+          "related": [
+            "GYM-13",
+            "GYM-47",
+            "GYM-57"
+          ]
+        },
+        {
+          "id": "GYM-89",
+          "title": "Medir y persistir tokens y coste API equivalente por llamada",
+          "state": "todo",
+          "summary": "Normalizar usage de todos los adaptadores y guardar un ledger local por llamada, ronda, conversación y agente, sin contenido sensible ni doble conteo de streams o reintentos.",
+          "dependsOn": [
+            "GYM-90"
+          ],
+          "related": [
+            "GYM-13",
+            "GYM-47",
+            "GYM-51",
+            "GYM-57",
+            "GYM-85"
+          ]
+        },
+        {
+          "id": "GYM-90",
+          "title": "Mantener un catálogo versionado de contexto y precios de modelos",
+          "state": "todo",
+          "summary": "Registrar por proveedor y modelo la ventana, salida máxima, capacidades, tarifas, vigencias y modo de credencial, dejando como desconocido cualquier dato no verificable.",
+          "dependsOn": [],
+          "related": [
+            "GYM-11",
+            "GYM-51",
+            "GYM-57",
+            "GYM-58"
+          ]
+        },
+        {
+          "id": "GYM-91",
+          "title": "Mostrar tokens y porcentaje de contexto en cada conversación",
+          "state": "todo",
+          "summary": "Mostrar por hilo los tokens acumulados facturables y, por separado, la ocupación del payload de la próxima llamada respecto a la ventana efectiva del modelo.",
+          "dependsOn": [
+            "GYM-89",
+            "GYM-90"
+          ],
+          "related": [
+            "GYM-41",
+            "GYM-46",
+            "GYM-47",
+            "GYM-51",
+            "GYM-57"
+          ]
+        },
+        {
           "id": "GYM-50",
           "title": "Memoria del agente",
           "state": "backlog",
