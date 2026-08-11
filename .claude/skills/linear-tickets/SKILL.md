@@ -193,7 +193,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Cinco cosas que cuestan tiempo si no se saben:
+Seis cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -220,6 +220,18 @@ Cinco cosas que cuestan tiempo si no se saben:
    síntoma es que `replace --dry-run` devuelve `sin coincidencias` aunque el
    checkbox aparezca marcado en la interfaz. Relee el ticket con `get` y usa la
    capitalización que devuelva la API antes de repetir la sustitución.
+
+6. **Los backticks Markdown ejecutan command substitution si los pasas entre
+   comillas dobles en zsh.** El síntoma es `command not found: main` o
+   `command not found: debug`, seguido de `sin coincidencias`, al usar `replace`
+   sobre texto como `` `main` ``. La shell altera el argumento antes de que lo
+   reciba `linear.py`, incluso en `--dry-run`. Pasa `--find` y `--replace` entre
+   comillas simples —escapando cualquier apóstrofo de forma segura— o léelos
+   desde una fuente que no vuelva a interpretar el contenido. Ejemplo seguro:
+   ```bash
+   python3 <ruta>/linear.py replace GYM-25 \
+     --find 'proteger `main`' --replace 'proteger `main` y los workflows' --dry-run
+   ```
 
 ## Notas
 

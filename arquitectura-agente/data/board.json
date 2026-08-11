@@ -56,16 +56,35 @@
       "kind": "epic",
       "title": "Gobierno y seguridad de la política remota del agente",
       "state": "todo",
-      "summary": "Conservar el control remoto necesario para corregir riesgos sanitarios con rapidez, pero con aprobación exclusiva, entornos, firma, evals, guardrails, rollback y auditoría verificables.",
+      "summary": "Identificar inequívocamente al agente como IA y conservar el control remoto necesario para corregir riesgos sanitarios, con aprobación exclusiva, entornos, firma, evals, guardrails, rollback y auditoría verificables.",
       "dependsOn": [],
       "tickets": [
+        {
+          "id": "GYM-150",
+          "title": "Identificar inequívocamente al agente como inteligencia artificial",
+          "state": "todo",
+          "summary": "Informar de forma clara, accesible y previa a la primera interacción de que se conversa con una IA, mediante UI determinista y una cláusula de identidad no anulable en todos los prompts conversacionales.",
+          "baseline": "partial",
+          "dependsOn": [],
+          "related": [
+            "GYM-105",
+            "GYM-137",
+            "GYM-140",
+            "GYM-142",
+            "GYM-143",
+            "GYM-145",
+            "GYM-147"
+          ]
+        },
         {
           "id": "GYM-137",
           "title": "Alinear el fallback integrado con el prompt remoto en cada compilación",
           "state": "todo",
           "summary": "Usar prompts/AGENTS.md como única fuente editable y empaquetar automáticamente su snapshot en cada build, conservando la prioridad remoto → caché → versión compilada sin divergencias.",
           "baseline": "partial",
-          "dependsOn": [],
+          "dependsOn": [
+            "GYM-150"
+          ],
           "related": [
             "GYM-47",
             "GYM-73",
@@ -1920,8 +1939,9 @@
     {
       "id": "seguridad-prompt",
       "title": "Máxima prioridad: gobernar y asegurar la política del agente",
-      "why": "Este bloque va antes que cualquier otro trabajo abierto. Conserva el control remoto para emergencias sanitarias, pero añade una única fuente compilada, autorización exclusiva, entornos, firma, evals, eliminación de debug, guardrails, rollback y alertas en ese orden.",
+      "why": "Este bloque va antes que cualquier otro trabajo abierto. Primero elimina la ambigüedad legal identificando al agente como IA desde la primera interacción; después conserva el control remoto para emergencias sanitarias y añade fuente compilada, autorización exclusiva, entornos, firma, evals, eliminación de debug, guardrails, rollback y alertas.",
       "tickets": [
+        "GYM-150",
         "GYM-137",
         "GYM-142",
         "GYM-144",
