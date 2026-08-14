@@ -564,6 +564,23 @@
             "GYM-135",
             "GYM-136"
           ]
+        },
+        {
+          "id": "GYM-152",
+          "title": "Detectar, preservar y recuperar la memoria personal corrupta",
+          "state": "todo",
+          "summary": "Distinguir la memoria vacía de la corrupta, validar cada campo, preservar el payload original y bloquear sobrescrituras hasta que el usuario complete una recuperación explícita.",
+          "dependsOn": [
+            "GYM-151"
+          ],
+          "related": [
+            "GYM-24",
+            "GYM-42",
+            "GYM-62",
+            "GYM-63",
+            "GYM-135",
+            "GYM-136"
+          ]
         }
       ]
     },
@@ -2003,9 +2020,10 @@
     {
       "id": "arreglar",
       "title": "Arreglar lo que está roto de verdad",
-      "why": "No son ejercicio: son fallos reales del agente hoy. GYM-151 evita que la UI y el agente se borren recuerdos entre sí; después se corrige que el modelo confunda errores con datos, acepte argumentos alucinados o crezca el contexto sin límite.",
+      "why": "No son ejercicio: son fallos reales del agente hoy. GYM-151 evita que la UI y el agente se borren recuerdos entre sí y GYM-152 impide que una memoria corrupta parezca vacía y termine sobrescrita; después se corrige que el modelo confunda errores con datos, acepte argumentos alucinados o crezca el contexto sin límite.",
       "tickets": [
         "GYM-151",
+        "GYM-152",
         "GYM-42",
         "GYM-40",
         "GYM-41"
