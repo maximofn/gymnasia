@@ -543,6 +543,31 @@
       ]
     },
     {
+      "id": "GYM-50",
+      "kind": "epic",
+      "title": "Memoria del agente",
+      "state": "backlog",
+      "summary": "Evolucionar la memoria semántica actual con escritura segura, temporalidad, memoria episódica, consolidación, olvido, evaluación y defensa ante envenenamiento.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-151",
+          "title": "Evitar pérdidas por escrituras concurrentes de la memoria personal",
+          "state": "todo",
+          "summary": "Sustituir las sobrescrituras del array completo por mutaciones granulares con IDs y revisiones, combinando cambios distintos y mostrando conflictos reales entre la UI y el agente.",
+          "dependsOn": [],
+          "related": [
+            "GYM-24",
+            "GYM-42",
+            "GYM-45",
+            "GYM-63",
+            "GYM-135",
+            "GYM-136"
+          ]
+        }
+      ]
+    },
+    {
       "id": "GYM-65",
       "kind": "epic",
       "title": "Runtime de agentes",
@@ -1313,7 +1338,7 @@
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
-      "summary": "Trabajo de producto y de plataforma que en Linear vive fuera de las dos épicas.",
+      "summary": "Trabajo de producto y de plataforma que en Linear vive fuera de las épicas reflejadas en el tablero.",
       "tickets": [
         {
           "id": "GYM-5",
@@ -1720,17 +1745,6 @@
           ]
         },
         {
-          "id": "GYM-50",
-          "title": "Memoria del agente",
-          "state": "backlog",
-          "summary": "Épica pendiente de desglosar. Hoy solo hay memoria semántica: falta episódica, timestamps, consolidación y defensa ante envenenamiento. El patrón JIT de las 4 tools de memoria ya está bien resuelto.",
-          "dependsOn": [],
-          "related": [
-            "GYM-45",
-            "GYM-51"
-          ]
-        },
-        {
           "id": "GYM-51",
           "title": "Context engineering",
           "state": "backlog",
@@ -1989,8 +2003,9 @@
     {
       "id": "arreglar",
       "title": "Arreglar lo que está roto de verdad",
-      "why": "No son ejercicio: son fallos reales del agente hoy. Sin is_error el modelo confunde un error con un dato; sin validación acepta cualquier argumento alucinado; sin política de tamaño el contexto crece sin techo. En este orden, de más dañino a menos.",
+      "why": "No son ejercicio: son fallos reales del agente hoy. GYM-151 evita que la UI y el agente se borren recuerdos entre sí; después se corrige que el modelo confunda errores con datos, acepte argumentos alucinados o crezca el contexto sin límite.",
       "tickets": [
+        "GYM-151",
         "GYM-42",
         "GYM-40",
         "GYM-41"
