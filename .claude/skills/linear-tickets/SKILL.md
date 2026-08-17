@@ -193,7 +193,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Seis cosas que cuestan tiempo si no se saben:
+Siete cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -232,6 +232,12 @@ Seis cosas que cuestan tiempo si no se saben:
    python3 <ruta>/linear.py replace GYM-25 \
      --find 'proteger `main`' --replace 'proteger `main` y los workflows' --dry-run
    ```
+
+7. **Linear limita `issues(first: ...)` a 250 resultados.** El síntoma al usar
+   `list --limit 251` (o un valor mayor) es `Argument Validation Error` con
+   `first must not be greater than 250`. Usa como máximo `--limit 250`; si el
+   equipo supera esa cifra, el script necesitará paginación antes de poder
+   auditar el inventario completo en una sola consulta.
 
 ## Notas
 
