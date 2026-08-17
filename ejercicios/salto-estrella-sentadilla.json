@@ -1,0 +1,14 @@
+{
+  "id": "salto-estrella-sentadilla",
+  "name": "Salto en estrella desde sentadilla",
+  "image_male": "images/salto-estrella-sentadilla-male.webp",
+  "image_female": "images/salto-estrella-sentadilla-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "glúteos",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies a la anchura de los hombros y baja a una sentadilla corta. Impúlsate con fuerza y, en el aire, abre las piernas y extiende los brazos hacia los lados formando una estrella. Vuelve a juntar las extremidades antes de aterrizar suavemente con las rodillas flexionadas y enlaza la siguiente repetición."
+}

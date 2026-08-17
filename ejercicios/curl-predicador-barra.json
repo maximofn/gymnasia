@@ -1,0 +1,13 @@
+{
+  "id": "curl-predicador-barra",
+  "name": "Curl predicador con barra",
+  "image_male": "images/curl-predicador-barra-male.webp",
+  "image_female": "images/curl-predicador-barra-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco predicador y apoya por completo la parte posterior de los brazos en la almohadilla. Sujeta una barra con agarre supino y flexiona los codos para acercarla a los hombros sin despegar los brazos del soporte. Contrae los bíceps arriba y baja lentamente hasta casi extender los codos."
+}

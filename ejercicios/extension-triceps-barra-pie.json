@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-barra-pie",
+  "name": "Extensión de tríceps de pie con barra",
+  "image_male": "images/extension-triceps-barra-pie-male.webp",
+  "image_female": "images/extension-triceps-barra-pie-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "abdomen"
+  ],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie y eleva una barra por encima de la cabeza con agarre prono. Mantén los brazos superiores junto a las orejas y flexiona los codos para bajar la barra detrás de la cabeza sin abrirlos hacia los lados. Extiende los codos hasta volver arriba, manteniendo el abdomen activo y la espalda neutra."
+}

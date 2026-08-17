@@ -1,0 +1,14 @@
+{
+  "id": "sentadilla-dividida-banda",
+  "name": "Sentadilla dividida con banda",
+  "image_male": "images/sentadilla-dividida-banda-male.webp",
+  "image_female": "images/sentadilla-dividida-banda-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Adopta una posición dividida con un pie adelantado y el otro apoyado detrás. Pisa una banda con el pie delantero y sujeta sus extremos a la altura de los hombros. Desciende flexionando ambas rodillas hasta acercar la rodilla trasera al suelo, mantén el torso erguido y vuelve a subir empujando con el talón delantero."
+}

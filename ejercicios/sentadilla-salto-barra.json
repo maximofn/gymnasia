@@ -1,0 +1,14 @@
+{
+  "id": "sentadilla-salto-barra",
+  "name": "Sentadilla con salto y barra",
+  "image_male": "images/sentadilla-salto-barra-male.webp",
+  "image_female": "images/sentadilla-salto-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "glúteos",
+    "gemelos"
+  ],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca una barra ligera sobre la parte alta de la espalda y separa los pies a la anchura de los hombros. Baja a una sentadilla manteniendo el tronco firme y acelera hacia arriba hasta despegar ambos pies del suelo. Aterriza suavemente con las rodillas flexionadas, recupera el equilibrio y repite solo si puedes conservar una técnica estable."
+}

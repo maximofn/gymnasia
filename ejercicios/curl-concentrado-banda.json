@@ -1,0 +1,13 @@
+{
+  "id": "curl-concentrado-banda",
+  "name": "Curl concentrado con banda",
+  "image_male": "images/curl-concentrado-banda-male.webp",
+  "image_female": "images/curl-concentrado-banda-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Siéntate con las piernas separadas, pisa un extremo de la banda con un pie y sujeta el otro con la mano del mismo lado. Apoya el codo en la cara interna del muslo y mantén el brazo superior inmóvil. Flexiona el codo hasta acercar la mano al hombro, aprieta el bíceps y desciende de forma controlada antes de cambiar de lado."
+}

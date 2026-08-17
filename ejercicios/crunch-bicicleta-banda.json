@@ -1,0 +1,14 @@
+{
+  "id": "crunch-bicicleta-banda",
+  "name": "Crunch bicicleta con banda",
+  "image_male": "images/crunch-bicicleta-banda-male.webp",
+  "image_female": "images/crunch-bicicleta-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "flexores de cadera"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con una banda alrededor de ambos pies y coloca las manos detrás de la cabeza. Eleva los hombros y acerca una rodilla al pecho mientras extiendes la otra pierna contra la resistencia, girando el torso para aproximar el codo contrario. Alterna los lados con control sin tirar del cuello ni apoyar los pies."
+}

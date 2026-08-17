@@ -1,0 +1,14 @@
+{
+  "id": "rodillo-abdominal-barra",
+  "name": "Rodillo abdominal con barra",
+  "image_male": "images/rodillo-abdominal-barra-male.webp",
+  "image_female": "images/rodillo-abdominal-barra-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "zona lumbar",
+    "hombros"
+  ],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Arrodíllate y agarra una barra cargada con discos que puedan rodar, colocando las manos a la anchura de los hombros. Activa el abdomen y desplaza la barra hacia delante mientras extiendes las caderas y los brazos sin arquear la zona lumbar. Llega hasta donde puedas mantener el control y regresa llevando la barra hacia las rodillas."
+}

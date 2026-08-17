@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-frontal-banda",
+  "name": "Elevación frontal con banda",
+  "image_male": "images/elevacion-frontal-banda-male.webp",
+  "image_female": "images/elevacion-frontal-banda-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "tríceps"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Pisa el centro de una banda con ambos pies y agarra los extremos delante de los muslos. Con el abdomen activo y los codos apenas flexionados, eleva los brazos al frente hasta la altura de los hombros. Haz una pausa y baja lentamente sin balancear el cuerpo ni encoger los hombros."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-y-banda",
+  "name": "Elevación en Y con banda",
+  "image_male": "images/elevacion-y-banda-male.webp",
+  "image_female": "images/elevacion-y-banda-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "romboides"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Pisa una banda con ambos pies y sujeta los extremos delante de los muslos. Mantén los brazos casi rectos y elévalos hacia arriba y hacia fuera hasta formar una Y con el cuerpo. Junta suavemente los omóplatos sin arquear la espalda y baja de manera controlada."
+}

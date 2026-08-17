@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-gemelos-sentado-barra",
+  "name": "Elevación de gemelos sentado con barra",
+  "image_male": "images/elevacion-gemelos-sentado-barra-male.webp",
+  "image_female": "images/elevacion-gemelos-sentado-barra-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "sóleo"
+  ],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con la parte delantera de los pies sobre un bloque y coloca una barra acolchada sobre los muslos, cerca de las rodillas. Sujeta la barra y baja los talones de forma controlada. Empuja con las puntas de los pies para elevarlos al máximo, haz una pausa y vuelve a descender."
+}

@@ -6,7 +6,7 @@
   "image_generation": {
     "provider": "openai-imagegen",
     "model": "gpt-image-2",
-    "generated_at": "2026-08-09",
+    "generated_at": "2026-08-17",
     "style_reference": "docs/design/Gimnasia Design System.png"
   },
   "batches": [
@@ -160,6 +160,33 @@
         {"source_id": "0051", "id": "sentadilla-jefferson-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0067", "id": "arrancada-una-mano-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0069", "id": "sentadilla-overhead-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
+      ]
+    },
+    {
+      "number": 7,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0002", "id": "flexion-lateral-45-grados", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0084", "id": "rodillo-abdominal-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3220", "id": "salto-estrella-sentadilla", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0972", "id": "crunch-bicicleta-banda", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0974", "id": "jalon-agarre-cerrado-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0976", "id": "curl-concentrado-banda", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0978", "id": "elevacion-frontal-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1408", "id": "puente-gluteos-banda", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0988", "id": "remo-unilateral-bajo-banda", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0997", "id": "press-hombros-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1001", "id": "sentadilla-dividida-banda", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1008", "id": "step-up-banda", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1015", "id": "press-pallof-vertical-banda", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1017", "id": "elevacion-y-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0053", "id": "sentadilla-salto-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1410", "id": "zancada-lateral-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0070", "id": "curl-predicador-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0095", "id": "encogimientos-barra", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0088", "id": "elevacion-gemelos-sentado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0109", "id": "extension-triceps-barra-pie", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
       ]
     }
   ]

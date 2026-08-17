@@ -1,0 +1,14 @@
+{
+  "id": "press-hombros-banda",
+  "name": "Press de hombros con banda",
+  "image_male": "images/press-hombros-banda-male.webp",
+  "image_female": "images/press-hombros-banda-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "trapecios"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Pisa el centro de una banda con los pies a la anchura de los hombros y lleva las manos junto a los hombros, con los codos flexionados. Empuja ambos extremos por encima de la cabeza hasta extender los brazos sin arquear la espalda. Baja con control hasta la posición inicial manteniendo el abdomen activo."
+}

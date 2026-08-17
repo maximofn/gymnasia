@@ -1,0 +1,14 @@
+{
+  "id": "flexion-lateral-45-grados",
+  "name": "Flexión lateral a 45 grados",
+  "image_male": "images/flexion-lateral-45-grados-male.webp",
+  "image_female": "images/flexion-lateral-45-grados-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": [
+    "abdomen",
+    "zona lumbar"
+  ],
+  "equipment": "banco de hiperextensiones",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de lado en un banco de hiperextensiones a 45 grados, con los pies bien sujetos y la cadera apoyada en la almohadilla. Mantén el cuerpo alineado y las manos detrás de la cabeza o cruzadas sobre el pecho. Inclina el torso lateralmente hacia el suelo de forma controlada y vuelve a elevarlo contrayendo los oblicuos, sin girar el tronco."
+}

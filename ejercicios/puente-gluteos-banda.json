@@ -1,0 +1,14 @@
+{
+  "id": "puente-gluteos-banda",
+  "name": "Puente de glúteos con banda",
+  "image_male": "images/puente-gluteos-banda-male.webp",
+  "image_female": "images/puente-gluteos-banda-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "abdomen"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y una banda corta justo por encima de las rodillas. Separa ligeramente las rodillas contra la banda y empuja con los talones para elevar las caderas. Contrae los glúteos arriba manteniendo el torso alineado y desciende con control."
+}

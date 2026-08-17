@@ -1,0 +1,14 @@
+{
+  "id": "zancada-lateral-barra",
+  "name": "Zancada lateral con barra",
+  "image_male": "images/zancada-lateral-barra-male.webp",
+  "image_female": "images/zancada-lateral-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "aductores"
+  ],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Apoya una barra sobre la parte alta de la espalda y colócate de pie. Da un paso amplio hacia un lado, lleva la cadera hacia atrás y flexiona la rodilla de esa pierna mientras mantienes la otra extendida y ambos pies apoyados. Empuja el suelo con la pierna flexionada para volver al centro y alterna el lado."
+}

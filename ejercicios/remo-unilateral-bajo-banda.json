@@ -1,0 +1,14 @@
+{
+  "id": "remo-unilateral-bajo-banda",
+  "name": "Remo unilateral bajo con banda",
+  "image_male": "images/remo-unilateral-bajo-banda-male.webp",
+  "image_female": "images/remo-unilateral-bajo-banda-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "bíceps",
+    "hombros"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Fija una banda a un punto bajo y sujétala con una mano. Da un paso atrás, flexiona ligeramente las rodillas e inclina el torso desde las caderas manteniendo la espalda neutra. Tira del codo hacia la cadera y junta el omóplato sin girar el tronco. Extiende el brazo lentamente y cambia de lado al completar las repeticiones."
+}

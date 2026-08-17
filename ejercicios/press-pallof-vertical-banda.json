@@ -1,0 +1,14 @@
+{
+  "id": "press-pallof-vertical-banda",
+  "name": "Press Pallof vertical con banda",
+  "image_male": "images/press-pallof-vertical-banda-male.webp",
+  "image_female": "images/press-pallof-vertical-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "glúteos"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Fija una banda a un lado a la altura del pecho y colócate perpendicular al anclaje con los pies firmes. Sujeta la banda junto al esternón con ambas manos y activa el abdomen. Extiende los brazos en diagonal hasta llevar las manos por encima de la cabeza sin permitir que el tronco rote o se incline. Regresa lentamente y cambia de lado."
+}

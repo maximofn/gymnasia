@@ -1,0 +1,14 @@
+{
+  "id": "encogimientos-barra",
+  "name": "Encogimientos con barra",
+  "image_male": "images/encogimientos-barra-male.webp",
+  "image_female": "images/encogimientos-barra-female.webp",
+  "muscle_group": "trapecios",
+  "secondary_muscles": [
+    "hombros",
+    "antebrazos"
+  ],
+  "equipment": "barra",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie y sujeta una barra delante de los muslos con agarre prono y los brazos rectos. Mantén el torso estable y eleva los hombros verticalmente hacia las orejas sin doblar los codos ni llevarlos hacia atrás. Haz una pausa en la parte alta y desciende lentamente."
+}

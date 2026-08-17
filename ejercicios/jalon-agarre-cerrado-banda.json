@@ -1,0 +1,14 @@
+{
+  "id": "jalon-agarre-cerrado-banda",
+  "name": "Jalón con agarre cerrado y banda",
+  "image_male": "images/jalon-agarre-cerrado-banda-male.webp",
+  "image_female": "images/jalon-agarre-cerrado-banda-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Fija una banda en un punto alto y sujétala con ambas manos juntas. Siéntate o arrodíllate frente al anclaje con el torso erguido y los brazos extendidos. Lleva las manos hacia la parte alta del pecho bajando los codos junto al cuerpo y juntando los omóplatos. Regresa lentamente sin perder la tensión."
+}

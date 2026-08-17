@@ -1,0 +1,14 @@
+{
+  "id": "step-up-banda",
+  "name": "Step-up con banda",
+  "image_male": "images/step-up-banda-male.webp",
+  "image_female": "images/step-up-banda-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Coloca una banda corta por encima de las rodillas y sitúate frente a un cajón estable. Apoya un pie completo sobre la plataforma y sube empujando con ese talón mientras mantienes la rodilla alineada contra la resistencia. Extiende la cadera arriba y baja de forma controlada antes de repetir con la otra pierna."
+}
