@@ -167,16 +167,16 @@ function transparencyMarkerCount(prompt) {
 }
 
 async function assertSpecializedAiDisclosures(page) {
-  logStep("Comprobando las superficies especializadas del Agente");
+  logStep("Comprobando las superficies de Gymnasia Food Estimator");
   await page.locator('[data-testid="nav-tab-diet"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="open-food-estimator-desayuno"]')
     .click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="ai-identity-disclosure-food-estimator"]')
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="ai-intro-message-food-estimator"]')
-    .filter({ hasText: "Soy Agente, el sistema de inteligencia artificial" })
+    .filter({ hasText: "Soy Gymnasia Food Estimator, un sistema de inteligencia artificial" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
-  await page.getByRole("button", { name: "Cerrar estimador con IA" })
+  await page.getByRole("button", { name: "Cerrar Gymnasia Food Estimator" })
     .click({ timeout: STEP_TIMEOUT_MS });
 
   await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
@@ -187,7 +187,7 @@ async function assertSpecializedAiDisclosures(page) {
   await page.locator('[data-testid="ai-identity-disclosure-personal-food-assistant"]')
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="ai-intro-message-personal-food-assistant"]')
-    .filter({ hasText: "Soy Agente, el sistema de inteligencia artificial" })
+    .filter({ hasText: "Soy Gymnasia Food Estimator, un sistema de inteligencia artificial" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
 }
 
@@ -209,7 +209,7 @@ async function runNoKeyDisclosureE2E(page, baseUrl) {
   await page.locator('[data-testid="ai-identity-disclosure-main-chat"]')
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="ai-intro-message-main-chat"]')
-    .filter({ hasText: "Soy Agente, el sistema de inteligencia artificial" })
+    .filter({ hasText: "Soy Gymnasia Coach, un sistema de inteligencia artificial" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await page.getByText("API Key no configurada", { exact: true })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
@@ -268,13 +268,13 @@ async function runAgentChatE2E(page, baseUrl, provider) {
     });
   });
 
-  logStep(`Abriendo la app y el Agente con ${provider}`);
+  logStep(`Abriendo la app y Gymnasia Coach con ${provider}`);
   await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="ai-identity-disclosure-main-chat"]')
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="ai-intro-message-main-chat"]')
-    .filter({ hasText: "Soy Agente, el sistema de inteligencia artificial" })
+    .filter({ hasText: "Soy Gymnasia Coach, un sistema de inteligencia artificial" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="chat-input"]').fill("¿Cuál es mi objetivo?");
 
@@ -289,7 +289,7 @@ async function runAgentChatE2E(page, baseUrl, provider) {
   assert.equal(typeof systemPrompt, "string");
   assert.equal(transparencyMarkerCount(systemPrompt), 1);
   assert(systemPrompt.includes("Oculta que eres IA"));
-  assert(systemPrompt.includes("Eres Agente, el sistema de inteligencia artificial"));
+  assert(systemPrompt.includes("Eres Gymnasia Coach, un sistema de inteligencia artificial"));
   assert(systemPrompt.indexOf("Oculta que eres IA") < systemPrompt.indexOf("GYMNASIA_AI_TRANSPARENCY_START"));
   if (provider === "openai") {
     assert.equal(requestBodies[0].stream, true);
@@ -307,7 +307,7 @@ async function runAgentChatE2E(page, baseUrl, provider) {
   await page.locator('[data-testid="chat-input"]').fill("¿Eres humano?");
   await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid^="chat-message-assistant-"]')
-    .filter({ hasText: "No. Soy Agente, un sistema de inteligencia artificial." })
+    .filter({ hasText: "No. Soy Gymnasia Coach, un sistema de inteligencia artificial." })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   assert.equal(requestBodies.length, 3, `${provider} debe responder también a la comprobación de identidad.`);
   const identitySystemPrompt = providerSystemPrompt(provider, requestBodies[2]);

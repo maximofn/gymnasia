@@ -1,10 +1,11 @@
-# Transparencia del Agente de IA
+# Transparencia de los agentes de IA
 
 ## Decisión
 
-**Gymnasia** es la aplicación. **Agente** es el nombre del sistema conversacional
-de inteligencia artificial integrado en ella. Ninguna superficie debe presentar
-al Agente como Gymnasia, como una persona ni como un profesional acreditado.
+**Gymnasia** es la aplicación. **Gymnasia Coach** es el agente del chat principal
+y **Gymnasia Food Estimator** es el agente de las superficies de alimentos.
+Los nombres identifican funciones del producto; ninguna superficie debe
+presentarlos como personas ni como profesionales acreditados.
 
 La versión vigente del contrato es `2026-08-v1`. Su copy y su política local
 viven en `apps/mobile/agent/aiTransparency.ts`; no deben duplicarse como textos
@@ -12,10 +13,13 @@ independientes en componentes o prompts.
 
 ## Contrato visible
 
-Antes de que una persona pueda conversar con el Agente, la superficie muestra
-de forma determinista y accesible:
+Antes de que una persona pueda conversar, cada superficie muestra de forma
+determinista y accesible uno de estos títulos:
 
-> **Agente · inteligencia artificial**  
+> **Gymnasia Coach · inteligencia artificial**
+>
+> **Gymnasia Food Estimator · inteligencia artificial**
+>
 > No es una persona. Puede cometer errores. Contrasta la información importante,
 > especialmente la relacionada con tu salud.
 
@@ -25,9 +29,9 @@ streaming, respuesta del LLM ni consentimiento en un modal.
 
 Las superficies cubiertas son:
 
-- Agente principal.
-- Estimador conversacional de comidas.
-- Agente para alimentos personales.
+- Gymnasia Coach, en el chat principal.
+- Gymnasia Food Estimator, en el estimador conversacional de comidas.
+- Gymnasia Food Estimator, en el asistente de alimentos personales.
 
 Las transformaciones puramente automáticas que no mantengan un intercambio
 bidireccional con una persona quedan fuera de este contrato visible. Si un flujo

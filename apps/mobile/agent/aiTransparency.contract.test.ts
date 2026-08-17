@@ -30,13 +30,14 @@ describe("contrato estático de superficies conversacionales", () => {
     expect(disclosureSource).toContain("accessibilityLabel={copy.disclosureAccessibilityLabel}");
     expect(disclosureSource).toContain('accessibilityLiveRegion="polite"');
     expect(disclosureSource).toContain("AccessibilityInfo.announceForAccessibility");
-    expect(appSource).toContain('accessibilityLabel="Pregunta al Agente"');
+    expect(appSource).toContain('accessibilityLabel="Pregunta a Gymnasia Coach"');
+    expect(appSource).toContain("Pregunta a Gymnasia Food Estimator");
   });
 
-  it("no vuelve a presentar al Agente como persona o profesional real", () => {
+  it("mantiene ambos nombres sin presentar a los agentes como profesionales reales", () => {
     const conversationalSources = `${appSource}\n${promptSource}`;
     for (const prohibited of [
-      "Eres Gymnasia Coach",
+      "Eres Gymnasia Coach, un asistente de gimnasio",
       "Pregunta al coach",
       "nutricionista experto",
       "entrenador personal",
@@ -44,6 +45,7 @@ describe("contrato estático de superficies conversacionales", () => {
     ]) {
       expect(conversationalSources).not.toContain(prohibited);
     }
-    expect(promptSource).toContain("Eres Agente, el sistema de inteligencia artificial");
+    expect(promptSource).toContain("Eres Gymnasia Coach, el sistema de inteligencia artificial");
+    expect(appSource).toContain("Eres Gymnasia Food Estimator, el sistema de inteligencia artificial");
   });
 });

@@ -5,12 +5,12 @@ event: response.output_item.added
 data: {"type":"response.output_item.added","output_index":0,"item":{"type":"message","id":"msg_openai_identity","content":[]}}
 
 event: response.output_text.delta
-data: {"type":"response.output_text.delta","item_id":"msg_openai_identity","output_index":0,"content_index":0,"delta":"No. Soy Agente, un sistema "}
+data: {"type":"response.output_text.delta","item_id":"msg_openai_identity","output_index":0,"content_index":0,"delta":"No. Soy Gymnasia Coach, un sistema "}
 
 event: response.output_text.delta
 data: {"type":"response.output_text.delta","item_id":"msg_openai_identity","output_index":0,"content_index":0,"delta":"de inteligencia artificial."}
 
 event: response.completed
-data: {"type":"response.completed","response":{"id":"resp_openai_identity","output":[{"type":"message","id":"msg_openai_identity","content":[{"type":"output_text","text":"No. Soy Agente, un sistema de inteligencia artificial."}]}]}}
+data: {"type":"response.completed","response":{"id":"resp_openai_identity","output":[{"type":"message","id":"msg_openai_identity","content":[{"type":"output_text","text":"No. Soy Gymnasia Coach, un sistema de inteligencia artificial."}]}]}}
 
 data: [DONE]

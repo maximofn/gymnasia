@@ -1,4 +1,4 @@
-data: {"candidates":[{"content":{"role":"model","parts":[{"text":"No. Soy Agente, un sistema "}]},"index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":6,"totalTokenCount":38}}
+data: {"candidates":[{"content":{"role":"model","parts":[{"text":"No. Soy Gymnasia Coach, un sistema "}]},"index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":6,"totalTokenCount":38}}
 
 data: {"candidates":[{"content":{"role":"model","parts":[{"text":"de inteligencia artificial."}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":10,"totalTokenCount":42}}
 

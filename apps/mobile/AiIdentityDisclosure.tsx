@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { AccessibilityInfo, Platform, Text, View } from "react-native";
 
 import {
-  AI_TRANSPARENCY_COPY,
+  getAiTransparencyCopy,
   type AiConversationSurface,
 } from "./agent/aiTransparency";
 import { mobileTheme } from "./theme";
@@ -13,7 +13,7 @@ type AiIdentityDisclosureProps = {
 };
 
 export function AiIdentityDisclosure({ surface }: AiIdentityDisclosureProps) {
-  const copy = AI_TRANSPARENCY_COPY.es;
+  const copy = getAiTransparencyCopy(surface);
 
   useEffect(() => {
     if (Platform.OS === "web") return;
