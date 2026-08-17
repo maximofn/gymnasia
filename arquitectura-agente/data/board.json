@@ -62,7 +62,7 @@
         {
           "id": "GYM-150",
           "title": "Identificar inequívocamente al agente como inteligencia artificial",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Informar de forma clara, accesible y previa a la primera interacción de que se conversa con una IA, mediante UI determinista y una cláusula de identidad no anulable en todos los prompts conversacionales.",
           "baseline": "partial",
           "dependsOn": [],

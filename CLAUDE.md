@@ -94,6 +94,15 @@ Run from repo root unless noted.
   ```bash
   npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
   ```
+- En un worktree, `.vercel/project.json` puede faltar porque está ignorado por Git.
+  Antes de desplegar, confirma que contiene `"projectName":"gymnasia"`. Si falta
+  o apunta a otro proyecto, enlázalo explícitamente antes del deploy:
+  ```bash
+  npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente
+  ```
+  La salida correcta del deploy empieza por `Deploying gymnasia` y termina
+  aliando `https://gymnasia-sable.vercel.app`. Si muestra `Searching for existing
+  projects` o `Created`, detén el flujo: crearía un proyecto distinto.
 - La CLI de Vercel **no está instalada de forma permanente**; `npm exec` la baja al
   vuelo. La sesión suele estar autenticada en
   `~/Library/Application Support/com.vercel.cli`. Comprobarlo sin desplegar:
@@ -268,6 +277,18 @@ Only non-obvious gotchas that could recur are kept here.
   (ver "Tablero de seguimiento — Deploy Runbook").
 - Fix definitivo pendiente: reconectar el proyecto en el dashboard de Vercel si se quiere
   despliegue automático.
+
+### Un worktree sin vínculo de Vercel puede crear otro proyecto al desplegar el tablero
+- Gotcha: `arquitectura-agente/.vercel/project.json` está ignorado por Git. Un
+  worktree nuevo no hereda el vínculo al proyecto `gymnasia`; ejecutar directamente
+  `vercel deploy --cwd arquitectura-agente` hace que la CLI busque o cree un proyecto
+  con el nombre del directorio. El síntoma es `Searching for existing projects`,
+  seguido de `Created .../arquitectura-agente`, y un alias distinto de
+  `gymnasia-sable.vercel.app`.
+- Fix: antes del deploy, ejecutar
+  `npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente`
+  y verificar que la salida diga `Deploying gymnasia` y termine con el alias de
+  producción esperado.
 
 ### `actions/checkout` falla aunque `submodules: false` por gitlinks huérfanos
 - Gotcha: `.claude/worktrees/*` contiene entradas gitlink (`mode 160000`) heredadas,

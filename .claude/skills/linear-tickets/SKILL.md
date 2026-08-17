@@ -193,7 +193,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Siete cosas que cuestan tiempo si no se saben:
+Ocho cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -238,6 +238,18 @@ Siete cosas que cuestan tiempo si no se saben:
    `first must not be greater than 250`. Usa como máximo `--limit 250`; si el
    equipo supera esa cifra, el script necesitará paginación antes de poder
    auditar el inventario completo en una sola consulta.
+
+8. **Un worktree no hereda el vínculo ignorado de Vercel.** El síntoma al
+   desplegar el tablero es `Searching for existing projects` seguido de
+   `Created .../arquitectura-agente`; el deploy termina en un alias nuevo en vez
+   de `gymnasia-sable.vercel.app`. Antes de desplegar desde un worktree, enlaza
+   el directorio explícitamente y verifica el destino:
+   ```bash
+   npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente
+   npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
+   ```
+   La segunda salida debe empezar por `Deploying gymnasia` y terminar aliando
+   `https://gymnasia-sable.vercel.app`; si muestra `Created`, detén el flujo.
 
 ## Notas
 

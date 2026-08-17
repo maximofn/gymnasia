@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "apps/mobile/**"
+      - "prompts/**"
+      - "docs/ai-transparency.md"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/agent-tests.yml"
@@ -14,6 +16,8 @@ on:
     branches: [main]
     paths:
       - "apps/mobile/**"
+      - "prompts/**"
+      - "docs/ai-transparency.md"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/agent-tests.yml"

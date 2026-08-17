@@ -61,6 +61,15 @@ import {
   createGoogleStreamParser,
   createOpenAIStreamParser,
 } from "./agent/providerStreamParsers";
+import {
+  AI_DISCLOSURE_MESSAGE_KIND,
+  AI_TRANSPARENCY_COPY,
+  composeAiSystemPrompt,
+  createAiDisclosureMessage,
+  excludeLocalDisclosureMessages,
+  type AiDisclosureMessageKind,
+} from "./agent/aiTransparency";
+import { AiIdentityDisclosure } from "./AiIdentityDisclosure";
 
 // Foreground notification presentation handler. Without this, scheduled
 // notifications delivered while the app is in the foreground are silently
@@ -249,6 +258,7 @@ type ChatMessage = {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
+  kind?: AiDisclosureMessageKind;
   thinking?: string | null;
   is_streaming?: boolean;
   created_at: string;
@@ -623,7 +633,7 @@ const ALL_SERIES_TYPES = Object.keys(SERIES_TYPE_META) as SeriesType[];
 const CHAT_SYSTEM_PROMPT_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md";
 const DEFAULT_CHAT_SYSTEM_PROMPT =
-  "Eres Gymnasia Coach, un asistente de gimnasio y entrenador personal. " +
+  "Eres Agente, el sistema de inteligencia artificial de la aplicación Gymnasia, especializado en entrenamiento y nutrición. " +
   "Tu trabajo es ayudar con entrenamiento, nutricion, habitos y progreso fisico. " +
   "Responde siempre en espanol. Responde de forma breve, clara, practica y accionable. " +
   "Prioriza consejos seguros, realistas y faciles de aplicar.\n\n" +
@@ -656,7 +666,7 @@ const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
   "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
   "o abre la app en el movil.";
 const FOOD_ESTIMATOR_SYSTEM_PROMPT =
-  "Eres Gymnasia Food Estimator, un nutricionista experto en estimación visual de comidas. " +
+  "Eres Agente, el sistema de inteligencia artificial de la aplicación Gymnasia especializado en estimación visual de comidas. " +
   "Tu tarea es estimar siempre: calorías totales (kcal), gramos de proteína, gramos de carbohidratos, gramos de grasas y peso total de la comida en gramos. " +
   "Si la información es incierta, indica rangos aproximados y explica supuestos breves. " +
   "Responde en español, de forma clara y práctica. " +
@@ -671,8 +681,8 @@ const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Una receta es cualquier plato elaborado o combinación de ingredientes preparada por el usuario (por ejemplo: tortilla de patatas, ensalada César, arroz con pollo, etc.). " +
   "Los alimentos genéricos simples (arroz, pollo, huevo, aceite, fruta...) NO son ni producto comercial ni receta, son alimentos base.";
 const FOOD_AI_SYSTEM_PROMPT =
-  "Eres un nutricionista experto. El usuario te va a decir un alimento, plato o receta. " +
-  "Tu objetivo es determinar los valores nutricionales exactos por unidad base (100g, 1ml, 1 unidad, etc.). " +
+  "Eres Agente, el sistema de inteligencia artificial de la aplicación Gymnasia especializado en estimaciones nutricionales. El usuario te va a decir un alimento, plato o receta. " +
+  "Tu objetivo es estimar los valores nutricionales por unidad base (100g, 1ml, 1 unidad, etc.) sin atribuirte credenciales profesionales. " +
   "Flujo: 1) El usuario te dice un alimento, plato o receta. " +
   "2) Si necesitas más datos (ingredientes, cantidades, modo de preparación), pregúntale. " +
   "3) Cuando tengas toda la información, calcula los valores nutricionales. " +
@@ -3133,11 +3143,13 @@ function parseGoogleContent(payload: unknown): string | null {
 }
 
 async function callProviderChatAPI(provider: AIKey, messages: ChatInputMessage[]): Promise<string> {
-  const systemPrompt = normalizeChatSystemPrompt(
-    messages
-      .filter((msg) => msg.role === "system")
-      .map((msg) => msg.content)
-      .join("\n\n"),
+  const systemPrompt = composeAiSystemPrompt(
+    normalizeChatSystemPrompt(
+      messages
+        .filter((msg) => msg.role === "system")
+        .map((msg) => msg.content)
+        .join("\n\n"),
+    ),
   );
   const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
     .filter((msg) => msg.role !== "system")
@@ -3257,11 +3269,13 @@ async function callProviderChatAPIWithTools(
   messages: ChatInputMessage[],
   options?: ChatProviderCallOptions,
 ): Promise<AnthropicChatResult> {
-  const systemPrompt = normalizeChatSystemPrompt(
-    messages
-      .filter((msg) => msg.role === "system")
-      .map((msg) => msg.content)
-      .join("\n\n"),
+  const systemPrompt = composeAiSystemPrompt(
+    normalizeChatSystemPrompt(
+      messages
+        .filter((msg) => msg.role === "system")
+        .map((msg) => msg.content)
+        .join("\n\n"),
+    ),
   );
   const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
     .filter((msg) => msg.role !== "system")
@@ -3579,6 +3593,14 @@ async function callFoodEstimatorAPI(
     return -1;
   })();
   const nonSystemMessages = messages.filter((msg) => msg.role !== "system");
+  const systemPrompt = composeAiSystemPrompt(
+    normalizeChatSystemPrompt(
+      messages
+        .filter((msg) => msg.role === "system")
+        .map((msg) => msg.content)
+        .join("\n\n"),
+    ),
+  );
   const lastNonSystemUserMessageIndex = (() => {
     for (let index = nonSystemMessages.length - 1; index >= 0; index -= 1) {
       if (nonSystemMessages[index].role === "user") return index;
@@ -3587,12 +3609,6 @@ async function callFoodEstimatorAPI(
   })();
 
   if (provider.provider === "openai") {
-    const systemPrompt = normalizeChatSystemPrompt(
-      messages
-        .filter((msg) => msg.role === "system")
-        .map((msg) => msg.content)
-        .join("\n\n"),
-    );
     const openAIInputs: Array<Record<string, unknown>> = messages
       .filter((msg) => msg.role !== "system")
       .map((msg, index) => {
@@ -3757,7 +3773,7 @@ async function callFoodEstimatorAPI(
         model,
         max_tokens: 1200 + ANTHROPIC_THINKING_BUDGET,
         thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
-        system: FOOD_ESTIMATOR_SYSTEM_PROMPT,
+        system: systemPrompt,
         messages: msgs,
         tools: foodEstimatorTools.anthropic,
       };
@@ -3858,7 +3874,7 @@ async function callFoodEstimatorAPI(
   const makeGoogleRequest = async (contents: any[]) => {
     const body = {
       contents,
-      systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }] },
+      systemInstruction: { parts: [{ text: systemPrompt }] },
       tools: foodEstimatorTools.google,
       generationConfig: {
         thinkingConfig: {
@@ -3931,6 +3947,29 @@ async function callFoodEstimatorAPI(
 
 function uid(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function createAiIdentityChatMessage(prefix = "msg"): ChatMessage {
+  return {
+    id: uid(prefix),
+    ...createAiDisclosureMessage(),
+    created_at: new Date().toISOString(),
+  };
+}
+
+function normalizeThreadTitle(title: string | null, index: number): string | null {
+  if (typeof title !== "string") return title;
+  const normalized = title.trim();
+  const coachMatch = normalized.match(/^Coach(?:\s+(\d+))?$/i);
+  if (!coachMatch) return normalized || null;
+  const suffix = coachMatch[1] ?? (index > 0 ? `${index + 1}` : "");
+  return suffix ? `Agente ${suffix}` : "Agente";
+}
+
+function chatRoleLabel(role: ChatMessage["role"]): string {
+  if (role === "assistant") return AI_TRANSPARENCY_COPY.es.agentName;
+  if (role === "user") return "Tú";
+  return "Sistema";
 }
 
 function isoDateFromDate(date: Date): string {
@@ -4914,7 +4953,7 @@ function tabLabel(tab: TabKey): string {
     training: "Rutinas",
     diet: "Dieta",
     measures: "Medidas",
-    chat: "Chat",
+    chat: "Agente",
     settings: "Configuración",
   };
   return map[tab];
@@ -5024,6 +5063,8 @@ function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: stri
       onPress={onPress}
       disabled={disabled}
       testID={testID}
+      accessibilityLabel={label}
+      accessibilityRole="button"
       style={{
         height: 46,
         borderRadius: 12,
@@ -5394,8 +5435,8 @@ function createWebSeedStore(): LocalStore {
         quadriceps_cm: null, calf_cm: null, height_cm: null,
       },
     ],
-    threads: [{ id: threadId, title: "Coach 1" }],
-    messagesByThread: { [threadId]: [] },
+    threads: [{ id: threadId, title: "Agente 1" }],
+    messagesByThread: { [threadId]: [createAiIdentityChatMessage()] },
     keys: createDefaultProviderKeys(),
   };
 }
@@ -5409,9 +5450,9 @@ function createInitialStore(): LocalStore {
     dietByDate: {},
     dietSettings: createDefaultDietSettings(),
     measurements: [],
-    threads: [{ id: firstThreadId, title: "Coach 1" }],
+    threads: [{ id: firstThreadId, title: "Agente 1" }],
     messagesByThread: {
-      [firstThreadId]: [],
+      [firstThreadId]: [createAiIdentityChatMessage()],
     },
     keys: createDefaultProviderKeys(),
   };
@@ -5423,10 +5464,14 @@ function normalizeChatMessage(raw: ChatMessage, index: number): ChatMessage {
       ? raw.role
       : "assistant";
   const thinking = typeof raw?.thinking === "string" ? raw.thinking : null;
+  const kind = raw?.kind === AI_DISCLOSURE_MESSAGE_KIND
+    ? AI_DISCLOSURE_MESSAGE_KIND
+    : undefined;
   return {
     id: raw?.id?.trim() || uid(`msg-${index}`),
     role,
     content: typeof raw?.content === "string" ? raw.content : "",
+    kind,
     thinking,
     is_streaming: false,
     created_at:
@@ -5546,7 +5591,10 @@ function normalizeStore(raw: LocalStore): LocalStore {
     dietByDate: normalizeDietByDate(raw.dietByDate),
     dietSettings: normalizedDietSettings,
     measurements: normalizedMeasurements,
-    threads: raw.threads ?? [],
+    threads: (raw.threads ?? []).map((thread, index) => ({
+      ...thread,
+      title: normalizeThreadTitle(thread.title, index),
+    })),
     messagesByThread: normalizeMessagesByThread(raw.messagesByThread),
     keys,
     chatProvider,
@@ -5559,14 +5607,15 @@ type MiniChatProps = {
   providerKeys: AIKey[];
   providerPriority?: Provider[];
   preferredProvider?: Provider;
+  contextLabel?: string;
   onJsonResult?: (json: Record<string, unknown>) => void;
   onClose: () => void;
   visible: boolean;
   title: string;
 };
 
-function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvider, onJsonResult, onClose, visible, title }: MiniChatProps) {
-  const [mcMessages, setMcMessages] = useState<ChatMessage[]>([]);
+function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvider, contextLabel, onJsonResult, onClose, visible, title }: MiniChatProps) {
+  const [mcMessages, setMcMessages] = useState<ChatMessage[]>(() => [createAiIdentityChatMessage()]);
   const [mcInput, setMcInput] = useState("");
   const [mcSending, setMcSending] = useState(false);
   const mcScrollRef = useRef<ScrollView>(null);
@@ -5614,7 +5663,7 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
     try {
       const history: ChatInputMessage[] = [
         { role: "system", content: systemPrompt },
-        ...mcMessages.map((m) => ({ role: m.role, content: m.content })),
+        ...excludeLocalDisclosureMessages(mcMessages).map((m) => ({ role: m.role, content: m.content })),
         { role: "user" as const, content: text },
       ];
       const response = await callProviderChatAPI(provider, history);
@@ -5646,9 +5695,16 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
       <View>
         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, marginBottom: 2 }}>{providerLabel}</Text>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>{title}</Text>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>{title}</Text>
+            {contextLabel ? (
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 2 }}>{contextLabel}</Text>
+            ) : null}
+          </View>
           <Pressable
-            onPress={() => { setMcMessages([]); setMcInput(""); onClose(); }}
+            onPress={() => { setMcMessages([createAiIdentityChatMessage()]); setMcInput(""); onClose(); }}
+            accessibilityLabel="Cerrar Agente"
+            accessibilityRole="button"
             style={{ padding: 4 }}
           >
             <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
@@ -5656,19 +5712,17 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
         </View>
       </View>
 
+      <AiIdentityDisclosure surface="personal-food-assistant" />
+
       <ScrollView
         ref={mcScrollRef}
         style={{ maxHeight: 320 }}
         onContentSizeChange={() => mcScrollRef.current?.scrollToEnd({ animated: true })}
       >
-        {mcMessages.length === 0 ? (
-          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontStyle: "italic" }}>
-            Escribe un alimento, plato o receta para obtener sus macros...
-          </Text>
-        ) : null}
         {mcMessages.map((msg) => (
           <View
             key={msg.id}
+            testID={msg.kind === AI_DISCLOSURE_MESSAGE_KIND ? "ai-intro-message-personal-food-assistant" : undefined}
             style={{
               alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
               maxWidth: "85%",
@@ -5694,7 +5748,9 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
 
       {detectedJson && onJsonResult ? (
         <Pressable
-          onPress={() => { onJsonResult(detectedJson); setMcMessages([]); setMcInput(""); }}
+          onPress={() => { onJsonResult(detectedJson); setMcMessages([createAiIdentityChatMessage()]); setMcInput(""); }}
+          accessibilityLabel="Añadir resultado a mis alimentos"
+          accessibilityRole="button"
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -5715,6 +5771,7 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
           value={mcInput}
           onChangeText={setMcInput}
           placeholder="Ej: tortilla de patatas..."
+          accessibilityLabel="Pregunta al Agente sobre un alimento"
           placeholderTextColor={mobileTheme.color.textSecondary}
           onSubmitEditing={sendMcMessage}
           multiline
@@ -5734,6 +5791,8 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
         <Pressable
           onPress={sendMcMessage}
           disabled={mcSending || !mcInput.trim()}
+          accessibilityLabel="Enviar mensaje al Agente"
+          accessibilityRole="button"
           style={{
             alignItems: "center",
             justifyContent: "center",
@@ -5892,6 +5951,7 @@ function SharedChatPanel({
               return (
                 <View
                   key={msg.id}
+                  testID={msg.kind === AI_DISCLOSURE_MESSAGE_KIND ? "ai-intro-message-food-estimator" : undefined}
                   style={{
                     gap: 4,
                     alignSelf: isAssistant ? "flex-start" : "flex-end",
@@ -6010,7 +6070,11 @@ function SharedChatPanel({
           onContentSizeChange={() => scrollRef?.current?.scrollToEnd({ animated: true })}
         >
           {messages.map((msg) => (
-            <View key={msg.id} style={{ gap: 4 }}>
+            <View
+              key={msg.id}
+              testID={msg.kind === AI_DISCLOSURE_MESSAGE_KIND ? "ai-intro-message-shared-chat" : undefined}
+              style={{ gap: 4 }}
+            >
               {msg.role === "assistant" && msg.thinking ? (
                 <Pressable
                   onPress={() => onToggleThinking(msg.id)}
@@ -6057,7 +6121,7 @@ function SharedChatPanel({
                   padding: 10,
                 }}
               >
-                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{msg.role}</Text>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{chatRoleLabel(msg.role)}</Text>
                 {msg.content.trim() ? (
                   <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
                 ) : null}
@@ -6122,12 +6186,15 @@ function SharedChatPanel({
             value={inputValue}
             onChangeText={onInputChange}
             placeholder={inputPlaceholder}
+            accessibilityLabel="Pregunta al Agente sobre la comida"
             placeholderTextColor={mobileTheme.color.textSecondary}
             multiline
           />
           <Pressable
             onPress={onSend}
             disabled={sendDisabled}
+            accessibilityLabel={sendLabel}
+            accessibilityRole="button"
             style={{
               minWidth: 92,
               height: 44,
@@ -8299,11 +8366,11 @@ export default function App() {
       chatSessionInitRef.current = true;
       // Start a fresh chat session on every app launch
       const id = uid("thread");
-      const thread: ChatThread = { id, title: "Coach" };
+      const thread: ChatThread = { id, title: "Agente" };
       setStore((prev) => ({
         ...prev,
         threads: [...prev.threads, thread],
-        messagesByThread: { ...prev.messagesByThread, [id]: [] },
+        messagesByThread: { ...prev.messagesByThread, [id]: [createAiIdentityChatMessage()] },
       }));
       setActiveThreadId(id);
       return;
@@ -8487,7 +8554,7 @@ export default function App() {
         flushAssistantDraft(true);
       };
 
-      const history = [...threadMessages, userMessage]
+      const history = excludeLocalDisclosureMessages([...threadMessages, userMessage])
         .slice(-20)
         .map((msg) => ({ role: msg.role, content: msg.content }));
       const [systemPrompt, personalDataFields] = await Promise.all([loadChatSystemPrompt(), loadPersonalData()]);
@@ -8877,6 +8944,7 @@ export default function App() {
     // Override the initial message with the item's current data
     const gramsInfo = item.grams > 0 ? `${formatNutritionNumber(item.grams)}g, ` : "";
     setFoodEstimatorMessages([
+      createAiIdentityChatMessage("food_est_msg"),
       {
         id: uid("food_est_msg"),
         role: "assistant" as const,
@@ -9125,6 +9193,7 @@ export default function App() {
     foodEstimatorUsedBarcodeRef.current = false;
     setFoodEstimatorExpandedThinking({});
     setFoodEstimatorMessages([
+      createAiIdentityChatMessage("food_est_msg"),
       {
         id: uid("food_est_msg"),
         role: "assistant",
@@ -9320,7 +9389,7 @@ export default function App() {
       };
       const estimatorHistory: ChatInputMessage[] = [
         { role: "system", content: FOOD_ESTIMATOR_SYSTEM_PROMPT },
-        ...nextMessages.map<ChatInputMessage>((message) => ({
+        ...excludeLocalDisclosureMessages(nextMessages).map<ChatInputMessage>((message) => ({
           role: message.role === "assistant" ? "assistant" : "user",
           content: message.content,
         })),
@@ -11354,14 +11423,8 @@ export default function App() {
 
   function createThread() {
     const id = uid("thread");
-    const thread: ChatThread = { id, title: `Coach ${threads.length + 1}` };
-    const firstMessage: ChatMessage = {
-      id: uid("msg"),
-      role: "assistant",
-      content:
-        "Nuevo hilo creado. Este chat usa el proveedor activo; en web, Anthropic requiere un proxy propio y OpenAI/Google pueden usarse directos.",
-      created_at: new Date().toISOString(),
-    };
+    const thread: ChatThread = { id, title: `Agente ${threads.length + 1}` };
+    const firstMessage = createAiIdentityChatMessage();
 
     setStore((prev) => ({
       ...prev,
@@ -12050,6 +12113,10 @@ export default function App() {
                 return (
                   <Pressable
                     key={option.key}
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected: isActive }}
+                    accessibilityLabel={option.label}
+                    testID={`settings-tab-${option.key}`}
                     onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); setPersonalFoodAIChatOpen(false); }}
                     style={{
                       borderWidth: 1,
@@ -12114,8 +12181,9 @@ export default function App() {
           </View>
         ) : null}
         {tab === "chat" ? (
-          <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4] }}>
+          <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4], gap: 10 }}>
             {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
+            <AiIdentityDisclosure surface="main-chat" />
             {store.keys.some((k) => k.api_key.trim()) ? (
               <View style={{ flex: 1, gap: 10 }}>
                 <ScrollView
@@ -12126,7 +12194,11 @@ export default function App() {
                   onContentSizeChange={() => chatScrollRef?.current?.scrollToEnd({ animated: true })}
                 >
                   {messages.map((msg) => (
-                    <View key={msg.id} testID={`chat-message-${msg.role}-${msg.id}`} style={{ gap: 4 }}>
+                    <View
+                      key={msg.id}
+                      testID={msg.kind === AI_DISCLOSURE_MESSAGE_KIND ? "ai-intro-message-main-chat" : `chat-message-${msg.role}-${msg.id}`}
+                      style={{ gap: 4 }}
+                    >
                       {msg.role === "assistant" && msg.thinking ? (
                         <Pressable
                           onPress={() => setExpandedThinking((prev) => ({ ...prev, [msg.id]: !prev[msg.id] }))}
@@ -12173,7 +12245,7 @@ export default function App() {
                           padding: 10,
                         }}
                       >
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{msg.role}</Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{chatRoleLabel(msg.role)}</Text>
                         {msg.content.trim() ? (
                           <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
                         ) : null}
@@ -12206,7 +12278,8 @@ export default function App() {
                     }}
                     value={chatInput}
                     onChangeText={setChatInput}
-                    placeholder="Pregunta al coach"
+                    placeholder="Pregunta al Agente"
+                    accessibilityLabel="Pregunta al Agente"
                     placeholderTextColor={mobileTheme.color.textSecondary}
                     multiline
                     blurOnSubmit={false}
@@ -12220,7 +12293,35 @@ export default function App() {
                 </View>
               </View>
             ) : (
-              <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32, gap: 20 }}>
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ alignItems: "center", paddingHorizontal: 32, paddingVertical: 16, gap: 20 }}
+                showsVerticalScrollIndicator={false}
+              >
+                {messages
+                  .filter((message) => message.kind === AI_DISCLOSURE_MESSAGE_KIND)
+                  .slice(0, 1)
+                  .map((message) => (
+                    <View
+                      key={message.id}
+                      testID="ai-intro-message-main-chat"
+                      style={{
+                        width: "100%",
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.45)",
+                        backgroundColor: "rgba(203,255,26,0.08)",
+                        borderRadius: mobileTheme.radius.md,
+                        padding: 10,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        {AI_TRANSPARENCY_COPY.es.agentName}
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>
+                        {message.content}
+                      </Text>
+                    </View>
+                  ))}
                 <View style={{ width: 100, height: 100, borderRadius: 50, backgroundColor: "rgba(255,255,255,0.06)", alignItems: "center", justifyContent: "center" }}>
                   <Feather name="key" size={40} color="rgba(255,255,255,0.25)" />
                 </View>
@@ -12255,7 +12356,7 @@ export default function App() {
                     </Text>
                   </View>
                 ) : null}
-              </View>
+              </ScrollView>
             )}
           </View>
         ) : (
@@ -16639,6 +16740,9 @@ export default function App() {
                             <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600", fontSize: 12 }}>Añadir a mano</Text>
                           </Pressable>
                           <Pressable
+                            accessibilityRole="button"
+                            accessibilityLabel={`Añadir alimento con el Agente a ${category}`}
+                            testID={`open-food-estimator-${category.toLowerCase()}`}
                             onPress={() => { setDietAddMode("ai"); openDietMealEditor(category); openFoodEstimatorModal(); }}
                             style={{
                               flex: 1,
@@ -19700,6 +19804,9 @@ export default function App() {
                       </Text>
                     </Pressable>
                     <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel="Añadir un alimento personal con el Agente"
+                      testID="open-personal-food-assistant"
                       onPress={() => {
                         setPersonalFoodAIChatOpen(true);
                         setPersonalFoodFormVisible(false);
@@ -19728,7 +19835,8 @@ export default function App() {
                   {/* AI Chat */}
                   <MiniChat
                     visible={personalFoodAIChatOpen}
-                    title="Asistente de alimentos"
+                    title="Agente"
+                    contextLabel="Alimentos personales"
                     systemPrompt={FOOD_AI_SYSTEM_PROMPT}
                     providerKeys={store.keys}
                     preferredProvider={store.foodAIProvider}
@@ -21540,7 +21648,12 @@ export default function App() {
           >
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                <Pressable onPress={closeFoodEstimatorModal} hitSlop={8}>
+                <Pressable
+                  onPress={closeFoodEstimatorModal}
+                  hitSlop={8}
+                  accessibilityLabel="Cerrar estimador con IA"
+                  accessibilityRole="button"
+                >
                   <Feather name="arrow-left" size={22} color={mobileTheme.color.textPrimary} />
                 </Pressable>
                 <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800" }}>
@@ -21556,10 +21669,13 @@ export default function App() {
           </View>
 
           <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4], paddingTop: 10, gap: 10 }}>
+            <AiIdentityDisclosure surface="food-estimator" />
             <View style={{ flexDirection: "row", gap: 8 }}>
               <Pressable
                 onPress={addFoodEstimatorImageFromLibrary}
                 disabled={foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES}
+                accessibilityLabel="Subir foto para estimar la comida"
+                accessibilityRole="button"
                 style={{
                   flex: 1,
                   minHeight: 40,
@@ -21580,6 +21696,8 @@ export default function App() {
               <Pressable
                 onPress={addFoodEstimatorImageFromCamera}
                 disabled={foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES}
+                accessibilityLabel="Hacer foto para estimar la comida"
+                accessibilityRole="button"
                 style={{
                   flex: 1,
                   minHeight: 40,
@@ -21617,6 +21735,8 @@ export default function App() {
                     <Image source={{ uri: image.uri }} style={{ width: "100%", height: "100%" }} />
                     <Pressable
                       onPress={() => removeFoodEstimatorImage(image.id)}
+                      accessibilityLabel="Quitar foto de la estimación"
+                      accessibilityRole="button"
                       style={{
                         position: "absolute",
                         top: 3,
