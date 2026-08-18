@@ -18,6 +18,7 @@
     "test:board:e2e:headed": "BOARD_E2E_HEADLESS=0 npm run test:board:e2e"
   },
   "devDependencies": {
+    "ajv": "^8.17.1",
     "fast-check": "^4.9.0",
     "playwright": "^1.58.2",
     "vitest": "^4.1.10"
