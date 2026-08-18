@@ -29,6 +29,12 @@ export const AI_TRANSPARENCY_COPY = {
   },
 } as const;
 
+const AI_PERSISTENT_DISCLOSURE_LABELS: Record<AiConversationSurface, string> = {
+  "main-chat": "Gymnasia coach es un agente de IA",
+  "food-estimator": "Gymnasia food es un agente de IA",
+  "personal-food-assistant": "Gymnasia food es un agente de IA",
+};
+
 export function getAiTransparencyCopy(surface: AiConversationSurface) {
   const agentName = AI_AGENT_NAMES[surface];
   const copy = AI_TRANSPARENCY_COPY.es;
@@ -38,6 +44,7 @@ export function getAiTransparencyCopy(surface: AiConversationSurface) {
     disclosureBody: copy.disclosureBody,
     disclosureAccessibilityLabel:
       `${agentName}, inteligencia artificial. ${copy.disclosureBody}`,
+    persistentDisclosureLabel: AI_PERSISTENT_DISCLOSURE_LABELS[surface],
     introMessage: `Soy ${agentName}, ${copy.introBody}`,
   } as const;
 }

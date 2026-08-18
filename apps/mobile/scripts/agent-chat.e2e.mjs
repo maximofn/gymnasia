@@ -166,6 +166,21 @@ function transparencyMarkerCount(prompt) {
   return `${prompt}`.split("[GYMNASIA_AI_TRANSPARENCY_START:2026-08-v1]").length - 1;
 }
 
+async function assertDisclosurePlacement(page, surface) {
+  const messageList = page.locator(`[data-testid="chat-message-list-${surface}"]`);
+  assert.equal(await messageList.count(), 1, `debe existir el historial desplazable de ${surface}`);
+  assert.equal(
+    await messageList.locator(`[data-testid="ai-identity-disclosure-${surface}"]`).count(),
+    1,
+    `la explicación larga de ${surface} debe desplazarse con los mensajes`,
+  );
+  assert.equal(
+    await messageList.locator(`[data-testid="ai-persistent-disclosure-${surface}"]`).count(),
+    0,
+    `la leyenda breve de ${surface} debe quedar fuera del historial`,
+  );
+}
+
 async function assertSpecializedAiDisclosures(page) {
   logStep("Comprobando las superficies de Gymnasia Food Estimator");
   await page.locator('[data-testid="nav-tab-diet"]').click({ timeout: STEP_TIMEOUT_MS });
@@ -176,6 +191,10 @@ async function assertSpecializedAiDisclosures(page) {
   await page.locator('[data-testid="ai-intro-message-food-estimator"]')
     .filter({ hasText: "Soy Gymnasia Food Estimator, un sistema de inteligencia artificial" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="ai-persistent-disclosure-food-estimator"]')
+    .filter({ hasText: "Gymnasia food es un agente de IA" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await assertDisclosurePlacement(page, "food-estimator");
   await page.getByRole("button", { name: "Cerrar Gymnasia Food Estimator" })
     .click({ timeout: STEP_TIMEOUT_MS });
 
@@ -189,6 +208,10 @@ async function assertSpecializedAiDisclosures(page) {
   await page.locator('[data-testid="ai-intro-message-personal-food-assistant"]')
     .filter({ hasText: "Soy Gymnasia Food Estimator, un sistema de inteligencia artificial" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="ai-persistent-disclosure-personal-food-assistant"]')
+    .filter({ hasText: "Gymnasia food es un agente de IA" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await assertDisclosurePlacement(page, "personal-food-assistant");
 }
 
 async function runNoKeyDisclosureE2E(page, baseUrl) {
@@ -276,6 +299,10 @@ async function runAgentChatE2E(page, baseUrl, provider) {
   await page.locator('[data-testid="ai-intro-message-main-chat"]')
     .filter({ hasText: "Soy Gymnasia Coach, un sistema de inteligencia artificial" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="ai-persistent-disclosure-main-chat"]')
+    .filter({ hasText: "Gymnasia coach es un agente de IA" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await assertDisclosurePlacement(page, "main-chat");
   await page.locator('[data-testid="chat-input"]').fill("¿Cuál es mi objetivo?");
 
   logStep("Enviando mensaje y esperando tool call + segunda ronda");

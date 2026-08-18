@@ -13,12 +13,13 @@ const promptSource = readFileSync(
 );
 
 describe("contrato estático de superficies conversacionales", () => {
-  it.each(["main-chat", "food-estimator", "personal-food-assistant"])(
-    "mantiene visible la divulgación en %s",
-    (surface) => {
-      expect(appSource).toContain(`<AiIdentityDisclosure surface="${surface}" />`);
-    },
-  );
+  it("mantiene la divulgación desplazable y la leyenda persistente en las tres superficies", () => {
+    expect(appSource).toContain('<AiIdentityDisclosure surface="main-chat" />');
+    expect(appSource).toContain('<AiIdentityPersistentDisclosure surface="main-chat" />');
+    expect(appSource).toContain('disclosureSurface="food-estimator"');
+    expect(appSource).toContain('<AiIdentityDisclosure surface="personal-food-assistant" />');
+    expect(appSource).toContain('<AiIdentityPersistentDisclosure surface="personal-food-assistant" />');
+  });
 
   it("protege las tres fronteras de system prompt", () => {
     expect(appSource.match(/composeAiSystemPrompt\(/g)?.length).toBeGreaterThanOrEqual(3);

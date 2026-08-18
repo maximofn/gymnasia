@@ -81,3 +81,25 @@ export function AiIdentityDisclosure({ surface }: AiIdentityDisclosureProps) {
     </View>
   );
 }
+
+export function AiIdentityPersistentDisclosure({ surface }: AiIdentityDisclosureProps) {
+  const copy = getAiTransparencyCopy(surface);
+
+  return (
+    <Text
+      accessible
+      accessibilityRole="text"
+      numberOfLines={1}
+      ellipsizeMode="tail"
+      testID={`ai-persistent-disclosure-${surface}`}
+      style={{
+        color: mobileTheme.color.textSecondary,
+        fontSize: 11,
+        lineHeight: 15,
+        textAlign: "center",
+      }}
+    >
+      {copy.persistentDisclosureLabel}
+    </Text>
+  );
+}

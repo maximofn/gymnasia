@@ -32,6 +32,8 @@ describe("contrato de transparencia de los agentes", () => {
     const foodCopy = getAiTransparencyCopy("food-estimator");
     expect(coachCopy.disclosureTitle).toBe("Gymnasia Coach · inteligencia artificial");
     expect(foodCopy.disclosureTitle).toBe("Gymnasia Food Estimator · inteligencia artificial");
+    expect(coachCopy.persistentDisclosureLabel).toBe("Gymnasia coach es un agente de IA");
+    expect(foodCopy.persistentDisclosureLabel).toBe("Gymnasia food es un agente de IA");
     expect(coachCopy.disclosureBody).toContain("No es una persona");
     expect(foodCopy.introMessage).toContain("puedo cometer errores");
   });

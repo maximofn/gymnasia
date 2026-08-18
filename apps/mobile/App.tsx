@@ -70,7 +70,10 @@ import {
   type AiConversationSurface,
   type AiDisclosureMessageKind,
 } from "./agent/aiTransparency";
-import { AiIdentityDisclosure } from "./AiIdentityDisclosure";
+import {
+  AiIdentityDisclosure,
+  AiIdentityPersistentDisclosure,
+} from "./AiIdentityDisclosure";
 
 // Foreground notification presentation handler. Without this, scheduled
 // notifications delivered while the app is in the foreground are silently
@@ -5728,13 +5731,15 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
         </View>
       </View>
 
-      <AiIdentityDisclosure surface="personal-food-assistant" />
-
       <ScrollView
         ref={mcScrollRef}
+        testID="chat-message-list-personal-food-assistant"
         style={{ maxHeight: 320 }}
         onContentSizeChange={() => mcScrollRef.current?.scrollToEnd({ animated: true })}
       >
+        <View style={{ marginBottom: 8 }}>
+          <AiIdentityDisclosure surface="personal-food-assistant" />
+        </View>
         {mcMessages.map((msg) => (
           <View
             key={msg.id}
@@ -5820,6 +5825,7 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
           <Feather name="send" size={16} color={mcSending || !mcInput.trim() ? "#666" : "#000"} />
         </Pressable>
       </View>
+      <AiIdentityPersistentDisclosure surface="personal-food-assistant" />
     </View>
   );
 }
@@ -5921,6 +5927,7 @@ type SharedChatPanelProps = {
   onToggleThinking: (messageId: string) => void;
   pendingStatusMessage?: string | null;
   scrollRef?: React.RefObject<ScrollView | null>;
+  disclosureSurface?: AiConversationSurface;
 };
 
 function SharedChatPanel({
@@ -5937,6 +5944,7 @@ function SharedChatPanel({
   onToggleThinking,
   pendingStatusMessage,
   scrollRef,
+  disclosureSurface,
 }: SharedChatPanelProps) {
   const isEstimator = variant === "estimator";
   const hasStreamingMessage = messages.some((message) => message.is_streaming);
@@ -5957,11 +5965,13 @@ function SharedChatPanel({
         >
           <ScrollView
             ref={scrollRef}
+            testID={disclosureSurface ? `chat-message-list-${disclosureSurface}` : undefined}
             style={{ flex: 1 }}
             contentContainerStyle={{ gap: 8, paddingBottom: 6 }}
             nestedScrollEnabled
             onContentSizeChange={() => scrollRef?.current?.scrollToEnd({ animated: true })}
           >
+            {disclosureSurface ? <AiIdentityDisclosure surface={disclosureSurface} /> : null}
             {messages.map((msg) => {
               const isAssistant = msg.role === "assistant";
               return (
@@ -6080,11 +6090,13 @@ function SharedChatPanel({
       ) : (
         <ScrollView
           ref={scrollRef}
+          testID={disclosureSurface ? `chat-message-list-${disclosureSurface}` : undefined}
           style={{ maxHeight: 360 }}
           contentContainerStyle={{ gap: 8 }}
           nestedScrollEnabled
           onContentSizeChange={() => scrollRef?.current?.scrollToEnd({ animated: true })}
         >
+          {disclosureSurface ? <AiIdentityDisclosure surface={disclosureSurface} /> : null}
           {messages.map((msg) => (
             <View
               key={msg.id}
@@ -6250,6 +6262,8 @@ function SharedChatPanel({
           <PrimaryButton label={sendLabel} onPress={onSend} disabled={sendDisabled} />
         </>
       )}
+
+      {disclosureSurface ? <AiIdentityPersistentDisclosure surface={disclosureSurface} /> : null}
     </View>
   );
 }
@@ -12199,16 +12213,17 @@ export default function App() {
         {tab === "chat" ? (
           <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4], gap: 10 }}>
             {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
-            <AiIdentityDisclosure surface="main-chat" />
             {store.keys.some((k) => k.api_key.trim()) ? (
               <View style={{ flex: 1, gap: 10 }}>
                 <ScrollView
                   ref={chatScrollRef}
+                  testID="chat-message-list-main-chat"
                   style={{ flex: 1 }}
                   contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
                   showsVerticalScrollIndicator={false}
                   onContentSizeChange={() => chatScrollRef?.current?.scrollToEnd({ animated: true })}
                 >
+                  <AiIdentityDisclosure surface="main-chat" />
                   {messages.map((msg) => (
                     <View
                       key={msg.id}
@@ -12306,6 +12321,7 @@ export default function App() {
                     disabled={sendingChat}
                     testID="chat-send"
                   />
+                  <AiIdentityPersistentDisclosure surface="main-chat" />
                 </View>
               </View>
             ) : (
@@ -12314,6 +12330,7 @@ export default function App() {
                 contentContainerStyle={{ alignItems: "center", paddingHorizontal: 32, paddingVertical: 16, gap: 20 }}
                 showsVerticalScrollIndicator={false}
               >
+                <AiIdentityDisclosure surface="main-chat" />
                 {messages
                   .filter((message) => message.kind === AI_DISCLOSURE_MESSAGE_KIND)
                   .slice(0, 1)
@@ -21688,7 +21705,6 @@ export default function App() {
           </View>
 
           <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4], paddingTop: 10, gap: 10 }}>
-            <AiIdentityDisclosure surface="food-estimator" />
             <View style={{ flexDirection: "row", gap: 8 }}>
               <Pressable
                 onPress={addFoodEstimatorImageFromLibrary}
@@ -21793,6 +21809,7 @@ export default function App() {
               }}
               pendingStatusMessage={foodEstimatorSending ? (foodEstimatorStatus || `${foodThinkingLabel}...`) : null}
               scrollRef={foodEstimatorScrollRef}
+              disclosureSurface="food-estimator"
             />
           </View>
 
