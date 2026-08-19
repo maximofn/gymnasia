@@ -1,0 +1,14 @@
+{
+  "id": "sentadilla-dividida-unilateral-banda",
+  "name": "Sentadilla dividida unilateral con banda",
+  "image_male": "images/sentadilla-dividida-unilateral-banda-male.webp",
+  "image_female": "images/sentadilla-dividida-unilateral-banda-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "banda y banco",
+  "difficulty": "advanced",
+  "instructions": "Coloca el empeine trasero sobre un banco y pisa un extremo de la banda con el pie delantero. Sujeta el otro extremo con la mano del mismo lado a la altura del hombro. Baja la cadera flexionando la rodilla delantera mientras mantienes el torso erguido y la rodilla alineada con el pie. Empuja con el talón delantero hasta volver arriba y cambia de lado tras completar la serie."
+}

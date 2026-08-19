@@ -1,0 +1,14 @@
+{
+  "id": "rotacion-interna-cadera-tumbado-banda",
+  "name": "Rotación interna de cadera tumbado con banda",
+  "image_male": "images/rotacion-interna-cadera-tumbado-banda-male.webp",
+  "image_female": "images/rotacion-interna-cadera-tumbado-banda-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "aductores",
+    "isquiotibiales"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las caderas y rodillas flexionadas a 90 grados y coloca una minibanda alrededor de los pies. Mantén las rodillas juntas y separa lentamente los pies contra la resistencia para producir la rotación interna de ambas caderas. Detente sin mover la pelvis y vuelve de forma controlada manteniendo tensión en la banda."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "sit-up-navaja-banda",
+  "name": "Sit-up navaja con banda",
+  "image_male": "images/sit-up-navaja-banda-male.webp",
+  "image_female": "images/sit-up-navaja-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "banda",
+  "difficulty": "advanced",
+  "instructions": "Túmbate boca arriba con las piernas rectas y los brazos extendidos por encima de la cabeza, sujetando una banda tensa entre manos y pies. Eleva simultáneamente el torso y ambas piernas hasta formar una V, acercando las manos a los pies. Mantén el abdomen contraído y desciende lentamente sin perder la tensión ni arquear la zona lumbar."
+}

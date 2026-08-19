@@ -1,0 +1,14 @@
+{
+  "id": "pull-through-banda",
+  "name": "Pull-through con banda",
+  "image_male": "images/pull-through-banda-male.webp",
+  "image_female": "images/pull-through-banda-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "espalda baja"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Fija la banda a un punto bajo, colócate de espaldas y agárrala entre las piernas con ambas manos. Da unos pasos al frente para crear tensión. Lleva la cadera hacia atrás con las rodillas ligeramente flexionadas y la espalda neutra. Extiende la cadera con fuerza hasta quedar erguido, aprieta los glúteos y regresa de forma controlada."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "extension-triceps-lateral-banda",
+  "name": "Extensión lateral de tríceps con banda",
+  "image_male": "images/extension-triceps-lateral-banda-male.webp",
+  "image_female": "images/extension-triceps-lateral-banda-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Sujeta la banda con ambas manos delante del pecho y eleva los codos a la altura de los hombros. Mantén un brazo estable mientras el otro se extiende hacia su lado, estirando la banda hasta alinear el codo sin mover el hombro. Regresa lentamente, completa la serie y repite con el brazo contrario."
+}

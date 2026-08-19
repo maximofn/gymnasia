@@ -1,0 +1,13 @@
+{
+  "id": "encogimientos-banda",
+  "name": "Encogimientos con banda",
+  "image_male": "images/encogimientos-banda-male.webp",
+  "image_female": "images/encogimientos-banda-female.webp",
+  "muscle_group": "trapecios",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Pisa el centro de la banda con ambos pies y sujeta un extremo en cada mano junto a los muslos. Mantén los brazos rectos, el torso erguido y la mirada al frente. Eleva los hombros verticalmente hacia las orejas sin girarlos, mantén la contracción un instante y baja despacio hasta estirar los trapecios."
+}

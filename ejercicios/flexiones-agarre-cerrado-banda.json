@@ -1,0 +1,14 @@
+{
+  "id": "flexiones-agarre-cerrado-banda",
+  "name": "Flexiones con agarre cerrado y banda",
+  "image_male": "images/flexiones-agarre-cerrado-banda-male.webp",
+  "image_female": "images/flexiones-agarre-cerrado-banda-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Coloca una banda por la parte alta de la espalda y sujeta sus extremos bajo las palmas. Adopta la posición de flexión con las manos algo más cerradas que los hombros y el cuerpo alineado. Baja el pecho manteniendo los codos cerca del tronco y empuja el suelo hasta extender los brazos contra la resistencia de la banda, sin dejar caer la cadera."
+}

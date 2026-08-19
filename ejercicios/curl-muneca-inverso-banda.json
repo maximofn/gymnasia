@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-inverso-banda",
+  "name": "Curl de muñeca inverso con banda",
+  "image_male": "images/curl-muneca-inverso-banda-male.webp",
+  "image_female": "images/curl-muneca-inverso-banda-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Siéntate, pisa el centro de la banda y sujeta los extremos con las palmas hacia abajo. Apoya los antebrazos sobre los muslos dejando las muñecas fuera del borde. Sin despegar los antebrazos, eleva el dorso de las manos contra la resistencia. Haz una pausa breve y baja lentamente hasta recuperar la posición inicial."
+}

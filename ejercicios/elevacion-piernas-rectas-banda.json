@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-piernas-rectas-banda",
+  "name": "Elevación de piernas rectas con banda",
+  "image_male": "images/elevacion-piernas-rectas-banda-male.webp",
+  "image_female": "images/elevacion-piernas-rectas-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba, pasa la banda por los arcos de ambos pies y sujeta los extremos junto a las caderas. Mantén las piernas juntas y casi rectas mientras las elevas hasta quedar perpendiculares al suelo. Presiona la zona lumbar contra el suelo y baja lentamente las piernas sin que los talones lleguen a apoyarse."
+}

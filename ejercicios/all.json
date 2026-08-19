@@ -245,6 +245,19 @@
     "instructions": "Túmbate boca arriba con las manos detrás de la cabeza y eleva las piernas con las rodillas flexionadas. Acerca el codo derecho a la rodilla izquierda mientras extiendes la pierna derecha sin apoyar el talón. Alterna el movimiento hacia el otro lado con un pedaleo controlado, manteniendo la zona lumbar estable y evitando tirar del cuello."
   },
   {
+    "id": "crunch-giratorio-arrodillado-banda",
+    "name": "Crunch giratorio arrodillado con banda",
+    "image_male": "images/crunch-giratorio-arrodillado-banda-male.webp",
+    "image_female": "images/crunch-giratorio-arrodillado-banda-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "abdomen"
+    ],
+    "equipment": "banda",
+    "difficulty": "intermediate",
+    "instructions": "Ancla la banda por encima de la cabeza y arrodíllate de lado al punto de fijación. Sujeta la banda junto a la cabeza con ambas manos y mantén la cadera estable. Flexiona y gira el torso llevando el hombro exterior hacia la rodilla contraria. Regresa con control sin tirar con los brazos y completa las repeticiones antes de cambiar de lado."
+  },
+  {
     "id": "crunch-inverso",
     "name": "Crunch inverso",
     "image_male": "images/crunch-inverso-male.webp",
@@ -336,6 +349,20 @@
     "equipment": "polea",
     "difficulty": "beginner",
     "instructions": "Ponte de pie frente a una polea baja y sujeta la barra recta con agarre supino. Mantén los codos pegados a los costados y flexiona los brazos hasta acercar la barra a los hombros sin inclinar el torso. Aprieta los bíceps en la parte alta y extiende los codos de forma controlada, manteniendo tensión en el cable."
+  },
+  {
+    "id": "curl-biceps-unilateral-sobre-cabeza-banda",
+    "name": "Curl de bíceps unilateral sobre la cabeza con banda",
+    "image_male": "images/curl-biceps-unilateral-sobre-cabeza-banda-male.webp",
+    "image_female": "images/curl-biceps-unilateral-sobre-cabeza-banda-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos",
+      "hombros"
+    ],
+    "equipment": "banda",
+    "difficulty": "intermediate",
+    "instructions": "Fija la banda a un punto alto y colócate de lado al anclaje. Eleva el brazo de trabajo a la altura del hombro con el codo apuntando hacia fuera y el brazo superior inmóvil. Flexiona el codo llevando la mano hacia la cabeza, contrae el bíceps y extiende de nuevo con control. Completa la serie y cambia de brazo."
   },
   {
     "id": "curl-concentrado-banda",
@@ -456,6 +483,17 @@
     "equipment": "barra",
     "difficulty": "beginner",
     "instructions": "Siéntate y apoya los antebrazos sobre un banco con las palmas hacia arriba y las muñecas fuera del borde. Deja que la barra baje de forma controlada hacia los dedos y flexiona las muñecas para elevarla todo lo posible. Mantén los antebrazos inmóviles durante todo el recorrido y evita impulsar el peso con los codos."
+  },
+  {
+    "id": "curl-muneca-inverso-banda",
+    "name": "Curl de muñeca inverso con banda",
+    "image_male": "images/curl-muneca-inverso-banda-male.webp",
+    "image_female": "images/curl-muneca-inverso-banda-female.webp",
+    "muscle_group": "antebrazos",
+    "secondary_muscles": [],
+    "equipment": "banda",
+    "difficulty": "beginner",
+    "instructions": "Siéntate, pisa el centro de la banda y sujeta los extremos con las palmas hacia abajo. Apoya los antebrazos sobre los muslos dejando las muñecas fuera del borde. Sin despegar los antebrazos, eleva el dorso de las manos contra la resistencia. Haz una pausa breve y baja lentamente hasta recuperar la posición inicial."
   },
   {
     "id": "curl-predicador-barra",
@@ -584,6 +622,20 @@
     "instructions": "Pisa el centro de una banda con ambos pies y agarra los extremos delante de los muslos. Con el abdomen activo y los codos apenas flexionados, eleva los brazos al frente hasta la altura de los hombros. Haz una pausa y baja lentamente sin balancear el cuerpo ni encoger los hombros."
   },
   {
+    "id": "elevacion-frontal-lateral-banda",
+    "name": "Elevación frontal-lateral con banda",
+    "image_male": "images/elevacion-frontal-lateral-banda-male.webp",
+    "image_female": "images/elevacion-frontal-lateral-banda-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "trapecios",
+      "espalda"
+    ],
+    "equipment": "banda",
+    "difficulty": "beginner",
+    "instructions": "Pisa el centro de la banda y sujeta un extremo en cada mano delante de los muslos. Con el abdomen firme y los codos ligeramente flexionados, eleva los brazos en diagonal entre el frente y los lados hasta la altura de los hombros. Haz una pausa breve y baja con control sin balancear el torso."
+  },
+  {
     "id": "elevacion-gemelos-sentado-barra",
     "name": "Elevación de gemelos sentado con barra",
     "image_male": "images/elevacion-gemelos-sentado-barra-male.webp",
@@ -637,6 +689,19 @@
     "equipment": "banco",
     "difficulty": "beginner",
     "instructions": "Túmbate boca arriba en un banco plano y sujeta sus bordes para estabilizarte. Mantén las piernas juntas y casi extendidas mientras las elevas hasta aproximarlas a la vertical. Activa el abdomen para conservar la zona lumbar apoyada y baja las piernas lentamente sin arquear la espalda ni dejarlas caer."
+  },
+  {
+    "id": "elevacion-piernas-rectas-banda",
+    "name": "Elevación de piernas rectas con banda",
+    "image_male": "images/elevacion-piernas-rectas-banda-male.webp",
+    "image_female": "images/elevacion-piernas-rectas-banda-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "banda",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba, pasa la banda por los arcos de ambos pies y sujeta los extremos junto a las caderas. Mantén las piernas juntas y casi rectas mientras las elevas hasta quedar perpendiculares al suelo. Presiona la zona lumbar contra el suelo y baja lentamente las piernas sin que los talones lleguen a apoyarse."
   },
   {
     "id": "elevacion-rodillas-oblicua-colgado",
@@ -723,6 +788,19 @@
     "instructions": "Cuélgate de una barra con los brazos extendidos y estabiliza los hombros. Mantén las piernas juntas y eleva los pies por delante flexionando las caderas hasta que las piernas queden al menos paralelas al suelo. Evita balancearte o tomar impulso. Haz una pausa breve y baja las piernas lentamente hasta recuperar la posición inicial."
   },
   {
+    "id": "encogimientos-banda",
+    "name": "Encogimientos con banda",
+    "image_male": "images/encogimientos-banda-male.webp",
+    "image_female": "images/encogimientos-banda-female.webp",
+    "muscle_group": "trapecios",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "banda",
+    "difficulty": "beginner",
+    "instructions": "Pisa el centro de la banda con ambos pies y sujeta un extremo en cada mano junto a los muslos. Mantén los brazos rectos, el torso erguido y la mirada al frente. Eleva los hombros verticalmente hacia las orejas sin girarlos, mantén la contracción un instante y baja despacio hasta estirar los trapecios."
+  },
+  {
     "id": "encogimientos-barra",
     "name": "Encogimientos con barra",
     "image_male": "images/encogimientos-barra-male.webp",
@@ -782,6 +860,20 @@
     "instructions": "Comienza en plancha alta con las manos bajo los hombros y el cuerpo alineado. Lleva una rodilla hacia el pecho sin elevar las caderas y cambia rápidamente de pierna como si corrieras en el sitio. Mantén el core activo, los hombros estables y un ritmo que te permita conservar la postura durante toda la serie."
   },
   {
+    "id": "extension-cadera-inclinada-banda",
+    "name": "Extensión de cadera inclinada con banda",
+    "image_male": "images/extension-cadera-inclinada-banda-male.webp",
+    "image_female": "images/extension-cadera-inclinada-banda-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "espalda baja"
+    ],
+    "equipment": "banda",
+    "difficulty": "beginner",
+    "instructions": "Fija la banda a un punto bajo y coloca el otro extremo alrededor de un tobillo, de espaldas al anclaje. Inclina el torso desde la cadera con la espalda neutra y una ligera flexión en la pierna de apoyo. Extiende la pierna sujeta hacia atrás sin arquear la zona lumbar, aprieta el glúteo y regresa lentamente hasta recuperar la tensión inicial."
+  },
+  {
     "id": "extension-cuadriceps",
     "name": "Extensión de cuádriceps",
     "image_male": "images/extension-cuadriceps-male.webp",
@@ -805,6 +897,19 @@
     "equipment": "barra",
     "difficulty": "intermediate",
     "instructions": "Ponte de pie y eleva una barra por encima de la cabeza con agarre prono. Mantén los brazos superiores junto a las orejas y flexiona los codos para bajar la barra detrás de la cabeza sin abrirlos hacia los lados. Extiende los codos hasta volver arriba, manteniendo el abdomen activo y la espalda neutra."
+  },
+  {
+    "id": "extension-triceps-lateral-banda",
+    "name": "Extensión lateral de tríceps con banda",
+    "image_male": "images/extension-triceps-lateral-banda-male.webp",
+    "image_female": "images/extension-triceps-lateral-banda-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "banda",
+    "difficulty": "beginner",
+    "instructions": "Sujeta la banda con ambas manos delante del pecho y eleva los codos a la altura de los hombros. Mantén un brazo estable mientras el otro se extiende hacia su lado, estirando la banda hasta alinear el codo sin mover el hombro. Regresa lentamente, completa la serie y repite con el brazo contrario."
   },
   {
     "id": "extension-triceps-polea-sobre-cabeza",
@@ -949,6 +1054,20 @@
     "equipment": "banco de hiperextensiones",
     "difficulty": "intermediate",
     "instructions": "Colócate de lado en un banco de hiperextensiones a 45 grados, con los pies bien sujetos y la cadera apoyada en la almohadilla. Mantén el cuerpo alineado y las manos detrás de la cabeza o cruzadas sobre el pecho. Inclina el torso lateralmente hacia el suelo de forma controlada y vuelve a elevarlo contrayendo los oblicuos, sin girar el tronco."
+  },
+  {
+    "id": "flexiones-agarre-cerrado-banda",
+    "name": "Flexiones con agarre cerrado y banda",
+    "image_male": "images/flexiones-agarre-cerrado-banda-male.webp",
+    "image_female": "images/flexiones-agarre-cerrado-banda-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombros"
+    ],
+    "equipment": "banda",
+    "difficulty": "intermediate",
+    "instructions": "Coloca una banda por la parte alta de la espalda y sujeta sus extremos bajo las palmas. Adopta la posición de flexión con las manos algo más cerradas que los hombros y el cuerpo alineado. Baja el pecho manteniendo los codos cerca del tronco y empuja el suelo hasta extender los brazos contra la resistencia de la banda, sin dejar caer la cadera."
   },
   {
     "id": "flexiones-declinadas",
@@ -1098,6 +1217,19 @@
     "equipment": "peso corporal",
     "difficulty": "intermediate",
     "instructions": "Siéntate con las rodillas flexionadas, eleva ligeramente los pies y reclina el torso manteniendo la espalda neutra. Junta las manos frente al pecho y equilibra el cuerpo sobre los isquiones. Gira el torso para llevar las manos hacia un lado sin mover las rodillas. Vuelve al centro y repite hacia el lado contrario con un movimiento controlado."
+  },
+  {
+    "id": "giro-sentado-banda",
+    "name": "Giro sentado con banda",
+    "image_male": "images/giro-sentado-banda-male.webp",
+    "image_female": "images/giro-sentado-banda-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "abdomen"
+    ],
+    "equipment": "banda",
+    "difficulty": "beginner",
+    "instructions": "Siéntate erguido de lado a un anclaje situado a la altura del pecho y sujeta la banda con ambas manos frente al esternón. Mantén la pelvis y las piernas inmóviles. Gira el torso alejando las manos del anclaje sin flexionar los brazos, haz una pausa y vuelve lentamente. Completa las repeticiones y cambia de lado."
   },
   {
     "id": "hiperextension-fitball",
@@ -1648,6 +1780,21 @@
     "instructions": "Siéntate erguido entre dos poleas con los pies firmes y las asas a la altura del pecho. Lleva los codos ligeramente por debajo de los hombros y empuja ambas asas al frente hasta extender los brazos sin bloquearlos. Junta el pecho al final y permite que las manos regresen despacio, manteniendo el torso estable."
   },
   {
+    "id": "press-pecho-unilateral-giratorio-banda",
+    "name": "Press de pecho unilateral giratorio con banda",
+    "image_male": "images/press-pecho-unilateral-giratorio-banda-male.webp",
+    "image_female": "images/press-pecho-unilateral-giratorio-banda-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombros",
+      "tríceps",
+      "oblicuos"
+    ],
+    "equipment": "banda",
+    "difficulty": "intermediate",
+    "instructions": "Ancla la banda a la altura del pecho y colócate de espaldas y ligeramente de lado al punto de fijación. Sujeta la banda con una mano junto al pecho. Empuja el brazo hacia delante mientras giras suavemente el torso y la cadera hacia el lado contrario, sin perder el equilibrio. Regresa con control, completa la serie y cambia de lado."
+  },
+  {
     "id": "press-unilateral-maquina",
     "name": "Press plano unilateral sentado en máquina",
     "image_male": "images/press-unilateral-maquina-male.webp",
@@ -1702,6 +1849,20 @@
     "equipment": "peso corporal",
     "difficulty": "intermediate",
     "instructions": "Túmbate boca arriba con las rodillas flexionadas y eleva las caderas hasta alinear hombros, caderas y rodillas. Sin dejar que la pelvis caiga o rote, despega un pie y acerca esa rodilla al pecho. Vuelve a apoyar el pie, cambia de lado y continúa alternando mientras mantienes los glúteos y el abdomen activos."
+  },
+  {
+    "id": "pull-through-banda",
+    "name": "Pull-through con banda",
+    "image_male": "images/pull-through-banda-male.webp",
+    "image_female": "images/pull-through-banda-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "espalda baja"
+    ],
+    "equipment": "banda",
+    "difficulty": "intermediate",
+    "instructions": "Fija la banda a un punto bajo, colócate de espaldas y agárrala entre las piernas con ambas manos. Da unos pasos al frente para crear tensión. Lleva la cadera hacia atrás con las rodillas ligeramente flexionadas y la espalda neutra. Extiende la cadera con fuerza hasta quedar erguido, aprieta los glúteos y regresa de forma controlada."
   },
   {
     "id": "pull-through-polea",
@@ -1833,6 +1994,21 @@
     "instructions": "Siéntate en la máquina de polea baja con los pies apoyados en la plataforma y las rodillas ligeramente flexionadas. Agarra el agarre con ambas manos y tira hacia el abdomen manteniendo la espalda recta, apretando las escápulas en la parte final del movimiento. Vuelve de forma controlada extendiendo los brazos sin redondear la espalda."
   },
   {
+    "id": "remo-sentado-unilateral-giratorio-banda",
+    "name": "Remo sentado unilateral giratorio con banda",
+    "image_male": "images/remo-sentado-unilateral-giratorio-banda-male.webp",
+    "image_female": "images/remo-sentado-unilateral-giratorio-banda-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "bíceps",
+      "hombro posterior",
+      "oblicuos"
+    ],
+    "equipment": "banda",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate frente a un anclaje bajo con las piernas extendidas y sujeta la banda con una mano. Parte con el brazo estirado y el torso ligeramente rotado hacia el anclaje. Tira del codo hacia atrás mientras giras el pecho hacia el lado de trabajo y juntas el omóplato. Vuelve despacio a la posición inicial y cambia de brazo al terminar la serie."
+  },
+  {
     "id": "remo-t-maquina",
     "name": "Remo en T en máquina",
     "image_male": "images/remo-t-maquina-male.webp",
@@ -1890,6 +2066,20 @@
     "instructions": "Siéntate en la máquina de remo con el pecho apoyado en el soporte. Agarra el asa con una mano y tira hacia atrás llevando el codo pegado al cuerpo, apretando la escápula en la parte final del movimiento. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
   },
   {
+    "id": "rodillo-abdominal-asistido-banda",
+    "name": "Rodillo abdominal asistido con banda",
+    "image_male": "images/rodillo-abdominal-asistido-banda-male.webp",
+    "image_female": "images/rodillo-abdominal-asistido-banda-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "espalda baja",
+      "hombros"
+    ],
+    "equipment": "rodillo abdominal y banda",
+    "difficulty": "intermediate",
+    "instructions": "Ancla una banda por encima y pásala alrededor de la cintura para que te ayude durante el regreso. Arrodíllate y agarra el rodillo con ambas manos bajo los hombros. Rueda hacia delante extendiendo caderas y brazos mientras mantienes el abdomen firme y la espalda neutra. Detente antes de perder la postura y vuelve hacia las rodillas aprovechando la asistencia de la banda."
+  },
+  {
     "id": "rodillo-abdominal-barra",
     "name": "Rodillo abdominal con barra",
     "image_male": "images/rodillo-abdominal-barra-male.webp",
@@ -1916,6 +2106,34 @@
     "equipment": "rodillo abdominal",
     "difficulty": "advanced",
     "instructions": "Arrodíllate con el rodillo bajo los hombros, los brazos extendidos y el abdomen activo. Hazlo avanzar lentamente mientras extiendes caderas y hombros, manteniendo el cuerpo alineado y evitando que la zona lumbar se hunda. Contrae el abdomen y lleva el rodillo de vuelta hacia las rodillas sin perder el control."
+  },
+  {
+    "id": "rotacion-interna-cadera-sentado-banda",
+    "name": "Rotación interna de cadera sentado con banda",
+    "image_male": "images/rotacion-interna-cadera-sentado-banda-male.webp",
+    "image_female": "images/rotacion-interna-cadera-sentado-banda-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "aductores",
+      "isquiotibiales"
+    ],
+    "equipment": "banda y banco",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en el borde de un banco con las rodillas flexionadas a 90 grados y coloca una minibanda alrededor de los tobillos. Mantén las rodillas juntas y separa los pies hacia los lados contra la resistencia, sin mover la pelvis ni levantar los muslos. Haz una pausa y vuelve lentamente manteniendo tensión en la banda."
+  },
+  {
+    "id": "rotacion-interna-cadera-tumbado-banda",
+    "name": "Rotación interna de cadera tumbado con banda",
+    "image_male": "images/rotacion-interna-cadera-tumbado-banda-male.webp",
+    "image_female": "images/rotacion-interna-cadera-tumbado-banda-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "aductores",
+      "isquiotibiales"
+    ],
+    "equipment": "banda",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba con las caderas y rodillas flexionadas a 90 grados y coloca una minibanda alrededor de los pies. Mantén las rodillas juntas y separa lentamente los pies contra la resistencia para producir la rotación interna de ambas caderas. Detente sin mover la pelvis y vuelve de forma controlada manteniendo tensión en la banda."
   },
   {
     "id": "rotacion-landmine-180",
@@ -2066,6 +2284,20 @@
     "instructions": "Adopta una posición dividida con un pie adelantado y el otro apoyado detrás. Pisa una banda con el pie delantero y sujeta sus extremos a la altura de los hombros. Desciende flexionando ambas rodillas hasta acercar la rodilla trasera al suelo, mantén el torso erguido y vuelve a subir empujando con el talón delantero."
   },
   {
+    "id": "sentadilla-dividida-unilateral-banda",
+    "name": "Sentadilla dividida unilateral con banda",
+    "image_male": "images/sentadilla-dividida-unilateral-banda-male.webp",
+    "image_female": "images/sentadilla-dividida-unilateral-banda-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "glúteos",
+      "isquiotibiales"
+    ],
+    "equipment": "banda y banco",
+    "difficulty": "advanced",
+    "instructions": "Coloca el empeine trasero sobre un banco y pisa un extremo de la banda con el pie delantero. Sujeta el otro extremo con la mano del mismo lado a la altura del hombro. Baja la cadera flexionando la rodilla delantera mientras mantienes el torso erguido y la rodilla alineada con el pie. Empuja con el talón delantero hasta volver arriba y cambia de lado tras completar la serie."
+  },
+  {
     "id": "sentadilla-frontal-barra",
     "name": "Sentadilla frontal con barra",
     "image_male": "images/sentadilla-frontal-barra-male.webp",
@@ -2201,6 +2433,33 @@
     "instructions": "Túmbate en un banco declinado con los pies bien sujetos y las rodillas flexionadas. Activa el abdomen y eleva el torso hacia las rodillas sin impulsarte con los brazos ni tirar del cuello. Detente antes de perder tensión y desciende de forma controlada hasta apoyar de nuevo la espalda."
   },
   {
+    "id": "sit-up-empuje-banda",
+    "name": "Sit-up con empuje de banda",
+    "image_male": "images/sit-up-empuje-banda-male.webp",
+    "image_female": "images/sit-up-empuje-banda-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "pecho",
+      "hombros"
+    ],
+    "equipment": "banda",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba con las rodillas flexionadas y una banda anclada detrás de la cabeza. Sujeta un extremo en cada mano frente al pecho. Eleva el torso realizando un sit-up y, al mismo tiempo, empuja ambas manos hacia delante hasta extender los brazos. Regresa con control, flexionando los brazos mientras apoyas la espalda progresivamente."
+  },
+  {
+    "id": "sit-up-navaja-banda",
+    "name": "Sit-up navaja con banda",
+    "image_male": "images/sit-up-navaja-banda-male.webp",
+    "image_female": "images/sit-up-navaja-banda-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "banda",
+    "difficulty": "advanced",
+    "instructions": "Túmbate boca arriba con las piernas rectas y los brazos extendidos por encima de la cabeza, sujetando una banda tensa entre manos y pies. Eleva simultáneamente el torso y ambas piernas hasta formar una V, acercando las manos a los pies. Mantén el abdomen contraído y desciende lentamente sin perder la tensión ni arquear la zona lumbar."
+  },
+  {
     "id": "sit-up-tres-cuartos",
     "name": "Sit-up tres cuartos",
     "image_male": "images/sit-up-tres-cuartos-male.webp",
@@ -2284,6 +2543,19 @@
     "equipment": "peso corporal",
     "difficulty": "beginner",
     "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y los brazos junto al cuerpo. Eleva ligeramente los hombros y desplázate hacia un lado para tocar el talón derecho con la mano derecha. Vuelve al centro y repite hacia el talón izquierdo, alternando sin relajar el abdomen ni despegar la zona lumbar."
+  },
+  {
+    "id": "v-up-alterno-banda",
+    "name": "V-up alterno con banda",
+    "image_male": "images/v-up-alterno-banda-male.webp",
+    "image_female": "images/v-up-alterno-banda-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "banda",
+    "difficulty": "advanced",
+    "instructions": "Túmbate boca arriba con las piernas extendidas y sujeta una banda con ambas manos por encima de la cabeza. Activa el abdomen y eleva al mismo tiempo el torso y una pierna recta, acercando las manos al pie elevado. Desciende con control sin apoyar por completo y repite con la pierna contraria, manteniendo la zona lumbar estable durante toda la alternancia."
   },
   {
     "id": "zancada-barra",

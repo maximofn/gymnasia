@@ -1,0 +1,15 @@
+{
+  "id": "remo-sentado-unilateral-giratorio-banda",
+  "name": "Remo sentado unilateral giratorio con banda",
+  "image_male": "images/remo-sentado-unilateral-giratorio-banda-male.webp",
+  "image_female": "images/remo-sentado-unilateral-giratorio-banda-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "bíceps",
+    "hombro posterior",
+    "oblicuos"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate frente a un anclaje bajo con las piernas extendidas y sujeta la banda con una mano. Parte con el brazo estirado y el torso ligeramente rotado hacia el anclaje. Tira del codo hacia atrás mientras giras el pecho hacia el lado de trabajo y juntas el omóplato. Vuelve despacio a la posición inicial y cambia de brazo al terminar la serie."
+}

@@ -6,7 +6,7 @@
   "image_generation": {
     "provider": "openai-imagegen",
     "model": "gpt-image-2",
-    "generated_at": "2026-08-17",
+    "generated_at": "2026-08-19",
     "style_reference": "docs/design/Gimnasia Design System.png"
   },
   "batches": [
@@ -187,6 +187,33 @@
         {"source_id": "0095", "id": "encogimientos-barra", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0088", "id": "elevacion-gemelos-sentado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0109", "id": "extension-triceps-barra-pie", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
+      ]
+    },
+    {
+      "number": 8,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0969", "id": "v-up-alterno-banda", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0971", "id": "rodillo-abdominal-asistido-banda", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0980", "id": "extension-cadera-inclinada-banda", "action": "create", "difficulty": "beginner", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0975", "id": "flexiones-agarre-cerrado-banda", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0977", "id": "elevacion-frontal-lateral-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0981", "id": "sit-up-navaja-banda", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0985", "id": "crunch-giratorio-arrodillado-banda", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0984", "id": "rotacion-interna-cadera-tumbado-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1002", "id": "elevacion-piernas-rectas-banda", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0986", "id": "curl-biceps-unilateral-sobre-cabeza-banda", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0987", "id": "sentadilla-dividida-unilateral-banda", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0989", "id": "press-pecho-unilateral-giratorio-banda", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0990", "id": "remo-sentado-unilateral-giratorio-banda", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0991", "id": "pull-through-banda", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0992", "id": "sit-up-empuje-banda", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0994", "id": "curl-muneca-inverso-banda", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0996", "id": "rotacion-interna-cadera-sentado-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1011", "id": "giro-sentado-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1018", "id": "encogimientos-banda", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0998", "id": "extension-triceps-lateral-banda", "action": "create", "difficulty": "beginner", "view": "front view", "provider": "openai-imagegen", "qa": "approved"}
       ]
     }
   ]

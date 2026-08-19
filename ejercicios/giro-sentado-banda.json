@@ -1,0 +1,13 @@
+{
+  "id": "giro-sentado-banda",
+  "name": "Giro sentado con banda",
+  "image_male": "images/giro-sentado-banda-male.webp",
+  "image_female": "images/giro-sentado-banda-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": [
+    "abdomen"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Siéntate erguido de lado a un anclaje situado a la altura del pecho y sujeta la banda con ambas manos frente al esternón. Mantén la pelvis y las piernas inmóviles. Gira el torso alejando las manos del anclaje sin flexionar los brazos, haz una pausa y vuelve lentamente. Completa las repeticiones y cambia de lado."
+}

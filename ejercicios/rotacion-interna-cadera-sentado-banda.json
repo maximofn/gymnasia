@@ -1,0 +1,14 @@
+{
+  "id": "rotacion-interna-cadera-sentado-banda",
+  "name": "Rotación interna de cadera sentado con banda",
+  "image_male": "images/rotacion-interna-cadera-sentado-banda-male.webp",
+  "image_female": "images/rotacion-interna-cadera-sentado-banda-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "aductores",
+    "isquiotibiales"
+  ],
+  "equipment": "banda y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el borde de un banco con las rodillas flexionadas a 90 grados y coloca una minibanda alrededor de los tobillos. Mantén las rodillas juntas y separa los pies hacia los lados contra la resistencia, sin mover la pelvis ni levantar los muslos. Haz una pausa y vuelve lentamente manteniendo tensión en la banda."
+}

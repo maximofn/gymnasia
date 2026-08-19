@@ -1,0 +1,13 @@
+{
+  "id": "crunch-giratorio-arrodillado-banda",
+  "name": "Crunch giratorio arrodillado con banda",
+  "image_male": "images/crunch-giratorio-arrodillado-banda-male.webp",
+  "image_female": "images/crunch-giratorio-arrodillado-banda-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": [
+    "abdomen"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Ancla la banda por encima de la cabeza y arrodíllate de lado al punto de fijación. Sujeta la banda junto a la cabeza con ambas manos y mantén la cadera estable. Flexiona y gira el torso llevando el hombro exterior hacia la rodilla contraria. Regresa con control sin tirar con los brazos y completa las repeticiones antes de cambiar de lado."
+}

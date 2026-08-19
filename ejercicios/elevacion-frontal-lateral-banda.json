@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-frontal-lateral-banda",
+  "name": "Elevación frontal-lateral con banda",
+  "image_male": "images/elevacion-frontal-lateral-banda-male.webp",
+  "image_female": "images/elevacion-frontal-lateral-banda-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "espalda"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Pisa el centro de la banda y sujeta un extremo en cada mano delante de los muslos. Con el abdomen firme y los codos ligeramente flexionados, eleva los brazos en diagonal entre el frente y los lados hasta la altura de los hombros. Haz una pausa breve y baja con control sin balancear el torso."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "extension-cadera-inclinada-banda",
+  "name": "Extensión de cadera inclinada con banda",
+  "image_male": "images/extension-cadera-inclinada-banda-male.webp",
+  "image_female": "images/extension-cadera-inclinada-banda-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "espalda baja"
+  ],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Fija la banda a un punto bajo y coloca el otro extremo alrededor de un tobillo, de espaldas al anclaje. Inclina el torso desde la cadera con la espalda neutra y una ligera flexión en la pierna de apoyo. Extiende la pierna sujeta hacia atrás sin arquear la zona lumbar, aprieta el glúteo y regresa lentamente hasta recuperar la tensión inicial."
+}

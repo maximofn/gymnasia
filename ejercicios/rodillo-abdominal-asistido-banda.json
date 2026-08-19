@@ -1,0 +1,14 @@
+{
+  "id": "rodillo-abdominal-asistido-banda",
+  "name": "Rodillo abdominal asistido con banda",
+  "image_male": "images/rodillo-abdominal-asistido-banda-male.webp",
+  "image_female": "images/rodillo-abdominal-asistido-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "espalda baja",
+    "hombros"
+  ],
+  "equipment": "rodillo abdominal y banda",
+  "difficulty": "intermediate",
+  "instructions": "Ancla una banda por encima y pásala alrededor de la cintura para que te ayude durante el regreso. Arrodíllate y agarra el rodillo con ambas manos bajo los hombros. Rueda hacia delante extendiendo caderas y brazos mientras mantienes el abdomen firme y la espalda neutra. Detente antes de perder la postura y vuelve hacia las rodillas aprovechando la asistencia de la banda."
+}

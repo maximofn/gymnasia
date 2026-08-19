@@ -1,0 +1,14 @@
+{
+  "id": "sit-up-empuje-banda",
+  "name": "Sit-up con empuje de banda",
+  "image_male": "images/sit-up-empuje-banda-male.webp",
+  "image_female": "images/sit-up-empuje-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas y una banda anclada detrás de la cabeza. Sujeta un extremo en cada mano frente al pecho. Eleva el torso realizando un sit-up y, al mismo tiempo, empuja ambas manos hacia delante hasta extender los brazos. Regresa con control, flexionando los brazos mientras apoyas la espalda progresivamente."
+}

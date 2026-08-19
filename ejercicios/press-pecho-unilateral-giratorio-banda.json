@@ -1,0 +1,15 @@
+{
+  "id": "press-pecho-unilateral-giratorio-banda",
+  "name": "Press de pecho unilateral giratorio con banda",
+  "image_male": "images/press-pecho-unilateral-giratorio-banda-male.webp",
+  "image_female": "images/press-pecho-unilateral-giratorio-banda-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps",
+    "oblicuos"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Ancla la banda a la altura del pecho y colócate de espaldas y ligeramente de lado al punto de fijación. Sujeta la banda con una mano junto al pecho. Empuja el brazo hacia delante mientras giras suavemente el torso y la cadera hacia el lado contrario, sin perder el equilibrio. Regresa con control, completa la serie y cambia de lado."
+}

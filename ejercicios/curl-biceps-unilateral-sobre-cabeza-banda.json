@@ -1,0 +1,14 @@
+{
+  "id": "curl-biceps-unilateral-sobre-cabeza-banda",
+  "name": "Curl de bíceps unilateral sobre la cabeza con banda",
+  "image_male": "images/curl-biceps-unilateral-sobre-cabeza-banda-male.webp",
+  "image_female": "images/curl-biceps-unilateral-sobre-cabeza-banda-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos",
+    "hombros"
+  ],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Fija la banda a un punto alto y colócate de lado al anclaje. Eleva el brazo de trabajo a la altura del hombro con el codo apuntando hacia fuera y el brazo superior inmóvil. Flexiona el codo llevando la mano hacia la cabeza, contrae el bíceps y extiende de nuevo con control. Completa la serie y cambia de brazo."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "v-up-alterno-banda",
+  "name": "V-up alterno con banda",
+  "image_male": "images/v-up-alterno-banda-male.webp",
+  "image_female": "images/v-up-alterno-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "banda",
+  "difficulty": "advanced",
+  "instructions": "Túmbate boca arriba con las piernas extendidas y sujeta una banda con ambas manos por encima de la cabeza. Activa el abdomen y eleva al mismo tiempo el torso y una pierna recta, acercando las manos al pie elevado. Desciende con control sin apoyar por completo y repite con la pierna contraria, manteniendo la zona lumbar estable durante toda la alternancia."
+}
