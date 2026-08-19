@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-prono-banco-barra",
+  "name": "Curl de muñeca prono sobre banco con barra",
+  "image_male": "images/curl-muneca-prono-banco-barra-male.webp",
+  "image_female": "images/curl-muneca-prono-banco-barra-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["braquial", "bíceps"],
+  "equipment": "barra",
+  "difficulty": "beginner",
+  "instructions": "Siéntate frente a un banco y apoya los antebrazos sobre él con las palmas hacia abajo y las muñecas fuera del borde. Sujeta una barra ligera con agarre prono. Sin despegar los antebrazos, deja que las muñecas bajen y luego eleva el dorso de las manos tanto como permita un rango cómodo. Pausa arriba y desciende lentamente."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "press-pines-barra",
+  "name": "Press desde pines con barra",
+  "image_male": "images/press-pines-barra-male.webp",
+  "image_female": "images/press-pines-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombro anterior"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca un banco dentro de un rack y ajusta los pines de seguridad para que la barra quede unos centímetros por encima del pecho. Túmbate, retrae los omóplatos y agarra la barra algo más ancho que los hombros. Desde la parada completa sobre los pines, empuja hasta extender los brazos y vuelve a apoyar la barra con control antes de cada repetición."
+}

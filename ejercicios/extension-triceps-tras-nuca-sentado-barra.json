@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-tras-nuca-sentado-barra",
+  "name": "Extensión de tríceps tras nuca sentado con barra",
+  "image_male": "images/extension-triceps-tras-nuca-sentado-barra-male.webp",
+  "image_female": "images/extension-triceps-tras-nuca-sentado-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido y eleva una barra ligera sobre la cabeza con agarre cerrado. Mantén los brazos superiores junto a las orejas y flexiona únicamente los codos para bajar la barra detrás de la cabeza. Detén el descenso antes de perder la posición de hombros y extiende los codos hasta volver arriba, sin arquear la zona lumbar."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "press-banca-agarre-cerrado-inverso-barra",
+  "name": "Press de banca con agarre cerrado inverso",
+  "image_male": "images/press-banca-agarre-cerrado-inverso-barra-male.webp",
+  "image_female": "images/press-banca-agarre-cerrado-inverso-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombro anterior"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano y agarra la barra con las palmas orientadas hacia ti y las manos aproximadamente a la anchura de los hombros. Con ayuda para sacar la barra, bájala hacia la parte baja del pecho manteniendo los codos cerca del tronco y las muñecas neutras. Empuja verticalmente hasta extender los brazos sin perder el agarre."
+}

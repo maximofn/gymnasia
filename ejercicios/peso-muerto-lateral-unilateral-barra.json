@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-lateral-unilateral-barra",
+  "name": "Peso muerto lateral unilateral con barra",
+  "image_male": "images/peso-muerto-lateral-unilateral-barra-male.webp",
+  "image_female": "images/peso-muerto-lateral-unilateral-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "cuádriceps", "zona lumbar", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca una barra ligera en el suelo junto a una pierna y sitúate con los pies a la anchura de las caderas. Agarra el centro de la barra con la mano del mismo lado, lleva las caderas atrás y flexiona las rodillas manteniendo la espalda neutra. Empuja el suelo para incorporarte sin inclinarte lateralmente; baja con control y cambia de lado al terminar la serie."
+}

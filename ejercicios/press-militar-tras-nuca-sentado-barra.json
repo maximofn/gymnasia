@@ -1,0 +1,11 @@
+{
+  "id": "press-militar-tras-nuca-sentado-barra",
+  "name": "Press militar tras nuca sentado con barra",
+  "image_male": "images/press-militar-tras-nuca-sentado-barra-male.webp",
+  "image_female": "images/press-militar-tras-nuca-sentado-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["tríceps", "trapecios"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Siéntate erguido y sujeta una barra ligera con agarre amplio sobre la cabeza. Solo si tienes movilidad de hombro suficiente, baja la barra por detrás hasta una altura cómoda cercana a la coronilla, sin forzarla hacia el cuello. Mantén los antebrazos verticales y vuelve a empujar hasta extender los brazos. Evita esta variante si provoca dolor."
+}

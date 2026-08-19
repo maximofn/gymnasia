@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-cadera-tumbado-banco-barra",
+  "name": "Elevación de cadera tumbado en banco con barra",
+  "image_male": "images/elevacion-cadera-tumbado-banco-barra-male.webp",
+  "image_female": "images/elevacion-cadera-tumbado-banco-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "cuádriceps"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate a lo largo de un banco plano con los hombros apoyados, las rodillas flexionadas y los pies firmes en el suelo. Coloca una barra acolchada sobre las caderas y sujétala con ambas manos. Contrae los glúteos para elevar la pelvis hasta alinear hombros, caderas y rodillas; pausa arriba y desciende lentamente sin perder el control."
+}

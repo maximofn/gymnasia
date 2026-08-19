@@ -1,0 +1,11 @@
+{
+  "id": "press-declinado-agarre-inverso-barra",
+  "name": "Press declinado con agarre inverso",
+  "image_male": "images/press-declinado-agarre-inverso-barra-male.webp",
+  "image_female": "images/press-declinado-agarre-inverso-barra-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco declinado con los pies sujetos y agarra la barra con las palmas orientadas hacia ti. Pide ayuda para sacarla del soporte. Baja la barra hacia la zona inferior del pecho con los codos próximos al tronco y las muñecas alineadas; pausa antes de tocar y empuja hasta extender los brazos manteniendo los hombros estables."
+}

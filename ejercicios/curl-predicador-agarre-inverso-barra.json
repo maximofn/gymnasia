@@ -1,0 +1,11 @@
+{
+  "id": "curl-predicador-agarre-inverso-barra",
+  "name": "Curl predicador con agarre inverso",
+  "image_male": "images/curl-predicador-agarre-inverso-barra-male.webp",
+  "image_female": "images/curl-predicador-agarre-inverso-barra-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco predicador y apoya completamente los brazos sobre el cojín. Sujeta una barra ligera con agarre prono. Flexiona los codos para acercar la barra hacia los hombros sin despegar los brazos del apoyo, pausa arriba y desciende lentamente hasta casi extenderlos por completo."
+}

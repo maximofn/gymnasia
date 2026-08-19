@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-unilateral-barra",
+  "name": "Sentadilla unilateral con barra",
+  "image_male": "images/sentadilla-unilateral-barra-male.webp",
+  "image_female": "images/sentadilla-unilateral-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos", "core"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Apoya una barra ligera y bien equilibrada sobre la parte alta de la espalda. Eleva una pierna al frente y desciende sobre la pierna de apoyo, llevando la cadera atrás y manteniendo el pecho elevado. Baja solo hasta conservar el talón apoyado y la rodilla alineada con el pie; empuja el suelo para volver arriba y cambia de pierna."
+}

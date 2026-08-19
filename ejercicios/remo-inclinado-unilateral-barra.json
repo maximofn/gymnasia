@@ -1,0 +1,11 @@
+{
+  "id": "remo-inclinado-unilateral-barra",
+  "name": "Remo inclinado unilateral con barra",
+  "image_male": "images/remo-inclinado-unilateral-barra-male.webp",
+  "image_female": "images/remo-inclinado-unilateral-barra-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["dorsales", "bíceps", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "De pie, sujeta el centro de una barra ligera con una mano y flexiona ligeramente las rodillas. Inclina el torso desde las caderas con la espalda neutra y deja el brazo extendido bajo el hombro. Lleva la barra hacia el costado acercando el codo al tronco, pausa con el omóplato retraído y baja de forma controlada. Completa la serie y cambia de lado."
+}

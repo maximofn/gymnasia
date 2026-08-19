@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-tumbado-agarre-inverso-barra",
+  "name": "Extensión de tríceps tumbado con agarre inverso",
+  "image_male": "images/extension-triceps-tumbado-agarre-inverso-barra-male.webp",
+  "image_female": "images/extension-triceps-tumbado-agarre-inverso-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos", "hombros"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano y sujeta una barra ligera con agarre supino sobre el pecho. Mantén las muñecas neutras y los brazos superiores quietos. Flexiona los codos para acercar la barra a la frente sin abrirlos hacia los lados; detén el movimiento en un rango seguro y extiende los codos para volver arriba. Usa observador si es necesario."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "remo-inclinado-agarre-inverso-barra",
+  "name": "Remo inclinado con agarre inverso",
+  "image_male": "images/remo-inclinado-agarre-inverso-barra-male.webp",
+  "image_female": "images/remo-inclinado-agarre-inverso-barra-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["dorsales", "bíceps", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta la barra con agarre supino y las manos a la anchura de los hombros. Flexiona ligeramente las rodillas e inclina el torso desde las caderas con la espalda neutra. Lleva la barra hacia la parte baja del abdomen manteniendo los codos cerca del cuerpo, junta los omóplatos y baja de forma controlada hasta extender los brazos."
+}

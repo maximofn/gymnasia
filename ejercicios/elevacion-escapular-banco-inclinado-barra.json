@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-escapular-banco-inclinado-barra",
+  "name": "Elevación escapular en banco inclinado con barra",
+  "image_male": "images/elevacion-escapular-banco-inclinado-barra-male.webp",
+  "image_female": "images/elevacion-escapular-banco-inclinado-barra-female.webp",
+  "muscle_group": "serrato anterior",
+  "secondary_muscles": ["hombros", "trapecios"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco inclinado y sujeta la barra sobre la parte alta del pecho con los brazos extendidos. Sin flexionar los codos, empuja la barra hacia el techo separando ligeramente los omóplatos del respaldo. Pausa con el serrato contraído y deja que los omóplatos vuelvan de forma controlada, sin bajar la barra hacia el pecho."
+}

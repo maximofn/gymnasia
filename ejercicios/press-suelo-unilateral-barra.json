@@ -1,0 +1,11 @@
+{
+  "id": "press-suelo-unilateral-barra",
+  "name": "Press de suelo unilateral con barra",
+  "image_male": "images/press-suelo-unilateral-barra-male.webp",
+  "image_female": "images/press-suelo-unilateral-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombro anterior", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies apoyados. Con ayuda de un observador, equilibra una barra ligera por el centro sobre una mano y extiende el brazo encima del pecho. Baja hasta que el tríceps toque suavemente el suelo, mantén la muñeca alineada y empuja hasta extender el codo. Completa la serie y cambia de brazo."
+}

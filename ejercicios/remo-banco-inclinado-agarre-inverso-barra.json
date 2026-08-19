@@ -1,0 +1,11 @@
+{
+  "id": "remo-banco-inclinado-agarre-inverso-barra",
+  "name": "Remo en banco inclinado con agarre inverso",
+  "image_male": "images/remo-banco-inclinado-agarre-inverso-barra-male.webp",
+  "image_female": "images/remo-banco-inclinado-agarre-inverso-barra-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["dorsales", "bíceps", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo con el pecho apoyado en un banco inclinado y los pies firmes. Sujeta la barra por debajo con las palmas hacia delante. Desde los brazos extendidos, lleva la barra hacia la parte alta del abdomen manteniendo los codos cerca del tronco. Junta los omóplatos, pausa y baja lentamente sin despegar el pecho del respaldo."
+}

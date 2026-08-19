@@ -269,6 +269,33 @@
         {"source_id": "0076", "id": "remo-deltoides-posteriores-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0078", "id": "zancada-atras-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 11,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0050", "id": "elevacion-escapular-banco-inclinado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0058", "id": "elevacion-cadera-tumbado-banco-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0064", "id": "remo-inclinado-unilateral-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0065", "id": "press-suelo-unilateral-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0066", "id": "peso-muerto-lateral-unilateral-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0068", "id": "sentadilla-unilateral-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1411", "id": "curl-muneca-prono-banco-barra", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1751", "id": "press-pines-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0073", "id": "pullover-barra", "action": "create", "difficulty": "intermediate", "view": "slightly elevated side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0022", "id": "pullover-press-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "2187", "id": "press-banca-agarre-cerrado-inverso-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0118", "id": "remo-inclinado-agarre-inverso-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1256", "id": "press-declinado-agarre-inverso-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1317", "id": "remo-banco-inclinado-agarre-inverso-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1721", "id": "extension-triceps-tumbado-agarre-inverso-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0081", "id": "curl-predicador-agarre-inverso-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0086", "id": "press-militar-tras-nuca-sentado-barra", "action": "create", "difficulty": "advanced", "view": "rear 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0087", "id": "press-bradford-sentado-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1718", "id": "extension-triceps-tras-nuca-sentado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0090", "id": "buenos-dias-sentado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

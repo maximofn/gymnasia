@@ -1,0 +1,11 @@
+{
+  "id": "buenos-dias-sentado-barra",
+  "name": "Buenos días sentado con barra",
+  "image_male": "images/buenos-dias-sentado-barra-male.webp",
+  "image_female": "images/buenos-dias-sentado-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "zona lumbar", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con los pies separados y firmes, y apoya una barra ligera sobre la parte alta de la espalda. Mantén la columna neutra y el abdomen activo. Inclina el torso hacia delante desde las caderas hasta notar tensión en glúteos e isquiotibiales, sin redondear la espalda. Contrae los glúteos para regresar a la posición erguida."
+}

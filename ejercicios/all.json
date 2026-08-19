@@ -171,6 +171,21 @@
     "instructions": "Ponte de pie con los pies separados a la altura de las caderas y la barra apoyada sobre la parte superior de la espalda. Flexiona ligeramente las rodillas, activa el core y lleva las caderas hacia atrás mientras inclinas el torso manteniendo la espalda neutra. Baja hasta sentir tensión en los isquiotibiales. Empuja las caderas hacia delante y contrae los glúteos para regresar de forma controlada."
   },
   {
+    "id": "buenos-dias-sentado-barra",
+    "name": "Buenos días sentado con barra",
+    "image_male": "images/buenos-dias-sentado-barra-male.webp",
+    "image_female": "images/buenos-dias-sentado-barra-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "zona lumbar",
+      "core"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate en un banco con los pies separados y firmes, y apoya una barra ligera sobre la parte alta de la espalda. Mantén la columna neutra y el abdomen activo. Inclina el torso hacia delante desde las caderas hasta notar tensión en glúteos e isquiotibiales, sin redondear la espalda. Contrae los glúteos para regresar a la posición erguida."
+  },
+  {
     "id": "burpee",
     "name": "Burpee",
     "image_male": "images/burpee-male.webp",
@@ -559,6 +574,34 @@
     "instructions": "Siéntate, pisa el centro de la banda y sujeta los extremos con las palmas hacia abajo. Apoya los antebrazos sobre los muslos dejando las muñecas fuera del borde. Sin despegar los antebrazos, eleva el dorso de las manos contra la resistencia. Haz una pausa breve y baja lentamente hasta recuperar la posición inicial."
   },
   {
+    "id": "curl-muneca-prono-banco-barra",
+    "name": "Curl de muñeca prono sobre banco con barra",
+    "image_male": "images/curl-muneca-prono-banco-barra-male.webp",
+    "image_female": "images/curl-muneca-prono-banco-barra-female.webp",
+    "muscle_group": "antebrazos",
+    "secondary_muscles": [
+      "braquial",
+      "bíceps"
+    ],
+    "equipment": "barra",
+    "difficulty": "beginner",
+    "instructions": "Siéntate frente a un banco y apoya los antebrazos sobre él con las palmas hacia abajo y las muñecas fuera del borde. Sujeta una barra ligera con agarre prono. Sin despegar los antebrazos, deja que las muñecas bajen y luego eleva el dorso de las manos tanto como permita un rango cómodo. Pausa arriba y desciende lentamente."
+  },
+  {
+    "id": "curl-predicador-agarre-inverso-barra",
+    "name": "Curl predicador con agarre inverso",
+    "image_male": "images/curl-predicador-agarre-inverso-barra-male.webp",
+    "image_female": "images/curl-predicador-agarre-inverso-barra-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "braquial",
+      "antebrazos"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate en un banco predicador y apoya completamente los brazos sobre el cojín. Sujeta una barra ligera con agarre prono. Flexiona los codos para acercar la barra hacia los hombros sin despegar los brazos del apoyo, pausa arriba y desciende lentamente hasta casi extenderlos por completo."
+  },
+  {
     "id": "curl-predicador-barra",
     "name": "Curl predicador con barra",
     "image_male": "images/curl-predicador-barra-male.webp",
@@ -669,6 +712,34 @@
     "equipment": "peso corporal",
     "difficulty": "intermediate",
     "instructions": "Cuélgate de una barra fija con las manos en pronación (palmas hacia adelante), algo más abiertas que el ancho de los hombros y los brazos completamente extendidos. Tira del cuerpo hacia arriba apretando los dorsales y llevando los codos hacia abajo y atrás, hasta que la barbilla supere la barra. Baja de forma controlada hasta extender por completo los brazos sin balancearte."
+  },
+  {
+    "id": "elevacion-cadera-tumbado-banco-barra",
+    "name": "Elevación de cadera tumbado en banco con barra",
+    "image_male": "images/elevacion-cadera-tumbado-banco-barra-male.webp",
+    "image_female": "images/elevacion-cadera-tumbado-banco-barra-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "cuádriceps"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate a lo largo de un banco plano con los hombros apoyados, las rodillas flexionadas y los pies firmes en el suelo. Coloca una barra acolchada sobre las caderas y sujétala con ambas manos. Contrae los glúteos para elevar la pelvis hasta alinear hombros, caderas y rodillas; pausa arriba y desciende lentamente sin perder el control."
+  },
+  {
+    "id": "elevacion-escapular-banco-inclinado-barra",
+    "name": "Elevación escapular en banco inclinado con barra",
+    "image_male": "images/elevacion-escapular-banco-inclinado-barra-male.webp",
+    "image_female": "images/elevacion-escapular-banco-inclinado-barra-female.webp",
+    "muscle_group": "serrato anterior",
+    "secondary_muscles": [
+      "hombros",
+      "trapecios"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba en un banco inclinado y sujeta la barra sobre la parte alta del pecho con los brazos extendidos. Sin flexionar los codos, empuja la barra hacia el techo separando ligeramente los omóplatos del respaldo. Pausa con el serrato contraído y deja que los omóplatos vuelvan de forma controlada, sin bajar la barra hacia el pecho."
   },
   {
     "id": "elevacion-frontal-banda",
@@ -1083,6 +1154,34 @@
     "equipment": "mancuerna",
     "difficulty": "beginner",
     "instructions": "Siéntate erguido en un banco y sujeta una mancuerna con ambas manos por encima de la cabeza. Mantén los brazos superiores cerca de las orejas y flexiona los codos para bajar la mancuerna detrás de la cabeza. Extiende los codos contrayendo los tríceps sin abrirlos hacia los lados ni arquear la espalda."
+  },
+  {
+    "id": "extension-triceps-tras-nuca-sentado-barra",
+    "name": "Extensión de tríceps tras nuca sentado con barra",
+    "image_male": "images/extension-triceps-tras-nuca-sentado-barra-male.webp",
+    "image_female": "images/extension-triceps-tras-nuca-sentado-barra-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "antebrazos"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate erguido y eleva una barra ligera sobre la cabeza con agarre cerrado. Mantén los brazos superiores junto a las orejas y flexiona únicamente los codos para bajar la barra detrás de la cabeza. Detén el descenso antes de perder la posición de hombros y extiende los codos hasta volver arriba, sin arquear la zona lumbar."
+  },
+  {
+    "id": "extension-triceps-tumbado-agarre-inverso-barra",
+    "name": "Extensión de tríceps tumbado con agarre inverso",
+    "image_male": "images/extension-triceps-tumbado-agarre-inverso-barra-male.webp",
+    "image_female": "images/extension-triceps-tumbado-agarre-inverso-barra-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "antebrazos",
+      "hombros"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Túmbate en un banco plano y sujeta una barra ligera con agarre supino sobre el pecho. Mantén las muñecas neutras y los brazos superiores quietos. Flexiona los codos para acercar la barra a la frente sin abrirlos hacia los lados; detén el movimiento en un rango seguro y extiende los codos para volver arriba. Usa observador si es necesario."
   },
   {
     "id": "extension-triceps-tumbado-barra",
@@ -1588,6 +1687,22 @@
     "instructions": "Ponte de pie con los pies separados a la altura de los hombros y la barra en el suelo frente a ti. Flexiona las rodillas y las caderas para bajar el torso y agarra la barra con las manos algo más separadas que el ancho de los hombros. Mantén la espalda neutra y el pecho elevado mientras empujas con los pies para levantar la barra, extendiendo las caderas y las rodillas. Termina de pie con los glúteos contraídos y el core activado. Baja la barra flexionando de nuevo las caderas y las rodillas sin perder la posición de la espalda."
   },
   {
+    "id": "peso-muerto-lateral-unilateral-barra",
+    "name": "Peso muerto lateral unilateral con barra",
+    "image_male": "images/peso-muerto-lateral-unilateral-barra-male.webp",
+    "image_female": "images/peso-muerto-lateral-unilateral-barra-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "cuádriceps",
+      "zona lumbar",
+      "antebrazos"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Coloca una barra ligera en el suelo junto a una pierna y sitúate con los pies a la anchura de las caderas. Agarra el centro de la barra con la mano del mismo lado, lleva las caderas atrás y flexiona las rodillas manteniendo la espalda neutra. Empuja el suelo para incorporarte sin inclinarte lateralmente; baja con control y cambia de lado al terminar la serie."
+  },
+  {
     "id": "peso-muerto-piernas-rectas-banda",
     "name": "Peso muerto con piernas rectas y banda",
     "image_male": "images/peso-muerto-piernas-rectas-banda-male.webp",
@@ -1617,7 +1732,7 @@
   },
   {
     "id": "peso-muerto-piernas-rigidas-espalda-recta-banda",
-    "name": "Peso muerto con piernas rígidas y banda",
+    "name": "Peso muerto con piernas rígidas y espalda recta con banda",
     "image_male": "images/peso-muerto-piernas-rigidas-espalda-recta-banda-male.webp",
     "image_female": "images/peso-muerto-piernas-rigidas-espalda-recta-banda-female.webp",
     "muscle_group": "isquiotibiales",
@@ -1758,6 +1873,20 @@
     "instructions": "Siéntate en un banco con respaldo y sujeta una mancuerna en cada mano a la altura de los hombros, con las palmas orientadas hacia el cuerpo y los codos por delante. Eleva las mancuernas mientras rotas las muñecas hasta que las palmas miren hacia delante y los brazos queden extendidos sobre la cabeza. Invierte la rotación al bajar de forma controlada."
   },
   {
+    "id": "press-banca-agarre-cerrado-inverso-barra",
+    "name": "Press de banca con agarre cerrado inverso",
+    "image_male": "images/press-banca-agarre-cerrado-inverso-barra-male.webp",
+    "image_female": "images/press-banca-agarre-cerrado-inverso-barra-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombro anterior"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Túmbate en un banco plano y agarra la barra con las palmas orientadas hacia ti y las manos aproximadamente a la anchura de los hombros. Con ayuda para sacar la barra, bájala hacia la parte baja del pecho manteniendo los codos cerca del tronco y las muñecas neutras. Empuja verticalmente hasta extender los brazos sin perder el agarre."
+  },
+  {
     "id": "press-banca-agarre-cerrado",
     "name": "Press de banca con agarre cerrado",
     "image_male": "images/press-banca-agarre-cerrado-male.webp",
@@ -1800,6 +1929,20 @@
     "instructions": "Acuéstate en un banco plano con los pies firmes en el suelo. Agarra la barra con las manos algo más abiertas que el ancho de los hombros. Baja la barra de forma controlada hasta el pecho y empuja hacia arriba hasta extender los brazos."
   },
   {
+    "id": "press-bradford-sentado-barra",
+    "name": "Press Bradford sentado con barra",
+    "image_male": "images/press-bradford-sentado-barra-male.webp",
+    "image_female": "images/press-bradford-sentado-barra-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps",
+      "trapecios"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Siéntate con el tronco erguido y sostén una barra ligera delante de los hombros con agarre algo más ancho. Empuja solo lo suficiente para pasar la barra sobre la coronilla y bájala detrás de la cabeza hasta un rango cómodo. Invierte el recorrido hacia delante sin bloquear los codos. Mantén el abdomen activo y evita cualquier posición dolorosa."
+  },
+  {
     "id": "press-cerrado-extension-triceps-declinado-barra",
     "name": "Press cerrado a extensión de tríceps declinado",
     "image_male": "images/press-cerrado-extension-triceps-declinado-barra-male.webp",
@@ -1826,6 +1969,20 @@
     "equipment": "barra y banco declinado",
     "difficulty": "intermediate",
     "instructions": "Túmbate en un banco declinado con los pies asegurados y agarra la barra algo más ancho que los hombros. Baja la barra hacia la parte inferior del pecho manteniendo los antebrazos verticales y los omóplatos retraídos. Empuja hasta extender los brazos sin despegar los hombros del banco ni rebotar la barra."
+  },
+  {
+    "id": "press-declinado-agarre-inverso-barra",
+    "name": "Press declinado con agarre inverso",
+    "image_male": "images/press-declinado-agarre-inverso-barra-male.webp",
+    "image_female": "images/press-declinado-agarre-inverso-barra-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombro anterior"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Túmbate en un banco declinado con los pies sujetos y agarra la barra con las palmas orientadas hacia ti. Pide ayuda para sacarla del soporte. Baja la barra hacia la zona inferior del pecho con los codos próximos al tronco y las muñecas alineadas; pausa antes de tocar y empuja hasta extender los brazos manteniendo los hombros estables."
   },
   {
     "id": "press-declinado-barra",
@@ -2024,6 +2181,20 @@
     "instructions": "Siéntate erguido en un banco con respaldo y sujeta la barra un poco más abierta que los hombros. Colócala frente a la parte superior del pecho con los antebrazos verticales. Activa el core y empuja la barra por encima de la cabeza hasta extender los brazos sin arquear la zona lumbar. Baja con control hasta la posición inicial y repite."
   },
   {
+    "id": "press-militar-tras-nuca-sentado-barra",
+    "name": "Press militar tras nuca sentado con barra",
+    "image_male": "images/press-militar-tras-nuca-sentado-barra-male.webp",
+    "image_female": "images/press-militar-tras-nuca-sentado-barra-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps",
+      "trapecios"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Siéntate erguido y sujeta una barra ligera con agarre amplio sobre la cabeza. Solo si tienes movilidad de hombro suficiente, baja la barra por detrás hasta una altura cómoda cercana a la coronilla, sin forzarla hacia el cuello. Mantén los antebrazos verticales y vuelve a empujar hasta extender los brazos. Evita esta variante si provoca dolor."
+  },
+  {
     "id": "press-pallof-banda",
     "name": "Press Pallof con banda",
     "image_male": "images/press-pallof-banda-male.webp",
@@ -2081,6 +2252,20 @@
     "instructions": "Ancla la banda a la altura del pecho y colócate de espaldas y ligeramente de lado al punto de fijación. Sujeta la banda con una mano junto al pecho. Empuja el brazo hacia delante mientras giras suavemente el torso y la cadera hacia el lado contrario, sin perder el equilibrio. Regresa con control, completa la serie y cambia de lado."
   },
   {
+    "id": "press-pines-barra",
+    "name": "Press desde pines con barra",
+    "image_male": "images/press-pines-barra-male.webp",
+    "image_female": "images/press-pines-barra-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombro anterior"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Coloca un banco dentro de un rack y ajusta los pines de seguridad para que la barra quede unos centímetros por encima del pecho. Túmbate, retrae los omóplatos y agarra la barra algo más ancho que los hombros. Desde la parada completa sobre los pines, empuja hasta extender los brazos y vuelve a apoyar la barra con control antes de cada repetición."
+  },
+  {
     "id": "press-sobre-cabeza-giratorio-banda",
     "name": "Press sobre la cabeza giratorio con banda",
     "image_male": "images/press-sobre-cabeza-giratorio-banda-male.webp",
@@ -2094,6 +2279,21 @@
     "equipment": "banda",
     "difficulty": "intermediate",
     "instructions": "Pisa el centro de la banda y lleva las manos a los hombros. Empuja ambos brazos por encima de la cabeza mientras giras suavemente el torso hacia un lado, manteniendo la pelvis estable. Baja las manos con control y repite el press girando hacia el lado contrario. Evita arquear la zona lumbar durante el bloqueo."
+  },
+  {
+    "id": "press-suelo-unilateral-barra",
+    "name": "Press de suelo unilateral con barra",
+    "image_male": "images/press-suelo-unilateral-barra-male.webp",
+    "image_female": "images/press-suelo-unilateral-barra-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombro anterior",
+      "antebrazos"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies apoyados. Con ayuda de un observador, equilibra una barra ligera por el centro sobre una mano y extiende el brazo encima del pecho. Baja hasta que el tríceps toque suavemente el suelo, mantén la muñeca alineada y empuja hasta extender el codo. Completa la serie y cambia de brazo."
   },
   {
     "id": "press-unilateral-maquina",
@@ -2180,6 +2380,21 @@
     "instructions": "Colócate de espaldas a una polea baja y sujeta la cuerda entre las piernas. Da unos pasos al frente para tensar el cable y lleva las caderas hacia atrás con las rodillas ligeramente flexionadas y la espalda neutra. Extiende las caderas hasta quedar erguido, aprieta los glúteos y regresa despacio a la bisagra inicial."
   },
   {
+    "id": "pullover-barra",
+    "name": "Pullover con barra",
+    "image_male": "images/pullover-barra-male.webp",
+    "image_female": "images/pullover-barra-female.webp",
+    "muscle_group": "dorsales",
+    "secondary_muscles": [
+      "pecho",
+      "tríceps",
+      "serrato anterior"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba en un banco plano y sujeta una barra ligera sobre el pecho con los brazos casi extendidos. Manteniendo fija una pequeña flexión de codos, baja la barra en arco detrás de la cabeza hasta notar un estiramiento cómodo en los dorsales. Invierte el recorrido sin arquear la zona lumbar y vuelve a situar la barra sobre el pecho."
+  },
+  {
     "id": "pullover-brazos-flexionados-barra",
     "name": "Pullover con barra y brazos flexionados",
     "image_male": "images/pullover-brazos-flexionados-barra-male.webp",
@@ -2236,6 +2451,21 @@
     "instructions": "Túmbate boca arriba en un banco y sujeta una mancuerna con ambas manos sobre el pecho. Mantén los brazos casi extendidos y baja la mancuerna en arco por detrás de la cabeza sin abrir los codos en exceso. Detente cuando notes un estiramiento cómodo en pecho y dorsales. Contrae el core y devuelve la mancuerna al punto inicial siguiendo el mismo recorrido."
   },
   {
+    "id": "pullover-press-barra",
+    "name": "Pullover con press de barra",
+    "image_male": "images/pullover-press-barra-male.webp",
+    "image_female": "images/pullover-press-barra-female.webp",
+    "muscle_group": "dorsales",
+    "secondary_muscles": [
+      "pecho",
+      "tríceps",
+      "hombro anterior"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Túmbate en un banco plano con una barra ligera sobre el pecho. Con los brazos casi extendidos, lleva la barra en arco detrás de la cabeza y regresa hasta encima del pecho. Flexiona entonces los codos para bajar la barra como en un press cerrado y empuja hasta extender los brazos. Mantén el abdomen activo durante las dos fases."
+  },
+  {
     "id": "rack-pull-barra",
     "name": "Rack pull con barra",
     "image_male": "images/rack-pull-barra-male.webp",
@@ -2249,6 +2479,21 @@
     "equipment": "barra y rack",
     "difficulty": "advanced",
     "instructions": "Coloca la barra sobre los soportes del rack justo por debajo de las rodillas. Agárrala con las manos por fuera de las piernas, activa el abdomen y conserva la espalda neutra. Extiende caderas y rodillas hasta quedar erguido, termina apretando los glúteos y devuelve la barra a los soportes con un descenso controlado."
+  },
+  {
+    "id": "remo-banco-inclinado-agarre-inverso-barra",
+    "name": "Remo en banco inclinado con agarre inverso",
+    "image_male": "images/remo-banco-inclinado-agarre-inverso-barra-male.webp",
+    "image_female": "images/remo-banco-inclinado-agarre-inverso-barra-female.webp",
+    "muscle_group": "espalda alta",
+    "secondary_muscles": [
+      "dorsales",
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca abajo con el pecho apoyado en un banco inclinado y los pies firmes. Sujeta la barra por debajo con las palmas hacia delante. Desde los brazos extendidos, lleva la barra hacia la parte alta del abdomen manteniendo los codos cerca del tronco. Junta los omóplatos, pausa y baja lentamente sin despegar el pecho del respaldo."
   },
   {
     "id": "remo-banco-inclinado-barra",
@@ -2310,6 +2555,21 @@
     "instructions": "Sujeta la barra con agarre pronado algo más ancho que los hombros y flexiona la cadera hasta inclinar el torso con la espalda neutra. Lleva la barra hacia la parte alta del pecho abriendo los codos hacia los lados y juntando los omóplatos. Pausa en la contracción y baja la barra lentamente sin modificar el ángulo del torso."
   },
   {
+    "id": "remo-inclinado-agarre-inverso-barra",
+    "name": "Remo inclinado con agarre inverso",
+    "image_male": "images/remo-inclinado-agarre-inverso-barra-male.webp",
+    "image_female": "images/remo-inclinado-agarre-inverso-barra-female.webp",
+    "muscle_group": "espalda alta",
+    "secondary_muscles": [
+      "dorsales",
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "barra",
+    "difficulty": "intermediate",
+    "instructions": "Sujeta la barra con agarre supino y las manos a la anchura de los hombros. Flexiona ligeramente las rodillas e inclina el torso desde las caderas con la espalda neutra. Lleva la barra hacia la parte baja del abdomen manteniendo los codos cerca del cuerpo, junta los omóplatos y baja de forma controlada hasta extender los brazos."
+  },
+  {
     "id": "remo-inclinado-barra",
     "name": "Remo inclinado con barra",
     "image_male": "images/remo-inclinado-barra-male.webp",
@@ -2322,6 +2582,21 @@
     "equipment": "barra",
     "difficulty": "intermediate",
     "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Inclina el torso desde las caderas manteniendo la espalda neutra y el pecho elevado. Sujeta la barra con agarre prono y tira de ella hacia la parte inferior del pecho, llevando los codos hacia atrás y juntando los omóplatos. Haz una pausa breve y baja la barra de forma controlada."
+  },
+  {
+    "id": "remo-inclinado-unilateral-barra",
+    "name": "Remo inclinado unilateral con barra",
+    "image_male": "images/remo-inclinado-unilateral-barra-male.webp",
+    "image_female": "images/remo-inclinado-unilateral-barra-female.webp",
+    "muscle_group": "espalda alta",
+    "secondary_muscles": [
+      "dorsales",
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "De pie, sujeta el centro de una barra ligera con una mano y flexiona ligeramente las rodillas. Inclina el torso desde las caderas con la espalda neutra y deja el brazo extendido bajo el hombro. Lleva la barra hacia el costado acercando el codo al tronco, pausa con el omóplato retraído y baja de forma controlada. Completa la serie y cambia de lado."
   },
   {
     "id": "remo-invertido",
@@ -2925,6 +3200,22 @@
     "equipment": "peso corporal",
     "difficulty": "advanced",
     "instructions": "Sujétate ligeramente a un soporte y eleva los talones mientras llevas las rodillas hacia delante. Inclina el cuerpo hacia atrás manteniendo una línea firme desde las rodillas hasta los hombros y baja solo hasta donde controles la posición. Extiende las rodillas para volver, sin rebotar ni descargar el peso sobre el brazo de apoyo."
+  },
+  {
+    "id": "sentadilla-unilateral-barra",
+    "name": "Sentadilla unilateral con barra",
+    "image_male": "images/sentadilla-unilateral-barra-male.webp",
+    "image_female": "images/sentadilla-unilateral-barra-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "glúteos",
+      "isquiotibiales",
+      "gemelos",
+      "core"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Apoya una barra ligera y bien equilibrada sobre la parte alta de la espalda. Eleva una pierna al frente y desciende sobre la pierna de apoyo, llevando la cadera atrás y manteniendo el pecho elevado. Baja solo hasta conservar el talón apoyado y la rodilla alineada con el pie; empuja el suelo para volver arriba y cambia de pierna."
   },
   {
     "id": "sentadilla-zercher-profunda-barra",

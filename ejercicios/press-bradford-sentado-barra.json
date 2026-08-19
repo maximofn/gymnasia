@@ -1,0 +1,11 @@
+{
+  "id": "press-bradford-sentado-barra",
+  "name": "Press Bradford sentado con barra",
+  "image_male": "images/press-bradford-sentado-barra-male.webp",
+  "image_female": "images/press-bradford-sentado-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["tríceps", "trapecios"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Siéntate con el tronco erguido y sostén una barra ligera delante de los hombros con agarre algo más ancho. Empuja solo lo suficiente para pasar la barra sobre la coronilla y bájala detrás de la cabeza hasta un rango cómodo. Invierte el recorrido hacia delante sin bloquear los codos. Mantén el abdomen activo y evita cualquier posición dolorosa."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "pullover-press-barra",
+  "name": "Pullover con press de barra",
+  "image_male": "images/pullover-press-barra-male.webp",
+  "image_female": "images/pullover-press-barra-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["pecho", "tríceps", "hombro anterior"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano con una barra ligera sobre el pecho. Con los brazos casi extendidos, lleva la barra en arco detrás de la cabeza y regresa hasta encima del pecho. Flexiona entonces los codos para bajar la barra como en un press cerrado y empuja hasta extender los brazos. Mantén el abdomen activo durante las dos fases."
+}

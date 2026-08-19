@@ -1,0 +1,11 @@
+{
+  "id": "pullover-barra",
+  "name": "Pullover con barra",
+  "image_male": "images/pullover-barra-male.webp",
+  "image_female": "images/pullover-barra-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["pecho", "tríceps", "serrato anterior"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco plano y sujeta una barra ligera sobre el pecho con los brazos casi extendidos. Manteniendo fija una pequeña flexión de codos, baja la barra en arco detrás de la cabeza hasta notar un estiramiento cómodo en los dorsales. Invierte el recorrido sin arquear la zona lumbar y vuelve a situar la barra sobre el pecho."
+}
