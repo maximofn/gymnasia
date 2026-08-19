@@ -18,6 +18,7 @@ Escritura:
       --description "..." --state "Todo" --priority high
   uv run linear.py update GYM-12 --state "In Progress" --priority urgent
   uv run linear.py update GYM-12 --title "Nuevo título" --description "..."
+  uv run linear.py link GYM-12 --blocked-by GYM-10 --blocked-by GYM-11
   uv run linear.py close GYM-12 --evidence "npm test: 24/24"
   uv run linear.py comment GYM-12 --body "Comentario"
 
@@ -633,6 +634,32 @@ def cmd_comment(args):
     print(f"Comentario añadido a {args.id}")
 
 
+def cmd_link(args):
+    """Crea relaciones `blocks` desde cada bloqueante hacia el ticket objetivo."""
+    gql = """
+    mutation LinkIssues($input: IssueRelationCreateInput!) {
+      issueRelationCreate(input: $input) {
+        success
+        issueRelation { id type }
+      }
+    }
+    """
+    target_uuid = resolve_issue_uuid(args.id)
+    for blocker_id in args.blocked_by:
+        blocker_uuid = resolve_issue_uuid(blocker_id)
+        inp = {
+            "issueId": blocker_uuid,
+            "relatedIssueId": target_uuid,
+            "type": "blocks",
+        }
+        res = query(gql, {"input": inp})["issueRelationCreate"]
+        if not res["success"]:
+            sys.exit(
+                f"No se pudo marcar {args.id} como bloqueado por {blocker_id}."
+            )
+        print(f"{args.id} bloqueado por {blocker_id}")
+
+
 def main():
     p = argparse.ArgumentParser(description="Cliente Linear GraphQL (leer/crear/modificar)")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -710,6 +737,19 @@ def main():
     pm.add_argument("id", help="identifier, p.ej. GYM-12")
     pm.add_argument("--body", required=True)
     pm.set_defaults(func=cmd_comment)
+
+    plink = sub.add_parser(
+        "link",
+        help="añadir dependencias: el issue queda bloqueado por otros issues",
+    )
+    plink.add_argument("id", help="issue bloqueado, p.ej. GYM-12")
+    plink.add_argument(
+        "--blocked-by",
+        action="append",
+        required=True,
+        help="identifier bloqueante; se puede repetir",
+    )
+    plink.set_defaults(func=cmd_link)
 
     args = p.parse_args()
     args.func(args)

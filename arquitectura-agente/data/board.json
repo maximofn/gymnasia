@@ -52,6 +52,198 @@
   ],
   "groups": [
     {
+      "id": "GYM-187",
+      "kind": "epic",
+      "title": "Publicar Gymnasia en Google Play",
+      "state": "todo",
+      "summary": "Adecuar producto, cumplimiento, cuenta, ficha, firma y artefacto para validar Gymnasia en tracks internos y cerrados antes de lanzarla en España y ampliar después los territorios.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-188",
+          "title": "Eliminar la actualización por APK de GitHub del build de Google Play",
+          "state": "todo",
+          "summary": "Retirar del artefacto de Play cualquier comprobación, descarga o instalación de APK desde GitHub y dejar las actualizaciones de esa variante exclusivamente en manos de Google Play.",
+          "dependsOn": [],
+          "related": [
+            "GYM-156",
+            "GYM-157",
+            "GYM-159",
+            "GYM-198"
+          ]
+        },
+        {
+          "id": "GYM-189",
+          "title": "Añadir denuncia dentro de la app para respuestas generadas por IA",
+          "state": "todo",
+          "summary": "Añadir a cada respuesta una denuncia accesible que minimice datos, excluya claves BYOK y use un canal de recepción compatible con la arquitectura local-first.",
+          "dependsOn": [
+            "GYM-143",
+            "GYM-145"
+          ],
+          "related": [
+            "GYM-190",
+            "GYM-198"
+          ]
+        },
+        {
+          "id": "GYM-190",
+          "title": "Publicar la política de privacidad y completar las declaraciones de salud",
+          "state": "todo",
+          "summary": "Publicar una política HTTPS coherente con el almacenamiento local, BYOK y los datos de salud, y alinear con ella Data safety y las declaraciones de salud e IA de Play.",
+          "dependsOn": [],
+          "related": [
+            "GYM-162",
+            "GYM-189",
+            "GYM-197"
+          ]
+        },
+        {
+          "id": "GYM-191",
+          "title": "Eliminar USE_EXACT_ALARM del build Android",
+          "state": "todo",
+          "summary": "Eliminar android.permission.USE_EXACT_ALARM del manifest fusionado y conservar los avisos de entrenamiento con mecanismos admitidos por Google Play.",
+          "dependsOn": [],
+          "related": [
+            "GYM-198"
+          ]
+        },
+        {
+          "id": "GYM-192",
+          "title": "Retirar temporalmente la integración de VivaGym de la versión pública",
+          "state": "todo",
+          "summary": "Quitar de la versión pública la interfaz, red, autenticación y datos sensibles de VivaGym sin romper los datos locales ni las funciones principales.",
+          "dependsOn": [],
+          "related": [
+            "GYM-7",
+            "GYM-154",
+            "GYM-155",
+            "GYM-198"
+          ]
+        },
+        {
+          "id": "GYM-193",
+          "title": "Comprobar la disponibilidad legal y comercial de la marca Gymnasia",
+          "state": "todo",
+          "summary": "Buscar conflictos relevantes en OEPM, EUIPO, Google Play y canales comerciales y decidir si se conserva o ajusta el nombre antes de consolidar la ficha.",
+          "dependsOn": [],
+          "related": [
+            "GYM-195",
+            "GYM-197"
+          ]
+        },
+        {
+          "id": "GYM-194",
+          "title": "Crear y verificar la cuenta de Google Play Console",
+          "state": "todo",
+          "summary": "Crear la cuenta propietaria, completar identidad y contactos, asegurarla con 2FA y recuperación y asignar a cada colaborador el rol mínimo necesario.",
+          "dependsOn": [],
+          "related": [
+            "GYM-195"
+          ]
+        },
+        {
+          "id": "GYM-195",
+          "title": "Crear Gymnasia en Google Play Console y decidir la firma",
+          "state": "todo",
+          "summary": "Dar de alta package name e identidad definitivos y decidir antes de la primera subida entre importar la clave de EAS para conservar actualizaciones o usar una nueva de Google.",
+          "dependsOn": [
+            "GYM-193",
+            "GYM-194"
+          ],
+          "related": [
+            "GYM-198"
+          ]
+        },
+        {
+          "id": "GYM-196",
+          "title": "Preparar credenciales BYOK temporales para la revisión de Google Play",
+          "state": "todo",
+          "summary": "Crear una credencial de revisión aislada, limitada y temporal, probarla con el AAB y compartirla solo mediante App access para revocarla al terminar.",
+          "dependsOn": [
+            "GYM-195"
+          ],
+          "related": [
+            "GYM-190",
+            "GYM-198",
+            "GYM-199"
+          ]
+        },
+        {
+          "id": "GYM-197",
+          "title": "Preparar la ficha de Google Play",
+          "state": "todo",
+          "summary": "Completar textos, recursos, capturas, clasificación, acceso y declaraciones de una ficha española fiel al AAB y preparada para localizarse.",
+          "dependsOn": [
+            "GYM-190",
+            "GYM-193",
+            "GYM-195"
+          ],
+          "related": [
+            "GYM-199"
+          ]
+        },
+        {
+          "id": "GYM-198",
+          "title": "Generar y validar el Android App Bundle de producción",
+          "state": "todo",
+          "summary": "Generar un AAB reproducible, firmado y trazable tras pasar las pruebas e inspeccionar manifest, permisos, SDK, versión, package name y componentes excluidos.",
+          "dependsOn": [
+            "GYM-188",
+            "GYM-189",
+            "GYM-190",
+            "GYM-191",
+            "GYM-192",
+            "GYM-195",
+            "GYM-196"
+          ],
+          "related": [
+            "GYM-158",
+            "GYM-159",
+            "GYM-199"
+          ]
+        },
+        {
+          "id": "GYM-199",
+          "title": "Publicar el AAB en pruebas internas y después en pruebas cerradas",
+          "state": "todo",
+          "summary": "Validar primero el AAB en el track interno y promover exactamente el mismo artefacto al track cerrado con testers, feedback e incidencias trazables.",
+          "dependsOn": [
+            "GYM-197",
+            "GYM-198"
+          ],
+          "related": [
+            "GYM-158",
+            "GYM-200"
+          ]
+        },
+        {
+          "id": "GYM-200",
+          "title": "Conseguir y coordinar al menos 12 testers durante 14 días",
+          "state": "todo",
+          "summary": "Reclutar con margen, mantener al menos 12 personas inscritas durante 14 días cuando lo exija la cuenta y convertir su actividad y feedback en evidencia.",
+          "dependsOn": [
+            "GYM-199"
+          ],
+          "related": [
+            "GYM-201"
+          ]
+        },
+        {
+          "id": "GYM-201",
+          "title": "Publicar en producción en España y ampliar después al resto del mundo",
+          "state": "todo",
+          "summary": "Solicitar producción con la evidencia de la prueba cerrada, desplegar por etapas en España y ampliar luego a los demás territorios elegibles tras revisar estabilidad y cumplimiento.",
+          "dependsOn": [
+            "GYM-200"
+          ],
+          "related": [
+            "GYM-199"
+          ]
+        }
+      ]
+    },
+    {
       "id": "GYM-138",
       "kind": "epic",
       "title": "Gobierno y seguridad de la política remota del agente",
@@ -2242,18 +2434,39 @@
   ],
   "recommendedOrder": [
     {
-      "id": "seguridad-prompt",
-      "title": "Máxima prioridad: gobernar y asegurar la política del agente",
-      "why": "Este bloque va antes que cualquier otro trabajo abierto. Primero elimina la ambigüedad legal identificando al agente como IA desde la primera interacción; después conserva el control remoto para emergencias sanitarias y añade fuente compilada, autorización exclusiva, entornos, firma, evals, eliminación de debug, guardrails, rollback y alertas.",
+      "id": "publicar-google-play",
+      "title": "Máxima prioridad: publicar Gymnasia en Google Play",
+      "why": "La publicación desbloquea el contenido sobre una app que el público puede instalar. Se completa primero la cadena sanitaria que exige la denuncia; en paralelo se limpian el build, el cumplimiento, la marca y la cuenta. Después se decide la firma, se prepara ficha y acceso, se genera un único AAB trazable y se promociona por tracks hasta España y el resto de territorios elegibles.",
       "tickets": [
         "GYM-150",
         "GYM-137",
         "GYM-142",
-        "GYM-144",
-        "GYM-140",
         "GYM-145",
         "GYM-139",
         "GYM-143",
+        "GYM-188",
+        "GYM-189",
+        "GYM-190",
+        "GYM-191",
+        "GYM-192",
+        "GYM-193",
+        "GYM-194",
+        "GYM-195",
+        "GYM-196",
+        "GYM-197",
+        "GYM-198",
+        "GYM-199",
+        "GYM-200",
+        "GYM-201"
+      ]
+    },
+    {
+      "id": "seguridad-prompt",
+      "title": "Completar el gobierno de la política del agente",
+      "why": "La fuente compilada, la autorización, la suite y la barrera sanitaria ya se priorizan dentro de la publicación en Play. Este tramo completa los entornos, la firma de políticas, el rollback, la auditoría y las alertas después de asegurar los bloqueos inmediatos de publicación.",
+      "tickets": [
+        "GYM-144",
+        "GYM-140",
         "GYM-141"
       ]
     },

@@ -228,5 +228,53 @@ class ClosureValidationTests(unittest.TestCase):
                 linear.cmd_close(args)
 
 
+class IssueRelationTests(unittest.TestCase):
+    def test_link_creates_blocks_relations_in_the_correct_direction(self):
+        calls = []
+
+        def fake_resolve(identifier):
+            return {
+                "GYM-200": "uuid-target",
+                "GYM-143": "uuid-143",
+                "GYM-145": "uuid-145",
+            }[identifier]
+
+        def fake_query(gql, variables=None):
+            self.assertIn("issueRelationCreate", gql)
+            calls.append(variables["input"])
+            return {
+                "issueRelationCreate": {
+                    "success": True,
+                    "issueRelation": {"id": "relation", "type": "blocks"},
+                }
+            }
+
+        args = argparse.Namespace(
+            id="GYM-200",
+            blocked_by=["GYM-143", "GYM-145"],
+        )
+        with (
+            mock.patch.object(linear, "resolve_issue_uuid", side_effect=fake_resolve),
+            mock.patch.object(linear, "query", side_effect=fake_query),
+        ):
+            linear.cmd_link(args)
+
+        self.assertEqual(
+            calls,
+            [
+                {
+                    "issueId": "uuid-143",
+                    "relatedIssueId": "uuid-target",
+                    "type": "blocks",
+                },
+                {
+                    "issueId": "uuid-145",
+                    "relatedIssueId": "uuid-target",
+                    "type": "blocks",
+                },
+            ],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

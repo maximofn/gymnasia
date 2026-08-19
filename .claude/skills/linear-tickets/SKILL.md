@@ -125,6 +125,9 @@ python3 .claude/skills/linear-tickets/scripts/linear.py update GYM-12 --priority
 python3 .claude/skills/linear-tickets/scripts/linear.py update GYM-12 --title "Nuevo título"
 # Reasignar el padre de un issue existente
 python3 .claude/skills/linear-tickets/scripts/linear.py update GYM-12 --parent GYM-25
+# Añadir dependencias (repite --blocked-by para varios bloqueantes)
+python3 .claude/skills/linear-tickets/scripts/linear.py link GYM-12 \
+  --blocked-by GYM-10 --blocked-by GYM-11
 # Comentar
 python3 .claude/skills/linear-tickets/scripts/linear.py comment GYM-12 --body "Comentario"
 ```
@@ -261,6 +264,9 @@ Ocho cosas que cuestan tiempo si no se saben:
 - **Estados**: se resuelven por nombre exacto (case-insensitive). Si dudas de
   los nombres disponibles, lista primero con `states GYM`.
 - El identifier (`GYM-12`) se traduce internamente al UUID que exige la API.
+- En `link TARGET --blocked-by BLOCKER`, la relación GraphQL se crea en la
+  dirección `BLOCKER blocks TARGET`; invertir ambos UUID hace que Linear muestre
+  la dependencia al revés.
 - Los estados por defecto de un equipo Linear suelen ser: `Backlog`, `Todo`,
   `In Progress`, `In Review`, `Done`, `Canceled` (verifícalos con `states`).
 - Para completar un ticket usa `close`; `update --state Done` está bloqueado.
