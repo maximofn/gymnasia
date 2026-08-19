@@ -20,6 +20,7 @@ Este directorio centraliza toda la documentacion funcional y tecnica del proyect
 - `docs/architecture/stack-and-systems.md`: arquitectura general y componentes.
 - `docs/architecture/offline-and-sync.md`: estrategia offline y sincronizacion.
 - `docs/architecture/security-and-privacy.md`: privacidad, seguridad y ciclo de vida de datos.
+- `docs/architecture/chat-system-prompt.md`: fuente, fallback, caché, hash y verificación del prompt de Gymnasia Coach.
 - `docs/openwiki-automation.md`: runner privado con cuota gratuita, OAuth cifrado, LangSmith, Telegram y Personal Brain.
 - `docs/design/README.md`: referencias de diseno Pencil para frontend.
 - `docs/design/frontend-implementation-guide.md`: guia de implementacion de frontend basada en capturas.

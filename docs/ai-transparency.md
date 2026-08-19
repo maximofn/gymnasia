@@ -75,6 +75,7 @@ Antes de publicar una función nueva:
 5. Verificar copy, contraste, escalado de texto, VoiceOver/TalkBack y orden de foco.
 6. Añadir contrato determinista y E2E con proveedor falso antes de publicar.
 
-GYM-137 debe preservar este compositor cuando unifique prompts; GYM-142 debe
-proteger las rutas y checks asociados; GYM-147 ampliará el recurso a los idiomas
-futuros sin reducir su claridad.
+El cargador unificado por GYM-137 preserva este compositor después de seleccionar
+remoto, caché o snapshot integrado. GYM-142 debe proteger las rutas y checks
+asociados; GYM-147 ampliará el recurso a los idiomas futuros sin reducir su
+claridad.

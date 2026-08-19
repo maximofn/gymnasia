@@ -70,6 +70,7 @@ import {
   type AiConversationSurface,
   type AiDisclosureMessageKind,
 } from "./agent/aiTransparency";
+import { loadChatSystemPrompt } from "./agent/chatSystemPromptRuntime";
 import {
   AiIdentityDisclosure,
   AiIdentityPersistentDisclosure,
@@ -427,7 +428,6 @@ type LocalStore = {
 const STORAGE_KEY = "gymnasia.mobile.local.v3";
 const SESSION_STORAGE_KEY = "gymnasia.mobile.training.session.v1";
 const SESSION_TEMPLATE_SNAPSHOT_KEY = "gymnasia.mobile.training.session_template_snapshot.v1";
-const CHAT_SYSTEM_PROMPT_CACHE_KEY = "gymnasia.mobile.chat.system_prompt.v1";
 const PERSONAL_DATA_STORAGE_KEY = "gymnasia.mobile.personal_data.v1";
 const USER_PREFS_STORAGE_KEY = "gymnasia.mobile.user_prefs.v1";
 const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: { enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" } };
@@ -634,37 +634,6 @@ const SERIES_TYPE_META: Record<SeriesType, { label: string; short: string; color
 };
 const ALL_SERIES_TYPES = Object.keys(SERIES_TYPE_META) as SeriesType[];
 
-const CHAT_SYSTEM_PROMPT_URL =
-  "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md";
-const DEFAULT_CHAT_SYSTEM_PROMPT =
-  "Eres Gymnasia Coach, el sistema de inteligencia artificial de la aplicación Gymnasia, especializado en entrenamiento y nutrición. " +
-  "Tu trabajo es ayudar con entrenamiento, nutricion, habitos y progreso fisico. " +
-  "Responde siempre en espanol. Responde de forma breve, clara, practica y accionable. " +
-  "Prioriza consejos seguros, realistas y faciles de aplicar.\n\n" +
-  "## Herramientas de memoria\n\n" +
-  "Tienes 4 herramientas: list_personal_data_keys, read_field_description(key), read_field_value(key), save_personal_data(personal_data).\n" +
-  "- Al saludar: 1) list_personal_data_keys, 2) read_field_description de keys candidatas, 3) read_field_value del campo correcto, 4) saluda con su nombre.\n" +
-  "- Al guardar datos: 1) list keys existentes, 2) lee datos actuales, 3) save_personal_data con array completo [{key,description,value}].\n" +
-  "- No menciones las herramientas al usuario.\n\n" +
-  "## Herramientas de dieta\n\n" +
-  "Tienes herramientas para gestionar la dieta del usuario: search_foods, read_meal_foods, add_meal_food.\n" +
-  "- Cuando el usuario pida añadir un alimento a una comida, SIEMPRE sigue este flujo:\n" +
-  "  1) Usa search_foods para buscar el alimento en la base de datos.\n" +
-  "  2) Si hay varios resultados similares, pregunta al usuario cuál quiere.\n" +
-  "  3) Una vez claro el alimento, calcula las calorías y macros según los gramos indicados (los datos de search_foods son por 100g).\n" +
-  "  4) Usa add_meal_food con la fecha, comida y el JSON con name, grams, calories_kcal, protein_g, carbs_g, fat_g.\n" +
-  "- Si el alimento no está en la base de datos, pregunta al usuario los datos nutricionales o estímalos.\n" +
-  "- Si el usuario no especifica la fecha, usa la fecha de hoy.\n" +
-  "- Si el usuario no especifica los gramos, usa el serving_size_g del alimento encontrado.\n\n" +
-  "## Herramientas de entrenamiento\n\n" +
-  "Tienes herramientas para gestionar rutinas: search_exercises, read_routines, create_routine.\n" +
-  "- Cuando el usuario pida crear una rutina, SIEMPRE sigue este flujo:\n" +
-  "  1) Pregunta qué tipo de rutina quiere (fuerza, hipertrofia, cardio, flexibilidad) y qué músculos o enfoque.\n" +
-  "  2) Usa search_exercises para buscar los ejercicios apropiados en la base de datos.\n" +
-  "  3) Propón la rutina al usuario con ejercicios, series, repeticiones y peso antes de crearla.\n" +
-  "  4) Una vez confirmada, usa create_routine con los datos.\n" +
-  "- Usa nombres exactos de ejercicios obtenidos de search_exercises para que se vinculen correctamente con imágenes.\n" +
-  "- Si el usuario no especifica series/reps/peso, usa valores por defecto razonables según el tipo de rutina.";
 const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
   "Anthropic en navegador necesita un proxy HTTP por CORS. " +
   "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
@@ -752,32 +721,6 @@ function resolveWebApiBaseUrl(): string {
 function buildWebProxyUrl(path: string): string {
   const baseUrl = resolveWebApiBaseUrl();
   return baseUrl ? `${baseUrl}${path}` : path;
-}
-
-function normalizeChatSystemPrompt(value: string | null | undefined): string {
-  const normalized = value?.trim() ?? "";
-  return normalized || DEFAULT_CHAT_SYSTEM_PROMPT;
-}
-
-async function loadChatSystemPrompt(): Promise<string> {
-  try {
-    const response = await fetch(`${CHAT_SYSTEM_PROMPT_URL}?ts=${Date.now()}`);
-    if (!response.ok) {
-      throw new Error(`GitHub prompt error (${response.status})`);
-    }
-    const remotePrompt = normalizeChatSystemPrompt(await response.text());
-    AsyncStorage.setItem(CHAT_SYSTEM_PROMPT_CACHE_KEY, remotePrompt).catch(() => {
-      // ignore cache write errors
-    });
-    return remotePrompt;
-  } catch {
-    try {
-      const cachedPrompt = await AsyncStorage.getItem(CHAT_SYSTEM_PROMPT_CACHE_KEY);
-      return normalizeChatSystemPrompt(cachedPrompt);
-    } catch {
-      return DEFAULT_CHAT_SYSTEM_PROMPT;
-    }
-  }
 }
 
 const EXERCISE_EQUIPMENT_OPTIONS = [
@@ -3152,12 +3095,10 @@ async function callProviderChatAPI(
   surface: AiConversationSurface = "main-chat",
 ): Promise<string> {
   const systemPrompt = composeAiSystemPrompt(
-    normalizeChatSystemPrompt(
-      messages
-        .filter((msg) => msg.role === "system")
-        .map((msg) => msg.content)
-        .join("\n\n"),
-    ),
+    messages
+      .filter((msg) => msg.role === "system")
+      .map((msg) => msg.content)
+      .join("\n\n"),
     surface,
   );
   const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
@@ -3279,12 +3220,10 @@ async function callProviderChatAPIWithTools(
   options?: ChatProviderCallOptions,
 ): Promise<AnthropicChatResult> {
   const systemPrompt = composeAiSystemPrompt(
-    normalizeChatSystemPrompt(
-      messages
-        .filter((msg) => msg.role === "system")
-        .map((msg) => msg.content)
-        .join("\n\n"),
-    ),
+    messages
+      .filter((msg) => msg.role === "system")
+      .map((msg) => msg.content)
+      .join("\n\n"),
   );
   const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
     .filter((msg) => msg.role !== "system")
@@ -3603,12 +3542,10 @@ async function callFoodEstimatorAPI(
   })();
   const nonSystemMessages = messages.filter((msg) => msg.role !== "system");
   const systemPrompt = composeAiSystemPrompt(
-    normalizeChatSystemPrompt(
-      messages
-        .filter((msg) => msg.role === "system")
-        .map((msg) => msg.content)
-        .join("\n\n"),
-    ),
+    messages
+      .filter((msg) => msg.role === "system")
+      .map((msg) => msg.content)
+      .join("\n\n"),
     "food-estimator",
   );
   const lastNonSystemUserMessageIndex = (() => {
@@ -8587,11 +8524,14 @@ export default function App() {
       const history = excludeLocalDisclosureMessages([...threadMessages, userMessage])
         .slice(-20)
         .map((msg) => ({ role: msg.role, content: msg.content }));
-      const [systemPrompt, personalDataFields] = await Promise.all([loadChatSystemPrompt(), loadPersonalData()]);
+      const [systemPromptSelection, personalDataFields] = await Promise.all([
+        loadChatSystemPrompt(),
+        loadPersonalData(),
+      ]);
       const debugField = personalDataFields.find((f) => f.key === "debug");
       const fullSystemPrompt = debugField?.value
-        ? `${systemPrompt}\n\n## Instrucciones de depuracion\n\n${debugField.value}`
-        : systemPrompt;
+        ? `${systemPromptSelection.content}\n\n## Instrucciones de depuracion\n\n${debugField.value}`
+        : systemPromptSelection.content;
       let assistantResult: AnthropicChatResult | null = null;
       const chatMessages = [{ role: "system" as const, content: fullSystemPrompt }, ...history];
       for (let attempt = 0; attempt < 3; attempt++) {
@@ -21087,7 +21027,7 @@ export default function App() {
                     Trazas de depuración
                   </Text>
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                    Registro de eventos de notificaciones y descansos. Cada entrada lleva timestamp ISO. Útil para diagnosticar por qué no salta la notificación con el móvil bloqueado o en background.
+                    Registro de notificaciones, descansos y selección de política del agente. Cada entrada lleva timestamp ISO. Las trazas del agente muestran solo fuente, hash y versión; nunca el prompt ni datos personales.
                   </Text>
 
                   <TracePanel />

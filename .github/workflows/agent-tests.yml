@@ -52,6 +52,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify bundled chat prompt snapshot
+        run: npm run check:chat-prompt
+
       - name: Run deterministic agent suite
         run: npm test
 

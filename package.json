@@ -6,6 +6,8 @@
   ],
   "scripts": {
     "dev:mobile": "npm --workspace apps/mobile run start",
+    "sync:chat-prompt": "node apps/mobile/scripts/sync-chat-system-prompt.mjs --write",
+    "check:chat-prompt": "node apps/mobile/scripts/sync-chat-system-prompt.mjs --check",
     "test": "npm run test:deterministic",
     "test:deterministic": "npm --workspace apps/mobile run test:deterministic",
     "test:llm": "npm --workspace apps/mobile run test:llm",

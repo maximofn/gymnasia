@@ -47,6 +47,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify bundled chat prompt snapshot
+        run: npm run check:chat-prompt
+
       - name: Setup EAS CLI
         uses: expo/expo-github-action@v8
         with:

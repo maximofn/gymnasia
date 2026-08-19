@@ -11,6 +11,9 @@ runtime de Expo:
   ronda` de los tres proveedores.
 - `providerStreamParsers.ts`: parsers de los streams crudos de OpenAI,
   Anthropic y Google usados por la app y por las pruebas de integración.
+- `chatSystemPrompt.ts`: validación y selección determinista de prompt remoto,
+  caché o snapshot integrado; el adaptador Expo vive en
+  `chatSystemPromptRuntime.ts`.
 - `sse.ts`: helpers puros para procesar eventos SSE y reproducir fixtures.
 
 ## Comandos
@@ -32,9 +35,11 @@ pruebas recorren stream → parser de producción → tool → resultado → seg
 ronda. Los schemas también se someten a propiedades generativas con `fast-check`.
 Cada regresión determinista nueva debe añadirse como fixture o caso unitario.
 
-El E2E exporta la app web, abre Chromium, intercepta OpenAI con esos fixtures y
-verifica el flujo visible completo. Es más lento y se ejecuta de forma explícita;
-no forma parte del CI determinista que bloquea commits.
+El E2E exporta la app web, abre Chromium, intercepta OpenAI, Anthropic y Google
+con esos fixtures y verifica el flujo visible completo. También prueba la
+selección remota, caché e integrada del system prompt y sus metadatos de traza.
+Es más lento y se ejecuta de forma explícita; no forma parte del CI determinista
+que bloquea commits.
 
 ## LangSmith
 

@@ -39,12 +39,23 @@ red, claves ni tokens:
 
 ```bash
 npm test                # unitarios, integración, contrato, regresión y fuzzing
-npm run test:agent:e2e  # app web + Playwright + proveedor OpenAI falso
+npm run test:agent:e2e  # app web + Playwright + proveedores falsos
 ```
 
 Las evals con LLM están separadas de CI y reservadas para LangSmith. Consulta
 `docs/testing/agent-testing.md` para la arquitectura, los comandos y la plantilla
 de QA manual.
+
+El prompt base de Gymnasia Coach se edita únicamente en `prompts/AGENTS.md`.
+Después de cambiarlo hay que regenerar y verificar su snapshot integrado:
+
+```bash
+npm run sync:chat-prompt
+npm run check:chat-prompt
+```
+
+El flujo remoto, caché e integrado se documenta en
+`docs/architecture/chat-system-prompt.md`.
 
 ## Front web
 
@@ -73,5 +84,6 @@ npm run test:board:e2e   # E2E con Playwright
 
 - Instrucciones para agentes IA: `AGENTS.md`
 - Documentacion central: `docs/README.md`
+- Política remota y fallback del agente: `docs/architecture/chat-system-prompt.md`
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`
