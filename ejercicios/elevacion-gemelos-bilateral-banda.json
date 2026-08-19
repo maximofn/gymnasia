@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-gemelos-bilateral-banda",
+  "name": "Elevación bilateral de gemelos con banda",
+  "image_male": "images/elevacion-gemelos-bilateral-banda-male.webp",
+  "image_female": "images/elevacion-gemelos-bilateral-banda-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["tobillos", "pies"],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Pisa la banda con ambos pies separados a la anchura de las caderas y sujeta los extremos a la altura de los hombros. Mantén rodillas y caderas extendidas. Eleva los talones todo lo posible apoyándote sobre la parte delantera de los pies, haz una pausa arriba y baja lentamente sin perder el equilibrio ni dejar que los tobillos se inclinen."
+}

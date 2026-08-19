@@ -1,0 +1,11 @@
+{
+  "id": "crunch-pie-banda",
+  "name": "Crunch de pie con banda",
+  "image_male": "images/crunch-pie-banda-male.webp",
+  "image_female": "images/crunch-pie-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos"],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Fija la banda por encima de la cabeza y colócate de espaldas al anclaje. Sujeta los extremos junto a los hombros y mantén la cadera estable. Flexiona la columna acercando el esternón a la pelvis sin convertir el movimiento en una inclinación de cadera. Contrae el abdomen y regresa lentamente hasta quedar erguido."
+}

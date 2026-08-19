@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-frontal-banco-barra",
+  "name": "Sentadilla frontal a banco con barra",
+  "image_male": "images/sentadilla-frontal-banco-barra-male.webp",
+  "image_female": "images/sentadilla-frontal-banco-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos"],
+  "equipment": "barra y banco",
+  "difficulty": "intermediate",
+  "instructions": "Coloca un banco detrás y apoya la barra en posición frontal sobre los hombros, con los codos altos. Lleva la cadera hacia atrás y flexiona las rodillas hasta tocar el banco de forma controlada, sin relajarte ni sentarte por completo. Mantén el pecho elevado y empuja con toda la planta del pie para volver de pie."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "press-sobre-cabeza-giratorio-banda",
+  "name": "Press sobre la cabeza giratorio con banda",
+  "image_male": "images/press-sobre-cabeza-giratorio-banda-male.webp",
+  "image_female": "images/press-sobre-cabeza-giratorio-banda-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["tríceps", "espalda", "oblicuos"],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Pisa el centro de la banda y lleva las manos a los hombros. Empuja ambos brazos por encima de la cabeza mientras giras suavemente el torso hacia un lado, manteniendo la pelvis estable. Baja las manos con control y repite el press girando hacia el lado contrario. Evita arquear la zona lumbar durante el bloqueo."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-banda",
+  "name": "Curl de muñeca con banda",
+  "image_male": "images/curl-muneca-banda-male.webp",
+  "image_female": "images/curl-muneca-banda-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Siéntate, pisa la banda y sujeta los extremos con las palmas hacia arriba. Apoya los antebrazos sobre los muslos dejando las muñecas fuera del borde. Flexiona únicamente las muñecas para acercar las palmas hacia ti, contrae los antebrazos y baja despacio hasta recuperar el estiramiento inicial."
+}

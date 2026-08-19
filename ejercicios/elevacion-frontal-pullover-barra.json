@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-frontal-pullover-barra",
+  "name": "Elevación frontal y pullover con barra",
+  "image_male": "images/elevacion-frontal-pullover-barra-male.webp",
+  "image_female": "images/elevacion-frontal-pullover-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["pecho", "tríceps"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "De pie, sujeta una barra ligera frente a los muslos con los brazos casi rectos. Elévala por delante y continúa el arco por encima de la cabeza hasta llevarla ligeramente detrás, sin arquear la zona lumbar. Invierte el recorrido de forma controlada hasta devolver la barra a los muslos, manteniendo el abdomen firme."
+}

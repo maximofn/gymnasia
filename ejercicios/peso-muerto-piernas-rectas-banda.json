@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-piernas-rectas-banda",
+  "name": "Peso muerto con piernas rectas y banda",
+  "image_male": "images/peso-muerto-piernas-rectas-banda-male.webp",
+  "image_female": "images/peso-muerto-piernas-rectas-banda-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "espalda baja"],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Pisa la banda con ambos pies y sostén un extremo en cada mano. Con las piernas rectas pero sin bloquear las rodillas, desplaza la cadera hacia atrás e inclina el torso manteniendo la columna neutra. Baja hasta el límite de movilidad de los isquiotibiales y vuelve extendiendo la cadera, sin redondear la espalda ni encoger los hombros."
+}

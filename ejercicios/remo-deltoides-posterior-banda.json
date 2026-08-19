@@ -1,0 +1,11 @@
+{
+  "id": "remo-deltoides-posterior-banda",
+  "name": "Remo para deltoides posterior con banda",
+  "image_male": "images/remo-deltoides-posterior-banda-male.webp",
+  "image_female": "images/remo-deltoides-posterior-banda-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": ["trapecios", "espalda", "bíceps"],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Pisa el centro de la banda, flexiona ligeramente las rodillas e inclina el torso con la espalda neutra. Sujeta un extremo en cada mano con los brazos extendidos. Eleva los codos hacia fuera y atrás hasta que queden a la altura de los hombros, juntando los omóplatos. Haz una pausa y baja con control sin balancear el torso."
+}

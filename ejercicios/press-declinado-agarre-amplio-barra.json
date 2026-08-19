@@ -1,0 +1,11 @@
+{
+  "id": "press-declinado-agarre-amplio-barra",
+  "name": "Press declinado con agarre amplio",
+  "image_male": "images/press-declinado-agarre-amplio-barra-male.webp",
+  "image_female": "images/press-declinado-agarre-amplio-barra-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "barra y banco declinado",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco declinado con los pies asegurados y agarra la barra algo más ancho que los hombros. Baja la barra hacia la parte inferior del pecho manteniendo los antebrazos verticales y los omóplatos retraídos. Empuja hasta extender los brazos sin despegar los hombros del banco ni rebotar la barra."
+}

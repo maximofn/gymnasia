@@ -1,0 +1,11 @@
+{
+  "id": "press-cerrado-extension-triceps-declinado-barra",
+  "name": "Press cerrado a extensión de tríceps declinado",
+  "image_male": "images/press-cerrado-extension-triceps-declinado-barra-male.webp",
+  "image_female": "images/press-cerrado-extension-triceps-declinado-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombros"],
+  "equipment": "barra y banco declinado",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco declinado y sujeta la barra con agarre cerrado sobre el pecho. Flexiona los codos manteniendo los brazos superiores estables para llevar la barra hacia la frente. Extiende los codos y, desde ahí, realiza un press cerrado hasta bloquear los brazos sobre el pecho. Invierte la secuencia con control en cada repetición."
+}

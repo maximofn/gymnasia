@@ -1,0 +1,11 @@
+{
+  "id": "pullover-brazos-flexionados-barra",
+  "name": "Pullover con barra y brazos flexionados",
+  "image_male": "images/pullover-brazos-flexionados-barra-male.webp",
+  "image_female": "images/pullover-brazos-flexionados-barra-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["pecho", "tríceps"],
+  "equipment": "barra y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco y sostén la barra sobre el pecho con un agarre medio. Mantén una flexión fija en los codos y baja la barra en arco por detrás de la cabeza hasta notar el estiramiento de dorsales y pecho. Lleva la barra de nuevo sobre el pecho sin cambiar el ángulo de los codos ni arquear la espalda."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "jalon-supino-banda",
+  "name": "Jalón supino con banda",
+  "image_male": "images/jalon-supino-banda-male.webp",
+  "image_female": "images/jalon-supino-banda-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Ancla la banda por encima de la cabeza y agárrala con las palmas orientadas hacia ti. Parte con los brazos extendidos y el torso erguido. Lleva los codos hacia abajo y atrás hasta acercar las manos a la parte alta del pecho, contrayendo los dorsales. Regresa lentamente sin elevar los hombros ni perder tensión."
+}

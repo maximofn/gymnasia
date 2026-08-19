@@ -1,0 +1,11 @@
+{
+  "id": "crunch-giratorio-pie-banda",
+  "name": "Crunch giratorio de pie con banda",
+  "image_male": "images/crunch-giratorio-pie-banda-male.webp",
+  "image_female": "images/crunch-giratorio-pie-banda-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen"],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Coloca una banda por la parte alta de la espalda y sujeta los extremos delante del pecho. Mantén los pies firmes y eleva una rodilla mientras flexionas y giras el torso para acercar el codo contrario. Vuelve con control y repite hacia el otro lado, evitando tirar del cuello o inclinarte solo desde la cadera."
+}

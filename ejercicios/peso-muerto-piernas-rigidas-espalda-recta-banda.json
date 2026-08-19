@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-piernas-rigidas-espalda-recta-banda",
+  "name": "Peso muerto con piernas rígidas y banda",
+  "image_male": "images/peso-muerto-piernas-rigidas-espalda-recta-banda-male.webp",
+  "image_female": "images/peso-muerto-piernas-rigidas-espalda-recta-banda-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "espalda baja"],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Pisa el centro de la banda y sujeta los extremos delante de los muslos. Mantén las rodillas casi extendidas, el abdomen firme y la espalda completamente neutra. Lleva la cadera hacia atrás mientras bajas las manos cerca de las piernas hasta notar tensión en los isquiotibiales. Extiende la cadera y aprieta los glúteos para volver erguido."
+}

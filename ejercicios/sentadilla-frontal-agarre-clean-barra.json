@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-frontal-agarre-clean-barra",
+  "name": "Sentadilla frontal con agarre de clean",
+  "image_male": "images/sentadilla-frontal-agarre-clean-barra-male.webp",
+  "image_female": "images/sentadilla-frontal-agarre-clean-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "abdomen"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Apoya la barra sobre los deltoides delanteros con agarre de clean, las puntas de los dedos bajo la barra y los codos altos. Desciende entre las piernas manteniendo el pecho erguido, la espalda neutra y las rodillas siguiendo la dirección de los pies. Supera el paralelo si tu movilidad lo permite y empuja el suelo para volver arriba."
+}

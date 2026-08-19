@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-frontal-barra",
+  "name": "Elevación frontal con barra",
+  "image_male": "images/elevacion-frontal-barra-male.webp",
+  "image_female": "images/elevacion-frontal-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["bíceps", "trapecios"],
+  "equipment": "barra",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie y sujeta la barra delante de los muslos con agarre pronado. Mantén los codos ligeramente flexionados y eleva la barra por delante hasta la altura de los hombros, sin balancear el torso. Haz una pausa breve y baja lentamente hasta recuperar la posición inicial."
+}

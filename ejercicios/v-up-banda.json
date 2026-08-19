@@ -1,0 +1,11 @@
+{
+  "id": "v-up-banda",
+  "name": "V-up con banda",
+  "image_male": "images/v-up-banda-male.webp",
+  "image_female": "images/v-up-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "banda",
+  "difficulty": "advanced",
+  "instructions": "Túmbate boca arriba con una banda alrededor de los pies y un extremo en cada mano. Eleva simultáneamente el torso y ambas piernas rectas hasta formar una V, acercando las manos a los pies mientras mantienes la banda tensa. Haz una pausa breve y desciende con control sin arquear la zona lumbar ni apoyar completamente."
+}

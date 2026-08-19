@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-banco-barra",
+  "name": "Sentadilla a banco con barra",
+  "image_male": "images/sentadilla-banco-barra-male.webp",
+  "image_female": "images/sentadilla-banco-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos"],
+  "equipment": "barra y banco",
+  "difficulty": "intermediate",
+  "instructions": "Sitúa un banco detrás y coloca la barra estable sobre la parte alta de la espalda. Desciende llevando la cadera hacia atrás hasta tocar suavemente el banco, con las rodillas alineadas con los pies y el torso firme. Sin perder tensión, empuja el suelo y extiende caderas y rodillas hasta recuperar la posición inicial."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-arm-blaster-barra",
+  "name": "Curl de bíceps con barra y arm blaster",
+  "image_male": "images/curl-biceps-arm-blaster-barra-male.webp",
+  "image_female": "images/curl-biceps-arm-blaster-barra-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "barra y arm blaster",
+  "difficulty": "intermediate",
+  "instructions": "Coloca el arm blaster contra el torso y apoya los brazos superiores sobre sus extremos. Sujeta la barra con agarre supino y extiende los codos sin bloquearlos. Flexiona los brazos manteniendo los codos inmóviles hasta acercar la barra a los hombros. Contrae los bíceps y baja lentamente sin separar los brazos del soporte."
+}

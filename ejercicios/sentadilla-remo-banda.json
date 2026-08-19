@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-remo-banda",
+  "name": "Sentadilla con remo y banda",
+  "image_male": "images/sentadilla-remo-banda-male.webp",
+  "image_female": "images/sentadilla-remo-banda-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "espalda"],
+  "equipment": "banda",
+  "difficulty": "intermediate",
+  "instructions": "Ancla la banda a la altura de la cintura y colócate de frente con un extremo en cada mano. Baja a una sentadilla manteniendo el pecho elevado y los brazos extendidos. Conserva la posición baja mientras tiras de los codos hacia atrás y juntas los omóplatos. Extiende de nuevo los brazos y empuja con los talones para volver de pie."
+}
