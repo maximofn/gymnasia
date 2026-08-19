@@ -31,6 +31,7 @@ describe("contrato estático de superficies conversacionales", () => {
     expect(disclosureSource).toContain("accessibilityLabel={copy.disclosureAccessibilityLabel}");
     expect(disclosureSource).toContain('accessibilityLiveRegion="polite"');
     expect(disclosureSource).toContain("AccessibilityInfo.announceForAccessibility");
+    expect(disclosureSource).toContain('textAlign: "right"');
     expect(appSource).toContain('accessibilityLabel="Pregunta a Gymnasia Coach"');
     expect(appSource).toContain("Pregunta a Gymnasia Food Estimator");
   });

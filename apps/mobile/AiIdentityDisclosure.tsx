@@ -96,7 +96,7 @@ export function AiIdentityPersistentDisclosure({ surface }: AiIdentityDisclosure
         color: mobileTheme.color.textSecondary,
         fontSize: 11,
         lineHeight: 15,
-        textAlign: "center",
+        textAlign: "right",
       }}
     >
       {copy.persistentDisclosureLabel}
