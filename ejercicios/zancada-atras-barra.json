@@ -1,0 +1,11 @@
+{
+  "id": "zancada-atras-barra",
+  "name": "Zancada hacia atrás con barra",
+  "image_male": "images/zancada-atras-barra-male.webp",
+  "image_female": "images/zancada-atras-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Coloca la barra sobre la parte alta de la espalda y parte de pie con el core activo. Da un paso amplio hacia atrás y baja la rodilla trasera hasta dejarla cerca del suelo mientras la rodilla delantera permanece alineada con el pie. Empuja con el talón delantero para regresar de pie y alterna las piernas manteniendo el torso estable."
+}

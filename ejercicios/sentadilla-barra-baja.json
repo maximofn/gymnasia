@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-barra-baja",
+  "name": "Sentadilla con barra baja",
+  "image_male": "images/sentadilla-barra-baja-male.webp",
+  "image_female": "images/sentadilla-barra-baja-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "cuádriceps", "core"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca la barra sobre la repisa formada por los deltoides posteriores, por debajo de los trapecios, y fija las manos. Lleva las caderas hacia atrás mientras flexionas las rodillas y mantén la barra equilibrada sobre el mediopié con una inclinación natural del torso. Alcanza una profundidad estable y extiende caderas y rodillas empujando el suelo."
+}

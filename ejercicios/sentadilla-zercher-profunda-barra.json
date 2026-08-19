@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-zercher-profunda-barra",
+  "name": "Sentadilla Zercher profunda con barra",
+  "image_male": "images/sentadilla-zercher-profunda-barra-male.webp",
+  "image_female": "images/sentadilla-zercher-profunda-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "core"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca la barra en el pliegue de los codos, junta las manos delante del pecho y mantén los antebrazos elevados. Separa los pies a la anchura de los hombros, activa el core y desciende entre las caderas con el torso erguido. Baja solo mientras mantengas las rodillas alineadas y la espalda neutra; empuja con todo el pie para volver a la posición inicial."
+}

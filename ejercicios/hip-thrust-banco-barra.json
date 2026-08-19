@@ -1,0 +1,11 @@
+{
+  "id": "hip-thrust-banco-barra",
+  "name": "Hip thrust con banco y barra",
+  "image_male": "images/hip-thrust-banco-barra-male.webp",
+  "image_female": "images/hip-thrust-banco-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la parte alta de la espalda en el borde de un banco estable y coloca una barra acolchada sobre las caderas. Planta los pies a la anchura de las caderas y sujeta la barra con ambas manos. Empuja con los talones hasta alinear hombros, caderas y rodillas, contrae los glúteos sin hiperextender la zona lumbar y baja las caderas lentamente."
+}

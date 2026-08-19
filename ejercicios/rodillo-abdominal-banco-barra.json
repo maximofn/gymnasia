@@ -1,0 +1,11 @@
+{
+  "id": "rodillo-abdominal-banco-barra",
+  "name": "Rodillo abdominal con barra sobre banco",
+  "image_male": "images/rodillo-abdominal-banco-barra-male.webp",
+  "image_female": "images/rodillo-abdominal-banco-barra-female.webp",
+  "muscle_group": "abdominales",
+  "secondary_muscles": ["hombros", "tríceps", "dorsales"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Arrodíllate frente a un banco estable y apoya sobre él una barra que pueda rodar con seguridad. Agarra la barra a la anchura de los hombros, activa glúteos y abdomen y desplázala hacia delante mientras extiendes el cuerpo en bloque. Detén el recorrido antes de arquear la zona lumbar y tira de la barra hacia ti para regresar a la posición inicial."
+}

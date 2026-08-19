@@ -1,0 +1,11 @@
+{
+  "id": "pullover-declinado-brazos-flexionados-barra",
+  "name": "Pullover declinado con brazos flexionados y barra",
+  "image_male": "images/pullover-declinado-brazos-flexionados-barra-male.webp",
+  "image_female": "images/pullover-declinado-brazos-flexionados-barra-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["pecho", "tríceps"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco declinado con los pies asegurados y sujeta la barra sobre el pecho con agarre pronado. Mantén los codos flexionados en un ángulo constante y lleva la barra en arco por detrás de la cabeza hasta notar tensión en los dorsales. Detén el recorrido antes de perder la posición de los hombros y devuelve la barra sobre el pecho con control."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-pies-juntos-barra",
+  "name": "Sentadilla con pies juntos y barra",
+  "image_male": "images/sentadilla-pies-juntos-barra-male.webp",
+  "image_female": "images/sentadilla-pies-juntos-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la barra sobre la parte alta de la espalda y coloca los pies más estrechos que las caderas, con las puntas ligeramente abiertas. Desciende flexionando rodillas y caderas mientras mantienes los talones apoyados y el pecho elevado. Llega solo hasta la profundidad que permita conservar las rodillas alineadas y empuja con todo el pie para subir."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "press-guillotina-barra",
+  "name": "Press guillotina con barra",
+  "image_male": "images/press-guillotina-barra-male.webp",
+  "image_female": "images/press-guillotina-barra-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior", "tríceps"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano, retrae los omóplatos y agarra la barra algo más ancho que los hombros. Con una carga ligera y preferiblemente un observador, baja la barra hacia la parte alta del pecho manteniendo los codos abiertos, sin apoyarla ni dirigirla contra el cuello. Detén el descenso en un rango cómodo y empuja verticalmente hasta extender los brazos."
+}

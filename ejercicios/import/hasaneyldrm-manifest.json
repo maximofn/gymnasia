@@ -242,6 +242,33 @@
         {"source_id": "0041", "id": "elevacion-frontal-barra", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0036", "id": "press-declinado-agarre-amplio-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 10,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0999", "id": "elevacion-gemelo-unilateral-banda", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1000", "id": "elevacion-tibial-unilateral-banda", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0034", "id": "pullover-declinado-brazos-flexionados-barra", "action": "create", "difficulty": "intermediate", "view": "slightly elevated side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0037", "id": "pullover-declinado-agarre-amplio-barra", "action": "create", "difficulty": "advanced", "view": "slightly elevated side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1545", "id": "sentadilla-zercher-profunda-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "3562", "id": "hip-thrust-banco-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0045", "id": "press-guillotina-barra", "action": "create", "difficulty": "advanced", "view": "slightly elevated front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1436", "id": "sentadilla-barra-alta", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1719", "id": "press-inclinado-agarre-cerrado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0048", "id": "press-inclinado-agarre-inverso-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0049", "id": "remo-banco-inclinado-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0052", "id": "press-jm-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1435", "id": "sentadilla-barra-baja", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "1720", "id": "extension-triceps-detras-cabeza-tumbado-barra", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0063", "id": "sentadilla-pies-juntos-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0071", "id": "sit-up-press-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0072", "id": "curl-biceps-boca-abajo-banco-inclinado-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0083", "id": "rodillo-abdominal-banco-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0076", "id": "remo-deltoides-posteriores-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
+        {"source_id": "0078", "id": "zancada-atras-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

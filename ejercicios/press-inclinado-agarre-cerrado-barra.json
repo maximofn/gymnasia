@@ -1,0 +1,11 @@
+{
+  "id": "press-inclinado-agarre-cerrado-barra",
+  "name": "Press inclinado con agarre cerrado y barra",
+  "image_male": "images/press-inclinado-agarre-cerrado-barra-male.webp",
+  "image_female": "images/press-inclinado-agarre-cerrado-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho superior", "hombro anterior"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el banco a una inclinación moderada y agarra la barra un poco más estrecha que los hombros. Baja la barra hacia la parte alta del pecho manteniendo las muñecas rectas y los codos cerca del torso. Pausa sin perder la retracción de los omóplatos y empuja hasta extender los brazos sin bloquearlos de forma brusca."
+}

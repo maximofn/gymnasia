@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-tibial-unilateral-banda",
+  "name": "Elevación tibial unilateral con banda",
+  "image_male": "images/elevacion-tibial-unilateral-banda-male.webp",
+  "image_female": "images/elevacion-tibial-unilateral-banda-female.webp",
+  "muscle_group": "tibiales",
+  "secondary_muscles": ["gemelos", "estabilizadores del tobillo"],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Ancla la banda a ras de suelo delante de ti y pásala sobre el antepié de la pierna de trabajo. Apoya el talón y adopta una posición estable con la otra pierna ligeramente elevada. Lleva los dedos hacia la espinilla contra la tensión sin despegar el talón, pausa arriba y baja el antepié de forma controlada. Completa las repeticiones y cambia de lado."
+}

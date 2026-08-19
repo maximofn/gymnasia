@@ -1,0 +1,11 @@
+{
+  "id": "pullover-declinado-agarre-amplio-barra",
+  "name": "Pullover declinado con agarre amplio y barra",
+  "image_male": "images/pullover-declinado-agarre-amplio-barra-male.webp",
+  "image_female": "images/pullover-declinado-agarre-amplio-barra-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["pecho", "tríceps"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco declinado con los pies asegurados y sostén la barra sobre el pecho con un agarre más ancho que los hombros. Conserva los brazos casi rectos y baja la barra en arco por detrás de la cabeza sin arquear la zona lumbar. Pausa en un rango cómodo y contrae los dorsales para regresar hasta colocar la barra sobre el pecho."
+}

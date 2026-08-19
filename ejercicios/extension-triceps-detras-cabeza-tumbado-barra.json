@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-detras-cabeza-tumbado-barra",
+  "name": "Extensión de tríceps tumbado detrás de la cabeza con barra",
+  "image_male": "images/extension-triceps-detras-cabeza-tumbado-barra-male.webp",
+  "image_female": "images/extension-triceps-detras-cabeza-tumbado-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano y sostén la barra sobre el pecho con las manos a la anchura de los hombros. Inclina ligeramente los brazos hacia la cabeza y, manteniendo los brazos superiores quietos, flexiona los codos para llevar la barra por detrás de la cabeza. Pausa sin perder tensión y extiende los codos hasta recuperar la posición inicial."
+}

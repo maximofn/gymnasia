@@ -1,0 +1,11 @@
+{
+  "id": "sit-up-press-barra",
+  "name": "Sit-up con press de barra",
+  "image_male": "images/sit-up-press-barra-male.webp",
+  "image_female": "images/sit-up-press-barra-female.webp",
+  "muscle_group": "abdominales",
+  "secondary_muscles": ["hombros", "pecho"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate con las rodillas flexionadas, los pies apoyados y una barra ligera sostenida sobre el pecho. Contrae el abdomen para elevar el torso y, al acercarte a la posición sentada, presiona la barra sobre la cabeza sin arquear la espalda. Baja primero la barra al pecho y después desciende el torso de manera controlada hasta el suelo."
+}

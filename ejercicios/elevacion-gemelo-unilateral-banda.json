@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-gemelo-unilateral-banda",
+  "name": "Elevación unilateral de gemelo con banda",
+  "image_male": "images/elevacion-gemelo-unilateral-banda-male.webp",
+  "image_female": "images/elevacion-gemelo-unilateral-banda-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["sóleo", "estabilizadores del tobillo"],
+  "equipment": "banda",
+  "difficulty": "beginner",
+  "instructions": "Apoya el antepié de la pierna de trabajo en el borde de un escalón bajo, pisa allí el centro de la banda y sujeta los extremos a la altura de los hombros. Eleva el otro pie y mantén el tronco erguido. Empuja con la punta para levantar el talón claramente por encima del escalón, pausa arriba y desciende lentamente. Completa las repeticiones y cambia de pierna."
+}

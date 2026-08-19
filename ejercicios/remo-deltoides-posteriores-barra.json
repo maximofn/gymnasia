@@ -1,0 +1,11 @@
+{
+  "id": "remo-deltoides-posteriores-barra",
+  "name": "Remo para deltoides posteriores con barra",
+  "image_male": "images/remo-deltoides-posteriores-barra-male.webp",
+  "image_female": "images/remo-deltoides-posteriores-barra-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": ["trapecios", "romboides", "bíceps"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta la barra con agarre pronado algo más ancho que los hombros y flexiona la cadera hasta inclinar el torso con la espalda neutra. Lleva la barra hacia la parte alta del pecho abriendo los codos hacia los lados y juntando los omóplatos. Pausa en la contracción y baja la barra lentamente sin modificar el ángulo del torso."
+}

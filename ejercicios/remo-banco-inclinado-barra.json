@@ -1,0 +1,11 @@
+{
+  "id": "remo-banco-inclinado-barra",
+  "name": "Remo con barra en banco inclinado",
+  "image_male": "images/remo-banco-inclinado-barra-male.webp",
+  "image_female": "images/remo-banco-inclinado-barra-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["dorsales", "bíceps", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta un banco inclinado y túmbate boca abajo con el pecho apoyado y los pies firmes. Sujeta la barra con agarre pronado y deja los brazos extendidos hacia el suelo. Lleva la barra hacia la parte baja del pecho mientras juntas los omóplatos y mantienes el torso pegado al banco. Pausa arriba y desciende lentamente hasta extender los brazos."
+}

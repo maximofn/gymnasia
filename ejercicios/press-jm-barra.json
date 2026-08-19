@@ -1,0 +1,11 @@
+{
+  "id": "press-jm-barra",
+  "name": "Press JM con barra",
+  "image_male": "images/press-jm-barra-male.webp",
+  "image_female": "images/press-jm-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombro anterior"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano y sujeta la barra con un agarre estrecho pero cómodo. Desde arriba, lleva los codos hacia delante y flexiónalos para bajar la barra de forma controlada entre la barbilla y la parte alta del pecho. Mantén los hombros estables y extiende los codos para devolver la barra a la vertical sin convertir el movimiento en un press convencional."
+}

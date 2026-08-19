@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-barra-alta",
+  "name": "Sentadilla con barra alta",
+  "image_male": "images/sentadilla-barra-alta-male.webp",
+  "image_female": "images/sentadilla-barra-alta-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la barra sobre los trapecios, por encima de los deltoides posteriores, y separa los pies a la anchura de los hombros. Mantén el pecho elevado y baja flexionando caderas y rodillas con el torso relativamente vertical. Desciende hasta una profundidad estable con las rodillas alineadas sobre los pies y empuja el suelo para volver de pie."
+}
