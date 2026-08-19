@@ -144,9 +144,9 @@
         },
         {
           "id": "GYM-195",
-          "title": "Crear Gymnasia en Google Play Console y decidir la firma",
+          "title": "Crear Gymnasia en Google Play Console e importar la clave actual de EAS",
           "state": "todo",
-          "summary": "Dar de alta package name e identidad definitivos y decidir antes de la primera subida entre importar la clave de EAS para conservar actualizaciones o usar una nueva de Google.",
+          "summary": "Dar de alta package name e identidad definitivos, importar antes de la primera release la clave que firma los APK de EAS y probar una actualización sin desinstalar ni perder datos locales.",
           "dependsOn": [
             "GYM-193",
             "GYM-194"
@@ -2436,7 +2436,7 @@
     {
       "id": "publicar-google-play",
       "title": "Máxima prioridad: publicar Gymnasia en Google Play",
-      "why": "La publicación desbloquea el contenido sobre una app que el público puede instalar. Se completa primero la cadena sanitaria que exige la denuncia; en paralelo se limpian el build, el cumplimiento, la marca y la cuenta. Después se decide la firma, se prepara ficha y acceso, se genera un único AAB trazable y se promociona por tracks hasta España y el resto de territorios elegibles.",
+      "why": "La publicación desbloquea el contenido sobre una app que el público puede instalar. Se completa primero la cadena sanitaria que exige la denuncia; en paralelo se limpian el build, el cumplimiento, la marca y la cuenta. Después se importa la clave actual de EAS para conservar las actualizaciones de usuarios reales, se prepara ficha y acceso, se genera un único AAB trazable y se promociona por tracks hasta España y el resto de territorios elegibles.",
       "tickets": [
         "GYM-150",
         "GYM-137",
