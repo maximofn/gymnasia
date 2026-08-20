@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-19",
+    "updated": "2026-08-20",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -271,7 +271,7 @@
         {
           "id": "GYM-137",
           "title": "Alinear el fallback integrado con el prompt remoto en cada compilación",
-          "state": "todo",
+          "state": "done",
           "summary": "Usar prompts/AGENTS.md como única fuente editable y empaquetar automáticamente su snapshot en cada build, conservando la prioridad remoto → caché → versión compilada sin divergencias.",
           "baseline": "partial",
           "dependsOn": [
