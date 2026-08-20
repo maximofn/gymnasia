@@ -14,6 +14,9 @@ runtime de Expo:
 - `chatSystemPrompt.ts`: validación y selección determinista de prompt remoto,
   caché o snapshot integrado; el adaptador Expo vive en
   `chatSystemPromptRuntime.ts`.
+- `personalData.ts`: higiene de forma del almacén de datos personales. Sanea
+  cualquier entrada (almacén, argumento de tool, backup importado) preservando la
+  clave literal, porque las tools de lectura casan por igualdad exacta.
 - `sse.ts`: helpers puros para procesar eventos SSE y reproducir fixtures.
 
 ## Comandos
