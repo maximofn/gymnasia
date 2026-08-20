@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "defaultBranch": "main",
+  "owner": {
+    "login": "maximofn",
+    "userId": 15805036,
+    "codeowner": "@maximofn"
+  },
+  "checks": {
+    "policy": "prompt-policy",
+    "ownerAuthorization": "gymnasia/owner-authorization",
+    "githubActionsAppId": 15368
+  },
+  "sensitivePaths": [
+    {
+      "path": ".github/",
+      "kind": "directory",
+      "reason": "Rulesets, CODEOWNERS and GitHub Actions automation"
+    },
+    {
+      "path": "prompts/",
+      "kind": "directory",
+      "reason": "Remote agent policy source"
+    },
+    {
+      "path": "apps/mobile/",
+      "kind": "directory",
+      "reason": "Mobile runtime, bundled policy, validators, tools and tests"
+    },
+    {
+      "path": "ops/openwiki-automation-template/",
+      "kind": "directory",
+      "reason": "Privileged automation template"
+    },
+    {
+      "path": "policy/",
+      "kind": "directory",
+      "reason": "Reserved location for signed policy publishing"
+    },
+    {
+      "path": "scripts/prompt-policy/",
+      "kind": "directory",
+      "reason": "Policy generator, authorization reconciler and tests"
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "file",
+      "reason": "Repository agent instructions"
+    },
+    {
+      "path": "CLAUDE.md",
+      "kind": "file",
+      "reason": "Repository agent instructions source"
+    },
+    {
+      "path": "package.json",
+      "kind": "file",
+      "reason": "Required check command definitions"
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "file",
+      "reason": "Locked CI dependencies"
+    },
+    {
+      "path": "docs/openwiki-automation.md",
+      "kind": "file",
+      "reason": "Privileged automation operating procedure"
+    },
+    {
+      "path": "docs/security/prompt-policy-governance.md",
+      "kind": "file",
+      "reason": "Policy governance and account-security procedure"
+    }
+  ]
+}

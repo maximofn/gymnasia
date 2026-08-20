@@ -1,0 +1,76 @@
+name: Prompt policy
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  prompt-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository without traversing legacy gitlinks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -c protocol.version=2 fetch --no-tags --depth=1 origin "$GITHUB_REF"
+          git checkout --detach FETCH_HEAD
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify generated policy artifacts and workflows
+        id: policy
+        run: npm run check:prompt-policy
+
+      - name: Run policy unit, contract and property tests
+        id: policy_tests
+        run: npm run test:prompt-policy
+
+      - name: Verify bundled chat prompt snapshot
+        id: snapshot
+        run: npm run check:chat-prompt
+
+      - name: Run deterministic agent suite
+        id: deterministic
+        run: npm test
+
+      - name: Run OpenWiki automation tests
+        id: openwiki
+        run: npm run test:openwiki
+
+      - name: Type-check mobile app
+        id: types
+        run: npm --workspace apps/mobile exec tsc --noEmit
+
+      - name: Publish policy summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Prompt policy"
+            echo
+            echo "| Control | Result |"
+            echo "| --- | --- |"
+            echo "| Generated policy, CODEOWNERS and workflows | ${{ steps.policy.outcome }} |"
+            echo "| Unit, contract and property tests | ${{ steps.policy_tests.outcome }} |"
+            echo "| Bundled prompt parity | ${{ steps.snapshot.outcome }} |"
+            echo "| Agent schema, tools and invariants | ${{ steps.deterministic.outcome }} |"
+            echo "| OpenWiki automation | ${{ steps.openwiki.outcome }} |"
+            echo "| TypeScript | ${{ steps.types.outcome }} |"
+            echo
+            echo "No prompt content, secrets, conversations or personal data are included in this summary."
+          } >> "$GITHUB_STEP_SUMMARY"
