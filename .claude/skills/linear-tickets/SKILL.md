@@ -196,7 +196,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Ocho cosas que cuestan tiempo si no se saben:
+Nueve cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -208,10 +208,15 @@ Ocho cosas que cuestan tiempo si no se saben:
    sustituciones de texto sobre descripciones ya guardadas deben usar `*`.
    Los checkboxes `- [ ]` **sí** se conservan tal cual.
 
-3. **Usa siempre la ruta absoluta del script.** El directorio de trabajo persiste
-   entre invocaciones de shell y puede haber quedado en otro sitio; con ruta
-   relativa el comando falla en silencio o se ejecuta contra el fichero
-   equivocado.
+3. **Usa la ruta absoluta del script que pertenece al checkout objetivo.** El
+   directorio de trabajo persiste entre invocaciones de shell y puede haber
+   quedado en otro sitio; con ruta relativa el comando falla en silencio o se
+   ejecuta contra el fichero equivocado. Además, `linear.py` calcula la raíz del
+   repositorio desde su propio `__file__`, no desde el `cwd`: en un worktree,
+   invocar el script del checkout principal hace que `board --apply` modifique
+   el `board.json` principal aunque el shell esté situado en el worktree. Para
+   sincronizar el espejo usa la ruta absoluta al `linear.py` del worktree donde
+   vas a commitear.
 
 4. **Verifica después de una edición masiva.** Un `replace` que no encaja no
    da error, simplemente no cambia nada. Comprueba con:
@@ -253,6 +258,13 @@ Ocho cosas que cuestan tiempo si no se saben:
    ```
    La segunda salida debe empezar por `Deploying gymnasia` y terminar aliando
    `https://gymnasia-sable.vercel.app`; si muestra `Created`, detén el flujo.
+
+9. **`close` no añade evidencia a un ticket que ya está completado.** El síntoma
+   es `GYM-N ya está completado.` incluso con `--evidence`: el comando termina
+   antes de validar o publicar esas evidencias. Si el ticket llegó a `Done` por
+   otro flujo, completa primero su checklist y añade un comentario explícito
+   `## Evidencia de cierre` con `linear.py comment`; después sincroniza y
+   despliega el tablero igualmente.
 
 ## Notas
 
