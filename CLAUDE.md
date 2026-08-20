@@ -155,7 +155,14 @@ enforces this before creating the issue.
 ## Commit & Pull Request Guidelines
 History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ...`, `chore(scope): ...`, `docs: ...`.
 - Keep commit subjects imperative and scoped (e.g., `fix(mobile): pin Metro module resolution for monorepo`).
-- After each modification, create a local commit and push it to `main` automatically when the commit does not match the Expo APK build paths below. If it touches build-triggering files under `apps/mobile/**`, ask for explicit confirmation before pushing because Expo quota is limited.
+- After each modification, create a local commit on a topic branch, push that
+  branch and open a pull request. Never push directly to `main`: its ruleset
+  requires `prompt-policy` and `gymnasia/owner-authorization`.
+- Pull requests authored by `@maximofn` are authorized automatically. An
+  external PR that touches a sensitive path from `.github/prompt-policy.json`
+  requires a current-commit approval from `@maximofn`; all merges remain manual.
+- If a PR touches build-triggering files under `apps/mobile/**`, ask for explicit
+  confirmation before merging because Expo quota is limited.
 - **Qué dispara realmente el build de Expo**: no todo push a `main`. El workflow
   `.github/workflows/build-apk.yml` filtra por rutas:
   ```yaml
@@ -301,19 +308,24 @@ Only non-obvious gotchas that could recur are kept here.
   contiene esos gitlinks.
 
 ## Post-Modification Workflow
-After each modification, create a local commit:
+After each modification, create a local commit on a topic branch:
 ```bash
 git add -A && git commit -m '<description>'
+git push -u origin <branch>
+gh pr create
 ```
-After committing, push to `main` automatically when the commit does not match the
-Expo APK build paths below. If it touches build-triggering files under
-`apps/mobile/**`, ask for explicit confirmation before pushing because Expo quota
-is limited.
+Do not push directly to `main`. Wait for the required checks and merge the pull
+request manually. If it touches build-triggering files under `apps/mobile/**`,
+ask for explicit confirmation before merging because Expo quota is limited.
 
 Un push a `main` **solo** dispara el build de APK si toca `apps/mobile/**`
 (excluyendo `apps/mobile/scripts/**` y los `.md`). Ver el filtro de rutas en
 "Commit & Pull Request Guidelines". La cuota mensual de Expo es limitada, así que
 un push que sí entre en el filtro gasta build; el resto, no.
+
+The APK workflow changes `apps/mobile/app.json` only inside the build workspace;
+the GitHub tag and Release persist the published version. It must never commit a
+version bump directly to `main`.
 
 <!-- OPENWIKI:START -->
 
