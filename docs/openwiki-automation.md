@@ -57,7 +57,7 @@ Variable de Actions, no secreta:
 
 | Nombre | Uso |
 | --- | --- |
-| `MAXIMOFN_REPOSITORY` | Repositorio en formato `owner/repository`; pendiente de que el usuario facilite cuál es. |
+| `MAXIMOFN_REPOSITORY` | Repositorio de la web: `maximofn/portafolio`. Ya configurado en Actions. |
 
 Los secretos de ejecución no van en el `.env` raíz de Gymnasia. Para ejecución
 local de OpenWiki, las claves gestionadas por OpenWiki viven en
@@ -174,9 +174,10 @@ además redacta patrones evidentes de contraseña, token, secret y API key.
 
 ### Repositorio de maximofn.com
 
-Pendiente: el usuario debe facilitar `owner/repository`. Se guardará como la
-variable `MAXIMOFN_REPOSITORY`. Si es privado, se añadirá un token independiente
-de solo lectura como `MAXIMOFN_REPO_TOKEN`.
+La variable `MAXIMOFN_REPOSITORY` apunta a `maximofn/portafolio`. El repositorio
+es privado, por lo que queda pendiente crear un token fine-grained independiente,
+limitado a ese repositorio y con `Contents: read-only`, y guardarlo como
+`MAXIMOFN_REPO_TOKEN`.
 
 ### Búsqueda web
 
