@@ -39,3 +39,16 @@ test("classifies OpenWiki logs without printing their contents", async () => {
   assert.doesNotMatch(workflow, /grep[^\n]+openwiki\.log/u);
   assert.doesNotMatch(workflow, /cat[^\n]+openwiki\.log/u);
 });
+
+test("keeps LangSmith tracing enabled except for an explicit manual diagnostic", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.match(
+    workflow,
+    /disable_langsmith_tracing:\n\s+description: "Disable LangSmith tracing for one diagnostic run"\n\s+required: false\n\s+default: false\n\s+type: boolean/u,
+  );
+  assert.match(
+    workflow,
+    /LANGCHAIN_TRACING_V2: \$\{\{ inputs\.disable_langsmith_tracing == true && 'false' \|\| 'true' \}\}/u,
+  );
+});
