@@ -16,8 +16,9 @@ El workflow se niega a ejecutarse si detecta una visibilidad distinta de
 
 GitHub Free incluye 2.000 minutos mensuales de runners estándar para
 repositorios privados y 500 MB de almacenamiento. Una ejecución diaria cabe en
-la cuota si promedia menos de unos 66 minutos. Debe configurarse un presupuesto
-de 0 EUR con bloqueo al alcanzar el límite para impedir cargos accidentales.
+la cuota si promedia menos de unos 66 minutos. La cuenta tiene un presupuesto de
+Actions de 0 EUR con `Stop usage` activo y avisos del consumo incluido, por lo
+que no puede generar cargos accidentales al agotar la cuota gratuita.
 
 ## Qué ejecuta
 
@@ -28,7 +29,8 @@ de 0 EUR con bloqueo al alcanzar el límite para impedir cargos accidentales.
   - actualiza opcionalmente Personal Brain desde Linear, maximofn.com y Tavily;
   - cifra de nuevo el OAuth rotado y el estado privado antes de persistirlos.
 - `openwiki-report.yml`, a las 12:00 UTC: consulta el workflow anterior y envía
-  a Telegram solo estado, clasificación del error y URL. No lee ni envía logs.
+  a Telegram solo estado general, salud de OAuth y Personal Brain, PR y URL. No
+  lee ni envía logs.
 - `tests.yml`: valida cifrado, filtrado OAuth, export seguro de Linear y
   configuración de Personal Brain.
 
@@ -43,7 +45,7 @@ macOS; el horario remoto lo proporciona GitHub Actions.
 | --- | --- |
 | `GYMNASIA_REPO_TOKEN` | Token fine-grained limitado a `maximofn/gymnasia`, con `Contents: read/write` y `Pull requests: read/write`. |
 | `OPENWIKI_OAUTH_PASSPHRASE` | Cifra/descifra los seis campos OAuth permitidos. Mínimo 32 caracteres. |
-| `OPENWIKI_OAUTH_SEED` | Sobre cifrado de arranque o recuperación. Se borra tras comprobar el primer artefacto. |
+| `OPENWIKI_OAUTH_SEED` | Sobre cifrado solo para arranque o recuperación. No permanece configurado durante la operación normal. |
 | `LANGSMITH_API_KEY` | Escribe las trazas de la ejecución de Code Brain en el proyecto `openwiki`. |
 | `OPENWIKI_LANGSMITH_API_KEY` | Lee los proyectos configurados en `openwiki/.langsmith.json`. |
 | `LINEAR_READONLY_API_KEY` | Clave independiente de Linear con permiso `Read` solamente. |
@@ -73,11 +75,10 @@ workspace:
   proyectos declarados: `gymnasia-app-agent`, `gymnasia-food-agent` y
   `openwiki`.
 
-En local ambos nombres siguen configurados con el mismo valor. El repositorio
-privado tiene ese valor únicamente como `LANGSMITH_API_KEY`; antes de activar el
-runner hay que crear una segunda service key distinta, guardarla como
-`OPENWIKI_LANGSMITH_API_KEY` tanto en `~/.openwiki/.env` como en Actions secrets
-y rotar el valor local compartido.
+En Actions y en `~/.openwiki/.env` ambos nombres están configurados con valores
+distintos. La cuenta usa la región europea: tanto el conector declarado en
+`openwiki/.langsmith.json` como el SDK de trazas apuntan a
+`https://eu.api.smith.langchain.com`.
 
 Personal Brain ejecuta sin `LANGCHAIN_TRACING_V2`: sus datos de Linear,
 repositorios privados y búsquedas no se envían a LangSmith. Code Brain sí traza
@@ -99,21 +100,20 @@ propietario recibirán únicamente las ejecuciones realizadas con su propia clav
 
 El repositorio ya está creado con visibilidad privada, permisos predeterminados
 de Actions de solo lectura y aprobación de PR deshabilitada para su
-`GITHUB_TOKEN`. También están cargados el OAuth cifrado, su contraseña, una
-contraseña independiente para Personal Brain y `LANGSMITH_API_KEY`.
+`GITHUB_TOKEN`. `OpenWiki Update`, `OpenWiki Daily Report` y `Tests` están
+activos. Todos los secretos y la variable de las tablas anteriores están
+configurados; `OPENWIKI_OAUTH_SEED` se eliminó después de verificar la
+restauración desde artefacto.
 
-Pendiente en GitHub: configurar un presupuesto de Actions de 0 EUR con
-`Stop usage when budget limit is reached` y cargar las credenciales indicadas
-en las secciones siguientes. `OpenWiki Update` y `OpenWiki Daily Report` están
-deshabilitados manualmente hasta completar esa configuración; `Tests` permanece
-activo. Tras una ejecución manual correcta se habilitan con:
+Puesta en servicio verificada el 20 de agosto de 2026:
 
-```bash
-gh workflow enable openwiki-update.yml \
-  --repo maximofn/gymnasia-openwiki-automation
-gh workflow enable openwiki-report.yml \
-  --repo maximofn/gymnasia-openwiki-automation
-```
+- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/32352293394)
+  terminó correctamente con Code Brain, LangSmith, Personal Brain y la PR;
+- los artefactos `openwiki-oauth-state` y `openwiki-personal-state` se crearon
+  cifrados desde esa misma ejecución;
+- la rama fija actualizó la [PR de documentación #18](https://github.com/maximofn/gymnasia/pull/18);
+- el [informe manual](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/32353104131)
+  fue aceptado correctamente por la API de Telegram.
 
 ### Permiso de PR
 
@@ -193,8 +193,8 @@ directorio público `openwiki/` de Gymnasia.
 
 ## Telegram
 
-Pendiente: el usuario debe crear el bot con `@BotFather`, iniciar el chat con
-`/start` y proporcionar el destino. El token no se pega en conversaciones:
+El bot y el chat están configurados y el envío manual está verificado. Para
+rotar cualquiera de los dos valores sin pegarlos en conversaciones:
 
 ```bash
 gh secret set TELEGRAM_BOT_TOKEN \
@@ -216,9 +216,12 @@ npm ci
 npm test
 ```
 
-Antes de activar el horario también hay que validar los YAML, comprobar los
-scripts shell con `bash -n`, pasar `zizmor` y ejecutar manualmente ambos
-workflows.
+Antes de activar o modificar los horarios hay que validar los YAML, comprobar
+los scripts shell con `bash -n`, pasar `zizmor` y ejecutar manualmente ambos
+workflows. La puesta en servicio actual pasó 22 tests de la plantilla, el CI del
+repositorio privado, 61 tests deterministas de Gymnasia, `zizmor` sin hallazgos
+y las dos ejecuciones manuales; estas comprobaciones deben repetirse cuando
+cambie la plantilla.
 
 ## Referencias oficiales
 

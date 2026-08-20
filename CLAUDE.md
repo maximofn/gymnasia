@@ -339,9 +339,9 @@ version bump directly to `main`.
 
 ## OpenWiki automation security
 
-ChatGPT OAuth automation must not run from this public repository. The separate repository `maximofn/gymnasia-openwiki-automation` is private and is sourced from the reviewed template in `ops/openwiki-automation-template/`; it refuses to run with non-private visibility. It uses a fixed `openwiki/update` branch, encrypted OAuth and Personal Brain artifacts, and a separate sanitized Telegram report. Setup, threat boundaries, pending credentials, and recovery instructions live in `docs/openwiki-automation.md`.
+ChatGPT OAuth automation must not run from this public repository. The separate repository `maximofn/gymnasia-openwiki-automation` is private and is sourced from the reviewed template in `ops/openwiki-automation-template/`; it refuses to run with non-private visibility. It uses a fixed `openwiki/update` branch, encrypted OAuth and Personal Brain artifacts, and a separate sanitized Telegram report. Setup, threat boundaries, operational status, and recovery instructions live in `docs/openwiki-automation.md`.
 
-The legacy public `.github/workflows/openwiki-update.yml` remains API-key gated and exits successfully without generating a PR when `OPENROUTER_API_KEY` is absent. Do not add ChatGPT OAuth secrets to this public repository. Once the private runner is active and verified, remove the legacy scheduled workflow to avoid redundant no-op runs.
+The legacy public OpenWiki workflow was removed after the private runner completed its end-to-end verification. Do not add ChatGPT OAuth secrets or a replacement OpenWiki schedule to this public repository.
 
 `openwiki cron` only manages local Personal Brain connector ingestion schedules. It does not list or schedule Code Brain repository updates; those use the private automation repository's GitHub Actions workflow.
 
