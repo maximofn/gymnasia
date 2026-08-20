@@ -3,6 +3,7 @@ import { pathToFileURL } from "node:url";
 
 const CATEGORIES = Object.freeze([
   "oauth",
+  "managed-markers",
   "langsmith",
   "rate-limit",
   "model",
@@ -25,6 +26,10 @@ const STRONG_OAUTH_PATTERNS = [
 ];
 
 const CATEGORY_PATTERNS = Object.freeze({
+  "managed-markers": [
+    /\bopenwiki managed markers are (?:malformed|duplicated)\b/u,
+    /\bmarkers (?:are )?(?:malformed|duplicated)\b[^\n]{0,100}\bopenwiki\b/u,
+  ],
   langsmith: [
     /\b(?:langsmith|langchain tracing|langchain[_ -]api[_ -]key)\b[^\n]{0,100}\b(?:error|failed|failure|unauthorized|forbidden|invalid|missing|required|timed? ?out|401|403|429)\b/u,
     /\b(?:error|failed|failure|unauthorized|forbidden|invalid|missing|required|timed? ?out|401|403|429)\b[^\n]{0,100}\b(?:langsmith|langchain tracing|langchain[_ -]api[_ -]key)\b/u,
@@ -68,6 +73,7 @@ export function classifyOpenWikiError(logText) {
   }
 
   for (const category of [
+    "managed-markers",
     "langsmith",
     "rate-limit",
     "context-limit",

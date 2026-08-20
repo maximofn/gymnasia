@@ -183,7 +183,7 @@ jobs:
               failure_category="unknown"
             fi
             case "$failure_category" in
-              oauth|langsmith|rate-limit|model|context-limit|network|unknown) ;;
+              oauth|managed-markers|langsmith|rate-limit|model|context-limit|network|unknown) ;;
               *) failure_category="unknown" ;;
             esac
             if [ "$failure_category" = "oauth" ]; then
