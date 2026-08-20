@@ -20,8 +20,9 @@ repositorio no tiene visibilidad privada.
 
 - `OpenWiki Update`: 08:00 UTC y ejecución manual. Usa la suscripción de
   ChatGPT, actualiza `openwiki/update`, mantiene una única PR y cifra el estado.
-- `OpenWiki Daily Report`: 12:00 UTC y ejecución manual. Envía solo indicadores
-  sanitizados a Telegram.
+- `OpenWiki Daily Report`: 12:00 UTC y ejecución manual. Envía duración, estado
+  de ambos brains, fuentes confirmadas y estadísticas de la PR usando solo
+  metadatos sanitizados.
 - `Tests`: valida cada push y PR de este repositorio privado.
 
 Personal Brain admite exactamente las fuentes acordadas: Linear de solo

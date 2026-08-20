@@ -231,6 +231,7 @@ jobs:
             git -C "$linear_path" add linear.md
             git -C "$linear_path" commit -m "data: refresh read-only Linear metadata"
             echo "linear_path=$linear_path" >> "$GITHUB_OUTPUT"
+            echo "linear_enabled=true" >> "$GITHUB_OUTPUT"
             enabled=true
           fi
 
@@ -248,10 +249,12 @@ jobs:
               GH_TOKEN="$MAXIMOFN_REPO_TOKEN" gh repo clone "$MAXIMOFN_REPOSITORY" "$maximofn_path" -- --quiet --no-tags
             fi
             echo "maximofn_path=$maximofn_path" >> "$GITHUB_OUTPUT"
+            echo "repository_enabled=true" >> "$GITHUB_OUTPUT"
             enabled=true
           fi
 
           if [ -n "$TAVILY_API_KEY" ]; then
+            echo "tavily_enabled=true" >> "$GITHUB_OUTPUT"
             enabled=true
           fi
 
@@ -260,6 +263,18 @@ jobs:
             exit 1
           fi
           echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+
+      - name: Confirm Personal Brain Linear source
+        if: steps.personal_sources.outputs.linear_enabled == 'true'
+        run: ":"
+
+      - name: Confirm Personal Brain repository source
+        if: steps.personal_sources.outputs.repository_enabled == 'true'
+        run: ":"
+
+      - name: Confirm Personal Brain Tavily source
+        if: steps.personal_sources.outputs.tavily_enabled == 'true'
+        run: ":"
 
       - name: Mark Personal Brain configuration failure
         if: steps.personal_sources.outcome == 'failure'
