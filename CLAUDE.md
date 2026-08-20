@@ -307,6 +307,15 @@ Only non-obvious gotchas that could recur are kept here.
   plantilla del repositorio privado puede usar `actions/checkout` porque no
   contiene esos gitlinks.
 
+### OpenWiki reemplaza todo el contenido entre sus marcadores
+- Gotcha: `openwiki code --update` regenera íntegramente el bloque delimitado por
+  `<!-- OPENWIKI:START -->` y `<!-- OPENWIKI:END -->` en `CLAUDE.md`. Cualquier
+  regla operativa añadida a mano dentro del bloque desaparece en la siguiente PR,
+  aunque no sea una página de `openwiki/`.
+- Fix: mantener dentro de los marcadores solo el texto generado por OpenWiki y
+  colocar fuera del bloque todas las reglas propias de seguridad, OAuth, runners
+  y mantenimiento.
+
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:
 ```bash
@@ -327,6 +336,16 @@ The APK workflow changes `apps/mobile/app.json` only inside the build workspace;
 the GitHub tag and Release persist the published version. It must never commit a
 version bump directly to `main`.
 
+## OpenWiki automation security
+
+ChatGPT OAuth automation must not run from this public repository. The separate repository `maximofn/gymnasia-openwiki-automation` is private and is sourced from the reviewed template in `ops/openwiki-automation-template/`; it refuses to run with non-private visibility. It uses a fixed `openwiki/update` branch, encrypted OAuth and Personal Brain artifacts, and a separate sanitized Telegram report. Setup, threat boundaries, pending credentials, and recovery instructions live in `docs/openwiki-automation.md`.
+
+The legacy public `.github/workflows/openwiki-update.yml` remains API-key gated and exits successfully without generating a PR when `OPENROUTER_API_KEY` is absent. Do not add ChatGPT OAuth secrets to this public repository. Once the private runner is active and verified, remove the legacy scheduled workflow to avoid redundant no-op runs.
+
+`openwiki cron` only manages local Personal Brain connector ingestion schedules. It does not list or schedule Code Brain repository updates; those use the private automation repository's GitHub Actions workflow.
+
+Do not hand-edit generated OpenWiki pages unless explicitly asked; prefer updating source code/docs and letting OpenWiki regenerate.
+
 <!-- OPENWIKI:START -->
 
 ## OpenWiki
@@ -335,13 +354,5 @@ This repository has a generated `openwiki/` evidence index. It is optional just-
 
 - Treat source code and tests as authoritative. A brief's unknowns and review items are verification gaps, not automatic requirements.
 - Prefer the narrowest quiet validation that proves the changed behavior. Preserve complete failure output.
-
-ChatGPT OAuth automation must not run from this public repository. The separate repository `maximofn/gymnasia-openwiki-automation` is private and is sourced from the reviewed template in `ops/openwiki-automation-template/`; it refuses to run with non-private visibility. It uses a fixed `openwiki/update` branch, encrypted OAuth and Personal Brain artifacts, and a separate sanitized Telegram report. Setup, threat boundaries, pending credentials, and recovery instructions live in `docs/openwiki-automation.md`.
-
-The legacy public `.github/workflows/openwiki-update.yml` remains API-key gated and exits successfully without generating a PR when `OPENROUTER_API_KEY` is absent. Do not add ChatGPT OAuth secrets to this public repository. Once the private runner is active and verified, remove the legacy scheduled workflow to avoid redundant no-op runs.
-
-`openwiki cron` only manages local Personal Brain connector ingestion schedules. It does not list or schedule Code Brain repository updates; those use `.github/workflows/openwiki-update.yml`.
-
-Do not hand-edit generated OpenWiki pages unless explicitly asked; prefer updating source code/docs and letting OpenWiki regenerate.
 
 <!-- OPENWIKI:END -->
