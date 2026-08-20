@@ -291,7 +291,7 @@
         {
           "id": "GYM-142",
           "title": "Proteger los cambios sensibles de política y automatización",
-          "state": "todo",
+          "state": "done",
           "summary": "Bloquear cambios sensibles sin PR, checks y aprobación de @maximofn mediante ruleset, CODEOWNERS, CI sin secretos, Actions inmutables y un bypass de emergencia auditado.",
           "baseline": "missing",
           "dependsOn": [
