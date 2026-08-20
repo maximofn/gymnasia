@@ -155,6 +155,7 @@ jobs:
           LANGCHAIN_PROJECT: openwiki
           LANGCHAIN_TRACING_V2: ${{ inputs.disable_langsmith_tracing == true && 'false' || 'true' }}
           LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+          LANGSMITH_ENDPOINT: "https://eu.api.smith.langchain.com"
           LANGSMITH_HIDE_INPUTS: "true"
           LANGSMITH_HIDE_METADATA: "true"
           LANGSMITH_HIDE_OUTPUTS: "true"
