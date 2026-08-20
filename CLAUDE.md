@@ -309,12 +309,13 @@ Only non-obvious gotchas that could recur are kept here.
 
 ### OpenWiki reemplaza todo el contenido entre sus marcadores
 - Gotcha: `openwiki code --update` regenera íntegramente el bloque delimitado por
-  `<!-- OPENWIKI:START -->` y `<!-- OPENWIKI:END -->` en `CLAUDE.md`. Cualquier
-  regla operativa añadida a mano dentro del bloque desaparece en la siguiente PR,
-  aunque no sea una página de `openwiki/`.
-- Fix: mantener dentro de los marcadores solo el texto generado por OpenWiki y
-  colocar fuera del bloque todas las reglas propias de seguridad, OAuth, runners
-  y mantenimiento.
+  los comentarios `OPENWIKI:START` y `OPENWIKI:END` en `CLAUDE.md`. Además,
+  OpenWiki busca literalmente los delimitadores completos: mencionarlos otra vez
+  en la prosa hace que aborte por marcadores duplicados o malformados. Cualquier
+  regla operativa añadida a mano dentro del bloque desaparece en la siguiente PR.
+- Fix: conservar exactamente una pareja de delimitadores, no reproducirlos
+  literalmente en ningún otro texto y mantener fuera del bloque todas las reglas
+  propias de seguridad, OAuth, runners y mantenimiento.
 
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:

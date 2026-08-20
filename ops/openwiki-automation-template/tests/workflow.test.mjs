@@ -56,3 +56,37 @@ test("keeps LangSmith tracing enabled except for an explicit manual diagnostic",
     /LANGSMITH_ENDPOINT: "https:\/\/eu\.api\.smith\.langchain\.com"/u,
   );
 });
+
+test("the public repository keeps exactly one OpenWiki marker pair", async (t) => {
+  for (const fileName of ["CLAUDE.md", "AGENTS.md"]) {
+    let instructions;
+    try {
+      instructions = await readFile(
+        new URL(`../../../${fileName}`, import.meta.url),
+        "utf8",
+      );
+    } catch (error) {
+      if (error?.code === "ENOENT" && fileName === "CLAUDE.md") {
+        t.skip("the standalone private automation copy has no target instructions");
+        return;
+      }
+      throw error;
+    }
+
+    assert.equal(
+      instructions.match(/<!-- OPENWIKI:START -->/gu)?.length,
+      1,
+      fileName,
+    );
+    assert.equal(
+      instructions.match(/<!-- OPENWIKI:END -->/gu)?.length,
+      1,
+      fileName,
+    );
+    assert.ok(
+      instructions.indexOf("<!-- OPENWIKI:START -->") <
+        instructions.indexOf("<!-- OPENWIKI:END -->"),
+      fileName,
+    );
+  }
+});

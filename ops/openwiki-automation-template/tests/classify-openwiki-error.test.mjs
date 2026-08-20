@@ -24,6 +24,10 @@ test("classifies known OpenWiki failure families", () => {
     ["ChatGPT token request failed (400). Try signing in again.", "oauth"],
     ["ChatGPT token response missing required fields", "oauth"],
     ["Failed to extract account id from ChatGPT access token", "oauth"],
+    [
+      "its OpenWiki managed markers are malformed or duplicated",
+      "managed-markers",
+    ],
     ["LangSmith trace upload returned 401 Unauthorized", "langsmith"],
     ["HTTP 429: too many requests", "rate-limit"],
     ["maximum context length exceeded", "context-limit"],
