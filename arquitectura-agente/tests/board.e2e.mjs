@@ -97,6 +97,23 @@ async function run() {
     const progressText = await page.locator(".epic .progress-text").first().innerText();
     assert.match(progressText, /^\d+\/\d+ · \d+%$/, "la barra de progreso no muestra el ratio");
 
+    const renderedBaselines = await page.locator("#view-epics .ticket").evaluateAll((rows) =>
+      rows.map((row) => ({
+        id: row.querySelector(".ticket-id")?.textContent,
+        hasBaseline: Boolean(row.querySelector(".baseline")),
+      })),
+    );
+    for (const ticket of tickets) {
+      const rendered = renderedBaselines.find((row) => row.id === ticket.id);
+      const isClosed = ticket.state === "done" || ticket.state === "canceled";
+      assert.equal(
+        rendered?.hasBaseline,
+        Boolean(ticket.baseline) && !isClosed,
+        `${ticket.id} muestra incorrectamente su estado de partida`,
+      );
+    }
+    logStep("Estados de partida ocultos en tickets cerrados");
+
     // --- Orden recomendado --------------------------------------------------
     // Es lo primero de la página, así que va antes que las pestañas en el DOM y
     // solo enseña lo que queda por hacer.

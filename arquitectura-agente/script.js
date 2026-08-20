@@ -416,7 +416,8 @@
 
     const side = el("div", "ticket-side");
     side.append(statePill(ticket.state));
-    const baseline = baselineInfo(ticket.baseline);
+    const isClosed = ticket.state === "done" || ticket.state === "canceled";
+    const baseline = isClosed ? null : baselineInfo(ticket.baseline);
     if (baseline) {
       side.append(el("span", "baseline", `${baseline.icon} ${baseline.label}`));
     }
