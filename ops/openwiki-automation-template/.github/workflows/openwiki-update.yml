@@ -164,14 +164,28 @@ jobs:
 
           auth_status="unknown"
           result="failure"
+          failure_category=""
           if [ "$exit_code" -eq 0 ]; then
             auth_status="ok"
             result="success"
-          elif grep -Eiq 'invalid_grant|refresh token|token refresh|unauthorized|authentication failed|oauth[^[:space:]]* (expired|invalid|failed)|(^|[^0-9])401([^0-9]|$)' "$RUNNER_TEMP/openwiki.log"; then
-            auth_status="error"
+          else
+            if ! failure_category="$(
+              node ../scripts/classify-openwiki-error.mjs \
+                "$RUNNER_TEMP/openwiki.log" 2> /dev/null
+            )"; then
+              failure_category="unknown"
+            fi
+            case "$failure_category" in
+              oauth|langsmith|rate-limit|model|context-limit|network|unknown) ;;
+              *) failure_category="unknown" ;;
+            esac
+            if [ "$failure_category" = "oauth" ]; then
+              auth_status="error"
+            fi
           fi
 
           echo "auth_status=$auth_status" >> "$GITHUB_OUTPUT"
+          echo "failure_category=$failure_category" >> "$GITHUB_OUTPUT"
           echo "result=$result" >> "$GITHUB_OUTPUT"
 
       - name: Mark OpenAI OAuth failure
@@ -180,7 +194,9 @@ jobs:
 
       - name: Mark OpenWiki non-auth failure
         if: steps.openwiki.outputs.result == 'failure' && steps.openwiki.outputs.auth_status != 'error'
-        run: echo "::error title=OpenWiki update failed::The failure was not classified as an OAuth error."
+        env:
+          FAILURE_CATEGORY: ${{ steps.openwiki.outputs.failure_category }}
+        run: echo "::error title=OpenWiki update failed::Failure category:$FAILURE_CATEGORY"
 
       - name: Prepare selected Personal Brain sources
         id: personal_sources
@@ -460,6 +476,7 @@ jobs:
           always() &&
           (steps.preflight.outcome == 'failure' ||
           steps.oauth.outcome == 'failure' ||
+          steps.openwiki.outcome == 'failure' ||
           steps.openwiki.outputs.result == 'failure' ||
           steps.encrypt_oauth.outcome == 'failure' ||
           steps.personal_sources.outcome == 'failure' ||
