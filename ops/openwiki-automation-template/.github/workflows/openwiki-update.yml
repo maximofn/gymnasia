@@ -2,6 +2,12 @@ name: OpenWiki Update
 
 on:
   workflow_dispatch:
+    inputs:
+      disable_langsmith_tracing:
+        description: "Disable LangSmith tracing for one diagnostic run"
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: "0 8 * * *"
 
@@ -147,7 +153,7 @@ jobs:
         env:
           HOME: ${{ env.OPENWIKI_CODE_USER_HOME }}
           LANGCHAIN_PROJECT: openwiki
-          LANGCHAIN_TRACING_V2: "true"
+          LANGCHAIN_TRACING_V2: ${{ inputs.disable_langsmith_tracing == true && 'false' || 'true' }}
           LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
           LANGSMITH_HIDE_INPUTS: "true"
           LANGSMITH_HIDE_METADATA: "true"
