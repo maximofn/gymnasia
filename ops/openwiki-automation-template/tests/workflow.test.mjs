@@ -6,6 +6,10 @@ const workflowUrl = new URL(
   "../.github/workflows/openwiki-update.yml",
   import.meta.url,
 );
+const reportWorkflowUrl = new URL(
+  "../.github/workflows/openwiki-report.yml",
+  import.meta.url,
+);
 
 test("initializes runner-only paths after the runner starts", async () => {
   const workflow = await readFile(workflowUrl, "utf8");
@@ -55,6 +59,31 @@ test("keeps LangSmith tracing enabled except for an explicit manual diagnostic",
     workflow,
     /LANGSMITH_ENDPOINT: "https:\/\/eu\.api\.smith\.langchain\.com"/u,
   );
+});
+
+test("publishes source presence as metadata-only job steps", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.match(workflow, /linear_enabled=true/u);
+  assert.match(workflow, /repository_enabled=true/u);
+  assert.match(workflow, /tavily_enabled=true/u);
+  assert.match(workflow, /name: Confirm Personal Brain Linear source/u);
+  assert.match(workflow, /name: Confirm Personal Brain repository source/u);
+  assert.match(workflow, /name: Confirm Personal Brain Tavily source/u);
+});
+
+test("builds the Telegram report from sanitized metadata", async () => {
+  const workflow = await readFile(reportWorkflowUrl, "utf8");
+
+  assert.match(workflow, /node scripts\/build-daily-report\.mjs/u);
+  assert.match(
+    workflow,
+    /--json additions,changedFiles,deletions,files,mergedAt,number,state,updatedAt,url/u,
+  );
+  assert.match(workflow, /--data-urlencode "text@\$\{report_file\}"/u);
+  assert.doesNotMatch(workflow, /gh run view[^\n]+--log/u);
+  assert.doesNotMatch(workflow, /--json[^\n]+(?:body|title)/u);
+  assert.doesNotMatch(workflow, /openwiki(?:-personal)?\.log/u);
 });
 
 test("the public repository keeps exactly one OpenWiki marker pair", async (t) => {

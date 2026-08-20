@@ -38,6 +38,18 @@ jobs:
             echo "::notice::Daily report skipped: configure TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID."
           fi
 
+      - name: Check out private automation repository
+        if: steps.telegram.outputs.enabled == 'true'
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        if: steps.telegram.outputs.enabled == 'true'
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "22.22.0"
+
       - name: Send sanitized daily OpenWiki report
         if: steps.telegram.outputs.enabled == 'true'
         shell: bash
@@ -60,6 +72,16 @@ jobs:
               --data-urlencode "disable_web_page_preview=true" > /dev/null
           }
 
+          send_telegram_file() {
+            local report_file="$1"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --url "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+              --data-urlencode "text@${report_file}" \
+              --data-urlencode "disable_web_page_preview=true" > /dev/null
+          }
+
           report_internal_failure() {
             local exit_code="$?"
             trap - EXIT
@@ -70,92 +92,34 @@ jobs:
           }
           trap report_internal_failure EXIT
 
-          runs_json="$(
-            GH_TOKEN="$AUTOMATION_GH_TOKEN" \
-              gh api "repos/$GITHUB_REPOSITORY/actions/workflows/openwiki-update.yml/runs?per_page=1"
-          )"
-          run_id="$(jq -r '.workflow_runs[0].id // empty' <<< "$runs_json")"
-          report_date="$(TZ=Europe/Madrid date '+%Y-%m-%d')"
-          status_label="⚠️ sin ejecuciones registradas"
-          oauth_label="⚪ desconocido"
-          personal_label="⚪ desconocido"
-          run_url="https://github.com/${GITHUB_REPOSITORY}/actions/workflows/openwiki-update.yml"
+          runs_path="$RUNNER_TEMP/openwiki-runs.json"
+          jobs_path="$RUNNER_TEMP/openwiki-jobs.json"
+          pull_requests_path="$RUNNER_TEMP/openwiki-pull-requests.json"
+          report_path="$RUNNER_TEMP/openwiki-daily-report.txt"
 
+          GH_TOKEN="$AUTOMATION_GH_TOKEN" \
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/openwiki-update.yml/runs?per_page=1" \
+              > "$runs_path"
+          run_id="$(jq -r '.workflow_runs[0].id // empty' "$runs_path")"
           if [ -n "$run_id" ]; then
-            run_status="$(jq -r '.workflow_runs[0].status' <<< "$runs_json")"
-            run_conclusion="$(jq -r '.workflow_runs[0].conclusion // ""' <<< "$runs_json")"
-            run_created_at="$(jq -r '.workflow_runs[0].created_at' <<< "$runs_json")"
-            run_url="$(jq -r '.workflow_runs[0].html_url' <<< "$runs_json")"
-            run_age_hours="$(( ( $(date -u +%s) - $(date -u -d "$run_created_at" +%s) ) / 3600 ))"
-
-            if [ "$run_age_hours" -gt 30 ]; then
-              status_label="🔴 no se ejecuta desde hace ${run_age_hours} h"
-            elif [ "$run_status" = "queued" ]; then
-              status_label="🟠 en cola"
-            elif [ "$run_status" = "in_progress" ]; then
-              status_label="🔵 en ejecución"
-            elif [ "$run_conclusion" = "success" ]; then
-              status_label="✅ correcta"
-            else
-              status_label="🔴 ${run_conclusion:-fallida}"
-            fi
-
-            jobs_json="$(
-              GH_TOKEN="$AUTOMATION_GH_TOKEN" \
-                gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100"
-            )"
-            step_succeeded() {
-              jq -e --arg name "$1" \
-                '[.jobs[].steps[]? | select(.name == $name and .conclusion == "success")] | length > 0' \
-                > /dev/null <<< "$jobs_json"
-            }
-
-            if step_succeeded "Mark OpenWiki configuration missing"; then
-              oauth_label="⚪ runner sin configurar"
-            elif step_succeeded "Mark encrypted OAuth state failure"; then
-              oauth_label="🔴 estado cifrado inválido"
-            elif step_succeeded "Mark OAuth persistence failure"; then
-              oauth_label="🔴 no se pudo guardar la renovación"
-            elif step_succeeded "Mark OpenAI OAuth failure"; then
-              oauth_label="🔴 login expirado o revocado"
-            elif [ "$run_conclusion" = "success" ]; then
-              oauth_label="✅ correcto"
-            fi
-
-            if step_succeeded "Mark Personal Brain configuration failure"; then
-              personal_label="🔴 configuración inválida"
-            elif step_succeeded "Mark Personal Brain sources missing"; then
-              personal_label="⚪ sin fuentes configuradas"
-            elif step_succeeded "Mark Personal Brain state failure"; then
-              personal_label="🔴 estado cifrado inválido"
-            elif step_succeeded "Mark Personal Brain onboarding failure"; then
-              personal_label="🔴 configuración local fallida"
-            elif step_succeeded "Mark Personal Brain update failure"; then
-              personal_label="🔴 actualización fallida"
-            elif step_succeeded "Mark Personal Brain persistence failure"; then
-              personal_label="🔴 no se pudo guardar"
-            elif [ "$run_conclusion" = "success" ]; then
-              personal_label="✅ correcto"
-            fi
+            GH_TOKEN="$AUTOMATION_GH_TOKEN" \
+              gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" \
+                > "$jobs_path"
+          else
+            printf '%s\n' '{"jobs":[]}' > "$jobs_path"
           fi
 
-          pr_url=""
           if [ -n "$GYMNASIA_REPO_TOKEN" ]; then
-            pr_url="$(
-              GH_TOKEN="$GYMNASIA_REPO_TOKEN" \
-                gh pr list --repo maximofn/gymnasia --state open \
-                  --head openwiki/update --limit 1 --json url --jq '.[0].url // empty'
-            )"
+            GH_TOKEN="$GYMNASIA_REPO_TOKEN" \
+              gh pr list --repo maximofn/gymnasia --state all \
+                --head openwiki/update --limit 1 \
+                --json additions,changedFiles,deletions,files,mergedAt,number,state,updatedAt,url \
+                  > "$pull_requests_path"
+          else
+            printf '%s\n' '[]' > "$pull_requests_path"
           fi
-          pr_label="${pr_url:-sin PR abierta}"
 
-          message="$(printf '%s\n%s\n%s\n%s\n%s\n%s' \
-            "OpenWiki Gymnasia — $report_date" \
-            "Ejecución: $status_label" \
-            "OAuth OpenAI: $oauth_label" \
-            "Personal Brain: $personal_label" \
-            "PR: $pr_label" \
-            "Detalles: $run_url")"
-
-          send_telegram "$message"
+          node scripts/build-daily-report.mjs \
+            "$runs_path" "$jobs_path" "$pull_requests_path" "$report_path"
+          send_telegram_file "$report_path"
           sent=true

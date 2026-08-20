@@ -29,8 +29,9 @@ que no puede generar cargos accidentales al agotar la cuota gratuita.
   - actualiza opcionalmente Personal Brain desde Linear, maximofn.com y Tavily;
   - cifra de nuevo el OAuth rotado y el estado privado antes de persistirlos.
 - `openwiki-report.yml`, a las 12:00 UTC: consulta el workflow anterior y envía
-  a Telegram solo estado general, salud de OAuth y Personal Brain, PR y URL. No
-  lee ni envía logs.
+  a Telegram duración y disparador, estado de Code Brain, configuración de
+  LangSmith, persistencia OAuth, Personal Brain y fuentes confirmadas, además
+  del estado y estadísticas de la PR. No lee ni envía logs ni contenidos.
 - `tests.yml`: valida cifrado, filtrado OAuth, export seguro de Linear y
   configuración de Personal Brain.
 
@@ -204,8 +205,10 @@ gh secret set TELEGRAM_CHAT_ID \
 ```
 
 El informe no incluye prompts, código, contenido del wiki, trazas, errores
-completos ni credenciales. Solo indica estado general, salud del OAuth, salud de
-Personal Brain, URL de la PR y enlace al workflow.
+completos, títulos de Linear ni credenciales. Solo usa metadatos allowlisted de
+GitHub: estados y tiempos de pasos, presencia de cada fuente, número/estado de
+la PR, archivos y recuentos de líneas. Las URLs se limitan al dominio
+`github.com` antes de incorporarlas al mensaje.
 
 ## Validación
 
@@ -218,7 +221,7 @@ npm test
 
 Antes de activar o modificar los horarios hay que validar los YAML, comprobar
 los scripts shell con `bash -n`, pasar `zizmor` y ejecutar manualmente ambos
-workflows. La puesta en servicio actual pasó 22 tests de la plantilla, el CI del
+workflows. La puesta en servicio actual pasó la batería de la plantilla, el CI del
 repositorio privado, 61 tests deterministas de Gymnasia, `zizmor` sin hallazgos
 y las dos ejecuciones manuales; estas comprobaciones deben repetirse cuando
 cambie la plantilla.
