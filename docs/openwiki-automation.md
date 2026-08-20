@@ -175,9 +175,8 @@ además redacta patrones evidentes de contraseña, token, secret y API key.
 ### Repositorio de maximofn.com
 
 La variable `MAXIMOFN_REPOSITORY` apunta a `maximofn/portafolio`. El repositorio
-es privado, por lo que queda pendiente crear un token fine-grained independiente,
-limitado a ese repositorio y con `Contents: read-only`, y guardarlo como
-`MAXIMOFN_REPO_TOKEN`.
+es privado y usa un token fine-grained independiente, limitado a ese repositorio
+y con `Contents: read-only`, guardado como `MAXIMOFN_REPO_TOKEN` en Actions.
 
 ### Búsqueda web
 
