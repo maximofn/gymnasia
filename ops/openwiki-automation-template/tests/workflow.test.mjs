@@ -51,4 +51,8 @@ test("keeps LangSmith tracing enabled except for an explicit manual diagnostic",
     workflow,
     /LANGCHAIN_TRACING_V2: \$\{\{ inputs\.disable_langsmith_tracing == true && 'false' \|\| 'true' \}\}/u,
   );
+  assert.match(
+    workflow,
+    /LANGSMITH_ENDPOINT: "https:\/\/eu\.api\.smith\.langchain\.com"/u,
+  );
 });
