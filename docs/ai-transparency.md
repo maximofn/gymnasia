@@ -41,8 +41,9 @@ automático se convierte en conversación, debe incorporarse antes de publicarse
 
 `composeAiSystemPrompt` elimina marcadores reservados antiguos o inyectados y
 añade al final una única política local versionada. La composición ocurre justo
-antes de construir la petición de OpenAI, Anthropic o Google, después de cualquier
-prompt remoto, caché, fallback o instrucción de depuración.
+antes de construir la petición de OpenAI, Anthropic o Google, después del prompt
+remoto, de caché o integrado. No hay ninguna otra fuente: desde GYM-139 ningún
+dato local del usuario puede añadir texto al system prompt.
 
 La caché conserva solo la política funcional remota. Así, una instalación offline
 con una caché antigua recibe siempre la versión de transparencia compilada en la

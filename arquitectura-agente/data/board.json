@@ -352,8 +352,8 @@
         {
           "id": "GYM-139",
           "title": "Eliminar la inyección persistente mediante debug en producción",
-          "state": "todo",
-          "summary": "Impedir que un campo de memoria editable por el usuario o el agente se anexe al system prompt; conservar depuración únicamente como configuración local explícita de development.",
+          "state": "done",
+          "summary": "Eliminar por completo la vía que anexaba un campo de memoria local al system prompt, sin sustituirla por una variante de development, y sanear la forma de los datos personales en sus tres fronteras de escritura.",
           "baseline": "missing",
           "dependsOn": [
             "GYM-137"

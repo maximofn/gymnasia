@@ -44,6 +44,10 @@ import * as DocumentPicker from "expo-document-picker";
 import { pushTrace, clearTraces, getTraces, formatTraces, type TraceEntry } from "./trace";
 import { CHAT_TOOLS } from "./agent/toolDefinitions";
 import {
+  sanitizePersonalDataFields,
+  type PersonalDataField,
+} from "./agent/personalData";
+import {
   createAgentToolExecutor,
   type ToolExecutionContext,
   type ToolMeasurement,
@@ -1119,26 +1123,26 @@ function findRepoExerciseMatch(
   return repo.find((r) => exerciseNameMatchKey(r.name) === key) ?? null;
 }
 
-type PersonalDataField = { key: string; description: string; value: string };
-
+// Sanea al leer, sin escribir: esta función corre desde tres handlers de tools
+// en mitad del streaming y desde la exportación de backups, y una escritura ahí
+// competiría con commitMemoryField.
 async function loadPersonalData(): Promise<PersonalDataField[]> {
   try {
     const raw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed;
-    return [];
+    return sanitizePersonalDataFields(JSON.parse(raw));
   } catch {
     return [];
   }
 }
 
-async function savePersonalData(fields: PersonalDataField[]): Promise<void> {
-  await AsyncStorage.setItem(PERSONAL_DATA_STORAGE_KEY, JSON.stringify(fields));
-}
-
-function personalDataToJson(fields: PersonalDataField[]): string {
-  return JSON.stringify(fields, null, 2);
+// Acepta unknown a propósito: el backup importado llega sin validar y no debe
+// fingir que ya tiene la forma correcta.
+async function savePersonalData(fields: unknown): Promise<void> {
+  await AsyncStorage.setItem(
+    PERSONAL_DATA_STORAGE_KEY,
+    JSON.stringify(sanitizePersonalDataFields(fields)),
+  );
 }
 
 async function loadMeasurementsFromStorage(): Promise<Measurement[]> {
@@ -8524,16 +8528,22 @@ export default function App() {
       const history = excludeLocalDisclosureMessages([...threadMessages, userMessage])
         .slice(-20)
         .map((msg) => ({ role: msg.role, content: msg.content }));
-      const [systemPromptSelection, personalDataFields] = await Promise.all([
-        loadChatSystemPrompt(),
-        loadPersonalData(),
-      ]);
-      const debugField = personalDataFields.find((f) => f.key === "debug");
-      const fullSystemPrompt = debugField?.value
-        ? `${systemPromptSelection.content}\n\n## Instrucciones de depuracion\n\n${debugField.value}`
-        : systemPromptSelection.content;
+      // GYM-139: el system prompt procede exclusivamente de la política
+      // seleccionada más la política local de transparencia que añade
+      // composeAiSystemPrompt. Ningún dato local puede sumar texto aquí, así que
+      // esta ruta no lee la memoria personal en absoluto.
+      const systemPromptSelection = await loadChatSystemPrompt();
+      void pushTrace("chatPrompt", "chat-request", {
+        source: systemPromptSelection.source,
+        version: systemPromptSelection.version,
+        basePromptChars: systemPromptSelection.content.length,
+        localPromptOverrides: 0,
+      });
       let assistantResult: AnthropicChatResult | null = null;
-      const chatMessages = [{ role: "system" as const, content: fullSystemPrompt }, ...history];
+      const chatMessages = [
+        { role: "system" as const, content: systemPromptSelection.content },
+        ...history,
+      ];
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
           if (attempt > 0) {
@@ -9134,7 +9144,12 @@ export default function App() {
       if (importedPrefs.chartMetric) setMeasuresChartMetric(importedPrefs.chartMetric);
 
       setPersonalFoods(Array.isArray(payload.data.personalFoods) ? payload.data.personalFoods : []);
-      await savePersonalData(Array.isArray(payload.data.personalData) ? payload.data.personalData : []);
+      await savePersonalData(sanitizePersonalDataFields(payload.data.personalData));
+      // La pestaña Memoria solo lee del disco si aún no ha cargado, y persiste su
+      // array entero en cada onBlur. Sin este reset, un estado cargado antes de
+      // importar volcaría los campos previos encima de los restaurados.
+      setMemoryFields([]);
+      setMemoryLoaded(false);
 
       // El snapshot de sesión activa no se incluye en el backup; cerramos cualquier
       // sesión en curso para no dejar un estado inconsistente con los datos nuevos.
@@ -18999,7 +19014,7 @@ export default function App() {
                     Memoria del coach
                   </Text>
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                    Datos personales que el coach recuerda entre conversaciones. Puedes editarlos o dejar que el coach los guarde cuando le compartas información.
+                    Datos personales que el coach recuerda entre conversaciones. Puedes editarlos o dejar que el coach los guarde cuando le compartas información. El coach los consulta cuando los necesita: nunca se envían como instrucciones del sistema ni modifican su comportamiento.
                   </Text>
 
                   {memoryFields.map((field, index) => (
@@ -19028,6 +19043,7 @@ export default function App() {
                             fontSize: 13,
                             fontWeight: "700",
                           }}
+                          testID={`memory-field-key-${index}`}
                           value={field.key}
                           onChangeText={(text) => updateMemoryField(index, "key", text)}
                           onBlur={commitMemoryField}

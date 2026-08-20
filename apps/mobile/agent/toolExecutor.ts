@@ -1,8 +1,10 @@
-export type PersonalDataField = {
-  key: string;
-  description: string;
-  value: string;
-};
+import {
+  countDiscardedPersonalDataFields,
+  sanitizePersonalDataFields,
+  type PersonalDataField,
+} from "./personalData";
+
+export type { PersonalDataField };
 
 export type ToolMeasurement = {
   id: string;
@@ -127,16 +129,16 @@ export type ToolHandler = (
   dependencies: ToolExecutorDependencies,
 ) => Promise<string>;
 
-function parsePersonalDataInput(input: unknown): PersonalDataField[] {
+/** Deshace el envoltorio JSON del argumento; la validación la hace sanitizePersonalDataFields. */
+function parsePersonalDataInput(input: unknown): unknown {
   if (typeof input === "string") {
     try {
-      const parsed = JSON.parse(input);
-      return Array.isArray(parsed) ? parsed : [];
+      return JSON.parse(input);
     } catch {
       return [];
     }
   }
-  return Array.isArray(input) ? input : [];
+  return input;
 }
 
 function normalizeSearchText(value: string): string {
@@ -170,8 +172,15 @@ function parseObjectArgument(
 }
 
 const savePersonalData: ToolHandler = async (args, _context, dependencies) => {
-  const fields = parsePersonalDataInput(args.personal_data);
+  const parsed = parsePersonalDataInput(args.personal_data);
+  const fields = sanitizePersonalDataFields(parsed);
+  const discarded = countDiscardedPersonalDataFields(parsed);
   await dependencies.savePersonalData(fields);
+  // La tool reescribe el array entero: un descarte silencioso le haría creer al
+  // modelo que guardó un campo que luego list_personal_data_keys no devuelve.
+  if (discarded > 0) {
+    return `Datos personales guardados correctamente. Se descartaron ${discarded} campo(s) mal formado(s) o sin nombre.`;
+  }
   return "Datos personales guardados correctamente.";
 };
 

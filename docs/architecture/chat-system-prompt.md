@@ -18,6 +18,15 @@ política local de identidad y transparencia. El snapshot no sustituye ni duplic
 esa protección. Los prompts del estimador de comidas y del asistente de alimentos
 personales son independientes.
 
+La composición admite exactamente esas dos fuentes: la política seleccionada y la
+política local de transparencia. Ningún dato local del usuario —memoria del
+coach, preferencias, backups importados— puede añadir texto al system prompt, en
+ningún entorno y se llame como se llame el campo. Hasta GYM-139 un campo de
+memoria personal con la clave `debug` se anexaba al prompt en producción; ese
+mecanismo se eliminó por completo, no se sustituyó por una variante de
+desarrollo, y `apps/mobile/agent/personalData.contract.test.ts` lo verifica sobre
+el fuente de `App.tsx`.
+
 ## Normalización, validación y hash
 
 La normalización elimina un BOM UTF-8 inicial y convierte `CRLF` o `CR` a `LF`.
@@ -32,6 +41,12 @@ normalización; se vuelve a calcular el hash antes de utilizarla.
 
 Las trazas `chatPrompt` registran la fuente (`remote`, `cache` o `bundled`), el
 hash y la versión. No contienen el prompt, conversaciones ni datos personales.
+El evento `selected` acompaña a la selección de la política; `chat-request` se
+emite una vez por envío del chat principal con la fuente, la versión, la longitud
+del prompt base y `localPromptOverrides: 0`. Ese último campo es un literal
+constante: su valor no informa en runtime, pero deja el invariante observable
+desde fuera del binario, de modo que reintroducir un override obligaría a
+tocarlo.
 El hash permite demostrar igualdad y detectar corrupción, pero no autentica al
 publicador; la firma criptográfica de bundles pertenece a GYM-140.
 
