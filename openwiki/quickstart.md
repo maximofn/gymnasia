@@ -83,7 +83,7 @@ flowchart TD
 - **Agente:** [Entorno de ejecución del agente](agent/runtime.md), [Configuración de proveedores](agent/provider-configuration.md) y [Streaming de proveedores y continuación de herramientas](agent/provider-streaming.md).
 - **Contenido:** [Repositorios de contenido](content/repositories.md) y [Generación de imágenes](content/image-generation.md).
 - **Servicios e integraciones:** [Proxy CORS de Anthropic para navegadores](services/anthropic-proxy.md), [Tablero de arquitectura](services/architecture-board.md) y [Acceso a VivaGym y actualizaciones de la aplicación](integrations/vivagym-and-updates.md).
-- **Operaciones:** [Compilación, publicación y pruebas](operations/build-release-and-testing.md) gestiona los manifiestos, las compilaciones, la CI, los comandos E2E, las publicaciones de EAS y los límites de despliegue.
+- **Operaciones:** [Compilación, publicación y pruebas](operations/build-release-and-testing.md) gestiona los manifiestos, las compilaciones, la CI, los comandos E2E, las publicaciones de EAS y los límites de despliegue. [Gobierno de cambios sensibles y política de prompt](operations/prompt-policy-governance.md) define las rutas protegidas, los artefactos derivados y la autorización de PR.
 
 ## Enrutamiento de tareas
 
@@ -104,6 +104,7 @@ flowchart TD
 | Actualizar los datos, el gráfico, la interfaz o el despliegue del tablero | [Tablero de arquitectura](services/architecture-board.md) | `arquitectura-agente/data/board.json`, `index.html`, `script.js::init`, `indexData`, `computeLevels`, `renderGraph` | `npm run test:board`; añadir `npm run test:board:e2e` para el renderizado |
 | Cambiar el QR de VivaGym o la detección de actualizaciones del APK | [VivaGym y actualizaciones](integrations/vivagym-and-updates.md) | `fetchVivaGymAppToken`, `loginVivaGym`, `fetchVivaGymQrValue`, `getVivaGymQr`, `checkForUpdate`, `runManualUpdateCheck`, `compareVersions` | Comprobación de tipos, conjunto determinista, comprobaciones de integración nativas/manuales que protejan los secretos |
 | Compilar, probar, publicar o desplegar | [Compilación, publicación y pruebas](operations/build-release-and-testing.md) | Manifiestos raíz/móvil, `apps/mobile/app.json`, `apps/mobile/eas.json`, configuraciones de Vercel para móvil/tablero, `.github/workflows/*` | Seleccionar el comando responsable más específico y ampliar después la validación antes de publicar |
+| Cambiar rutas sensibles, `CODEOWNERS`, el ruleset, checks obligatorios o la autorización de una PR | [Gobierno de cambios sensibles](operations/prompt-policy-governance.md) | `.github/prompt-policy.json`, `loadPolicy`, `renderCodeowners`, `createRuleset`, `assertWorkflowPolicy`, `evaluateAuthorization` | `npm run check:prompt-policy && npm run test:prompt-policy` |
 
 ## Puntos de entrada exactos del entorno de ejecución y del operador
 
@@ -146,7 +147,7 @@ npm run test:board
 npm run test:board:e2e
 ```
 
-`npm run test:llm` es solo un marcador de posición y no proporciona ninguna cobertura de evaluación. Las pruebas E2E del navegador no demuestran el funcionamiento de SecureStore nativo, las notificaciones, la temporización en segundo plano, el botón Atrás de Android, la instalación de APK ni el comportamiento en iOS.
+`npm run test:llm` es solo un marcador de posición y no proporciona ninguna cobertura de evaluación. Los controles de gobierno de rutas sensibles son independientes: `npm run check:prompt-policy` verifica la política, sus artefactos generados y restricciones de workflows; `npm run test:prompt-policy` prueba la clasificación y autorización. Consulta [Gobierno de cambios sensibles](operations/prompt-policy-governance.md) antes de modificar esa frontera. Las pruebas E2E del navegador no demuestran el funcionamiento de SecureStore nativo, las notificaciones, la temporización en segundo plano, el botón Atrás de Android, la instalación de APK ni el comportamiento en iOS.
 
 ## Validación mínima
 
