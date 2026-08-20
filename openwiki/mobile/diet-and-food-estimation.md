@@ -162,7 +162,8 @@ El estimador de alimentos es un modal específico y está separado del agente ge
 
 La resolución del proveedor respeta primero `store.foodAIProvider` cuando ese proveedor tiene una clave de API. Después tiene en cuenta el proveedor seleccionado en el modal y, por último, recurre a `google`, `openai`, `anthropic`, en ese orden. Este mecanismo alternativo no consulta `is_active`. OpenAI utiliza Responses, Google utiliza `streamGenerateContent` y Anthropic utiliza Messages; el tráfico de Anthropic desde navegadores pasa por el proxy configurado. La estimación de imágenes con Anthropic se rechaza explícitamente en la web, aunque la estimación de solo texto con Anthropic puede utilizar el proxy.
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 14: ...gits Tool->>OFF: GET product by Expecting '+', '-', '()', 'ACTOR', got 'off' -->
+```text
 sequenceDiagram
     actor User
     participant UI as Estimator Modal

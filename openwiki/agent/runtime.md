@@ -46,7 +46,8 @@ El agente es una capacidad en proceso de la aplicación Expo, no un servicio de 
 
 ## Ciclo de vida de extremo a extremo
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 16: ...dates Adapter->>Loop: Parsed provide Expecting '+', '-', '()', 'ACTOR', got 'loop' -->
+```text
 sequenceDiagram
     participant User
     participant Send as sendMessage

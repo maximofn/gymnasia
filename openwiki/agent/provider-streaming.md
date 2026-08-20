@@ -30,7 +30,8 @@ El agente móvil normaliza tres protocolos de streaming incompatibles en el mism
 
 ## Ciclo de vida del stream por capas
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 14: ... body Parser->>Loop: Parsed turn an Expecting '+', '-', '()', 'ACTOR', got 'loop' -->
+```text
 sequenceDiagram
     participant App as callProviderChatAPIWithTools
     participant Transport as Fetch or XHR
