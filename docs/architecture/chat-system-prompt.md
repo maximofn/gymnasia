@@ -13,6 +13,12 @@ El snapshot TypeScript vive en
 `apps/mobile/agent/generated/chatSystemPrompt.generated.ts`. Es un artefacto
 versionado y generado: no se edita manualmente.
 
+El bloque delimitado por `HEALTH-SAFETY:START` y `HEALTH-SAFETY:END` tampoco se
+edita a mano. Se genera desde `policy/health-safety/`; tanto las reglas
+`provisional` como las `approved` se publican para no dejar al agente sin
+protección mientras llega la revisión profesional. El ciclo y los límites de
+esta garantía se documentan en `docs/architecture/health-safety-policy.md`.
+
 Después de seleccionar el prompt base, `composeAiSystemPrompt` añade una única
 política local de identidad y transparencia. El snapshot no sustituye ni duplica
 esa protección. Los prompts del estimador de comidas y del asistente de alimentos
@@ -52,18 +58,27 @@ publicador; la firma criptográfica de bundles pertenece a GYM-140.
 
 ## Editar y verificar
 
-1. Edita solamente `prompts/AGENTS.md`.
-2. Regenera el snapshot:
+1. Para texto no sanitario, edita `prompts/AGENTS.md` fuera del bloque
+   administrado. Para seguridad sanitaria, edita `policy/health-safety/`.
+2. Si cambió la política sanitaria, genera su bloque y el snapshot:
+
+   ```bash
+   npm run sync:health-safety
+   ```
+
+   Para un cambio no sanitario, regenera solo el snapshot:
 
    ```bash
    npm run sync:chat-prompt
    ```
 
-3. Revisa el diff del archivo fuente y del generado.
+3. Revisa el diff de la fuente canónica, el prompt y el archivo generado.
 4. Comprueba la sincronización y ejecuta las pruebas:
 
    ```bash
    npm run check:chat-prompt
+   npm run check:health-safety
+   npm run test:health-safety
    npm test
    npm run test:agent:e2e
    npm --workspace apps/mobile exec tsc --noEmit

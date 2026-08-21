@@ -1,0 +1,29 @@
+{
+  "$schema": "./schemas/llm-evaluation.schema.json",
+  "schemaVersion": 1,
+  "authorizing": false,
+  "requiredForPullRequests": false,
+  "executesPullRequestCode": false,
+  "allowsSecretsFromExternalPullRequests": false,
+  "execution": "manual-or-scheduled",
+  "command": "npm run test:llm",
+  "reportSchema": "./schemas/evaluation-report.schema.json",
+  "inputs": [
+    "policyVersion",
+    "promptVersion",
+    "datasetVersion",
+    "evaluatorName",
+    "evaluatorVersion",
+    "model",
+    "caseResults",
+    "pullRequestDiffAsData",
+    "humanDecision"
+  ],
+  "linkedTickets": [
+    "GYM-73",
+    "GYM-76",
+    "GYM-77",
+    "GYM-78",
+    "GYM-124"
+  ]
+}

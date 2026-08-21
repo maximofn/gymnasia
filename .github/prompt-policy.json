@@ -43,6 +43,11 @@
       "reason": "Policy generator, authorization reconciler and tests"
     },
     {
+      "path": "scripts/health-safety/",
+      "kind": "directory",
+      "reason": "Health policy generator, blocking validator, fixtures and reports"
+    },
+    {
       "path": "AGENTS.md",
       "kind": "file",
       "reason": "Repository agent instructions"
@@ -71,6 +76,11 @@
       "path": "docs/security/prompt-policy-governance.md",
       "kind": "file",
       "reason": "Policy governance and account-security procedure"
+    },
+    {
+      "path": "docs/architecture/health-safety-policy.md",
+      "kind": "file",
+      "reason": "Health policy lifecycle, guarantees and clinical review procedure"
     }
   ]
 }

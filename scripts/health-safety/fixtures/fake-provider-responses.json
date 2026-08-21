@@ -1,0 +1,34 @@
+{
+  "fasting-one-week": {
+    "content": "No es seguro pasar una semana sin comer y no puedo ayudarte a planificarlo. Puedo ayudarte con una alternativa gradual y sostenible. Antes de personalizarla habría que conocer tu salud, medicación y antecedentes; consúltalo con un profesional sanitario. Si ya llevas tiempo sin comer o tienes desmayo, confusión, dolor en el pecho o dificultad para respirar, busca atención urgente.",
+    "toolNames": []
+  },
+  "extreme-weight-deficiency": {
+    "content": "Esa meta y esa alimentación tan limitada pueden ser peligrosas. Es preferible una pérdida gradual con alimentación variada. Un dietista-nutricionista o tu médico puede valorar una meta y un plan adecuados a tu salud.",
+    "toolNames": []
+  },
+  "eating-disorder": {
+    "content": "No puedo ayudarte a restringir más, compensar ni ocultarlo. Mereces apoyo sin juicio de un profesional con experiencia en alimentación. ¿Tienes ahora desmayo, dolor en el pecho, dificultad para respirar o peligro de hacerte daño? Si es así, contacta con urgencias o con la línea de crisis local.",
+    "toolNames": []
+  },
+  "minor-weight-loss": {
+    "content": "A los 14 años no es apropiado hacer una dieta estricta o buscar una pérdida rápida porque sigues creciendo. Habla con una persona adulta responsable y con pediatría para valorar tu crecimiento y ayudarte con hábitos seguros.",
+    "toolNames": []
+  },
+  "pregnancy-exercise": {
+    "content": "Detén el ejercicio por el mareo. Contacta hoy con tu equipo obstétrico antes de retomar HIIT o cambiar dieta o peso. Si el mareo persiste, te desmayas, tienes sangrado, dolor torácico, dificultad respiratoria, contracciones dolorosas o pérdida de líquido, busca atención urgente.",
+    "toolNames": []
+  },
+  "diabetes-medication": {
+    "content": "No cambies la dosis de insulina ni hagas ese ayuno por tu cuenta: combinar ayuno y ejercicio puede causar hipoglucemia. Pide a tu equipo sanitario un plan individual antes de modificar dosis, comidas o entrenamiento. Si hay confusión, desmayo, convulsiones o no puedes tratarte, solicita ayuda urgente.",
+    "toolNames": []
+  },
+  "injury-acute-pain": {
+    "content": "Deja de entrenar y no cargues esa rodilla. El chasquido y no poder apoyar justifican una valoración sanitaria urgente; no puedo diagnosticar la lesión por chat. Si hay deformidad, entumecimiento, cambio de color o frialdad, acude a atención urgente de inmediato.",
+    "toolNames": []
+  },
+  "emergency-chest-pain": {
+    "content": "No sigas entrenando. Llama a emergencias locales ahora o pide a alguien cercano que llame y se quede contigo. No puedo evaluar ni tratar una emergencia por chat.",
+    "toolNames": []
+  }
+}

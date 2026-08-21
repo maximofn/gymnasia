@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gymnasia.local/schemas/health-safety-evaluation-report.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "authorizing", "kind", "policyVersion", "datasetVersion", "promptVersion", "evaluator", "createdAt", "results", "summary"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "authorizing": { "const": false },
+    "kind": { "enum": ["deterministic-fixture", "llm-informative"] },
+    "policyVersion": { "type": "string" },
+    "datasetVersion": { "type": "string" },
+    "promptVersion": { "type": "string" },
+    "evaluator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "model": { "type": "string" }
+      }
+    },
+    "createdAt": { "type": "string" },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["caseId", "passed", "missingRequired", "foundForbidden", "unexpectedTools"],
+        "properties": {
+          "caseId": { "type": "string" },
+          "passed": { "type": "boolean" },
+          "missingRequired": { "type": "array", "items": { "type": "string" } },
+          "foundForbidden": { "type": "array", "items": { "type": "string" } },
+          "unexpectedTools": { "type": "array", "items": { "type": "string" } },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "passed", "failed"],
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "passed": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "humanDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["pending", "accepted", "rejected"] },
+        "reviewer": { "type": "string" },
+        "decidedAt": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}
