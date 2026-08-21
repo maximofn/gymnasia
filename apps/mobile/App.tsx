@@ -479,6 +479,30 @@ const ALARM_LATE_THRESHOLD_MS = 5_000;
 // Si la alerta in-app acaba de sonar, la notificación que llega detrás no debe
 // volver a sonar: en la práctica llegan con ~200 ms de diferencia.
 const REST_ALERT_DEDUPE_WINDOW_MS = 8_000;
+
+// Fabricantes cuya gestión de batería congela o mata los procesos en segundo
+// plano, impidiendo que se entreguen las alarmas programadas. No es Doze ni un
+// problema de permisos: solo se resuelve desde los ajustes del propio fabricante.
+// Verificado en un Huawei P30, donde la notificación se entregaba justo al volver
+// a la app en vez de a su hora. Referencia: dontkillmyapp.com
+const BATTERY_RESTRICTIVE_MANUFACTURERS: Array<{ match: RegExp; brand: string; path: string }> = [
+  { match: /huawei|honor/i, brand: "Huawei", path: 'Ajustes → Batería → Lanzamiento de aplicaciones → Gymnasia. Desactiva "Gestionar automáticamente" y activa las tres opciones, sobre todo "Ejecutar en segundo plano".' },
+  { match: /xiaomi|redmi|poco/i, brand: "Xiaomi", path: 'Ajustes → Aplicaciones → Gymnasia. Activa "Inicio automático" y, en "Ahorro de batería", elige "Sin restricciones".' },
+  { match: /samsung/i, brand: "Samsung", path: 'Ajustes → Batería → Límites de uso en segundo plano. Saca a Gymnasia de "Aplicaciones en suspensión" y desactiva "Poner en suspensión apps no usadas".' },
+  { match: /oneplus/i, brand: "OnePlus", path: 'Ajustes → Batería → Optimización de batería → Gymnasia → "No optimizar". Desactiva también "Optimización avanzada".' },
+  { match: /oppo|realme/i, brand: "Oppo", path: 'Ajustes → Batería → Gymnasia. Permite la actividad en segundo plano y el inicio automático.' },
+  { match: /vivo|iqoo/i, brand: "Vivo", path: 'Ajustes → Batería → Consumo elevado en segundo plano. Permite que Gymnasia se ejecute en segundo plano.' },
+  { match: /meizu|asus|wiko|tecno|infinix|blackview|unihertz/i, brand: "tu fabricante", path: "Busca en los ajustes de batería la opción de inicio automático o ejecución en segundo plano y permítela para Gymnasia." },
+];
+
+/** Devuelve la guía del fabricante si el dispositivo es de los que restringen el segundo plano. */
+function batteryRestrictionGuidance(): { brand: string; path: string } | null {
+  if (Platform.OS !== "android") return null;
+  const constants = Platform.constants as { Manufacturer?: string; Brand?: string };
+  const identity = `${constants?.Manufacturer ?? ""} ${constants?.Brand ?? ""}`;
+  const entry = BATTERY_RESTRICTIVE_MANUFACTURERS.find(({ match }) => match.test(identity));
+  return entry ? { brand: entry.brand, path: entry.path } : null;
+}
 // Pasada esta ventana, reproducir el sonido de fin de descanso al volver a la app
 // sería absurdo: el usuario ya sabe que terminó.
 const REST_ALERT_FALLBACK_WINDOW_MS = 120_000;
@@ -7939,6 +7963,10 @@ export default function App() {
   }, [alarmHealth]);
 
   const androidPackageId = Constants.expoConfig?.android?.package ?? null;
+  const batteryGuidance = useMemo(() => batteryRestrictionGuidance(), []);
+  // Se oculta en cuanto se confirma que los avisos llegan puntuales: en ese caso
+  // el usuario ya lo tiene configurado y el aviso solo sería ruido.
+  const showBatteryGuidance = batteryGuidance !== null && alarmPunctuality.status !== "ontime";
 
   // El listener de recepción no dispara si el sistema mató el proceso, así que su
   // silencio no prueba que la notificación no llegara. La bandeja sí: si sigue ahí,
@@ -20643,6 +20671,44 @@ export default function App() {
                         </Text>
                         <Feather name="chevron-right" size={18} color={mobileTheme.color.textSecondary} />
                       </View>
+                    </Pressable>
+                  ) : null}
+
+                  {/* Guía del fabricante. Es la causa más común de que el aviso no
+                      suene en segundo plano, y no se arregla desde la app. */}
+                  {showBatteryGuidance && batteryGuidance ? (
+                    <Pressable
+                      onPress={() => Linking.openSettings()}
+                      style={{
+                        backgroundColor: alarmPunctuality.status === "late" ? "rgba(255,107,107,0.08)" : mobileTheme.color.bgSurface,
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: alarmPunctuality.status === "late" ? "rgba(255,107,107,0.35)" : mobileTheme.color.borderSubtle,
+                        gap: 6,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <Feather
+                          name="battery-charging"
+                          size={16}
+                          color={alarmPunctuality.status === "late" ? "#FF6B6B" : mobileTheme.color.textSecondary}
+                        />
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600", flex: 1 }}>
+                          {batteryGuidance.brand === "tu fabricante"
+                            ? "Tu móvil puede bloquear los avisos en segundo plano"
+                            : `Los móviles ${batteryGuidance.brand} bloquean los avisos en segundo plano`}
+                        </Text>
+                      </View>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Para ahorrar batería, el sistema congela las apps que no estás usando y el aviso de descanso no llega hasta que vuelves a abrir Gymnasia. No es algo que la app pueda cambiar por su cuenta.
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+                        {batteryGuidance.path}
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontStyle: "italic" }}>
+                        Este aviso desaparecerá solo cuando comprobemos que los avisos llegan puntuales.
+                      </Text>
                     </Pressable>
                   ) : null}
 
