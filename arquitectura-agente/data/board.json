@@ -101,7 +101,7 @@
         {
           "id": "GYM-191",
           "title": "Eliminar USE_EXACT_ALARM del build Android",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Eliminar android.permission.USE_EXACT_ALARM del manifest fusionado y conservar los avisos de entrenamiento con mecanismos admitidos por Google Play.",
           "dependsOn": [],
           "related": [
