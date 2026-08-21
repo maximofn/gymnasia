@@ -46,8 +46,15 @@ Si un cambio toca cualquiera de estas cosas, recórrela entera:
 6. **Revisa las declaraciones de Play.** `docs/legal/play-declarations.md`: si cambia
    una categoría de datos, un permiso o un tercero, la tabla de Data safety cambia con
    ella. Si la ficha ya está publicada, hay que reenviar el formulario.
-7. **Publica.** El HTML generado se sirve desde `apps/mobile/public/`; despliega y
-   verifica con `curl` (ver más abajo).
+7. **Publica.** El HTML generado se sirve desde `apps/mobile/public/`, en el proyecto
+   Vercel **`gymnasia-web`** (no `gymnasia`, que es el tablero). El push a `main` **no**
+   despliega: hay que lanzar la CLI a mano, enlazando antes porque `apps/mobile/.vercel/`
+   está git-ignored.
+   ```bash
+   npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd apps/mobile
+   npm exec --yes -- vercel@latest deploy --prod --yes --cwd apps/mobile
+   ```
+   La salida debe decir `Deploying gymnasia-web`. Si dice `Created`, detente.
 
 ## Verificación de lo publicado
 

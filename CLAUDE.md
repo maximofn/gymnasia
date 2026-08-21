@@ -303,6 +303,33 @@ Only non-obvious gotchas that could recur are kept here.
 - Fix: to test a clean install on web, empty the file too (`printf '{}' > apps/mobile/.dev-store.json`) and make sure no tab still has the app running — a live instance re-persists its in-memory state on the way out, silently undoing the wipe.
 - Note: a fresh boot also re-runs the body-fat migration (`gymnasia.mobile.body_fat_migration_done`), which injects ~90 body-fat-only measurements. Expect the measurement count to differ from what you seeded.
 
+### Hay DOS proyectos de Vercel, y la política de privacidad vive en el segundo
+- Gotcha: `gymnasia` y `gymnasia-web` son proyectos distintos y es fácil confundirlos,
+  porque el nombre corto es el del tablero, no el de la app.
+  - `gymnasia` → `arquitectura-agente/` → <https://gymnasia-sable.vercel.app> (tablero).
+  - `gymnasia-web` → `apps/mobile/` → <https://gymnasia.maximofn.com> (export web de la
+    app, y **la política de privacidad publicada en `/privacidad` y `/privacy`**).
+- Ninguno de los dos se despliega en el push: `vercel project ls` mostraba
+  `gymnasia-web` sin actualizar desde hacía 15 días mientras `main` seguía avanzando.
+  Mergear la política **no la publica**; hay que lanzar la CLI a mano.
+- `apps/mobile/` no tiene `.vercel/` (está git-ignored), así que desplegar sin enlazar
+  crearía un proyecto nuevo llamado `mobile`. Enlazar primero, siempre:
+  ```bash
+  npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd apps/mobile
+  npm exec --yes -- vercel@latest deploy --prod --yes --cwd apps/mobile
+  ```
+  La salida debe decir `Deploying gymnasia-web` y aliar `gymnasia.maximofn.com`. Si dice
+  `Created`, detente: está creando otro proyecto.
+- Verificar después, con `curl` y no con Playwright (no tiene salida a internet en el
+  sandbox del agente):
+  ```bash
+  curl -sS -o /dev/null -w '%{http_code}\n' https://gymnasia.maximofn.com/privacidad
+  curl -sS https://gymnasia.maximofn.com/privacidad | grep -o 'gymnasia-policy-digest" content="[^"]*"'
+  ```
+  El digest debe coincidir con `PRIVACY_POLICY_DIGESTS` de
+  `apps/mobile/agent/generated/legalCopy.generated.ts`. Si no coincide, lo publicado no
+  es lo que se revisó.
+
 ### Vercel no despliega `arquitectura-agente/` en el push: la integración de Git está inactiva
 - Gotcha: el repo *parece* conectado a Vercel — hay deployments de `vercel[bot]` en
   GitHub — pero los últimos son del **2 de marzo de 2026**. Todo lo publicado después
