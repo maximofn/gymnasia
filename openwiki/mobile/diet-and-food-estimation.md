@@ -162,33 +162,31 @@ El estimador de alimentos es un modal específico y está separado del agente ge
 
 La resolución del proveedor respeta primero `store.foodAIProvider` cuando ese proveedor tiene una clave de API. Después tiene en cuenta el proveedor seleccionado en el modal y, por último, recurre a `google`, `openai`, `anthropic`, en ese orden. Este mecanismo alternativo no consulta `is_active`. OpenAI utiliza Responses, Google utiliza `streamGenerateContent` y Anthropic utiliza Messages; el tráfico de Anthropic desde navegadores pasa por el proxy configurado. La estimación de imágenes con Anthropic se rechaza explícitamente en la web, aunque la estimación de solo texto con Anthropic puede utilizar el proxy.
 
-<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 14: ...gits Tool->>OFF: GET product by Expecting '+', '-', '()', 'ACTOR', got 'off' -->
-```text
+```mermaid
 sequenceDiagram
     actor User
-    participant UI as Estimator Modal
-    participant Provider as Model Provider
-    participant Tool as Barcode Handler
-    participant OFF as OpenFoodFacts
-    participant Extractor as Structured Extraction
-    participant Store as Local Store
-
+    participant UI as EstimatorModal
+    participant Provider as ModelProvider
+    participant Barcode as BarcodeHandler
+    participant FoodFacts as OpenFoodFacts
+    participant Extractor as StructuredExtractor
+    participant Store as LocalStore
     User->>UI: Add text or images
-    UI->>Provider: Conversation and first-turn images
-    alt Barcode tool requested
-        Provider->>Tool: scan_barcode with digits
-        Tool->>OFF: GET product by barcode
-        OFF-->>Tool: Product and nutrients
-        Tool-->>Provider: JSON or controlled error text
+    UI->>Provider: Conversation and first turn images
+    alt Barcode request
+        Provider->>Barcode: scan_barcode with digits
+        Barcode->>FoodFacts: Request product by barcode
+        FoodFacts-->>Barcode: Product and nutrients
+        Barcode-->>Provider: JSON or controlled error
         Provider-->>UI: Revised estimate
-    else No barcode tool
-        Provider-->>UI: Visual or textual estimate
+    else No barcode request
+        Provider-->>UI: Visual or text estimate
     end
     User->>UI: Add to selected meal
-    UI->>Extractor: Conversation summary and nutrition schema
+    UI->>Extractor: Summary and nutrition schema
     Extractor-->>UI: Structured nutrition object
-    UI->>UI: Prefer repository values when matched
-    UI->>Store: Add item or update existing item
+    UI->>UI: Prefer matched repository values
+    UI->>Store: Add or update diet item
 ```
 
 *El estimador realiza una estimación conversacional, una consulta opcional del código de barras y una segunda extracción estructurada antes de confirmar un elemento ordinario de dieta.*
