@@ -7,9 +7,11 @@
 /ops/openwiki-automation-template/ @maximofn
 /policy/ @maximofn
 /scripts/prompt-policy/ @maximofn
+/scripts/health-safety/ @maximofn
 /AGENTS.md @maximofn
 /CLAUDE.md @maximofn
 /package.json @maximofn
 /package-lock.json @maximofn
 /docs/openwiki-automation.md @maximofn
 /docs/security/prompt-policy-governance.md @maximofn
+/docs/architecture/health-safety-policy.md @maximofn

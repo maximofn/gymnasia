@@ -22,9 +22,11 @@ test("clasifica todas las fronteras privilegiadas", () => {
     "ops/openwiki-automation-template/.github/workflows/tests.yml",
     "policy/releases/v1.json",
     "scripts/prompt-policy/policy.mjs",
+    "scripts/health-safety/check.mjs",
     "AGENTS.md",
     "CLAUDE.md",
     "package.json",
+    "docs/architecture/health-safety-policy.md",
   ]) {
     assert.equal(isSensitivePath(path, policy), true, path);
   }

@@ -25,6 +25,9 @@ Desde la raíz:
 
 ```bash
 npm test                                      # suite determinista
+npm run check:health-safety                   # puerta sanitaria canónica
+npm run test:health-safety                    # contratos, regresiones y propiedades sanitarias
+npm run report:health-safety                  # informe de fixtures, authorizing=false
 npm run test:deterministic                    # alias explícito de la anterior
 npm run test:agent:e2e                        # app web + Playwright + OpenAI falso
 npm --workspace apps/mobile exec tsc --noEmit # type-check
@@ -37,6 +40,13 @@ el dialecto crudo de cada proveedor, pero no son capturas de APIs de pago. Las
 pruebas recorren stream → parser de producción → tool → resultado → segunda
 ronda. Los schemas también se someten a propiedades generativas con `fast-check`.
 Cada regresión determinista nueva debe añadirse como fixture o caso unitario.
+
+La suite sanitaria vive en `policy/health-safety/` y
+`scripts/health-safety/`. Sus fixtures representan respuestas explícitas de un
+proveedor falso y verifican el cableado, los contratos y regresiones curadas;
+no pretenden demostrar que cualquier respuesta de un modelo real sea segura.
+Las reglas `provisional` ya bloquean CI y se publican en el prompt, aunque el
+ticket no se considera clínicamente cerrado hasta su revisión profesional.
 
 El E2E exporta la app web, abre Chromium, intercepta OpenAI, Anthropic y Google
 con esos fixtures y verifica el flujo visible completo. También prueba la
@@ -61,6 +71,11 @@ Cuando se implemente la épica de observabilidad:
   propio;
 - sus tasas de acierto se informarán por separado y nunca convertirán
   `npm test` en una suite con red o coste.
+
+La interfaz sanitaria para esos resultados está en
+`policy/health-safety/llm-evaluation.json`. Todo informe LLM cumple el schema
+versionado y conserva `authorizing: false`: puede aportar evidencia, pero nunca
+aprobar una PR, fusionar o promover un artefacto.
 
 ## Plantilla de QA por ticket
 

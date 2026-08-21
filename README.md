@@ -9,6 +9,8 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
 - `arquitectura-agente/`: Tablero de seguimiento de epicas y tickets (espejo manual de Linear, sitio estatico en Vercel)
+- `policy/health-safety/`: Reglas y casos sanitarios versionados que generan la protección del agente
+- `scripts/health-safety/`: Generador, puerta determinista, fixtures e informes sanitarios
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
 
 ## Arranque rapido
@@ -39,6 +41,8 @@ red, claves ni tokens:
 
 ```bash
 npm test                # unitarios, integración, contrato, regresión y fuzzing
+npm run check:health-safety # política, prompt, snapshot y fixtures sanitarios
+npm run test:health-safety  # regresiones y propiedades sanitarias sin red
 npm run test:agent:e2e  # app web + Playwright + proveedores falsos
 ```
 
@@ -46,12 +50,13 @@ Las evals con LLM están separadas de CI y reservadas para LangSmith. Consulta
 `docs/testing/agent-testing.md` para la arquitectura, los comandos y la plantilla
 de QA manual.
 
-El prompt base de Gymnasia Coach se edita únicamente en `prompts/AGENTS.md`.
-Después de cambiarlo hay que regenerar y verificar su snapshot integrado:
+El prompt base de Gymnasia Coach vive en `prompts/AGENTS.md`, pero su bloque
+sanitario se genera desde `policy/health-safety/` y no se edita a mano. Después
+de cambiar una regla sanitaria hay que regenerar y verificar ambos artefactos:
 
 ```bash
-npm run sync:chat-prompt
-npm run check:chat-prompt
+npm run sync:health-safety
+npm run check:health-safety
 ```
 
 El flujo remoto, caché e integrado se documenta en
@@ -85,5 +90,6 @@ npm run test:board:e2e   # E2E con Playwright
 - Instrucciones para agentes IA: `AGENTS.md`
 - Documentacion central: `docs/README.md`
 - Política remota y fallback del agente: `docs/architecture/chat-system-prompt.md`
+- Política y revisión sanitaria del agente: `docs/architecture/health-safety-policy.md`
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`

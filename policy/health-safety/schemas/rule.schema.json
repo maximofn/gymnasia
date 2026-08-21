@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gymnasia.local/schemas/health-safety-rule.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "version",
+    "status",
+    "title",
+    "categories",
+    "risk",
+    "requiredBehaviors",
+    "prohibitedBehaviors",
+    "requiredQuestions",
+    "escalation",
+    "uncertainty",
+    "sources",
+    "review"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^HS-[A-Z]+(?:-[A-Z]+)*-[0-9]{3}$" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "status": { "enum": ["draft", "provisional", "approved"] },
+    "title": { "type": "string", "minLength": 8 },
+    "categories": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" }
+    },
+    "risk": { "enum": ["high", "critical"] },
+    "requiredBehaviors": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 12 }
+    },
+    "prohibitedBehaviors": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 12 }
+    },
+    "requiredQuestions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 12 }
+    },
+    "escalation": { "type": "string", "minLength": 12 },
+    "uncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["known", "unknowns", "conservativeDefault"],
+      "properties": {
+        "known": { "type": "string", "minLength": 12 },
+        "unknowns": { "type": "string", "minLength": 12 },
+        "conservativeDefault": { "type": "string", "minLength": 12 }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "publisher", "url", "accessedAt"],
+        "properties": {
+          "title": { "type": "string", "minLength": 4 },
+          "publisher": { "type": "string", "minLength": 2 },
+          "url": { "type": "string", "pattern": "^https://" },
+          "accessedAt": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["professionalReviewed"],
+      "properties": {
+        "professionalReviewed": { "type": "boolean" },
+        "reviewerRole": { "type": "string", "minLength": 3 },
+        "reviewedAt": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "notes": { "type": "string", "minLength": 3 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "approved" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "review": {
+            "properties": { "professionalReviewed": { "const": true } },
+            "required": ["professionalReviewed", "reviewerRole", "reviewedAt"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "review": {
+            "properties": { "professionalReviewed": { "const": false } }
+          }
+        }
+      }
+    }
+  ]
+}

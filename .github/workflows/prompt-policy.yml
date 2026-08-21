@@ -48,6 +48,14 @@ jobs:
         id: android_permissions_tests
         run: npm run test:android-permissions
 
+      - name: Verify canonical health safety policy and bundled prompt
+        id: health_safety
+        run: npm run check:health-safety
+
+      - name: Run health safety unit, contract, regression and property tests
+        id: health_safety_tests
+        run: npm run test:health-safety
+
       - name: Verify bundled chat prompt snapshot
         id: snapshot
         run: npm run check:chat-prompt
@@ -77,6 +85,8 @@ jobs:
             echo "| Unit, contract and property tests | ${{ steps.policy_tests.outcome }} |"
             echo "| Publishable Android permissions | ${{ steps.android_permissions.outcome }} |"
             echo "| Android permission policy tests | ${{ steps.android_permissions_tests.outcome }} |"
+            echo "| Health safety policy and prompt | ${{ steps.health_safety.outcome }} |"
+            echo "| Health safety deterministic tests | ${{ steps.health_safety_tests.outcome }} |"
             echo "| Bundled prompt parity | ${{ steps.snapshot.outcome }} |"
             echo "| Agent schema, tools and invariants | ${{ steps.deterministic.outcome }} |"
             echo "| OpenWiki automation | ${{ steps.openwiki.outcome }} |"

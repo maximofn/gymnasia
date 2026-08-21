@@ -6,6 +6,10 @@
   ],
   "scripts": {
     "dev:mobile": "npm --workspace apps/mobile run start",
+    "sync:health-safety": "node scripts/health-safety/sync.mjs --write && npm run sync:chat-prompt",
+    "check:health-safety": "node scripts/health-safety/check.mjs",
+    "test:health-safety": "node --test scripts/health-safety/*.test.mjs",
+    "report:health-safety": "node scripts/health-safety/report.mjs",
     "sync:chat-prompt": "node apps/mobile/scripts/sync-chat-system-prompt.mjs --write",
     "check:chat-prompt": "node apps/mobile/scripts/sync-chat-system-prompt.mjs --check",
     "sync:prompt-policy": "node scripts/prompt-policy/generate.mjs --write",
