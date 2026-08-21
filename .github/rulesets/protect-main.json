@@ -46,6 +46,10 @@
           {
             "context": "gymnasia/owner-authorization",
             "integration_id": 15368
+          },
+          {
+            "context": "gymnasia/policy-promotion",
+            "integration_id": 15368
           }
         ]
       }

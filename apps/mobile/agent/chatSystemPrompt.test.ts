@@ -24,6 +24,10 @@ function cacheRecord(content: string, sha256 = hash(content)): string {
     normalizationVersion: CHAT_SYSTEM_PROMPT_NORMALIZATION_VERSION,
     content,
     sha256,
+    environment: "staging",
+    channel: "Staging",
+    candidate: "policy-v2026.08.1-aaaaaaaaaaaa",
+    deploymentId: 42,
   });
 }
 
@@ -36,6 +40,11 @@ function remoteResponse(
     status: 200,
     contentType: "text/plain; charset=utf-8",
     body,
+    expectedSha256: hash(normalizeChatSystemPromptContent(body)),
+    environment: "staging",
+    channel: "Staging",
+    candidate: "policy-v2026.08.1-aaaaaaaaaaaa",
+    deploymentId: 42,
     ...overrides,
   };
 }
@@ -66,7 +75,13 @@ function createDependencies(
       sha256: bundledHash,
       version: `sha256:${bundledHash}`,
       normalizationVersion: CHAT_SYSTEM_PROMPT_NORMALIZATION_VERSION,
+      environment: "staging",
+      channel: "Staging",
+      candidate: "policy-v2026.08.1-bbbbbbbbbbbb",
+      deploymentId: null,
     },
+    scope: { environment: "staging", channel: "Staging" },
+    allowLegacyCache: true,
     diagnostic: (entry) => {
       diagnostics.push(entry);
     },
@@ -110,12 +125,20 @@ describe("selectChatSystemPrompt", () => {
       source: "remote",
       sha256: hash("Prompt remoto\nSeguro\n"),
       version: `sha256:${hash("Prompt remoto\nSeguro\n")}`,
+      environment: "staging",
+      channel: "Staging",
+      candidate: "policy-v2026.08.1-aaaaaaaaaaaa",
+      deploymentId: 42,
     });
     expect(JSON.parse(writes[0] ?? "{}")).toEqual({
-      schemaVersion: 2,
+      schemaVersion: 3,
       normalizationVersion: CHAT_SYSTEM_PROMPT_NORMALIZATION_VERSION,
       content: "Prompt remoto\nSeguro\n",
       sha256: hash("Prompt remoto\nSeguro\n"),
+      environment: "staging",
+      channel: "Staging",
+      candidate: "policy-v2026.08.1-aaaaaaaaaaaa",
+      deploymentId: 42,
     });
     expect(diagnostics.at(-1)).toMatchObject({
       event: "selected",
@@ -161,6 +184,24 @@ describe("selectChatSystemPrompt", () => {
     });
   });
 
+  it("development local no intenta resolver un remoto", async () => {
+    const { dependencies, diagnostics } = createDependencies({
+      fetchRemote: undefined,
+      scope: { environment: "development", channel: "Local" },
+      bundled: {
+        ...createDependencies().dependencies.bundled,
+        environment: "development",
+        channel: "Local",
+      },
+      allowLegacyCache: false,
+    });
+
+    const result = await selectChatSystemPrompt(dependencies);
+
+    expect(result.source).toBe("bundled");
+    expect(diagnostics.some((entry) => entry.event.startsWith("remote"))).toBe(false);
+  });
+
   it("rechaza una caché manipulada cuyo hash ya no corresponde", async () => {
     const { dependencies, diagnostics } = createDependencies({
       readCurrentCache: async () => cacheRecord("Contenido alterado", "0".repeat(64)),
@@ -173,6 +214,44 @@ describe("selectChatSystemPrompt", () => {
       event: "cache-rejected",
       source: "cache",
       reason: "hash-mismatch",
+    });
+  });
+
+  it("rechaza una caché válida de otro canal", async () => {
+    const wrongChannel = JSON.parse(cacheRecord("Contenido de staging"));
+    wrongChannel.channel = "Production";
+    const { dependencies, diagnostics } = createDependencies({
+      readCurrentCache: async () => JSON.stringify(wrongChannel),
+      allowLegacyCache: false,
+    });
+
+    const result = await selectChatSystemPrompt(dependencies);
+
+    expect(result.source).toBe("bundled");
+    expect(diagnostics).toContainEqual({
+      event: "cache-rejected",
+      source: "cache",
+      reason: "invalid-metadata",
+    });
+  });
+
+  it("rechaza un asset remoto cuyo digest no coincide", async () => {
+    const { dependencies, diagnostics, writes } = createDependencies({
+      fetchRemote: async () => remoteResponse("Asset manipulado", {
+        expectedSha256: "0".repeat(64),
+      }),
+      allowLegacyCache: false,
+    });
+
+    const result = await selectChatSystemPrompt(dependencies);
+
+    expect(result.source).toBe("bundled");
+    expect(writes).toEqual([]);
+    expect(diagnostics).toContainEqual({
+      event: "remote-rejected",
+      source: "remote",
+      reason: "hash-mismatch",
+      status: 200,
     });
   });
 
