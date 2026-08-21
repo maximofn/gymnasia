@@ -427,11 +427,13 @@ type UserPreferences = {
 // Android no deja consultar desde JS si la app puede programar alarmas exactas
 // (expo-notifications no expone canScheduleExactAlarms), así que el veredicto se
 // deduce observando si los avisos llegan puntuales.
+// Solo se registra lo medido: un retraso real entre la hora pedida y la entrega
+// observada. No hay campo para "no entregada" porque no existe forma fiable de
+// afirmarlo — que la app no viera la entrega no prueba que no ocurriera.
 type AlarmHealth = {
   lastDelayMs: number | null;
   lastObservedAt: number | null;
   lateStreak: number;
-  missedStreak: number;
 };
 type TemplateSeriesPointer = {
   exerciseIndex: number;
@@ -480,7 +482,7 @@ const REST_ALERT_DEDUPE_WINDOW_MS = 8_000;
 // Pasada esta ventana, reproducir el sonido de fin de descanso al volver a la app
 // sería absurdo: el usuario ya sabe que terminó.
 const REST_ALERT_FALLBACK_WINDOW_MS = 120_000;
-const DEFAULT_ALARM_HEALTH: AlarmHealth = { lastDelayMs: null, lastObservedAt: null, lateStreak: 0, missedStreak: 0 };
+const DEFAULT_ALARM_HEALTH: AlarmHealth = { lastDelayMs: null, lastObservedAt: null, lateStreak: 0 };
 
 // NotificationPermissionsStatus hereda `granted` y `status` de PermissionResponse,
 // pero con install-strategy=nested expo-modules-core queda bajo expo/node_modules
@@ -7888,25 +7890,20 @@ export default function App() {
   // Registra lo observado sobre la puntualidad de las alarmas. Persiste de forma
   // directa (no vía useEffect) porque estas observaciones ocurren justo cuando la
   // app puede irse a segundo plano.
-  const recordAlarmObservation = useCallback((observation: { delayMs?: number; missed?: boolean }) => {
+  const recordAlarmObservation = useCallback((observation: { delayMs: number }) => {
     setAlarmHealth((prev) => {
-      const late = observation.missed === true
-        || (typeof observation.delayMs === "number" && observation.delayMs > ALARM_LATE_THRESHOLD_MS);
+      const late = observation.delayMs > ALARM_LATE_THRESHOLD_MS;
       const next: AlarmHealth = {
-        lastDelayMs: typeof observation.delayMs === "number" ? observation.delayMs : prev.lastDelayMs,
+        lastDelayMs: observation.delayMs,
         lastObservedAt: Date.now(),
         // Una entrega puntual resetea la racha: si el usuario concede "Alarmas y
-        // recordatorios", el aviso desaparece solo.
+        // recordatorios" o permite la ejecución en segundo plano, el aviso
+        // desaparece solo.
         lateStreak: late ? prev.lateStreak + 1 : 0,
-        missedStreak: observation.missed ? prev.missedStreak + 1 : 0,
       };
       alarmHealthRef.current = next;
       void AsyncStorage.setItem(ALARM_HEALTH_STORAGE_KEY, JSON.stringify(next)).catch(() => {});
-      void pushTrace("alarmHealth", observation.missed ? "missed" : "observed", {
-        delayMs: observation.delayMs ?? null,
-        lateStreak: next.lateStreak,
-        missedStreak: next.missedStreak,
-      });
+      void pushTrace("alarmHealth", "observed", { delayMs: observation.delayMs, lateStreak: next.lateStreak });
       return next;
     });
   }, []);
@@ -7915,10 +7912,10 @@ export default function App() {
   // observado. "unknown" no es un fallo: es que aún no ha terminado un descanso
   // en segundo plano del que aprender.
   const alarmPunctuality = useMemo<{ status: "unknown" | "ontime" | "late"; badge: string; detail: string }>(() => {
-    const { lastDelayMs, lateStreak, missedStreak } = alarmHealth;
+    const { lastDelayMs, lateStreak } = alarmHealth;
     // Con el umbral en 5 s, un solo retraso ya es señal: no hace falta esperar a
     // que se repita para avisar.
-    if (missedStreak > 0 || lateStreak >= 1) {
+    if (lateStreak >= 1) {
       const lateSeconds = lastDelayMs ? Math.round(lastDelayMs / 1000) : null;
       const howLate = lateSeconds === null
         ? "no llegó a tiempo"
@@ -8400,11 +8397,11 @@ export default function App() {
             } else {
               // Sin evidencia, la alerta suena como red de seguridad, pero solo si
               // el descanso acaba de terminar: horas después sería absurda.
+              // No se registra retraso aquí: `overdueMs` mide cuánto ha tardado el
+              // usuario en volver, no cuánto tardó la notificación. Confundirlos
+              // marcaba "con retraso" a quien simplemente volvió tarde.
               const stillRelevant = overdueMs !== null && overdueMs <= REST_ALERT_FALLBACK_WINDOW_MS;
               manualRestSkipRef.current = !stillRelevant;
-              if (notifSettingsRef.current.enabled && overdueMs !== null && overdueMs > ALARM_LATE_THRESHOLD_MS) {
-                recordAlarmObservation({ missed: true });
-              }
             }
             void pushTrace("restSkip", "decision", {
               delivered: deliveredAt !== null,
