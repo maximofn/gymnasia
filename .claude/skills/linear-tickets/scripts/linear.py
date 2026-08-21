@@ -504,9 +504,20 @@ def cmd_replace(args):
 BOARD_PATH = ("arquitectura-agente", "data", "board.json")
 
 
+# El tablero espejo solo modela cinco columnas (backlog, todo, in_progress, done,
+# canceled), pero el flujo GYM tiene seis estados. Los que no existen en el
+# tablero se colapsan en la columna equivalente mas cercana; sin esta tabla,
+# `board --apply` escribe un estado que board.json no define y el fallo no
+# aparece hasta `npm run test:board`.
+BOARD_STATE_ALIASES = {
+    "in_review": "in_progress",
+}
+
+
 def board_state_id(linear_state_name: str) -> str:
-    """'In Progress' -> 'in_progress'. Los cinco estados del flujo GYM mapean asi."""
-    return linear_state_name.strip().lower().replace(" ", "_")
+    """'In Progress' -> 'in_progress'; 'In Review' -> 'in_progress' (ver BOARD_STATE_ALIASES)."""
+    slug = linear_state_name.strip().lower().replace(" ", "_")
+    return BOARD_STATE_ALIASES.get(slug, slug)
 
 
 def cmd_board(args):

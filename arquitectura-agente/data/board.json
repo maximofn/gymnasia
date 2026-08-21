@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-20",
+    "updated": "2026-08-21",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -101,7 +101,7 @@
         {
           "id": "GYM-191",
           "title": "Eliminar USE_EXACT_ALARM del build Android",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Eliminar android.permission.USE_EXACT_ALARM del manifest fusionado y conservar los avisos de entrenamiento con mecanismos admitidos por Google Play.",
           "dependsOn": [],
           "related": [
@@ -306,7 +306,7 @@
         {
           "id": "GYM-144",
           "title": "Formalizar dev, staging y producción para la política del agente",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Convertir los perfiles EAS existentes en entornos aislados de app, almacenamiento, secretos y canal de política, promocionando el mismo artefacto desde staging a producción.",
           "baseline": "partial",
           "dependsOn": [
