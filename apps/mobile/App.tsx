@@ -84,20 +84,41 @@ import {
 // notifications delivered while the app is in the foreground are silently
 // dropped (no banner, no sound). We also trace every received notification
 // so we can debug "did the native scheduler actually fire it?".
+// Instante en que sonó la alerta in-app de fin de descanso. Vive a nivel de
+// módulo porque el handler de notificaciones se registra fuera del componente y
+// no puede leer sus refs.
+let lastInAppRestAlertAt: number | null = null;
+
+export function markInAppRestAlertPlayed(at: number = Date.now()) {
+  lastInAppRestAlertAt = at;
+}
+
+/** Una notificación de descanso que llega justo detrás de la alerta in-app duplicaría el aviso. */
+function isDuplicateRestAlert(data: unknown): boolean {
+  const payload = data as { kind?: string } | null | undefined;
+  if (payload?.kind !== "rest_end") return false;
+  if (lastInAppRestAlertAt === null) return false;
+  return Date.now() - lastInAppRestAlertAt < REST_ALERT_DEDUPE_WINDOW_MS;
+}
+
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
+    const duplicate = isDuplicateRestAlert(notification.request.content.data);
     void pushTrace("notifReceived", "handleNotification", {
       id: notification.request.identifier,
       title: notification.request.content.title,
       body: notification.request.content.body,
       trigger: notification.request.trigger,
       appState: "foreground",
+      duplicate,
     });
+    // Se sigue registrando en la bandeja para que la observación de puntualidad
+    // la vea, pero sin sonar ni interrumpir por segunda vez.
     return {
-      shouldShowAlert: true,
-      shouldPlaySound: true,
+      shouldShowAlert: !duplicate,
+      shouldPlaySound: !duplicate,
       shouldSetBadge: false,
-      shouldShowBanner: true,
+      shouldShowBanner: !duplicate,
       shouldShowList: true,
     };
   },
@@ -406,11 +427,13 @@ type UserPreferences = {
 // Android no deja consultar desde JS si la app puede programar alarmas exactas
 // (expo-notifications no expone canScheduleExactAlarms), así que el veredicto se
 // deduce observando si los avisos llegan puntuales.
+// Solo se registra lo medido: un retraso real entre la hora pedida y la entrega
+// observada. No hay campo para "no entregada" porque no existe forma fiable de
+// afirmarlo — que la app no viera la entrega no prueba que no ocurriera.
 type AlarmHealth = {
   lastDelayMs: number | null;
   lastObservedAt: number | null;
   lateStreak: number;
-  missedStreak: number;
 };
 type TemplateSeriesPointer = {
   exerciseIndex: number;
@@ -449,13 +472,41 @@ const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: 
 // por eso viven en su propia clave y no dentro de UserPreferences (cuya hidratación
 // hace un merge superficial que dejaría undefined cualquier campo anidado nuevo).
 const ALARM_HEALTH_STORAGE_KEY = "gymnasia.mobile.alarm_health.v1";
-// Android agrupa las alarmas inexactas en ventanas de Doze de varios minutos.
-// 45 s no salta con el jitter normal y sí cuando el sistema está retrasándolas.
-const ALARM_LATE_THRESHOLD_MS = 45_000;
+// Lo que importa no es cómo agrupa Android las alarmas, sino a partir de cuándo
+// el aviso deja de servir: con descansos de 60-120 s, un retraso de unos segundos
+// ya llega tarde. Un umbral alto clasificaba como "a tiempo" avisos inútiles.
+const ALARM_LATE_THRESHOLD_MS = 5_000;
+// Si la alerta in-app acaba de sonar, la notificación que llega detrás no debe
+// volver a sonar: en la práctica llegan con ~200 ms de diferencia.
+const REST_ALERT_DEDUPE_WINDOW_MS = 8_000;
+
+// Fabricantes cuya gestión de batería congela o mata los procesos en segundo
+// plano, impidiendo que se entreguen las alarmas programadas. No es Doze ni un
+// problema de permisos: solo se resuelve desde los ajustes del propio fabricante.
+// Verificado en un Huawei P30, donde la notificación se entregaba justo al volver
+// a la app en vez de a su hora. Referencia: dontkillmyapp.com
+const BATTERY_RESTRICTIVE_MANUFACTURERS: Array<{ match: RegExp; brand: string; path: string }> = [
+  { match: /huawei|honor/i, brand: "Huawei", path: 'Ajustes → Batería → Lanzamiento de aplicaciones → Gymnasia. Desactiva "Gestionar automáticamente" y activa las tres opciones, sobre todo "Ejecutar en segundo plano".' },
+  { match: /xiaomi|redmi|poco/i, brand: "Xiaomi", path: 'Ajustes → Aplicaciones → Gymnasia. Activa "Inicio automático" y, en "Ahorro de batería", elige "Sin restricciones".' },
+  { match: /samsung/i, brand: "Samsung", path: 'Ajustes → Batería → Límites de uso en segundo plano. Saca a Gymnasia de "Aplicaciones en suspensión" y desactiva "Poner en suspensión apps no usadas".' },
+  { match: /oneplus/i, brand: "OnePlus", path: 'Ajustes → Batería → Optimización de batería → Gymnasia → "No optimizar". Desactiva también "Optimización avanzada".' },
+  { match: /oppo|realme/i, brand: "Oppo", path: 'Ajustes → Batería → Gymnasia. Permite la actividad en segundo plano y el inicio automático.' },
+  { match: /vivo|iqoo/i, brand: "Vivo", path: 'Ajustes → Batería → Consumo elevado en segundo plano. Permite que Gymnasia se ejecute en segundo plano.' },
+  { match: /meizu|asus|wiko|tecno|infinix|blackview|unihertz/i, brand: "tu fabricante", path: "Busca en los ajustes de batería la opción de inicio automático o ejecución en segundo plano y permítela para Gymnasia." },
+];
+
+/** Devuelve la guía del fabricante si el dispositivo es de los que restringen el segundo plano. */
+function batteryRestrictionGuidance(): { brand: string; path: string } | null {
+  if (Platform.OS !== "android") return null;
+  const constants = Platform.constants as { Manufacturer?: string; Brand?: string };
+  const identity = `${constants?.Manufacturer ?? ""} ${constants?.Brand ?? ""}`;
+  const entry = BATTERY_RESTRICTIVE_MANUFACTURERS.find(({ match }) => match.test(identity));
+  return entry ? { brand: entry.brand, path: entry.path } : null;
+}
 // Pasada esta ventana, reproducir el sonido de fin de descanso al volver a la app
 // sería absurdo: el usuario ya sabe que terminó.
 const REST_ALERT_FALLBACK_WINDOW_MS = 120_000;
-const DEFAULT_ALARM_HEALTH: AlarmHealth = { lastDelayMs: null, lastObservedAt: null, lateStreak: 0, missedStreak: 0 };
+const DEFAULT_ALARM_HEALTH: AlarmHealth = { lastDelayMs: null, lastObservedAt: null, lateStreak: 0 };
 
 // NotificationPermissionsStatus hereda `granted` y `status` de PermissionResponse,
 // pero con install-strategy=nested expo-modules-core queda bajo expo/node_modules
@@ -7715,6 +7766,9 @@ export default function App() {
   const playRestFinishedAlert = useCallback(async () => {
     if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
+    // Marca antes de reproducir: la notificación que venga detrás debe encontrar
+    // la marca puesta aunque la carga del sonido tarde.
+    markInAppRestAlertPlayed();
     const settings = notifSettingsRef.current;
 
     // Load the selected sound if not already cached
@@ -7860,25 +7914,20 @@ export default function App() {
   // Registra lo observado sobre la puntualidad de las alarmas. Persiste de forma
   // directa (no vía useEffect) porque estas observaciones ocurren justo cuando la
   // app puede irse a segundo plano.
-  const recordAlarmObservation = useCallback((observation: { delayMs?: number; missed?: boolean }) => {
+  const recordAlarmObservation = useCallback((observation: { delayMs: number }) => {
     setAlarmHealth((prev) => {
-      const late = observation.missed === true
-        || (typeof observation.delayMs === "number" && observation.delayMs > ALARM_LATE_THRESHOLD_MS);
+      const late = observation.delayMs > ALARM_LATE_THRESHOLD_MS;
       const next: AlarmHealth = {
-        lastDelayMs: typeof observation.delayMs === "number" ? observation.delayMs : prev.lastDelayMs,
+        lastDelayMs: observation.delayMs,
         lastObservedAt: Date.now(),
         // Una entrega puntual resetea la racha: si el usuario concede "Alarmas y
-        // recordatorios", el aviso desaparece solo.
+        // recordatorios" o permite la ejecución en segundo plano, el aviso
+        // desaparece solo.
         lateStreak: late ? prev.lateStreak + 1 : 0,
-        missedStreak: observation.missed ? prev.missedStreak + 1 : 0,
       };
       alarmHealthRef.current = next;
       void AsyncStorage.setItem(ALARM_HEALTH_STORAGE_KEY, JSON.stringify(next)).catch(() => {});
-      void pushTrace("alarmHealth", observation.missed ? "missed" : "observed", {
-        delayMs: observation.delayMs ?? null,
-        lateStreak: next.lateStreak,
-        missedStreak: next.missedStreak,
-      });
+      void pushTrace("alarmHealth", "observed", { delayMs: observation.delayMs, lateStreak: next.lateStreak });
       return next;
     });
   }, []);
@@ -7887,15 +7936,20 @@ export default function App() {
   // observado. "unknown" no es un fallo: es que aún no ha terminado un descanso
   // en segundo plano del que aprender.
   const alarmPunctuality = useMemo<{ status: "unknown" | "ontime" | "late"; badge: string; detail: string }>(() => {
-    const { lastDelayMs, lateStreak, missedStreak } = alarmHealth;
-    if (missedStreak > 0 || lateStreak >= 2) {
-      const lateMinutes = lastDelayMs ? Math.max(1, Math.round(lastDelayMs / 60000)) : null;
+    const { lastDelayMs, lateStreak } = alarmHealth;
+    // Con el umbral en 5 s, un solo retraso ya es señal: no hace falta esperar a
+    // que se repita para avisar.
+    if (lateStreak >= 1) {
+      const lateSeconds = lastDelayMs ? Math.round(lastDelayMs / 1000) : null;
+      const howLate = lateSeconds === null
+        ? "no llegó a tiempo"
+        : lateSeconds >= 90
+          ? `llegó unos ${Math.round(lateSeconds / 60)} min tarde`
+          : `llegó ${lateSeconds} s tarde`;
       return {
         status: "late",
         badge: "Con retraso",
-        detail: lateMinutes
-          ? `El último aviso llegó unos ${lateMinutes} min tarde. Activa "Alarmas y recordatorios" para que salte puntual.`
-          : 'El último aviso no llegó a tiempo. Activa "Alarmas y recordatorios" para que salte puntual.',
+        detail: `El último aviso ${howLate}. Activa "Alarmas y recordatorios" y, si tu móvil gestiona la batería de forma agresiva, permite que Gymnasia se ejecute en segundo plano.`,
       };
     }
     if (lastDelayMs !== null && lateStreak === 0) {
@@ -7909,6 +7963,32 @@ export default function App() {
   }, [alarmHealth]);
 
   const androidPackageId = Constants.expoConfig?.android?.package ?? null;
+  const batteryGuidance = useMemo(() => batteryRestrictionGuidance(), []);
+  // Se oculta en cuanto se confirma que los avisos llegan puntuales: en ese caso
+  // el usuario ya lo tiene configurado y el aviso solo sería ruido.
+  const showBatteryGuidance = batteryGuidance !== null && alarmPunctuality.status !== "ontime";
+
+  // El listener de recepción no dispara si el sistema mató el proceso, así que su
+  // silencio no prueba que la notificación no llegara. La bandeja sí: si sigue ahí,
+  // se entregó. Evita declarar "perdida" una notificación que sí sonó.
+  const syncRestDeliveryFromTray = useCallback(async () => {
+    if (restNotifDeliveredAtRef.current !== null) return;
+    try {
+      const presented = await Notifications.getPresentedNotificationsAsync();
+      const match = presented.find((item) => {
+        const payload = item.request.content.data as { kind?: string } | null | undefined;
+        return payload?.kind === "rest_end";
+      });
+      if (!match) return;
+      const deliveredAt = typeof match.date === "number" ? match.date : Date.now();
+      restNotifDeliveredAtRef.current = deliveredAt;
+      const expectedAt = restNotifExpectedAtRef.current;
+      void pushTrace("notifReceived", "found in tray", { deliveredAt, expectedAt });
+      if (expectedAt) recordAlarmObservation({ delayMs: Math.max(0, deliveredAt - expectedAt) });
+    } catch (e) {
+      void pushTrace("notifReceived", "tray check failed", { error: String(e) });
+    }
+  }, [recordAlarmObservation]);
 
   // Refresca las señales que Android sí deja consultar. La puntualidad de la
   // alarma exacta no está entre ellas: esa se deduce en recordAlarmObservation.
@@ -8303,7 +8383,7 @@ export default function App() {
   }, [activeWorkoutSession?.is_resting, activeWorkoutSession?.rest_seconds_left]);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
+    const subscription = AppState.addEventListener("change", async (nextAppState) => {
       if (nextAppState === "active") {
         // El usuario puede haber cambiado permisos o ajustes del canal mientras
         // estaba fuera; sin esto el aviso se quedaría obsoleto en pantalla.
@@ -8320,6 +8400,11 @@ export default function App() {
           restLog.restLeft - elapsedSeconds <= 0;
         if (!restShouldHaveEnded) {
           void cancelRestEndNotification();
+        }
+        // Antes de decidir si suena la alerta: comprobar la bandeja, porque el
+        // listener no pudo capturar la entrega si el sistema mató el proceso.
+        if (restShouldHaveEnded) {
+          await syncRestDeliveryFromTray();
         }
         setActiveWorkoutSession((prev) => {
           if (!prev || prev.status !== "running") return prev;
@@ -8340,11 +8425,11 @@ export default function App() {
             } else {
               // Sin evidencia, la alerta suena como red de seguridad, pero solo si
               // el descanso acaba de terminar: horas después sería absurda.
+              // No se registra retraso aquí: `overdueMs` mide cuánto ha tardado el
+              // usuario en volver, no cuánto tardó la notificación. Confundirlos
+              // marcaba "con retraso" a quien simplemente volvió tarde.
               const stillRelevant = overdueMs !== null && overdueMs <= REST_ALERT_FALLBACK_WINDOW_MS;
               manualRestSkipRef.current = !stillRelevant;
-              if (notifSettingsRef.current.enabled && overdueMs !== null && overdueMs > ALARM_LATE_THRESHOLD_MS) {
-                recordAlarmObservation({ missed: true });
-              }
             }
             void pushTrace("restSkip", "decision", {
               delivered: deliveredAt !== null,
@@ -8377,7 +8462,7 @@ export default function App() {
     return () => {
       subscription.remove();
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification, recordAlarmObservation, refreshNotificationDiagnostics]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, recordAlarmObservation, refreshNotificationDiagnostics, syncRestDeliveryFromTray]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -20586,6 +20671,44 @@ export default function App() {
                         </Text>
                         <Feather name="chevron-right" size={18} color={mobileTheme.color.textSecondary} />
                       </View>
+                    </Pressable>
+                  ) : null}
+
+                  {/* Guía del fabricante. Es la causa más común de que el aviso no
+                      suene en segundo plano, y no se arregla desde la app. */}
+                  {showBatteryGuidance && batteryGuidance ? (
+                    <Pressable
+                      onPress={() => Linking.openSettings()}
+                      style={{
+                        backgroundColor: alarmPunctuality.status === "late" ? "rgba(255,107,107,0.08)" : mobileTheme.color.bgSurface,
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: alarmPunctuality.status === "late" ? "rgba(255,107,107,0.35)" : mobileTheme.color.borderSubtle,
+                        gap: 6,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <Feather
+                          name="battery-charging"
+                          size={16}
+                          color={alarmPunctuality.status === "late" ? "#FF6B6B" : mobileTheme.color.textSecondary}
+                        />
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600", flex: 1 }}>
+                          {batteryGuidance.brand === "tu fabricante"
+                            ? "Tu móvil puede bloquear los avisos en segundo plano"
+                            : `Los móviles ${batteryGuidance.brand} bloquean los avisos en segundo plano`}
+                        </Text>
+                      </View>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Para ahorrar batería, el sistema congela las apps que no estás usando y el aviso de descanso no llega hasta que vuelves a abrir Gymnasia. No es algo que la app pueda cambiar por su cuenta.
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+                        {batteryGuidance.path}
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontStyle: "italic" }}>
+                        Este aviso desaparecerá solo cuando comprobemos que los avisos llegan puntuales.
+                      </Text>
                     </Pressable>
                   ) : null}
 
