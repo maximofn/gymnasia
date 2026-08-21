@@ -335,7 +335,7 @@
         {
           "id": "GYM-145",
           "title": "Crear una suite de seguridad sanitaria para cambios del agente",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Crear `policy/health-safety/` como fuente canónica y `npm run check:health-safety`; las reglas provisionales ya protegen el prompt y CI, las approved requieren revisión profesional y el LLM solo informa.",
           "baseline": "partial",
           "dependsOn": [
