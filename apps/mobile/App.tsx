@@ -84,20 +84,41 @@ import {
 // notifications delivered while the app is in the foreground are silently
 // dropped (no banner, no sound). We also trace every received notification
 // so we can debug "did the native scheduler actually fire it?".
+// Instante en que sonó la alerta in-app de fin de descanso. Vive a nivel de
+// módulo porque el handler de notificaciones se registra fuera del componente y
+// no puede leer sus refs.
+let lastInAppRestAlertAt: number | null = null;
+
+export function markInAppRestAlertPlayed(at: number = Date.now()) {
+  lastInAppRestAlertAt = at;
+}
+
+/** Una notificación de descanso que llega justo detrás de la alerta in-app duplicaría el aviso. */
+function isDuplicateRestAlert(data: unknown): boolean {
+  const payload = data as { kind?: string } | null | undefined;
+  if (payload?.kind !== "rest_end") return false;
+  if (lastInAppRestAlertAt === null) return false;
+  return Date.now() - lastInAppRestAlertAt < REST_ALERT_DEDUPE_WINDOW_MS;
+}
+
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
+    const duplicate = isDuplicateRestAlert(notification.request.content.data);
     void pushTrace("notifReceived", "handleNotification", {
       id: notification.request.identifier,
       title: notification.request.content.title,
       body: notification.request.content.body,
       trigger: notification.request.trigger,
       appState: "foreground",
+      duplicate,
     });
+    // Se sigue registrando en la bandeja para que la observación de puntualidad
+    // la vea, pero sin sonar ni interrumpir por segunda vez.
     return {
-      shouldShowAlert: true,
-      shouldPlaySound: true,
+      shouldShowAlert: !duplicate,
+      shouldPlaySound: !duplicate,
       shouldSetBadge: false,
-      shouldShowBanner: true,
+      shouldShowBanner: !duplicate,
       shouldShowList: true,
     };
   },
@@ -449,9 +470,13 @@ const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: 
 // por eso viven en su propia clave y no dentro de UserPreferences (cuya hidratación
 // hace un merge superficial que dejaría undefined cualquier campo anidado nuevo).
 const ALARM_HEALTH_STORAGE_KEY = "gymnasia.mobile.alarm_health.v1";
-// Android agrupa las alarmas inexactas en ventanas de Doze de varios minutos.
-// 45 s no salta con el jitter normal y sí cuando el sistema está retrasándolas.
-const ALARM_LATE_THRESHOLD_MS = 45_000;
+// Lo que importa no es cómo agrupa Android las alarmas, sino a partir de cuándo
+// el aviso deja de servir: con descansos de 60-120 s, un retraso de unos segundos
+// ya llega tarde. Un umbral alto clasificaba como "a tiempo" avisos inútiles.
+const ALARM_LATE_THRESHOLD_MS = 5_000;
+// Si la alerta in-app acaba de sonar, la notificación que llega detrás no debe
+// volver a sonar: en la práctica llegan con ~200 ms de diferencia.
+const REST_ALERT_DEDUPE_WINDOW_MS = 8_000;
 // Pasada esta ventana, reproducir el sonido de fin de descanso al volver a la app
 // sería absurdo: el usuario ya sabe que terminó.
 const REST_ALERT_FALLBACK_WINDOW_MS = 120_000;
@@ -7715,6 +7740,9 @@ export default function App() {
   const playRestFinishedAlert = useCallback(async () => {
     if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
+    // Marca antes de reproducir: la notificación que venga detrás debe encontrar
+    // la marca puesta aunque la carga del sonido tarde.
+    markInAppRestAlertPlayed();
     const settings = notifSettingsRef.current;
 
     // Load the selected sound if not already cached
@@ -7888,14 +7916,19 @@ export default function App() {
   // en segundo plano del que aprender.
   const alarmPunctuality = useMemo<{ status: "unknown" | "ontime" | "late"; badge: string; detail: string }>(() => {
     const { lastDelayMs, lateStreak, missedStreak } = alarmHealth;
-    if (missedStreak > 0 || lateStreak >= 2) {
-      const lateMinutes = lastDelayMs ? Math.max(1, Math.round(lastDelayMs / 60000)) : null;
+    // Con el umbral en 5 s, un solo retraso ya es señal: no hace falta esperar a
+    // que se repita para avisar.
+    if (missedStreak > 0 || lateStreak >= 1) {
+      const lateSeconds = lastDelayMs ? Math.round(lastDelayMs / 1000) : null;
+      const howLate = lateSeconds === null
+        ? "no llegó a tiempo"
+        : lateSeconds >= 90
+          ? `llegó unos ${Math.round(lateSeconds / 60)} min tarde`
+          : `llegó ${lateSeconds} s tarde`;
       return {
         status: "late",
         badge: "Con retraso",
-        detail: lateMinutes
-          ? `El último aviso llegó unos ${lateMinutes} min tarde. Activa "Alarmas y recordatorios" para que salte puntual.`
-          : 'El último aviso no llegó a tiempo. Activa "Alarmas y recordatorios" para que salte puntual.',
+        detail: `El último aviso ${howLate}. Activa "Alarmas y recordatorios" y, si tu móvil gestiona la batería de forma agresiva, permite que Gymnasia se ejecute en segundo plano.`,
       };
     }
     if (lastDelayMs !== null && lateStreak === 0) {
@@ -7909,6 +7942,28 @@ export default function App() {
   }, [alarmHealth]);
 
   const androidPackageId = Constants.expoConfig?.android?.package ?? null;
+
+  // El listener de recepción no dispara si el sistema mató el proceso, así que su
+  // silencio no prueba que la notificación no llegara. La bandeja sí: si sigue ahí,
+  // se entregó. Evita declarar "perdida" una notificación que sí sonó.
+  const syncRestDeliveryFromTray = useCallback(async () => {
+    if (restNotifDeliveredAtRef.current !== null) return;
+    try {
+      const presented = await Notifications.getPresentedNotificationsAsync();
+      const match = presented.find((item) => {
+        const payload = item.request.content.data as { kind?: string } | null | undefined;
+        return payload?.kind === "rest_end";
+      });
+      if (!match) return;
+      const deliveredAt = typeof match.date === "number" ? match.date : Date.now();
+      restNotifDeliveredAtRef.current = deliveredAt;
+      const expectedAt = restNotifExpectedAtRef.current;
+      void pushTrace("notifReceived", "found in tray", { deliveredAt, expectedAt });
+      if (expectedAt) recordAlarmObservation({ delayMs: Math.max(0, deliveredAt - expectedAt) });
+    } catch (e) {
+      void pushTrace("notifReceived", "tray check failed", { error: String(e) });
+    }
+  }, [recordAlarmObservation]);
 
   // Refresca las señales que Android sí deja consultar. La puntualidad de la
   // alarma exacta no está entre ellas: esa se deduce en recordAlarmObservation.
@@ -8303,7 +8358,7 @@ export default function App() {
   }, [activeWorkoutSession?.is_resting, activeWorkoutSession?.rest_seconds_left]);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
+    const subscription = AppState.addEventListener("change", async (nextAppState) => {
       if (nextAppState === "active") {
         // El usuario puede haber cambiado permisos o ajustes del canal mientras
         // estaba fuera; sin esto el aviso se quedaría obsoleto en pantalla.
@@ -8320,6 +8375,11 @@ export default function App() {
           restLog.restLeft - elapsedSeconds <= 0;
         if (!restShouldHaveEnded) {
           void cancelRestEndNotification();
+        }
+        // Antes de decidir si suena la alerta: comprobar la bandeja, porque el
+        // listener no pudo capturar la entrega si el sistema mató el proceso.
+        if (restShouldHaveEnded) {
+          await syncRestDeliveryFromTray();
         }
         setActiveWorkoutSession((prev) => {
           if (!prev || prev.status !== "running") return prev;
@@ -8377,7 +8437,7 @@ export default function App() {
     return () => {
       subscription.remove();
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification, recordAlarmObservation, refreshNotificationDiagnostics]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, recordAlarmObservation, refreshNotificationDiagnostics, syncRestDeliveryFromTray]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
