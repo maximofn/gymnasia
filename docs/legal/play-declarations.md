@@ -109,7 +109,12 @@ la opción recomendada: evita declarar recogida de credenciales en una app de fi
   `apps/mobile/agent/aiTransparency.ts`, con una tarjeta de divulgación y una leyenda
   permanente en las tres superficies conversacionales.
 - **Salvaguardas**: instrucciones de sistema que prohíben al asistente presentarse como
-  persona o profesional sanitario, más las barreras de contenido sanitario.
+  persona o profesional sanitario, más la política sanitaria canónica de
+  `policy/health-safety/` (GYM-145), que cubre ayunos prolongados, pérdida extrema de
+  peso, trastornos alimentarios, menores, embarazo, diabetes, medicación, lesiones,
+  dolor agudo y emergencias. Sus reglas alimentan el bloque `HEALTH-SAFETY` del prompt y
+  una puerta determinista en CI (`npm run check:health-safety`), documentada en
+  `docs/architecture/health-safety-policy.md`.
 - **Mecanismo de denuncia de respuestas**: por correo a maximofn@maximofn.com,
   documentado en la sección `#denuncia` de la política.
 
