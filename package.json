@@ -11,6 +11,8 @@
     "sync:prompt-policy": "node scripts/prompt-policy/generate.mjs --write",
     "check:prompt-policy": "node scripts/prompt-policy/generate.mjs --check",
     "test:prompt-policy": "node --test scripts/prompt-policy/*.test.mjs",
+    "check:android-permissions": "node scripts/android-permissions/check.mjs --check",
+    "test:android-permissions": "node --test scripts/android-permissions/*.test.mjs",
     "test": "npm run test:deterministic",
     "test:deterministic": "npm --workspace apps/mobile run test:deterministic",
     "test:llm": "npm --workspace apps/mobile run test:llm",

@@ -259,6 +259,15 @@ Only non-obvious gotchas that could recur are kept here.
 - Fix: use `SchedulableTriggerInputTypes.DATE` with an exact timestamp (`Date.now() + seconds * 1000`). DATE triggers use `AlarmManager.setExactAndAllowWhileIdle()` which bypasses Doze.
 - Also: channel `importance` must be `MAX` (not `HIGH`) with `bypassDnd: true` and `lockscreenVisibility: PUBLIC` for the notification to wake the screen when the phone is locked.
 - Note: Android caches notification channels by ID. If the channel already exists with lower importance from a previous app version, `setNotificationChannelAsync` will NOT upgrade it — the user must uninstall and reinstall the app to get the new channel settings.
+- **Outdated since GYM-191**: a DATE trigger no longer guarantees exact delivery. See the entry below.
+
+### `USE_EXACT_ALARM` is banned by Google Play — DATE triggers degrade to inexact alarms
+- Gotcha: `android.permission.USE_EXACT_ALARM` is auto-granted on install, so it made DATE triggers reliably exact — but Google Play restricts it to apps whose **core function** is an alarm clock or calendar. Declaring it in a workout app gets the AAB rejected in review. It was removed in GYM-191.
+- Consequence: `ExpoSchedulingDelegate.setupAlarm` checks `alarmManager.canScheduleExactAlarms()` and silently falls back from `setExactAndAllowWhileIdle()` to `setAndAllowWhileIdle()`. Exactness now depends on the user granting `SCHEDULE_EXACT_ALARM` ("Alarmas y recordatorios"), which Android 14+ does **not** grant by default. Do not re-add `USE_EXACT_ALARM` to "fix" late notifications — it will fail review.
+- `SCHEDULE_EXACT_ALARM` is fine to declare: it is not Play-restricted and is user-grantable.
+- `expo-notifications` does **not** expose `canScheduleExactAlarms()` to JS, so the app cannot read that permission's state. Punctuality is inferred by comparing the scheduled `expectedAt` (carried in the notification payload) against actual delivery.
+- Guard rail: `npm run check:android-permissions` fails if the permission returns via `app.json` or via a dependency's manifest. The approved list lives in `scripts/android-permissions/policy.json`.
+- **Manifest merger trap**: `expo.android.blockedPermissions` makes prebuild emit `<uses-permission android:name="…USE_EXACT_ALARM" tools:node="remove"/>`. So the **source** manifest legitimately contains the string. Absence must be verified on the **merged** manifest of the artifact — grepping the source manifest gives a false positive.
 
 ### CI APK build cancelled by job timeout while EAS build sits in the free-tier queue
 - Gotcha: `.github/workflows/build-apk.yml` runs `eas build` (waits for completion by default). On the Expo **free tier the build queue alone can exceed 60 min**, so a `timeout-minutes: 60` job gets cancelled mid-wait. Symptom: GitHub Actions run shows `cancelled` with `##[error]The operation was canceled` in the "Build APK on EAS" step; the later steps (Download APK / Create Release / Commit version bump) are `skipped`, so **no GitHub Release and no version-bump commit are produced** — but the EAS build itself keeps running/queued on Expo independently.

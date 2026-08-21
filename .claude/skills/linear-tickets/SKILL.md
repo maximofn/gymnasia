@@ -196,7 +196,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Nueve cosas que cuestan tiempo si no se saben:
+Diez cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -265,6 +265,19 @@ Nueve cosas que cuestan tiempo si no se saben:
    otro flujo, completa primero su checklist y añade un comentario explícito
    `## Evidencia de cierre` con `linear.py comment`; después sincroniza y
    despliega el tablero igualmente.
+
+10. **El tablero tiene cinco columnas y el flujo GYM seis estados.** `board.json`
+    solo define `backlog`, `todo`, `in_progress`, `done` y `canceled`, pero Linear
+    tiene además `In Review`. El síntoma es que `board --apply` dice
+    `1 estado(s) sincronizado(s)` sin ningún error y luego `npm run test:board`
+    falla con `GYM-N tiene estado inválido: in_review`. Es decir: el comando que
+    debía dejar el tablero correcto es el que lo rompe, y no te enteras hasta el
+    test. `board_state_id()` colapsa ahora esos estados con `BOARD_STATE_ALIASES`
+    (`in_review` → `in_progress`). Si algún día se añade un estado nuevo al flujo
+    de Linear, hay que añadirlo a esa tabla o darle columna propia en el tablero
+    (`data/board.json`, más `--state-<id>` y las reglas `.state-<id>` de
+    `styles.css`). **Pasa siempre `npm run test:board` después de `--apply`**: es
+    la única red que detecta esto.
 
 ## Notas
 
