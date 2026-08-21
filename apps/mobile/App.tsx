@@ -402,6 +402,16 @@ type UserPreferences = {
   chartMetric?: MeasuresChartMetricKey;
   notifications: NotificationSettings;
 };
+
+// Android no deja consultar desde JS si la app puede programar alarmas exactas
+// (expo-notifications no expone canScheduleExactAlarms), así que el veredicto se
+// deduce observando si los avisos llegan puntuales.
+type AlarmHealth = {
+  lastDelayMs: number | null;
+  lastObservedAt: number | null;
+  lateStreak: number;
+  missedStreak: number;
+};
 type TemplateSeriesPointer = {
   exerciseIndex: number;
   seriesIndex: number;
@@ -435,6 +445,25 @@ const SESSION_TEMPLATE_SNAPSHOT_KEY = "gymnasia.mobile.training.session_template
 const PERSONAL_DATA_STORAGE_KEY = "gymnasia.mobile.personal_data.v1";
 const USER_PREFS_STORAGE_KEY = "gymnasia.mobile.user_prefs.v1";
 const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: { enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" } };
+// Salud de las alarmas: observaciones del dispositivo, no preferencias del usuario,
+// por eso viven en su propia clave y no dentro de UserPreferences (cuya hidratación
+// hace un merge superficial que dejaría undefined cualquier campo anidado nuevo).
+const ALARM_HEALTH_STORAGE_KEY = "gymnasia.mobile.alarm_health.v1";
+// Android agrupa las alarmas inexactas en ventanas de Doze de varios minutos.
+// 45 s no salta con el jitter normal y sí cuando el sistema está retrasándolas.
+const ALARM_LATE_THRESHOLD_MS = 45_000;
+// Pasada esta ventana, reproducir el sonido de fin de descanso al volver a la app
+// sería absurdo: el usuario ya sabe que terminó.
+const REST_ALERT_FALLBACK_WINDOW_MS = 120_000;
+const DEFAULT_ALARM_HEALTH: AlarmHealth = { lastDelayMs: null, lastObservedAt: null, lateStreak: 0, missedStreak: 0 };
+
+// NotificationPermissionsStatus hereda `granted` y `status` de PermissionResponse,
+// pero con install-strategy=nested expo-modules-core queda bajo expo/node_modules
+// y TypeScript no resuelve la herencia. Leemos ambos campos de forma estructural.
+function isNotificationPermissionGranted(response: unknown): boolean {
+  const outcome = response as { granted?: boolean; status?: string } | null | undefined;
+  return outcome?.granted === true || outcome?.status === "granted";
+}
 const SECURE_STORE_API_KEY_PREFIX = "gymnasia.mobile.v3.provider.api_key";
 const LEGACY_STORAGE_KEYS = [
   "gymnasia.mobile.local.v1",
@@ -6502,6 +6531,11 @@ export default function App() {
   const [measurementEntryScreenOpen, setMeasurementEntryScreenOpen] = useState(false);
   const [editingMeasurementId, setEditingMeasurementId] = useState<string | null>(null);
   const [userPrefs, setUserPrefs] = useState<UserPreferences>({ ...DEFAULT_USER_PREFS });
+  const [alarmHealth, setAlarmHealth] = useState<AlarmHealth>({ ...DEFAULT_ALARM_HEALTH });
+  // null = aún no comprobado. Diferenciarlo de false evita alarmar al usuario
+  // antes de saber nada.
+  const [notifPermissionGranted, setNotifPermissionGranted] = useState<boolean | null>(null);
+  const [restChannelImportance, setRestChannelImportance] = useState<number | null>(null);
   const [measuresDashboardPeriod, setMeasuresDashboardPeriod] =
     useState<MeasuresDashboardPeriodKey>("3m");
   const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
@@ -6713,6 +6747,12 @@ export default function App() {
   const restAlertLockRef = useRef(false);
   const audioWorkoutInitializedRef = useRef(false);
   const restNotificationIdRef = useRef<string | null>(null);
+  // Instante en que el aviso de descanso debía saltar y aquel en que se entregó
+  // de verdad. La diferencia es la única medida disponible de si Android está
+  // concediendo alarmas exactas.
+  const restNotifExpectedAtRef = useRef<number | null>(null);
+  const restNotifDeliveredAtRef = useRef<number | null>(null);
+  const alarmHealthRef = useRef<AlarmHealth>(DEFAULT_ALARM_HEALTH);
   const restNotifBodyRef = useRef<string>("");
   const notifSettingsRef = useRef<NotificationSettings>({ enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" });
   const providerSettingsInitializedRef = useRef(false);
@@ -7739,7 +7779,10 @@ export default function App() {
         restFinishSoundRef.current = sound;
         restSoundCacheRef.current[settings.soundKey] = sound;
       }
-      await Notifications.requestPermissionsAsync();
+      const notifPermission = await Notifications.requestPermissionsAsync();
+      const notifGranted = isNotificationPermissionGranted(notifPermission);
+      setNotifPermissionGranted(notifGranted);
+      void pushTrace("notifPerm", "status", { granted: notifGranted });
       if (Platform.OS === "android") {
         void pushTrace("initWorkoutAudio", "creating channel rest_end_alert");
         await Notifications.setNotificationChannelAsync("rest_end_alert", {
@@ -7754,6 +7797,7 @@ export default function App() {
           enableLights: true,
         });
         const channelInfo = await Notifications.getNotificationChannelAsync("rest_end_alert");
+        setRestChannelImportance(channelInfo?.importance ?? null);
         void pushTrace("initWorkoutAudio", "channel", { importance: channelInfo?.importance, bypassDnd: channelInfo?.bypassDnd, visibility: channelInfo?.lockscreenVisibility });
       }
       audioWorkoutInitializedRef.current = true;
@@ -7778,6 +7822,9 @@ export default function App() {
           vibrate: settings.vibrate ? [0, 300, 150, 300] : undefined,
           priority: Notifications.AndroidNotificationPriority.MAX,
           autoDismiss: true,
+          // El instante previsto viaja con la notificación para poder medir el
+          // retraso aunque el proceso se haya reiniciado y las refs estén vacías.
+          data: { kind: "rest_end", expectedAt: triggerDate },
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -7786,6 +7833,8 @@ export default function App() {
         },
       });
       restNotificationIdRef.current = id;
+      restNotifExpectedAtRef.current = triggerDate;
+      restNotifDeliveredAtRef.current = null;
       void pushTrace("scheduleNotif", "scheduled", { id, triggerIso: new Date(triggerDate).toISOString() });
     } catch (e) {
       void pushTrace("scheduleNotif", "error", { error: String(e) });
@@ -7801,6 +7850,80 @@ export default function App() {
         void pushTrace("cancelNotif", "error", { id: idToCancel, error: String(e) });
       }
       restNotificationIdRef.current = null;
+    }
+    // Solo se olvida el instante previsto. La evidencia de entrega la limpia
+    // scheduleRestEndNotification: el efecto de flanco cancela antes de decidir
+    // si suena la alerta, y borrarla aquí dejaría al supresor otra vez ciego.
+    restNotifExpectedAtRef.current = null;
+  }, []);
+
+  // Registra lo observado sobre la puntualidad de las alarmas. Persiste de forma
+  // directa (no vía useEffect) porque estas observaciones ocurren justo cuando la
+  // app puede irse a segundo plano.
+  const recordAlarmObservation = useCallback((observation: { delayMs?: number; missed?: boolean }) => {
+    setAlarmHealth((prev) => {
+      const late = observation.missed === true
+        || (typeof observation.delayMs === "number" && observation.delayMs > ALARM_LATE_THRESHOLD_MS);
+      const next: AlarmHealth = {
+        lastDelayMs: typeof observation.delayMs === "number" ? observation.delayMs : prev.lastDelayMs,
+        lastObservedAt: Date.now(),
+        // Una entrega puntual resetea la racha: si el usuario concede "Alarmas y
+        // recordatorios", el aviso desaparece solo.
+        lateStreak: late ? prev.lateStreak + 1 : 0,
+        missedStreak: observation.missed ? prev.missedStreak + 1 : 0,
+      };
+      alarmHealthRef.current = next;
+      void AsyncStorage.setItem(ALARM_HEALTH_STORAGE_KEY, JSON.stringify(next)).catch(() => {});
+      void pushTrace("alarmHealth", observation.missed ? "missed" : "observed", {
+        delayMs: observation.delayMs ?? null,
+        lateStreak: next.lateStreak,
+        missedStreak: next.missedStreak,
+      });
+      return next;
+    });
+  }, []);
+
+  // Veredicto legible sobre la puntualidad de las alarmas, derivado de lo
+  // observado. "unknown" no es un fallo: es que aún no ha terminado un descanso
+  // en segundo plano del que aprender.
+  const alarmPunctuality = useMemo<{ status: "unknown" | "ontime" | "late"; badge: string; detail: string }>(() => {
+    const { lastDelayMs, lateStreak, missedStreak } = alarmHealth;
+    if (missedStreak > 0 || lateStreak >= 2) {
+      const lateMinutes = lastDelayMs ? Math.max(1, Math.round(lastDelayMs / 60000)) : null;
+      return {
+        status: "late",
+        badge: "Con retraso",
+        detail: lateMinutes
+          ? `El último aviso llegó unos ${lateMinutes} min tarde. Activa "Alarmas y recordatorios" para que salte puntual.`
+          : 'El último aviso no llegó a tiempo. Activa "Alarmas y recordatorios" para que salte puntual.',
+      };
+    }
+    if (lastDelayMs !== null && lateStreak === 0) {
+      return { status: "ontime", badge: "A tiempo", detail: "El último aviso llegó puntual." };
+    }
+    return {
+      status: "unknown",
+      badge: "Sin comprobar",
+      detail: "Aún no hemos podido comprobar si los avisos llegan a tiempo. Gymnasia no puede consultar este permiso: lo deduce de la puntualidad real.",
+    };
+  }, [alarmHealth]);
+
+  const androidPackageId = Constants.expoConfig?.android?.package ?? null;
+
+  // Refresca las señales que Android sí deja consultar. La puntualidad de la
+  // alarma exacta no está entre ellas: esa se deduce en recordAlarmObservation.
+  const refreshNotificationDiagnostics = useCallback(async () => {
+    try {
+      const permission = await Notifications.getPermissionsAsync();
+      const granted = isNotificationPermissionGranted(permission);
+      setNotifPermissionGranted(granted);
+      if (Platform.OS === "android") {
+        const channel = await Notifications.getNotificationChannelAsync("rest_end_alert");
+        setRestChannelImportance(channel?.importance ?? null);
+      }
+      void pushTrace("notifPerm", "status", { granted });
+    } catch (e) {
+      void pushTrace("notifPerm", "diagnostics failed", { error: String(e) });
     }
   }, []);
 
@@ -7953,12 +8076,13 @@ export default function App() {
 
         await clearLegacyStorageData(secureAvailable);
 
-        const [rawStore, secureApiKeys, rawSession, rawSessionTemplateSnapshot, rawPrefs] = await Promise.all([
+        const [rawStore, secureApiKeys, rawSession, rawSessionTemplateSnapshot, rawPrefs, rawAlarmHealth] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEY),
           readProviderApiKeysFromSecureStore(secureAvailable),
           AsyncStorage.getItem(SESSION_STORAGE_KEY),
           AsyncStorage.getItem(SESSION_TEMPLATE_SNAPSHOT_KEY),
           AsyncStorage.getItem(USER_PREFS_STORAGE_KEY),
+          AsyncStorage.getItem(ALARM_HEALTH_STORAGE_KEY),
         ]);
 
         // On web dev, prefer file-backed store over localStorage
@@ -8002,6 +8126,13 @@ export default function App() {
           setUserPrefs(parsedPrefs);
           setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
           if (parsedPrefs.chartMetric) setMeasuresChartMetric(parsedPrefs.chartMetric);
+
+          const parsedAlarmHealth: AlarmHealth = rawAlarmHealth
+            ? { ...DEFAULT_ALARM_HEALTH, ...JSON.parse(rawAlarmHealth) }
+            : { ...DEFAULT_ALARM_HEALTH };
+          alarmHealthRef.current = parsedAlarmHealth;
+          setAlarmHealth(parsedAlarmHealth);
+          void refreshNotificationDiagnostics();
         }
       } catch (err) {
         if (!ignore) {
@@ -8173,6 +8304,11 @@ export default function App() {
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState === "active") {
+        // El usuario puede haber cambiado permisos o ajustes del canal mientras
+        // estaba fuera; sin esto el aviso se quedaría obsoleto en pantalla.
+        void refreshNotificationDiagnostics();
+      }
       if (nextAppState === "active" && backgroundTimestampRef.current) {
         const elapsedSeconds = Math.floor((Date.now() - backgroundTimestampRef.current) / 1000);
         void pushTrace("appState", "foreground", { elapsedSeconds, restLeft: restStateLogRef.current.restLeft });
@@ -8193,9 +8329,29 @@ export default function App() {
           }
           const nextRest = Math.max(0, prev.rest_seconds_left - elapsedSeconds);
           if (nextRest === 0) {
-            if (notifSettingsRef.current.enabled) {
+            // Suprimir la alerta in-app solo con evidencia de que la notificación
+            // se entregó. Sin alarmas exactas puede no haber sonado nunca, y
+            // asumirlo dejaba al usuario sin ningún aviso.
+            const deliveredAt = restNotifDeliveredAtRef.current;
+            const expectedAt = restNotifExpectedAtRef.current;
+            const overdueMs = expectedAt ? Date.now() - expectedAt : null;
+            if (notifSettingsRef.current.enabled && deliveredAt !== null) {
               manualRestSkipRef.current = true;
+            } else {
+              // Sin evidencia, la alerta suena como red de seguridad, pero solo si
+              // el descanso acaba de terminar: horas después sería absurda.
+              const stillRelevant = overdueMs !== null && overdueMs <= REST_ALERT_FALLBACK_WINDOW_MS;
+              manualRestSkipRef.current = !stillRelevant;
+              if (notifSettingsRef.current.enabled && overdueMs !== null && overdueMs > ALARM_LATE_THRESHOLD_MS) {
+                recordAlarmObservation({ missed: true });
+              }
             }
+            void pushTrace("restSkip", "decision", {
+              delivered: deliveredAt !== null,
+              expectedAt,
+              overdueMs,
+              suppressed: manualRestSkipRef.current,
+            });
           }
           return {
             ...prev,
@@ -8221,7 +8377,7 @@ export default function App() {
     return () => {
       subscription.remove();
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, recordAlarmObservation, refreshNotificationDiagnostics]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -8286,24 +8442,41 @@ export default function App() {
   // Notification listeners — trace when a scheduled notification is actually
   // delivered (foreground) and when the user taps it (cold-launch or resume).
   useEffect(() => {
+    // Una entrega observada es la única prueba de que Android está respetando la
+    // hora pedida. `expectedAt` llega en el payload, así que sigue midiéndose
+    // aunque el proceso se haya reiniciado entretanto.
+    const observeDelivery = (data: unknown, deliveredAt: number) => {
+      const payload = data as { kind?: string; expectedAt?: number } | null | undefined;
+      if (payload?.kind !== "rest_end") return;
+      restNotifDeliveredAtRef.current = deliveredAt;
+      const expectedAt = Number(payload.expectedAt ?? restNotifExpectedAtRef.current ?? 0);
+      if (!expectedAt) return;
+      recordAlarmObservation({ delayMs: Math.max(0, deliveredAt - expectedAt) });
+    };
+
     const receivedSub = Notifications.addNotificationReceivedListener((event) => {
       void pushTrace("notifReceived", "fired", {
         id: event.request.identifier,
         title: event.request.content.title,
         body: event.request.content.body,
       });
+      observeDelivery(event.request.content.data, Date.now());
     });
     const responseSub = Notifications.addNotificationResponseReceivedListener((event) => {
       void pushTrace("notifResponse", "tapped", {
         id: event.notification.request.identifier,
         title: event.notification.request.content.title,
       });
+      // Un tap demuestra la entrega aunque el proceso hubiera muerto y el listener
+      // de recepción nunca llegara a dispararse.
+      const deliveredAt = event.notification.date ? new Date(event.notification.date).getTime() : Date.now();
+      observeDelivery(event.notification.request.content.data, deliveredAt);
     });
     return () => {
       receivedSub.remove();
       responseSub.remove();
     };
-  }, []);
+  }, [recordAlarmObservation]);
 
   useEffect(() => {
     if (!activeWorkoutSession?.is_resting) return;
@@ -20371,7 +20544,7 @@ export default function App() {
                         try {
                           await IntentLauncher.startActivityAsync(
                             IntentLauncher.ActivityAction.REQUEST_SCHEDULE_EXACT_ALARM,
-                            { data: "package:com.maximofn.gymnasia" },
+                            androidPackageId ? { data: `package:${androidPackageId}` } : {},
                           );
                         } catch (e) {
                           void pushTrace("notifPerm", "exact alarm intent failed, fallback to app settings", { error: String(e) });
@@ -20394,11 +20567,74 @@ export default function App() {
                           Permiso de alarmas exactas
                         </Text>
                         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                          Necesario para que las notificaciones salten a tiempo con el móvil bloqueado. Si no las recibes, abre los ajustes del sistema y activa "Alarmas y recordatorios".
+                          {alarmPunctuality.detail}
                         </Text>
                       </View>
-                      <Feather name="chevron-right" size={18} color={mobileTheme.color.textSecondary} />
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                        <Text
+                          style={{
+                            fontSize: 11,
+                            fontWeight: "700",
+                            color: alarmPunctuality.status === "late"
+                              ? "#FF6B6B"
+                              : alarmPunctuality.status === "ontime"
+                                ? mobileTheme.color.brandPrimary
+                                : mobileTheme.color.textSecondary,
+                          }}
+                        >
+                          {alarmPunctuality.badge}
+                        </Text>
+                        <Feather name="chevron-right" size={18} color={mobileTheme.color.textSecondary} />
+                      </View>
                     </Pressable>
+                  ) : null}
+
+                  {/* Avisos de degradación, excluyentes y en orden de gravedad: sin
+                      permiso de notificaciones no hay nada que ajustar más abajo. */}
+                  {notifPermissionGranted === false ? (
+                    <Pressable
+                      onPress={() => Linking.openSettings()}
+                      style={{
+                        backgroundColor: "rgba(255,107,107,0.08)",
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,107,107,0.35)",
+                        gap: 4,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+                        Notificaciones bloqueadas por Android
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Sin ellas solo podremos avisarte con la app abierta. Toca para abrir los ajustes del sistema.
+                      </Text>
+                    </Pressable>
+                  ) : Platform.OS === "android" && restChannelImportance !== null && restChannelImportance <= 1 ? (
+                    <Pressable
+                      onPress={() => Linking.openSettings()}
+                      style={{
+                        backgroundColor: "rgba(255,107,107,0.08)",
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,107,107,0.35)",
+                        gap: 4,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+                        El canal "Descanso terminado" está silenciado
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Los avisos llegarán sin sonido. Toca para reactivarlo en los ajustes del sistema.
+                      </Text>
+                    </Pressable>
+                  ) : null}
+
+                  {Platform.OS === "android" ? (
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontStyle: "italic" }}>
+                      Con la pantalla apagada Android puede retrasar el aviso unos minutos para ahorrar batería. Si el descanso ya había terminado, te avisaremos igualmente al volver a la app.
+                    </Text>
                   ) : null}
 
                   <View

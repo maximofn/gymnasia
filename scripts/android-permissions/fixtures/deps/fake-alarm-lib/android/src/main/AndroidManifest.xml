@@ -1,0 +1,7 @@
+<!-- Fixture de scripts/android-permissions/permissions.test.mjs: simula una
+     dependencia que reintroduce el permiso prohibido por manifest merger.
+     No forma parte del build de la app. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+</manifest>

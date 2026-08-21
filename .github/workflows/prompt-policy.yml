@@ -40,6 +40,14 @@ jobs:
         id: policy_tests
         run: npm run test:prompt-policy
 
+      - name: Verify publishable Android permissions
+        id: android_permissions
+        run: npm run check:android-permissions
+
+      - name: Run Android permission policy tests
+        id: android_permissions_tests
+        run: npm run test:android-permissions
+
       - name: Verify bundled chat prompt snapshot
         id: snapshot
         run: npm run check:chat-prompt
@@ -67,6 +75,8 @@ jobs:
             echo "| --- | --- |"
             echo "| Generated policy, CODEOWNERS and workflows | ${{ steps.policy.outcome }} |"
             echo "| Unit, contract and property tests | ${{ steps.policy_tests.outcome }} |"
+            echo "| Publishable Android permissions | ${{ steps.android_permissions.outcome }} |"
+            echo "| Android permission policy tests | ${{ steps.android_permissions_tests.outcome }} |"
             echo "| Bundled prompt parity | ${{ steps.snapshot.outcome }} |"
             echo "| Agent schema, tools and invariants | ${{ steps.deterministic.outcome }} |"
             echo "| OpenWiki automation | ${{ steps.openwiki.outcome }} |"
