@@ -18,6 +18,10 @@ on:
       - "apps/mobile/**"
       - "!apps/mobile/scripts/**"
       - "!apps/mobile/**/*.md"
+      # apps/mobile/public/ solo lo consume `expo export --platform web`: EAS no lo
+      # empaqueta en el AAB ni en el APK. Republicar la política de privacidad no
+      # debe gastar una compilación de la cuota mensual (GYM-190).
+      - "!apps/mobile/public/**"
 
 concurrency:
   group: build-apk-${{ github.ref }}

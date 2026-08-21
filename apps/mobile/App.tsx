@@ -92,6 +92,9 @@ import {
   FAKE_PROVIDER_MODELS,
   providerCredential,
 } from "./agent/providerTransport";
+import { LegalFooter } from "./LegalFooter";
+import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
+import { openExternalUrl } from "./openExternalUrl";
 
 // Foreground notification presentation handler. Without this, scheduled
 // notifications delivered while the app is in the foreground are silently
@@ -21189,6 +21192,17 @@ export default function App() {
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
                     Restaurar sustituye por completo los datos actuales por los del archivo. Tus API keys se mantienen.
                   </Text>
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel="Ver qué contiene la copia de seguridad en la política de privacidad"
+                    testID="legal-backup-policy-link"
+                    onPress={() => { void openExternalUrl(`${resolvePrivacyPolicyUrl()}#copias`); }}
+                    hitSlop={8}
+                  >
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
+                      Qué contiene este archivo
+                    </Text>
+                  </Pressable>
                 </View>
               ) : null}
 
@@ -21530,6 +21544,8 @@ export default function App() {
                   Gymnasia v{Constants.expoConfig?.version ?? "?"} · config v{RUNTIME_ENVIRONMENT.configurationVersion}
                 </Text>
               </View>
+
+              <LegalFooter />
             </View>
           ) : null}
         </Animated.ScrollView>
@@ -22327,7 +22343,7 @@ export default function App() {
             </Text>
             <Pressable
               onPress={() => {
-                Linking.openURL(updateInfo.url);
+                void openExternalUrl(updateInfo.url);
                 setUpdateInfo(null);
               }}
               style={{
@@ -22397,7 +22413,7 @@ export default function App() {
             </Text>
             <Pressable
               onPress={() => {
-                Linking.openURL(updatesConfirmInfo.url);
+                void openExternalUrl(updatesConfirmInfo.url);
                 setUpdatesConfirmInfo(null);
               }}
               style={{
