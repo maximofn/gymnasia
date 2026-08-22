@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-21",
+    "updated": "2026-08-22",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -89,7 +89,7 @@
         {
           "id": "GYM-190",
           "title": "Publicar la política de privacidad y completar las declaraciones de salud",
-          "state": "todo",
+          "state": "done",
           "summary": "Publicar una política HTTPS coherente con el almacenamiento local, BYOK y los datos de salud, y alinear con ella Data safety y las declaraciones de salud e IA de Play.",
           "dependsOn": [],
           "related": [
@@ -101,7 +101,7 @@
         {
           "id": "GYM-191",
           "title": "Eliminar USE_EXACT_ALARM del build Android",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Eliminar android.permission.USE_EXACT_ALARM del manifest fusionado y conservar los avisos de entrenamiento con mecanismos admitidos por Google Play.",
           "dependsOn": [],
           "related": [
@@ -124,7 +124,7 @@
         {
           "id": "GYM-193",
           "title": "Comprobar la disponibilidad legal y comercial de la marca Gymnasia",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Buscar conflictos relevantes en OEPM, EUIPO, Google Play y canales comerciales y decidir si se conserva o ajusta el nombre antes de consolidar la ficha.",
           "dependsOn": [],
           "related": [
@@ -306,11 +306,12 @@
         {
           "id": "GYM-144",
           "title": "Formalizar dev, staging y producción para la política del agente",
-          "state": "in_progress",
-          "summary": "Convertir los perfiles EAS existentes en entornos aislados de app, almacenamiento, secretos y canal de política, promocionando el mismo artefacto desde staging a producción.",
+          "state": "done",
+          "summary": "Formalizar entornos aislados y promover el mismo artefacto reutilizando `npm run check:health-safety` de GYM-145 como puerta obligatoria, con evidencia versionada y sin bypass en la vía crítica.",
           "baseline": "partial",
           "dependsOn": [
-            "GYM-142"
+            "GYM-142",
+            "GYM-145"
           ],
           "related": [
             "GYM-124"
@@ -334,9 +335,9 @@
         {
           "id": "GYM-145",
           "title": "Crear una suite de seguridad sanitaria para cambios del agente",
-          "state": "todo",
-          "summary": "Bloquear regresiones sanitarias deterministas y añadir evaluación LLM solo informativa con casos como ayuno prolongado, pérdida extrema, trastornos y urgencias.",
-          "baseline": "missing",
+          "state": "done",
+          "summary": "Crear `policy/health-safety/` como fuente canónica y `npm run check:health-safety`; las reglas provisionales ya protegen el prompt y CI, las approved requieren revisión profesional y el LLM solo informa.",
+          "baseline": "partial",
           "dependsOn": [
             "GYM-142"
           ],
@@ -2436,12 +2437,13 @@
     {
       "id": "publicar-google-play",
       "title": "Máxima prioridad: publicar Gymnasia en Google Play",
-      "why": "La publicación desbloquea el contenido sobre una app que el público puede instalar. Se completa primero la cadena sanitaria que exige la denuncia; en paralelo se limpian el build, el cumplimiento, la marca y la cuenta. Después se importa la clave actual de EAS para conservar las actualizaciones de usuarios reales, se prepara ficha y acceso, se genera un único AAB trazable y se promociona por tracks hasta España y el resto de territorios elegibles.",
+      "why": "La publicación desbloquea el contenido sobre una app que el público puede instalar. Primero se crea la suite sanitaria y se formalizan los entornos para que toda promoción reutilice su puerta determinista; después se completa la barrera sanitaria y se limpian el build, el cumplimiento, la marca y la cuenta. Finalmente se importa la clave actual de EAS, se prepara ficha y acceso, se genera un único AAB trazable y se promociona por tracks hasta España y el resto de territorios elegibles.",
       "tickets": [
         "GYM-150",
         "GYM-137",
         "GYM-142",
         "GYM-145",
+        "GYM-144",
         "GYM-139",
         "GYM-143",
         "GYM-188",
@@ -2463,9 +2465,8 @@
     {
       "id": "seguridad-prompt",
       "title": "Completar el gobierno de la política del agente",
-      "why": "La fuente compilada, la autorización, la suite y la barrera sanitaria ya se priorizan dentro de la publicación en Play. Este tramo completa los entornos, la firma de políticas, el rollback, la auditoría y las alertas después de asegurar los bloqueos inmediatos de publicación.",
+      "why": "La fuente compilada, la autorización, la suite, los entornos y la barrera sanitaria ya se priorizan dentro de la publicación en Play. Este tramo completa la firma de políticas, el rollback, la auditoría y las alertas.",
       "tickets": [
-        "GYM-144",
         "GYM-140",
         "GYM-141"
       ]

@@ -5,7 +5,10 @@ on:
     paths:
       - "apps/mobile/**"
       - "prompts/**"
+      - "policy/health-safety/**"
+      - "scripts/health-safety/**"
       - "docs/ai-transparency.md"
+      - "docs/architecture/health-safety-policy.md"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/agent-tests.yml"
@@ -17,7 +20,10 @@ on:
     paths:
       - "apps/mobile/**"
       - "prompts/**"
+      - "policy/health-safety/**"
+      - "scripts/health-safety/**"
       - "docs/ai-transparency.md"
+      - "docs/architecture/health-safety-policy.md"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/agent-tests.yml"
@@ -54,6 +60,12 @@ jobs:
 
       - name: Verify bundled chat prompt snapshot
         run: npm run check:chat-prompt
+
+      - name: Verify canonical health safety policy and bundled prompt
+        run: npm run check:health-safety
+
+      - name: Run health safety deterministic tests
+        run: npm run test:health-safety
 
       - name: Run deterministic agent suite
         run: npm test

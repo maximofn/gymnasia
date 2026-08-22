@@ -1,20 +1,37 @@
+---
+name: generate-exercise-image
+description: Generar o regenerar las imágenes masculina y femenina de ejercicios del repositorio Gymnasia, manteniendo su estilo visual y usando por prioridad la herramienta de imágenes integrada de Codex, Nano Banana, Z-Image-Turbo y FLUX.2-dev. Usar al añadir ejercicios, completar imágenes ausentes o corregir ilustraciones existentes.
+---
+
 # Generate Exercise Images
 
-Genera imágenes de ejercicios (hombre y mujer) usando Hugging Face Spaces.
+Generar dos imágenes por ejercicio —variante masculina y femenina— con el estilo visual de Gymnasia. En una sesión interactiva, usar primero la herramienta de generación de imágenes integrada de Codex; recurrir a Hugging Face solo cuando esa ruta no esté disponible.
 
-## Backends disponibles
+## Orden de preferencia
 
-El script soporta 3 backends de generación de imagen (en orden de preferencia):
+La skill admite cuatro rutas, en este orden:
 
-| Backend | Space | Requiere | Calidad |
-|---------|-------|----------|---------|
-| `nano-banana` (default) | `multimodalart/nano-banana` | HF PRO | Alta |
-| `z-image-turbo` | `mrfakename/Z-Image-Turbo` | Nada | Media-Alta |
-| `flux2-dev` | `black-forest-labs/FLUX.2-dev` | Nada | Alta (lento) |
+| Prioridad | Ruta | Ejecución | Requiere |
+|-----------|------|-----------|----------|
+| 1 | Generador integrado de Codex | Herramienta de imágenes de la sesión | Disponibilidad en la sesión/suscripción de Codex |
+| 2 | `nano-banana` | `generate_images.py` mediante Hugging Face | HF PRO |
+| 3 | `z-image-turbo` | `generate_images.py` mediante Hugging Face | Nada |
+| 4 | `flux2-dev` | `generate_images.py` mediante Hugging Face | Nada |
 
-**Fallback automático**: sin `--backend`, el script prueba cada uno en orden hasta conectar.
+La herramienta integrada de Codex **no es un backend del script**. `generate_images.py` y `generate.sh` solo soportan los tres backends de Hugging Face y no pueden reutilizar la suscripción de Codex/ChatGPT como una clave de API. No usar `OPENAI_API_KEY` ni facturación de API salvo que el usuario solicite expresamente esa ruta.
 
-**Si Nano Banana no está disponible**: informar al usuario de que el backend principal no responde y generar las imágenes con los dos backends alternativos (`z-image-turbo` y `flux2-dev`) para que el usuario elija las que prefiera. Ejemplo:
+Para la ruta integrada, emitir una llamada independiente por cada imagen o variante. Copiar el resultado final desde el directorio de imágenes generadas de Codex a `ejercicios/images/` y normalizarlo como WebP real de 768×432.
+
+## Fallback y avisos
+
+1. Intentar primero el generador integrado de Codex.
+2. Si la herramienta no existe en la sesión, está bloqueada por límites/permisos o falla repetidamente, intentar `nano-banana` mediante el script.
+3. Si tampoco se puede usar `nano-banana`, informar al usuario de que **no están disponibles ni el generador integrado de Codex ni Nano Banana** antes de continuar con los fallbacks restantes.
+4. Generar entonces alternativas con `z-image-turbo` y `flux2-dev` para que el usuario elija.
+
+Sin `--backend`, el script aplica su propio fallback interno: `nano-banana` → `z-image-turbo` → `flux2-dev`. Ese fallback no incluye la herramienta integrada de Codex.
+
+Ejemplo para comparar los dos últimos backends:
 
 ```bash
 # Generar con z-image-turbo
@@ -30,10 +47,11 @@ Antes de generar con cada backend, renombrar las imágenes existentes para que e
 2. Eliminar las imágenes descartadas
 3. Verificar que el JSON `ejercicios/<id>.json` tiene los campos `"image_male": "images/<id>-male.webp"` e `"image_female": "images/<id>-female.webp"`
 4. Regenerar `ejercicios/all.json` ejecutando el script (saltará las imágenes ya existentes pero reconstruirá los JSON)
-5. Commit y push de los cambios
+5. Crear un commit en una rama temática, subirla y abrir un pull request; no hacer push directo a `main`
 
 ## Requisitos
 
+- Sesión de Codex con la herramienta integrada de imágenes disponible para la ruta preferida. No requiere `OPENAI_API_KEY`.
 - Token de HF PRO en `.env` (raíz del proyecto): `HF_TOKEN=hf_xxx`
   - Solo requerido para `nano-banana`. Los otros backends funcionan sin token PRO.
 - Entorno uv ya configurado en `image-generation/`
@@ -84,7 +102,9 @@ EXERCISE_PROMPTS = {
 La descripción debe ser en inglés y lo más específica posible sobre la posición del cuerpo.
 El view puede ser: `"side view"`, `"front view"`, `"3/4 diagonal view"`.
 
-3. Ejecutar el script helper de la skill:
+3. Intentar generar primero `<id>-male` y `<id>-female` con la herramienta integrada de Codex, usando una llamada por variante y las imágenes aprobadas del repositorio solo como referencias de estilo.
+4. Copiar las salidas seleccionadas a `ejercicios/images/<id>-male.webp` y `ejercicios/images/<id>-female.webp`; convertirlas a WebP real de 768×432 y revisar anatomía, técnica, equipamiento, color, encuadre y ausencia de texto o marcas.
+5. Si la ruta integrada no está disponible, ejecutar el helper de Hugging Face:
 
 ```bash
 # Generar solo un ejercicio (auto-fallback)
@@ -97,7 +117,7 @@ El view puede ser: `"side view"`, `"front view"`, `"3/4 diagonal view"`.
 .claude/skills/generate-exercise-image/scripts/generate.sh
 ```
 
-El script se encarga de hacer `cd` a `image-generation/`, desactivar conda y ejecutar `uv run`.
+El script se encarga de hacer `cd` a `image-generation/`, desactivar conda y ejecutar `uv run`. No intenta acceder a la suscripción de Codex.
 
 El script salta imágenes que ya existen. Para regenerar, borrar primero las imágenes en `ejercicios/images/`.
 
@@ -117,6 +137,7 @@ Modern fitness app aesthetic, clean composition with plenty of negative space.
 
 ## Detalles técnicos
 
+- **Generador integrado de Codex**: ruta interactiva preferida. Usar el último modelo disponible en la herramienta de imágenes de la sesión. No requiere `OPENAI_API_KEY`; su disponibilidad y límites dependen de la sesión/suscripción. Guardar siempre los resultados finales dentro del repositorio, no únicamente en el directorio de imágenes generadas de Codex.
 - **nano-banana**: Nano Banana 2 (via `multimodalart/nano-banana` en HF). El endpoint de Gradio es privado (`api_visibility: private`), el script fuerza `is_valid = True` y pasa el token en el campo manual del Space. Resolución: 1K, Aspect Ratio: 16:9.
 - **z-image-turbo**: Z-Image-Turbo (via `mrfakename/Z-Image-Turbo`). Gratuito, rápido (9 inference steps). Resolución: 1024x1024.
 - **flux2-dev**: FLUX.2-dev (via `black-forest-labs/FLUX.2-dev`). Gratuito, alta calidad pero más lento (30 inference steps). Resolución: 1024x1024. Incluye prompt upsampling.

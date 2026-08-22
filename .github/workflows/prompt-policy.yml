@@ -48,6 +48,30 @@ jobs:
         id: android_permissions_tests
         run: npm run test:android-permissions
 
+      - name: Verify canonical health safety policy and bundled prompt
+        id: health_safety
+        run: npm run check:health-safety
+
+      - name: Run health safety unit, contract, regression and property tests
+        id: health_safety_tests
+        run: npm run test:health-safety
+
+      - name: Verify published data inventory
+        id: data_inventory
+        run: npm run check:data-inventory
+
+      - name: Run data inventory tests
+        id: data_inventory_tests
+        run: npm run test:data-inventory
+
+      - name: Verify generated privacy policy
+        id: legal
+        run: npm run check:legal
+
+      - name: Run privacy policy tests
+        id: legal_tests
+        run: npm run test:legal
+
       - name: Verify bundled chat prompt snapshot
         id: snapshot
         run: npm run check:chat-prompt
@@ -77,6 +101,12 @@ jobs:
             echo "| Unit, contract and property tests | ${{ steps.policy_tests.outcome }} |"
             echo "| Publishable Android permissions | ${{ steps.android_permissions.outcome }} |"
             echo "| Android permission policy tests | ${{ steps.android_permissions_tests.outcome }} |"
+            echo "| Health safety policy and prompt | ${{ steps.health_safety.outcome }} |"
+            echo "| Health safety deterministic tests | ${{ steps.health_safety_tests.outcome }} |"
+            echo "| Published data inventory | ${{ steps.data_inventory.outcome }} |"
+            echo "| Data inventory tests | ${{ steps.data_inventory_tests.outcome }} |"
+            echo "| Generated privacy policy | ${{ steps.legal.outcome }} |"
+            echo "| Privacy policy tests | ${{ steps.legal_tests.outcome }} |"
             echo "| Bundled prompt parity | ${{ steps.snapshot.outcome }} |"
             echo "| Agent schema, tools and invariants | ${{ steps.deterministic.outcome }} |"
             echo "| OpenWiki automation | ${{ steps.openwiki.outcome }} |"

@@ -16,6 +16,10 @@ const promptSource = readFileSync(
   new URL("../../../prompts/AGENTS.md", import.meta.url),
   "utf8",
 );
+const snapshotMetadata = JSON.parse(readFileSync(
+  new URL("./generated/policySnapshot.generated.json", import.meta.url),
+  "utf8",
+));
 
 describe("contrato del snapshot integrado del system prompt", () => {
   it("empaqueta exactamente la fuente normalizada del mismo commit", () => {
@@ -33,6 +37,13 @@ describe("contrato del snapshot integrado del system prompt", () => {
 
     expect(BUNDLED_CHAT_SYSTEM_PROMPT_SHA256).toBe(calculatedHash);
     expect(BUNDLED_CHAT_SYSTEM_PROMPT_VERSION).toBe(`sha256:${calculatedHash}`);
+    expect(snapshotMetadata).toMatchObject({
+      schemaVersion: 1,
+      environment: "development",
+      channel: "Local",
+      sha256: calculatedHash,
+      deploymentId: null,
+    });
   });
 
   it("impide que App.tsx vuelva a mantener un fallback manual", () => {

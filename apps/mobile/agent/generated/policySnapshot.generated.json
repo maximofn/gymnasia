@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "environment": "development",
+  "channel": "Local",
+  "candidate": "sha256:257075bdc4760222dce2a983cde23d5f8eaf19faca53614a75d01f9d2705f8d8",
+  "sha256": "257075bdc4760222dce2a983cde23d5f8eaf19faca53614a75d01f9d2705f8d8",
+  "deploymentId": null
+}

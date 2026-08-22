@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/evaluation-report.schema.json",
+  "schemaVersion": 1,
+  "authorizing": false,
+  "kind": "llm-informative",
+  "policyVersion": "2026.08.1",
+  "datasetVersion": "2026.08.1",
+  "promptVersion": "sha256:example-not-executed",
+  "evaluator": {
+    "name": "pending-gym-77-gym-78",
+    "version": "interface-1",
+    "model": "not-run"
+  },
+  "createdAt": "2026-08-21T00:00:00.000Z",
+  "results": [],
+  "summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "humanDecision": {
+    "status": "pending",
+    "notes": "Ejemplo de interfaz: la evaluación LLM aún no se ha ejecutado."
+  }
+}

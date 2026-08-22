@@ -75,29 +75,66 @@ import {
   type AiDisclosureMessageKind,
 } from "./agent/aiTransparency";
 import { loadChatSystemPrompt } from "./agent/chatSystemPromptRuntime";
+import type { ChatSystemPromptSelection } from "./agent/chatSystemPrompt";
+import {
+  belongsToActiveStorageNamespace,
+  IS_FAKE_PROVIDER_MODE,
+  RUNTIME_ENVIRONMENT,
+  scopedSecureStoreKey,
+  scopedStorageKey,
+} from "./runtimeEnvironment";
 import {
   AiIdentityDisclosure,
   AiIdentityPersistentDisclosure,
 } from "./AiIdentityDisclosure";
+import {
+  createFakeProviderResult,
+  FAKE_PROVIDER_MODELS,
+  providerCredential,
+} from "./agent/providerTransport";
+import { LegalFooter } from "./LegalFooter";
+import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
+import { openExternalUrl } from "./openExternalUrl";
 
 // Foreground notification presentation handler. Without this, scheduled
 // notifications delivered while the app is in the foreground are silently
 // dropped (no banner, no sound). We also trace every received notification
 // so we can debug "did the native scheduler actually fire it?".
+// Instante en que sonó la alerta in-app de fin de descanso. Vive a nivel de
+// módulo porque el handler de notificaciones se registra fuera del componente y
+// no puede leer sus refs.
+let lastInAppRestAlertAt: number | null = null;
+
+export function markInAppRestAlertPlayed(at: number = Date.now()) {
+  lastInAppRestAlertAt = at;
+}
+
+/** Una notificación de descanso que llega justo detrás de la alerta in-app duplicaría el aviso. */
+function isDuplicateRestAlert(data: unknown): boolean {
+  const payload = data as { kind?: string } | null | undefined;
+  if (payload?.kind !== "rest_end") return false;
+  if (lastInAppRestAlertAt === null) return false;
+  return Date.now() - lastInAppRestAlertAt < REST_ALERT_DEDUPE_WINDOW_MS;
+}
+
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
+    const duplicate = isDuplicateRestAlert(notification.request.content.data);
     void pushTrace("notifReceived", "handleNotification", {
       id: notification.request.identifier,
       title: notification.request.content.title,
       body: notification.request.content.body,
       trigger: notification.request.trigger,
       appState: "foreground",
+      duplicate,
     });
+    // Se sigue registrando en la bandeja para que la observación de puntualidad
+    // la vea, pero sin sonar ni interrumpir por segunda vez.
     return {
-      shouldShowAlert: true,
-      shouldPlaySound: true,
+      shouldShowAlert: !duplicate,
+      shouldPlaySound: !duplicate,
       shouldSetBadge: false,
-      shouldShowBanner: true,
+      shouldShowBanner: !duplicate,
       shouldShowList: true,
     };
   },
@@ -406,11 +443,13 @@ type UserPreferences = {
 // Android no deja consultar desde JS si la app puede programar alarmas exactas
 // (expo-notifications no expone canScheduleExactAlarms), así que el veredicto se
 // deduce observando si los avisos llegan puntuales.
+// Solo se registra lo medido: un retraso real entre la hora pedida y la entrega
+// observada. No hay campo para "no entregada" porque no existe forma fiable de
+// afirmarlo — que la app no viera la entrega no prueba que no ocurriera.
 type AlarmHealth = {
   lastDelayMs: number | null;
   lastObservedAt: number | null;
   lateStreak: number;
-  missedStreak: number;
 };
 type TemplateSeriesPointer = {
   exerciseIndex: number;
@@ -439,23 +478,51 @@ type LocalStore = {
   foodAIProvider?: Provider;
 };
 
-const STORAGE_KEY = "gymnasia.mobile.local.v3";
-const SESSION_STORAGE_KEY = "gymnasia.mobile.training.session.v1";
-const SESSION_TEMPLATE_SNAPSHOT_KEY = "gymnasia.mobile.training.session_template_snapshot.v1";
-const PERSONAL_DATA_STORAGE_KEY = "gymnasia.mobile.personal_data.v1";
-const USER_PREFS_STORAGE_KEY = "gymnasia.mobile.user_prefs.v1";
+const STORAGE_KEY = scopedStorageKey("gymnasia.mobile.local.v3");
+const SESSION_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.training.session.v1");
+const SESSION_TEMPLATE_SNAPSHOT_KEY = scopedStorageKey("gymnasia.mobile.training.session_template_snapshot.v1");
+const PERSONAL_DATA_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.personal_data.v1");
+const USER_PREFS_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.user_prefs.v1");
 const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: { enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" } };
 // Salud de las alarmas: observaciones del dispositivo, no preferencias del usuario,
 // por eso viven en su propia clave y no dentro de UserPreferences (cuya hidratación
 // hace un merge superficial que dejaría undefined cualquier campo anidado nuevo).
-const ALARM_HEALTH_STORAGE_KEY = "gymnasia.mobile.alarm_health.v1";
-// Android agrupa las alarmas inexactas en ventanas de Doze de varios minutos.
-// 45 s no salta con el jitter normal y sí cuando el sistema está retrasándolas.
-const ALARM_LATE_THRESHOLD_MS = 45_000;
+const ALARM_HEALTH_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.alarm_health.v1");
+// Lo que importa no es cómo agrupa Android las alarmas, sino a partir de cuándo
+// el aviso deja de servir: con descansos de 60-120 s, un retraso de unos segundos
+// ya llega tarde. Un umbral alto clasificaba como "a tiempo" avisos inútiles.
+const ALARM_LATE_THRESHOLD_MS = 5_000;
+// Si la alerta in-app acaba de sonar, la notificación que llega detrás no debe
+// volver a sonar: en la práctica llegan con ~200 ms de diferencia.
+const REST_ALERT_DEDUPE_WINDOW_MS = 8_000;
+
+// Fabricantes cuya gestión de batería congela o mata los procesos en segundo
+// plano, impidiendo que se entreguen las alarmas programadas. No es Doze ni un
+// problema de permisos: solo se resuelve desde los ajustes del propio fabricante.
+// Verificado en un Huawei P30, donde la notificación se entregaba justo al volver
+// a la app en vez de a su hora. Referencia: dontkillmyapp.com
+const BATTERY_RESTRICTIVE_MANUFACTURERS: Array<{ match: RegExp; brand: string; path: string }> = [
+  { match: /huawei|honor/i, brand: "Huawei", path: 'Ajustes → Batería → Lanzamiento de aplicaciones → Gymnasia. Desactiva "Gestionar automáticamente" y activa las tres opciones, sobre todo "Ejecutar en segundo plano".' },
+  { match: /xiaomi|redmi|poco/i, brand: "Xiaomi", path: 'Ajustes → Aplicaciones → Gymnasia. Activa "Inicio automático" y, en "Ahorro de batería", elige "Sin restricciones".' },
+  { match: /samsung/i, brand: "Samsung", path: 'Ajustes → Batería → Límites de uso en segundo plano. Saca a Gymnasia de "Aplicaciones en suspensión" y desactiva "Poner en suspensión apps no usadas".' },
+  { match: /oneplus/i, brand: "OnePlus", path: 'Ajustes → Batería → Optimización de batería → Gymnasia → "No optimizar". Desactiva también "Optimización avanzada".' },
+  { match: /oppo|realme/i, brand: "Oppo", path: 'Ajustes → Batería → Gymnasia. Permite la actividad en segundo plano y el inicio automático.' },
+  { match: /vivo|iqoo/i, brand: "Vivo", path: 'Ajustes → Batería → Consumo elevado en segundo plano. Permite que Gymnasia se ejecute en segundo plano.' },
+  { match: /meizu|asus|wiko|tecno|infinix|blackview|unihertz/i, brand: "tu fabricante", path: "Busca en los ajustes de batería la opción de inicio automático o ejecución en segundo plano y permítela para Gymnasia." },
+];
+
+/** Devuelve la guía del fabricante si el dispositivo es de los que restringen el segundo plano. */
+function batteryRestrictionGuidance(): { brand: string; path: string } | null {
+  if (Platform.OS !== "android") return null;
+  const constants = Platform.constants as { Manufacturer?: string; Brand?: string };
+  const identity = `${constants?.Manufacturer ?? ""} ${constants?.Brand ?? ""}`;
+  const entry = BATTERY_RESTRICTIVE_MANUFACTURERS.find(({ match }) => match.test(identity));
+  return entry ? { brand: entry.brand, path: entry.path } : null;
+}
 // Pasada esta ventana, reproducir el sonido de fin de descanso al volver a la app
 // sería absurdo: el usuario ya sabe que terminó.
 const REST_ALERT_FALLBACK_WINDOW_MS = 120_000;
-const DEFAULT_ALARM_HEALTH: AlarmHealth = { lastDelayMs: null, lastObservedAt: null, lateStreak: 0, missedStreak: 0 };
+const DEFAULT_ALARM_HEALTH: AlarmHealth = { lastDelayMs: null, lastObservedAt: null, lateStreak: 0 };
 
 // NotificationPermissionsStatus hereda `granted` y `status` de PermissionResponse,
 // pero con install-strategy=nested expo-modules-core queda bajo expo/node_modules
@@ -464,14 +531,18 @@ function isNotificationPermissionGranted(response: unknown): boolean {
   const outcome = response as { granted?: boolean; status?: string } | null | undefined;
   return outcome?.granted === true || outcome?.status === "granted";
 }
-const SECURE_STORE_API_KEY_PREFIX = "gymnasia.mobile.v3.provider.api_key";
+const SECURE_STORE_API_KEY_PREFIX = scopedSecureStoreKey("gymnasia.mobile.v3.provider.api_key");
 const LEGACY_STORAGE_KEYS = [
-  "gymnasia.mobile.local.v1",
-  "gymnasia.mobile.local.v2",
+  scopedStorageKey("gymnasia.mobile.local.v1"),
+  scopedStorageKey("gymnasia.mobile.local.v2"),
+  // Marcaba una migración que inyectaba un histórico de grasa corporal ajeno al
+  // usuario. La migración se retiró; la marca solo sobrevive en instalaciones
+  // antiguas y no significa nada.
+  scopedStorageKey("gymnasia.mobile.body_fat_migration_done"),
 ];
 const LEGACY_SECURE_STORE_PREFIXES = [
-  "gymnasia.mobile.provider.api_key",
-  "gymnasia.mobile.v2.provider.api_key",
+  scopedSecureStoreKey("gymnasia.mobile.provider.api_key"),
+  scopedSecureStoreKey("gymnasia.mobile.v2.provider.api_key"),
 ];
 const DEFAULT_MODELS: Record<Provider, string> = {
   openai: "gpt-5-mini",
@@ -506,7 +577,7 @@ const FOOD_ESTIMATOR_MAX_IMAGES = 6;
 
 const GITHUB_RELEASES_API = "https://api.github.com/repos/maximofn/gymnasia/releases/latest";
 const UPDATE_CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000; // 4 hours
-const UPDATE_CHECK_KEY = "gymnasia.mobile.lastUpdateCheck";
+const UPDATE_CHECK_KEY = scopedStorageKey("gymnasia.mobile.lastUpdateCheck");
 
 function compareVersions(a: string, b: string): number {
   const pa = a.split(".").map(Number);
@@ -546,27 +617,27 @@ async function checkForUpdate(): Promise<{ available: boolean; version: string; 
 const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
 const EXERCISES_ALL_URL = `${EXERCISES_REPO_BASE_URL}/all.json`;
-const EXERCISES_CACHE_KEY = "gymnasia.mobile.exercises_repo.v2";
+const EXERCISES_CACHE_KEY = scopedStorageKey("gymnasia.mobile.exercises_repo.v2");
 const FOODS_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos";
 const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
 const FOODS_IMAGES_BASE_URL = `${FOODS_REPO_BASE_URL}/images`;
-const FOODS_CACHE_KEY = "gymnasia.mobile.foods_repo.v1";
+const FOODS_CACHE_KEY = scopedStorageKey("gymnasia.mobile.foods_repo.v1");
 const PRODUCTS_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/productos_comerciales";
 const PRODUCTS_ALL_URL = `${PRODUCTS_REPO_BASE_URL}/all.json`;
 const PRODUCTS_IMAGES_BASE_URL = `${PRODUCTS_REPO_BASE_URL}/images`;
-const PRODUCTS_CACHE_KEY = "gymnasia.mobile.products_repo.v1";
+const PRODUCTS_CACHE_KEY = scopedStorageKey("gymnasia.mobile.products_repo.v1");
 const RECIPES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/recetas";
 const RECIPES_ALL_URL = `${RECIPES_REPO_BASE_URL}/all.json`;
 const RECIPES_IMAGES_BASE_URL = `${RECIPES_REPO_BASE_URL}/images`;
-const RECIPES_CACHE_KEY = "gymnasia.mobile.recipes_repo.v1";
-const PERSONAL_FOODS_STORAGE_KEY = "gymnasia.mobile.personal_foods.v1";
+const RECIPES_CACHE_KEY = scopedStorageKey("gymnasia.mobile.recipes_repo.v1");
+const PERSONAL_FOODS_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.personal_foods.v1");
 
 // --- Copia de seguridad (export/import manual, GYM-5) ---
 // Almacena la fecha del último backup manual realizado por el usuario.
-const BACKUP_META_KEY = "gymnasia.mobile.backup_meta.v1";
+const BACKUP_META_KEY = scopedStorageKey("gymnasia.mobile.backup_meta.v1");
 // Identificador y versión del formato de backup. Bump BACKUP_SCHEMA_VERSION si el
 // esquema de datos cambia de forma incompatible; el importador rechaza versiones
 // superiores a la que conoce esta build.
@@ -1197,101 +1268,6 @@ async function saveMeasurementsToStorage(measurements: Measurement[]): Promise<v
   }
 }
 
-const BODY_FAT_MIGRATION_KEY = "gymnasia.mobile.body_fat_migration_done";
-const BODY_FAT_HISTORY_DATA: Array<{ date: string; pct: number }> = [
-  { date: "2025-07-06", pct: 16.1 }, { date: "2025-07-07", pct: 16.1 },
-  { date: "2025-09-03", pct: 18.2 }, { date: "2025-09-04", pct: 18.1 },
-  { date: "2025-09-05", pct: 17.8 }, { date: "2025-09-06", pct: 17.9 },
-  { date: "2025-09-07", pct: 17.8 }, { date: "2025-09-08", pct: 17.7 },
-  { date: "2025-09-10", pct: 17.7 }, { date: "2025-09-11", pct: 17.4 },
-  { date: "2025-09-12", pct: 17.6 }, { date: "2025-09-13", pct: 16.9 },
-  { date: "2025-09-14", pct: 17.5 }, { date: "2025-09-15", pct: 18.2 },
-  { date: "2025-09-16", pct: 18.6 }, { date: "2025-09-18", pct: 17.2 },
-  { date: "2025-09-19", pct: 17.9 }, { date: "2025-09-20", pct: 18.0 },
-  { date: "2025-09-22", pct: 18.6 }, { date: "2025-09-23", pct: 17.7 },
-  { date: "2025-09-25", pct: 17.6 }, { date: "2025-09-26", pct: 18.0 },
-  { date: "2025-09-27", pct: 17.6 }, { date: "2025-09-28", pct: 17.5 },
-  { date: "2025-09-29", pct: 17.7 }, { date: "2025-09-30", pct: 17.6 },
-  { date: "2025-10-02", pct: 17.7 }, { date: "2025-10-03", pct: 17.4 },
-  { date: "2025-10-05", pct: 17.1 }, { date: "2025-10-06", pct: 17.4 },
-  { date: "2025-10-07", pct: 17.8 }, { date: "2025-10-08", pct: 17.9 },
-  { date: "2025-10-09", pct: 17.9 }, { date: "2025-10-17", pct: 18.1 },
-  { date: "2025-10-26", pct: 18.2 }, { date: "2025-12-27", pct: 20.3 },
-  { date: "2025-12-28", pct: 20.8 }, { date: "2025-12-30", pct: 20.2 },
-  { date: "2026-01-05", pct: 20.4 }, { date: "2026-01-07", pct: 20.4 },
-  { date: "2026-01-09", pct: 20.3 }, { date: "2026-01-11", pct: 19.5 },
-  { date: "2026-01-12", pct: 20.2 }, { date: "2026-01-13", pct: 19.7 },
-  { date: "2026-01-14", pct: 19.7 }, { date: "2026-01-15", pct: 19.6 },
-  { date: "2026-01-16", pct: 19.3 }, { date: "2026-01-17", pct: 19.2 },
-  { date: "2026-01-18", pct: 19.6 }, { date: "2026-01-19", pct: 20.2 },
-  { date: "2026-01-20", pct: 19.9 }, { date: "2026-01-22", pct: 19.0 },
-  { date: "2026-01-24", pct: 19.6 }, { date: "2026-01-25", pct: 19.5 },
-  { date: "2026-01-27", pct: 19.5 }, { date: "2026-01-29", pct: 19.1 },
-  { date: "2026-01-30", pct: 20.0 }, { date: "2026-01-31", pct: 18.9 },
-  { date: "2026-02-01", pct: 19.5 }, { date: "2026-02-04", pct: 19.3 },
-  { date: "2026-02-05", pct: 18.3 }, { date: "2026-02-07", pct: 19.3 },
-  { date: "2026-02-08", pct: 19.6 }, { date: "2026-02-09", pct: 20.2 },
-  { date: "2026-02-10", pct: 18.7 }, { date: "2026-02-11", pct: 18.9 },
-  { date: "2026-02-13", pct: 19.0 }, { date: "2026-02-14", pct: 19.0 },
-  { date: "2026-02-15", pct: 19.2 }, { date: "2026-02-16", pct: 19.1 },
-  { date: "2026-02-17", pct: 18.6 }, { date: "2026-02-18", pct: 18.8 },
-  { date: "2026-02-19", pct: 18.8 }, { date: "2026-02-20", pct: 19.3 },
-  { date: "2026-02-24", pct: 19.0 }, { date: "2026-02-25", pct: 19.0 },
-  { date: "2026-02-27", pct: 19.5 }, { date: "2026-03-03", pct: 18.4 },
-  { date: "2026-03-04", pct: 18.8 }, { date: "2026-03-06", pct: 19.5 },
-  { date: "2026-03-12", pct: 18.6 }, { date: "2026-03-13", pct: 18.8 },
-  { date: "2026-03-14", pct: 18.2 }, { date: "2026-03-16", pct: 19.3 },
-  { date: "2026-03-17", pct: 19.1 }, { date: "2026-03-18", pct: 18.6 },
-  { date: "2026-03-20", pct: 18.5 }, { date: "2026-03-22", pct: 18.6 },
-  { date: "2026-03-23", pct: 18.1 }, { date: "2026-03-24", pct: 18.6 },
-  { date: "2026-03-25", pct: 17.9 }, { date: "2026-03-26", pct: 18.0 },
-];
-
-async function migrateBodyFatHistory(
-  setStore: (updater: (prev: LocalStore) => LocalStore) => void,
-): Promise<void> {
-  try {
-    const done = await AsyncStorage.getItem(BODY_FAT_MIGRATION_KEY);
-    if (done === "1") return;
-    const measurements = await loadMeasurementsFromStorage();
-    let changed = false;
-    for (const entry of BODY_FAT_HISTORY_DATA) {
-      const existing = measurements.find((m) => m.measured_at.startsWith(entry.date));
-      if (existing) {
-        if (existing.body_fat_pct === null || existing.body_fat_pct === undefined) {
-          existing.body_fat_pct = entry.pct;
-          changed = true;
-        }
-      } else {
-        measurements.push({
-          id: uid("measurement"),
-          measured_at: new Date(entry.date + "T12:00:00").toISOString(),
-          weight_kg: null,
-          body_fat_pct: entry.pct,
-          photo_uri: null,
-          neck_cm: null,
-          chest_cm: null,
-          waist_cm: null,
-          hips_cm: null,
-          biceps_cm: null,
-          quadriceps_cm: null,
-          calf_cm: null,
-          height_cm: null,
-        });
-        changed = true;
-      }
-    }
-    if (changed) {
-      const sorted = sortMeasurementsDesc(measurements);
-      await saveMeasurementsToStorage(sorted);
-      setStore((prev) => ({ ...prev, measurements: sorted }));
-    }
-    await AsyncStorage.setItem(BODY_FAT_MIGRATION_KEY, "1");
-  } catch {
-    /* silently fail */
-  }
-}
-
 const SCAN_BARCODE_TOOL = "scan_barcode";
 const SCAN_BARCODE_DESC =
   "Busca un producto alimentario por su código de barras (EAN/UPC) en OpenFoodFacts. " +
@@ -1398,7 +1374,7 @@ function resolveProviderByPriority(keys: AIKey[], priority: Provider[]): AIKey |
   for (const provider of priority) {
     const configured = keys.find((item) => item.provider === provider);
     if (!configured) continue;
-    const apiKey = configured.api_key.trim();
+    const apiKey = providerCredential(configured.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) continue;
     return {
       ...configured,
@@ -1413,7 +1389,7 @@ function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
   for (const provider of FOOD_ESTIMATOR_PROVIDER_PRIORITY) {
     const configured = keys.find((item) => item.provider === provider);
     if (!configured) continue;
-    const apiKey = configured.api_key.trim();
+    const apiKey = providerCredential(configured.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) continue;
     return {
       ...configured,
@@ -1422,6 +1398,17 @@ function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
     };
   }
   return null;
+}
+
+function withEffectiveProviderCredential(provider: AIKey | undefined): AIKey | null {
+  if (!provider) return null;
+  const apiKey = providerCredential(provider.api_key, IS_FAKE_PROVIDER_MODE);
+  if (!apiKey) return null;
+  return {
+    ...provider,
+    api_key: apiKey,
+    model: normalizeProviderModel(provider.provider, provider.model),
+  };
 }
 
 function createDefaultProviderKeys(): AIKey[] {
@@ -1467,7 +1454,10 @@ function createProviderConnectionStatusMap(
   });
 
   return PROVIDERS.reduce((acc, provider) => {
-    const hasApiKey = !!(byProvider.get(provider)?.api_key ?? "").trim();
+    const hasApiKey = !!providerCredential(
+      byProvider.get(provider)?.api_key,
+      IS_FAKE_PROVIDER_MODE,
+    );
     acc[provider] = hasApiKey
       ? {
           state: "unknown",
@@ -1885,8 +1875,8 @@ const VIVAGYM_CLIENT_ID = "4_43uq8rgou3y88ckkk0sgg8c408w4gwsssg8owg0ow4wcocgw0w"
 const VIVAGYM_CLIENT_SECRET = "1uiljdab2misc4owsc0kg0cw0kgw0k0gkgk0k8k488w8sskk4s";
 const VIVAGYM_APP_NAME = "vivagym";
 const VIVAGYM_USER_AGENT = "okhttp/4.12.0";
-const VIVAGYM_EMAIL_KEY = "vivagym.email";
-const VIVAGYM_PASSWORD_KEY = "vivagym.password";
+const VIVAGYM_EMAIL_KEY = scopedSecureStoreKey("vivagym.email");
+const VIVAGYM_PASSWORD_KEY = scopedSecureStoreKey("vivagym.password");
 
 type VivaGymCredentials = { email: string; password: string };
 
@@ -2173,6 +2163,7 @@ function parseGoogleModelOptions(payload: unknown): GoogleModelOption[] {
 }
 
 async function fetchAnthropicModelsViaWebProxy(apiKey: string): Promise<AnthropicModelOption[]> {
+  if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.anthropic];
   try {
     const response = await fetch(buildWebProxyUrl("/chat/providers/anthropic/models"), {
       method: "POST",
@@ -2206,6 +2197,7 @@ async function fetchAnthropicModelsViaWebProxy(apiKey: string): Promise<Anthropi
 }
 
 async function fetchAnthropicModelsDirect(apiKey: string): Promise<AnthropicModelOption[]> {
+  if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.anthropic];
   const response = await fetch("https://api.anthropic.com/v1/models", {
     method: "GET",
     headers: {
@@ -2230,6 +2222,7 @@ async function fetchAnthropicModelsDirect(apiKey: string): Promise<AnthropicMode
 }
 
 async function fetchOpenAIModelsDirect(apiKey: string): Promise<OpenAIModelOption[]> {
+  if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.openai];
   const response = await fetch("https://api.openai.com/v1/models", {
     method: "GET",
     headers: {
@@ -2252,6 +2245,7 @@ async function fetchOpenAIModelsDirect(apiKey: string): Promise<OpenAIModelOptio
 }
 
 async function fetchGoogleModelsDirect(apiKey: string): Promise<GoogleModelOption[]> {
+  if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.google];
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`,
     {
@@ -2393,6 +2387,9 @@ async function callAnthropicViaWebProxy(
 }
 
 async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnectionCheckResult> {
+  if (IS_FAKE_PROVIDER_MODE) {
+    return { ok: true, severity: "success", message: "Fixture local activo; no se ha realizado ninguna llamada externa." };
+  }
   const apiKey = provider.api_key.trim();
   if (!apiKey) {
     return { ok: false, severity: "warning", message: PROVIDER_STATUS_COPY.warningNoKey };
@@ -3127,6 +3124,10 @@ async function callProviderChatAPI(
   messages: ChatInputMessage[],
   surface: AiConversationSurface = "main-chat",
 ): Promise<string> {
+  if (IS_FAKE_PROVIDER_MODE) {
+    const latestUserInput = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
+    return createFakeProviderResult(surface, latestUserInput).content;
+  }
   const systemPrompt = composeAiSystemPrompt(
     messages
       .filter((msg) => msg.role === "system")
@@ -3252,6 +3253,12 @@ async function callProviderChatAPIWithTools(
   messages: ChatInputMessage[],
   options?: ChatProviderCallOptions,
 ): Promise<AnthropicChatResult> {
+  if (IS_FAKE_PROVIDER_MODE) {
+    const latestUserInput = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
+    const fixture = createFakeProviderResult("main-chat", latestUserInput);
+    options?.onContentDelta?.(fixture.content, fixture.content);
+    return fixture;
+  }
   const systemPrompt = composeAiSystemPrompt(
     messages
       .filter((msg) => msg.role === "system")
@@ -3560,6 +3567,13 @@ async function callFoodEstimatorAPI(
   options?: FoodEstimatorCallOptions,
   skipImages?: boolean,
 ): Promise<AnthropicChatResult> {
+  if (IS_FAKE_PROVIDER_MODE) {
+    const latestUserInput = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
+    const fixture = createFakeProviderResult("food-estimator", latestUserInput);
+    options?.onStatus?.("Fixture local");
+    options?.onContentDelta?.(fixture.content, fixture.content);
+    return fixture;
+  }
   const model = normalizeProviderModel(provider.provider, provider.model);
   const normalizedImages = skipImages ? [] : images
     .filter((image) => image.base64.trim().length > 0)
@@ -5281,153 +5295,6 @@ function normalizeDietByDate(rawValue: unknown): Record<string, DietDay> {
   return normalized;
 }
 
-function createWebSeedStore(): LocalStore {
-  const threadId = uid("thread");
-  const today = new Date().toISOString().slice(0, 10);
-  return {
-    templates: [
-      {
-        id: uid("tpl"),
-        name: "Tren Superior — Fuerza",
-        category: "strength",
-        icon: "activity",
-        duration_minutes: "45",
-        exercises: [
-          {
-            id: uid("ex"),
-            name: "Press banca",
-            muscle: "pecho",
-            sets: [8, 8, 8, 6],
-            series: [
-              { id: uid("set"), type: "warmup", reps: "12", weight_kg: "40", rest_seconds: "60" },
-              { id: uid("set"), reps: "8", weight_kg: "70", rest_seconds: "120" },
-              { id: uid("set"), reps: "8", weight_kg: "70", rest_seconds: "120" },
-              { id: uid("set"), reps: "6", weight_kg: "75", rest_seconds: "150" },
-            ],
-            load_kg: 70,
-            rest_seconds: 120,
-          },
-          {
-            id: uid("ex"),
-            name: "Remo con barra",
-            muscle: "espalda",
-            sets: [10, 10, 10],
-            series: [
-              { id: uid("set"), reps: "10", weight_kg: "60", rest_seconds: "90" },
-              { id: uid("set"), reps: "10", weight_kg: "60", rest_seconds: "90" },
-              { id: uid("set"), reps: "10", weight_kg: "60", rest_seconds: "90" },
-            ],
-            load_kg: 60,
-            rest_seconds: 90,
-          },
-          {
-            id: uid("ex"),
-            name: "Curl bíceps",
-            muscle: "bíceps",
-            sets: [12, 12, 12],
-            series: [
-              { id: uid("set"), reps: "12", weight_kg: "14", rest_seconds: "60" },
-              { id: uid("set"), type: "dropset", reps: "12", weight_kg: "14", rest_seconds: "0",
-                sub_series: [
-                  { id: uid("sub"), reps: "10", weight_kg: "14", rest_seconds: "0" },
-                  { id: uid("sub"), reps: "8", weight_kg: "10", rest_seconds: "0" },
-                  { id: uid("sub"), reps: "6", weight_kg: "8", rest_seconds: "0" },
-                ],
-              },
-              { id: uid("set"), reps: "12", weight_kg: "14", rest_seconds: "60" },
-            ],
-            load_kg: 14,
-            rest_seconds: 60,
-          },
-        ],
-      },
-      {
-        id: uid("tpl"),
-        name: "Tren Inferior — Hipertrofia",
-        category: "hypertrophy",
-        icon: "zap",
-        duration_minutes: "50",
-        exercises: [
-          {
-            id: uid("ex"),
-            name: "Sentadilla",
-            muscle: "cuádriceps",
-            sets: [10, 10, 8, 8],
-            series: [
-              { id: uid("set"), type: "warmup", reps: "15", weight_kg: "40", rest_seconds: "60" },
-              { id: uid("set"), reps: "10", weight_kg: "80", rest_seconds: "120" },
-              { id: uid("set"), reps: "8", weight_kg: "90", rest_seconds: "150" },
-              { id: uid("set"), reps: "8", weight_kg: "90", rest_seconds: "150" },
-            ],
-            load_kg: 80,
-            rest_seconds: 120,
-          },
-          {
-            id: uid("ex"),
-            name: "Peso muerto rumano",
-            muscle: "isquiotibiales",
-            sets: [10, 10, 10],
-            series: [
-              { id: uid("set"), reps: "10", weight_kg: "70", rest_seconds: "90" },
-              { id: uid("set"), reps: "10", weight_kg: "70", rest_seconds: "90" },
-              { id: uid("set"), reps: "10", weight_kg: "70", rest_seconds: "90" },
-            ],
-            load_kg: 70,
-            rest_seconds: 90,
-          },
-          {
-            id: uid("ex"),
-            name: "Plancha isométrica",
-            muscle: "core",
-            sets: [60, 60],
-            series: [
-              { id: uid("set"), type: "isometric", reps: "60", weight_kg: "", rest_seconds: "60" },
-              { id: uid("set"), type: "isometric", reps: "60", weight_kg: "", rest_seconds: "60" },
-            ],
-            load_kg: null,
-            rest_seconds: 60,
-          },
-        ],
-      },
-    ],
-    workoutHistory: [],
-    dietByDate: {
-      [today]: {
-        day_date: today,
-        meals: [
-          {
-            id: uid("meal"),
-            title: "Desayuno",
-            items: [
-              { id: uid("fi"), title: "Avena con leche", grams: 300, calories_kcal: 350, protein_g: 12, carbs_g: 55, fat_g: 8 },
-              { id: uid("fi"), title: "Plátano", grams: 120, calories_kcal: 105, protein_g: 1.3, carbs_g: 27, fat_g: 0.4 },
-            ],
-          },
-          {
-            id: uid("meal"),
-            title: "Almuerzo",
-            items: [
-              { id: uid("fi"), title: "Pechuga de pollo", grams: 200, calories_kcal: 280, protein_g: 52, carbs_g: 0, fat_g: 6 },
-              { id: uid("fi"), title: "Arroz integral", grams: 180, calories_kcal: 215, protein_g: 5, carbs_g: 45, fat_g: 2 },
-            ],
-          },
-        ],
-      },
-    },
-    dietSettings: createDefaultDietSettings(),
-    measurements: [
-      {
-        id: uid("m"), measured_at: today, weight_kg: 78, body_fat_pct: 15, photo_uri: null,
-        neck_cm: null, chest_cm: null, waist_cm: null, hips_cm: null, biceps_cm: null,
-        quadriceps_cm: null, calf_cm: null, height_cm: null,
-      },
-    ],
-    threads: [{ id: threadId, title: "Gymnasia Coach 1" }],
-    messagesByThread: { [threadId]: [createAiIdentityChatMessage()] },
-    keys: createDefaultProviderKeys(),
-  };
-}
-
 function createInitialStore(): LocalStore {
   const firstThreadId = uid("thread");
 
@@ -5613,8 +5480,9 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
 
   const resolvedProvider = (() => {
     if (preferredProvider) {
-      const match = providerKeys.find((k) => k.provider === preferredProvider && k.api_key.trim());
-      if (match) return { ...match, api_key: match.api_key.trim(), model: normalizeProviderModel(match.provider, match.model) };
+      const match = providerKeys.find((k) => k.provider === preferredProvider);
+      const resolved = withEffectiveProviderCredential(match);
+      if (resolved) return resolved;
     }
     return resolveProviderByPriority(providerKeys, providerPriority ?? FOOD_ESTIMATOR_PROVIDER_PRIORITY);
   })();
@@ -6465,6 +6333,24 @@ export default function App() {
   const chatThinkingLabel = useThinkingLabel(sendingChat);
   const [expandedThinking, setExpandedThinking] = useState<Record<string, boolean>>({});
   const [showByokExplain, setShowByokExplain] = useState(false);
+  const [activePolicySelection, setActivePolicySelection] =
+    useState<ChatSystemPromptSelection | null>(null);
+  useEffect(() => {
+    let mounted = true;
+    const refreshPolicy = () => {
+      void loadChatSystemPrompt()
+        .then((selection) => {
+          if (mounted) setActivePolicySelection(selection);
+        })
+        .catch(() => {});
+    };
+    refreshPolicy();
+    const interval = setInterval(refreshPolicy, 5 * 60 * 1000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
   const chatScrollRef = useRef<ScrollView>(null);
   const mainScrollRef = useRef<ScrollView>(null);
   const dietScrollY = useRef(new Animated.Value(0)).current;
@@ -6767,11 +6653,16 @@ export default function App() {
   const activeProvider = useMemo(
     () => {
       if (store.chatProvider) {
-        const match = store.keys.find((item) => item.provider === store.chatProvider && item.api_key.trim());
-        if (match) return match;
+        const match = store.keys.find((item) => item.provider === store.chatProvider);
+        const resolved = withEffectiveProviderCredential(match);
+        if (resolved) return resolved;
       }
       // Fallback: first provider with API key
-      return store.keys.find((item) => item.api_key.trim()) ?? store.keys[0] ?? null;
+      for (const item of store.keys) {
+        const resolved = withEffectiveProviderCredential(item);
+        if (resolved) return resolved;
+      }
+      return null;
     },
     [store.keys, store.chatProvider],
   );
@@ -7715,6 +7606,9 @@ export default function App() {
   const playRestFinishedAlert = useCallback(async () => {
     if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
+    // Marca antes de reproducir: la notificación que venga detrás debe encontrar
+    // la marca puesta aunque la carga del sonido tarde.
+    markInAppRestAlertPlayed();
     const settings = notifSettingsRef.current;
 
     // Load the selected sound if not already cached
@@ -7860,25 +7754,20 @@ export default function App() {
   // Registra lo observado sobre la puntualidad de las alarmas. Persiste de forma
   // directa (no vía useEffect) porque estas observaciones ocurren justo cuando la
   // app puede irse a segundo plano.
-  const recordAlarmObservation = useCallback((observation: { delayMs?: number; missed?: boolean }) => {
+  const recordAlarmObservation = useCallback((observation: { delayMs: number }) => {
     setAlarmHealth((prev) => {
-      const late = observation.missed === true
-        || (typeof observation.delayMs === "number" && observation.delayMs > ALARM_LATE_THRESHOLD_MS);
+      const late = observation.delayMs > ALARM_LATE_THRESHOLD_MS;
       const next: AlarmHealth = {
-        lastDelayMs: typeof observation.delayMs === "number" ? observation.delayMs : prev.lastDelayMs,
+        lastDelayMs: observation.delayMs,
         lastObservedAt: Date.now(),
         // Una entrega puntual resetea la racha: si el usuario concede "Alarmas y
-        // recordatorios", el aviso desaparece solo.
+        // recordatorios" o permite la ejecución en segundo plano, el aviso
+        // desaparece solo.
         lateStreak: late ? prev.lateStreak + 1 : 0,
-        missedStreak: observation.missed ? prev.missedStreak + 1 : 0,
       };
       alarmHealthRef.current = next;
       void AsyncStorage.setItem(ALARM_HEALTH_STORAGE_KEY, JSON.stringify(next)).catch(() => {});
-      void pushTrace("alarmHealth", observation.missed ? "missed" : "observed", {
-        delayMs: observation.delayMs ?? null,
-        lateStreak: next.lateStreak,
-        missedStreak: next.missedStreak,
-      });
+      void pushTrace("alarmHealth", "observed", { delayMs: observation.delayMs, lateStreak: next.lateStreak });
       return next;
     });
   }, []);
@@ -7887,15 +7776,20 @@ export default function App() {
   // observado. "unknown" no es un fallo: es que aún no ha terminado un descanso
   // en segundo plano del que aprender.
   const alarmPunctuality = useMemo<{ status: "unknown" | "ontime" | "late"; badge: string; detail: string }>(() => {
-    const { lastDelayMs, lateStreak, missedStreak } = alarmHealth;
-    if (missedStreak > 0 || lateStreak >= 2) {
-      const lateMinutes = lastDelayMs ? Math.max(1, Math.round(lastDelayMs / 60000)) : null;
+    const { lastDelayMs, lateStreak } = alarmHealth;
+    // Con el umbral en 5 s, un solo retraso ya es señal: no hace falta esperar a
+    // que se repita para avisar.
+    if (lateStreak >= 1) {
+      const lateSeconds = lastDelayMs ? Math.round(lastDelayMs / 1000) : null;
+      const howLate = lateSeconds === null
+        ? "no llegó a tiempo"
+        : lateSeconds >= 90
+          ? `llegó unos ${Math.round(lateSeconds / 60)} min tarde`
+          : `llegó ${lateSeconds} s tarde`;
       return {
         status: "late",
         badge: "Con retraso",
-        detail: lateMinutes
-          ? `El último aviso llegó unos ${lateMinutes} min tarde. Activa "Alarmas y recordatorios" para que salte puntual.`
-          : 'El último aviso no llegó a tiempo. Activa "Alarmas y recordatorios" para que salte puntual.',
+        detail: `El último aviso ${howLate}. Activa "Alarmas y recordatorios" y, si tu móvil gestiona la batería de forma agresiva, permite que Gymnasia se ejecute en segundo plano.`,
       };
     }
     if (lastDelayMs !== null && lateStreak === 0) {
@@ -7909,6 +7803,32 @@ export default function App() {
   }, [alarmHealth]);
 
   const androidPackageId = Constants.expoConfig?.android?.package ?? null;
+  const batteryGuidance = useMemo(() => batteryRestrictionGuidance(), []);
+  // Se oculta en cuanto se confirma que los avisos llegan puntuales: en ese caso
+  // el usuario ya lo tiene configurado y el aviso solo sería ruido.
+  const showBatteryGuidance = batteryGuidance !== null && alarmPunctuality.status !== "ontime";
+
+  // El listener de recepción no dispara si el sistema mató el proceso, así que su
+  // silencio no prueba que la notificación no llegara. La bandeja sí: si sigue ahí,
+  // se entregó. Evita declarar "perdida" una notificación que sí sonó.
+  const syncRestDeliveryFromTray = useCallback(async () => {
+    if (restNotifDeliveredAtRef.current !== null) return;
+    try {
+      const presented = await Notifications.getPresentedNotificationsAsync();
+      const match = presented.find((item) => {
+        const payload = item.request.content.data as { kind?: string } | null | undefined;
+        return payload?.kind === "rest_end";
+      });
+      if (!match) return;
+      const deliveredAt = typeof match.date === "number" ? match.date : Date.now();
+      restNotifDeliveredAtRef.current = deliveredAt;
+      const expectedAt = restNotifExpectedAtRef.current;
+      void pushTrace("notifReceived", "found in tray", { deliveredAt, expectedAt });
+      if (expectedAt) recordAlarmObservation({ delayMs: Math.max(0, deliveredAt - expectedAt) });
+    } catch (e) {
+      void pushTrace("notifReceived", "tray check failed", { error: String(e) });
+    }
+  }, [recordAlarmObservation]);
 
   // Refresca las señales que Android sí deja consultar. La puntualidad de la
   // alarma exacta no está entre ellas: esa se deduce en recordAlarmObservation.
@@ -8091,9 +8011,7 @@ export default function App() {
 
         const baseStore = effectiveRaw
           ? normalizeStore(JSON.parse(effectiveRaw) as LocalStore)
-          : Platform.OS === "web"
-            ? createWebSeedStore()
-            : createInitialStore();
+          : createInitialStore();
 
         const mergedStore = mergeStoreWithSecureApiKeys(baseStore, secureApiKeys);
         const hydratedSession = rawSession
@@ -8201,7 +8119,6 @@ export default function App() {
     );
     loadPersonalFoods().then(setPersonalFoods);
     readBackupMeta().then((meta) => setLastBackupAt(meta.lastBackupAt));
-    migrateBodyFatHistory(setStore);
   }, [isHydrated]);
 
   useEffect(() => {
@@ -8303,7 +8220,7 @@ export default function App() {
   }, [activeWorkoutSession?.is_resting, activeWorkoutSession?.rest_seconds_left]);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
+    const subscription = AppState.addEventListener("change", async (nextAppState) => {
       if (nextAppState === "active") {
         // El usuario puede haber cambiado permisos o ajustes del canal mientras
         // estaba fuera; sin esto el aviso se quedaría obsoleto en pantalla.
@@ -8320,6 +8237,11 @@ export default function App() {
           restLog.restLeft - elapsedSeconds <= 0;
         if (!restShouldHaveEnded) {
           void cancelRestEndNotification();
+        }
+        // Antes de decidir si suena la alerta: comprobar la bandeja, porque el
+        // listener no pudo capturar la entrega si el sistema mató el proceso.
+        if (restShouldHaveEnded) {
+          await syncRestDeliveryFromTray();
         }
         setActiveWorkoutSession((prev) => {
           if (!prev || prev.status !== "running") return prev;
@@ -8340,11 +8262,11 @@ export default function App() {
             } else {
               // Sin evidencia, la alerta suena como red de seguridad, pero solo si
               // el descanso acaba de terminar: horas después sería absurda.
+              // No se registra retraso aquí: `overdueMs` mide cuánto ha tardado el
+              // usuario en volver, no cuánto tardó la notificación. Confundirlos
+              // marcaba "con retraso" a quien simplemente volvió tarde.
               const stillRelevant = overdueMs !== null && overdueMs <= REST_ALERT_FALLBACK_WINDOW_MS;
               manualRestSkipRef.current = !stillRelevant;
-              if (notifSettingsRef.current.enabled && overdueMs !== null && overdueMs > ALARM_LATE_THRESHOLD_MS) {
-                recordAlarmObservation({ missed: true });
-              }
             }
             void pushTrace("restSkip", "decision", {
               delivered: deliveredAt !== null,
@@ -8377,7 +8299,7 @@ export default function App() {
     return () => {
       subscription.remove();
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification, recordAlarmObservation, refreshNotificationDiagnostics]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, recordAlarmObservation, refreshNotificationDiagnostics, syncRestDeliveryFromTray]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
@@ -8706,9 +8628,15 @@ export default function App() {
       // composeAiSystemPrompt. Ningún dato local puede sumar texto aquí, así que
       // esta ruta no lee la memoria personal en absoluto.
       const systemPromptSelection = await loadChatSystemPrompt();
+      setActivePolicySelection(systemPromptSelection);
       void pushTrace("chatPrompt", "chat-request", {
         source: systemPromptSelection.source,
         version: systemPromptSelection.version,
+        environment: systemPromptSelection.environment,
+        channel: systemPromptSelection.channel,
+        candidate: systemPromptSelection.candidate,
+        sha256: systemPromptSelection.sha256,
+        deploymentId: systemPromptSelection.deploymentId,
         basePromptChars: systemPromptSelection.content.length,
         localPromptOverrides: 0,
       });
@@ -9148,29 +9076,16 @@ export default function App() {
   function resolveFoodEstimatorProviderFromState(): AIKey | null {
     // Use store.foodAIProvider if set
     if (store.foodAIProvider) {
-      const match = store.keys.find(
-        (item) => item.provider === store.foodAIProvider && item.api_key.trim().length > 0,
-      );
-      if (match) {
-        return {
-          ...match,
-          api_key: match.api_key.trim(),
-          model: normalizeProviderModel(match.provider, match.model),
-        };
-      }
+      const match = store.keys.find((item) => item.provider === store.foodAIProvider);
+      const resolved = withEffectiveProviderCredential(match);
+      if (resolved) return resolved;
     }
     // Fallback to previous logic
     const selectedProviderFromStore =
       foodEstimatorProvider &&
-      store.keys.find(
-        (item) => item.provider === foodEstimatorProvider.provider && item.api_key.trim().length > 0,
-      );
+      store.keys.find((item) => item.provider === foodEstimatorProvider.provider);
     if (selectedProviderFromStore) {
-      return {
-        ...selectedProviderFromStore,
-        api_key: selectedProviderFromStore.api_key.trim(),
-        model: normalizeProviderModel(selectedProviderFromStore.provider, selectedProviderFromStore.model),
-      };
+      return withEffectiveProviderCredential(selectedProviderFromStore);
     }
     return resolveFoodEstimatorProvider(store.keys);
   }
@@ -9341,7 +9256,7 @@ export default function App() {
 
   function openFoodEstimatorModal() {
     const provider = store.foodAIProvider
-      ? store.keys.find((k) => k.provider === store.foodAIProvider && k.api_key.trim()) ?? resolveFoodEstimatorProvider(store.keys)
+      ? withEffectiveProviderCredential(store.keys.find((k) => k.provider === store.foodAIProvider) ?? store.keys[0]) ?? resolveFoodEstimatorProvider(store.keys)
       : resolveFoodEstimatorProvider(store.keys);
     setFoodEstimatorProvider(provider);
     setFoodEstimatorImages([]);
@@ -11593,7 +11508,7 @@ export default function App() {
       },
     }));
     setActiveThreadId(id);
-    void loadChatSystemPrompt();
+    void loadChatSystemPrompt().then(setActivePolicySelection).catch(() => {});
   }
 
   function setActiveProvider(provider: Provider) {
@@ -11788,7 +11703,7 @@ export default function App() {
       api_key: "",
       model: DEFAULT_MODELS.anthropic,
     };
-    const apiKey = draft.api_key.trim();
+    const apiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) {
       setAnthropicModelOptions([]);
       setAnthropicModelOptionsMessage({
@@ -11811,7 +11726,7 @@ export default function App() {
       api_key: "",
       model: DEFAULT_MODELS.openai,
     };
-    const apiKey = draft.api_key.trim();
+    const apiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) {
       setOpenAIModelOptions([]);
       setOpenAIModelOptionsMessage({
@@ -11834,7 +11749,7 @@ export default function App() {
       api_key: "",
       model: DEFAULT_MODELS.google,
     };
-    const apiKey = draft.api_key.trim();
+    const apiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) {
       setGoogleModelOptions([]);
       setGoogleModelOptionsMessage({
@@ -12049,7 +11964,29 @@ export default function App() {
     setProviderDeleteModal(null);
   }
 
-  function resetLocalData() {
+  async function resetLocalData() {
+    const activeAsyncStorageKeys = (await AsyncStorage.getAllKeys())
+      .filter(belongsToActiveStorageNamespace);
+    if (activeAsyncStorageKeys.length > 0) {
+      await AsyncStorage.multiRemove(activeAsyncStorageKeys);
+    }
+
+    const secureStoreAvailableNow = await isSecureStoreAvailable();
+    if (secureStoreAvailableNow) {
+      const activeSecureStoreKeys = [
+        ...PROVIDERS.map(secureStoreKey),
+        ...LEGACY_SECURE_STORE_PREFIXES.flatMap((prefix) =>
+          PROVIDERS.map((provider) => `${prefix}.${provider}`),
+        ),
+        VIVAGYM_EMAIL_KEY,
+        VIVAGYM_PASSWORD_KEY,
+      ];
+      await Promise.all(
+        activeSecureStoreKeys.map((key) => SecureStore.deleteItemAsync(key)),
+      );
+    }
+    await clearTraces();
+
     const initial = createInitialStore();
     setStore(initial);
     setProviderKeyVisibility(createProviderBooleanMap(false));
@@ -12341,7 +12278,7 @@ export default function App() {
         {tab === "chat" ? (
           <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4], gap: 10 }}>
             {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
-            {store.keys.some((k) => k.api_key.trim()) ? (
+            {IS_FAKE_PROVIDER_MODE || store.keys.some((k) => k.api_key.trim()) ? (
               <View style={{ flex: 1, gap: 10 }}>
                 <ScrollView
                   ref={chatScrollRef}
@@ -18179,7 +18116,7 @@ export default function App() {
                           >
                             {(["anthropic", "openai", "google"] as Provider[]).map((provider) => {
                               const k = store.keys.find((item) => item.provider === provider);
-                              const hasKey = !!(k?.api_key.trim());
+                              const hasKey = !!providerCredential(k?.api_key, IS_FAKE_PROVIDER_MODE);
                               const isSelected = dropdown.value === provider;
                               return (
                                 <Pressable
@@ -18240,8 +18177,8 @@ export default function App() {
                       api_key: key.api_key,
                       model: key.model,
                     };
-                    const hasDraftApiKey = !!draft.api_key.trim();
-                    const hasPersistedProviderApiKey = !!key.api_key.trim();
+                    const hasDraftApiKey = !!providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+                    const hasPersistedProviderApiKey = !!providerCredential(key.api_key, IS_FAKE_PROVIDER_MODE);
                     const keyVisible = providerKeyVisibility[key.provider];
                     const connectionStatus = providerConnectionStatus[key.provider] ?? {
                       state: hasDraftApiKey ? "unknown" : "disconnected",
@@ -18481,7 +18418,7 @@ export default function App() {
                               <Pressable
                                 onPress={() => {
     
-                                  const anthropicApiKey = draft.api_key.trim();
+                                  const anthropicApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
                                   if (!anthropicApiKey) {
                                     setAnthropicModelOptionsMessage({
                                       text: PROVIDER_STATUS_COPY.warningNoKey,
@@ -18679,7 +18616,7 @@ export default function App() {
                               <Pressable
                                 onPress={() => {
     
-                                  const openAIApiKey = draft.api_key.trim();
+                                  const openAIApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
                                   if (!openAIApiKey) {
                                     setOpenAIModelOptionsMessage({
                                       text: PROVIDER_STATUS_COPY.warningNoKey,
@@ -18960,7 +18897,7 @@ export default function App() {
                               <Pressable
                                 onPress={() => {
     
-                                  const googleApiKey = draft.api_key.trim();
+                                  const googleApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
                                   if (!googleApiKey) {
                                     setGoogleModelOptionsMessage({
                                       text: PROVIDER_STATUS_COPY.warningNoKey,
@@ -19156,7 +19093,7 @@ export default function App() {
                   ) : null}
 
                   <Pressable
-                    onPress={resetLocalData}
+                    onPress={() => void resetLocalData()}
                     style={{
                       marginTop: 4,
                       height: 44,
@@ -20589,6 +20526,44 @@ export default function App() {
                     </Pressable>
                   ) : null}
 
+                  {/* Guía del fabricante. Es la causa más común de que el aviso no
+                      suene en segundo plano, y no se arregla desde la app. */}
+                  {showBatteryGuidance && batteryGuidance ? (
+                    <Pressable
+                      onPress={() => Linking.openSettings()}
+                      style={{
+                        backgroundColor: alarmPunctuality.status === "late" ? "rgba(255,107,107,0.08)" : mobileTheme.color.bgSurface,
+                        borderRadius: 12,
+                        padding: 14,
+                        borderWidth: 1,
+                        borderColor: alarmPunctuality.status === "late" ? "rgba(255,107,107,0.35)" : mobileTheme.color.borderSubtle,
+                        gap: 6,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <Feather
+                          name="battery-charging"
+                          size={16}
+                          color={alarmPunctuality.status === "late" ? "#FF6B6B" : mobileTheme.color.textSecondary}
+                        />
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600", flex: 1 }}>
+                          {batteryGuidance.brand === "tu fabricante"
+                            ? "Tu móvil puede bloquear los avisos en segundo plano"
+                            : `Los móviles ${batteryGuidance.brand} bloquean los avisos en segundo plano`}
+                        </Text>
+                      </View>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                        Para ahorrar batería, el sistema congela las apps que no estás usando y el aviso de descanso no llega hasta que vuelves a abrir Gymnasia. No es algo que la app pueda cambiar por su cuenta.
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+                        {batteryGuidance.path}
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontStyle: "italic" }}>
+                        Este aviso desaparecerá solo cuando comprobemos que los avisos llegan puntuales.
+                      </Text>
+                    </Pressable>
+                  ) : null}
+
                   {/* Avisos de degradación, excluyentes y en orden de gravedad: sin
                       permiso de notificaciones no hay nada que ajustar más abajo. */}
                   {notifPermissionGranted === false ? (
@@ -20976,6 +20951,17 @@ export default function App() {
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
                     Restaurar sustituye por completo los datos actuales por los del archivo. Tus API keys se mantienen.
                   </Text>
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel="Ver qué contiene la copia de seguridad en la política de privacidad"
+                    testID="legal-backup-policy-link"
+                    onPress={() => { void openExternalUrl(`${resolvePrivacyPolicyUrl()}#copias`); }}
+                    hitSlop={8}
+                  >
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
+                      Qué contiene este archivo
+                    </Text>
+                  </Pressable>
                 </View>
               ) : null}
 
@@ -21292,9 +21278,33 @@ export default function App() {
 
               {/* Exercise detail rendered as fullscreen overlay below */}
 
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, textAlign: "center", marginTop: 8, opacity: 0.6 }}>
-                Gymnasia v{Constants.expoConfig?.version ?? "?"}
-              </Text>
+              <View
+                style={{
+                  marginTop: 8,
+                  alignSelf: "center",
+                  maxWidth: 520,
+                  width: "100%",
+                  borderWidth: 1,
+                  borderColor: "rgba(203,255,26,0.32)",
+                  backgroundColor: "rgba(203,255,26,0.06)",
+                  borderRadius: mobileTheme.radius.md,
+                  paddingHorizontal: 12,
+                  paddingVertical: 9,
+                  gap: 3,
+                }}
+              >
+                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.8 }}>
+                  {RUNTIME_ENVIRONMENT.environment} · {activePolicySelection?.channel ?? RUNTIME_ENVIRONMENT.policyChannel} · {RUNTIME_ENVIRONMENT.providerMode}
+                </Text>
+                <Text numberOfLines={1} style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                  Política {activePolicySelection?.candidate ?? RUNTIME_ENVIRONMENT.policyCandidate} · {(activePolicySelection?.sha256 ?? RUNTIME_ENVIRONMENT.policySha256).slice(0, 12)}
+                </Text>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, opacity: 0.72 }}>
+                  Gymnasia v{Constants.expoConfig?.version ?? "?"} · config v{RUNTIME_ENVIRONMENT.configurationVersion}
+                </Text>
+              </View>
+
+              <LegalFooter />
             </View>
           ) : null}
         </Animated.ScrollView>
@@ -22092,7 +22102,7 @@ export default function App() {
             </Text>
             <Pressable
               onPress={() => {
-                Linking.openURL(updateInfo.url);
+                void openExternalUrl(updateInfo.url);
                 setUpdateInfo(null);
               }}
               style={{
@@ -22162,7 +22172,7 @@ export default function App() {
             </Text>
             <Pressable
               onPress={() => {
-                Linking.openURL(updatesConfirmInfo.url);
+                void openExternalUrl(updatesConfirmInfo.url);
                 setUpdatesConfirmInfo(null);
               }}
               style={{

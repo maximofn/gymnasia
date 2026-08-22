@@ -9,6 +9,7 @@ on:
         default: "preview"
         type: choice
         options:
+          - staging
           - preview
           - production
   push:
@@ -17,6 +18,13 @@ on:
       - "apps/mobile/**"
       - "!apps/mobile/scripts/**"
       - "!apps/mobile/**/*.md"
+      # apps/mobile/public/ solo lo consume `expo export --platform web`: EAS no lo
+      # empaqueta en el AAB ni en el APK. Republicar la política de privacidad no
+      # debe gastar una compilación de la cuota mensual (GYM-190).
+      - "!apps/mobile/public/**"
+      # Los tests no entran en el bundle: cambiarlos no produce un binario distinto.
+      - "!apps/mobile/**/*.test.ts"
+      - "!apps/mobile/**/*.test.tsx"
 
 concurrency:
   group: build-apk-${{ github.ref }}
@@ -29,6 +37,7 @@ jobs:
     # alone can exceed 60 min, which cancelled the job mid-wait (build kept
     # queued on Expo but no release was published). Give the queue extra margin.
     timeout-minutes: 120
+    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.profile == 'production') && 'Production' || 'Staging' }}
     permissions:
       contents: write
 
@@ -50,17 +59,27 @@ jobs:
       - name: Verify bundled chat prompt snapshot
         run: npm run check:chat-prompt
 
+      - name: Resolve build profile
+        id: profile
+        run: |
+          PROFILE="${{ github.event.inputs.profile || 'staging' }}"
+          echo "profile=$PROFILE" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare integrated snapshot from the active policy channel
+        env:
+          BUILD_PROFILE: ${{ steps.profile.outputs.profile }}
+        run: |
+          ENVIRONMENT="staging"
+          test "$BUILD_PROFILE" != "production" || ENVIRONMENT="production"
+          node scripts/policy-promotion/prepare-policy-snapshot.mjs \
+            --environment "$ENVIRONMENT" \
+            --github-env "$GITHUB_ENV"
+
       - name: Setup EAS CLI
         uses: expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e # v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Resolve build profile
-        id: profile
-        run: |
-          PROFILE="${{ github.event.inputs.profile || 'preview' }}"
-          echo "profile=$PROFILE" >> "$GITHUB_OUTPUT"
 
       - name: Compute next version from conventional commits
         id: version
@@ -144,6 +163,7 @@ jobs:
           ls -lh gymnasia.apk
 
       - name: Generate changelog
+        if: steps.profile.outputs.profile == 'production'
         id: changelog
         run: |
           LATEST_TAG=$(git tag --list 'v*' --sort=-version:refname | head -1)
@@ -160,23 +180,55 @@ jobs:
             echo "CHANGELOG_EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+      - name: Upload internal Staging APK
+        if: steps.profile.outputs.profile != 'production'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          name: "Gymnasia ${{ steps.version.outputs.next }}"
-          body: |
-            ## Gymnasia ${{ steps.version.outputs.next }}
+          name: gymnasia-${{ steps.profile.outputs.profile }}-${{ github.sha }}
+          path: gymnasia.apk
+          if-no-files-found: error
+          retention-days: 14
 
-            **Build profile:** `${{ steps.profile.outputs.profile }}`
-            **Version bump:** `${{ steps.version.outputs.current }}` -> `${{ steps.version.outputs.next }}` (${{ steps.version.outputs.bump }})
+      - name: Create draft APK release
+        if: steps.profile.outputs.profile == 'production'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          NEXT_VERSION: ${{ steps.version.outputs.next }}
+          CURRENT_VERSION: ${{ steps.version.outputs.current }}
+          VERSION_BUMP: ${{ steps.version.outputs.bump }}
+          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BODY_FILE="$(mktemp)"
+          {
+            echo "## Gymnasia ${NEXT_VERSION}"
+            echo
+            echo "**Build profile:** production"
+            echo "**Version bump:** ${CURRENT_VERSION} -> ${NEXT_VERSION} (${VERSION_BUMP})"
+            echo
+            echo "### Changes"
+            echo "$CHANGELOG"
+            echo
+            echo "### Install"
+            echo 'Download `gymnasia.apk` and install it on Android.'
+          } > "$BODY_FILE"
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Gymnasia ${NEXT_VERSION}" \
+            --notes-file "$BODY_FILE" \
+            --draft
 
-            ### Changes
-            ${{ steps.changelog.outputs.changelog }}
+      - name: Attach APK before publishing release
+        if: steps.profile.outputs.profile == 'production'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ steps.version.outputs.tag }}" gymnasia.apk --repo "$GITHUB_REPOSITORY"
 
-            ### Install
-            Download `gymnasia.apk` and install on your Android device.
-            You may need to enable "Install from unknown sources" in Android settings.
-          files: gymnasia.apk
-          draft: false
-          prerelease: false
+      - name: Publish immutable APK release
+        if: steps.profile.outputs.profile == 'production'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "${{ steps.version.outputs.tag }}" --repo "$GITHUB_REPOSITORY" --draft=false --latest

@@ -13,12 +13,17 @@ import { chromium } from "playwright";
 const DEFAULT_PORT = 8091;
 const SERVER_BOOT_TIMEOUT_MS = 120000;
 const STEP_TIMEOUT_MS = 30000;
-const STORE_KEY = "gymnasia.mobile.local.v3";
-const PERSONAL_DATA_KEY = "gymnasia.mobile.personal_data.v1";
-const UPDATE_CHECK_KEY = "gymnasia.mobile.lastUpdateCheck";
-const CHAT_PROMPT_CACHE_KEY = "gymnasia.mobile.chat.system_prompt.v2";
-const TRACE_KEY = "gymnasia_debug_traces";
+const STAGING_NAMESPACE = "gymnasia.staging";
+const scopedKey = (key) => `${STAGING_NAMESPACE}:${key}`;
+const STORE_KEY = scopedKey("gymnasia.mobile.local.v3");
+const PERSONAL_DATA_KEY = scopedKey("gymnasia.mobile.personal_data.v1");
+const UPDATE_CHECK_KEY = scopedKey("gymnasia.mobile.lastUpdateCheck");
+const CHAT_PROMPT_CACHE_KEY = scopedKey("gymnasia.mobile.chat.system_prompt.v3");
+const TRACE_KEY = scopedKey("gymnasia_debug_traces");
 const PROMPT_NORMALIZATION_VERSION = 1;
+const SOURCE_COMMIT = "a".repeat(40);
+const POLICY_CANDIDATE = "policy-v2026.08.1-aaaaaaaaaaaa";
+const POLICY_DEPLOYMENT_ID = 4242;
 const mobileRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const repositoryRoot = dirname(dirname(mobileRoot));
 const bundledPrompt = readFileSync(join(repositoryRoot, "prompts", "AGENTS.md"), "utf8")
@@ -92,10 +97,10 @@ async function ensureWebServer() {
   logStep("Exportando el bundle web");
   const child = spawn(
     "npm",
-    ["--workspace", "apps/mobile", "run", "build:web"],
+    ["--workspace", "apps/mobile", "run", "build:web", "--", "--clear"],
     {
       stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env, CI: process.env.CI ?? "1" },
+      env: { ...process.env, APP_ENV: "staging", CI: process.env.CI ?? "1" },
     },
   );
   child.stdout.on("data", (chunk) => {
@@ -194,10 +199,14 @@ function createSeedStoreWithoutKeys() {
 
 function createPromptCacheRecord(content) {
   return JSON.stringify({
-    schemaVersion: 2,
+    schemaVersion: 3,
     normalizationVersion: PROMPT_NORMALIZATION_VERSION,
     content,
     sha256: sha256(content),
+    environment: "staging",
+    channel: "Staging",
+    candidate: POLICY_CANDIDATE,
+    deploymentId: POLICY_DEPLOYMENT_ID,
   });
 }
 
@@ -294,6 +303,9 @@ async function runNoKeyDisclosureE2E(page, baseUrl) {
   await page.route("**/dev-store", async (route) => {
     await route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
   });
+  await page.route("https://api.github.com/repos/maximofn/gymnasia/deployments**", async (route) => {
+    await route.fulfill({ status: 503, contentType: "application/json", body: "{}" });
+  });
 
   logStep("Comprobando la divulgación sin API key en viewport pequeño");
   await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
@@ -360,13 +372,51 @@ async function runAgentChatE2E(
     await route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
   });
   await page.route("https://raw.githubusercontent.com/**", async (route) => {
-    const isPrompt = route.request().url().includes("/prompts/AGENTS.md");
     await route.fulfill({
-      status: isPrompt ? promptScenario.response.status : 200,
-      contentType: isPrompt
-        ? promptScenario.response.contentType
-        : "application/json",
-      body: isPrompt ? promptScenario.response.body : "[]",
+      status: 200,
+      contentType: "application/json",
+      body: "[]",
+    });
+  });
+  await page.route("https://api.github.com/repos/maximofn/gymnasia/deployments**", async (route) => {
+    const requestUrl = route.request().url();
+    if (requestUrl.endsWith(`/deployments/${POLICY_DEPLOYMENT_ID}/statuses`)) {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([{ state: "success" }]),
+      });
+      return;
+    }
+    const digest = sha256(promptScenario.prompt);
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([{
+        id: POLICY_DEPLOYMENT_ID,
+        task: "gymnasia-policy",
+        environment: "Staging",
+        statuses_url: `https://api.github.com/repos/maximofn/gymnasia/deployments/${POLICY_DEPLOYMENT_ID}/statuses`,
+        payload: {
+          schemaVersion: 1,
+          candidate: POLICY_CANDIDATE,
+          sourceCommit: SOURCE_COMMIT,
+          assetUrl: `https://github.com/maximofn/gymnasia/releases/download/${POLICY_CANDIDATE}/policy.md`,
+          assetSha256: digest,
+          policyVersion: "2026.08.1",
+          datasetVersion: "2026.08.1",
+          promptVersion: `sha256:${digest}`,
+          reportSha256: "b".repeat(64),
+          workflowRunUrl: "https://github.com/maximofn/gymnasia/actions/runs/123",
+        },
+      }]),
+    });
+  });
+  await page.route(`https://github.com/maximofn/gymnasia/releases/download/${POLICY_CANDIDATE}/policy.md`, async (route) => {
+    await route.fulfill({
+      status: promptScenario.response.status,
+      contentType: promptScenario.response.contentType,
+      body: promptScenario.response.body,
     });
   });
 

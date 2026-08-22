@@ -17,6 +17,14 @@ const generatedPath = join(
   "generated",
   "chatSystemPrompt.generated.ts",
 );
+const generatedMetadataPath = join(
+  repositoryRoot,
+  "apps",
+  "mobile",
+  "agent",
+  "generated",
+  "policySnapshot.generated.json",
+);
 
 export function normalizeChatSystemPromptSource(value) {
   return value.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
@@ -36,6 +44,19 @@ export const BUNDLED_CHAT_SYSTEM_PROMPT_SHA256 = ${JSON.stringify(sha256)};
 export const BUNDLED_CHAT_SYSTEM_PROMPT_VERSION = ${JSON.stringify(`sha256:${sha256}`)};
 export const BUNDLED_CHAT_SYSTEM_PROMPT = ${JSON.stringify(content)};
 `;
+}
+
+export function renderLocalPolicySnapshotMetadata(source) {
+  const content = normalizeChatSystemPromptSource(source);
+  const sha256 = createHash("sha256").update(content, "utf8").digest("hex");
+  return `${JSON.stringify({
+    schemaVersion: 1,
+    environment: "development",
+    channel: "Local",
+    candidate: `sha256:${sha256}`,
+    sha256,
+    deploymentId: null,
+  }, null, 2)}\n`;
 }
 
 function readSourceAsUtf8() {
@@ -60,10 +81,13 @@ function main() {
     return;
   }
 
-  const expected = renderChatSystemPromptSnapshot(readSourceAsUtf8());
+  const source = readSourceAsUtf8();
+  const expected = renderChatSystemPromptSnapshot(source);
+  const expectedMetadata = renderLocalPolicySnapshotMetadata(source);
   if (mode === "--write") {
     mkdirSync(dirname(generatedPath), { recursive: true });
     writeFileSync(generatedPath, expected, "utf8");
+    writeFileSync(generatedMetadataPath, expectedMetadata, "utf8");
     console.log(
       `Snapshot actualizado: ${relative(repositoryRoot, generatedPath)}`,
     );
@@ -71,12 +95,14 @@ function main() {
   }
 
   let actual = null;
+  let actualMetadata = null;
   try {
     actual = readFileSync(generatedPath, "utf8");
+    actualMetadata = readFileSync(generatedMetadataPath, "utf8");
   } catch {
     // El mensaje común de divergencia explica cómo crear el archivo.
   }
-  if (actual !== expected) {
+  if (actual !== expected || actualMetadata !== expectedMetadata) {
     console.error(
       [
         "El snapshot integrado no corresponde a prompts/AGENTS.md.",

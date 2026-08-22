@@ -9,8 +9,19 @@
   "checks": {
     "policy": "prompt-policy",
     "ownerAuthorization": "gymnasia/owner-authorization",
+    "policyPromotion": "gymnasia/policy-promotion",
     "githubActionsAppId": 15368
   },
+  "promotionPaths": [
+    {
+      "path": "prompts/",
+      "kind": "directory"
+    },
+    {
+      "path": "policy/health-safety/",
+      "kind": "directory"
+    }
+  ],
   "sensitivePaths": [
     {
       "path": ".github/",
@@ -43,6 +54,16 @@
       "reason": "Policy generator, authorization reconciler and tests"
     },
     {
+      "path": "scripts/health-safety/",
+      "kind": "directory",
+      "reason": "Health policy generator, blocking validator, fixtures and reports"
+    },
+    {
+      "path": "scripts/policy-promotion/",
+      "kind": "directory",
+      "reason": "Policy deployment validation, snapshot generation and contracts"
+    },
+    {
       "path": "AGENTS.md",
       "kind": "file",
       "reason": "Repository agent instructions"
@@ -71,6 +92,16 @@
       "path": "docs/security/prompt-policy-governance.md",
       "kind": "file",
       "reason": "Policy governance and account-security procedure"
+    },
+    {
+      "path": "docs/architecture/health-safety-policy.md",
+      "kind": "file",
+      "reason": "Health policy lifecycle, guarantees and clinical review procedure"
+    },
+    {
+      "path": "docs/architecture/policy-environments.md",
+      "kind": "file",
+      "reason": "Environment isolation and immutable policy promotion procedure"
     }
   ]
 }
