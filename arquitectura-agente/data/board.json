@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-21",
+    "updated": "2026-08-22",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -89,7 +89,7 @@
         {
           "id": "GYM-190",
           "title": "Publicar la política de privacidad y completar las declaraciones de salud",
-          "state": "todo",
+          "state": "done",
           "summary": "Publicar una política HTTPS coherente con el almacenamiento local, BYOK y los datos de salud, y alinear con ella Data safety y las declaraciones de salud e IA de Play.",
           "dependsOn": [],
           "related": [
@@ -124,7 +124,7 @@
         {
           "id": "GYM-193",
           "title": "Comprobar la disponibilidad legal y comercial de la marca Gymnasia",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Buscar conflictos relevantes en OEPM, EUIPO, Google Play y canales comerciales y decidir si se conserva o ajusta el nombre antes de consolidar la ficha.",
           "dependsOn": [],
           "related": [
@@ -306,12 +306,11 @@
         {
           "id": "GYM-144",
           "title": "Formalizar dev, staging y producción para la política del agente",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Formalizar entornos aislados y promover el mismo artefacto reutilizando `npm run check:health-safety` de GYM-145 como puerta obligatoria, con evidencia versionada y sin bypass en la vía crítica.",
           "baseline": "partial",
           "dependsOn": [
-            "GYM-142",
-            "GYM-145"
+            "GYM-142"
           ],
           "related": [
             "GYM-124"
@@ -335,7 +334,7 @@
         {
           "id": "GYM-145",
           "title": "Crear una suite de seguridad sanitaria para cambios del agente",
-          "state": "done",
+          "state": "in_progress",
           "summary": "Crear `policy/health-safety/` como fuente canónica y `npm run check:health-safety`; las reglas provisionales ya protegen el prompt y CI, las approved requieren revisión profesional y el LLM solo informa.",
           "baseline": "partial",
           "dependsOn": [
@@ -368,12 +367,11 @@
         {
           "id": "GYM-143",
           "title": "Añadir una barrera sanitaria independiente del system prompt",
-          "state": "todo",
+          "state": "done",
           "summary": "Aplicar una base sanitaria que la política remota no pueda desactivar y validar salidas de alto riesgo antes de mostrarlas, incluso sin conexión.",
           "baseline": "missing",
           "dependsOn": [
-            "GYM-139",
-            "GYM-145"
+            "GYM-139"
           ],
           "related": [
             "GYM-68",
@@ -1853,7 +1851,7 @@
         },
         {
           "id": "GYM-54",
-          "title": "Sustituir los escritores no-op de GitHub Issues por un flujo seguro y verificable",
+          "title": "Crear un backend seguro para incidencias y mantener create_feature_issue",
           "state": "todo",
           "summary": "Eliminar el falso éxito de create_feature_issue y reemplazar los tres escritores inactivos por un handoff explícito y comprobable, sin incrustar tokens de escritura en la app.",
           "dependsOn": [],
