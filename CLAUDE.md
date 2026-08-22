@@ -143,6 +143,10 @@ Run from repo root unless noted.
 The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - deterministic tests: `npm test`
 - browser E2E with a fake OpenAI provider: `npm run test:agent:e2e`
+- published privacy policy E2E: `npm run test:privacy:e2e` (exports the web build and
+  reads it with a clean browser context; `PRIVACY_E2E_SKIP_EXPORT=1` reuses `dist/`)
+- data inventory guard rail: `npm run check:data-inventory`, `npm run test:data-inventory`
+- generated privacy policy: `npm run check:legal`, `npm run test:legal`, `npm run sync:legal`
 - mobile type-check: `npm --workspace apps/mobile exec tsc --noEmit`
 - LLM eval boundary: `npm run test:llm` (reserved for LangSmith; never part of commit-blocking CI)
 
@@ -177,11 +181,14 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
       - "apps/mobile/**"
       - "!apps/mobile/scripts/**"
       - "!apps/mobile/**/*.md"
+      - "!apps/mobile/public/**"
   ```
   Es decir, solo compila si el push toca `apps/mobile/**`, y ni siquiera entonces
-  si son únicamente scripts o markdown. Cambios en `.claude/`, `CLAUDE.md`,
-  `arquitectura-agente/`, `ejercicios/`, `alimentos/` o `.github/` **no gastan
-  build**. La cuota mensual de Expo es limitada, así que verifica el filtro antes
+  si son únicamente scripts, markdown o ficheros de `public/`. Cambios en
+  `.claude/`, `CLAUDE.md`, `arquitectura-agente/`, `ejercicios/`, `alimentos/` o
+  `.github/` **no gastan build**. `apps/mobile/public/` tampoco: solo lo consume
+  `expo export --platform web`, EAS no lo empaqueta en el AAB, y ahí vive la
+  política de privacidad publicada, que debe poder republicarse sin gastar cuota. La cuota mensual de Expo es limitada, así que verifica el filtro antes
   de asumir que un push es caro — y pide confirmación igualmente.
 - PR description should include: summary, impacted paths, commands executed, and screenshots for UI updates.
 
@@ -191,6 +198,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - **Hugging Face token**: `HF_TOKEN` in the root `.env`. Required (HF PRO) by the `nano-banana` backend for exercise image generation. The script loads it via `load_dotenv(<repo>/.env)` and reads `os.environ["HF_TOKEN"]` (see `image-generation/generate_images.py` and skill `generate-exercise-image`). The `z-image-turbo` and `flux2-dev` backends work without it.
 
 ## Documentation Maintenance
+- **El texto legal tiene una única fuente**: `docs/legal/privacy-policy.{es,en}.md`.
+  El HTML publicado (`apps/mobile/public/{privacidad,privacy}/`) y el módulo que
+  consume la app (`apps/mobile/agent/generated/legalCopy.generated.ts`) son
+  generados: no se editan a mano. Tras tocar la política, `npm run sync:legal`;
+  `npm run check:legal` falla en CI si los artefactos no corresponden. Nunca
+  escribas el descargo sanitario ni la URL de la política como literales en
+  componentes, igual que con `apps/mobile/agent/aiTransparency.ts`.
+- **Cualquier cambio que toque datos tratados** (una clave de almacenamiento, un
+  host, un permiso, lo que se envía a un proveedor, lo que borra el reset) exige
+  actualizar `scripts/data-inventory/inventory.json` y recorrer
+  `docs/legal/privacy-change-checklist.md`. `npm run check:data-inventory` falla si
+  el inventario deja de describir el código.
 - Keep `AGENTS.md` and root `CLAUDE.md` synchronized whenever repository instructions change.
 - `AGENTS.md` es un link de `CLAUDE.md` por lo que modificando uno se debe actualizar el otro.
 - Update `README.md` whenever the project structure, dependencies, or startup instructions change.
@@ -282,7 +301,34 @@ Only non-obvious gotchas that could recur are kept here.
 ### Clearing `localStorage` does NOT reset the app on web — it also persists to `.dev-store.json`
 - Gotcha: on web + `__DEV__`, `App.tsx` (`loadDevStoreFile` / `saveDevStoreFile`) mirrors the store to `apps/mobile/.dev-store.json` through a Metro middleware (`metro.config.js`, `/dev-store` endpoint) so data survives dev-server restarts. On boot it reads that file back, so wiping `localStorage` leaves the app fully populated. The file is served per dev server, not per origin, so `localhost:8081` and `127.0.0.1:8081` restore the *same* data even though their `localStorage` is separate.
 - Fix: to test a clean install on web, empty the file too (`printf '{}' > apps/mobile/.dev-store.json`) and make sure no tab still has the app running — a live instance re-persists its in-memory state on the way out, silently undoing the wipe.
-- Note: a fresh boot also re-runs the body-fat migration (`gymnasia.mobile.body_fat_migration_done`), which injects ~90 body-fat-only measurements. Expect the measurement count to differ from what you seeded.
+- Note: a fresh boot used to re-run a body-fat migration that injected ~90 body-fat-only measurements. It was removed in GYM-190 because the data was not the user's, so a clean install now starts with no measurements on mobile. On web, the first load still seeds demo data via `createWebSeedStore()`.
+
+### Hay DOS proyectos de Vercel, y la política de privacidad vive en el segundo
+- Gotcha: `gymnasia` y `gymnasia-web` son proyectos distintos y es fácil confundirlos,
+  porque el nombre corto es el del tablero, no el de la app.
+  - `gymnasia` → `arquitectura-agente/` → <https://gymnasia-sable.vercel.app> (tablero).
+  - `gymnasia-web` → `apps/mobile/` → <https://gymnasia.maximofn.com> (export web de la
+    app, y **la política de privacidad publicada en `/privacidad` y `/privacy`**).
+- Ninguno de los dos se despliega en el push: `vercel project ls` mostraba
+  `gymnasia-web` sin actualizar desde hacía 15 días mientras `main` seguía avanzando.
+  Mergear la política **no la publica**; hay que lanzar la CLI a mano.
+- `apps/mobile/` no tiene `.vercel/` (está git-ignored), así que desplegar sin enlazar
+  crearía un proyecto nuevo llamado `mobile`. Enlazar primero, siempre:
+  ```bash
+  npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd apps/mobile
+  npm exec --yes -- vercel@latest deploy --prod --yes --cwd apps/mobile
+  ```
+  La salida debe decir `Deploying gymnasia-web` y aliar `gymnasia.maximofn.com`. Si dice
+  `Created`, detente: está creando otro proyecto.
+- Verificar después, con `curl` y no con Playwright (no tiene salida a internet en el
+  sandbox del agente):
+  ```bash
+  curl -sS -o /dev/null -w '%{http_code}\n' https://gymnasia.maximofn.com/privacidad
+  curl -sS https://gymnasia.maximofn.com/privacidad | grep -o 'gymnasia-policy-digest" content="[^"]*"'
+  ```
+  El digest debe coincidir con `PRIVACY_POLICY_DIGESTS` de
+  `apps/mobile/agent/generated/legalCopy.generated.ts`. Si no coincide, lo publicado no
+  es lo que se revisó.
 
 ### Vercel no despliega `arquitectura-agente/` en el push: la integración de Git está inactiva
 - Gotcha: el repo *parece* conectado a Vercel — hay deployments de `vercel[bot]` en

@@ -46,32 +46,31 @@ El agente es una capacidad en proceso de la aplicación Expo, no un servicio de 
 
 ## Ciclo de vida de extremo a extremo
 
-<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 16: ...dates Adapter->>Loop: Parsed provide Expecting '+', '-', '()', 'ACTOR', got 'loop' -->
-```text
+```mermaid
 sequenceDiagram
     participant User
     participant Send as sendMessage
     participant Store as LocalStore
-    participant Adapter as callProviderChatAPIWithTools
+    participant Adapter as ProviderAdapter
     participant Provider
-    participant Loop as providerToolLoop
-    participant Executor as createAgentToolExecutor
-    User->>Send: Submit nonempty chat input
-    Send->>Store: Append user message and streaming draft
-    Send->>Send: Load prompt and personal debug field
-    Send->>Adapter: System prompt plus last 20 messages
+    participant ToolLoop as ProviderToolLoop
+    participant Executor as ToolExecutor
+    User->>Send: Send nonempty input
+    Send->>Store: Append user and draft messages
+    Send->>Send: Load prompt and debug field
+    Send->>Adapter: Prompt and last 20 messages
     Adapter->>Provider: Stream request with CHAT_TOOLS
     Provider-->>Adapter: Text thinking and tool calls
     Adapter-->>Store: Throttled draft updates
-    Adapter->>Loop: Parsed provider turn
-    loop Up to 10 tool rounds
-        Loop->>Executor: executeTool name and arguments
-        Executor->>Store: Read or mutate domain data
-        Executor-->>Loop: String result
-        Loop->>Provider: Correlated tool result
-        Provider-->>Loop: Next parsed turn
+    Adapter->>ToolLoop: Parsed provider turn
+    loop Up to 10 rounds
+        ToolLoop->>Executor: Execute name and arguments
+        Executor->>Store: Read or mutate local data
+        Executor-->>ToolLoop: String result
+        ToolLoop->>Provider: Correlated tool result
+        Provider-->>ToolLoop: Next parsed turn
     end
-    Adapter-->>Send: Final content and optional thinking
+    Adapter-->>Send: Final content and thinking
     Send->>Store: Finalize assistant message
 ```
 

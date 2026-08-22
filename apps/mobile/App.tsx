@@ -107,6 +107,9 @@ import {
   FAKE_PROVIDER_MODELS,
   providerCredential,
 } from "./agent/providerTransport";
+import { LegalFooter } from "./LegalFooter";
+import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
+import { openExternalUrl } from "./openExternalUrl";
 
 // Foreground notification presentation handler. Without this, scheduled
 // notifications delivered while the app is in the foreground are silently
@@ -556,6 +559,10 @@ const SECURE_STORE_API_KEY_PREFIX = scopedSecureStoreKey("gymnasia.mobile.v3.pro
 const LEGACY_STORAGE_KEYS = [
   scopedStorageKey("gymnasia.mobile.local.v1"),
   scopedStorageKey("gymnasia.mobile.local.v2"),
+  // Marcaba una migración que inyectaba un histórico de grasa corporal ajeno al
+  // usuario. La migración se retiró; la marca solo sobrevive en instalaciones
+  // antiguas y no significa nada.
+  scopedStorageKey("gymnasia.mobile.body_fat_migration_done"),
 ];
 const LEGACY_SECURE_STORE_PREFIXES = [
   scopedSecureStoreKey("gymnasia.mobile.provider.api_key"),
@@ -1313,101 +1320,6 @@ async function saveMeasurementsToStorage(measurements: Measurement[]): Promise<v
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
   } catch {
     /* silently fail — component useEffect will persist next cycle */
-  }
-}
-
-const BODY_FAT_MIGRATION_KEY = scopedStorageKey("gymnasia.mobile.body_fat_migration_done");
-const BODY_FAT_HISTORY_DATA: Array<{ date: string; pct: number }> = [
-  { date: "2025-07-06", pct: 16.1 }, { date: "2025-07-07", pct: 16.1 },
-  { date: "2025-09-03", pct: 18.2 }, { date: "2025-09-04", pct: 18.1 },
-  { date: "2025-09-05", pct: 17.8 }, { date: "2025-09-06", pct: 17.9 },
-  { date: "2025-09-07", pct: 17.8 }, { date: "2025-09-08", pct: 17.7 },
-  { date: "2025-09-10", pct: 17.7 }, { date: "2025-09-11", pct: 17.4 },
-  { date: "2025-09-12", pct: 17.6 }, { date: "2025-09-13", pct: 16.9 },
-  { date: "2025-09-14", pct: 17.5 }, { date: "2025-09-15", pct: 18.2 },
-  { date: "2025-09-16", pct: 18.6 }, { date: "2025-09-18", pct: 17.2 },
-  { date: "2025-09-19", pct: 17.9 }, { date: "2025-09-20", pct: 18.0 },
-  { date: "2025-09-22", pct: 18.6 }, { date: "2025-09-23", pct: 17.7 },
-  { date: "2025-09-25", pct: 17.6 }, { date: "2025-09-26", pct: 18.0 },
-  { date: "2025-09-27", pct: 17.6 }, { date: "2025-09-28", pct: 17.5 },
-  { date: "2025-09-29", pct: 17.7 }, { date: "2025-09-30", pct: 17.6 },
-  { date: "2025-10-02", pct: 17.7 }, { date: "2025-10-03", pct: 17.4 },
-  { date: "2025-10-05", pct: 17.1 }, { date: "2025-10-06", pct: 17.4 },
-  { date: "2025-10-07", pct: 17.8 }, { date: "2025-10-08", pct: 17.9 },
-  { date: "2025-10-09", pct: 17.9 }, { date: "2025-10-17", pct: 18.1 },
-  { date: "2025-10-26", pct: 18.2 }, { date: "2025-12-27", pct: 20.3 },
-  { date: "2025-12-28", pct: 20.8 }, { date: "2025-12-30", pct: 20.2 },
-  { date: "2026-01-05", pct: 20.4 }, { date: "2026-01-07", pct: 20.4 },
-  { date: "2026-01-09", pct: 20.3 }, { date: "2026-01-11", pct: 19.5 },
-  { date: "2026-01-12", pct: 20.2 }, { date: "2026-01-13", pct: 19.7 },
-  { date: "2026-01-14", pct: 19.7 }, { date: "2026-01-15", pct: 19.6 },
-  { date: "2026-01-16", pct: 19.3 }, { date: "2026-01-17", pct: 19.2 },
-  { date: "2026-01-18", pct: 19.6 }, { date: "2026-01-19", pct: 20.2 },
-  { date: "2026-01-20", pct: 19.9 }, { date: "2026-01-22", pct: 19.0 },
-  { date: "2026-01-24", pct: 19.6 }, { date: "2026-01-25", pct: 19.5 },
-  { date: "2026-01-27", pct: 19.5 }, { date: "2026-01-29", pct: 19.1 },
-  { date: "2026-01-30", pct: 20.0 }, { date: "2026-01-31", pct: 18.9 },
-  { date: "2026-02-01", pct: 19.5 }, { date: "2026-02-04", pct: 19.3 },
-  { date: "2026-02-05", pct: 18.3 }, { date: "2026-02-07", pct: 19.3 },
-  { date: "2026-02-08", pct: 19.6 }, { date: "2026-02-09", pct: 20.2 },
-  { date: "2026-02-10", pct: 18.7 }, { date: "2026-02-11", pct: 18.9 },
-  { date: "2026-02-13", pct: 19.0 }, { date: "2026-02-14", pct: 19.0 },
-  { date: "2026-02-15", pct: 19.2 }, { date: "2026-02-16", pct: 19.1 },
-  { date: "2026-02-17", pct: 18.6 }, { date: "2026-02-18", pct: 18.8 },
-  { date: "2026-02-19", pct: 18.8 }, { date: "2026-02-20", pct: 19.3 },
-  { date: "2026-02-24", pct: 19.0 }, { date: "2026-02-25", pct: 19.0 },
-  { date: "2026-02-27", pct: 19.5 }, { date: "2026-03-03", pct: 18.4 },
-  { date: "2026-03-04", pct: 18.8 }, { date: "2026-03-06", pct: 19.5 },
-  { date: "2026-03-12", pct: 18.6 }, { date: "2026-03-13", pct: 18.8 },
-  { date: "2026-03-14", pct: 18.2 }, { date: "2026-03-16", pct: 19.3 },
-  { date: "2026-03-17", pct: 19.1 }, { date: "2026-03-18", pct: 18.6 },
-  { date: "2026-03-20", pct: 18.5 }, { date: "2026-03-22", pct: 18.6 },
-  { date: "2026-03-23", pct: 18.1 }, { date: "2026-03-24", pct: 18.6 },
-  { date: "2026-03-25", pct: 17.9 }, { date: "2026-03-26", pct: 18.0 },
-];
-
-async function migrateBodyFatHistory(
-  setStore: (updater: (prev: LocalStore) => LocalStore) => void,
-): Promise<void> {
-  try {
-    const done = await AsyncStorage.getItem(BODY_FAT_MIGRATION_KEY);
-    if (done === "1") return;
-    const measurements = await loadMeasurementsFromStorage();
-    let changed = false;
-    for (const entry of BODY_FAT_HISTORY_DATA) {
-      const existing = measurements.find((m) => m.measured_at.startsWith(entry.date));
-      if (existing) {
-        if (existing.body_fat_pct === null || existing.body_fat_pct === undefined) {
-          existing.body_fat_pct = entry.pct;
-          changed = true;
-        }
-      } else {
-        measurements.push({
-          id: uid("measurement"),
-          measured_at: new Date(entry.date + "T12:00:00").toISOString(),
-          weight_kg: null,
-          body_fat_pct: entry.pct,
-          photo_uri: null,
-          neck_cm: null,
-          chest_cm: null,
-          waist_cm: null,
-          hips_cm: null,
-          biceps_cm: null,
-          quadriceps_cm: null,
-          calf_cm: null,
-          height_cm: null,
-        });
-        changed = true;
-      }
-    }
-    if (changed) {
-      const sorted = sortMeasurementsDesc(measurements);
-      await saveMeasurementsToStorage(sorted);
-      setStore((prev) => ({ ...prev, measurements: sorted }));
-    }
-    await AsyncStorage.setItem(BODY_FAT_MIGRATION_KEY, "1");
-  } catch {
-    /* silently fail */
   }
 }
 
@@ -5530,153 +5442,6 @@ function normalizeDietByDate(rawValue: unknown): Record<string, DietDay> {
   return normalized;
 }
 
-function createWebSeedStore(): LocalStore {
-  const threadId = uid("thread");
-  const today = new Date().toISOString().slice(0, 10);
-  return {
-    templates: [
-      {
-        id: uid("tpl"),
-        name: "Tren Superior — Fuerza",
-        category: "strength",
-        icon: "activity",
-        duration_minutes: "45",
-        exercises: [
-          {
-            id: uid("ex"),
-            name: "Press banca",
-            muscle: "pecho",
-            sets: [8, 8, 8, 6],
-            series: [
-              { id: uid("set"), type: "warmup", reps: "12", weight_kg: "40", rest_seconds: "60" },
-              { id: uid("set"), reps: "8", weight_kg: "70", rest_seconds: "120" },
-              { id: uid("set"), reps: "8", weight_kg: "70", rest_seconds: "120" },
-              { id: uid("set"), reps: "6", weight_kg: "75", rest_seconds: "150" },
-            ],
-            load_kg: 70,
-            rest_seconds: 120,
-          },
-          {
-            id: uid("ex"),
-            name: "Remo con barra",
-            muscle: "espalda",
-            sets: [10, 10, 10],
-            series: [
-              { id: uid("set"), reps: "10", weight_kg: "60", rest_seconds: "90" },
-              { id: uid("set"), reps: "10", weight_kg: "60", rest_seconds: "90" },
-              { id: uid("set"), reps: "10", weight_kg: "60", rest_seconds: "90" },
-            ],
-            load_kg: 60,
-            rest_seconds: 90,
-          },
-          {
-            id: uid("ex"),
-            name: "Curl bíceps",
-            muscle: "bíceps",
-            sets: [12, 12, 12],
-            series: [
-              { id: uid("set"), reps: "12", weight_kg: "14", rest_seconds: "60" },
-              { id: uid("set"), type: "dropset", reps: "12", weight_kg: "14", rest_seconds: "0",
-                sub_series: [
-                  { id: uid("sub"), reps: "10", weight_kg: "14", rest_seconds: "0" },
-                  { id: uid("sub"), reps: "8", weight_kg: "10", rest_seconds: "0" },
-                  { id: uid("sub"), reps: "6", weight_kg: "8", rest_seconds: "0" },
-                ],
-              },
-              { id: uid("set"), reps: "12", weight_kg: "14", rest_seconds: "60" },
-            ],
-            load_kg: 14,
-            rest_seconds: 60,
-          },
-        ],
-      },
-      {
-        id: uid("tpl"),
-        name: "Tren Inferior — Hipertrofia",
-        category: "hypertrophy",
-        icon: "zap",
-        duration_minutes: "50",
-        exercises: [
-          {
-            id: uid("ex"),
-            name: "Sentadilla",
-            muscle: "cuádriceps",
-            sets: [10, 10, 8, 8],
-            series: [
-              { id: uid("set"), type: "warmup", reps: "15", weight_kg: "40", rest_seconds: "60" },
-              { id: uid("set"), reps: "10", weight_kg: "80", rest_seconds: "120" },
-              { id: uid("set"), reps: "8", weight_kg: "90", rest_seconds: "150" },
-              { id: uid("set"), reps: "8", weight_kg: "90", rest_seconds: "150" },
-            ],
-            load_kg: 80,
-            rest_seconds: 120,
-          },
-          {
-            id: uid("ex"),
-            name: "Peso muerto rumano",
-            muscle: "isquiotibiales",
-            sets: [10, 10, 10],
-            series: [
-              { id: uid("set"), reps: "10", weight_kg: "70", rest_seconds: "90" },
-              { id: uid("set"), reps: "10", weight_kg: "70", rest_seconds: "90" },
-              { id: uid("set"), reps: "10", weight_kg: "70", rest_seconds: "90" },
-            ],
-            load_kg: 70,
-            rest_seconds: 90,
-          },
-          {
-            id: uid("ex"),
-            name: "Plancha isométrica",
-            muscle: "core",
-            sets: [60, 60],
-            series: [
-              { id: uid("set"), type: "isometric", reps: "60", weight_kg: "", rest_seconds: "60" },
-              { id: uid("set"), type: "isometric", reps: "60", weight_kg: "", rest_seconds: "60" },
-            ],
-            load_kg: null,
-            rest_seconds: 60,
-          },
-        ],
-      },
-    ],
-    workoutHistory: [],
-    dietByDate: {
-      [today]: {
-        day_date: today,
-        meals: [
-          {
-            id: uid("meal"),
-            title: "Desayuno",
-            items: [
-              { id: uid("fi"), title: "Avena con leche", grams: 300, calories_kcal: 350, protein_g: 12, carbs_g: 55, fat_g: 8 },
-              { id: uid("fi"), title: "Plátano", grams: 120, calories_kcal: 105, protein_g: 1.3, carbs_g: 27, fat_g: 0.4 },
-            ],
-          },
-          {
-            id: uid("meal"),
-            title: "Almuerzo",
-            items: [
-              { id: uid("fi"), title: "Pechuga de pollo", grams: 200, calories_kcal: 280, protein_g: 52, carbs_g: 0, fat_g: 6 },
-              { id: uid("fi"), title: "Arroz integral", grams: 180, calories_kcal: 215, protein_g: 5, carbs_g: 45, fat_g: 2 },
-            ],
-          },
-        ],
-      },
-    },
-    dietSettings: createDefaultDietSettings(),
-    measurements: [
-      {
-        id: uid("m"), measured_at: today, weight_kg: 78, body_fat_pct: 15, photo_uri: null,
-        neck_cm: null, chest_cm: null, waist_cm: null, hips_cm: null, biceps_cm: null,
-        quadriceps_cm: null, calf_cm: null, height_cm: null,
-      },
-    ],
-    threads: [{ id: threadId, title: "Gymnasia Coach 1" }],
-    messagesByThread: { [threadId]: [createAiIdentityChatMessage()] },
-    keys: createDefaultProviderKeys(),
-  };
-}
-
 function createInitialStore(): LocalStore {
   const firstThreadId = uid("thread");
 
@@ -8470,9 +8235,7 @@ export default function App() {
 
         const baseStore = effectiveRaw
           ? normalizeStore(JSON.parse(effectiveRaw) as LocalStore)
-          : Platform.OS === "web"
-            ? createWebSeedStore()
-            : createInitialStore();
+          : createInitialStore();
 
         const mergedStore = mergeStoreWithSecureApiKeys(baseStore, secureApiKeys);
         const hydratedSession = rawSession
@@ -8584,7 +8347,6 @@ export default function App() {
     );
     loadPersonalFoods().then(setPersonalFoods);
     readBackupMeta().then((meta) => setLastBackupAt(meta.lastBackupAt));
-    migrateBodyFatHistory(setStore);
   }, [isHydrated]);
 
   useEffect(() => {
@@ -21643,6 +21405,17 @@ export default function App() {
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
                     Restaurar sustituye por completo los datos actuales por los del archivo. Tus API keys se mantienen.
                   </Text>
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel="Ver qué contiene la copia de seguridad en la política de privacidad"
+                    testID="legal-backup-policy-link"
+                    onPress={() => { void openExternalUrl(`${resolvePrivacyPolicyUrl()}#copias`); }}
+                    hitSlop={8}
+                  >
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
+                      Qué contiene este archivo
+                    </Text>
+                  </Pressable>
                 </View>
               ) : null}
 
@@ -21984,6 +21757,8 @@ export default function App() {
                   Gymnasia v{Constants.expoConfig?.version ?? "?"} · config v{RUNTIME_ENVIRONMENT.configurationVersion}
                 </Text>
               </View>
+
+              <LegalFooter />
             </View>
           ) : null}
         </Animated.ScrollView>
@@ -22781,7 +22556,7 @@ export default function App() {
             </Text>
             <Pressable
               onPress={() => {
-                Linking.openURL(updateInfo.url);
+                void openExternalUrl(updateInfo.url);
                 setUpdateInfo(null);
               }}
               style={{
@@ -22851,7 +22626,7 @@ export default function App() {
             </Text>
             <Pressable
               onPress={() => {
-                Linking.openURL(updatesConfirmInfo.url);
+                void openExternalUrl(updatesConfirmInfo.url);
                 setUpdatesConfirmInfo(null);
               }}
               style={{

@@ -30,29 +30,28 @@ El agente móvil normaliza tres protocolos de streaming incompatibles en el mism
 
 ## Ciclo de vida del stream por capas
 
-<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 14: ... body Parser->>Loop: Parsed turn an Expecting '+', '-', '()', 'ACTOR', got 'loop' -->
-```text
+```mermaid
 sequenceDiagram
-    participant App as callProviderChatAPIWithTools
-    participant Transport as Fetch or XHR
-    participant Parser as Provider stream parser
-    participant Loop as Provider tool loop
-    participant Tool as executeChatTool
-    participant API as Provider API
-    App->>Transport: POST provider payload with stream enabled
+    participant App as ChatAdapter
+    participant Transport as FetchOrXHR
+    participant Parser as StreamParser
+    participant ToolLoop as ProviderToolLoop
+    participant Tool as ChatTool
+    participant API as ProviderAPI
+    App->>Transport: Send streaming provider request
     Transport->>API: HTTP request
     API-->>Transport: Fragmented SSE bytes
-    Transport->>Parser: push decoded text chunks
+    Transport->>Parser: Push decoded text chunks
     Parser-->>App: Content and thinking deltas
-    Transport->>Parser: finish after end of body
-    Parser-->>Loop: Parsed turn and correlation metadata
-    alt Tool calls exist
-        Loop->>Tool: Execute calls sequentially
-        Tool-->>Loop: String results
-        Loop->>App: Request continuation envelope
-        App->>Transport: Next streamed request
-    else No tool calls
-        Loop-->>App: Final turn
+    Transport->>Parser: Finish body
+    Parser-->>ToolLoop: Parsed turn and correlation data
+    alt Calls exist
+        ToolLoop->>Tool: Execute calls sequentially
+        Tool-->>ToolLoop: String results
+        ToolLoop->>App: Continuation envelope
+        App->>Transport: Send next streaming request
+    else No calls
+        ToolLoop-->>App: Final turn
     end
 ```
 

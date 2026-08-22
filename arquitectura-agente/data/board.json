@@ -313,7 +313,8 @@
             "GYM-142"
           ],
           "related": [
-            "GYM-124"
+            "GYM-124",
+            "GYM-145"
           ]
         },
         {
@@ -1853,11 +1854,13 @@
           "id": "GYM-54",
           "title": "Crear un backend seguro para incidencias y mantener create_feature_issue",
           "state": "todo",
-          "summary": "Eliminar el falso éxito de create_feature_issue y reemplazar los tres escritores inactivos por un handoff explícito y comprobable, sin incrustar tokens de escritura en la app.",
+          "summary": "Conservar create_feature_issue y canalizar las incidencias de funcionalidades, alimentos y ejercicios por un backend limitado que custodia GitHub, exige revisión en la app y solo confirma creaciones verificadas.",
           "dependsOn": [],
           "related": [
             "GYM-42",
-            "GYM-45"
+            "GYM-45",
+            "GYM-136",
+            "GYM-168"
           ]
         },
         {
