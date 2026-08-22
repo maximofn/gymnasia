@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-salto-zancada-atras-barra",
+  "name": "Sentadilla con salto y zancada atrás con barra",
+  "image_male": "images/sentadilla-salto-zancada-atras-barra-male.webp",
+  "image_female": "images/sentadilla-salto-zancada-atras-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca una barra muy ligera sobre la espalda, baja a sentadilla y salta con control. Aterriza suavemente y lleva una pierna atrás para hacer una zancada inversa. Regresa al centro, repite la secuencia alternando la pierna y prioriza siempre una recepción estable."
+}

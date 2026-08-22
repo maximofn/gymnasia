@@ -296,6 +296,33 @@
         {"source_id": "1718", "id": "extension-triceps-tras-nuca-sentado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"},
         {"source_id": "0090", "id": "buenos-dias-sentado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "openai-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 12,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0092", "id": "extension-triceps-sentado-sobre-cabeza-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0094", "id": "giro-sentado-barra", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0096", "id": "inclinacion-lateral-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0098", "id": "sentadilla-apertura-amplia-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1756", "id": "peso-muerto-una-pierna-barra", "action": "create", "difficulty": "advanced", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0099", "id": "sentadilla-dividida-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2799", "id": "elevacion-pierna-alterna-sentado-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0100", "id": "esquiador-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0101", "id": "sentadilla-velocidad-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0102", "id": "sentadilla-rodillas-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2798", "id": "sentadilla-salto-zancada-atras-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0103", "id": "rodillo-abdominal-pie-barra", "action": "create", "difficulty": "advanced", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0104", "id": "curl-muneca-tras-espalda-barra", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0105", "id": "press-bradford-pie-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1372", "id": "elevacion-gemelos-pie-barra", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0106", "id": "curl-biceps-agarre-cerrado-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1456", "id": "press-militar-agarre-cerrado-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2414", "id": "curl-concentrado-unilateral-barra", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0107", "id": "elevacion-frontal-sobre-cabeza-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0112", "id": "giro-pie-barra", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

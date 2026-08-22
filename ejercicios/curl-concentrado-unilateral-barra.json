@@ -1,0 +1,11 @@
+{
+  "id": "curl-concentrado-unilateral-barra",
+  "name": "Curl concentrado unilateral con barra",
+  "image_male": "images/curl-concentrado-unilateral-barra-male.webp",
+  "image_female": "images/curl-concentrado-unilateral-barra-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "core"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "De pie, estabiliza con una mano el centro de una barra muy ligera y apoya la otra mano sobre el muslo. Mantén el brazo de trabajo cerca del torso y flexiona el codo sin inclinar la barra ni balancearte. Baja lentamente y cambia de brazo tras completar las repeticiones."
+}
