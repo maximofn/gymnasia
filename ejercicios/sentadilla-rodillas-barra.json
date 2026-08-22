@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-rodillas-barra",
+  "name": "Sentadilla de rodillas con barra",
+  "image_male": "images/sentadilla-rodillas-barra-male.webp",
+  "image_female": "images/sentadilla-rodillas-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Arrodíllate sobre una superficie acolchada con una barra ligera sobre la parte alta de la espalda. Mantén el torso erguido y lleva lentamente las caderas hacia los talones. Contrae los glúteos para extender la cadera y volver a la posición alta sin arquear la zona lumbar."
+}

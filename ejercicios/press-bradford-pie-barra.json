@@ -1,0 +1,11 @@
+{
+  "id": "press-bradford-pie-barra",
+  "name": "Press Bradford de pie con barra",
+  "image_male": "images/press-bradford-pie-barra-male.webp",
+  "image_female": "images/press-bradford-pie-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["tríceps", "trapecios", "core"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con una barra ligera delante de los hombros. Elévala solo lo suficiente para pasarla sobre la cabeza y bájala detrás hasta la altura de las orejas. Invierte el recorrido hacia delante manteniendo el abdomen firme, los codos bajo la barra y un movimiento lento."
+}

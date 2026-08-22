@@ -1,0 +1,11 @@
+{
+  "id": "esquiador-barra",
+  "name": "Esquiador con barra",
+  "image_male": "images/esquiador-barra-male.webp",
+  "image_female": "images/esquiador-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["tríceps", "core", "piernas"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Sujeta una barra ligera delante de los muslos, flexiona ligeramente rodillas y caderas y mantén el tronco firme. Extiende las piernas mientras guías la barra hacia la parte alta del pecho con los codos elevados. Amortigua al volver a la posición inicial y conserva la barra cerca del cuerpo durante todo el movimiento."
+}
