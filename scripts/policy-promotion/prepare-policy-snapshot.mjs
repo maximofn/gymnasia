@@ -4,6 +4,8 @@ import { appendFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { renderRuntimePolicyModule } from "../health-safety/policy.mjs";
+
 const repository = process.env.GITHUB_REPOSITORY || "maximofn/gymnasia";
 const moduleDirectory = dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = resolve(moduleDirectory, "../..");
@@ -14,6 +16,10 @@ const outputPath = join(
 const metadataOutputPath = join(
   repositoryRoot,
   "apps/mobile/agent/generated/policySnapshot.generated.json",
+);
+const runtimeOutputPath = join(
+  repositoryRoot,
+  "apps/mobile/agent/generated/healthSafetyPolicy.generated.ts",
 );
 const acceptedContentTypes = new Set([
   "application/octet-stream",
@@ -50,14 +56,18 @@ function parsePayload(value, channel) {
   const candidatePattern = /^policy-v\d{4}\.\d{2}\.\d+-[a-f0-9]{12}$/;
   const digestPattern = /^[a-f0-9]{64}$/;
   const expectedUrl = `https://github.com/${repository}/releases/download/${payload?.candidate}/policy.md`;
+  const expectedRuntimeUrl = `https://github.com/${repository}/releases/download/${payload?.candidate}/health-safety-runtime.json`;
   if (
-    payload?.schemaVersion !== 1
+    payload?.schemaVersion !== 2
     || !candidatePattern.test(payload?.candidate || "")
     || payload?.assetUrl !== expectedUrl
     || !digestPattern.test(payload?.assetSha256 || "")
     || !digestPattern.test(payload?.reportSha256 || "")
     || payload?.promptVersion !== `sha256:${payload.assetSha256}`
     || payload?.datasetVersion !== payload?.policyVersion
+    || payload?.runtimePolicyUrl !== expectedRuntimeUrl
+    || !digestPattern.test(payload?.runtimePolicySha256 || "")
+    || payload?.runtimePolicyVersion !== payload?.policyVersion
   ) {
     throw new Error(`Payload de deployment ${channel} inválido.`);
   }
@@ -126,6 +136,21 @@ export async function preparePolicySnapshot({ environment, githubEnv }) {
     downloadText(`${baseUrl}/health-safety-report.json`),
     downloadText(`${baseUrl}/promotion-evidence.json`),
   ]);
+  const runtimeAsset = await downloadText(payload.runtimePolicyUrl);
+  const runtimeMediaType = runtimeAsset.contentType?.split(";", 1)[0]?.trim().toLowerCase() || "";
+  if (runtimeMediaType && !["application/json", "application/octet-stream", "text/plain"].includes(runtimeMediaType)) {
+    throw new Error(`Tipo de health-safety-runtime.json no permitido: ${runtimeMediaType}`);
+  }
+  const runtimeDigest = sha256(Buffer.from(runtimeAsset.body, "utf8"));
+  if (runtimeDigest !== payload.runtimePolicySha256) {
+    throw new Error("El digest de la política sanitaria de runtime no coincide.");
+  }
+  let runtimePolicy;
+  try {
+    runtimePolicy = JSON.parse(runtimeAsset.body);
+  } catch {
+    throw new Error("La política sanitaria de runtime no es JSON válido.");
+  }
   if (sha256(Buffer.from(reportAsset.body, "utf8")) !== payload.reportSha256) {
     throw new Error("El digest del informe sanitario no coincide.");
   }
@@ -135,10 +160,13 @@ export async function preparePolicySnapshot({ environment, githubEnv }) {
     report.authorizing !== false
     || report.summary?.failed !== 0
     || report.promptVersion !== `sha256:${digest}`
-    || evidence.schemaVersion !== 1
+    || runtimePolicy.schemaVersion !== 1
+    || runtimePolicy.policyVersion !== payload.runtimePolicyVersion
+    || evidence.schemaVersion !== 2
     || evidence.candidate !== payload.candidate
     || evidence.sourceCommit !== payload.sourceCommit
     || evidence.assetSha256 !== digest
+    || evidence.runtimePolicySha256 !== runtimeDigest
     || evidence.healthSafetyReportSha256 !== payload.reportSha256
     || evidence.owner !== "maximofn"
     || evidence.gate?.command !== "npm run check:health-safety"
@@ -149,12 +177,15 @@ export async function preparePolicySnapshot({ environment, githubEnv }) {
   }
 
   writeFileSync(outputPath, renderPromptModule(normalized, digest), "utf8");
+  writeFileSync(runtimeOutputPath, renderRuntimePolicyModule(runtimePolicy), "utf8");
   writeFileSync(metadataOutputPath, `${JSON.stringify({
     schemaVersion: 1,
     environment,
     channel,
     candidate: payload.candidate,
     sha256: digest,
+    runtimePolicySha256: runtimeDigest,
+    runtimePolicyVersion: runtimePolicy.policyVersion,
     deploymentId,
   }, null, 2)}\n`, "utf8");
   if (githubEnv) {
@@ -164,7 +195,14 @@ export async function preparePolicySnapshot({ environment, githubEnv }) {
       "utf8",
     );
   }
-  return { environment, channel, deploymentId, candidate: payload.candidate, digest };
+  return {
+    environment,
+    channel,
+    deploymentId,
+    candidate: payload.candidate,
+    digest,
+    runtimeDigest,
+  };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

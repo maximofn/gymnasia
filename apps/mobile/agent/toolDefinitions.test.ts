@@ -6,6 +6,7 @@ import {
   AGENT_TOOL_DEFINITIONS,
   AGENT_TOOL_NAMES,
   CHAT_TOOLS,
+  agentToolEffect,
   validateToolInput,
 } from "./toolDefinitions";
 import { AGENT_TOOL_HANDLER_NAMES } from "./toolExecutor";
@@ -27,6 +28,15 @@ describe("catálogo canónico de tools", () => {
   it("usa nombres únicos", () => {
     const uniqueNames = new Set(AGENT_TOOL_NAMES);
     expect(uniqueNames.size).toBe(AGENT_TOOL_NAMES.length);
+  });
+
+  it("clasifica el efecto de todas las tools para el guardrail sanitario", () => {
+    for (const definition of AGENT_TOOL_DEFINITIONS) {
+      expect(["read", "local_write", "external_write"]).toContain(definition.effect);
+      expect(agentToolEffect(definition.name)).toBe(definition.effect);
+    }
+    expect(agentToolEffect("unknown_tool")).toBeNull();
+    expect(agentToolEffect("create_feature_issue")).toBe("external_write");
   });
 
   it("declara JSON Schemas de objeto coherentes", () => {

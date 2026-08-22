@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gymnasia.local/schemas/health-safety-runtime-policy.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "policyVersion",
+    "consentVersion",
+    "defaultLocale",
+    "supportedLocales",
+    "rules",
+    "normalExamples"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "policyVersion": { "type": "string", "pattern": "^[0-9]{4}\\.[0-9]{2}\\.[0-9]+$" },
+    "consentVersion": { "type": "string", "pattern": "^[0-9]{4}\\.[0-9]{2}\\.[0-9]+$" },
+    "defaultLocale": { "enum": ["es", "en", "pt"] },
+    "supportedLocales": {
+      "type": "array",
+      "const": ["es", "en", "pt"]
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/runtimeRule" }
+    },
+    "normalExamples": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["locale", "text"],
+        "properties": {
+          "locale": { "enum": ["es", "en", "pt"] },
+          "text": { "type": "string", "minLength": 8 }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "signal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "locale", "level", "all"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "locale": { "enum": ["es", "en", "pt"] },
+        "level": { "enum": ["elevated", "high", "critical"] },
+        "all": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 2 }
+        },
+        "any": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 2 }
+        },
+        "none": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 2 }
+        }
+      }
+    },
+    "localizedResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "message"],
+      "properties": {
+        "reason": { "type": "string", "minLength": 8 },
+        "message": { "type": "string", "minLength": 40 }
+      }
+    },
+    "runtimeRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "risk",
+        "toolMode",
+        "inputSignals",
+        "outputSignals",
+        "responses"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^HS-[A-Z]+(?:-[A-Z]+)*-[0-9]{3}$" },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "risk": { "enum": ["high", "critical"] },
+        "toolMode": { "enum": ["none", "read-only", "all"] },
+        "fallbackRuleId": { "type": "string", "pattern": "^HS-[A-Z]+(?:-[A-Z]+)*-[0-9]{3}$" },
+        "inputSignals": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/signal" }
+        },
+        "outputSignals": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/signal" }
+        },
+        "responses": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["es", "en", "pt"],
+          "properties": {
+            "es": { "$ref": "#/definitions/localizedResponse" },
+            "en": { "$ref": "#/definitions/localizedResponse" },
+            "pt": { "$ref": "#/definitions/localizedResponse" }
+          }
+        }
+      }
+    }
+  }
+}

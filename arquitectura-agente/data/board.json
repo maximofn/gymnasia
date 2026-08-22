@@ -368,12 +368,11 @@
         {
           "id": "GYM-143",
           "title": "Añadir una barrera sanitaria independiente del system prompt",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Aplicar una base sanitaria que la política remota no pueda desactivar y validar salidas de alto riesgo antes de mostrarlas, incluso sin conexión.",
           "baseline": "missing",
           "dependsOn": [
-            "GYM-139",
-            "GYM-145"
+            "GYM-139"
           ],
           "related": [
             "GYM-68",
