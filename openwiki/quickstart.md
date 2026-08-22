@@ -83,7 +83,7 @@ flowchart TD
 - **Agente:** [Entorno de ejecución del agente](agent/runtime.md), [Configuración de proveedores](agent/provider-configuration.md) y [Streaming de proveedores y continuación de herramientas](agent/provider-streaming.md).
 - **Contenido:** [Repositorios de contenido](content/repositories.md) y [Generación de imágenes](content/image-generation.md).
 - **Servicios e integraciones:** [Proxy CORS de Anthropic para navegadores](services/anthropic-proxy.md), [Tablero de arquitectura](services/architecture-board.md) y [Acceso a VivaGym y actualizaciones de la aplicación](integrations/vivagym-and-updates.md).
-- **Operaciones:** [Compilación, publicación y pruebas](operations/build-release-and-testing.md) gestiona los manifiestos, las compilaciones, la CI, los comandos E2E, las publicaciones de EAS y los límites de despliegue. [Gobierno de cambios sensibles y política de prompt](operations/prompt-policy-governance.md) define las rutas protegidas, los artefactos derivados y la autorización de PR.
+- **Operaciones:** [Compilación, publicación y pruebas](operations/build-release-and-testing.md) gestiona los manifiestos, las compilaciones, la CI, los comandos E2E, las publicaciones de EAS y los límites de despliegue. [Validación de permisos Android publicables](operations/android-permissions.md) protege el contrato entre Expo, dependencias y Google Play. [Gobierno de cambios sensibles y política de prompt](operations/prompt-policy-governance.md) define las rutas protegidas, los artefactos derivados y la autorización de PR.
 
 ## Enrutamiento de tareas
 
@@ -105,6 +105,7 @@ flowchart TD
 | Cambiar el QR de VivaGym o la detección de actualizaciones del APK | [VivaGym y actualizaciones](integrations/vivagym-and-updates.md) | `fetchVivaGymAppToken`, `loginVivaGym`, `fetchVivaGymQrValue`, `getVivaGymQr`, `checkForUpdate`, `runManualUpdateCheck`, `compareVersions` | Comprobación de tipos, conjunto determinista, comprobaciones de integración nativas/manuales que protejan los secretos |
 | Compilar, probar, publicar o desplegar | [Compilación, publicación y pruebas](operations/build-release-and-testing.md) | Manifiestos raíz/móvil, `apps/mobile/app.json`, `apps/mobile/eas.json`, configuraciones de Vercel para móvil/tablero, `.github/workflows/*` | Seleccionar el comando responsable más específico y ampliar después la validación antes de publicar |
 | Cambiar rutas sensibles, `CODEOWNERS`, el ruleset, checks obligatorios o la autorización de una PR | [Gobierno de cambios sensibles](operations/prompt-policy-governance.md) | `.github/prompt-policy.json`, `loadPolicy`, `renderCodeowners`, `createRuleset`, `assertWorkflowPolicy`, `evaluateAuthorization` | `npm run check:prompt-policy && npm run test:prompt-policy` |
+| Cambiar permisos Android, una dependencia móvil, alarmas, avisos o configuración nativa publicable | [Validación de permisos Android](operations/android-permissions.md) | `apps/mobile/app.json`, `scripts/android-permissions/policy.json`, `checkAndroidPermissions`, `evaluatePermissionPolicy` | `npm run check:android-permissions && npm run test:android-permissions` |
 
 ## Puntos de entrada exactos del entorno de ejecución y del operador
 
@@ -172,6 +173,7 @@ Añade únicamente el flujo responsable de Playwright o del tablero mientras ite
 - **El proxy de Anthropic es apto únicamente para desarrollo.** Acepta claves en los cuerpos de las solicitudes, permite todos los orígenes y no tiene autenticación, límites de frecuencia ni límites para el cuerpo. No lo expongas públicamente sin modificarlo.
 - **Las credenciales y los valores QR de VivaGym son sensibles.** Nunca los registres, rastrees, copies en la documentación ni incluyas en los datos de prueba. La compatibilidad con navegadores está limitada por CORS y por la disponibilidad del almacenamiento seguro.
 - **Las actualizaciones de APK se detectan, pero no se verifican.** El cliente abre una URL de recurso de GitHub sin validar la suma de comprobación, la firma, el paquete, el certificado ni el tipo de artefacto. Confirma que un artefacto de producción publicado sea realmente un APK.
+- **Los permisos Android son un contrato de publicación.** `USE_EXACT_ALARM` debe seguir bloqueado aunque una dependencia intente aportarlo; ejecuta [Validación de permisos Android publicables](operations/android-permissions.md) tras cambiar `app.json` o dependencias y valida el artefacto nativo, no solo la web.
 - **El JSON remoto y las imágenes generadas son contratos del entorno de ejecución.** La aplicación convierte las respuestas de los catálogos sin esquemas de tiempo de ejecución; la generación no es determinista, puede ser de pago y no garantiza que los bytes ni las dimensiones de `.webp` coincidan con la extensión o el propósito.
 
 ## Límite de la documentación histórica
