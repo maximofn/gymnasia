@@ -26,6 +26,7 @@ Prioridades: none | urgent | high | medium | low
 """
 import argparse
 import json
+import os
 import re
 import sys
 import urllib.request
@@ -67,6 +68,10 @@ def repo_root() -> Path:
 
 
 def load_api_key() -> str:
+    env_value = os.environ.get("LINEAR_API_KEY", "").strip()
+    if env_value:
+        return env_value
+
     env_path = repo_root() / ".env"
     if not env_path.exists():
         sys.exit(f"No existe {env_path}")

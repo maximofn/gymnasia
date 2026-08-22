@@ -112,6 +112,11 @@ Run from repo root unless noted.
   Si devuelve `The specified token is not valid`, la sesión ha caducado: ejecutar
   `npm exec --yes -- vercel@latest login`, completar el acceso interactivo y repetir
   el deploy. Reintentar el despliegue sin renovar la sesión no lo corrige.
+  Si `whoami` sí devuelve el usuario pero `deploy` falla inmediatamente con
+  `Not authorized`, vuelve a enlazar explícitamente el mismo proyecto con
+  `npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente`.
+  La CLI renovará el token OIDC local; verifica que diga `Linked .../gymnasia` y
+  no `Created` antes de repetir el deploy.
 - No usar `npx vercel`: el hook de rtk reescribe `npx` a `npm` y falla con
   `Unknown command: "vercel@latest"`. Usar `npm exec --` siempre.
 - Antes de desplegar, pasar los tests:
@@ -305,6 +310,16 @@ Only non-obvious gotchas that could recur are kept here.
   `npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente`
   y verificar que la salida diga `Deploying gymnasia` y termine con el alias de
   producción esperado.
+
+### Vercel puede rechazar el deploy aunque `whoami` funcione
+- Gotcha: la sesión general de la CLI puede seguir siendo válida y `vercel whoami`
+  devolver `maximofn`, mientras `vercel deploy` falla inmediatamente con
+  `Not authorized`. El problema es el token OIDC local del vínculo con el
+  proyecto, no necesariamente el login global; repetir el deploy no lo renueva.
+- Fix: ejecutar
+  `npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente`.
+  Debe enlazar el proyecto existente y descargar un token OIDC nuevo. Si muestra
+  `Created`, detenerse para no crear otro proyecto. Después repetir el deploy.
 
 ### `actions/checkout` falla aunque `submodules: false` por gitlinks huérfanos
 - Gotcha: `.claude/worktrees/*` contiene entradas gitlink (`mode 160000`) heredadas,

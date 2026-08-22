@@ -6,7 +6,8 @@ description: Leer, crear y modificar tickets (issues) en Linear del proyecto Gym
 # Linear Tickets (Gymnasia)
 
 Gestiona los issues de Linear (equipo **GYM / Gymnasia**) vía la API GraphQL,
-usando un script que lee `LINEAR_API_KEY` del `.env` de la raíz del repo.
+usando un script que lee `LINEAR_API_KEY` del entorno o del `.env` de la raíz
+del repo.
 
 ## Regla del espejo (obligatoria)
 
@@ -196,7 +197,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Diez cosas que cuestan tiempo si no se saben:
+Doce cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -278,6 +279,20 @@ Diez cosas que cuestan tiempo si no se saben:
     (`data/board.json`, más `--state-<id>` y las reglas `.state-<id>` de
     `styles.css`). **Pasa siempre `npm run test:board` después de `--apply`**: es
     la única red que detecta esto.
+
+11. **Una rama asociada a Linear puede cerrar el ticket aunque la PR no lo
+    implemente.** El síntoma es que el issue pasa a `Done` segundos después de
+    fusionar una PR cuyo contenido solo lo menciona o actualiza el tablero, sin
+    checklist ni evidencia de cierre. Para trabajo que se cerrará manualmente,
+    usa una rama sin el identificador `GYM-N`, deja el issue en `In Progress` y
+    ejecuta `linear.py close` únicamente tras completar pruebas y evidencias.
+
+12. **Los worktrees no heredan el `.env` ignorado del checkout principal.** El
+    síntoma al usar el `linear.py` correcto del worktree es `No existe
+    <worktree>/.env`. El script acepta ahora `LINEAR_API_KEY` ya cargada en el
+    entorno; carga el secreto desde una fuente segura antes de invocarlo y nunca
+    lo imprimas. Así `board --apply` modifica el checkout que se va a commitear
+    sin copiar el fichero de secretos.
 
 ## Notas
 

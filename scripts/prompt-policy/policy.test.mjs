@@ -6,7 +6,9 @@ import {
   assertWorkflowPolicy,
   createRuleset,
   evaluateAuthorization,
+  evaluatePolicyPromotion,
   isSensitivePath,
+  isPolicyPromotionPath,
   loadPolicy,
   renderCodeowners,
   renderRuleset,
@@ -22,9 +24,11 @@ test("clasifica todas las fronteras privilegiadas", () => {
     "ops/openwiki-automation-template/.github/workflows/tests.yml",
     "policy/releases/v1.json",
     "scripts/prompt-policy/policy.mjs",
+    "scripts/health-safety/check.mjs",
     "AGENTS.md",
     "CLAUDE.md",
     "package.json",
+    "docs/architecture/health-safety-policy.md",
   ]) {
     assert.equal(isSensitivePath(path, policy), true, path);
   }
@@ -124,6 +128,39 @@ test("una PR externa sensible exige una aprobación del propietario para el SHA 
   }).state, "pending");
 });
 
+test("solo el contenido de política exige promover exactamente el SHA actual", () => {
+  assert.equal(isPolicyPromotionPath("prompts/AGENTS.md", policy), true);
+  assert.equal(isPolicyPromotionPath("policy/health-safety/rules.json", policy), true);
+  assert.equal(isPolicyPromotionPath("apps/mobile/App.tsx", policy), false);
+
+  const base = { policy, headSha: "a".repeat(40), files: ["prompts/AGENTS.md"] };
+  assert.equal(evaluatePolicyPromotion({ ...base, deployments: [] }).state, "pending");
+  assert.equal(evaluatePolicyPromotion({
+    ...base,
+    deployments: [{
+      task: "gymnasia-policy",
+      environment: "Production",
+      latestStatus: "success",
+      payload: { schemaVersion: 1, sourceCommit: "b".repeat(40) },
+    }],
+  }).state, "pending");
+  assert.equal(evaluatePolicyPromotion({
+    ...base,
+    deployments: [{
+      task: "gymnasia-policy",
+      environment: "Production",
+      latestStatus: "success",
+      payload: { schemaVersion: 1, sourceCommit: base.headSha },
+    }],
+  }).state, "success");
+  assert.equal(evaluatePolicyPromotion({
+    policy,
+    headSha: base.headSha,
+    files: ["apps/mobile/App.tsx"],
+    deployments: [],
+  }).state, "success");
+});
+
 test("CODEOWNERS y ruleset son deterministas y protegen sus propios controles", () => {
   const codeowners = renderCodeowners(policy);
   assert.match(codeowners, /^\/\.github\/ @maximofn$/m);
@@ -131,7 +168,7 @@ test("CODEOWNERS y ruleset son deterministas y protegen sus propios controles", 
   assert.equal(renderRuleset(policy), `${JSON.stringify(createRuleset(policy), null, 2)}\n`);
   assert.deepEqual(
     createRuleset(policy).rules.at(-1).parameters.required_status_checks.map((check) => check.context),
-    ["prompt-policy", "gymnasia/owner-authorization"],
+    ["prompt-policy", "gymnasia/owner-authorization", "gymnasia/policy-promotion"],
   );
 });
 

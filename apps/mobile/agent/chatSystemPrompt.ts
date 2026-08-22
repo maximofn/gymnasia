@@ -1,6 +1,6 @@
 import { CHAT_SYSTEM_PROMPT_NORMALIZATION_VERSION } from "./generated/chatSystemPrompt.generated";
 
-export const CHAT_SYSTEM_PROMPT_CACHE_SCHEMA_VERSION = 2 as const;
+export const CHAT_SYSTEM_PROMPT_CACHE_SCHEMA_VERSION = 3 as const;
 
 export type ChatSystemPromptSource = "remote" | "cache" | "bundled";
 
@@ -9,6 +9,10 @@ export type ChatSystemPromptSelection = {
   source: ChatSystemPromptSource;
   sha256: string;
   version: string;
+  environment: string;
+  channel: string;
+  candidate: string;
+  deploymentId: number | null;
 };
 
 export type ChatSystemPromptDiagnostic = {
@@ -24,6 +28,10 @@ export type ChatSystemPromptDiagnostic = {
   status?: number;
   sha256?: string;
   version?: string;
+  environment?: string;
+  channel?: string;
+  candidate?: string;
+  deploymentId?: number | null;
 };
 
 export type ChatSystemPromptRemoteResponse = {
@@ -31,6 +39,11 @@ export type ChatSystemPromptRemoteResponse = {
   status: number;
   contentType: string | null;
   body: string;
+  expectedSha256: string;
+  environment: string;
+  channel: string;
+  candidate: string;
+  deploymentId: number;
 };
 
 type BundledChatSystemPrompt = {
@@ -38,15 +51,24 @@ type BundledChatSystemPrompt = {
   sha256: string;
   version: string;
   normalizationVersion: number;
+  environment: string;
+  channel: string;
+  candidate: string;
+  deploymentId: number | null;
 };
 
 export type ChatSystemPromptDependencies = {
-  fetchRemote: () => Promise<ChatSystemPromptRemoteResponse>;
+  fetchRemote?: () => Promise<ChatSystemPromptRemoteResponse>;
   readCurrentCache: () => Promise<string | null>;
   readLegacyCache: () => Promise<string | null>;
   writeCurrentCache: (value: string) => Promise<void>;
   sha256: (value: string) => Promise<string>;
   bundled: BundledChatSystemPrompt;
+  scope: {
+    environment: string;
+    channel: string;
+  };
+  allowLegacyCache?: boolean;
   diagnostic?: (entry: ChatSystemPromptDiagnostic) => void;
 };
 
@@ -59,7 +81,16 @@ type ChatSystemPromptCacheRecord = {
   normalizationVersion: number;
   content: string;
   sha256: string;
+  environment: string;
+  channel: string;
+  candidate: string;
+  deploymentId: number | null;
 };
+
+type PolicySelectionMetadata = Pick<
+  ChatSystemPromptSelection,
+  "environment" | "channel" | "candidate" | "deploymentId"
+>;
 
 const ACCEPTED_REMOTE_CONTENT_TYPES = new Set([
   "application/octet-stream",
@@ -122,24 +153,31 @@ function createSelection(
   content: string,
   source: ChatSystemPromptSource,
   sha256: string,
+  metadata: PolicySelectionMetadata,
   version = promptVersion(sha256),
 ): ChatSystemPromptSelection {
-  const selection = { content, source, sha256, version };
+  const selection = { content, source, sha256, version, ...metadata };
   emitDiagnostic(dependencies, {
     event: "selected",
     source,
     sha256,
     version,
+    ...metadata,
   });
   return selection;
 }
 
-function serializeCacheRecord(content: string, sha256: string): string {
+function serializeCacheRecord(
+  content: string,
+  sha256: string,
+  metadata: PolicySelectionMetadata,
+): string {
   const record: ChatSystemPromptCacheRecord = {
     schemaVersion: CHAT_SYSTEM_PROMPT_CACHE_SCHEMA_VERSION,
     normalizationVersion: CHAT_SYSTEM_PROMPT_NORMALIZATION_VERSION,
     content,
     sha256,
+    ...metadata,
   };
   return JSON.stringify(record);
 }
@@ -187,6 +225,14 @@ async function readValidCurrentCache(
     || record.normalizationVersion !== CHAT_SYSTEM_PROMPT_NORMALIZATION_VERSION
     || typeof record.sha256 !== "string"
     || !SHA256_PATTERN.test(record.sha256)
+    || record.environment !== dependencies.scope.environment
+    || record.channel !== dependencies.scope.channel
+    || typeof record.candidate !== "string"
+    || record.candidate.trim().length === 0
+    || (
+      record.deploymentId !== null
+      && (typeof record.deploymentId !== "number" || !Number.isSafeInteger(record.deploymentId))
+    )
   ) {
     emitDiagnostic(dependencies, {
       event: "cache-rejected",
@@ -221,6 +267,12 @@ async function readValidCurrentCache(
       validation.content,
       "cache",
       calculatedHash,
+      {
+        environment: record.environment,
+        channel: record.channel,
+        candidate: record.candidate,
+        deploymentId: record.deploymentId,
+      },
     );
   } catch {
     emitDiagnostic(dependencies, {
@@ -260,9 +312,15 @@ async function readValidLegacyCache(
 
   try {
     const sha256 = await dependencies.sha256(validation.content);
+    const metadata = {
+      environment: dependencies.bundled.environment,
+      channel: dependencies.bundled.channel,
+      candidate: dependencies.bundled.candidate,
+      deploymentId: dependencies.bundled.deploymentId,
+    };
     try {
       await dependencies.writeCurrentCache(
-        serializeCacheRecord(validation.content, sha256),
+        serializeCacheRecord(validation.content, sha256, metadata),
       );
     } catch {
       emitDiagnostic(dependencies, {
@@ -271,7 +329,13 @@ async function readValidLegacyCache(
         reason: "legacy-migration-error",
       });
     }
-    return createSelection(dependencies, validation.content, "cache", sha256);
+    return createSelection(
+      dependencies,
+      validation.content,
+      "cache",
+      sha256,
+      metadata,
+    );
   } catch {
     emitDiagnostic(dependencies, {
       event: "cache-rejected",
@@ -285,6 +349,7 @@ async function readValidLegacyCache(
 async function readRemotePrompt(
   dependencies: ChatSystemPromptDependencies,
 ): Promise<ChatSystemPromptSelection | null> {
+  if (!dependencies.fetchRemote) return null;
   let response: ChatSystemPromptRemoteResponse;
   try {
     response = await dependencies.fetchRemote();
@@ -307,6 +372,22 @@ async function readRemotePrompt(
     return null;
   }
 
+  if (
+    response.environment !== dependencies.scope.environment
+    || response.channel !== dependencies.scope.channel
+    || !SHA256_PATTERN.test(response.expectedSha256)
+    || !response.candidate.trim()
+    || !Number.isSafeInteger(response.deploymentId)
+  ) {
+    emitDiagnostic(dependencies, {
+      event: "remote-rejected",
+      source: "remote",
+      reason: "invalid-metadata",
+      status: response.status,
+    });
+    return null;
+  }
+
   const validation = validateChatSystemPromptContent(
     response.body,
     response.contentType,
@@ -323,9 +404,24 @@ async function readRemotePrompt(
 
   try {
     const sha256 = await dependencies.sha256(validation.content);
+    if (sha256 !== response.expectedSha256) {
+      emitDiagnostic(dependencies, {
+        event: "remote-rejected",
+        source: "remote",
+        reason: "hash-mismatch",
+        status: response.status,
+      });
+      return null;
+    }
+    const metadata = {
+      environment: response.environment,
+      channel: response.channel,
+      candidate: response.candidate,
+      deploymentId: response.deploymentId,
+    };
     try {
       await dependencies.writeCurrentCache(
-        serializeCacheRecord(validation.content, sha256),
+        serializeCacheRecord(validation.content, sha256, metadata),
       );
     } catch {
       emitDiagnostic(dependencies, {
@@ -334,7 +430,13 @@ async function readRemotePrompt(
         reason: "remote-cache-error",
       });
     }
-    return createSelection(dependencies, validation.content, "remote", sha256);
+    return createSelection(
+      dependencies,
+      validation.content,
+      "remote",
+      sha256,
+      metadata,
+    );
   } catch {
     emitDiagnostic(dependencies, {
       event: "remote-rejected",
@@ -356,6 +458,13 @@ function readBundledPrompt(
     || !SHA256_PATTERN.test(bundled.sha256)
     || bundled.normalizationVersion !== CHAT_SYSTEM_PROMPT_NORMALIZATION_VERSION
     || bundled.version !== promptVersion(bundled.sha256)
+    || bundled.environment !== dependencies.scope.environment
+    || bundled.channel !== dependencies.scope.channel
+    || !bundled.candidate.trim()
+    || (
+      bundled.deploymentId !== null
+      && (!Number.isSafeInteger(bundled.deploymentId) || bundled.deploymentId < 1)
+    )
   ) {
     throw new Error("El snapshot integrado del system prompt es inválido.");
   }
@@ -364,6 +473,12 @@ function readBundledPrompt(
     validation.content,
     "bundled",
     bundled.sha256,
+    {
+      environment: bundled.environment,
+      channel: bundled.channel,
+      candidate: bundled.candidate,
+      deploymentId: bundled.deploymentId,
+    },
     bundled.version,
   );
 }
@@ -377,8 +492,10 @@ export async function selectChatSystemPrompt(
   const currentCache = await readValidCurrentCache(dependencies);
   if (currentCache) return currentCache;
 
-  const legacyCache = await readValidLegacyCache(dependencies);
-  if (legacyCache) return legacyCache;
+  if (dependencies.allowLegacyCache) {
+    const legacyCache = await readValidLegacyCache(dependencies);
+    if (legacyCache) return legacyCache;
+  }
 
   return readBundledPrompt(dependencies);
 }

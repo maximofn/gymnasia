@@ -9,6 +9,7 @@
 ## Validation
 
 - [ ] `prompt-policy` is green.
+- [ ] `gymnasia/policy-promotion` is green, or this PR does not change policy content.
 - [ ] Relevant local tests are listed with their results.
 - [ ] Screenshots are attached for UI changes, or not applicable.
 

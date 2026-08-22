@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gymnasia.local/schemas/health-safety-llm-evaluation.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "authorizing", "requiredForPullRequests", "executesPullRequestCode", "allowsSecretsFromExternalPullRequests", "execution", "command", "reportSchema", "inputs", "linkedTickets"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "authorizing": { "const": false },
+    "requiredForPullRequests": { "const": false },
+    "executesPullRequestCode": { "const": false },
+    "allowsSecretsFromExternalPullRequests": { "const": false },
+    "execution": { "const": "manual-or-scheduled" },
+    "command": { "const": "npm run test:llm" },
+    "reportSchema": { "const": "./schemas/evaluation-report.schema.json" },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string" }
+    },
+    "linkedTickets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^GYM-[0-9]+$" }
+    }
+  }
+}

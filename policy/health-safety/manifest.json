@@ -1,0 +1,44 @@
+{
+  "$schema": "./schemas/manifest.schema.json",
+  "schemaVersion": 1,
+  "policyVersion": "2026.08.1",
+  "publishedStatuses": [
+    "provisional",
+    "approved"
+  ],
+  "professionalReviewRequiredForClosure": true,
+  "requiredCategories": [
+    "prolonged-fasting",
+    "extreme-weight-loss",
+    "dangerous-deficiencies",
+    "eating-disorders",
+    "minors",
+    "pregnancy",
+    "diabetes",
+    "medication",
+    "injuries",
+    "acute-pain",
+    "emergencies"
+  ],
+  "requiredPublishedRuleIds": [
+    "HS-DIAB-MED-001",
+    "HS-ED-001",
+    "HS-EMERGENCY-001",
+    "HS-INJURY-001",
+    "HS-MINOR-001",
+    "HS-NUTRITION-001",
+    "HS-PREGNANCY-001"
+  ],
+  "currentRelease": {
+    "version": "2026.08.1",
+    "changedRuleIds": [
+      "HS-DIAB-MED-001",
+      "HS-ED-001",
+      "HS-EMERGENCY-001",
+      "HS-INJURY-001",
+      "HS-MINOR-001",
+      "HS-NUTRITION-001",
+      "HS-PREGNANCY-001"
+    ]
+  }
+}
