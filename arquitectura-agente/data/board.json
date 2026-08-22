@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-21",
+    "updated": "2026-08-22",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -89,7 +89,7 @@
         {
           "id": "GYM-190",
           "title": "Publicar la política de privacidad y completar las declaraciones de salud",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Publicar una política HTTPS coherente con el almacenamiento local, BYOK y los datos de salud, y alinear con ella Data safety y las declaraciones de salud e IA de Play.",
           "dependsOn": [],
           "related": [
@@ -124,7 +124,7 @@
         {
           "id": "GYM-193",
           "title": "Comprobar la disponibilidad legal y comercial de la marca Gymnasia",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Buscar conflictos relevantes en OEPM, EUIPO, Google Play y canales comerciales y decidir si se conserva o ajusta el nombre antes de consolidar la ficha.",
           "dependsOn": [],
           "related": [
