@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-sentado-sobre-cabeza-barra",
+  "name": "Extensión de tríceps sentado sobre la cabeza con barra",
+  "image_male": "images/extension-triceps-sentado-sobre-cabeza-barra-male.webp",
+  "image_female": "images/extension-triceps-sentado-sobre-cabeza-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido en un banco, apoya bien los pies y sujeta una barra ligera por encima de la cabeza con agarre cerrado. Mantén los brazos superiores junto a las orejas. Flexiona solo los codos para bajar la barra detrás de la cabeza y extiéndelos de nuevo sin arquear la zona lumbar."
+}

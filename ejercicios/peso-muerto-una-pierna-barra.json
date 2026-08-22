@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-una-pierna-barra",
+  "name": "Peso muerto a una pierna con barra",
+  "image_male": "images/peso-muerto-una-pierna-barra-male.webp",
+  "image_female": "images/peso-muerto-una-pierna-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "zona lumbar", "core"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Sujeta la barra delante de los muslos y traslada el peso a una pierna. Inclina el torso desde la cadera mientras extiendes la pierna libre hacia atrás, manteniendo la espalda neutra y la barra cerca del cuerpo. Regresa apretando el glúteo sin girar la pelvis y completa ambos lados."
+}

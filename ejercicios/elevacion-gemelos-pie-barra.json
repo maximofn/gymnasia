@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-gemelos-pie-barra",
+  "name": "Elevación de gemelos de pie con barra",
+  "image_male": "images/elevacion-gemelos-pie-barra-male.webp",
+  "image_female": "images/elevacion-gemelos-pie-barra-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["sóleo", "core"],
+  "equipment": "barra",
+  "difficulty": "beginner",
+  "instructions": "Coloca una barra ligera sobre la parte alta de la espalda y mantén los pies paralelos. Eleva los talones todo lo posible mientras conservas las rodillas extendidas y el torso estable. Haz una pausa arriba y baja lentamente hasta apoyar los talones."
+}

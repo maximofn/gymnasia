@@ -1,0 +1,11 @@
+{
+  "id": "rodillo-abdominal-pie-barra",
+  "name": "Rodillo abdominal de pie con barra",
+  "image_male": "images/rodillo-abdominal-pie-barra-male.webp",
+  "image_female": "images/rodillo-abdominal-pie-barra-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["hombros", "zona lumbar", "dorsales"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "De pie, inclínate desde las caderas y agarra una barra con discos que puedan rodar. Mantén el abdomen firme y desplaza la barra hacia delante extendiendo el cuerpo solo hasta donde controles la zona lumbar. Usa el abdomen para hacerla regresar y vuelve a levantarte sin tirones."
+}
