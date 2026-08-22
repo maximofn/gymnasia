@@ -14,6 +14,9 @@ runtime de Expo:
 - `chatSystemPrompt.ts`: validación y selección determinista de prompt remoto,
   caché o snapshot integrado; el adaptador Expo vive en
   `chatSystemPromptRuntime.ts`.
+- `healthSafety.ts`: clasificador local, buffer de streaming, permisos de tools,
+  respuestas seguras y merge monotónico del overlay remoto; el adaptador Expo
+  vive en `healthSafetyRuntime.ts`.
 - `personalData.ts`: higiene de forma del almacén de datos personales. Sanea
   cualquier entrada (almacén, argumento de tool, backup importado) preservando la
   clave literal, porque las tools de lectura casan por igualdad exacta.
@@ -50,7 +53,9 @@ ticket no se considera clínicamente cerrado hasta su revisión profesional.
 
 El E2E exporta la app web, abre Chromium, intercepta OpenAI, Anthropic y Google
 con esos fixtures y verifica el flujo visible completo. También prueba la
-selección remota, caché e integrada del system prompt y sus metadatos de traza.
+selección remota, caché e integrada del system prompt, sus metadatos de traza y
+que una emergencia produce una tarjeta local persistida sin una nueva petición
+al proveedor ni ejecución de tools.
 Es más lento y se ejecuta de forma explícita; no forma parte del CI determinista
 que bloquea commits.
 

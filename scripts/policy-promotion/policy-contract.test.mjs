@@ -34,6 +34,9 @@ test("producción reutiliza candidato y digest de staging", () => {
   assert.match(workflow, /stagingDeploymentId/);
   assert.match(workflow, /ASSET_SHA="\$\(jq -r \.assetSha256 promotion-evidence\.json\)"/);
   assert.doesNotMatch(workflow, /raw\.githubusercontent\.com.*main.*prompts\/AGENTS\.md/);
+  assert.match(workflow, /health-safety-runtime\.json/);
+  assert.match(workflow, /runtimePolicySha256/);
+  assert.equal((workflow.match(/schemaVersion: 2/g) || []).length, 3);
 });
 
 test("el bootstrap solo puede ejecutarse una vez desde el HEAD actual de main", () => {
@@ -59,4 +62,6 @@ test("EAS conserva preview como alias de staging y separa producción", () => {
     "utf8",
   );
   assert.match(snapshotScript, /policySnapshot\.generated\.json/);
+  assert.match(snapshotScript, /healthSafetyPolicy\.generated\.ts/);
+  assert.match(snapshotScript, /runtimePolicySha256/);
 });

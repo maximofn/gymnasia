@@ -14,7 +14,7 @@ const CANDIDATE = "policy-v2026.08.1-aaaaaaaaaaaa";
 
 function payload(overrides: Record<string, unknown> = {}) {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     candidate: CANDIDATE,
     sourceCommit: SHA,
     assetUrl: `https://github.com/maximofn/gymnasia/releases/download/${CANDIDATE}/policy.md`,
@@ -24,6 +24,9 @@ function payload(overrides: Record<string, unknown> = {}) {
     promptVersion: `sha256:${DIGEST}`,
     reportSha256: REPORT_DIGEST,
     workflowRunUrl: "https://github.com/maximofn/gymnasia/actions/runs/123",
+    runtimePolicyUrl: `https://github.com/maximofn/gymnasia/releases/download/${CANDIDATE}/health-safety-runtime.json`,
+    runtimePolicySha256: "d".repeat(64),
+    runtimePolicyVersion: "2026.08.1",
     ...overrides,
   };
 }
@@ -34,7 +37,7 @@ describe("policy deployment contract", () => {
   });
 
   it.each([
-    { schemaVersion: 2 },
+    { schemaVersion: 3 },
     { candidate: "main" },
     { sourceCommit: "abc" },
     { assetUrl: "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md" },
@@ -42,8 +45,21 @@ describe("policy deployment contract", () => {
     { datasetVersion: "other" },
     { promptVersion: "sha256:other" },
     { workflowRunUrl: "https://evil.example/run/1" },
+    { runtimePolicyUrl: "https://evil.example/runtime.json" },
+    { runtimePolicySha256: "no" },
+    { runtimePolicyVersion: "2026.07.1" },
   ])("rejects invalid combinations %#", (override) => {
     expect(parsePolicyDeploymentPayload(payload(override))).toBeNull();
+  });
+
+  it("keeps reading schema v1 deployments without a runtime overlay", () => {
+    const legacy = payload({
+      schemaVersion: 1,
+      runtimePolicyUrl: undefined,
+      runtimePolicySha256: undefined,
+      runtimePolicyVersion: undefined,
+    });
+    expect(parsePolicyDeploymentPayload(legacy)).toEqual(legacy);
   });
 
   it("never accepts an arbitrary non-release URL", () => {

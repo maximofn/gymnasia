@@ -7,11 +7,13 @@ Gymnasia Coach. Cubre ayunos prolongados, pérdida extrema de peso, déficits,
 trastornos alimentarios, menores, embarazo, diabetes, medicación, lesiones,
 dolor agudo y emergencias.
 
-Las mismas reglas alimentan tres superficies:
+La política alimenta cuatro barreras coordinadas:
 
 1. el bloque administrado `HEALTH-SAFETY` de `prompts/AGENTS.md`;
 2. los casos y fixtures deterministas de la puerta de CI;
-3. la interfaz de informe no autorizador que consumirán las evals con LLM.
+3. `runtime.json`, con señales y respuestas locales ES/EN/PT para el guardrail
+   de entrada, salida, streaming y tools;
+4. la interfaz de informe no autorizador que consumirán las evals con LLM.
 
 No se mantiene una segunda copia manual del contenido sanitario en el prompt.
 
@@ -48,6 +50,8 @@ manifest y se vuelven a ejecutar todas las pruebas.
   procedencia sin datos personales.
 - `schemas/*.schema.json`: contratos JSON bloqueantes.
 - `llm-evaluation.json`: frontera manual/programada de las evals probabilísticas.
+- `runtime.json`: clasificador local, respuestas seguras y overlay monotónico
+  versionado. Su schema está en `schemas/runtime-policy.schema.json`.
 - `examples/llm-evaluation-report.json`: forma versionada del informe LLM.
 - `scripts/health-safety/fixtures/`: respuestas de proveedor falso, sin red.
 
@@ -91,11 +95,19 @@ recibir secretos al evaluar una contribución externa.
 ## Frontera de la garantía
 
 La puerta demuestra de forma determinista que las reglas, el prompt, los casos,
-los fixtures y el snapshot son coherentes. Los patrones de respuesta solo se
-aplican a fixtures curados; no demuestran equivalencia semántica arbitraria ni
-que un modelo real obedecerá siempre el system prompt.
+los fixtures y ambos snapshots móviles son coherentes. En runtime, el
+clasificador local intercepta riesgo alto o crítico antes del proveedor,
+restringe tools por efecto, mantiene en buffer las consultas elevadas y valida
+segmentos completos antes de mostrarlos. Si una salida coincide con una señal
+de riesgo, la sustituye por una respuesta local que queda en el historial.
 
-GYM-143 añadirá la segunda barrera independiente en runtime para inspeccionar
-entradas y salidas críticas aunque el modelo ignore el prompt. Hasta entonces,
-las reglas provisionales reducen el riesgo, pero no constituyen una garantía
-determinista sobre cada respuesta de producción.
+La evaluación adicional con el mismo proveedor BYOK es opcional, está
+desactivada por defecto y requiere consentimiento versionado por proveedor.
+Solo recibe el texto de la consulta ambigua: no recibe historial, fotos ni
+memoria local. Un fallo o timeout conserva la decisión local y el buffer seguro.
+
+El overlay remoto puede añadir señales o endurecer riesgo/permisos, pero no
+rebajar la política compilada ni reemplazar sus mensajes. Una descarga, schema,
+digest o versión inválidos cae a caché validada y después al snapshot integrado.
+Estos patrones curados no demuestran equivalencia semántica arbitraria; por eso
+la revisión profesional de GYM-145 sigue siendo una pista independiente.

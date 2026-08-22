@@ -35,8 +35,9 @@ Google.
    `npm run check:health-safety` y genera un informe `authorizing: false`.
 3. Tras aprobar el environment `Staging`, se publica una prerelease draft →
    assets → publish con tag `policy-v<version>-<sha12>`. Contiene `policy.md`,
-   `health-safety-report.json` y `promotion-evidence.json`, y se crea el
-   deployment Staging.
+   `health-safety-runtime.json`, `health-safety-report.json` y
+   `promotion-evidence.json`, y se crea el deployment Staging. Los digests del
+   prompt y del runtime forman parte del payload schema v2.
 4. Probar el candidato en Staging y ejecutar la operación `production` con el
    mismo tag cuando esté listo. El workflow exige un deployment Staging
    exitoso, repite la puerta sanitaria sobre el mismo contenido y requiere la
@@ -76,9 +77,10 @@ node scripts/policy-promotion/prepare-policy-snapshot.mjs --environment staging|
 ```
 
 El script falla si no hay deployment, si la release/evidencia no existe o si
-algún digest difiere. Una APK interna se conserva como artifact de Actions; solo
-Production crea una release APK estable. Las releases de política son
-`prerelease`, por lo que `/releases/latest` continúa señalando la última APK.
+algún digest difiere. Integra tanto `policy.md` como el snapshot TypeScript del
+guardrail sanitario en la APK. Una APK interna se conserva como artifact de
+Actions; solo Production crea una release APK estable. Las releases de política
+son `prerelease`, por lo que `/releases/latest` continúa señalando la última APK.
 
 ## Limpieza y caída de GitHub
 
@@ -86,10 +88,12 @@ Production crea una release APK estable. Las releases de política son
 incluidos SecureStore, caché de política y trazas. Desinstalar o limpiar Staging
 no afecta a Production gracias a sus IDs y namespaces distintos.
 
-Si GitHub no responde, la app usa la caché v3 válida del mismo canal; sin caché,
-usa el snapshot integrado de ese canal. No salta a `main`, a otro environment ni
-a una política sin digest. Las trazas y Ajustes muestran entorno, canal,
-candidato y los 12 primeros caracteres del hash, nunca prompt o secretos.
+Si GitHub no responde, la app usa la caché válida del mismo canal; sin caché,
+usa los snapshots integrados del prompt y del guardrail. El overlay sanitario se
+fusiona de forma monotónica con el snapshot compilado, por lo que ni la caché ni
+un deployment pueden debilitarlo. No salta a `main`, a otro environment ni a una
+política sin digest. Las trazas y Ajustes muestran entorno, canal, candidato y
+hashes, nunca prompt, texto sanitario ni secretos.
 
 Para recuperar una política anterior, se crea un deployment nuevo del canal que
 referencia un candidato inmutable anterior. No se edita ni reemplaza la release.

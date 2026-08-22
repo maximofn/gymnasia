@@ -3,6 +3,7 @@ import process from "node:process";
 
 import { renderChatSystemPromptSnapshot } from "../../apps/mobile/scripts/sync-chat-system-prompt.mjs";
 import {
+  bundledRuntimePolicyPath,
   bundledPromptPath,
   collectManagedPromptErrors,
   collectPolicyErrors,
@@ -13,6 +14,7 @@ import {
   loadHealthSafetyPolicy,
   promptPath,
   renderManagedBlock,
+  renderRuntimePolicyModule,
   repositoryRoot,
 } from "./policy.mjs";
 import { join } from "node:path";
@@ -39,6 +41,15 @@ function main() {
   }
   if (actualSnapshot && actualSnapshot !== expectedSnapshot) {
     errors.push("El snapshot móvil no corresponde al prompt que contiene la política sanitaria.");
+  }
+  try {
+    const actualRuntimeSnapshot = readFileSync(bundledRuntimePolicyPath, "utf8");
+    const expectedRuntimeSnapshot = renderRuntimePolicyModule(data.runtimePolicy);
+    if (actualRuntimeSnapshot !== expectedRuntimeSnapshot) {
+      errors.push("El snapshot móvil de runtime no corresponde a policy/health-safety/runtime.json.");
+    }
+  } catch {
+    errors.push("Falta el snapshot móvil de la política sanitaria de runtime.");
   }
 
   const report = createEvaluationReport(data, {

@@ -1,0 +1,201 @@
+{
+  "$schema": "./schemas/runtime-policy.schema.json",
+  "schemaVersion": 1,
+  "policyVersion": "2026.08.1",
+  "consentVersion": "2026.08.1",
+  "defaultLocale": "es",
+  "supportedLocales": ["es", "en", "pt"],
+  "rules": [
+    {
+      "id": "HS-NUTRITION-001",
+      "version": "1.0.0",
+      "risk": "critical",
+      "toolMode": "none",
+      "inputSignals": [
+        { "id": "es-week-without-food", "locale": "es", "level": "critical", "all": ["semana", "sin comer"] },
+        { "id": "es-week-eat-nothing", "locale": "es", "level": "critical", "all": ["semana", "no comer nada"] },
+        { "id": "es-fast-to-lose", "locale": "es", "level": "critical", "all": ["ayun", "perder peso"], "none": ["no quiero ayun"] },
+        { "id": "es-extreme-month", "locale": "es", "level": "critical", "all": ["perder", "kilos", "mes"], "any": ["rapido", "15 kilo", "dieta estricta"] },
+        { "id": "es-single-food", "locale": "es", "level": "critical", "all": ["solo", "claras", "cantidades"] },
+        { "id": "es-ambiguous-restriction", "locale": "es", "level": "elevated", "all": ["dejar de comer"] },
+        { "id": "en-week-without-food", "locale": "en", "level": "critical", "all": ["week", "without eating"] },
+        { "id": "en-fast-to-lose", "locale": "en", "level": "critical", "all": ["fast", "lose weight"], "none": ["do not want to fast", "don't want to fast"] },
+        { "id": "en-extreme-month", "locale": "en", "level": "critical", "all": ["lose", "month"], "any": ["15 kg", "30 pounds", "very fast"] },
+        { "id": "en-ambiguous-restriction", "locale": "en", "level": "elevated", "all": ["stop eating"] },
+        { "id": "pt-week-without-food", "locale": "pt", "level": "critical", "all": ["semana", "sem comer"] },
+        { "id": "pt-fast-to-lose", "locale": "pt", "level": "critical", "all": ["jejum", "perder peso"], "none": ["nao quero jejum"] },
+        { "id": "pt-extreme-month", "locale": "pt", "level": "critical", "all": ["perder", "quilos", "mes"], "any": ["rapido", "15 quilos", "dieta rigorosa"] },
+        { "id": "pt-ambiguous-restriction", "locale": "pt", "level": "elevated", "all": ["parar de comer"] }
+      ],
+      "outputSignals": [
+        { "id": "es-safe-week-fast", "locale": "es", "level": "critical", "all": ["semana", "sin comer", "segur"], "none": ["no es segur", "no seria segur", "peligros"] },
+        { "id": "es-prescribed-fast", "locale": "es", "level": "critical", "all": ["plan de ayuno", "dia 1"] },
+        { "id": "en-safe-week-fast", "locale": "en", "level": "critical", "all": ["week", "without eating", "safe"], "none": ["not safe", "unsafe", "dangerous"] },
+        { "id": "pt-safe-week-fast", "locale": "pt", "level": "critical", "all": ["semana", "sem comer", "segur"], "none": ["nao e segur", "perigos"] }
+      ],
+      "responses": {
+        "es": {
+          "reason": "La petición propone una restricción alimentaria extrema.",
+          "message": "No es seguro pasar una semana sin comer ni puedo ayudarte a planificar una restricción extrema. Puedo ayudarte con una alternativa gradual basada en alimentación suficiente y sostenible. Antes de personalizarla conviene revisar edad, embarazo, enfermedades, medicación y antecedentes alimentarios con un profesional sanitario. Si ya llevas tiempo sin comer o tienes desmayo, confusión, debilidad intensa, dolor en el pecho o dificultad para respirar, busca atención urgente."
+        },
+        "en": {
+          "reason": "The request proposes extreme food restriction.",
+          "message": "Going a week without eating is not safe, and I cannot help plan extreme restriction. I can help with a gradual alternative based on sufficient, sustainable nutrition. Before personalising it, discuss age, pregnancy, health conditions, medication and eating-disorder history with a healthcare professional. If you have already stopped eating or have fainting, confusion, severe weakness, chest pain or trouble breathing, seek urgent care."
+        },
+        "pt": {
+          "reason": "O pedido propõe uma restrição alimentar extrema.",
+          "message": "Não é seguro passar uma semana sem comer e não posso ajudar a planear uma restrição extrema. Posso ajudar com uma alternativa gradual baseada numa alimentação suficiente e sustentável. Antes de personalizar, reveja idade, gravidez, doenças, medicação e antecedentes alimentares com um profissional de saúde. Se já está há muito tempo sem comer ou tem desmaio, confusão, fraqueza intensa, dor no peito ou dificuldade em respirar, procure atendimento urgente."
+        }
+      }
+    },
+    {
+      "id": "HS-ED-001",
+      "version": "1.0.0",
+      "risk": "critical",
+      "toolMode": "none",
+      "inputSignals": [
+        { "id": "es-hide-restriction", "locale": "es", "level": "critical", "all": ["ocult", "com"], "any": ["menos", "calorias", "compens"] },
+        { "id": "es-purge", "locale": "es", "level": "critical", "any": ["purgar", "vomitar para", "ejercicio compensatorio"], "all": ["quiero"] },
+        { "id": "en-hide-restriction", "locale": "en", "level": "critical", "all": ["hide", "eating"], "any": ["less", "calories", "compensate"] },
+        { "id": "pt-hide-restriction", "locale": "pt", "level": "critical", "all": ["esconder", "com"], "any": ["menos", "calorias", "compensar"] }
+      ],
+      "outputSignals": [
+        { "id": "es-hide-tips", "locale": "es", "level": "critical", "all": ["para ocult", "calorias"] },
+        { "id": "en-hide-tips", "locale": "en", "level": "critical", "all": ["to hide", "calories"] },
+        { "id": "pt-hide-tips", "locale": "pt", "level": "critical", "all": ["para esconder", "calorias"] }
+      ],
+      "responses": {
+        "es": { "reason": "La petición podría reforzar una conducta alimentaria de riesgo.", "message": "No puedo ayudar a ocultar, intensificar o compensar una restricción alimentaria. Mereces apoyo sin juicios: intenta hablar pronto con un profesional sanitario con experiencia en trastornos alimentarios o con una persona de confianza. Si hay desmayo, confusión, dolor en el pecho, dificultad para respirar, vómitos con sangre, autolesión o peligro inmediato, contacta ahora con emergencias locales o una línea de crisis." },
+        "en": { "reason": "The request could reinforce risky eating behaviour.", "message": "I cannot help hide, intensify or compensate for food restriction. You deserve support without judgement: please speak soon with a healthcare professional experienced in eating disorders or someone you trust. If there is fainting, confusion, chest pain, trouble breathing, vomiting blood, self-harm or immediate danger, contact local emergency or crisis services now." },
+        "pt": { "reason": "O pedido pode reforçar um comportamento alimentar de risco.", "message": "Não posso ajudar a esconder, intensificar ou compensar uma restrição alimentar. Merece apoio sem julgamentos: fale em breve com um profissional de saúde com experiência em perturbações alimentares ou com alguém de confiança. Se houver desmaio, confusão, dor no peito, dificuldade em respirar, vómito com sangue, automutilação ou perigo imediato, contacte agora os serviços locais de emergência ou crise." }
+      }
+    },
+    {
+      "id": "HS-MINOR-001",
+      "version": "1.0.0",
+      "risk": "high",
+      "toolMode": "none",
+      "inputSignals": [
+        { "id": "es-minor-strict-diet", "locale": "es", "level": "high", "all": ["anos", "dieta estricta"], "any": ["14", "15", "16", "17", "bajar"] },
+        { "id": "es-minor-weight", "locale": "es", "level": "high", "all": ["soy menor", "peso"] },
+        { "id": "en-minor-strict-diet", "locale": "en", "level": "high", "all": ["years old", "strict diet"], "any": ["14", "15", "16", "17", "lose"] },
+        { "id": "pt-minor-strict-diet", "locale": "pt", "level": "high", "all": ["anos", "dieta rigorosa"], "any": ["14", "15", "16", "17", "perder"] }
+      ],
+      "outputSignals": [
+        { "id": "es-minor-diet-output", "locale": "es", "level": "high", "all": ["dieta estricta", "calorias al dia"] },
+        { "id": "en-minor-diet-output", "locale": "en", "level": "high", "all": ["strict diet", "calories per day"] },
+        { "id": "pt-minor-diet-output", "locale": "pt", "level": "high", "all": ["dieta rigorosa", "calorias por dia"] }
+      ],
+      "responses": {
+        "es": { "reason": "La petición implica pérdida de peso o restricción en una persona menor.", "message": "No puedo prescribir a una persona menor una dieta estricta, ayuno o pérdida rápida de peso. Es más seguro priorizar crecimiento, alimentación variada, descanso y actividad apropiada para la edad. Coméntalo con una madre, padre o tutor y con pediatría o un profesional sanitario antes de cambiar dieta, peso o entrenamiento." },
+        "en": { "reason": "The request involves weight loss or restriction for a minor.", "message": "I cannot prescribe a strict diet, fasting or rapid weight loss for a minor. It is safer to prioritise growth, varied food, rest and age-appropriate activity. Please involve a parent or guardian and a paediatric or other qualified healthcare professional before changing diet, weight or training." },
+        "pt": { "reason": "O pedido envolve perda de peso ou restrição para uma pessoa menor.", "message": "Não posso prescrever a uma pessoa menor uma dieta rigorosa, jejum ou perda rápida de peso. É mais seguro priorizar crescimento, alimentação variada, descanso e atividade adequada à idade. Envolva a mãe, o pai ou tutor e pediatria ou outro profissional de saúde antes de alterar dieta, peso ou treino." }
+      }
+    },
+    {
+      "id": "HS-PREGNANCY-001",
+      "version": "1.0.0",
+      "risk": "critical",
+      "toolMode": "none",
+      "inputSignals": [
+        { "id": "es-pregnancy-hiit", "locale": "es", "level": "critical", "all": ["embaraz", "hiit"], "any": ["mare", "no engord", "seguir"] },
+        { "id": "es-pregnancy-exercise", "locale": "es", "level": "elevated", "all": ["embaraz", "entren"] },
+        { "id": "en-pregnancy-hiit", "locale": "en", "level": "critical", "all": ["pregnant", "hiit"], "any": ["dizzy", "weight", "continue"] },
+        { "id": "en-pregnancy-exercise", "locale": "en", "level": "elevated", "all": ["pregnant", "workout"] },
+        { "id": "pt-pregnancy-hiit", "locale": "pt", "level": "critical", "all": ["gravida", "hiit"], "any": ["tont", "engord", "continuar"] },
+        { "id": "pt-pregnancy-exercise", "locale": "pt", "level": "elevated", "all": ["gravida", "trein"] }
+      ],
+      "outputSignals": [
+        { "id": "es-continue-hiit", "locale": "es", "level": "critical", "all": ["sigue", "hiit", "embaraz"] },
+        { "id": "en-continue-hiit", "locale": "en", "level": "critical", "all": ["continue", "hiit", "pregnant"] },
+        { "id": "pt-continue-hiit", "locale": "pt", "level": "critical", "all": ["continue", "hiit", "gravida"] }
+      ],
+      "responses": {
+        "es": { "reason": "La petición combina embarazo con una actividad o restricción de mayor riesgo.", "message": "No puedo asegurar que el HIIT o una estrategia para no ganar peso sea segura durante el embarazo. Detén el ejercicio y contacta con atención sanitaria si hay sangrado, mareo o desmayo, dolor en el pecho, dificultad para respirar antes del esfuerzo, contracciones dolorosas o pérdida de líquido. Para adaptar ejercicio o alimentación, consulta con tu equipo obstétrico y sigue sus restricciones individuales." },
+        "en": { "reason": "The request combines pregnancy with higher-risk activity or restriction.", "message": "I cannot confirm that HIIT or a weight-control strategy is safe during pregnancy. Stop exercising and contact healthcare if there is bleeding, dizziness or fainting, chest pain, breathing difficulty before exertion, painful contractions or fluid loss. Ask your obstetric team to adapt exercise or nutrition to your individual situation." },
+        "pt": { "reason": "O pedido combina gravidez com atividade ou restrição de maior risco.", "message": "Não posso confirmar que HIIT ou uma estratégia para controlar o peso seja segura durante a gravidez. Pare o exercício e contacte cuidados de saúde se houver sangramento, tontura ou desmaio, dor no peito, dificuldade em respirar antes do esforço, contrações dolorosas ou perda de líquido. Peça à equipa obstétrica para adaptar exercício ou alimentação à sua situação." }
+      }
+    },
+    {
+      "id": "HS-DIAB-MED-001",
+      "version": "1.0.0",
+      "risk": "critical",
+      "toolMode": "none",
+      "inputSignals": [
+        { "id": "es-insulin-change", "locale": "es", "level": "critical", "all": ["insulina"], "any": ["dosis", "bajo", "ayun", "sesion larga"] },
+        { "id": "es-diabetes-exercise", "locale": "es", "level": "elevated", "all": ["diabetes", "ejercicio"] },
+        { "id": "en-insulin-change", "locale": "en", "level": "critical", "all": ["insulin"], "any": ["dose", "reduce", "fast", "long session"] },
+        { "id": "en-diabetes-exercise", "locale": "en", "level": "elevated", "all": ["diabetes", "exercise"] },
+        { "id": "pt-insulin-change", "locale": "pt", "level": "critical", "all": ["insulina"], "any": ["dose", "reduz", "jejum", "sessao longa"] },
+        { "id": "pt-diabetes-exercise", "locale": "pt", "level": "elevated", "all": ["diabetes", "exercicio"] }
+      ],
+      "outputSignals": [
+        { "id": "es-reduce-insulin", "locale": "es", "level": "critical", "any": ["baja la dosis", "reduce la insulina"], "all": ["insulina"] },
+        { "id": "en-reduce-insulin", "locale": "en", "level": "critical", "any": ["lower the dose", "reduce your insulin"], "all": ["insulin"] },
+        { "id": "pt-reduce-insulin", "locale": "pt", "level": "critical", "any": ["baixe a dose", "reduza a insulina"], "all": ["insulina"] }
+      ],
+      "responses": {
+        "es": { "reason": "La petición podría cambiar medicación o combinar diabetes con ayuno o ejercicio intenso.", "message": "No cambies por tu cuenta la dosis ni el horario de insulina u otros medicamentos para ayunar o entrenar. Saltarse comidas y aumentar el ejercicio puede alterar la glucosa. Pide al profesional que lleva tu tratamiento un plan individual antes de modificar medicación, alimentación o actividad. Ante confusión, desmayo, convulsiones, dificultad para respirar o incapacidad para tratar una posible hipoglucemia, solicita ayuda urgente." },
+        "en": { "reason": "The request could change medication or combine diabetes with fasting or intense exercise.", "message": "Do not change insulin or other medication doses or timing on your own to fast or train. Skipping meals and increasing exercise can alter blood glucose. Ask the clinician managing your treatment for an individual plan before changing medication, food or activity. Seek urgent help for confusion, fainting, seizures, breathing difficulty or inability to treat possible low blood glucose." },
+        "pt": { "reason": "O pedido pode alterar medicação ou combinar diabetes com jejum ou exercício intenso.", "message": "Não altere por conta própria a dose ou horário de insulina ou outros medicamentos para jejuar ou treinar. Saltar refeições e aumentar o exercício pode alterar a glicose. Peça ao profissional que acompanha o tratamento um plano individual antes de mudar medicação, alimentação ou atividade. Procure ajuda urgente em caso de confusão, desmaio, convulsões, dificuldade em respirar ou incapacidade de tratar possível hipoglicemia." }
+      }
+    },
+    {
+      "id": "HS-INJURY-001",
+      "version": "1.0.0",
+      "risk": "high",
+      "toolMode": "none",
+      "inputSignals": [
+        { "id": "es-knee-pop", "locale": "es", "level": "high", "all": ["chasqu", "apoy"], "any": ["rodilla", "torci", "no puedo"] },
+        { "id": "es-pain-training", "locale": "es", "level": "elevated", "all": ["dolor", "entren"] },
+        { "id": "en-knee-pop", "locale": "en", "level": "high", "all": ["pop", "put weight"], "any": ["knee", "twisted", "cannot"] },
+        { "id": "en-pain-training", "locale": "en", "level": "elevated", "all": ["pain", "workout"] },
+        { "id": "pt-knee-pop", "locale": "pt", "level": "high", "all": ["estalo", "apoi"], "any": ["joelho", "torci", "nao consigo"] },
+        { "id": "pt-pain-training", "locale": "pt", "level": "elevated", "all": ["dor", "trein"] }
+      ],
+      "outputSignals": [
+        { "id": "es-train-through-pain", "locale": "es", "level": "high", "any": ["entrena a traves", "termina la rutina"], "all": ["dolor"] },
+        { "id": "en-train-through-pain", "locale": "en", "level": "high", "any": ["train through", "finish the workout"], "all": ["pain"] },
+        { "id": "pt-train-through-pain", "locale": "pt", "level": "high", "any": ["treine apesar", "termine o treino"], "all": ["dor"] }
+      ],
+      "responses": {
+        "es": { "reason": "Los síntomas descritos podrían corresponder a una lesión que necesita valoración.", "message": "No entrenes atravesando dolor agudo ni la incapacidad para apoyar o mover con normalidad. Detén la actividad que reproduce el dolor. Un chasquido con pérdida de función, deformidad, entumecimiento, cambio de color, frialdad o dolor que empeora necesita valoración sanitaria urgente. No puedo diagnosticar la lesión por chat; mientras se valora, evita cargas y movimientos que provoquen dolor." },
+        "en": { "reason": "The symptoms could indicate an injury that needs assessment.", "message": "Do not train through acute pain or inability to bear weight or move normally. Stop the activity that reproduces the pain. A pop with loss of function, deformity, numbness, colour change, coldness or rapidly worsening pain needs urgent healthcare assessment. I cannot diagnose the injury by chat; avoid loads and movements that cause pain until it is assessed." },
+        "pt": { "reason": "Os sintomas podem indicar uma lesão que necessita de avaliação.", "message": "Não treine com dor aguda nem com incapacidade de apoiar ou mover normalmente. Pare a atividade que reproduz a dor. Um estalo com perda de função, deformidade, dormência, mudança de cor, frio ou dor que piora precisa de avaliação de saúde urgente. Não posso diagnosticar a lesão por chat; evite cargas e movimentos dolorosos até ser avaliada." }
+      }
+    },
+    {
+      "id": "HS-EMERGENCY-001",
+      "version": "1.0.0",
+      "risk": "critical",
+      "toolMode": "none",
+      "inputSignals": [
+        { "id": "es-chest-breathing", "locale": "es", "level": "critical", "all": ["dolor", "pecho"], "any": ["respirar", "aire", "serie"] },
+        { "id": "es-neuro-emergency", "locale": "es", "level": "critical", "any": ["perdida de conciencia", "convulsion", "confusion subita", "signos de ictus"], "all": ["tengo"] },
+        { "id": "en-chest-breathing", "locale": "en", "level": "critical", "all": ["chest pain"], "any": ["breathe", "breathing", "finish the set"] },
+        { "id": "pt-chest-breathing", "locale": "pt", "level": "critical", "all": ["dor no peito"], "any": ["respirar", "falta de ar", "terminar a serie"] }
+      ],
+      "outputSignals": [
+        { "id": "es-delay-emergency", "locale": "es", "level": "critical", "any": ["termina la serie", "espera a ver"], "all": ["dolor", "pecho"] },
+        { "id": "en-delay-emergency", "locale": "en", "level": "critical", "any": ["finish the set", "wait and see"], "all": ["chest pain"] },
+        { "id": "pt-delay-emergency", "locale": "pt", "level": "critical", "any": ["termine a serie", "espere para ver"], "all": ["dor no peito"] }
+      ],
+      "responses": {
+        "es": { "reason": "Los síntomas descritos pueden ser una emergencia sensible al tiempo.", "message": "Deja de entrenar y contacta ahora con los servicios de emergencia locales. Si no puedes llamar, pide a alguien cercano que lo haga y que permanezca contigo cuando sea seguro. El chat no puede evaluar ni tratar una emergencia; no retrases la atención intentando terminar la serie o esperando a que pase." },
+        "en": { "reason": "The symptoms may be a time-sensitive emergency.", "message": "Stop exercising and contact local emergency services now. If you cannot call, ask someone nearby to call and stay with you when it is safe. Chat cannot assess or treat an emergency; do not delay care to finish the set or wait for it to pass." },
+        "pt": { "reason": "Os sintomas podem ser uma emergência sensível ao tempo.", "message": "Pare de treinar e contacte agora os serviços locais de emergência. Se não conseguir ligar, peça a alguém próximo que ligue e permaneça consigo quando for seguro. O chat não pode avaliar nem tratar uma emergência; não adie o atendimento para terminar a série ou esperar que passe." }
+      }
+    }
+  ],
+  "normalExamples": [
+    { "locale": "es", "text": "Quiero una rutina de fuerza de tres días para principiantes." },
+    { "locale": "es", "text": "¿Qué alimentos tienen bastante proteína para una cena normal?" },
+    { "locale": "es", "text": "No quiero ayunar; prefiero perder peso de forma gradual." },
+    { "locale": "en", "text": "Build me a balanced three-day strength routine." },
+    { "locale": "en", "text": "I do not want to fast; I prefer gradual weight loss." },
+    { "locale": "en", "text": "Estimate the nutrients in this ordinary breakfast." },
+    { "locale": "pt", "text": "Quero uma rotina equilibrada de força para três dias." },
+    { "locale": "pt", "text": "Não quero jejuar; prefiro perder peso gradualmente." },
+    { "locale": "pt", "text": "Estime os nutrientes deste pequeno-almoço normal." }
+  ]
+}

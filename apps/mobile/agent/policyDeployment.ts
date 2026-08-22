@@ -1,7 +1,7 @@
 import type { PolicyChannel } from "../environment";
 
 export const POLICY_DEPLOYMENT_TASK = "gymnasia-policy" as const;
-export const POLICY_DEPLOYMENT_SCHEMA_VERSION = 1 as const;
+export const POLICY_DEPLOYMENT_SCHEMA_VERSION = 2 as const;
 export const POLICY_DEPLOYMENT_REFRESH_MS = 5 * 60 * 1000;
 
 const REPOSITORY = "maximofn/gymnasia";
@@ -11,7 +11,7 @@ const COMMIT_PATTERN = /^[a-f0-9]{40}$/;
 const POLICY_VERSION_PATTERN = /^\d{4}\.\d{2}\.\d+$/;
 
 export type PolicyDeploymentPayload = {
-  schemaVersion: typeof POLICY_DEPLOYMENT_SCHEMA_VERSION;
+  schemaVersion: 1 | typeof POLICY_DEPLOYMENT_SCHEMA_VERSION;
   candidate: string;
   sourceCommit: string;
   assetUrl: string;
@@ -21,6 +21,9 @@ export type PolicyDeploymentPayload = {
   promptVersion: string;
   reportSha256: string;
   workflowRunUrl: string;
+  runtimePolicyUrl?: string;
+  runtimePolicySha256?: string;
+  runtimePolicyVersion?: string;
 };
 
 export type ActivePolicyDeployment = PolicyDeploymentPayload & {
@@ -49,6 +52,11 @@ function isAllowedAssetUrl(value: string, candidate: string): boolean {
   return value === `${expectedPrefix}policy.md`;
 }
 
+function isAllowedRuntimePolicyUrl(value: string, candidate: string): boolean {
+  const expectedPrefix = `https://github.com/${REPOSITORY}/releases/download/${encodeURIComponent(candidate)}/`;
+  return value === `${expectedPrefix}health-safety-runtime.json`;
+}
+
 function isAllowedWorkflowRunUrl(value: string): boolean {
   return new RegExp(`^https://github\\.com/${REPOSITORY}/actions/runs/[0-9]+$`).test(value);
 }
@@ -69,7 +77,7 @@ export function parsePolicyDeploymentPayload(
   }
   const payload = candidateValue as Record<string, unknown>;
   if (
-    payload.schemaVersion !== POLICY_DEPLOYMENT_SCHEMA_VERSION
+    (payload.schemaVersion !== 1 && payload.schemaVersion !== POLICY_DEPLOYMENT_SCHEMA_VERSION)
     || typeof payload.candidate !== "string"
     || !/^policy-v\d{4}\.\d{2}\.\d+-[a-f0-9]{12}$/.test(payload.candidate)
     || typeof payload.sourceCommit !== "string"
@@ -89,6 +97,15 @@ export function parsePolicyDeploymentPayload(
     || typeof payload.workflowRunUrl !== "string"
     || !isAllowedWorkflowRunUrl(payload.workflowRunUrl)
   ) {
+    return null;
+  }
+  if (payload.schemaVersion === POLICY_DEPLOYMENT_SCHEMA_VERSION && (
+    typeof payload.runtimePolicyUrl !== "string"
+    || !isAllowedRuntimePolicyUrl(payload.runtimePolicyUrl, payload.candidate)
+    || typeof payload.runtimePolicySha256 !== "string"
+    || !SHA256_PATTERN.test(payload.runtimePolicySha256)
+    || payload.runtimePolicyVersion !== payload.policyVersion
+  )) {
     return null;
   }
   return payload as PolicyDeploymentPayload;
