@@ -56,6 +56,27 @@ describe("contrato estático del enlace legal en la app", () => {
   });
 });
 
+describe("el binario no distribuye datos de salud que no sean del usuario", () => {
+  // Hasta agosto de 2026 la app sembraba 92 mediciones reales de grasa corporal del
+  // desarrollador en cada instalación nueva: aparecían en las gráficas del usuario,
+  // viajaban en su copia de seguridad y el agente las leía como si fueran suyas.
+  // La política afirma que los datos son del usuario; esto lo sostiene.
+  it("no reintroduce la siembra de histórico de grasa corporal", () => {
+    expect(appSource).not.toContain("BODY_FAT_HISTORY_DATA");
+    expect(appSource).not.toContain("migrateBodyFatHistory");
+  });
+
+  it("no siembra series de mediciones fechadas", () => {
+    // Una serie con fechas y valores concretos no es una semilla de demostración.
+    expect(appSource).not.toMatch(/\{\s*date:\s*"\d{4}-\d{2}-\d{2}",\s*pct:\s*[\d.]+\s*\}/);
+  });
+
+  it("una instalación nueva en móvil arranca sin mediciones", () => {
+    const initialStore = appSource.slice(appSource.indexOf("function createInitialStore()"));
+    expect(initialStore.slice(0, 400)).toContain("measurements: []");
+  });
+});
+
 describe("contrato entre la app y la política publicada", () => {
   it("publica el mismo digest que la app declara", () => {
     expect(esHtml).toContain(

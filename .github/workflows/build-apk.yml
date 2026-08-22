@@ -22,6 +22,9 @@ on:
       # empaqueta en el AAB ni en el APK. Republicar la política de privacidad no
       # debe gastar una compilación de la cuota mensual (GYM-190).
       - "!apps/mobile/public/**"
+      # Los tests no entran en el bundle: cambiarlos no produce un binario distinto.
+      - "!apps/mobile/**/*.test.ts"
+      - "!apps/mobile/**/*.test.tsx"
 
 concurrency:
   group: build-apk-${{ github.ref }}

@@ -161,9 +161,9 @@
       "key": "gymnasia.mobile.body_fat_migration_done",
       "backend": "async-storage",
       "personal": false,
-      "dataCategory": "app-activity",
-      "purpose": "Marca de que la migración del histórico de grasa corporal ya se ejecutó. Ver notes: la migración inyecta datos que no son del usuario.",
-      "clearedBy": "never"
+      "dataCategory": "legacy",
+      "purpose": "Marca de una migración retirada que inyectaba un histórico de grasa corporal ajeno al usuario. Solo existe en instalaciones antiguas y se elimina en el arranque.",
+      "clearedBy": "startup-migration"
     },
     {
       "key": "gymnasia.mobile.local.v1",
@@ -300,7 +300,7 @@
     "Las claves BYOK se eliminan del estado antes de escribirlo en AsyncStorage solo si SecureStore está disponible. En web no lo está, así que la clave queda en el almacenamiento del navegador; la app ya lo advierte en Ajustes.",
     "La copia de seguridad exportada NO incluye las claves BYOK, pero sí medidas, dieta, historial de entrenamiento, memoria del coach y el historial completo de chats. En móvil el fichero se escribe en el directorio de caché de la app y no se borra tras compartirlo.",
     "'Restablecer datos locales' es un borrado parcial: solo alcanza a las entradas con clearedBy 'reset'. Todo lo marcado como 'never' sobrevive. GYM-162 lo corrige; hasta entonces la política publicada debe describirlo tal cual.",
-    "migrateBodyFatHistory inyecta en el historial de medidas de cada instalación una serie de porcentaje de grasa corporal que no pertenece al usuario. Es un dato de salud de un tercero distribuido en el binario y acaba en la copia de seguridad del usuario. Fuera del alcance de GYM-190; trazado aparte.",
+    "Hasta agosto de 2026 la app inyectaba en cada instalación 92 mediciones de grasa corporal que no pertenecían al usuario. Se retiró junto con su marca de migración. Si vuelve a aparecer una siembra de datos con apariencia real, no es una semilla de demostración: es dato de salud de un tercero distribuido en el binario.",
     "Los permisos no se declaran aquí: la fuente es scripts/android-permissions/policy.json. Los permisos que las dependencias aportan por manifest merger deben verificarse sobre el manifest FUSIONADO del artefacto en GYM-198, no sobre el manifest de origen."
   ]
 }

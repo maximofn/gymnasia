@@ -301,7 +301,7 @@ Only non-obvious gotchas that could recur are kept here.
 ### Clearing `localStorage` does NOT reset the app on web — it also persists to `.dev-store.json`
 - Gotcha: on web + `__DEV__`, `App.tsx` (`loadDevStoreFile` / `saveDevStoreFile`) mirrors the store to `apps/mobile/.dev-store.json` through a Metro middleware (`metro.config.js`, `/dev-store` endpoint) so data survives dev-server restarts. On boot it reads that file back, so wiping `localStorage` leaves the app fully populated. The file is served per dev server, not per origin, so `localhost:8081` and `127.0.0.1:8081` restore the *same* data even though their `localStorage` is separate.
 - Fix: to test a clean install on web, empty the file too (`printf '{}' > apps/mobile/.dev-store.json`) and make sure no tab still has the app running — a live instance re-persists its in-memory state on the way out, silently undoing the wipe.
-- Note: a fresh boot also re-runs the body-fat migration (`gymnasia.mobile.body_fat_migration_done`), which injects ~90 body-fat-only measurements. Expect the measurement count to differ from what you seeded.
+- Note: a fresh boot used to re-run a body-fat migration that injected ~90 body-fat-only measurements. It was removed in GYM-190 because the data was not the user's, so a clean install now starts with no measurements on mobile. On web, the first load still seeds demo data via `createWebSeedStore()`.
 
 ### Hay DOS proyectos de Vercel, y la política de privacidad vive en el segundo
 - Gotcha: `gymnasia` y `gymnasia-web` son proyectos distintos y es fácil confundirlos,
