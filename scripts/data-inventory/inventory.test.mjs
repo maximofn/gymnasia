@@ -22,6 +22,7 @@ import {
   scanHosts,
   scanStorageKeys,
   stripComments,
+  unescapeRegexDots,
 } from "./inventory.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -162,6 +163,43 @@ test("un ejemplo dentro de un comentario no cuenta como conexión real", () => {
   assert.equal(hosts.has("user"), false);
   assert.equal(hosts.has("docs.example.com"), false);
   assert.ok(hosts.has("real.example"));
+});
+
+test("un host escrito como expresión regular se lee entero", () => {
+  // `https://github\\.com/...` dentro de un new RegExp se leía como el host "github".
+  const sources = [
+    { path: "/fake/a.ts", source: 'new RegExp(`^https://github\\\\.com/owner/repo$`)' },
+  ].map(({ path, source }) => ({ path, source: unescapeRegexDots(source) }));
+  const hosts = scanHosts(sources);
+  assert.ok(hosts.has("github.com"));
+  assert.equal(hosts.has("github"), false);
+});
+
+test("un namespace de entorno no es una clave de almacenamiento", () => {
+  // scopedStorageKey antepone "gymnasia.production" a cada clave: es el prefijo del
+  // almacén, no una entrada con datos dentro.
+  const sources = [{ path: "/fake/app.config.ts", source: 'storageNamespace: "gymnasia.production"' }];
+  const violations = evaluateDataInventory({
+    inventory: {
+      storageKeys: [],
+      secureStoreKeys: [],
+      networkEndpoints: [],
+      storageNamespaces: ["gymnasia.production"],
+    },
+    sources,
+    permissions: emptyPermissions,
+  });
+  assert.deepEqual(violations, []);
+});
+
+test("un namespace sin declarar sí rompe el chequeo", () => {
+  const sources = [{ path: "/fake/app.config.ts", source: 'storageNamespace: "gymnasia.qa"' }];
+  const violations = evaluateDataInventory({
+    inventory: { storageKeys: [], secureStoreKeys: [], networkEndpoints: [], storageNamespaces: [] },
+    sources,
+    permissions: emptyPermissions,
+  });
+  assert.ok(codesFor(violations).includes("storage-key-undeclared"));
 });
 
 test("los ficheros de test no se escanean", () => {

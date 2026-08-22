@@ -81,9 +81,21 @@ export function stripComments(source) {
     .replace(/^[ \t]*\/\/.*$/gm, " ");
 }
 
+/**
+ * Deshace los escapes de las expresiones regulares escritas como cadena. Sin esto,
+ * `https://github\\.com/...` dentro de un `new RegExp(...)` se lee como el host
+ * "github", que no existe.
+ */
+export function unescapeRegexDots(source) {
+  return source.replace(/\\\\\./g, ".");
+}
+
 /** Lee cada fichero una sola vez: App.tsx pesa 1 MB y se escanea tres veces. */
 export function readSources(files) {
-  return files.map((path) => ({ path, source: stripComments(readFileSync(path, "utf8")) }));
+  return files.map((path) => ({
+    path,
+    source: unescapeRegexDots(stripComments(readFileSync(path, "utf8"))),
+  }));
 }
 
 export function scanStorageKeys(sources) {
@@ -130,12 +142,16 @@ export function evaluateDataInventory({ inventory, sources, permissions, root = 
   const declaredAsyncKeys = new Set(
     (inventory.storageKeys ?? []).map((entry) => entry.key),
   );
+  // Los namespaces no son claves: son el prefijo que scopedStorageKey antepone para
+  // que cada entorno (development, staging, production) tenga su propio almacén.
+  const declaredNamespaces = new Set(inventory.storageNamespaces ?? []);
   const declaredSecureKeys = inventory.secureStoreKeys ?? [];
   const declaredSecureLiterals = new Set(declaredSecureKeys.map((entry) => entry.key));
   const foundKeys = scanStorageKeys(sources);
 
   for (const [key, path] of foundKeys) {
     if (declaredAsyncKeys.has(key) || declaredSecureLiterals.has(key)) continue;
+    if (declaredNamespaces.has(key)) continue;
     violations.push({
       code: "storage-key-undeclared",
       subject: key,

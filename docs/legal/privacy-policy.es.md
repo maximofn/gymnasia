@@ -141,9 +141,10 @@ Gymnasia usa la cámara y la galería en dos sitios, y los trata de forma distin
 
 Además de los proveedores de IA:
 
-- **GitHub** (`raw.githubusercontent.com`, `api.github.com`): la aplicación descarga los
-  catálogos públicos de ejercicios, alimentos, productos y recetas, sus imágenes y las
-  instrucciones del asistente, y consulta si hay una versión nueva publicada. **No se
+- **GitHub** (`raw.githubusercontent.com`, `api.github.com`, `github.com`): la
+  aplicación descarga los catálogos públicos de ejercicios, alimentos, productos y
+  recetas, sus imágenes y las instrucciones del asistente; consulta qué versión de esas
+  instrucciones le corresponde; y comprueba si hay una versión nueva publicada. **No se
   envía ningún dato tuyo**, pero GitHub, como cualquier servidor al que te conectas, ve
   tu dirección IP.
 - **Open Food Facts** (`world.openfoodfacts.org`): si el asistente lee un código de

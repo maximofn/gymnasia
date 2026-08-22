@@ -136,11 +136,11 @@ differently:
 
 Besides the AI providers:
 
-- **GitHub** (`raw.githubusercontent.com`, `api.github.com`): the app downloads the
-  public catalogues of exercises, foods, products and recipes, their images and the
-  assistant's instructions, and checks whether a newer release has been published.
-  **No data of yours is sent**, but GitHub, like any server you connect to, sees your
-  IP address.
+- **GitHub** (`raw.githubusercontent.com`, `api.github.com`, `github.com`): the app
+  downloads the public catalogues of exercises, foods, products and recipes, their
+  images and the assistant's instructions; checks which version of those instructions
+  applies to it; and checks whether a newer release has been published. **No data of
+  yours is sent**, but GitHub, like any server you connect to, sees your IP address.
 - **Open Food Facts** (`world.openfoodfacts.org`): if the assistant reads a barcode in
   one of your photos, it looks that barcode up in their public database to obtain the
   product's nutritional information. The barcode is sent, not the image.
