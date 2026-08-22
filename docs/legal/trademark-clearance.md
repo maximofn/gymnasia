@@ -132,7 +132,7 @@ nombre visible de la ficha no lo es.
 | `gymnasia.net` | Ocupado | En venta (Dan.com) |
 | `gymnasia.org`, `gymnasia.fit` | Ocupados | Gimnasio nº1 de Sebastopol (centro escolar ruso) |
 | `gymnasia.eu` | Ocupado | En venta (Sedo) |
-| `gymnasia.es` | **NXDOMAIN**, sin delegar | Probablemente libre. Un dominio registrado pero sin delegar también da NXDOMAIN, así que hay que confirmarlo en dominios.es antes de darlo por disponible |
+| `gymnasia.es` | **NXDOMAIN**, sin delegar | Probablemente libre. Un dominio registrado pero sin delegar también da NXDOMAIN, así que habría que confirmarlo en dominios.es antes de darlo por disponible. El proyecto no lo necesita: ver la condición 2 |
 
 ### Perfiles
 
@@ -178,8 +178,15 @@ Condiciones que acompañan a la decisión:
 1. **Mantener la diferenciación visual y de autoría.** El nombre de desarrollador
    y el icono no deben parecerse a los de la app francesa ni a la turca. No usar
    nunca `gymnasia.fr`, `gymnasia.com` ni sus materiales como referencia.
-2. **Registrar `gymnasia.es`** si sigue libre, antes de publicar la ficha. Es
-   barato y es el único dominio relevante del mercado de lanzamiento.
+2. **Ningún dominio nuevo hace falta para publicar.** Google Play solo exige una
+   URL pública de política de privacidad, y eso ya lo cubre
+   `gymnasia.maximofn.com/privacidad`. El producto es una app local-first que se
+   descubre en la tienda, no una web, así que no depende de un dominio de marca.
+   `gymnasia.es` aparece libre, pero registrarlo **no es una condición del
+   lanzamiento** ni protege el nombre: lo que hace frágil a «Gymnasia» es su
+   proximidad con «gimnasia», y ningún dominio corrige eso. Es una compra
+   defendible solo si algún día se quiere una web de marketing en dominio
+   español, y esa decisión puede tomarse entonces.
 3. **No prometer exclusividad del nombre** en textos de la ficha ni en materiales
    de marketing.
 4. **Consultar a un agente de la propiedad industrial** antes de gastar dinero en
