@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "apps/mobile/**"
+      - "apps/feedback-worker/**"
       - "prompts/**"
       - "policy/health-safety/**"
       - "scripts/health-safety/**"
@@ -19,6 +20,7 @@ on:
     branches: [main]
     paths:
       - "apps/mobile/**"
+      - "apps/feedback-worker/**"
       - "prompts/**"
       - "policy/health-safety/**"
       - "scripts/health-safety/**"
@@ -69,6 +71,9 @@ jobs:
 
       - name: Run deterministic agent suite
         run: npm test
+
+      - name: Run feedback worker suite
+        run: npm --workspace apps/feedback-worker run test
 
       - name: Run OpenWiki automation tests
         run: npm run test:openwiki

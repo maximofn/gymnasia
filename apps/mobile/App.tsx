@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -53,6 +53,20 @@ import {
   type ToolMeasurement,
   type ToolStore,
 } from "./agent/toolExecutor";
+import { resolveFeedbackEndpoint } from "./environment";
+import { createFeedbackIssueClient } from "./agent/feedbackClient";
+import {
+  describeOutcomeForUser,
+  formatExerciseSummary,
+  formatFoodSummary,
+  type FeedbackIssueDraft,
+  type FeedbackIssueOutcome,
+} from "./agent/feedbackIssues";
+import {
+  createFeedbackProposalStore,
+  type FeedbackProposal,
+} from "./agent/feedbackProposals";
+import { FeedbackProposalBanner } from "./FeedbackProposalBanner";
 import {
   mapGoogleResponsePartToRequestPart,
   parseOpenAIFunctionArguments,
@@ -983,184 +997,34 @@ function findFoodInRepo(
   return partial ?? null;
 }
 
-// A static client must never embed a GitHub write token. Issue creation needs a
-// trusted server/proxy and is intentionally disabled until one exists.
-const GITHUB_FOOD_ISSUE_TOKEN = "";
+// Las incidencias se crean a través del backend de recepción (GYM-54), que es
+// quien custodia la credencial de GitHub. Un cliente estático nunca puede
+// llevar un token de escritura. Toda la lógica testeable vive en
+// agent/feedbackIssues.ts y agent/feedbackClient.ts.
+const feedbackEndpoint = resolveFeedbackEndpoint(Constants.expoConfig?.extra);
+const feedbackIssueClient = feedbackEndpoint.available
+  ? createFeedbackIssueClient({ baseUrl: feedbackEndpoint.baseUrl })
+  : null;
 
-async function createGitHubFoodIssue(food: {
-  name: string;
-  calories_kcal: number;
-  protein_g: number;
-  carbs_g: number;
-  fat_g: number;
-  grams: number;
-  food_type?: "producto_comercial" | "receta" | "alimento" | "manual";
-}): Promise<void> {
-  if (!GITHUB_FOOD_ISSUE_TOKEN) return;
-  try {
-    const titlePrefix =
-      food.food_type === "producto_comercial" ? "[Nuevo producto comercial]"
-      : food.food_type === "receta" ? "[Nueva receta]"
-      : food.food_type === "manual" ? "[Alimento añadido a mano]"
-      : "Nuevo alimento:";
-    const label =
-      food.food_type === "producto_comercial" ? "producto_comercial"
-      : food.food_type === "receta" ? "receta"
-      : "alimento";
-    const typeLabel =
-      food.food_type === "producto_comercial" ? "Producto comercial"
-      : food.food_type === "receta" ? "Receta"
-      : food.food_type === "manual" ? "Añadido a mano"
-      : "Alimento";
-    const body = [
-      `Se ha añadido un alimento que no está en la base de datos.\n`,
-      `### Datos del alimento`,
-      `- **Nombre**: ${food.name}`,
-      `- **Tipo**: ${typeLabel}`,
-      `- **Gramos registrados**: ${food.grams} g`,
-      `- **Calorías**: ${food.calories_kcal} kcal`,
-      `- **Proteína**: ${food.protein_g} g`,
-      `- **Carbohidratos**: ${food.carbs_g} g`,
-      `- **Grasa**: ${food.fat_g} g`,
-      `\n### JSON sugerido (por 100 g)`,
-      "```json",
-      JSON.stringify(
-        {
-          id: food.name
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-|-$/g, ""),
-          name: food.name,
-          category: "",
-          calories_per_100g: food.grams > 0 ? Math.round((food.calories_kcal / food.grams) * 100) : 0,
-          protein_per_100g: food.grams > 0 ? Math.round((food.protein_g / food.grams) * 100 * 10) / 10 : 0,
-          carbs_per_100g: food.grams > 0 ? Math.round((food.carbs_g / food.grams) * 100 * 10) / 10 : 0,
-          fat_per_100g: food.grams > 0 ? Math.round((food.fat_g / food.grams) * 100 * 10) / 10 : 0,
-          fiber_per_100g: 0,
-          serving_size_g: food.grams || 100,
-          serving_description: "",
-        },
-        null,
-        2,
-      ),
-      "```",
-    ].join("\n");
-    await fetch("https://api.github.com/repos/maximofn/gymnasia/issues", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${GITHUB_FOOD_ISSUE_TOKEN}`,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: `${titlePrefix} ${food.name}`,
-        body,
-        labels: [label],
-      }),
-    });
-  } catch {
-    // Fire-and-forget: do not block UI
-  }
-}
+/**
+ * Cola de propuestas de alimento y ejercicio pendientes de confirmación.
+ *
+ * Estos dos caminos no pasan por el agente: los dispara la UI. Encolar es
+ * síncrono y sin red, así que se conserva el patrón dispara-y-olvida de antes,
+ * pero ahora no sale nada hasta que el usuario toca "Enviar".
+ */
+const feedbackProposalStore = createFeedbackProposalStore({ createId: () => uid("proposal") });
 
-async function createGitHubExerciseIssue(exercise: {
-  name: string;
-  muscle_group: string;
-  secondary_muscles?: string[];
-  equipment: string;
-  difficulty?: string;
-  instructions?: string;
-}): Promise<void> {
-  if (!GITHUB_FOOD_ISSUE_TOKEN) return;
-  try {
-    const secondaryLabel = exercise.secondary_muscles?.length
-      ? exercise.secondary_muscles.join(", ")
-      : "Sin especificar";
-    const body = [
-      `Se ha añadido un ejercicio que no está en la base de datos.\n`,
-      `### Datos del ejercicio`,
-      `- **Nombre**: ${exercise.name}`,
-      `- **Grupo muscular**: ${exercise.muscle_group || "Sin especificar"}`,
-      `- **Músculos secundarios**: ${secondaryLabel}`,
-      `- **Equipamiento**: ${exercise.equipment || "Sin especificar"}`,
-      `- **Dificultad**: ${exercise.difficulty || "Sin especificar"}`,
-      `- **Instrucciones**: ${exercise.instructions || "Sin especificar"}`,
-      `\n### JSON sugerido`,
-      "```json",
-      JSON.stringify(
-        {
-          id: exercise.name
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-|-$/g, ""),
-          name: exercise.name,
-          image_male: "",
-          image_female: "",
-          muscle_group: exercise.muscle_group || "",
-          secondary_muscles: exercise.secondary_muscles ?? [],
-          equipment: exercise.equipment || "",
-          difficulty: exercise.difficulty || "",
-          instructions: exercise.instructions || "",
-        },
-        null,
-        2,
-      ),
-      "```",
-    ].join("\n");
-    await fetch("https://api.github.com/repos/maximofn/gymnasia/issues", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${GITHUB_FOOD_ISSUE_TOKEN}`,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: `[Nuevo ejercicio] ${exercise.name}`,
-        body,
-        labels: ["ejercicio"],
-      }),
-    });
-  } catch {
-    // Fire-and-forget: do not block UI
+async function submitFeedbackIssue(
+  draft: FeedbackIssueDraft,
+): Promise<FeedbackIssueOutcome> {
+  if (!feedbackIssueClient) {
+    return {
+      status: "unavailable",
+      reason: feedbackEndpoint.available ? "disabled" : feedbackEndpoint.reason,
+    };
   }
-}
-
-async function createGitHubFeatureIssue(params: {
-  title_summary: string;
-  conversation_excerpt: string;
-  interpretation: string;
-}): Promise<void> {
-  if (!GITHUB_FOOD_ISSUE_TOKEN) return;
-  try {
-    const body = [
-      `### Fragmento de la conversación`,
-      ``,
-      params.conversation_excerpt,
-      ``,
-      `### Interpretación del agente`,
-      ``,
-      params.interpretation,
-    ].join("\n");
-    await fetch("https://api.github.com/repos/maximofn/gymnasia/issues", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${GITHUB_FOOD_ISSUE_TOKEN}`,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: `[FEATURE] ${params.title_summary}`,
-        body,
-        labels: ["enhancement"],
-      }),
-    });
-  } catch {
-    // Fire-and-forget: do not block UI
-  }
+  return feedbackIssueClient.submitIssue(draft);
 }
 
 async function loadExercisesRepo(): Promise<ExerciseRepoEntry[]> {
@@ -1335,7 +1199,7 @@ const executeAgentTool = createAgentToolExecutor({
   getExerciseImageUrl: (exercise, gender) => (
     getExerciseImageUrl(exercise as ExerciseRepoEntry, gender)
   ),
-  createFeatureIssue: createGitHubFeatureIssue,
+  submitFeedbackIssue,
 });
 
 function createToolExecutionContext(
@@ -6295,6 +6159,27 @@ function TracePanel() {
 }
 
 export default function App() {
+  // Propuestas pendientes de alimento y ejercicio. El store vive fuera de React
+  // porque lo alimentan funciones de módulo; aquí solo se observa.
+  const feedbackProposals = useSyncExternalStore(
+    feedbackProposalStore.subscribe,
+    feedbackProposalStore.getSnapshot,
+    feedbackProposalStore.getSnapshot,
+  );
+
+  const handleFeedbackProposalSubmit = useCallback(
+    async (proposal: FeedbackProposal) => {
+      feedbackProposalStore.markSubmitting(proposal.id);
+      const outcome = await submitFeedbackIssue(proposal.draft);
+      feedbackProposalStore.settle(proposal.id, outcome);
+    },
+    [],
+  );
+
+  const handleFeedbackProposalDismiss = useCallback((proposal: FeedbackProposal) => {
+    feedbackProposalStore.dismiss(proposal.id);
+  }, []);
+
   const { width: viewportWidth } = useWindowDimensions();
   const isDesktopWeb = Platform.OS === "web" && viewportWidth >= 960;
   const [tab, setTab] = useState<TabKey>("home");
@@ -8870,14 +8755,17 @@ export default function App() {
         fat_g: fat ?? 0,
       };
       if (!repoMatch) {
-        createGitHubFoodIssue({
-          name: title,
-          calories_kcal: calories,
-          protein_g: protein ?? 0,
-          carbs_g: carbs ?? 0,
-          fat_g: fat ?? 0,
-          grams: grams ?? 0,
-          food_type: "manual",
+        feedbackProposalStore.propose({
+          kind: "food",
+          title: title,
+          summary: formatFoodSummary({
+            name: title,
+            grams: grams ?? 0,
+            calories_kcal: calories,
+            protein_g: protein ?? 0,
+            carbs_g: carbs ?? 0,
+            fat_g: fat ?? 0,
+          }),
         });
       }
     }
@@ -9719,14 +9607,17 @@ export default function App() {
           ? "producto_comercial"
           : parsed.food_type;
         if (!repoMatch && effectiveFoodType !== "alimento") {
-          createGitHubFoodIssue({
-            name: aiName,
-            calories_kcal: parsed.calories_kcal,
-            protein_g: parsed.protein_g ?? 0,
-            carbs_g: parsed.carbs_g ?? 0,
-            fat_g: parsed.fat_g ?? 0,
-            grams: aiGrams,
-            food_type: effectiveFoodType,
+          feedbackProposalStore.propose({
+            kind: "food",
+            title: aiName,
+            summary: formatFoodSummary({
+              name: aiName,
+              grams: aiGrams,
+              calories_kcal: parsed.calories_kcal,
+              protein_g: parsed.protein_g ?? 0,
+              carbs_g: parsed.carbs_g ?? 0,
+              fat_g: parsed.fat_g ?? 0,
+            }),
           });
         }
       }
@@ -10301,10 +10192,13 @@ export default function App() {
       if (!repoMatch) {
         exerciseIssueSentRef.current.add(key);
         const exercise = activeTrainingTemplate?.exercises.find((e) => e.id === exerciseId);
-        createGitHubExerciseIssue({
-          name: trimmed,
-          muscle_group: exercise?.muscle ?? "",
-          equipment: "",
+        feedbackProposalStore.propose({
+          kind: "exercise",
+          title: trimmed,
+          summary: formatExerciseSummary({
+            name: trimmed,
+            muscle_group: exercise?.muscle ?? "",
+          }),
         });
       }
     }, 2000);
@@ -10515,14 +10409,15 @@ export default function App() {
     setExercisePickerOpen(false);
     setError(null);
 
-    // Fire-and-forget: create GitHub issue for new exercise
-    createGitHubExerciseIssue({
-      name: draft.name.trim(),
-      muscle_group: draft.muscle_group,
-      secondary_muscles: draft.secondary_muscles,
-      equipment: draft.equipment,
-      difficulty: draft.difficulty,
-      instructions: draft.instructions,
+    // Encolar es síncrono y sin red: nada sale hasta que el usuario confirma.
+    feedbackProposalStore.propose({
+      kind: "exercise",
+      title: draft.name.trim(),
+      summary: formatExerciseSummary({
+        name: draft.name.trim(),
+        muscle_group: draft.muscle_group,
+        equipment: draft.equipment,
+      }),
     });
   }
 
@@ -12031,6 +11926,24 @@ export default function App() {
           maxWidth: isDesktopWeb ? 1440 : undefined,
         }}
       >
+      {feedbackProposals.length > 0 ? (
+        <View
+          style={{
+            paddingHorizontal: isDesktopWeb ? 32 : mobileTheme.spacing[4],
+            paddingTop: mobileTheme.spacing[3],
+            gap: mobileTheme.spacing[2],
+          }}
+        >
+          {feedbackProposals.map((proposal) => (
+            <FeedbackProposalBanner
+              key={proposal.id}
+              proposal={proposal}
+              onSubmit={handleFeedbackProposalSubmit}
+              onDismiss={handleFeedbackProposalDismiss}
+            />
+          ))}
+        </View>
+      ) : null}
       <View
         style={{
           paddingHorizontal: isDesktopWeb ? 32 : mobileTheme.spacing[4],

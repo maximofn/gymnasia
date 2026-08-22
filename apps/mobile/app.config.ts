@@ -32,6 +32,23 @@ const VARIANTS: Record<BuildEnvironment, {
   },
 };
 
+/**
+ * URL del backend de incidencias (GYM-54).
+ *
+ * Es un literal a propósito, no solo una variable de entorno: el escáner de
+ * `scripts/data-inventory` reconoce hosts por literal `https://`, así que
+ * dejarlo aquí obliga a declararlo en `networkEndpoints` y el guard rail
+ * trabaja a favor. Con la URL solo en el entorno, el host sería invisible.
+ *
+ * `FEEDBACK_API_BASE_URL` existe solo como override de desarrollo, para
+ * apuntar a `wrangler dev`.
+ */
+const FEEDBACK_ENDPOINTS: Record<BuildEnvironment, string> = {
+  development: "",
+  staging: "",
+  production: "https://gymnasia-feedback.maximofn.com",
+};
+
 function readBundledPolicyMetadata(environment: BuildEnvironment): {
   sha256: string;
   candidate: string;
@@ -116,6 +133,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       configurationVersion: 1,
       policyCandidate,
       policySha256,
+      feedbackApiBaseUrl:
+        process.env.FEEDBACK_API_BASE_URL?.trim()
+        || FEEDBACK_ENDPOINTS[variant.environment],
     },
   } as ExpoConfig;
 };

@@ -108,6 +108,13 @@ export type ToolExecutionContext = {
   exercisesRepo?: ToolExerciseRepoEntry[];
 };
 
+import {
+  describeOutcomeForModel,
+  sanitizeFeedbackDraft,
+  type FeedbackIssueDraft,
+  type FeedbackIssueOutcome,
+} from "./feedbackIssues";
+
 export type ToolExecutorDependencies = {
   loadPersonalData: () => Promise<PersonalDataField[]>;
   savePersonalData: (fields: PersonalDataField[]) => Promise<void>;
@@ -116,11 +123,12 @@ export type ToolExecutorDependencies = {
   sortMeasurements: (measurements: ToolMeasurement[]) => ToolMeasurement[];
   createId: (prefix: string) => string;
   getExerciseImageUrl: (exercise: ToolExerciseRepoEntry, sex: "male" | "female") => string;
-  createFeatureIssue: (input: {
-    title_summary: string;
-    conversation_excerpt: string;
-    interpretation: string;
-  }) => Promise<void>;
+  /**
+   * Envía la incidencia y devuelve el resultado REAL. A diferencia de la
+   * dependencia que sustituye, no puede devolver `void`: si no hay número de
+   * issue, no hay éxito que comunicar.
+   */
+  submitFeedbackIssue: (draft: FeedbackIssueDraft) => Promise<FeedbackIssueOutcome>;
 };
 
 export type ToolHandler = (
@@ -532,16 +540,14 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
 };
 
 const createFeatureIssue: ToolHandler = async (args, _context, dependencies) => {
-  const titleSummary = (args.title_summary as string) ?? "";
-  const conversationExcerpt = (args.conversation_excerpt as string) ?? "";
-  const interpretation = (args.interpretation as string) ?? "";
-  if (!titleSummary) return "Falta el título de la mejora.";
-  await dependencies.createFeatureIssue({
-    title_summary: titleSummary,
-    conversation_excerpt: conversationExcerpt,
-    interpretation,
+  const draft = sanitizeFeedbackDraft({
+    kind: "feature",
+    title: typeof args.title === "string" ? args.title : "",
+    summary: typeof args.summary === "string" ? args.summary : "",
   });
-  return "Issue de mejora creada en GitHub correctamente.";
+  if (!draft) return "Falta el título o el resumen de la mejora.";
+  const outcome = await dependencies.submitFeedbackIssue(draft);
+  return describeOutcomeForModel(outcome);
 };
 
 export const AGENT_TOOL_HANDLERS: Record<string, ToolHandler> = {
@@ -570,6 +576,13 @@ export function createAgentToolExecutor(dependencies: ToolExecutorDependencies) 
   ): Promise<string> {
     const handler = AGENT_TOOL_HANDLERS[name];
     if (!handler) return "Herramienta no reconocida.";
-    return handler(args, context, dependencies);
+    try {
+      return await handler(args, context, dependencies);
+    } catch {
+      // Sin este catch, una excepción de cualquier handler sube por
+      // providerToolLoop y aborta el turno entero del chat. Con una tool que
+      // hace red eso pasa de teórico a probable.
+      return "La herramienta ha fallado. Informa al usuario de que no se ha completado.";
+    }
   };
 }
