@@ -89,7 +89,7 @@
         {
           "id": "GYM-190",
           "title": "Publicar la política de privacidad y completar las declaraciones de salud",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Publicar una política HTTPS coherente con el almacenamiento local, BYOK y los datos de salud, y alinear con ella Data safety y las declaraciones de salud e IA de Play.",
           "dependsOn": [],
           "related": [
