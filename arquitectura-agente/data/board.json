@@ -310,11 +310,11 @@
           "summary": "Formalizar entornos aislados y promover el mismo artefacto reutilizando `npm run check:health-safety` de GYM-145 como puerta obligatoria, con evidencia versionada y sin bypass en la vía crítica.",
           "baseline": "partial",
           "dependsOn": [
-            "GYM-142",
-            "GYM-145"
+            "GYM-142"
           ],
           "related": [
-            "GYM-124"
+            "GYM-124",
+            "GYM-145"
           ]
         },
         {
@@ -335,7 +335,7 @@
         {
           "id": "GYM-145",
           "title": "Crear una suite de seguridad sanitaria para cambios del agente",
-          "state": "done",
+          "state": "in_progress",
           "summary": "Crear `policy/health-safety/` como fuente canónica y `npm run check:health-safety`; las reglas provisionales ya protegen el prompt y CI, las approved requieren revisión profesional y el LLM solo informa.",
           "baseline": "partial",
           "dependsOn": [
@@ -368,7 +368,7 @@
         {
           "id": "GYM-143",
           "title": "Añadir una barrera sanitaria independiente del system prompt",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Aplicar una base sanitaria que la política remota no pueda desactivar y validar salidas de alto riesgo antes de mostrarlas, incluso sin conexión.",
           "baseline": "missing",
           "dependsOn": [
@@ -1853,13 +1853,15 @@
         },
         {
           "id": "GYM-54",
-          "title": "Sustituir los escritores no-op de GitHub Issues por un flujo seguro y verificable",
+          "title": "Crear un backend seguro para incidencias y mantener create_feature_issue",
           "state": "todo",
-          "summary": "Eliminar el falso éxito de create_feature_issue y reemplazar los tres escritores inactivos por un handoff explícito y comprobable, sin incrustar tokens de escritura en la app.",
+          "summary": "Conservar create_feature_issue y canalizar las incidencias de funcionalidades, alimentos y ejercicios por un backend limitado que custodia GitHub, exige revisión en la app y solo confirma creaciones verificadas.",
           "dependsOn": [],
           "related": [
             "GYM-42",
-            "GYM-45"
+            "GYM-45",
+            "GYM-136",
+            "GYM-168"
           ]
         },
         {
