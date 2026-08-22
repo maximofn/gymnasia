@@ -15,18 +15,22 @@ publicador de políticas firmadas.
 ## Autorización de pull requests
 
 Toda modificación de `main` entra mediante pull request y supera
-`prompt-policy` y `gymnasia/owner-authorization`:
+`prompt-policy`, `gymnasia/owner-authorization` y
+`gymnasia/policy-promotion`:
 
 1. Una PR escrita por `@maximofn` queda autorizada automáticamente.
 2. Una PR externa sin rutas sensibles no necesita review, pero el merge sigue
    siendo manual y solo lo realiza alguien con permiso en el repositorio.
 3. Una PR externa sensible necesita un review `APPROVED` de `@maximofn` sobre
    el SHA actual. Un commit posterior invalida la autorización.
+4. Una PR que cambia `prompts/` o `policy/health-safety/` queda pendiente hasta
+   que el SHA exacto tenga un deployment `gymnasia-policy` exitoso en
+   Production. Las demás PR superan este tercer check automáticamente.
 
 La reconciliación privilegiada usa `pull_request_target` exclusivamente para
-leer metadatos y publicar un estado. Siempre ejecuta el script del SHA base;
-nunca descarga ni ejecuta el head de la PR, no recibe secretos y no dispone de
-permisos sobre contenidos.
+leer metadatos y deployments y publicar estados. Siempre ejecuta el script del
+SHA base; nunca descarga ni ejecuta el head de la PR, no recibe secretos y no
+dispone de permisos sobre contenidos.
 
 ## Emergencia
 

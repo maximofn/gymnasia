@@ -60,8 +60,26 @@ export function validatePolicy(policy) {
 
   if (policy.checks?.policy !== "prompt-policy"
     || policy.checks?.ownerAuthorization !== "gymnasia/owner-authorization"
+    || policy.checks?.policyPromotion !== "gymnasia/policy-promotion"
     || policy.checks?.githubActionsAppId !== 15368) {
     throw new Error("El catálogo de checks obligatorios no coincide con la política aprobada.");
+  }
+
+  if (!Array.isArray(policy.promotionPaths) || policy.promotionPaths.length === 0) {
+    throw new Error("La política debe declarar las rutas que requieren promoción.");
+  }
+  for (const entry of policy.promotionPaths) {
+    if (!entry || !["directory", "file"].includes(entry.kind)) {
+      throw new Error("Cada ruta de promoción debe declarar kind directory o file.");
+    }
+    const coveredBySensitivePath = policy.sensitivePaths.some((sensitive) => (
+      sensitive.kind === "directory"
+        ? entry.path.startsWith(sensitive.path)
+        : entry.path === sensitive.path
+    ));
+    if (!coveredBySensitivePath) {
+      throw new Error(`La ruta de promoción debe ser también sensible: ${entry.path}`);
+    }
   }
 }
 
@@ -81,6 +99,46 @@ export function matchingSensitiveEntry(value, policy = loadPolicy()) {
 
 export function isSensitivePath(value, policy = loadPolicy()) {
   return Boolean(matchingSensitiveEntry(value, policy));
+}
+
+export function isPolicyPromotionPath(value, policy = loadPolicy()) {
+  const normalized = normalizeRepositoryPath(value);
+  return policy.promotionPaths.some((entry) => entry.kind === "directory"
+    ? normalized.startsWith(entry.path)
+    : normalized === entry.path);
+}
+
+export function evaluatePolicyPromotion({ policy, headSha, files, deployments }) {
+  const policyFiles = files.filter((file) => isPolicyPromotionPath(file, policy));
+  if (policyFiles.length === 0) {
+    return {
+      state: "success",
+      description: "No policy content changed",
+      policyFiles,
+    };
+  }
+  const promoted = deployments.some((deployment) => {
+    let payload = deployment?.payload;
+    if (typeof payload === "string") {
+      try {
+        payload = JSON.parse(payload);
+      } catch {
+        return false;
+      }
+    }
+    return deployment?.task === "gymnasia-policy"
+      && deployment?.environment === "Production"
+      && deployment?.latestStatus === "success"
+      && payload?.schemaVersion === 1
+      && payload?.sourceCommit === headSha;
+  });
+  return {
+    state: promoted ? "success" : "pending",
+    description: promoted
+      ? "Exact policy commit promoted to Production"
+      : "Policy commit must be promoted to Production",
+    policyFiles,
+  };
 }
 
 export function renderCodeowners(policy = loadPolicy()) {
@@ -133,6 +191,10 @@ export function createRuleset(policy = loadPolicy()) {
             },
             {
               context: policy.checks.ownerAuthorization,
+              integration_id: policy.checks.githubActionsAppId,
+            },
+            {
+              context: policy.checks.policyPromotion,
               integration_id: policy.checks.githubActionsAppId,
             },
           ],
@@ -258,8 +320,9 @@ export function assertWorkflowPolicy() {
   }
   if (!/^\s{2}statuses:\s*write\s*$/m.test(ownerWorkflow)
     || !/^\s{2}contents:\s*read\s*$/m.test(ownerWorkflow)
-    || !/^\s{2}pull-requests:\s*read\s*$/m.test(ownerWorkflow)) {
-    errors.push("owner-authorization.yml debe limitarse a contents/pull-requests read y statuses write");
+    || !/^\s{2}pull-requests:\s*read\s*$/m.test(ownerWorkflow)
+    || !/^\s{2}deployments:\s*read\s*$/m.test(ownerWorkflow)) {
+    errors.push("owner-authorization.yml debe limitarse a contents/pull-requests/deployments read y statuses write");
   }
 
   const buildWorkflow = readFileSync(join(repositoryRoot, ".github", "workflows", "build-apk.yml"), "utf8");

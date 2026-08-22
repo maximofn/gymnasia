@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 
+import { RUNTIME_ENVIRONMENT, scopedStorageKey } from "./runtimeEnvironment";
+
 export type TraceEntry = {
   ts: number;
   tag: string;
@@ -8,7 +10,7 @@ export type TraceEntry = {
   data?: unknown;
 };
 
-const TRACE_KEY = "gymnasia_debug_traces";
+const TRACE_KEY = scopedStorageKey("gymnasia_debug_traces");
 const MAX_TRACES = 1000;
 
 let traceBuffer: TraceEntry[] = [];
@@ -88,6 +90,10 @@ export function formatTraces(entries: TraceEntry[]): string {
   const header = [
     `=== Gymnasia trace dump ===`,
     `platform: ${Platform.OS}`,
+    `environment: ${RUNTIME_ENVIRONMENT.environment}`,
+    `policy-channel: ${RUNTIME_ENVIRONMENT.policyChannel}`,
+    `policy-candidate: ${RUNTIME_ENVIRONMENT.policyCandidate}`,
+    `policy-sha256: ${RUNTIME_ENVIRONMENT.policySha256.slice(0, 12)}`,
     `generated: ${new Date().toISOString()}`,
     `entries: ${entries.length}`,
     `=========================================`,

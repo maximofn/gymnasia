@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-import { evaluateAuthorization, loadPolicy } from "./policy.mjs";
+import {
+  evaluateAuthorization,
+  evaluatePolicyPromotion,
+  loadPolicy,
+} from "./policy.mjs";
 
 const token = process.env.GH_TOKEN;
 const repository = process.env.GITHUB_REPOSITORY;
@@ -44,9 +48,9 @@ async function paginate(path) {
   }
 }
 
-async function publishStatus(sha, result) {
+async function publishStatus(sha, context, result) {
   const combined = await api(`/repos/${repository}/commits/${sha}/status`);
-  const current = combined.statuses.find((status) => status.context === policy.checks.ownerAuthorization);
+  const current = combined.statuses.find((status) => status.context === context);
   if (current?.state === result.state && current?.description === result.description) {
     console.log(`${sha.slice(0, 7)}: sin cambios (${result.state})`);
     return;
@@ -55,12 +59,23 @@ async function publishStatus(sha, result) {
     method: "POST",
     body: JSON.stringify({
       state: result.state,
-      context: policy.checks.ownerAuthorization,
+      context,
       description: result.description,
       target_url: runUrl,
     }),
   });
   console.log(`${sha.slice(0, 7)}: ${result.state} — ${result.description}`);
+}
+
+async function productionDeploymentsForCommit(headSha) {
+  const deployments = await paginate(
+    `/repos/${repository}/deployments?environment=Production&ref=${encodeURIComponent(headSha)}&task=gymnasia-policy`,
+  );
+  return Promise.all(deployments.map(async (deployment) => {
+    const statusesPath = new URL(deployment.statuses_url).pathname;
+    const statuses = await paginate(statusesPath);
+    return { ...deployment, latestStatus: statuses[0]?.state ?? null };
+  }));
 }
 
 async function reconcilePull(number) {
@@ -73,14 +88,29 @@ async function reconcilePull(number) {
     paginate(`/repos/${repository}/pulls/${number}/files`),
     paginate(`/repos/${repository}/pulls/${number}/reviews`),
   ]);
-  const result = evaluateAuthorization({
+  const authorization = evaluateAuthorization({
     policy,
     author: pull.user,
     headSha: pull.head.sha,
     files: fileNodes.map((node) => node.filename),
     reviews,
   });
-  await publishStatus(pull.head.sha, result);
+  const promotion = evaluatePolicyPromotion({
+    policy,
+    headSha: pull.head.sha,
+    files: fileNodes.map((node) => node.filename),
+    deployments: await productionDeploymentsForCommit(pull.head.sha),
+  });
+  await publishStatus(
+    pull.head.sha,
+    policy.checks.ownerAuthorization,
+    authorization,
+  );
+  await publishStatus(
+    pull.head.sha,
+    policy.checks.policyPromotion,
+    promotion,
+  );
 }
 
 let pullNumbers;

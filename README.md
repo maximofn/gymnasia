@@ -11,6 +11,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `arquitectura-agente/`: Tablero de seguimiento de epicas y tickets (espejo manual de Linear, sitio estatico en Vercel)
 - `policy/health-safety/`: Reglas y casos sanitarios versionados que generan la protección del agente
 - `scripts/health-safety/`: Generador, puerta determinista, fixtures e informes sanitarios
+- `scripts/policy-promotion/`: Contratos y preparación de snapshots por canal
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
 
 ## Arranque rapido
@@ -61,6 +62,8 @@ npm run check:health-safety
 
 El flujo remoto, caché e integrado se documenta en
 `docs/architecture/chat-system-prompt.md`.
+Las variantes instalables y la promoción inmutable se documentan en
+`docs/architecture/policy-environments.md`.
 
 ## Front web
 
@@ -90,6 +93,7 @@ npm run test:board:e2e   # E2E con Playwright
 - Instrucciones para agentes IA: `AGENTS.md`
 - Documentacion central: `docs/README.md`
 - Política remota y fallback del agente: `docs/architecture/chat-system-prompt.md`
+- Entornos y promoción de políticas: `docs/architecture/policy-environments.md`
 - Política y revisión sanitaria del agente: `docs/architecture/health-safety-policy.md`
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`
