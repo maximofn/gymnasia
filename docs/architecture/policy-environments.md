@@ -37,18 +37,32 @@ Google.
    assets → publish con tag `policy-v<version>-<sha12>`. Contiene `policy.md`,
    `health-safety-report.json` y `promotion-evidence.json`, y se crea el
    deployment Staging.
-4. Probar el candidato durante al menos 24 horas. Ejecutar la operación
-   `production` con el mismo tag. El workflow exige un deployment Staging
-   exitoso, repite la puerta sanitaria sobre el mismo contenido y espera 1.440
-   minutos en el environment `Production` antes de apuntar al mismo asset y
-   digest.
+4. Probar el candidato en Staging y ejecutar la operación `production` con el
+   mismo tag cuando esté listo. El workflow exige un deployment Staging
+   exitoso, repite la puerta sanitaria sobre el mismo contenido y requiere la
+   aprobación del environment `Production`, pero no impone una espera fija.
 5. El check `gymnasia/policy-promotion` solo pasa cuando Production registra el
    SHA actual. Un commit nuevo vuelve a dejarlo pendiente. Después se fusiona la
    PR manualmente.
 
-`critical=true` conserva candidato, SHA, deployment de staging, propietario,
-puerta sanitaria y evidencias, pero usa `Production Critical`, sin temporizador.
-No elimina la revisión del propietario ni permite otro actor.
+`critical=true` etiqueta explícitamente una promoción urgente y usa el
+environment separado `Production Critical`. Conserva candidato, SHA, deployment
+de staging, propietario, puerta sanitaria y evidencias; no elimina la revisión
+del propietario ni permite otro actor.
+
+## Bootstrap inicial
+
+Después de fusionar por primera vez este sistema, todavía no existe un canal que
+pueda alimentar la primera build. En esa única situación se ejecuta `Promote
+policy` desde el HEAD actual de `main`, con operación `staging`, `pr_number`
+vacío y `bootstrap_main=true`.
+
+El workflow exige simultáneamente que se esté ejecutando desde `main`, que el SHA
+sea el HEAD remoto actual, que `prompt-policy` esté verde y que no exista ningún
+deployment previo con `task=gymnasia-policy`. La condición se comprueba otra vez
+en el job privilegiado para cerrar carreras. Tras crear Staging, el mismo
+candidato se promueve normalmente a Production. Cualquier intento posterior de
+bootstrap falla cerrado.
 
 ## Builds y secretos
 

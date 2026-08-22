@@ -14,12 +14,17 @@ on:
         description: "Open PR number (staging only)"
         required: false
         type: string
+      bootstrap_main:
+        description: "One-time Staging bootstrap from the current protected main commit"
+        required: false
+        default: false
+        type: boolean
       candidate:
         description: "Immutable policy tag (production only)"
         required: false
         type: string
       critical:
-        description: "Use Production Critical without the 24-hour timer"
+        description: "Use the separately audited Production Critical path"
         required: false
         default: false
         type: boolean
@@ -38,29 +43,44 @@ jobs:
       pull-requests: read
       checks: read
       statuses: read
+      deployments: read
     outputs:
       source_commit: ${{ steps.pr.outputs.source_commit }}
+      bootstrap: ${{ steps.pr.outputs.bootstrap }}
       candidate: ${{ steps.evidence.outputs.candidate }}
 
     steps:
-      - name: Resolve the open PR and exact commit
+      - name: Resolve an open PR or the one-time main bootstrap
         id: pr
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ inputs.pr_number }}
+          BOOTSTRAP_MAIN: ${{ inputs.bootstrap_main }}
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || { echo "pr_number is required for staging"; exit 1; }
-          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" > /tmp/pr.json
-          test "$(jq -r .state /tmp/pr.json)" = "open"
-          test "$(jq -r .base.ref /tmp/pr.json)" = "main"
-          SOURCE_COMMIT="$(jq -r .head.sha /tmp/pr.json)"
+          if test "$BOOTSTRAP_MAIN" = "true"; then
+            test -z "$PR_NUMBER" || { echo "bootstrap_main and pr_number are mutually exclusive"; exit 1; }
+            test "$GITHUB_REF" = "refs/heads/main" || { echo "bootstrap_main must run from main"; exit 1; }
+            SOURCE_COMMIT="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq .object.sha)"
+            test "$SOURCE_COMMIT" = "$GITHUB_SHA" || { echo "bootstrap_main requires the current main HEAD"; exit 1; }
+            test "$(gh api "repos/${GITHUB_REPOSITORY}/deployments?task=gymnasia-policy&per_page=1" --jq length)" = "0" \
+              || { echo "bootstrap_main is disabled after the first policy deployment"; exit 1; }
+          else
+            [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || { echo "pr_number is required for staging"; exit 1; }
+            gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" > /tmp/pr.json
+            test "$(jq -r .state /tmp/pr.json)" = "open"
+            test "$(jq -r .base.ref /tmp/pr.json)" = "main"
+            SOURCE_COMMIT="$(jq -r .head.sha /tmp/pr.json)"
+          fi
           CHECKS="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SOURCE_COMMIT}/check-runs")"
-          STATUSES="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SOURCE_COMMIT}/status")"
           jq -e '.check_runs | any(.name == "prompt-policy" and .conclusion == "success")' <<<"$CHECKS"
-          jq -e '.statuses | any(.context == "gymnasia/owner-authorization" and .state == "success")' <<<"$STATUSES"
+          if test "$BOOTSTRAP_MAIN" != "true"; then
+            STATUSES="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SOURCE_COMMIT}/status")"
+            jq -e '.statuses | any(.context == "gymnasia/owner-authorization" and .state == "success")' <<<"$STATUSES"
+          fi
           echo "source_commit=$SOURCE_COMMIT" >> "$GITHUB_OUTPUT"
+          echo "bootstrap=$BOOTSTRAP_MAIN" >> "$GITHUB_OUTPUT"
 
       - name: Check out the exact untrusted commit without credentials
         env:
@@ -121,7 +141,8 @@ jobs:
               promptVersion: ("sha256:" + $assetSha256),
               assetSha256: $assetSha256,
               healthSafetyReportSha256: $reportSha256,
-              sourcePullRequest: ($sourcePr | tonumber),
+              sourcePullRequest: (if $sourcePr == "" then null else ($sourcePr | tonumber) end),
+              bootstrapMain: ($sourcePr == ""),
               owner: "maximofn",
               gate: {command: "npm run check:health-safety", passed: true, authorizingReport: false},
               workflowRunUrl: $runUrl
@@ -163,6 +184,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           CANDIDATE: ${{ needs.validate-staging.outputs.candidate }}
           SOURCE_COMMIT: ${{ needs.validate-staging.outputs.source_commit }}
+          BOOTSTRAP_MAIN: ${{ needs.validate-staging.outputs.bootstrap }}
         shell: bash
         run: |
           set -euo pipefail
@@ -172,6 +194,11 @@ jobs:
           test "$(jq -r .owner promotion-evidence.json)" = "maximofn"
           test "$(jq -r .gate.command promotion-evidence.json)" = "npm run check:health-safety"
           test "$(jq -r .gate.authorizingReport promotion-evidence.json)" = "false"
+          if test "$BOOTSTRAP_MAIN" = "true"; then
+            test "$(jq -r .bootstrapMain promotion-evidence.json)" = "true"
+            test "$(gh api "repos/${GITHUB_REPOSITORY}/deployments?task=gymnasia-policy&per_page=1" --jq length)" = "0" \
+              || { echo "another policy deployment won the bootstrap race"; exit 1; }
+          fi
           ASSET_SHA="$(sha256sum policy.md | cut -d' ' -f1)"
           REPORT_SHA="$(sha256sum health-safety-report.json | cut -d' ' -f1)"
           test "$ASSET_SHA" = "$(jq -r .assetSha256 promotion-evidence.json)"

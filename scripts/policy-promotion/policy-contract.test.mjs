@@ -36,6 +36,16 @@ test("producción reutiliza candidato y digest de staging", () => {
   assert.doesNotMatch(workflow, /raw\.githubusercontent\.com.*main.*prompts\/AGENTS\.md/);
 });
 
+test("el bootstrap solo puede ejecutarse una vez desde el HEAD actual de main", () => {
+  assert.match(workflow, /bootstrap_main:/);
+  assert.match(workflow, /test "\$GITHUB_REF" = "refs\/heads\/main"/);
+  assert.match(workflow, /test "\$SOURCE_COMMIT" = "\$GITHUB_SHA"/);
+  const absenceChecks = workflow.match(/deployments\?task=gymnasia-policy&per_page=1/g) || [];
+  assert.equal(absenceChecks.length, 2);
+  assert.match(workflow, /bootstrap_main is disabled after the first policy deployment/);
+  assert.match(workflow, /another policy deployment won the bootstrap race/);
+});
+
 test("EAS conserva preview como alias de staging y separa producción", () => {
   assert.equal(eas.build.preview.extends, "staging");
   assert.equal(eas.build.staging.env.APP_ENV, "staging");
