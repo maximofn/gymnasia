@@ -224,13 +224,20 @@ Detalles de la consulta que conviene conservar:
 - La consulta de control recomendada es `basicSearch: "gimnasio"` con el mismo
   filtro: debe devolver decenas de resultados. Si devuelve 0, el filtro está mal
   y el resultado principal no vale.
-- **TMview limita el ritmo y corta la conexión sin devolver un error HTTP.** El
-  síntoma es `curl: (56) Recv failure: Connection reset by peer`, o un
-  `ConnectionResetError` si se llama desde Python, después de varias consultas
-  seguidas. No es un fallo de la petición ni un bloqueo permanente: hay que
-  espaciar las llamadas unos segundos y reintentar con espera creciente. Una
-  reproducción encadenada de varias búsquedas necesita reintentos, o parecerá
-  que la API ha dejado de funcionar.
+- **TMview bloquea la API por IP tras unas quince consultas, y el bloqueo dura
+  mucho.** El síntoma es `curl: (56) Recv failure: Connection reset by peer`, o
+  un `ConnectionResetError` desde Python, sin ningún código HTTP. Lo que despista
+  es que **`https://www.tmdn.org/tmview/` sigue devolviendo 200**: la web parece
+  sana mientras todo `/tmview/api/*` —búsqueda e imágenes incluidas— deja de
+  responder. Reintentar no lo arregla: en esta comprobación se reintentó durante
+  más de 25 minutos con esperas de 120 segundos y no cedió.
+  - Por eso, planifica las consultas antes de lanzarlas y espácialas desde el
+    principio. No hagas un barrido de decenas de términos.
+  - Si te bloqueas a mitad, no insistas: pasa a las interfaces web de la OEPM y
+    la EUIPO que se listan abajo, o repite desde otra red más tarde.
+  - Los resultados de este documento se obtuvieron antes del bloqueo. La
+    reproducción del comando anterior quedó **sin verificar de nuevo** el día de
+    la comprobación por este motivo.
 
 Las interfaces web equivalentes, para verificación manual:
 
