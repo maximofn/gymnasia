@@ -124,7 +124,7 @@
         {
           "id": "GYM-193",
           "title": "Comprobar la disponibilidad legal y comercial de la marca Gymnasia",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Buscar conflictos relevantes en OEPM, EUIPO, Google Play y canales comerciales y decidir si se conserva o ajusta el nombre antes de consolidar la ficha.",
           "dependsOn": [],
           "related": [
@@ -2026,7 +2026,7 @@
         {
           "id": "GYM-54",
           "title": "Crear un backend seguro para incidencias y mantener create_feature_issue",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Conservar create_feature_issue y canalizar las incidencias de funcionalidades, alimentos y ejercicios por un backend limitado que custodia GitHub, exige revisión en la app y solo confirma creaciones verificadas.",
           "dependsOn": [],
           "related": [
