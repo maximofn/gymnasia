@@ -1,0 +1,11 @@
+{
+  "id": "remo-menton-agarre-amplio-barra",
+  "name": "Remo al mentón con agarre amplio y barra",
+  "image_male": "images/remo-menton-agarre-amplio-barra-male.webp",
+  "image_female": "images/remo-menton-agarre-amplio-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios", "bíceps"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta la barra frente a los muslos con agarre prono claramente más ancho que los hombros. Eleva la barra cerca del cuerpo guiando el movimiento con los codos hasta la parte alta del pecho. Detente antes de que aparezca molestia en los hombros y baja sin balancearte."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "escalador-cruzado",
+  "name": "Escalador cruzado",
+  "image_male": "images/escalador-cruzado-male.webp",
+  "image_female": "images/escalador-cruzado-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "flexores de cadera", "hombros"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Adopta una plancha alta con las manos bajo los hombros y el cuerpo alineado. Lleva una rodilla hacia el codo contrario sin elevar ni girar en exceso las caderas. Devuelve el pie atrás y alterna los lados a un ritmo controlado."
+}

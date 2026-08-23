@@ -1,0 +1,11 @@
+{
+  "id": "buenos-dias-piernas-rigidas-barra",
+  "name": "Buenos días con piernas rígidas y barra",
+  "image_male": "images/buenos-dias-piernas-rigidas-barra-male.webp",
+  "image_female": "images/buenos-dias-piernas-rigidas-barra-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "zona lumbar", "core"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Apoya la barra sobre la parte alta de la espalda y mantén las rodillas apenas desbloqueadas. Lleva las caderas hacia atrás e inclina el torso con la columna neutra hasta notar tensión en los isquiotibiales. Contrae glúteos e isquiotibiales para volver de pie sin redondear la espalda."
+}

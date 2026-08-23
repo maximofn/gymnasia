@@ -1,0 +1,11 @@
+{
+  "id": "giro-tumbado-rodillas-flexionadas",
+  "name": "Giro tumbado con rodillas flexionadas",
+  "image_male": "images/giro-tumbado-rodillas-flexionadas-male.webp",
+  "image_female": "images/giro-tumbado-rodillas-flexionadas-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen", "glúteos", "zona lumbar"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con los brazos abiertos en cruz, los pies apoyados y las rodillas juntas y flexionadas. Baja ambas rodillas hacia un lado sin despegar los hombros del suelo. Regresa al centro con el abdomen y repite hacia el lado contrario de forma controlada."
+}

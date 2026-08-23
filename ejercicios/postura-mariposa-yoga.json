@@ -1,0 +1,11 @@
+{
+  "id": "postura-mariposa-yoga",
+  "name": "Postura de mariposa",
+  "image_male": "images/postura-mariposa-yoga-male.webp",
+  "image_female": "images/postura-mariposa-yoga-female.webp",
+  "muscle_group": "aductores",
+  "secondary_muscles": ["isquiotibiales", "glúteos", "zona lumbar"],
+  "equipment": "ninguno",
+  "difficulty": "beginner",
+  "instructions": "Siéntate erguido, junta las plantas de los pies y deja caer las rodillas hacia los lados. Sujeta los pies o los tobillos y alarga la columna sin forzar las rodillas hacia el suelo. Mantén la postura durante varias respiraciones y sal de ella lentamente."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-piernas-rectas-barra",
+  "name": "Peso muerto con piernas rectas y barra",
+  "image_male": "images/peso-muerto-piernas-rectas-barra-male.webp",
+  "image_female": "images/peso-muerto-piernas-rectas-barra-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "zona lumbar", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Sujeta la barra frente a los muslos con agarre prono y las piernas casi rectas. Empuja las caderas hacia atrás y desliza la barra cerca de las piernas manteniendo la espalda neutra. Detente cuando alcances tu rango sin perder la postura y extiende las caderas para regresar."
+}
