@@ -43,10 +43,26 @@ const VARIANTS: Record<BuildEnvironment, {
  * `FEEDBACK_API_BASE_URL` existe solo como override de desarrollo, para
  * apuntar a `wrangler dev`.
  */
+const FEEDBACK_ENDPOINT = "https://gymnasia-feedback.maximofn.com";
+
 const FEEDBACK_ENDPOINTS: Record<BuildEnvironment, string> = {
+  // Vacío en desarrollo: trastear en local nunca debe escribir en el
+  // repositorio de incidencias real. Sin endpoint, la tool responde
+  // `unavailable` y el agente lo dice, en vez de fingir que ha enviado algo.
   development: "",
-  staging: "",
-  production: "https://gymnasia-feedback.maximofn.com",
+  // Staging apunta al MISMO backend que producción, porque solo hay uno: la
+  // distinción staging/producción de este repositorio es del canal de la
+  // política del agente, no del backend de incidencias.
+  //
+  // No es un detalle menor: el APK que se distribuye desde GitHub se compila
+  // con el perfil `staging` (ver .github/workflows/build-apk.yml), así que
+  // dejarlo vacío mataba la funcionalidad en la única variante que la gente
+  // instala, sin que nada fallara de forma visible.
+  //
+  // Los tests siguen aislados porque inyectan FEEDBACK_API_BASE_URL, que tiene
+  // prioridad sobre estos valores por defecto.
+  staging: FEEDBACK_ENDPOINT,
+  production: FEEDBACK_ENDPOINT,
 };
 
 function readBundledPolicyMetadata(environment: BuildEnvironment): {
