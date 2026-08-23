@@ -6,7 +6,7 @@ es dejarlas escritas, verificadas contra el código y coherentes con la polític
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v1` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v3` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -114,7 +114,9 @@ la opción recomendada: evita declarar recogida de credenciales en una app de fi
   peso, trastornos alimentarios, menores, embarazo, diabetes, medicación, lesiones,
   dolor agudo y emergencias. Sus reglas alimentan el bloque `HEALTH-SAFETY` del prompt y
   una puerta determinista en CI (`npm run check:health-safety`), documentada en
-  `docs/architecture/health-safety-policy.md`.
+  `docs/architecture/health-safety-policy.md`. La clasificación local intercepta riesgo
+  alto o crítico antes de cualquier proveedor; la evaluación adicional con el proveedor
+  BYOK está desactivada por defecto y requiere consentimiento separado por proveedor.
 - **Mecanismo de denuncia de respuestas**: por correo a maximofn@maximofn.com,
   documentado en la sección `#denuncia` de la política.
 

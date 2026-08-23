@@ -87,7 +87,7 @@ export function composeAiSystemPrompt(
 export type AiConversationMessage = {
   role: "user" | "assistant" | "system";
   content: string;
-  kind?: AiDisclosureMessageKind;
+  kind?: string;
 };
 
 export function createAiDisclosureMessage(

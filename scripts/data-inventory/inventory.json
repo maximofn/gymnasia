@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia (GYM-190). De aquí salen la política de privacidad publicada (docs/legal/) y las respuestas de Data safety (docs/security/play-declarations.md). Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198. Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-08-v1",
+  "policyVersion": "2026-08-v3",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -82,6 +82,14 @@
       "clearedBy": "never"
     },
     {
+      "key": "gymnasia.mobile.health_safety.consent.v1",
+      "backend": "async-storage",
+      "personal": false,
+      "dataCategory": "app-preferences",
+      "purpose": "Consentimiento versionado, separado por proveedor BYOK, para la evaluación adicional opcional de seguridad sanitaria; también registra si ya se mostró el aviso. No contiene el texto evaluado ni se incluye en las copias de seguridad exportadas.",
+      "clearedBy": "reset"
+    },
+    {
       "key": "gymnasia.mobile.alarm_health.v1",
       "backend": "async-storage",
       "personal": false,
@@ -152,6 +160,14 @@
       "dataCategory": "legacy",
       "purpose": "Versión anterior de la caché del system prompt. Se conserva la constante para poder leer instalaciones antiguas.",
       "clearedBy": "never"
+    },
+    {
+      "key": "gymnasia.mobile.health_safety.runtime.v1",
+      "backend": "async-storage",
+      "personal": false,
+      "dataCategory": "public-catalog-cache",
+      "purpose": "Caché firmada de la política pública de seguridad sanitaria seleccionada para el canal de la instalación. No contiene datos ni respuestas del usuario.",
+      "clearedBy": "reset"
     },
     {
       "key": "gymnasia.mobile.lastUpdateCheck",

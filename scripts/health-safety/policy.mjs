@@ -18,6 +18,14 @@ export const bundledPromptPath = join(
   "generated",
   "chatSystemPrompt.generated.ts",
 );
+export const bundledRuntimePolicyPath = join(
+  repositoryRoot,
+  "apps",
+  "mobile",
+  "agent",
+  "generated",
+  "healthSafetyPolicy.generated.ts",
+);
 export const HEALTH_SAFETY_START = "<!-- HEALTH-SAFETY:START -->";
 export const HEALTH_SAFETY_END = "<!-- HEALTH-SAFETY:END -->";
 
@@ -28,6 +36,7 @@ const schemaPaths = {
   case: "case.schema.json",
   llmEvaluation: "llm-evaluation.schema.json",
   evaluationReport: "evaluation-report.schema.json",
+  runtimePolicy: "runtime-policy.schema.json",
 };
 
 function readJson(path) {
@@ -52,6 +61,7 @@ function createSchemaValidators(schemas) {
     case: ajv.getSchema(schemas.case.$id),
     llmEvaluation: ajv.getSchema(schemas.llmEvaluation.$id),
     evaluationReport: ajv.getSchema(schemas.evaluationReport.$id),
+    runtimePolicy: ajv.getSchema(schemas.runtimePolicy.$id),
   };
 }
 
@@ -69,6 +79,7 @@ export function loadHealthSafetyPolicy() {
     ruleSet: readJson(join(healthSafetyRoot, "rules.json")),
     cases,
     llmEvaluation: readJson(join(healthSafetyRoot, "llm-evaluation.json")),
+    runtimePolicy: readJson(join(healthSafetyRoot, "runtime.json")),
     fixtures: readJson(join(moduleDirectory, "fixtures", "fake-provider-responses.json")),
   };
 }
@@ -109,12 +120,13 @@ export function findExfiltrationPatterns(value) {
 
 export function collectPolicyErrors(data, { toolNames = new Set() } = {}) {
   const errors = [];
-  const { validators, manifest, ruleSet, cases, llmEvaluation, fixtures } = data;
+  const { validators, manifest, ruleSet, cases, llmEvaluation, runtimePolicy, fixtures } = data;
 
   for (const [label, validator, value] of [
     ["manifest.json", validators.manifest, manifest],
     ["rules.json", validators.ruleSet, ruleSet],
     ["llm-evaluation.json", validators.llmEvaluation, llmEvaluation],
+    ["runtime.json", validators.runtimePolicy, runtimePolicy],
   ]) {
     if (!validator(value)) errors.push(...formatSchemaErrors(label, validator));
   }
@@ -134,6 +146,8 @@ export function collectPolicyErrors(data, { toolNames = new Set() } = {}) {
   const publishedStatuses = new Set(manifest?.publishedStatuses ?? []);
   const publishedRules = rules.filter((rule) => publishedStatuses.has(rule.status));
   const publishedIds = new Set(publishedRules.map((rule) => rule.id));
+  const runtimeRules = Array.isArray(runtimePolicy?.rules) ? runtimePolicy.rules : [];
+  const runtimeRulesById = new Map(runtimeRules.map((rule) => [rule.id, rule]));
 
   if (manifest?.policyVersion !== manifest?.currentRelease?.version) {
     errors.push("manifest.currentRelease.version debe coincidir con policyVersion.");
@@ -161,6 +175,36 @@ export function collectPolicyErrors(data, { toolNames = new Set() } = {}) {
     }
     if (rule.status !== "approved" && rule.review?.professionalReviewed === true) {
       errors.push(`${rule.id}: solo approved puede declarar revisión profesional.`);
+    }
+    if (publishedStatuses.has(rule.status)) {
+      const runtimeRule = runtimeRulesById.get(rule.id);
+      if (!runtimeRule) {
+        errors.push(`${rule.id}: falta su regla compilable en runtime.json.`);
+      } else {
+        if (runtimeRule.version !== rule.version) {
+          errors.push(`${rule.id}: runtime.json debe usar la versión ${rule.version}.`);
+        }
+        if (runtimeRule.risk !== rule.risk) {
+          errors.push(`${rule.id}: runtime.json debe conservar el riesgo ${rule.risk}.`);
+        }
+      }
+    }
+  }
+
+  if (runtimePolicy?.policyVersion !== manifest?.policyVersion) {
+    errors.push("runtime.json policyVersion debe coincidir con manifest.json.");
+  }
+  for (const runtimeRule of runtimeRules) {
+    if (!rulesById.has(runtimeRule.id) && !runtimeRule.fallbackRuleId) {
+      errors.push(`${runtimeRule.id}: una regla remota nueva necesita fallbackRuleId.`);
+    }
+    if (runtimeRule.fallbackRuleId && !runtimeRulesById.has(runtimeRule.fallbackRuleId)) {
+      errors.push(`${runtimeRule.id}: fallbackRuleId referencia ${runtimeRule.fallbackRuleId}, que no existe.`);
+    }
+    const signalIds = [...(runtimeRule.inputSignals ?? []), ...(runtimeRule.outputSignals ?? [])]
+      .map((signal) => signal.id);
+    for (const duplicate of duplicateValues(signalIds)) {
+      errors.push(`${runtimeRule.id}: ID de señal duplicado ${duplicate}.`);
     }
   }
 
@@ -194,7 +238,7 @@ export function collectPolicyErrors(data, { toolNames = new Set() } = {}) {
     }
   }
 
-  for (const pattern of findExfiltrationPatterns({ ruleSet, cases, llmEvaluation })) {
+  for (const pattern of findExfiltrationPatterns({ ruleSet, cases, llmEvaluation, runtimePolicy })) {
     errors.push(`La política contiene un patrón de exfiltración: ${pattern}.`);
   }
   if (llmEvaluation?.authorizing !== false || llmEvaluation?.requiredForPullRequests !== false) {
@@ -202,6 +246,50 @@ export function collectPolicyErrors(data, { toolNames = new Set() } = {}) {
   }
 
   return errors;
+}
+
+export function normalizeRuntimeText(value) {
+  return `${value ?? ""}`
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("es")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function runtimeSignalMatches(signal, text) {
+  const normalized = normalizeRuntimeText(text);
+  const includes = (value) => normalized.includes(normalizeRuntimeText(value));
+  return (signal.all ?? []).every(includes)
+    && (!(signal.any?.length) || signal.any.some(includes))
+    && !(signal.none ?? []).some(includes);
+}
+
+const RUNTIME_RISK_ORDER = { none: 0, elevated: 1, high: 2, critical: 3 };
+
+export function classifyRuntimeText(runtimePolicy, text, target = "input") {
+  const field = target === "output" ? "outputSignals" : "inputSignals";
+  const matches = [];
+  for (const rule of runtimePolicy.rules ?? []) {
+    for (const signal of rule[field] ?? []) {
+      if (runtimeSignalMatches(signal, text)) matches.push({ rule, signal });
+    }
+  }
+  matches.sort((left, right) => (
+    RUNTIME_RISK_ORDER[right.signal.level] - RUNTIME_RISK_ORDER[left.signal.level]
+  ));
+  return {
+    level: matches[0]?.signal.level ?? "none",
+    ruleIds: [...new Set(matches.map(({ rule }) => rule.id))],
+    signalIds: matches.map(({ signal }) => signal.id),
+    locale: matches[0]?.signal.locale ?? runtimePolicy.defaultLocale,
+  };
+}
+
+export function renderRuntimePolicyModule(runtimePolicy) {
+  return "// Generated by scripts/health-safety/sync.mjs. Do not edit by hand.\n"
+    + `export const BUNDLED_HEALTH_SAFETY_POLICY = ${JSON.stringify(runtimePolicy, null, 2)} as const;\n`;
 }
 
 export function publishedRules(data) {

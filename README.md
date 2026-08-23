@@ -70,7 +70,7 @@ npm run sync:health-safety
 npm run check:health-safety
 ```
 
-El flujo remoto, caché e integrado se documenta en
+El flujo remoto, caché e integrado del prompt y del guardrail sanitario se documenta en
 `docs/architecture/chat-system-prompt.md`.
 Las variantes instalables y la promoción inmutable se documentan en
 `docs/architecture/policy-environments.md`.

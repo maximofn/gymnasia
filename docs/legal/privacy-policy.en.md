@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v2
-effective_date: 2026-08-22
+version: 2026-08-v3
+effective_date: 2026-08-23
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -68,7 +68,8 @@ All of the following is stored on your device only:
 - **Assistant memory**: free-text notes that you or the assistant save in order to
   remember things between conversations. It may contain anything you have mentioned in
   the chat, including health data.
-- **Preferences**: interface and notification settings.
+- **Preferences**: interface and notification settings, and your per-provider consent
+  for the optional additional health-safety evaluation.
 - **Debug log**: a technical record of up to 1000 entries covering the rest-timer alerts
   delivered, which include the exercise name and set number. It is never sent over the
   network; you can view and clear it from Settings.
@@ -113,6 +114,13 @@ The request includes:
   weight, your body fat percentage, your measurements, the day's meals or your routines;
 - in the food estimator, **the images you provide**, encoded within the request.
 
+If you enable **additional health-safety evaluation** for a provider in Settings, the
+current text may be sent to that same provider in a separate classification request
+before the normal response is generated. This option is off by default, requires
+separate consent for each provider, and can be revoked at any time. Messages classified
+locally as high or critical risk are intercepted on the device and are not sent to the
+provider.
+
 That content is subject to the privacy policy and terms of the provider you chose, under
 your own account with them:
 
@@ -144,6 +152,17 @@ Besides the AI providers:
   images and the assistant's instructions; checks which version of those instructions
   applies to it; and checks whether a newer release has been published. **No data of
   yours is sent**, but GitHub, like any server you connect to, sees your IP address.
+- **Gymnasia feedback backend** (`gymnasia-feedback.maximofn.com`): only when you ask
+  for it. When you suggest an assistant improvement, or submit a food or exercise that
+  is missing from the catalogue, the app first shows you the exact title and summary
+  and **sends nothing until you approve them**. It sends only that title, that summary,
+  the proposal type and a technical identifier used to prevent duplicates. **It does
+  not send your conversation text, diet, training or measurement data, or any user
+  identifier.** The developer operates the service on Cloudflare infrastructure, and
+  it creates a record from your proposal in a **private** GitHub repository visible
+  only to the developer. Before storing it, the service automatically removes any API
+  key or password you might have pasted by mistake. If you submit no proposal, this
+  service is never used.
 - **Open Food Facts** (`world.openfoodfacts.org`): if the assistant reads a barcode in
   one of your photos, it looks that barcode up in their public database to obtain the
   product's nutritional information. The barcode is sent, not the image.

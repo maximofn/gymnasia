@@ -1,3 +1,5 @@
+import type { ToolEffect } from "./healthSafety";
+
 export type JsonSchemaProperty = {
   type: "string" | "number" | "object" | "array";
   description?: string;
@@ -11,6 +13,7 @@ export type ToolInputSchema = {
 
 export type AgentToolDefinition = {
   name: string;
+  effect: ToolEffect;
   description: string;
   inputSchema: ToolInputSchema;
 };
@@ -28,6 +31,7 @@ const numberProperty = (description: string): JsonSchemaProperty => ({
 export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   {
     name: "save_personal_data",
+    effect: "local_write",
     description:
       "Guarda o actualiza los datos personales del usuario. " +
       "Usa esta herramienta SIEMPRE que el usuario comparta informacion personal como nombre, edad, peso, altura, objetivos de fitness, lesiones, experiencia, etc. " +
@@ -47,6 +51,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "list_personal_data_keys",
+    effect: "read",
     description:
       "Devuelve la lista de todos los campos (keys) guardados en la memoria personal del usuario. " +
       "Usa esta herramienta como primer paso para descubrir que datos hay guardados.",
@@ -54,6 +59,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "read_field_description",
+    effect: "read",
     description:
       "Lee la descripcion de un campo especifico de la memoria personal. " +
       "Recibe el key del campo y devuelve su description, que explica para que sirve ese campo. " +
@@ -68,6 +74,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "read_field_value",
+    effect: "read",
     description:
       "Lee el valor de un campo especifico de la memoria personal. " +
       "Recibe el key del campo y devuelve su value. " +
@@ -82,6 +89,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "read_measurement",
+    effect: "read",
     description:
       "Lee las medidas corporales del usuario para una fecha específica. " +
       "Devuelve el registro de medidas de ese día (peso, contornos, altura) si existe, o un mensaje indicando que no hay registro. " +
@@ -96,6 +104,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "write_measurement",
+    effect: "local_write",
     description:
       "Guarda o actualiza las medidas corporales del usuario para una fecha específica. " +
       "Usa esta herramienta cuando el usuario te diga sus medidas (peso, contornos, altura). " +
@@ -114,6 +123,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "read_meal_foods",
+    effect: "read",
     description:
       "Lee los alimentos registrados en una comida específica de una fecha. " +
       "Usa esta herramienta cuando el usuario pregunte qué ha comido, los alimentos de una comida, o quiera revisar su dieta.",
@@ -128,6 +138,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "search_foods",
+    effect: "read",
     description:
       "Busca alimentos en la base de datos local. Soporta búsqueda por nombre, categoría, tipo (alimento/producto_comercial/receta), " +
       "filtros por rango de calorías/proteínas/carbohidratos/grasa por 100g, y ordenación. Todos los parámetros son opcionales, combínalos según lo que pida el usuario.",
@@ -151,6 +162,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "add_meal_food",
+    effect: "local_write",
     description:
       "Añade un alimento a una comida del usuario en una fecha específica. " +
       "IMPORTANTE: Antes de usar esta herramienta DEBES haber buscado el alimento con search_foods. " +
@@ -170,6 +182,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "search_exercises",
+    effect: "read",
     description:
       "Busca ejercicios en la base de datos local. Soporta búsqueda por nombre, músculo principal, músculos secundarios, equipamiento y dificultad. " +
       "Todos los parámetros son opcionales y combinables.",
@@ -186,6 +199,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "read_routines",
+    effect: "read",
     description:
       "Lee las rutinas de entrenamiento del usuario. Devuelve todas las rutinas con sus ejercicios, series, repeticiones, peso y descanso. " +
       "Usa esta herramienta cuando el usuario pregunte por sus rutinas, entrenamientos, o quiera revisar sus ejercicios programados.",
@@ -193,6 +207,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "create_routine",
+    effect: "local_write",
     description:
       "Crea una nueva rutina de entrenamiento. IMPORTANTE: Antes de usar esta herramienta DEBES haber buscado los ejercicios con search_exercises " +
       "para obtener los nombres exactos de la base de datos. Pasa el JSON con los datos de la rutina.",
@@ -212,6 +227,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   },
   {
     name: "create_feature_issue",
+    effect: "external_write",
     description:
       "Envía al equipo de Gymnasia una solicitud de mejora del usuario. " +
       "ANTES de llamarla, muestra al usuario el título y el resumen exactos que vas a enviar y espera a que los apruebe; " +
@@ -234,6 +250,14 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
 ];
 
 export const AGENT_TOOL_NAMES = AGENT_TOOL_DEFINITIONS.map((tool) => tool.name);
+
+const AGENT_TOOL_EFFECTS = new Map(
+  AGENT_TOOL_DEFINITIONS.map((tool) => [tool.name, tool.effect] as const),
+);
+
+export function agentToolEffect(name: string): ToolEffect | null {
+  return AGENT_TOOL_EFFECTS.get(name) ?? null;
+}
 
 export const CHAT_TOOLS = {
   openai: AGENT_TOOL_DEFINITIONS.map((tool) => ({

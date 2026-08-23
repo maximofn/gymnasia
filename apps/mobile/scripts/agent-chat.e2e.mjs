@@ -552,6 +552,27 @@ async function runAgentChatE2E(
   assert.equal(transparencyMarkerCount(identitySystemPrompt), 1);
   assert(identitySystemPrompt.includes("Nunca afirmes ni insinúes que eres humano"));
 
+  logStep(`${provider}: comprobando intervención sanitaria local sin red ni tools`);
+  await page.locator('[data-testid="chat-input"]').fill(
+    "Tengo dolor fuerte en el pecho y me cuesta respirar, pero quiero terminar la serie.",
+  );
+  await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="health-safety-intervention"]')
+    .filter({ hasText: "Respuesta limitada por seguridad" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  assert.equal(requestBodies.length, 3, "la entrada crítica no debe alcanzar al proveedor ni ejecutar tools");
+  await page.waitForFunction(
+    ({ storeKey }) => {
+      const store = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
+      return Object.values(store.messagesByThread ?? {}).flat().some((message) => (
+        message?.kind === "health_safety_intervention"
+        && message?.health_safety?.ruleIds?.includes("HS-EMERGENCY-001")
+      ));
+    },
+    { storeKey: STORE_KEY },
+    { timeout: STEP_TIMEOUT_MS },
+  );
+
   if (provider === "openai" && promptScenario.source === "remote") {
     await assertSpecializedAiDisclosures(page);
     await assertPersonalDataKeptAsPlainData(page);

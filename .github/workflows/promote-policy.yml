@@ -114,11 +114,14 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/policy-candidate
           cp prompts/AGENTS.md /tmp/policy-candidate/policy.md
+          cp policy/health-safety/runtime.json /tmp/policy-candidate/health-safety-runtime.json
           npm run report:health-safety -- --output /tmp/policy-candidate/health-safety-report.json
           POLICY_VERSION="$(jq -r .policyVersion policy/health-safety/manifest.json)"
           CANDIDATE="policy-v${POLICY_VERSION}-${SOURCE_COMMIT:0:12}"
           ASSET_SHA="$(sha256sum /tmp/policy-candidate/policy.md | cut -d' ' -f1)"
+          RUNTIME_SHA="$(sha256sum /tmp/policy-candidate/health-safety-runtime.json | cut -d' ' -f1)"
           REPORT_SHA="$(sha256sum /tmp/policy-candidate/health-safety-report.json | cut -d' ' -f1)"
+          test "$(jq -r .policyVersion /tmp/policy-candidate/health-safety-runtime.json)" = "$POLICY_VERSION"
           jq -e --arg digest "$ASSET_SHA" '
             .authorizing == false
             and .summary.failed == 0
@@ -129,17 +132,19 @@ jobs:
             --arg sourceCommit "$SOURCE_COMMIT" \
             --arg policyVersion "$POLICY_VERSION" \
             --arg assetSha256 "$ASSET_SHA" \
+            --arg runtimePolicySha256 "$RUNTIME_SHA" \
             --arg reportSha256 "$REPORT_SHA" \
             --arg sourcePr "${{ inputs.pr_number }}" \
             --arg runUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
             '{
-              schemaVersion: 1,
+              schemaVersion: 2,
               candidate: $candidate,
               sourceCommit: $sourceCommit,
               policyVersion: $policyVersion,
               datasetVersion: $policyVersion,
               promptVersion: ("sha256:" + $assetSha256),
               assetSha256: $assetSha256,
+              runtimePolicySha256: $runtimePolicySha256,
               healthSafetyReportSha256: $reportSha256,
               sourcePullRequest: (if $sourcePr == "" then null else ($sourcePr | tonumber) end),
               bootstrapMain: ($sourcePr == ""),
@@ -200,8 +205,10 @@ jobs:
               || { echo "another policy deployment won the bootstrap race"; exit 1; }
           fi
           ASSET_SHA="$(sha256sum policy.md | cut -d' ' -f1)"
+          RUNTIME_SHA="$(sha256sum health-safety-runtime.json | cut -d' ' -f1)"
           REPORT_SHA="$(sha256sum health-safety-report.json | cut -d' ' -f1)"
           test "$ASSET_SHA" = "$(jq -r .assetSha256 promotion-evidence.json)"
+          test "$RUNTIME_SHA" = "$(jq -r .runtimePolicySha256 promotion-evidence.json)"
           test "$REPORT_SHA" = "$(jq -r .healthSafetyReportSha256 promotion-evidence.json)"
           gh release create "$CANDIDATE" \
             --repo "$GITHUB_REPOSITORY" \
@@ -210,16 +217,19 @@ jobs:
             --notes "Immutable Gymnasia policy candidate validated by deterministic health-safety gates." \
             --draft \
             --prerelease
-          gh release upload "$CANDIDATE" policy.md health-safety-report.json promotion-evidence.json \
+          gh release upload "$CANDIDATE" policy.md health-safety-runtime.json health-safety-report.json promotion-evidence.json \
             --repo "$GITHUB_REPOSITORY"
           gh release edit "$CANDIDATE" --repo "$GITHUB_REPOSITORY" --draft=false --prerelease
           ASSET_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/policy.md"
+          RUNTIME_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/health-safety-runtime.json"
           POLICY_VERSION="$(jq -r .policyVersion promotion-evidence.json)"
           jq -n \
             --arg ref "$SOURCE_COMMIT" \
             --arg candidate "$CANDIDATE" \
             --arg assetUrl "$ASSET_URL" \
             --arg assetSha256 "$ASSET_SHA" \
+            --arg runtimePolicyUrl "$RUNTIME_URL" \
+            --arg runtimePolicySha256 "$RUNTIME_SHA" \
             --arg policyVersion "$POLICY_VERSION" \
             --arg reportSha256 "$REPORT_SHA" \
             --arg workflowRunUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
@@ -230,11 +240,14 @@ jobs:
               auto_merge: false,
               required_contexts: [],
               payload: {
-                schemaVersion: 1,
+                schemaVersion: 2,
                 candidate: $candidate,
                 sourceCommit: $ref,
                 assetUrl: $assetUrl,
                 assetSha256: $assetSha256,
+                runtimePolicyUrl: $runtimePolicyUrl,
+                runtimePolicySha256: $runtimePolicySha256,
+                runtimePolicyVersion: $policyVersion,
                 policyVersion: $policyVersion,
                 datasetVersion: $policyVersion,
                 promptVersion: ("sha256:" + $assetSha256),
@@ -278,6 +291,7 @@ jobs:
           mkdir -p /tmp/policy-production
           BASE="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}"
           curl -fsSL "$BASE/policy.md" -o /tmp/policy-production/policy.md
+          curl -fsSL "$BASE/health-safety-runtime.json" -o /tmp/policy-production/health-safety-runtime.json
           curl -fsSL "$BASE/health-safety-report.json" -o /tmp/policy-production/health-safety-report.json
           curl -fsSL "$BASE/promotion-evidence.json" -o /tmp/policy-production/promotion-evidence.json
           SOURCE_COMMIT="$(jq -r .sourceCommit /tmp/policy-production/promotion-evidence.json)"
@@ -285,6 +299,7 @@ jobs:
           test "$(jq -r .owner /tmp/policy-production/promotion-evidence.json)" = "maximofn"
           test "$(jq -r .gate.command /tmp/policy-production/promotion-evidence.json)" = "npm run check:health-safety"
           test "$(sha256sum /tmp/policy-production/policy.md | cut -d' ' -f1)" = "$(jq -r .assetSha256 /tmp/policy-production/promotion-evidence.json)"
+          test "$(sha256sum /tmp/policy-production/health-safety-runtime.json | cut -d' ' -f1)" = "$(jq -r .runtimePolicySha256 /tmp/policy-production/promotion-evidence.json)"
           gh api "repos/${GITHUB_REPOSITORY}/deployments?environment=Staging&ref=${SOURCE_COMMIT}&task=gymnasia-policy&per_page=100" > /tmp/staging-deployments.json
           STAGING_ID="$(jq -r --arg candidate "$CANDIDATE" '
             [.[] | select((.payload.candidate // "") == $candidate)] | first | .id // empty
@@ -306,6 +321,7 @@ jobs:
           git -c protocol.version=2 fetch --no-tags --depth=1 origin "$SOURCE_COMMIT"
           git checkout --detach FETCH_HEAD
           cp /tmp/policy-production/policy.md prompts/AGENTS.md
+          cp /tmp/policy-production/health-safety-runtime.json policy/health-safety/runtime.json
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -370,8 +386,10 @@ jobs:
           jq -e '.authorizing == false and .summary.failed == 0' production-health-safety-report.json
           ASSET_SHA="$(jq -r .assetSha256 promotion-evidence.json)"
           REPORT_SHA="$(jq -r .healthSafetyReportSha256 promotion-evidence.json)"
+          RUNTIME_SHA="$(jq -r .runtimePolicySha256 promotion-evidence.json)"
           POLICY_VERSION="$(jq -r .policyVersion promotion-evidence.json)"
           ASSET_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/policy.md"
+          RUNTIME_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/health-safety-runtime.json"
           ENVIRONMENT_NAME="Production"
           test "$CRITICAL" != "true" || ENVIRONMENT_NAME="Production Critical"
           jq -n \
@@ -379,6 +397,8 @@ jobs:
             --arg candidate "$CANDIDATE" \
             --arg assetUrl "$ASSET_URL" \
             --arg assetSha256 "$ASSET_SHA" \
+            --arg runtimePolicyUrl "$RUNTIME_URL" \
+            --arg runtimePolicySha256 "$RUNTIME_SHA" \
             --arg policyVersion "$POLICY_VERSION" \
             --arg reportSha256 "$REPORT_SHA" \
             --arg workflowRunUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
@@ -392,11 +412,14 @@ jobs:
               auto_merge: false,
               required_contexts: [],
               payload: {
-                schemaVersion: 1,
+                schemaVersion: 2,
                 candidate: $candidate,
                 sourceCommit: $ref,
                 assetUrl: $assetUrl,
                 assetSha256: $assetSha256,
+                runtimePolicyUrl: $runtimePolicyUrl,
+                runtimePolicySha256: $runtimePolicySha256,
+                runtimePolicyVersion: $policyVersion,
                 policyVersion: $policyVersion,
                 datasetVersion: $policyVersion,
                 promptVersion: ("sha256:" + $assetSha256),
