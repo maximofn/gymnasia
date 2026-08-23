@@ -45,7 +45,7 @@ function createRealExecutor(storedPersonalData: unknown) {
     sortMeasurements: (measurements: unknown[]) => measurements,
     createId: (prefix: string) => `${prefix}_test`,
     getExerciseImageUrl: () => "",
-    createFeatureIssue: async () => {},
+    submitFeedbackIssue: async () => ({ status: "canceled" as const }),
   } as unknown as ToolExecutorDependencies;
   return { executeTool: createAgentToolExecutor(dependencies), saved };
 }

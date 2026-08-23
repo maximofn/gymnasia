@@ -17,7 +17,7 @@ function createDependencies(
     sortMeasurements: (measurements) => measurements,
     createId: (prefix) => `${prefix}_test`,
     getExerciseImageUrl: (exercise, sex) => `${sex}/${exercise.image_male}`,
-    createFeatureIssue: async () => {},
+    submitFeedbackIssue: async () => ({ status: "canceled" as const }),
     ...overrides,
   };
 }

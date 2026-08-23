@@ -1,5 +1,5 @@
 ---
-version: 2026-08-v1
+version: 2026-08-v2
 effective_date: 2026-08-22
 locale: en
 lang: en
@@ -42,8 +42,11 @@ protection officer.
 Gymnasia does not ask for an email address, a password or a username in order to work.
 No account system exists.
 
-Neither does a Gymnasia server. The app does not send your data to any infrastructure
-controlled by the developer — not for storage, not for backups, not for analytics.
+Gymnasia does not store your data on any server. The app does not send it to
+infrastructure controlled by the developer — not for storage, not for backups, not for
+analytics. The only exception is sending improvement suggestions, which happens only when
+you expressly approve it and never includes your personal data (see
+[Third parties](#terceros)).
 **There is no analytics, no telemetry and no automatic crash reporting**: the app bundles
 no SDK of that kind.
 

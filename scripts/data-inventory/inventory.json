@@ -264,7 +264,7 @@
       "host": "api.github.com",
       "trigger": "automatic",
       "requiresUserKey": false,
-      "sends": "Nada del usuario. Consulta la última release publicada para avisar de actualizaciones (esa parte se retira en GYM-188) y los deployments del repositorio para resolver qué política del agente corresponde al canal de la instalación. Existe además código para abrir incidencias con alimentos, ejercicios o un extracto de conversación, inerte en este build porque GITHUB_FOOD_ISSUE_TOKEN está vacío.",
+      "sends": "Nada del usuario. Consulta la última release publicada para avisar de actualizaciones (esa parte se retira en GYM-188) y los deployments del repositorio para resolver qué política del agente corresponde al canal de la instalación. La app ya no abre incidencias contra GitHub: eso pasó al backend de recepción en GYM-54, que es quien custodia la credencial.",
       "thirdParty": "GitHub"
     },
     {
@@ -295,6 +295,13 @@
       "sends": "Correo y contraseña de la cuenta de VivaGym del usuario, para obtener su QR de acceso. El QR contiene su identificador de socio.",
       "thirdParty": "VivaGym / MyVitale",
       "plannedRemoval": "GYM-192"
+    },
+    {
+      "host": "gymnasia-feedback.maximofn.com",
+      "trigger": "user-initiated",
+      "requiresUserKey": false,
+      "sends": "El tipo de incidencia (mejora, alimento o ejercicio), un título y un resumen, y una clave de idempotencia derivada de ese mismo texto. En el chat, el agente muestra antes el título y el resumen y solo llama a la herramienta si el usuario los aprueba; en alimentos y ejercicios el envío requiere pulsar un botón. No se envía conversación literal, ni identificadores de usuario, ni datos de dieta, entrenamiento o medidas.",
+      "thirdParty": "Cloudflare (infraestructura del backend) y GitHub (repositorio privado de recepción de incidencias)"
     }
   ],
   "configurableEndpoints": [
@@ -303,6 +310,13 @@
       "source": "env:EXPO_PUBLIC_API_BASE_URL",
       "trigger": "user-initiated",
       "sends": "En web, y solo si el usuario configura esa variable, las peticiones a Anthropic pasan por la URL indicada e incluyen la clave de API en el cuerpo. Vacía por defecto, así que en las compilaciones publicadas no se usa.",
+      "thirdParty": "El que elija quien despliegue la variable"
+    },
+    {
+      "id": "feedback-backend-override",
+      "source": "env:FEEDBACK_API_BASE_URL",
+      "trigger": "user-initiated",
+      "sends": "Solo en compilaciones propias: si se define esa variable, las incidencias van a la URL indicada en vez de al backend de Gymnasia, con el mismo contenido. Vacía en desarrollo y staging; en producción el destino es el literal declarado en networkEndpoints.",
       "thirdParty": "El que elija quien despliegue la variable"
     }
   ],

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-22",
+    "updated": "2026-08-23",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -335,7 +335,7 @@
         {
           "id": "GYM-145",
           "title": "Crear una suite de seguridad sanitaria para cambios del agente",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Crear `policy/health-safety/` como fuente canónica y `npm run check:health-safety`; las reglas provisionales ya protegen el prompt y CI, las approved requieren revisión profesional y el LLM solo informa.",
           "baseline": "partial",
           "dependsOn": [
@@ -368,7 +368,7 @@
         {
           "id": "GYM-143",
           "title": "Añadir una barrera sanitaria independiente del system prompt",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Aplicar una base sanitaria que la política remota no pueda desactivar y validar salidas de alto riesgo antes de mostrarlas, incluso sin conexión.",
           "baseline": "missing",
           "dependsOn": [
@@ -1464,6 +1464,17 @@
             "GYM-105",
             "GYM-120"
           ]
+        },
+        {
+          "id": "GYM-202",
+          "title": "Estudiar un banco de pruebas en movil fisico y como testear App.tsx",
+          "state": "backlog",
+          "summary": "Decidir si merece la pena montar un banco de pruebas E2E sobre un móvil Android físico (Maestro o Detox) y qué camino seguir para poder testear App.tsx, que hoy no tiene tests porque son 23.726 líneas y Vitest solo cubre la carpeta agent/.",
+          "dependsOn": [],
+          "related": [
+            "GYM-123",
+            "GYM-184"
+          ]
         }
       ]
     },
@@ -1558,7 +1569,10 @@
           "state": "todo",
           "summary": "Añadir validación, timeout, cancelación, control de concurrencia y errores persistentes al flujo QR de VivaGym.",
           "dependsOn": [],
-          "related": ["GYM-7", "GYM-63"]
+          "related": [
+            "GYM-7",
+            "GYM-63"
+          ]
         },
         {
           "id": "GYM-155",
@@ -1566,7 +1580,11 @@
           "state": "todo",
           "summary": "Bloquear capturas del QR y garantizar la redacción de credenciales, tokens y URLs sensibles de VivaGym.",
           "dependsOn": [],
-          "related": ["GYM-7", "GYM-116", "GYM-154"]
+          "related": [
+            "GYM-7",
+            "GYM-116",
+            "GYM-154"
+          ]
         },
         {
           "id": "GYM-156",
@@ -1574,15 +1592,23 @@
           "state": "todo",
           "summary": "Hacer fiable el control de versiones, errores, reintentos y plataforma del actualizador integrado.",
           "dependsOn": [],
-          "related": ["GYM-67", "GYM-158"]
+          "related": [
+            "GYM-67",
+            "GYM-158"
+          ]
         },
         {
           "id": "GYM-157",
           "title": "Verificar integridad y procedencia del APK antes de actualizar",
           "state": "todo",
           "summary": "Validar firma, checksum, paquete y perfil EAS del APK publicado antes de ofrecérselo al usuario.",
-          "dependsOn": ["GYM-158"],
-          "related": ["GYM-129", "GYM-156"]
+          "dependsOn": [
+            "GYM-158"
+          ],
+          "related": [
+            "GYM-129",
+            "GYM-156"
+          ]
         },
         {
           "id": "GYM-158",
@@ -1590,7 +1616,11 @@
           "state": "todo",
           "summary": "Evitar releases huérfanas y validar URL, tipo y versión antes de publicar el artefacto Android.",
           "dependsOn": [],
-          "related": ["GYM-122", "GYM-123", "GYM-157"]
+          "related": [
+            "GYM-122",
+            "GYM-123",
+            "GYM-157"
+          ]
         },
         {
           "id": "GYM-159",
@@ -1598,7 +1628,11 @@
           "state": "todo",
           "summary": "Publicar Android solo mediante un disparador explícito y después de superar pruebas deterministas y nativas.",
           "dependsOn": [],
-          "related": ["GYM-122", "GYM-123", "GYM-158"]
+          "related": [
+            "GYM-122",
+            "GYM-123",
+            "GYM-158"
+          ]
         },
         {
           "id": "GYM-160",
@@ -1606,7 +1640,12 @@
           "state": "todo",
           "summary": "Reducir el radio de impacto del componente monolítico extrayendo dominios, transportes y pantallas testeables.",
           "dependsOn": [],
-          "related": ["GYM-8", "GYM-121", "GYM-134", "GYM-135"]
+          "related": [
+            "GYM-8",
+            "GYM-121",
+            "GYM-134",
+            "GYM-135"
+          ]
         },
         {
           "id": "GYM-161",
@@ -1614,7 +1653,11 @@
           "state": "todo",
           "summary": "Sanear el espejo de desarrollo y restringir el endpoint Metro que hoy puede exponer o sobrescribir secretos.",
           "dependsOn": [],
-          "related": ["GYM-63", "GYM-116", "GYM-129"]
+          "related": [
+            "GYM-63",
+            "GYM-116",
+            "GYM-129"
+          ]
         },
         {
           "id": "GYM-162",
@@ -1622,7 +1665,12 @@
           "state": "todo",
           "summary": "Separar el restablecimiento parcial del borrado total y cubrir todas las claves, secretos, cachés y trazas.",
           "dependsOn": [],
-          "related": ["GYM-24", "GYM-50", "GYM-63", "GYM-135"]
+          "related": [
+            "GYM-24",
+            "GYM-50",
+            "GYM-63",
+            "GYM-135"
+          ]
         },
         {
           "id": "GYM-163",
@@ -1630,7 +1678,12 @@
           "state": "todo",
           "summary": "Exportar y restaurar los bytes de las fotos en lugar de conservar URIs locales inservibles.",
           "dependsOn": [],
-          "related": ["GYM-24", "GYM-62", "GYM-135", "GYM-171"]
+          "related": [
+            "GYM-24",
+            "GYM-62",
+            "GYM-135",
+            "GYM-171"
+          ]
         },
         {
           "id": "GYM-164",
@@ -1638,7 +1691,13 @@
           "state": "todo",
           "summary": "Evitar que una hidratación fallida arranque vacía y reescriba datos potencialmente recuperables.",
           "dependsOn": [],
-          "related": ["GYM-62", "GYM-63", "GYM-70", "GYM-135", "GYM-152"]
+          "related": [
+            "GYM-62",
+            "GYM-63",
+            "GYM-70",
+            "GYM-135",
+            "GYM-152"
+          ]
         },
         {
           "id": "GYM-165",
@@ -1646,7 +1705,14 @@
           "state": "todo",
           "summary": "Evitar que verificaciones tardías y persistencia parcial dejen la configuración de proveedores incoherente.",
           "dependsOn": [],
-          "related": ["GYM-55", "GYM-56", "GYM-57", "GYM-58", "GYM-59", "GYM-135"]
+          "related": [
+            "GYM-55",
+            "GYM-56",
+            "GYM-57",
+            "GYM-58",
+            "GYM-59",
+            "GYM-135"
+          ]
         },
         {
           "id": "GYM-166",
@@ -1654,7 +1720,11 @@
           "state": "todo",
           "summary": "Reparar preferencias anidadas parciales o inválidas antes de activar notificaciones y gráficos.",
           "dependsOn": [],
-          "related": ["GYM-24", "GYM-63", "GYM-135"]
+          "related": [
+            "GYM-24",
+            "GYM-63",
+            "GYM-135"
+          ]
         },
         {
           "id": "GYM-167",
@@ -1662,7 +1732,14 @@
           "state": "todo",
           "summary": "Impedir objetivos de dieta imposibles, remanentes negativos y valores nutricionales no finitos.",
           "dependsOn": [],
-          "related": ["GYM-40", "GYM-81", "GYM-83", "GYM-84", "GYM-85", "GYM-132"]
+          "related": [
+            "GYM-40",
+            "GYM-81",
+            "GYM-83",
+            "GYM-84",
+            "GYM-85",
+            "GYM-132"
+          ]
         },
         {
           "id": "GYM-168",
@@ -1670,7 +1747,14 @@
           "state": "todo",
           "summary": "Evitar escrituras duplicadas cuando el chat reintenta una solicitud completa después de ejecutar herramientas.",
           "dependsOn": [],
-          "related": ["GYM-42", "GYM-45", "GYM-67", "GYM-69", "GYM-87", "GYM-135"]
+          "related": [
+            "GYM-42",
+            "GYM-45",
+            "GYM-67",
+            "GYM-69",
+            "GYM-87",
+            "GYM-135"
+          ]
         },
         {
           "id": "GYM-169",
@@ -1678,15 +1762,24 @@
           "state": "todo",
           "summary": "Añadir validación, conversión, reproducibilidad, atomicidad, dry-run/force y CI sin servicios de pago.",
           "dependsOn": [],
-          "related": ["GYM-12", "GYM-122", "GYM-182"]
+          "related": [
+            "GYM-12",
+            "GYM-122",
+            "GYM-182"
+          ]
         },
         {
           "id": "GYM-170",
           "title": "Añadir generación de imágenes para productos y recetas",
           "state": "todo",
           "summary": "Extender la CLI y los agregados a productos comerciales y recetas con sus rutas propias.",
-          "dependsOn": ["GYM-169"],
-          "related": ["GYM-133", "GYM-182"]
+          "dependsOn": [
+            "GYM-169"
+          ],
+          "related": [
+            "GYM-133",
+            "GYM-182"
+          ]
         },
         {
           "id": "GYM-171",
@@ -1694,7 +1787,14 @@
           "state": "todo",
           "summary": "Alinear fecha, duplicados, null, validación y éxito durable de las mediciones creadas por UI y tools.",
           "dependsOn": [],
-          "related": ["GYM-40", "GYM-63", "GYM-81", "GYM-135", "GYM-136", "GYM-163"]
+          "related": [
+            "GYM-40",
+            "GYM-63",
+            "GYM-81",
+            "GYM-135",
+            "GYM-136",
+            "GYM-163"
+          ]
         },
         {
           "id": "GYM-172",
@@ -1702,7 +1802,11 @@
           "state": "todo",
           "summary": "Evitar que el espejo estático quede obsoleto automatizando altas, cambios y un deploy verificable.",
           "dependsOn": [],
-          "related": ["GYM-31", "GYM-122", "GYM-123"]
+          "related": [
+            "GYM-31",
+            "GYM-122",
+            "GYM-123"
+          ]
         },
         {
           "id": "GYM-173",
@@ -1710,31 +1814,48 @@
           "state": "todo",
           "summary": "Evitar que la hidratación descarte tipo, tempo y subseries de las plantillas.",
           "dependsOn": [],
-          "related": ["GYM-62", "GYM-135"]
+          "related": [
+            "GYM-62",
+            "GYM-135"
+          ]
         },
         {
           "id": "GYM-174",
           "title": "Hacer transaccional la edición de plantillas y el descarte de sesiones",
           "state": "todo",
           "summary": "Permitir cancelar ediciones y restaurar todos los cambios de plantilla al descartar o finalizar una sesión.",
-          "dependsOn": ["GYM-173"],
-          "related": ["GYM-63", "GYM-135"]
+          "dependsOn": [
+            "GYM-173"
+          ],
+          "related": [
+            "GYM-63",
+            "GYM-135"
+          ]
         },
         {
           "id": "GYM-175",
           "title": "Contabilizar subseries y trabajo compuesto en entrenamiento",
           "state": "todo",
           "summary": "Incluir dropsets, rest-pause, myo-reps y superseries en progresión, descanso, volumen e historial.",
-          "dependsOn": ["GYM-173"],
-          "related": ["GYM-179"]
+          "dependsOn": [
+            "GYM-173"
+          ],
+          "related": [
+            "GYM-179"
+          ]
         },
         {
           "id": "GYM-176",
           "title": "Evitar registrar entrenamientos parciales como completos",
           "state": "todo",
           "summary": "Distinguir finalización parcial y recalcular el progreso desde las claves completadas.",
-          "dependsOn": ["GYM-173"],
-          "related": ["GYM-174", "GYM-179"]
+          "dependsOn": [
+            "GYM-173"
+          ],
+          "related": [
+            "GYM-174",
+            "GYM-179"
+          ]
         },
         {
           "id": "GYM-177",
@@ -1742,7 +1863,10 @@
           "state": "todo",
           "summary": "Persistir el ancla de reloj y suprimir alertas de descanso cuando la sesión está pausada.",
           "dependsOn": [],
-          "related": ["GYM-63", "GYM-135"]
+          "related": [
+            "GYM-63",
+            "GYM-135"
+          ]
         },
         {
           "id": "GYM-178",
@@ -1750,23 +1874,42 @@
           "state": "todo",
           "summary": "Impedir que create_routine genere plantillas inejecutables o semánticamente inválidas.",
           "dependsOn": [],
-          "related": ["GYM-40", "GYM-42", "GYM-136", "GYM-173", "GYM-183"]
+          "related": [
+            "GYM-40",
+            "GYM-42",
+            "GYM-136",
+            "GYM-173",
+            "GYM-183"
+          ]
         },
         {
           "id": "GYM-179",
           "title": "Guardar la prescripción ejecutada en el historial de entrenamientos",
           "state": "todo",
           "summary": "Conservar ejercicios y series suficientes para auditar y recalcular resúmenes históricos.",
-          "dependsOn": ["GYM-173", "GYM-175"],
-          "related": ["GYM-24", "GYM-135", "GYM-176"]
+          "dependsOn": [
+            "GYM-173",
+            "GYM-175"
+          ],
+          "related": [
+            "GYM-24",
+            "GYM-135",
+            "GYM-176"
+          ]
         },
         {
           "id": "GYM-180",
           "title": "Endurecer el proxy de Anthropic para un despliegue de producción",
           "state": "todo",
           "summary": "Añadir autenticación, CORS restringido, TLS, límites y redacción antes de exponer claves BYOK.",
-          "dependsOn": ["GYM-181"],
-          "related": ["GYM-107", "GYM-129", "GYM-165"]
+          "dependsOn": [
+            "GYM-181"
+          ],
+          "related": [
+            "GYM-107",
+            "GYM-129",
+            "GYM-165"
+          ]
         },
         {
           "id": "GYM-181",
@@ -1774,7 +1917,12 @@
           "state": "todo",
           "summary": "Cubrir las cuatro rutas con upstream falso, schemas, paginación, timeouts y streams interrumpidos.",
           "dependsOn": [],
-          "related": ["GYM-68", "GYM-85", "GYM-123", "GYM-180"]
+          "related": [
+            "GYM-68",
+            "GYM-85",
+            "GYM-123",
+            "GYM-180"
+          ]
         },
         {
           "id": "GYM-182",
@@ -1782,15 +1930,26 @@
           "state": "todo",
           "summary": "Añadir un generador y validador determinista para paridad, IDs, imágenes y dimensiones de todos los catálogos.",
           "dependsOn": [],
-          "related": ["GYM-12", "GYM-122", "GYM-169"]
+          "related": [
+            "GYM-12",
+            "GYM-122",
+            "GYM-169"
+          ]
         },
         {
           "id": "GYM-183",
           "title": "Registrar procedencia, frescura e IDs estables en los catálogos",
           "state": "todo",
           "summary": "Evitar coincidencias por nombre y cachés opacas conservando identidad y estado de cada fuente.",
-          "dependsOn": ["GYM-182"],
-          "related": ["GYM-61", "GYM-64", "GYM-84", "GYM-133"]
+          "dependsOn": [
+            "GYM-182"
+          ],
+          "related": [
+            "GYM-61",
+            "GYM-64",
+            "GYM-84",
+            "GYM-133"
+          ]
         },
         {
           "id": "GYM-184",
@@ -1798,7 +1957,11 @@
           "state": "todo",
           "summary": "Eliminar la lista manual frágil de overlays y evitar re-registrar el botón Atrás en cada render.",
           "dependsOn": [],
-          "related": ["GYM-121", "GYM-123", "GYM-160"]
+          "related": [
+            "GYM-121",
+            "GYM-123",
+            "GYM-160"
+          ]
         },
         {
           "id": "GYM-185",
@@ -1806,7 +1969,12 @@
           "state": "todo",
           "summary": "Evitar texto y tool calls duplicados ante reenvíos de eventos de Google o nombres repetidos.",
           "dependsOn": [],
-          "related": ["GYM-39", "GYM-42", "GYM-68", "GYM-168"]
+          "related": [
+            "GYM-39",
+            "GYM-42",
+            "GYM-68",
+            "GYM-168"
+          ]
         },
         {
           "id": "GYM-186",
@@ -1814,7 +1982,11 @@
           "state": "todo",
           "summary": "Detectar deriva de permisos, assets y ciclo de vida entre app.json y apps/mobile/android.",
           "dependsOn": [],
-          "related": ["GYM-122", "GYM-159", "GYM-184"]
+          "related": [
+            "GYM-122",
+            "GYM-159",
+            "GYM-184"
+          ]
         }
       ]
     },
@@ -1854,7 +2026,7 @@
         {
           "id": "GYM-54",
           "title": "Crear un backend seguro para incidencias y mantener create_feature_issue",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Conservar create_feature_issue y canalizar las incidencias de funcionalidades, alimentos y ejercicios por un backend limitado que custodia GitHub, exige revisión en la app y solo confirma creaciones verificadas.",
           "dependsOn": [],
           "related": [
@@ -2326,7 +2498,7 @@
         {
           "id": "GYM-12",
           "title": "Importar ejercicios del dataset hasaneyldrm/exercises-dataset",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Ampliar el repo local de ejercicios (~39 hoy) sin introducir backend: sigue siendo JSON estático.",
           "dependsOn": [],
           "related": []
@@ -2688,6 +2860,7 @@
       "tickets": [
         "GYM-122",
         "GYM-123",
+        "GYM-202",
         "GYM-124"
       ]
     },

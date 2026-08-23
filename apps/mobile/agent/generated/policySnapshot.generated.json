@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "environment": "development",
   "channel": "Local",
-  "candidate": "sha256:257075bdc4760222dce2a983cde23d5f8eaf19faca53614a75d01f9d2705f8d8",
-  "sha256": "257075bdc4760222dce2a983cde23d5f8eaf19faca53614a75d01f9d2705f8d8",
+  "candidate": "sha256:ba9dc95f307beb233568d12cd716d05604f7b25739204c9e039c56bff8f7c9a5",
+  "sha256": "ba9dc95f307beb233568d12cd716d05604f7b25739204c9e039c56bff8f7c9a5",
   "deploymentId": null
 }

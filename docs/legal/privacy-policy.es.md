@@ -1,5 +1,5 @@
 ---
-version: 2026-08-v1
+version: 2026-08-v2
 effective_date: 2026-08-22
 locale: es
 lang: es
@@ -43,9 +43,11 @@ protección de datos designado.
 Gymnasia no te pide un correo, ni una contraseña, ni un nombre de usuario para
 funcionar. No existe ningún sistema de cuentas.
 
-Tampoco existe un servidor de Gymnasia. La aplicación no envía tus datos a ninguna
+Gymnasia no guarda tus datos en ningún servidor. La aplicación no los envía a
 infraestructura controlada por el responsable, ni para almacenarlos, ni para hacer
-copias de seguridad, ni para analítica. **No hay analítica, ni telemetría, ni informes
+copias de seguridad, ni para analítica. La única excepción es el envío de propuestas de
+mejora, que solo ocurre cuando tú lo apruebas expresamente y que nunca incluye tus datos
+personales (ver [Terceros](#terceros)). **No hay analítica, ni telemetría, ni informes
 de fallos automáticos**: la aplicación no incorpora ningún SDK de ese tipo.
 
 ## Qué datos guarda la aplicación {#datos}
@@ -147,6 +149,17 @@ Además de los proveedores de IA:
   instrucciones le corresponde; y comprueba si hay una versión nueva publicada. **No se
   envía ningún dato tuyo**, pero GitHub, como cualquier servidor al que te conectas, ve
   tu dirección IP.
+- **Backend de incidencias de Gymnasia** (`gymnasia-feedback.maximofn.com`): solo si tú
+  lo pides. Cuando propones una mejora al asistente, o cuando añades un alimento o un
+  ejercicio que no está en el catálogo, la aplicación te muestra antes el título y el
+  resumen exactos y **no envía nada hasta que lo apruebas**. Lo que se envía es
+  únicamente ese título, ese resumen, el tipo de propuesta y un identificador técnico
+  para no crear duplicados. **No se envía el texto de tu conversación, ni tus datos de
+  dieta, entrenamiento o medidas, ni ningún identificador tuyo.** El servicio lo opera el
+  responsable sobre infraestructura de Cloudflare y crea con tu propuesta una ficha en un
+  repositorio **privado** de GitHub, visible solo para el responsable. Antes de guardarla,
+  el servicio borra automáticamente cualquier clave o contraseña que hubieras pegado por
+  error. Si no propones nada, este servicio no se usa nunca.
 - **Open Food Facts** (`world.openfoodfacts.org`): si el asistente lee un código de
   barras en una foto tuya, consulta ese código en su base de datos pública para obtener
   la información nutricional del producto. Se envía el código de barras, no la imagen.
