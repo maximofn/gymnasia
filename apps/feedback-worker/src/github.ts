@@ -55,6 +55,18 @@ export async function createGitHubIssue(
     );
 
     if (!response.ok) {
+      // Al cliente no se le dice nada de esto, pero sin registrarlo un fallo de
+      // credencial y uno de permisos son indistinguibles desde fuera. El cuerpo
+      // de error de GitHub describe el problema y no contiene el token.
+      const detail = await response.text().catch(() => "");
+      console.error(
+        "github_issue_failed",
+        JSON.stringify({
+          status: response.status,
+          repository: options.repository,
+          detail: detail.slice(0, 300),
+        }),
+      );
       return { ok: false, reason: "upstream_failed", status: response.status };
     }
 
@@ -71,7 +83,11 @@ export async function createGitHubIssue(
     }
 
     return { ok: true, number, url };
-  } catch {
+  } catch (error) {
+    console.error(
+      "github_issue_transport_failed",
+      JSON.stringify({ name: (error as { name?: string } | null)?.name ?? "unknown" }),
+    );
     return { ok: false, reason: "upstream_failed", status: null };
   } finally {
     clearTimeout(timeout);
