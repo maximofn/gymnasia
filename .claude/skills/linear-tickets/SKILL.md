@@ -280,12 +280,27 @@ Doce cosas que cuestan tiempo si no se saben:
     `styles.css`). **Pasa siempre `npm run test:board` después de `--apply`**: es
     la única red que detecta esto.
 
-11. **Una rama asociada a Linear puede cerrar el ticket aunque la PR no lo
-    implemente.** El síntoma es que el issue pasa a `Done` segundos después de
-    fusionar una PR cuyo contenido solo lo menciona o actualiza el tablero, sin
-    checklist ni evidencia de cierre. Para trabajo que se cerrará manualmente,
-    usa una rama sin el identificador `GYM-N`, deja el issue en `In Progress` y
-    ejecuta `linear.py close` únicamente tras completar pruebas y evidencias.
+11. **Linear cambia estados solo, y no basta con evitar el identificador en el
+    nombre de la rama.** La integración con GitHub asocia el issue por el
+    identificador `GYM-N` aparezca donde aparezca: rama, **título de la PR** o
+    cuerpo de la PR. Verificado el 22 de agosto de 2026: con la rama
+    `feat/feedback-issues-worker`, sin ningún `GYM-`, abrir una PR titulada
+    `feat(feedback): ... (GYM-54)` movió GYM-54 de `Todo` a `In Progress` y se
+    lo asignó al autor, sin que nadie tocara Linear.
+
+    Dos consecuencias:
+
+    - **Al abrir la PR**: el issue salta a `In Progress`. Es inofensivo, pero
+      aparece como deriva la siguiente vez que ejecutes `board`, y es fácil
+      creer que lo movió otra persona.
+    - **Al fusionar**: el issue puede pasar a `Done` sin checklist ni evidencia,
+      aunque la PR solo lo mencione. Ese es el caso grave.
+
+    Para trabajo que se cerrará a mano con `linear.py close`, mantén el
+    identificador **fuera de la rama y también del título de la PR** —
+    menciónalo solo en el cuerpo, en prosa— o cuenta con revisar el estado
+    después de fusionar. Y comprueba siempre el estado real con `get GYM-N`
+    antes de dar por bueno lo que crees que hiciste tú.
 
 12. **Los worktrees no heredan el `.env` ignorado del checkout principal.** El
     síntoma al usar el `linear.py` correcto del worktree es `No existe

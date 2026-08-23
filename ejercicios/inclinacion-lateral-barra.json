@@ -1,0 +1,11 @@
+{
+  "id": "inclinacion-lateral-barra",
+  "name": "Inclinación lateral con barra",
+  "image_male": "images/inclinacion-lateral-barra-male.webp",
+  "image_female": "images/inclinacion-lateral-barra-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen", "zona lumbar"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una barra ligera apoyada sobre la parte alta de la espalda y activa el abdomen. Sin girar el tronco ni mover las caderas, inclínate lentamente hacia un lado hasta notar tensión en el costado. Regresa al centro y alterna hacia el otro lado con un recorrido cómodo."
+}

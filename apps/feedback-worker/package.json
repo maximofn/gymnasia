@@ -1,0 +1,12 @@
+{
+  "name": "feedback-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run --config vitest.config.mts",
+    "dev": "npm exec --yes -- wrangler@latest dev",
+    "deploy": "npm exec --yes -- wrangler@latest deploy",
+    "migrate:local": "npm exec --yes -- wrangler@latest d1 migrations apply gymnasia-feedback --local",
+    "migrate:remote": "npm exec --yes -- wrangler@latest d1 migrations apply gymnasia-feedback --remote"
+  }
+}

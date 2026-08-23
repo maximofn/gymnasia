@@ -140,3 +140,45 @@ export function resolveRuntimeEnvironment(extra: unknown): RuntimeEnvironment {
 
   return { ...variant, policyCandidate, policySha256 };
 }
+
+export type FeedbackEndpoint =
+  | { available: true; baseUrl: string }
+  | { available: false; reason: "not_configured" | "invalid_config" };
+
+/**
+ * Resuelve el endpoint del backend de incidencias desde `expoConfig.extra`.
+ *
+ * Nunca lanza, a diferencia de `resolveRuntimeEnvironment`: un endpoint mal
+ * configurado degrada la funcionalidad, no puede tumbar el arranque de la app.
+ */
+export function resolveFeedbackEndpoint(extra: unknown): FeedbackEndpoint {
+  if (!extra || typeof extra !== "object" || Array.isArray(extra)) {
+    return { available: false, reason: "not_configured" };
+  }
+  const candidate = extra as Record<string, unknown>;
+  const raw = typeof candidate.feedbackApiBaseUrl === "string"
+    ? candidate.feedbackApiBaseUrl.trim()
+    : "";
+  if (!raw) return { available: false, reason: "not_configured" };
+
+  const isDevelopment = candidate.environment === "development";
+  let parsed: URL;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    return { available: false, reason: "invalid_config" };
+  }
+
+  // HTTP solo se tolera contra el propio equipo y solo en desarrollo.
+  const isLocalHttp = parsed.protocol === "http:"
+    && (parsed.hostname === "127.0.0.1" || parsed.hostname === "localhost");
+  if (parsed.protocol !== "https:" && !(isDevelopment && isLocalHttp)) {
+    return { available: false, reason: "invalid_config" };
+  }
+  // Credenciales embebidas, consulta o fragmento indican una URL manipulada.
+  if (parsed.username || parsed.password || parsed.search || parsed.hash) {
+    return { available: false, reason: "invalid_config" };
+  }
+
+  return { available: true, baseUrl: raw.replace(/\/+$/, "") };
+}

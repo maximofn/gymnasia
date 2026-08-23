@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Política de privacidad de Gymnasia</title>
+<meta name="description" content="Política de privacidad de Gymnasia">
+<meta name="gymnasia-policy-version" content="2026-08-v2">
+<meta name="gymnasia-policy-digest" content="sha256:90ddc365ab2c73dda96333912b3efb73be60bcdef932795be0b868b6c1030b87">
+<link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
+<link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
+<link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
+<style>
+:root { color-scheme: dark; --bg:#0A0E14; --surface:#131A24; --text:#E8EDF4; --muted:#9AA7B8; --accent:#CBFF1A; --border:#243040; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.65; }
+main { max-width:46rem; margin:0 auto; padding:2.5rem 1.25rem 5rem; }
+h1 { font-size:1.9rem; line-height:1.25; margin:0 0 .5rem; }
+h2 { font-size:1.2rem; margin:2.5rem 0 .75rem; scroll-margin-top:1rem; }
+h2 a { color:inherit; text-decoration:none; }
+h2 a:hover::after { content:" #"; color:var(--accent); }
+p, li { color:var(--text); }
+a { color:var(--accent); }
+code { background:var(--surface); padding:.1rem .35rem; border-radius:.25rem; font-size:.9em; overflow-wrap:anywhere; }
+ul { padding-left:1.25rem; }
+li { margin:.35rem 0; }
+.meta { color:var(--muted); font-size:.9rem; margin:0 0 2rem; }
+.langs { margin:0 0 2rem; font-size:.9rem; }
+nav { background:var(--surface); border:1px solid var(--border); border-radius:.75rem; padding:1rem 1.25rem; margin:0 0 2rem; }
+nav h2 { font-size:.85rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 .5rem; }
+nav ul { list-style:none; padding:0; margin:0; columns:2; }
+nav li { margin:.2rem 0; break-inside:avoid; }
+footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border); color:var(--muted); font-size:.85rem; }
+@media (max-width:34rem){ nav ul { columns:1; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Política de privacidad de Gymnasia</h1>
+  <p class="meta">Versión 2026-08-v2 · en vigor desde 2026-08-22 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
+  <nav>
+    <h2>Contenido</h2>
+    <ul>
+      <li><a href="#resumen">Resumen</a></li>
+      <li><a href="#responsable">Quién es responsable</a></li>
+      <li><a href="#sin-cuenta">No hay cuenta ni servidor</a></li>
+      <li><a href="#datos">Qué datos guarda la aplicación</a></li>
+      <li><a href="#almacenamiento-local">Dónde se guarda</a></li>
+      <li><a href="#byok">Tu clave de API</a></li>
+      <li><a href="#proveedores">Qué envía la aplicación a los proveedores de IA</a></li>
+      <li><a href="#fotos">Fotografías</a></li>
+      <li><a href="#terceros">Terceros con los que se comunica la aplicación</a></li>
+      <li><a href="#copias">Copias de seguridad y exportación</a></li>
+      <li><a href="#denuncia">Denunciar una respuesta del asistente</a></li>
+      <li><a href="#permisos">Permisos que solicita la aplicación</a></li>
+      <li><a href="#web">La versión web</a></li>
+      <li><a href="#conservacion">Cuánto tiempo se conservan tus datos</a></li>
+      <li><a href="#eliminacion">Cómo eliminar tus datos</a></li>
+      <li><a href="#menores">Menores</a></li>
+      <li><a href="#derechos">Tus derechos</a></li>
+      <li><a href="#no-dispositivo-medico">Gymnasia no es un dispositivo médico</a></li>
+      <li><a href="#cambios">Cambios en esta política</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <section id="resumen">
+    <h2><a href="#resumen">Resumen</a></h2>
+    <p>Gymnasia funciona <strong>en tu dispositivo</strong>. No hay cuenta, no hay registro y no existe ningún servidor de Gymnasia que reciba tus datos. Tus entrenamientos, tu dieta, tu peso, tus medidas y tus conversaciones con el asistente se guardan en el almacenamiento de la propia aplicación.</p>
+    <p>Hay una excepción importante y es enteramente tuya: si activas el asistente de inteligencia artificial, <strong>tú</strong> aportas la clave de un proveedor (OpenAI, Anthropic o Google) y la aplicación habla <strong>directamente</strong> con ese proveedor desde tu dispositivo. Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta con ella. Nosotros no lo vemos, no lo almacenamos y no podemos recuperarlo.</p>
+    <p>Esta política describe con detalle qué se guarda, qué sale del dispositivo y qué control tienes sobre ello.</p>
+  </section>
+
+  <section id="responsable">
+    <h2><a href="#responsable">Quién es responsable</a></h2>
+    <p>Responsable del tratamiento: <strong>Máximo Fernández Núñez</strong>.</p>
+    <p>Contacto para cualquier cuestión relacionada con la privacidad, incluido el ejercicio de tus derechos y la denuncia de una respuesta del asistente: <strong>maximofn@maximofn.com</strong>.</p>
+    <p>Gymnasia es un proyecto personal. No hay departamento de soporte ni delegado de protección de datos designado.</p>
+  </section>
+
+  <section id="sin-cuenta">
+    <h2><a href="#sin-cuenta">No hay cuenta ni servidor</a></h2>
+    <p>Gymnasia no te pide un correo, ni una contraseña, ni un nombre de usuario para funcionar. No existe ningún sistema de cuentas.</p>
+    <p>Gymnasia no guarda tus datos en ningún servidor. La aplicación no los envía a infraestructura controlada por el responsable, ni para almacenarlos, ni para hacer copias de seguridad, ni para analítica. La única excepción es el envío de propuestas de mejora, que solo ocurre cuando tú lo apruebas expresamente y que nunca incluye tus datos personales (ver [Terceros](#terceros)). <strong>No hay analítica, ni telemetría, ni informes de fallos automáticos</strong>: la aplicación no incorpora ningún SDK de ese tipo.</p>
+  </section>
+
+  <section id="datos">
+    <h2><a href="#datos">Qué datos guarda la aplicación</a></h2>
+    <p>Todo lo siguiente se guarda únicamente en tu dispositivo:</p>
+    <ul>
+      <li><strong>Actividad de entrenamiento</strong>: rutinas, ejercicios, series, repeticiones, cargas en kilogramos, duración de las sesiones, descansos y el volumen y las calorías estimadas.</li>
+      <li><strong>Nutrición</strong>: lo que registras cada día, con gramos, calorías, proteínas, hidratos y grasas; los alimentos que creas tú; y las recetas y productos que guardas.</li>
+      <li><strong>Peso y composición corporal</strong>: peso, porcentaje de grasa corporal, y los perímetros de cuello, pecho, cintura, cadera, bíceps, cuádriceps y gemelo, con su fecha.</li>
+      <li><strong>Datos personales de cálculo</strong>: sexo, altura, fecha de nacimiento, objetivo (definición, volumen o mantenimiento) y nivel de actividad. Se usan para estimar tus calorías y macronutrientes.</li>
+      <li><strong>Conversaciones con el asistente</strong>: el historial completo de tus hilos de chat, incluidos los mensajes del modelo.</li>
+      <li><strong>Memoria del asistente</strong>: notas en texto libre que tú o el propio asistente guardáis para recordar cosas entre conversaciones. Puede contener cualquier dato que hayas contado en el chat, incluidos datos de salud.</li>
+      <li><strong>Preferencias</strong>: ajustes de la interfaz y de las notificaciones.</li>
+      <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie. Nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
+    </ul>
+  </section>
+
+  <section id="almacenamiento-local">
+    <h2><a href="#almacenamiento-local">Dónde se guarda</a></h2>
+    <p>En el almacenamiento privado de la aplicación dentro de tu dispositivo. En Android, otras aplicaciones no pueden leerlo.</p>
+    <p>Las <strong>claves de API</strong> son el único dato que recibe un trato distinto: se guardan en el llavero seguro del sistema operativo, separadas del resto.</p>
+    <p>Si tu dispositivo tiene activada la copia de seguridad de Android, el sistema operativo puede incluir los datos de la aplicación en la copia de tu cuenta de Google. Eso lo gobiernan los ajustes de tu dispositivo y la política de privacidad de Google, no esta aplicación.</p>
+  </section>
+
+  <section id="byok">
+    <h2><a href="#byok">Tu clave de API</a></h2>
+    <p>El asistente funciona con el modelo de <strong>clave propia</strong>: no se incluye ninguna clave en la aplicación, y tú introduces la de tu cuenta con OpenAI, Anthropic o Google.</p>
+    <ul>
+      <li>La clave se guarda <strong>en el llavero seguro de tu dispositivo</strong> y no se envía a ningún servidor del responsable, porque no existe tal servidor.</li>
+      <li>La clave se envía <strong>únicamente al proveedor al que corresponde</strong>, en cada petición, como exige su API.</li>
+      <li>La clave <strong>no se incluye</strong> en el fichero de copia de seguridad que exportas.</li>
+      <li>Puedes borrarla en cualquier momento desde Ajustes.</li>
+    </ul>
+    <p><strong>En el navegador la protección es menor.</strong> La versión web de Gymnasia se ejecuta en un navegador, donde no existe el llavero del sistema operativo: allí la clave se guarda en el almacenamiento del navegador junto al resto de los datos, sin esa capa adicional de protección. La aplicación te lo advierte en la pantalla de configuración del proveedor. Si esto te preocupa, usa la aplicación móvil.</p>
+  </section>
+
+  <section id="proveedores">
+    <h2><a href="#proveedores">Qué envía la aplicación a los proveedores de IA</a></h2>
+    <p>Cuando usas el asistente, tu dispositivo se conecta <strong>directamente</strong> con el proveedor que hayas elegido. La petición incluye:</p>
+    <ul>
+      <li>las instrucciones del sistema del asistente;</li>
+      <li><strong>los últimos 20 mensajes</strong> del hilo de conversación;</li>
+      <li>los resultados de las herramientas que el asistente utiliza a petición tuya, que pueden incluir tu peso, tu porcentaje de grasa, tus perímetros, las comidas del día o tus rutinas;</li>
+      <li>en el estimador de comida, <strong>las imágenes que le proporcionas</strong>, codificadas dentro de la petición.</li>
+    </ul>
+    <p>Ese contenido queda sujeto a la política de privacidad y a los términos del proveedor que hayas elegido, bajo tu propia cuenta con él:</p>
+    <ul>
+      <li><a href="https://openai.com/policies/privacy-policy" rel="noopener noreferrer">OpenAI</a></li>
+      <li><a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">Anthropic</a></li>
+      <li><a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google</a></li>
+    </ul>
+    <p>Si no configuras ninguna clave, la aplicación no contacta con ningún proveedor de IA y el resto de funciones sigue operativa.</p>
+  </section>
+
+  <section id="fotos">
+    <h2><a href="#fotos">Fotografías</a></h2>
+    <p>Gymnasia usa la cámara y la galería en dos sitios, y los trata de forma distinta:</p>
+    <ul>
+      <li><strong>Estimador de comida</strong>: las imágenes que eliges (hasta seis) se envían al proveedor de IA para estimar los valores nutricionales. No se guardan en la aplicación ni se suben a ningún otro sitio.</li>
+      <li><strong>Fotografías de progreso</strong> asociadas a una medición: <strong>no salen de tu dispositivo</strong>. La aplicación guarda solo una referencia al fichero. Esa referencia sí se incluye en la copia de seguridad que exportas, y el asistente puede verla si consulta esa medición.</li>
+    </ul>
+  </section>
+
+  <section id="terceros">
+    <h2><a href="#terceros">Terceros con los que se comunica la aplicación</a></h2>
+    <p>Además de los proveedores de IA:</p>
+    <ul>
+      <li><strong>GitHub</strong> (<code>raw.githubusercontent.com</code>, <code>api.github.com</code>, <code>github.com</code>): la aplicación descarga los catálogos públicos de ejercicios, alimentos, productos y recetas, sus imágenes y las instrucciones del asistente; consulta qué versión de esas instrucciones le corresponde; y comprueba si hay una versión nueva publicada. <strong>No se envía ningún dato tuyo</strong>, pero GitHub, como cualquier servidor al que te conectas, ve tu dirección IP.</li>
+      <li><strong>Backend de incidencias de Gymnasia</strong> (<code>gymnasia-feedback.maximofn.com</code>): solo si tú lo pides. Cuando propones una mejora al asistente, o cuando añades un alimento o un ejercicio que no está en el catálogo, la aplicación te muestra antes el título y el resumen exactos y <strong>no envía nada hasta que lo apruebas</strong>. Lo que se envía es únicamente ese título, ese resumen, el tipo de propuesta y un identificador técnico para no crear duplicados. <strong>No se envía el texto de tu conversación, ni tus datos de dieta, entrenamiento o medidas, ni ningún identificador tuyo.</strong> El servicio lo opera el responsable sobre infraestructura de Cloudflare y crea con tu propuesta una ficha en un repositorio <strong>privado</strong> de GitHub, visible solo para el responsable. Antes de guardarla, el servicio borra automáticamente cualquier clave o contraseña que hubieras pegado por error. Si no propones nada, este servicio no se usa nunca.</li>
+      <li><strong>Open Food Facts</strong> (<code>world.openfoodfacts.org</code>): si el asistente lee un código de barras en una foto tuya, consulta ese código en su base de datos pública para obtener la información nutricional del producto. Se envía el código de barras, no la imagen.</li>
+      <li><strong>VivaGym / MyVitale</strong> (<code>vivagym.myvitale.com</code>): función opcional. Si decides usarla, introduces el correo y la contraseña de <strong>tu cuenta de VivaGym</strong>, que se guardan en el llavero seguro del dispositivo y se envían a los servidores de VivaGym para obtener tu código QR de acceso al gimnasio. Ese código contiene tu identificador de socio. Si no usas esta función, no se envía nada. Esta integración está prevista para retirarse en una versión futura.</li>
+    </ul>
+  </section>
+
+  <section id="copias">
+    <h2><a href="#copias">Copias de seguridad y exportación</a></h2>
+    <p>Puedes exportar todos tus datos a un fichero JSON desde Ajustes, y volver a importarlo después. Es una acción manual: no hay copia automática.</p>
+    <p>El fichero exportado <strong>contiene</strong>: tus medidas y porcentajes de grasa, la referencia a tus fotografías de progreso, tu registro de dieta completo, tu historial de entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la memoria del asistente y <strong>el historial íntegro de tus conversaciones</strong>. Es el fichero más sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.</p>
+    <p>El fichero <strong>no contiene</strong> tus claves de API.</p>
+    <p>Al exportar, el fichero se escribe en el almacenamiento temporal de la aplicación antes de que elijas dónde compartirlo, y esa copia temporal permanece ahí. Puedes eliminarla borrando los datos de la aplicación desde los ajustes del sistema.</p>
+  </section>
+
+  <section id="denuncia">
+    <h2><a href="#denuncia">Denunciar una respuesta del asistente</a></h2>
+    <p>Si el asistente genera una respuesta inapropiada, peligrosa o incorrecta, escribe a <strong>maximofn@maximofn.com</strong> describiendo lo ocurrido. Puedes adjuntar el texto de la respuesta si quieres, pero <strong>no envíes tu clave de API</strong> ni datos que prefieras no compartir: revisa lo que copias antes de mandarlo.</p>
+    <p>Las denuncias se revisan manualmente y pueden dar lugar a cambios en las instrucciones del asistente o en sus salvaguardas. En este momento la denuncia se gestiona por correo; una versión futura incorporará una acción dentro de la propia aplicación.</p>
+  </section>
+
+  <section id="permisos">
+    <h2><a href="#permisos">Permisos que solicita la aplicación</a></h2>
+    <ul>
+      <li><strong>Notificaciones, alarmas exactas, vibración y activación de pantalla</strong>: para avisarte cuando termina un descanso, incluso con la pantalla apagada.</li>
+      <li><strong>Ejecución tras reiniciar el dispositivo</strong>: para reprogramar esos avisos.</li>
+      <li><strong>Cámara y acceso a imágenes</strong>: solo cuando eliges una foto para el estimador de comida o para una medición.</li>
+    </ul>
+    <p>Ninguno de estos permisos se usa para recoger datos en segundo plano. Las notificaciones son locales: se generan en tu dispositivo y no hay notificaciones push desde un servidor.</p>
+  </section>
+
+  <section id="web">
+    <h2><a href="#web">La versión web</a></h2>
+    <p>Gymnasia también puede usarse en un navegador. El funcionamiento es el mismo, con dos diferencias que debes conocer:</p>
+    <ul>
+      <li>Los datos se guardan en el <strong>almacenamiento del navegador</strong>, no en el almacenamiento privado de una aplicación instalada. Borrar los datos del sitio los elimina.</li>
+      <li><strong>La clave de API no queda protegida por el llavero del sistema operativo</strong>, como se explica en el apartado anterior.</li>
+    </ul>
+  </section>
+
+  <section id="conservacion">
+    <h2><a href="#conservacion">Cuánto tiempo se conservan tus datos</a></h2>
+    <p>Indefinidamente, mientras tú los mantengas. Como los datos no salen de tu dispositivo, no existe ningún plazo de conservación en servidor que aplicar: los conservas tú y los borras tú.</p>
+    <p>Los datos que hayas enviado a un proveedor de IA se rigen por el plazo de conservación de ese proveedor, según tu cuenta con él.</p>
+  </section>
+
+  <section id="eliminacion">
+    <h2><a href="#eliminacion">Cómo eliminar tus datos</a></h2>
+    <p>Con transparencia sobre lo que hace hoy cada opción:</p>
+    <p><strong>&quot;Restablecer datos locales&quot;</strong> (Ajustes) es un borrado <strong>parcial</strong>. Elimina tus rutinas, tu historial de entrenamiento, tu dieta, tus medidas, tus conversaciones y tus claves de API. <strong>No elimina</strong>: la memoria del asistente, los alimentos que has creado, tus preferencias, el registro de depuración, las credenciales de VivaGym, las copias de seguridad que hayas exportado ni los catálogos descargados. Estamos trabajando en que esta acción borre todo lo que promete; hasta entonces, esta política describe su comportamiento real.</p>
+    <p><strong>El registro de depuración</strong> se borra con su propio botón, en Ajustes → Trazas.</p>
+    <p><strong>Borrado completo</strong>: elimina los datos de la aplicación desde los ajustes de tu dispositivo, o desinstálala. Eso elimina todo lo anterior sin excepción. Recuerda que los ficheros de copia de seguridad que hayas exportado y guardado en otro sitio sobreviven, y que las fotografías tomadas con la cámara siguen en tu galería.</p>
+    <p><strong>Datos en poder de un proveedor de IA</strong>: se solicitan directamente a ese proveedor, desde tu cuenta con él. Gymnasia no puede borrarlos por ti.</p>
+  </section>
+
+  <section id="menores">
+    <h2><a href="#menores">Menores</a></h2>
+    <p>Gymnasia no está dirigida a menores de 14 años y no verifica la edad de quien la usa. Si eres menor de edad, usa la aplicación con el consentimiento y la supervisión de una persona responsable de ti, especialmente en lo relativo a entrenamiento y alimentación.</p>
+  </section>
+
+  <section id="derechos">
+    <h2><a href="#derechos">Tus derechos</a></h2>
+    <p>El Reglamento General de Protección de Datos te reconoce los derechos de acceso, rectificación, supresión, limitación, portabilidad y oposición.</p>
+    <p>En Gymnasia esos derechos se ejercen, en la práctica, <strong>sin intermediario</strong>, porque el responsable no dispone de tus datos:</p>
+    <ul>
+      <li><strong>Acceso y portabilidad</strong>: la función de exportación te entrega todos tus datos en un fichero JSON estándar.</li>
+      <li><strong>Rectificación</strong>: puedes editar cualquier dato dentro de la aplicación.</li>
+      <li><strong>Supresión</strong>: consulta el apartado anterior.</li>
+      <li><strong>Oposición y limitación</strong>: deja de usar las funciones que envían datos a terceros; sin clave de API configurada, no se envía nada a ningún proveedor de IA.</li>
+    </ul>
+    <p>Si crees que el tratamiento no cumple la normativa, puedes escribir a <strong>maximofn@maximofn.com</strong> y presentar una reclamación ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" rel="noopener noreferrer">aepd.es</a>).</p>
+  </section>
+
+  <section id="no-dispositivo-medico">
+    <h2><a href="#no-dispositivo-medico">Gymnasia no es un dispositivo médico</a></h2>
+    <p><strong>Gymnasia no es un dispositivo médico y no sustituye el asesoramiento de un profesional sanitario.</strong></p>
+    <p>La aplicación no diagnostica, no trata, no cura ni previene ninguna enfermedad. Sus cálculos de calorías, macronutrientes y composición corporal son <strong>estimaciones</strong> basadas en fórmulas generales, no mediciones clínicas.</p>
+    <p>El asistente de inteligencia artificial <strong>no es una persona</strong> y puede equivocarse. No es médico, ni nutricionista, ni entrenador acreditado, aunque su tono pueda parecerlo. No sigas sus indicaciones sobre salud, lesiones, medicación o restricción alimentaria sin contrastarlas con un profesional cualificado.</p>
+    <p>Consulta a un profesional sanitario antes de empezar un programa de entrenamiento o un plan de alimentación, especialmente si tienes alguna condición médica, estás embarazada o tomas medicación.</p>
+  </section>
+
+  <section id="cambios">
+    <h2><a href="#cambios">Cambios en esta política</a></h2>
+    <p>Cuando cambie lo que la aplicación hace con tus datos, esta política se actualiza y su versión y fecha cambian con ella. La versión vigente es la que aparece al principio de este documento.</p>
+  </section>
+
+  <section id="contacto">
+    <h2><a href="#contacto">Contacto</a></h2>
+    <p><strong>maximofn@maximofn.com</strong></p>
+  </section>
+
+  <footer>
+    <p>Política de privacidad de Gymnasia · 2026-08-v2 · 2026-08-22</p>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,35 +1,76 @@
 # Arquitectura - Seguridad y Privacidad
 
-## Datos personales
-- Se almacenan en v1:
-  - Email (auth)
-  - Peso y contornos
-  - Fotos (segun modulo)
-  - Historial de entrenamiento y dieta
+> **Declaración vinculante**: la política publicada en
+> <https://gymnasia.maximofn.com/privacidad>, cuya fuente es
+> `docs/legal/privacy-policy.es.md`. El inventario verificado de datos vive en
+> `scripts/data-inventory/inventory.json`. Este documento describe la arquitectura;
+> ante cualquier discrepancia, mandan aquellos.
 
-## Seguridad de secretos
-- API keys BYOK:
-  - Almacenadas cifradas en servidor.
-  - Usuario puede ver/rotar/revocar.
+> **Aviso**: hasta agosto de 2026 este fichero describía un backend con cuentas de
+> usuario, claves BYOK cifradas en servidor y fotos alojadas en la UE. Nada de eso
+> existe ni ha existido en el producto. Se corrigió al redactar la política de
+> privacidad (GYM-190), porque publicar aquellas afirmaciones ante Google Play habría
+> sido declarar en falso. Los documentos de `docs/backend/` y `docs/specs/` describen
+> esa misma arquitectura no implementada: no son fuente de verdad sobre privacidad.
 
-## Seguridad de media
-- Fotos en servidor UE.
-- Cifrado en reposo.
-- Acceso por URL firmada temporal.
-- Retencion por defecto: 1 anio.
+## Modelo real: local-first, sin backend
 
-## Cuenta y borrado
-- Borrado de cuenta autoservicio.
-- Gracia de 30 dias para cancelar.
-- Durante gracia:
-  - login permitido
-  - bloqueadas nuevas subidas y nuevos registros
+- No hay cuentas, ni autenticación, ni servidor propio.
+- Todos los datos viven en el dispositivo: AsyncStorage para el estado y SecureStore
+  para las credenciales.
+- No hay analítica, telemetría ni crash reporting. Ningún SDK de ese tipo está
+  incorporado.
+- La única salida de datos personales es hacia el proveedor de IA que el usuario elige,
+  con la clave que él aporta, y ocurre directamente desde el dispositivo.
 
-## Logs
-- Objetivo v1: redaccion de PII/secrets en logs tecnicos.
+## Datos personales tratados
 
-## Safety IA
-- Bloqueo de contenido riesgoso:
-  - dopaje/farmacos
-  - ayuno extremo/purgas
-- Avisos de seguridad cuando el contexto lo requiera.
+Actividad de entrenamiento, registro nutricional, peso y composición corporal
+(incluidos perímetros y porcentaje de grasa), datos de cálculo (sexo, altura, fecha de
+nacimiento), historial de conversaciones con el asistente y la memoria del asistente en
+texto libre. El detalle por clave de almacenamiento, con su propósito y su ciclo de
+vida, está en el inventario.
+
+## Secretos
+
+- Las claves de API son BYOK: las introduce el usuario y se guardan en SecureStore, es
+  decir, en el llavero del sistema operativo.
+- No se incluye ninguna clave en el binario.
+- Las claves se excluyen del estado antes de escribirlo en AsyncStorage, **siempre que
+  SecureStore esté disponible**. En web no lo está, y la clave queda en el
+  almacenamiento del navegador. La aplicación lo advierte en la pantalla del proveedor.
+- La copia de seguridad exportada nunca incluye claves de API.
+
+## Copias de seguridad
+
+Exportación e importación manuales a un fichero JSON. Contiene medidas, dieta, historial
+de entrenamiento, ajustes personales, memoria del asistente y el historial completo de
+conversaciones. Es el artefacto más sensible que produce la aplicación.
+
+## Borrado
+
+`resetLocalData` es hoy un borrado **parcial**. No alcanza a la memoria del asistente,
+los alimentos personales, las preferencias, las trazas, las credenciales de VivaGym ni
+las cachés. GYM-162 lo corrige. La política publicada describe este comportamiento tal
+como es, no como debería ser.
+
+## Trazas
+
+`apps/mobile/trace.ts` mantiene un registro local de hasta 1000 entradas en
+AsyncStorage. Nunca sale por red; el usuario puede copiarlo o borrarlo desde Ajustes.
+
+## Seguridad de la IA
+
+- Divulgación de identidad de IA en las tres superficies conversacionales
+  (`apps/mobile/agent/aiTransparency.ts`).
+- Instrucciones de sistema que prohíben presentarse como persona o profesional
+  sanitario.
+- Barreras de contenido sanitario y avisos cuando el contexto lo requiere.
+
+## Cómo se evita que esto vuelva a divergir
+
+`npm run check:data-inventory` compara el inventario declarado con las claves de
+almacenamiento, los destinos de red y los permisos que hay en el código, y falla si no
+coinciden. `npm run check:legal` verifica que la política publicada corresponde a su
+fuente. Ambos corren en CI. El procedimiento al tocar cualquiera de esas cosas está en
+`docs/legal/privacy-change-checklist.md`.

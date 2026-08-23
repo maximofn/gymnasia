@@ -213,17 +213,22 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   {
     name: "create_feature_issue",
     description:
-      "Crea una issue en GitHub con el prefijo [FEATURE] cuando el usuario solicita una mejora o nueva funcionalidad para la app. " +
-      "Usa esta herramienta siempre que el usuario exprese un deseo de mejora, nueva característica o cambio en la app. " +
-      "El agente debe generar un título conciso y un resumen de lo interpretado.",
+      "Envía al equipo de Gymnasia una solicitud de mejora del usuario. " +
+      "ANTES de llamarla, muestra al usuario el título y el resumen exactos que vas a enviar y espera a que los apruebe; " +
+      "si pide cambios, reescríbelos y vuelve a preguntar. No la llames sin esa aprobación. " +
+      "No copies frases literales de la conversación: redacta un resumen propio y neutro, sin datos personales. " +
+      "No afirmes nunca que la solicitud existe hasta que esta herramienta te devuelva un número de referencia.",
     inputSchema: {
       type: "object",
       properties: {
-        title_summary: stringProperty("Título corto y descriptivo de la mejora solicitada (sin el prefijo [FEATURE], se añade automáticamente)"),
-        conversation_excerpt: stringProperty("Fragmento literal de la conversación donde el usuario pide la mejora"),
-        interpretation: stringProperty("Resumen en español de lo que ha interpretado el agente que el usuario quiere"),
+        title: stringProperty(
+          "Título corto y descriptivo de la mejora, en español, sin prefijos ni etiquetas.",
+        ),
+        summary: stringProperty(
+          "Resumen propio en español de lo que quiere el usuario. Sin citas literales ni datos personales.",
+        ),
       },
-      required: ["title_summary", "conversation_excerpt", "interpretation"],
+      required: ["title", "summary"],
     },
   },
 ];

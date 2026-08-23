@@ -1,15 +1,57 @@
 # Repository Guidelines
 
+## Cómo referirse a los tickets
+- **Nunca cites un ticket solo por su identificador.** Escribe siempre
+  `GYM-X (ticket para hacer Y)`, con una descripción breve de qué trata.
+- Motivo: el mantenedor no se sabe los números de memoria, y un `GYM-54` suelto
+  obliga a ir a Linear a mirarlo para entender la frase.
+- Aplica a las respuestas en el chat, a los mensajes de commit, a las
+  descripciones de PR y a la documentación. Ejemplo:
+  `GYM-45 (ticket para añadir confirmación humana en tools con efectos)`.
+
+## Cambios en las instrucciones del agente: avisar y esperar aprobación
+- **Cuando un cambio toque `prompts/` o `policy/health-safety/`, para y avisa.**
+  Son las instrucciones que el modelo lee y obedece, y el repositorio las gobierna
+  aparte del código: el check `gymnasia/policy-promotion` se queda en amarillo
+  (`PENDING`) hasta que esa política se promociona a propósito.
+- Qué hacer, en este orden:
+  1. **Avisar en lenguaje natural**, sin jerga. Nada de `policy-promotion está
+     PENDING`: escribe qué ha pasado y por qué, como se lo contarías a alguien
+     que no ha visto el fichero.
+  2. **Explicar el cambio en lenguaje natural**: qué le permitías o le prohibías
+     hacer al agente antes, qué le permites o le prohíbes ahora, y qué consecuencia
+     tiene para el usuario de la app. El diff no vale como explicación.
+  3. **Esperar a que el mantenedor diga explícitamente que lo aprueba.**
+- **Nunca** lances la promoción (`promote-policy.yml`), ni fusiones la PR, ni saques
+  el cambio a otra rama para esquivar la puerta, sin esa aprobación explícita. Un
+  «adelante» sobre otro asunto no cuenta.
+- Motivo: cambiar lo que un agente tiene permitido hacer es más arriesgado que
+  cambiar código, porque el diff no muestra las consecuencias. La puerta está
+  echada a propósito; tratarla como un trámite anula su razón de ser.
+- El detalle del mecanismo vive en `docs/security/prompt-policy-governance.md`.
+
 ## Project Structure & Module Organization
-This repo contains a single Expo React Native mobile app.
+This repo contains an Expo React Native mobile app and un Worker de Cloudflare de apoyo.
 - `apps/mobile`: Expo React Native app (`App.tsx`, `theme.ts`). This is the only application.
 - `alimentos/`: repositorio de alimentos (JSONs con datos nutricionales). Ver skill `.claude/skills/generate-food-images.md` para generar JSONs.
+- `apps/feedback-worker`: Worker de Cloudflare que recibe incidencias de la app y
+  crea issues en un repositorio privado. Ver su `README.md` para despliegue,
+  secretos, rotación y apagado.
 - `ejercicios/`: repositorio de ejercicios (JSONs + imágenes generadas). Ver skill `.claude/skills/generate-exercise-images.md` para generar imágenes.
 
 ## Current Delivery Focus
-- `apps/mobile` is the only product surface. There is no backend, web frontend, or database.
+- `apps/mobile` is the only product surface. There is no web frontend or database.
 - All features must work fully local-first on mobile.
-- Do not introduce backend or database dependencies.
+- **No hay backend obligatorio.** La app funciona entera sin ningún servicio: si
+  el backend está caído o sin configurar, la funcionalidad afectada degrada en
+  silencio y nada más se rompe. Si alguna vez la app deja de arrancar o de
+  funcionar porque un servicio no responde, el diseño está mal.
+- La **única** excepción autorizada es `apps/feedback-worker` (GYM-54, ticket
+  para sustituir los escritores no-op de GitHub Issues por un flujo verificable):
+  crear una issue exige una credencial de escritura en GitHub y un cliente
+  estático nunca puede llevarla. Ver `apps/feedback-worker/README.md`.
+- No introduzcas ninguna otra dependencia de backend o de base de datos sin que
+  exista un ticket que autorice la excepción de forma explícita.
 
 ## Design System Source Of Truth
 - The system design reference is the attached `docs/design/Gimnasia Design System.png`.
@@ -134,6 +176,32 @@ Run from repo root unless noted.
   `/index.html` devuelve un `Redirecting...` en vez del HTML: es `cleanUrls` de
   `vercel.json` redirigiendo a `/`. Comprobar siempre contra `/`, no `/index.html`.
 
+## Backend de incidencias — Deploy Runbook (`apps/feedback-worker/`)
+- Qué es: Worker de Cloudflare que custodia el PAT de GitHub y crea las issues
+  que propone la app. Plan gratuito, sin caducidad. Detalle completo en
+  `apps/feedback-worker/README.md`.
+- **Un push a `main` NO lo despliega.** Igual que Vercel en este repo, hay que
+  lanzar la CLI a mano:
+  ```bash
+  npm --workspace apps/feedback-worker run deploy
+  ```
+- `wrangler` **no está instalado**: se baja al vuelo con `npm exec --yes --`,
+  igual que la CLI de Vercel. No usar `npx`: el hook de rtk lo reescribe a `npm`.
+- El secreto `GITHUB_TOKEN` vive solo en Cloudflare (`wrangler secret put`).
+  **Nunca** en el repositorio, que es público, ni en el bundle de la app.
+- Verificar tras desplegar:
+  ```bash
+  curl -sS https://gymnasia-feedback.maximofn.com/health
+  ```
+- **Trampa del subdominio**: tiene que ser de un solo nivel. El certificado
+  gratuito Universal SSL de Cloudflare cubre `maximofn.com` y `*.maximofn.com`,
+  pero **no** `*.gymnasia.maximofn.com`: los comodines no se encadenan. Por eso
+  `gymnasia-feedback.maximofn.com` y no `feedback.gymnasia.maximofn.com`, que
+  exigiría Advanced Certificate Manager (de pago).
+- Cambiar la URL de producción obliga a tocar `apps/mobile/app.config.ts` **y**
+  `scripts/data-inventory/inventory.json`: el escáner reconoce el host por su
+  literal y `npm run check:data-inventory` falla si no está declarado.
+
 ## Coding Style & Naming Conventions
 - TypeScript is `strict`; follow existing TS style: 2-space indentation, semicolons, double quotes.
 - React components/types: `PascalCase`; functions/variables: `camelCase`.
@@ -142,7 +210,12 @@ Run from repo root unless noted.
 ## Testing Guidelines
 The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - deterministic tests: `npm test`
+- backend de incidencias: `npm --workspace apps/feedback-worker run test`
 - browser E2E with a fake OpenAI provider: `npm run test:agent:e2e`
+- published privacy policy E2E: `npm run test:privacy:e2e` (exports the web build and
+  reads it with a clean browser context; `PRIVACY_E2E_SKIP_EXPORT=1` reuses `dist/`)
+- data inventory guard rail: `npm run check:data-inventory`, `npm run test:data-inventory`
+- generated privacy policy: `npm run check:legal`, `npm run test:legal`, `npm run sync:legal`
 - mobile type-check: `npm --workspace apps/mobile exec tsc --noEmit`
 - LLM eval boundary: `npm run test:llm` (reserved for LangSmith; never part of commit-blocking CI)
 
@@ -177,11 +250,14 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
       - "apps/mobile/**"
       - "!apps/mobile/scripts/**"
       - "!apps/mobile/**/*.md"
+      - "!apps/mobile/public/**"
   ```
   Es decir, solo compila si el push toca `apps/mobile/**`, y ni siquiera entonces
-  si son únicamente scripts o markdown. Cambios en `.claude/`, `CLAUDE.md`,
-  `arquitectura-agente/`, `ejercicios/`, `alimentos/` o `.github/` **no gastan
-  build**. La cuota mensual de Expo es limitada, así que verifica el filtro antes
+  si son únicamente scripts, markdown o ficheros de `public/`. Cambios en
+  `.claude/`, `CLAUDE.md`, `arquitectura-agente/`, `ejercicios/`, `alimentos/` o
+  `.github/` **no gastan build**. `apps/mobile/public/` tampoco: solo lo consume
+  `expo export --platform web`, EAS no lo empaqueta en el AAB, y ahí vive la
+  política de privacidad publicada, que debe poder republicarse sin gastar cuota. La cuota mensual de Expo es limitada, así que verifica el filtro antes
   de asumir que un push es caro — y pide confirmación igualmente.
 - PR description should include: summary, impacted paths, commands executed, and screenshots for UI updates.
 
@@ -191,6 +267,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - **Hugging Face token**: `HF_TOKEN` in the root `.env`. Required (HF PRO) by the `nano-banana` backend for exercise image generation. The script loads it via `load_dotenv(<repo>/.env)` and reads `os.environ["HF_TOKEN"]` (see `image-generation/generate_images.py` and skill `generate-exercise-image`). The `z-image-turbo` and `flux2-dev` backends work without it.
 
 ## Documentation Maintenance
+- **El texto legal tiene una única fuente**: `docs/legal/privacy-policy.{es,en}.md`.
+  El HTML publicado (`apps/mobile/public/{privacidad,privacy}/`) y el módulo que
+  consume la app (`apps/mobile/agent/generated/legalCopy.generated.ts`) son
+  generados: no se editan a mano. Tras tocar la política, `npm run sync:legal`;
+  `npm run check:legal` falla en CI si los artefactos no corresponden. Nunca
+  escribas el descargo sanitario ni la URL de la política como literales en
+  componentes, igual que con `apps/mobile/agent/aiTransparency.ts`.
+- **Cualquier cambio que toque datos tratados** (una clave de almacenamiento, un
+  host, un permiso, lo que se envía a un proveedor, lo que borra el reset) exige
+  actualizar `scripts/data-inventory/inventory.json` y recorrer
+  `docs/legal/privacy-change-checklist.md`. `npm run check:data-inventory` falla si
+  el inventario deja de describir el código.
 - Keep `AGENTS.md` and root `CLAUDE.md` synchronized whenever repository instructions change.
 - `AGENTS.md` es un link de `CLAUDE.md` por lo que modificando uno se debe actualizar el otro.
 - Update `README.md` whenever the project structure, dependencies, or startup instructions change.
@@ -282,7 +370,34 @@ Only non-obvious gotchas that could recur are kept here.
 ### Clearing `localStorage` does NOT reset the app on web — it also persists to `.dev-store.json`
 - Gotcha: on web + `__DEV__`, `App.tsx` (`loadDevStoreFile` / `saveDevStoreFile`) mirrors the store to `apps/mobile/.dev-store.json` through a Metro middleware (`metro.config.js`, `/dev-store` endpoint) so data survives dev-server restarts. On boot it reads that file back, so wiping `localStorage` leaves the app fully populated. The file is served per dev server, not per origin, so `localhost:8081` and `127.0.0.1:8081` restore the *same* data even though their `localStorage` is separate.
 - Fix: to test a clean install on web, empty the file too (`printf '{}' > apps/mobile/.dev-store.json`) and make sure no tab still has the app running — a live instance re-persists its in-memory state on the way out, silently undoing the wipe.
-- Note: a fresh boot also re-runs the body-fat migration (`gymnasia.mobile.body_fat_migration_done`), which injects ~90 body-fat-only measurements. Expect the measurement count to differ from what you seeded.
+- Note: a fresh boot used to re-run a body-fat migration that injected ~90 body-fat-only measurements. It was removed in GYM-190 because the data was not the user's, so a clean install now starts with no measurements on mobile. On web, the first load still seeds demo data via `createWebSeedStore()`.
+
+### Hay DOS proyectos de Vercel, y la política de privacidad vive en el segundo
+- Gotcha: `gymnasia` y `gymnasia-web` son proyectos distintos y es fácil confundirlos,
+  porque el nombre corto es el del tablero, no el de la app.
+  - `gymnasia` → `arquitectura-agente/` → <https://gymnasia-sable.vercel.app> (tablero).
+  - `gymnasia-web` → `apps/mobile/` → <https://gymnasia.maximofn.com> (export web de la
+    app, y **la política de privacidad publicada en `/privacidad` y `/privacy`**).
+- Ninguno de los dos se despliega en el push: `vercel project ls` mostraba
+  `gymnasia-web` sin actualizar desde hacía 15 días mientras `main` seguía avanzando.
+  Mergear la política **no la publica**; hay que lanzar la CLI a mano.
+- `apps/mobile/` no tiene `.vercel/` (está git-ignored), así que desplegar sin enlazar
+  crearía un proyecto nuevo llamado `mobile`. Enlazar primero, siempre:
+  ```bash
+  npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd apps/mobile
+  npm exec --yes -- vercel@latest deploy --prod --yes --cwd apps/mobile
+  ```
+  La salida debe decir `Deploying gymnasia-web` y aliar `gymnasia.maximofn.com`. Si dice
+  `Created`, detente: está creando otro proyecto.
+- Verificar después, con `curl` y no con Playwright (no tiene salida a internet en el
+  sandbox del agente):
+  ```bash
+  curl -sS -o /dev/null -w '%{http_code}\n' https://gymnasia.maximofn.com/privacidad
+  curl -sS https://gymnasia.maximofn.com/privacidad | grep -o 'gymnasia-policy-digest" content="[^"]*"'
+  ```
+  El digest debe coincidir con `PRIVACY_POLICY_DIGESTS` de
+  `apps/mobile/agent/generated/legalCopy.generated.ts`. Si no coincide, lo publicado no
+  es lo que se revisó.
 
 ### Vercel no despliega `arquitectura-agente/` en el push: la integración de Git está inactiva
 - Gotcha: el repo *parece* conectado a Vercel — hay deployments de `vercel[bot]` en
