@@ -1,0 +1,22 @@
+event: response.created
+data: {"type":"response.created","response":{"id":"resp_openai_feature"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":0,"item":{"type":"function_call","id":"fc_openai_feature","call_id":"call_openai_feature","name":"create_feature_issue","arguments":"","status":"in_progress"}}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"fc_openai_feature","output_index":0,"delta":"{\"title\":\"Exportar la dieta a PDF\","}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"fc_openai_feature","output_index":0,"delta":"\"summary\":\"El usuario quiere imprimir su dieta semanal.\"}"}
+
+event: response.function_call_arguments.done
+data: {"type":"response.function_call_arguments.done","item_id":"fc_openai_feature","output_index":0,"arguments":"{\"title\":\"Exportar la dieta a PDF\",\"summary\":\"El usuario quiere imprimir su dieta semanal.\"}"}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","output_index":0,"item":{"type":"function_call","id":"fc_openai_feature","call_id":"call_openai_feature","name":"create_feature_issue","arguments":"{\"title\":\"Exportar la dieta a PDF\",\"summary\":\"El usuario quiere imprimir su dieta semanal.\"}","status":"completed"}}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"resp_openai_feature","output":[{"type":"function_call","id":"fc_openai_feature","call_id":"call_openai_feature","name":"create_feature_issue","arguments":"{\"title\":\"Exportar la dieta a PDF\",\"summary\":\"El usuario quiere imprimir su dieta semanal.\"}","status":"completed"}]}}
+
+data: [DONE]
