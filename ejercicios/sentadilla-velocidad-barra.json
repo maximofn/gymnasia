@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-velocidad-barra",
+  "name": "Sentadilla de velocidad con barra",
+  "image_male": "images/sentadilla-velocidad-barra-male.webp",
+  "image_female": "images/sentadilla-velocidad-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Usa una carga ligera y coloca la barra sobre la parte alta de la espalda. Baja a una sentadilla estable manteniendo el abdomen activo y acelera al subir sin despegar los pies del suelo. Recupera por completo la postura antes de repetir y detén la serie si pierdes velocidad o control."
+}

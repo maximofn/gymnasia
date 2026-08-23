@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-dividida-barra",
+  "name": "Sentadilla dividida con barra",
+  "image_male": "images/sentadilla-dividida-barra-male.webp",
+  "image_female": "images/sentadilla-dividida-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Apoya una barra sobre la parte alta de la espalda y adopta una posición escalonada, con ambos pies firmes. Baja verticalmente flexionando las dos rodillas hasta acercar la trasera al suelo, sin desplazar la rodilla delantera hacia dentro. Empuja con el pie delantero para subir y cambia de lado al terminar."
+}
