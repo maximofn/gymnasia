@@ -81,6 +81,67 @@ describe("create_feature_issue: contrato de la tool", () => {
   });
 });
 
+describe("el APK que se distribuye debe poder hablar con el backend", () => {
+  // Este contrato existe por un fallo real: `staging` estaba vacío y el APK que
+  // se distribuye desde GitHub se compila justo con ese perfil, así que la
+  // funcionalidad estaba muerta en la única variante que la gente instala. Nada
+  // fallaba de forma visible: la app decía "no disponible" y se quedaba tan
+  // ancha. Un test de comportamiento no lo habría cazado.
+  const appConfig = readFileSync(join(__dirname, "..", "app.config.ts"), "utf8");
+  const buildWorkflow = readFileSync(
+    join(repositoryRoot, ".github", "workflows", "build-apk.yml"),
+    "utf8",
+  );
+
+  function endpointFor(environment: string): string {
+    const block = appConfig.match(
+      /const FEEDBACK_ENDPOINTS: Record<BuildEnvironment, string> = \{([\s\S]*?)\};/,
+    );
+    if (!block) throw new Error("No se encontró FEEDBACK_ENDPOINTS en app.config.ts.");
+    const line = block[1]
+      .split("\n")
+      .map((entry) => entry.trim())
+      .find((entry) => entry.startsWith(`${environment}:`));
+    if (!line) throw new Error(`No se encontró el entorno ${environment}.`);
+    return line.slice(environment.length + 1).replace(/,$/, "").trim();
+  }
+
+  it("el perfil por defecto del workflow sigue siendo staging", () => {
+    // Si esto cambia, la comprobación de abajo deja de proteger lo que cree.
+    expect(buildWorkflow).toContain('PROFILE="${{ github.event.inputs.profile || \'staging\' }}"');
+  });
+
+  it("staging y production tienen endpoint configurado", () => {
+    for (const environment of ["staging", "production"]) {
+      const value = endpointFor(environment);
+      expect(value).not.toBe('""');
+      expect(value).not.toBe("''");
+    }
+  });
+
+  it("staging y production apuntan al mismo backend", () => {
+    // Solo hay un backend. La distinción staging/producción de este repositorio
+    // es del canal de la política del agente, no del receptor de incidencias.
+    expect(endpointFor("staging")).toBe(endpointFor("production"));
+  });
+
+  it("development se queda sin endpoint", () => {
+    // Trastear en local no puede escribir en el repositorio de incidencias real.
+    expect(endpointFor("development")).toBe('""');
+  });
+
+  it("el host configurado está declarado en el inventario de datos", () => {
+    const inventory = readFileSync(
+      join(repositoryRoot, "scripts", "data-inventory", "inventory.json"),
+      "utf8",
+    );
+    const url = appConfig.match(/const FEEDBACK_ENDPOINT = "(https:\/\/[^"]+)"/);
+    expect(url).not.toBeNull();
+    const host = new URL(url![1]).host;
+    expect(inventory).toContain(`"host": "${host}"`);
+  });
+});
+
 describe("regresión: los escritores no-op han desaparecido de App.tsx", () => {
   // App.tsx no tiene tests unitarios (23.726 líneas, ver GYM-202, ticket para
   // estudiar cómo testear App.tsx). Leerlo como texto es la única forma de
