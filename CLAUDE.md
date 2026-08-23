@@ -9,6 +9,27 @@
   descripciones de PR y a la documentación. Ejemplo:
   `GYM-45 (ticket para añadir confirmación humana en tools con efectos)`.
 
+## Cambios en las instrucciones del agente: avisar y esperar aprobación
+- **Cuando un cambio toque `prompts/` o `policy/health-safety/`, para y avisa.**
+  Son las instrucciones que el modelo lee y obedece, y el repositorio las gobierna
+  aparte del código: el check `gymnasia/policy-promotion` se queda en amarillo
+  (`PENDING`) hasta que esa política se promociona a propósito.
+- Qué hacer, en este orden:
+  1. **Avisar en lenguaje natural**, sin jerga. Nada de `policy-promotion está
+     PENDING`: escribe qué ha pasado y por qué, como se lo contarías a alguien
+     que no ha visto el fichero.
+  2. **Explicar el cambio en lenguaje natural**: qué le permitías o le prohibías
+     hacer al agente antes, qué le permites o le prohíbes ahora, y qué consecuencia
+     tiene para el usuario de la app. El diff no vale como explicación.
+  3. **Esperar a que el mantenedor diga explícitamente que lo aprueba.**
+- **Nunca** lances la promoción (`promote-policy.yml`), ni fusiones la PR, ni saques
+  el cambio a otra rama para esquivar la puerta, sin esa aprobación explícita. Un
+  «adelante» sobre otro asunto no cuenta.
+- Motivo: cambiar lo que un agente tiene permitido hacer es más arriesgado que
+  cambiar código, porque el diff no muestra las consecuencias. La puerta está
+  echada a propósito; tratarla como un trámite anula su razón de ser.
+- El detalle del mecanismo vive en `docs/security/prompt-policy-governance.md`.
+
 ## Project Structure & Module Organization
 This repo contains an Expo React Native mobile app and un Worker de Cloudflare de apoyo.
 - `apps/mobile`: Expo React Native app (`App.tsx`, `theme.ts`). This is the only application.
