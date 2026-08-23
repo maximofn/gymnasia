@@ -1,5 +1,5 @@
 ---
-version: 2026-08-v3
+version: 2026-08-v4
 effective_date: 2026-08-23
 locale: en
 lang: en
@@ -149,9 +149,9 @@ Besides the AI providers:
 
 - **GitHub** (`raw.githubusercontent.com`, `api.github.com`, `github.com`): the app
   downloads the public catalogues of exercises, foods, products and recipes, their
-  images and the assistant's instructions; checks which version of those instructions
-  applies to it; and checks whether a newer release has been published. **No data of
-  yours is sent**, but GitHub, like any server you connect to, sees your IP address.
+  images and the assistant's instructions; and checks which version of those instructions
+  applies to it. **No data of yours is sent**, but GitHub, like any server you connect
+  to, sees your IP address.
 - **Gymnasia feedback backend** (`gymnasia-feedback.maximofn.com`): only when you ask
   for it. When you suggest an assistant improvement, or submit a food or exercise that
   is missing from the catalogue, the app first shows you the exact title and summary

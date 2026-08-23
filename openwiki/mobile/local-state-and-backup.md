@@ -73,7 +73,7 @@ El agregado no constituye todo el modelo de persistencia. A continuación se enu
 | AsyncStorage `gymnasia.mobile.recipes_repo.v1` | Caché remota de recetas | No | Estrategia que prioriza la red y usa la caché como alternativa. |
 | AsyncStorage `gymnasia.mobile.backup_meta.v1` | `{lastBackupAt: string | null}` | No | Se actualiza después de una ruta de exportación/uso compartido correcta; es solo informativo. |
 | AsyncStorage `gymnasia.mobile.body_fat_migration_done` | Cadena `"1"` | No | Marcador de migración única del historial de grasa corporal incluido. |
-| AsyncStorage `gymnasia.mobile.lastUpdateCheck` | Milisegundos desde el epoch como cadena | No | Limitación a cuatro horas de las comprobaciones de versiones. |
+| AsyncStorage `gymnasia.mobile.lastUpdateCheck` | Marca heredada del actualizador retirado | No | Solo se elimina durante la limpieza de arranque de instalaciones antiguas; ya no se lee ni se escribe. |
 | AsyncStorage `gymnasia_debug_traces` | Hasta 1000 objetos `TraceEntry` | No | Gestionado por `trace.ts`; se carga de forma diferida y se reescribe sin esperar el resultado. |
 | SecureStore `gymnasia.mobile.v3.provider.api_key.<provider>` | Una clave de API de proveedor sin espacios circundantes | No | Se combina con `LocalStore` en memoria; se establece/elimina cada vez que cambia `store.keys`. |
 | SecureStore `vivagym.email`, `vivagym.password` | Credenciales de VivaGym | No | Ciclo de vida de integración independiente; no forma parte de la hidratación ni del restablecimiento normales. |

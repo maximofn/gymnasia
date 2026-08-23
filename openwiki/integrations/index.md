@@ -1,3 +1,3 @@
 # Archivos
 
-- [Acceso a VivaGym y actualizaciones de la aplicación](vivagym-and-updates.md) - Ciclos de vida de solicitudes externas para el acceso mediante QR de VivaGym y el descubrimiento y la descarga de actualizaciones APK basadas en versiones de GitHub.
+- [Acceso a VivaGym y distribución manual de APK](vivagym-and-updates.md) - Ciclo de vida del QR de VivaGym y frontera entre la aplicación, Google Play y los APK publicados manualmente.

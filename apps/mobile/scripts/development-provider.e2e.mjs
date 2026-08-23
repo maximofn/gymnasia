@@ -66,12 +66,14 @@ try {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   let providerRequests = 0;
   let deploymentRequests = 0;
+  let legacyUpdaterRequests = 0;
   await page.addInitScript(() => {
     localStorage.clear();
-    localStorage.setItem(
-      "gymnasia.development:gymnasia.mobile.lastUpdateCheck",
-      String(Date.now()),
-    );
+  });
+  page.on("request", (request) => {
+    if (request.url() === "https://api.github.com/repos/maximofn/gymnasia/releases/latest") {
+      legacyUpdaterRequests += 1;
+    }
   });
   await page.route("**/dev-store", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "{}" }));
   await page.route("https://raw.githubusercontent.com/**", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
@@ -101,6 +103,7 @@ try {
 
   assert.equal(providerRequests, 0, "development fake no debe llamar a proveedores reales");
   assert.equal(deploymentRequests, 0, "development no debe consultar GitHub Deployments");
+  assert.equal(legacyUpdaterRequests, 0, "development no debe consultar GitHub Releases para APK");
   log("fixture local verificado sin llamadas a proveedores ni deployments");
 } finally {
   await browser.close();

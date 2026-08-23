@@ -1,13 +1,13 @@
 ---
 type: concepto
-title: Acceso a VivaGym y actualizaciones de la aplicación
-description: Ciclos de vida de solicitudes externas para el acceso mediante QR de VivaGym y el descubrimiento y la descarga de actualizaciones APK basadas en versiones de GitHub.
-tags: [integrations, vivagym, updates, releases, security]
+title: Acceso a VivaGym y distribución manual de APK
+description: Ciclo de vida del acceso mediante QR de VivaGym y frontera entre la aplicación y los APK publicados manualmente.
+tags: [integrations, vivagym, releases, security]
 ---
 
-# Acceso a VivaGym y actualizaciones de la aplicación
+# Acceso a VivaGym y distribución manual de APK
 
-En `apps/mobile/App.tsx`, dentro de Configuración, existen dos integraciones independientes: la vinculación de cuentas y la obtención de códigos QR de VivaGym, y el descubrimiento de actualizaciones desde las versiones de GitHub. Ambas son integraciones del lado del cliente. Gymnasia no dispone de un backend intermediario del producto para ninguno de los dos flujos.
+En `apps/mobile/App.tsx`, dentro de Configuración, permanece la vinculación de cuentas y la obtención de códigos QR de VivaGym. Es una integración del lado del cliente y no dispone de un backend intermediario de Gymnasia. La publicación manual de APK pertenece al proceso de entrega y no tiene ningún consumidor dentro de la aplicación.
 
 ## Acceso mediante QR de VivaGym
 
@@ -94,98 +94,47 @@ Límites y riesgos importantes:
 
 La investigación en `docs/research/GYM-6-vivagym-qr.md` respalda la intención del protocolo e informa de una verificación real con una cuenta propiedad de un socio, pero no es una prueba de contrato automatizada y el comportamiento externo puede cambiar.
 
-## Ciclo de vida de las actualizaciones mediante versiones de GitHub
+## Distribución manual de APK
 
-### Nombres de configuración y productor de versiones
+La aplicación no contiene un actualizador propio en ninguna variante. No consulta
+`/releases/latest`, no compara su versión con GitHub, no ofrece una pestaña ni un
+aviso de actualización y no abre enlaces de descarga de APK. La variante de producción
+recibe sus actualizaciones exclusivamente mediante Google Play.
 
-| Nombre | Función |
-|---|---|
-| `GITHUB_RELEASES_API` | Endpoint REST fijo de GitHub para la versión más reciente del repositorio |
-| `UPDATE_CHECK_INTERVAL_MS` | Limitación de cuatro horas para las comprobaciones automáticas |
-| `UPDATE_CHECK_KEY` | Marca de tiempo de AsyncStorage del último intento automático o de la última obtención manual satisfactoria de una versión |
-| `Constants.expoConfig.version` | Origen de la versión semántica instalada o actual, con `0.0.0` como valor alternativo |
+La marca heredada `gymnasia.mobile.lastUpdateCheck` solo aparece en la lista de
+limpieza de AsyncStorage para retirarla de instalaciones antiguas; no se lee ni se
+vuelve a escribir. Android bloquea `REQUEST_INSTALL_PACKAGES` para impedir que la
+configuración o una dependencia reintroduzcan capacidad de instalar paquetes externos.
 
-El productor posterior es `.github/workflows/build-apk.yml`. Ante un envío móvil que cumpla los requisitos o una ejecución manual, calcula un incremento de versión basado en confirmaciones convencionales, actualiza `apps/mobile/app.json` en la copia de trabajo del flujo, compila Android mediante EAS, descarga el artefacto como `gymnasia.apk`, crea una versión de GitHub que no es preliminar y cuya etiqueta es `v` seguida de la versión, y después confirma el incremento de versión. El cliente de actualizaciones depende de esa convención de etiquetas y artefactos, pero no verifica cómo se compiló una versión.
-
-### Comprobación automática
-
-Después de que finaliza la hidratación local, un efecto de montaje llama a `checkForUpdate`:
-
-1. Lee `UPDATE_CHECK_KEY` de AsyncStorage.
-2. Si el tiempo transcurrido es inferior a `UPDATE_CHECK_INTERVAL_MS`, finaliza sin realizar una solicitud.
-3. Escribe la marca de tiempo actual **antes** de ponerse en contacto con GitHub.
-4. Obtiene `GITHUB_RELEASES_API` con la cabecera `Accept` del tipo de contenido JSON de GitHub.
-5. Elimina una `v` inicial de `tag_name` y compara los tres primeros componentes numéricos separados por puntos con la versión instalada.
-6. Si la versión remota es más reciente, selecciona el primer artefacto de la versión cuyo nombre termine en `.apk`.
-7. Almacena su `browser_download_url` en el estado del componente y muestra una ventana modal. **Descargar** llama a `Linking.openURL`; **Ahora no** solo cierra la ventana modal.
-
-Todos los errores automáticos y estados que no requieren ninguna acción devuelven `null` de forma silenciosa. Como la marca de tiempo del intento se escribe antes de la obtención, un fallo de red o de GitHub impide otro intento automático durante cuatro horas. Cerrar la ventana modal no crea un registro independiente de versión ignorada; una comprobación posterior que cumpla los requisitos puede volver a mostrarla.
-
-### Comprobación manual
-
-Configuración → Actualizaciones omite la condición de lectura de cuatro horas. `runManualUpdateCheck` obtiene el mismo endpoint de la versión más reciente y distingue entre estados de error visible para el usuario, actualización disponible y aplicación al día. Solo actualiza `UPDATE_CHECK_KEY` después de una respuesta OK con una etiqueta no vacía. Si una versión más reciente contiene un APK, **Actualizar aplicación** abre una ventana modal de confirmación; la confirmación llama a `Linking.openURL` para el artefacto.
-
-Una etiqueta más reciente sin un archivo `.apk` se notifica como si la aplicación estuviera al día, no como una versión incorrecta. Una versión instalada igual o más reciente también se notifica como actualizada. Los fallos de las solicitudes manuales conservan un mensaje de error en el panel de configuración.
-
-```mermaid
-flowchart TD
-    Start["Automatic check after hydration"] --> Read["Read UPDATE_CHECK_KEY"]
-    Read --> Gate{"Checked within four hours"}
-    Gate -->|Yes| Stop["Return silently"]
-    Gate -->|No| Stamp["Store attempt timestamp"]
-    Stamp --> Fetch["Fetch latest GitHub Release"]
-    Fetch --> Valid{"OK response and newer tag"}
-    Valid -->|No| Stop
-    Valid -->|Yes| Asset{"First APK asset exists"}
-    Asset -->|No| Stop
-    Asset -->|Yes| Modal["Show update modal"]
-    Modal --> Choice{"User chooses download"}
-    Choice -->|No| Stop
-    Choice -->|Yes| Browser["Open browser_download_url"]
-```
-
-*La ruta automática descubre un APK y delega la descarga en el sistema operativo; no instala ni verifica el paquete.*
-
-### Validación de versiones y artefactos
-
-`compareVersions(a, b)` convierte cada componente separado por puntos mediante `Number`, examina solo los índices del 0 al 2 y devuelve un número positivo cuando `b` es más reciente que `a`. Es adecuado para valores `major.minor.patch` simples, pero no es un analizador de versiones semánticas:
-
-- los metadatos de versiones preliminares o de compilación no se gestionan de forma intencionada;
-- los componentes no numéricos producen `NaN`, lo que puede hacer que las comparaciones parezcan iguales de forma incorrecta;
-- se ignoran los componentes posteriores al tercero;
-- las versiones locales o remotas incorrectas no se rechazan.
-
-La selección de artefactos distingue entre mayúsculas y minúsculas y elige el primer nombre que termina en `.apk`. El cliente confía en los metadatos de la versión más reciente de GitHub y en `browser_download_url`; no comprueba la suma de verificación, la firma, el nombre del paquete, el certificado, la procedencia, el tamaño, el tipo MIME, la arquitectura ni el perfil de compilación. No se espera la finalización de `Linking.openURL` ni se muestran sus errores. La instalación real, el permiso para orígenes desconocidos, las reglas de reversión a versiones anteriores y la aceptación de la firma del paquete se gestionan fuera de la aplicación, mediante Android, el navegador o la plataforma. En iOS o en la web, abrir un APK no es un mecanismo de actualización de aplicaciones, pero la comprobación y la interfaz no están condicionadas según la plataforma.
-
-No hay ninguna llamada de actualización OTA de Expo. Esta integración solo descubre versiones APK completas.
-
-### Fallos de actualización y riesgos en los límites de las versiones
-
-- La limitación de solicitudes de GitHub, el estado sin conexión, un JSON incorrecto, la ausencia de etiquetas o artefactos y los errores de almacenamiento son silenciosos en la ruta automática.
-- Ninguna de las rutas establece un tiempo de espera explícito para fetch ni admite cancelación, reintentos o espera exponencial.
-- El endpoint de la versión “más reciente” de GitHub excluye los borradores y normalmente resuelve la versión más reciente que no sea borrador ni preliminar, lo que coincide con la configuración actual de versiones del flujo de trabajo; cambiar la política de versiones puede alterar el descubrimiento.
-- El flujo de compilación utiliza `eas.json` con `appVersionSource: remote`, mientras que también edita `app.json` y posteriormente confirma el cambio. Se debe comprobar la correspondencia entre la versión instalada en `Constants.expoConfig.version`, la etiqueta de la versión y el artefacto producido por EAS, en lugar de dar por hecho que coinciden.
-- Las compilaciones manuales del perfil `production` no están configuradas explícitamente como APK en `eas.json`; no obstante, el flujo de trabajo siempre publica el archivo descargado como `gymnasia.apk`. Valide el tipo real del artefacto para cada perfil expuesto por el flujo de trabajo.
-- El flujo de trabajo publica la versión antes de confirmar y enviar el incremento de versión del código fuente. Un fallo tardío del envío puede dejar una versión válida aunque el archivo `app.json` del repositorio no haya avanzado.
+El productor de artefactos sigue siendo `.github/workflows/build-apk.yml`. Puede
+conservar APK internos como artefactos de Actions y publicar una release de producción,
+pero ese canal es manual e independiente: ningún código de la app descubre, descarga o
+instala esos archivos. Las releases usadas para distribuir la política del agente
+también permanecen y no deben confundirse con un actualizador de la aplicación.
 
 ## Validación y cobertura de pruebas
 
-No se encontraron pruebas automatizadas específicas para las funciones o la interfaz de VivaGym, las comprobaciones de actualizaciones, el comparador de versiones, el comportamiento de SecureStore, el análisis de respuestas de GitHub ni las ventanas modales de descarga. Las pruebas deterministas existentes de agentes y los flujos de chat y entrenamiento de Playwright no cubren estas integraciones de configuración. La validación real de VivaGym utilizaría credenciales externas reales y debe seguir siendo opcional y segura para los secretos.
+Después de cambios en VivaGym, ejecute `npm --workspace apps/mobile exec tsc --noEmit`
+y `npm test`, y pruebe la secuencia QR con una cuenta autorizada sin registrar
+credenciales, tokens ni valores QR.
 
-Validación recomendada después de cambios pertinentes:
+La ausencia del actualizador se protege en dos capas:
 
-1. Ejecute `npm --workspace apps/mobile exec tsc --noEmit` y `npm test`.
-2. VivaGym: pruebe campos ausentes, SecureStore no disponible, credenciales incorrectas, cada fase externa con un estado distinto de 2xx, cuerpos de respuesta satisfactoria incorrectos o vacíos, el orden de guardado después de la validación, la reentrada en la pestaña, la actualización manual, las solicitudes solapadas y la representación del QR en un dispositivo nativo compatible. Utilice una cuenta de prueba con consentimiento y oculte las URL, cuerpos y cabeceras de las solicitudes, así como los tokens y los valores QR.
-3. Actualizaciones: realice pruebas unitarias de `compareVersions` con entradas iguales, más recientes, más antiguas e incorrectas; simule respuestas del endpoint de la versión más reciente con errores, etiquetas ausentes, APK ausentes, varios artefactos y versiones más recientes o iguales; pruebe la semántica de la marca de tiempo de limitación.
-4. Compile una versión candidata y compruebe que la versión instalada, la etiqueta de GitHub, el título de la versión, el nombre de archivo del APK, el ID del paquete, el certificado de firma y el perfil EAS seleccionado coincidan. Realice la descarga mediante la aplicación en Android y verifique que la plataforma la acepte como actualización.
-5. Confirme que el comportamiento en iOS o la web se oculte, se deshabilite o se redirija intencionadamente antes de presentar esta funcionalidad exclusiva de APK en esas plataformas.
+1. Un contrato determinista rechaza el endpoint, los símbolos y los textos de la
+   antigua interfaz, y exige que la marca heredada solo se use para borrarla.
+2. Un E2E exporta la variante de producción, recorre inicio y Ajustes, y falla si
+   aparece la pestaña o si se solicita la última release de GitHub.
 
-Las carencias de alta prioridad son pruebas puras para el análisis de versiones y publicaciones, pruebas HTTP con dependencias inyectadas para la cadena de tres solicitudes de VivaGym, errores explícitos cuando SecureStore no está disponible, esquemas de respuesta, cancelación y tiempos de espera de solicitudes, condicionamiento de las actualizaciones exclusivamente para Android y verificación de la integridad y la procedencia de los artefactos.
+La configuración y el escáner de permisos bloquean `REQUEST_INSTALL_PACKAGES`. La
+ausencia en el manifest fusionado debe volver a comprobarse sobre el AAB real durante
+la validación final del artefacto de producción.
 
 ## Fuente de referencia
 
-- `apps/mobile/App.tsx`: constantes, funciones auxiliares, estados, efectos e interfaz de VivaGym, así como constantes, comprobaciones y ventanas modales de actualización.
-- `docs/research/GYM-6-vivagym-qr.md`: investigación de interoperabilidad y justificación del protocolo; pruebas de apoyo, no autoridad de ejecución.
-- `.github/workflows/build-apk.yml`: ciclo de vida de la etiqueta de la versión, la versión, la compilación EAS y la publicación del APK.
-- `apps/mobile/app.json` y `apps/mobile/eas.json`: identidad de versión y plataforma de la aplicación, y configuración de versiones y perfiles de compilación de EAS.
-- `apps/mobile/package.json`: dependencias de SecureStore y del procesador de QR.
+- `apps/mobile/App.tsx`: flujo e interfaz de VivaGym y limpieza de almacenamiento
+  heredado.
+- `docs/research/GYM-6-vivagym-qr.md`: investigación de interoperabilidad del QR;
+  pruebas de apoyo, no autoridad de ejecución.
+- `.github/workflows/build-apk.yml`: compilación EAS y publicación manual de APK.
+- `apps/mobile/app.json` y `scripts/android-permissions/policy.json`: permisos
+  Android permitidos y bloqueados.

@@ -39,6 +39,14 @@ test("USE_EXACT_ALARM no se declara y sí se bloquea", () => {
     "Sin blockedPermissions, una dependencia puede reintroducirlo por manifest merger.");
 });
 
+test("REQUEST_INSTALL_PACKAGES no se declara y sí se bloquea", () => {
+  const configured = readConfiguredPermissions(policy);
+  assert.equal(configured.permissions.includes("REQUEST_INSTALL_PACKAGES"), false,
+    "La variante de Google Play no puede solicitar instalación de paquetes externos.");
+  assert.equal(configured.blockedPermissions.includes("REQUEST_INSTALL_PACKAGES"), true,
+    "Sin blockedPermissions, una dependencia puede reintroducirlo por manifest merger.");
+});
+
 test("SCHEDULE_EXACT_ALARM sigue declarado", () => {
   const configured = readConfiguredPermissions(policy);
   assert.equal(configured.permissions.includes("SCHEDULE_EXACT_ALARM"), true,
