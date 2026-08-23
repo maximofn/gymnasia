@@ -139,6 +139,10 @@ en Data safety, que el guard rail verifica en `permissionDataSafetyImpact`.
 | `RECEIVE_BOOT_COMPLETED` | Ninguno | Reprogramar avisos tras reiniciar |
 | `FOREGROUND_SERVICE` | Ninguno | Declarado sin uso; retirada trazada en GYM-186 |
 
+`USE_EXACT_ALARM` y `REQUEST_INSTALL_PACKAGES` están bloqueados expresamente. El
+segundo sostiene que la aplicación no instala APK externos: la variante de producción
+se actualiza exclusivamente mediante Google Play.
+
 Permisos que aportan las dependencias al manifest fusionado y que sí afectan a la
 declaración: `CAMERA`, `READ_EXTERNAL_STORAGE` y `WRITE_EXTERNAL_STORAGE` (de
 `expo-image-picker`) sostienen la categoría *Photos and videos*.
