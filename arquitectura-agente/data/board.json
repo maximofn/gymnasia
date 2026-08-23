@@ -62,7 +62,7 @@
         {
           "id": "GYM-188",
           "title": "Eliminar la actualización por APK de GitHub del build de Google Play",
-          "state": "todo",
+          "state": "done",
           "summary": "Retirar del artefacto de Play cualquier comprobación, descarga o instalación de APK desde GitHub y dejar las actualizaciones de esa variante exclusivamente en manos de Google Play.",
           "dependsOn": [],
           "related": [
@@ -2497,7 +2497,7 @@
         {
           "id": "GYM-12",
           "title": "Importar ejercicios del dataset hasaneyldrm/exercises-dataset",
-          "state": "done",
+          "state": "in_progress",
           "summary": "Ampliar el repo local de ejercicios (~39 hoy) sin introducir backend: sigue siendo JSON estático.",
           "dependsOn": [],
           "related": []
