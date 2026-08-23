@@ -86,6 +86,8 @@ async function waitForUrl(url) {
   throw new Error(`Expo web no respondió en ${url}.`);
 }
 
+const FEEDBACK_BASE_URL = "https://feedback.e2e.test";
+
 async function ensureWebServer() {
   const configuredUrl = process.env.AGENT_E2E_URL?.trim();
   if (configuredUrl) {
@@ -100,7 +102,15 @@ async function ensureWebServer() {
     ["--workspace", "apps/mobile", "run", "build:web", "--", "--clear"],
     {
       stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env, APP_ENV: "staging", CI: process.env.CI ?? "1" },
+      env: {
+        ...process.env,
+        APP_ENV: "staging",
+        CI: process.env.CI ?? "1",
+        // El endpoint de staging es vacío a propósito en app.config.ts. Se
+        // inyecta uno falso para poder ejercitar el camino de creación sin
+        // tocar el backend real. Playwright intercepta todas sus llamadas.
+        FEEDBACK_API_BASE_URL: FEEDBACK_BASE_URL,
+      },
     },
   );
   child.stdout.on("data", (chunk) => {
@@ -551,6 +561,141 @@ async function runAgentChatE2E(
   );
 }
 
+/**
+ * GYM-54: el robot pide una mejora por lenguaje natural y comprueba que la app
+ * solo afirma que la incidencia existe cuando el backend devuelve un número.
+ *
+ * `backendScenario` decide qué responde el backend falso:
+ *  - "created": 201 con referencia verificable.
+ *  - "down": 503, el interruptor apagado.
+ *  - "malformed": 201 pero sin número utilizable. Es el caso que el código
+ *    anterior trataba como éxito.
+ */
+async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
+  const providerRounds = [];
+  const feedbackRequests = [];
+
+  await page.addInitScript(({ storeKey, updateCheckKey, store }) => {
+    window.localStorage.clear();
+    window.localStorage.setItem(storeKey, JSON.stringify(store));
+    window.localStorage.setItem(updateCheckKey, String(Date.now()));
+  }, {
+    storeKey: STORE_KEY,
+    updateCheckKey: UPDATE_CHECK_KEY,
+    store: createSeedStore("openai"),
+  });
+
+  await page.route("**/dev-store", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+  });
+  await page.route("https://raw.githubusercontent.com/**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+  await page.route("https://api.github.com/**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+
+  // El backend de incidencias, falso. Si esta ruta no se llama, la app no ha
+  // intentado enviar nada.
+  await page.route(`${FEEDBACK_BASE_URL}/**`, async (route) => {
+    feedbackRequests.push(route.request().postDataJSON());
+    const responses = {
+      created: {
+        status: 201,
+        body: JSON.stringify({
+          status: "created",
+          number: 41,
+          url: "https://github.com/maximofn/gymnasia-feedback/issues/41",
+          deduplicated: false,
+        }),
+      },
+      down: { status: 503, body: JSON.stringify({ status: "unavailable" }) },
+      malformed: { status: 201, body: JSON.stringify({ ok: true }) },
+    };
+    const response = responses[backendScenario];
+    await route.fulfill({
+      status: response.status,
+      contentType: "application/json",
+      body: response.body,
+    });
+  });
+
+  await page.route("**/v1/responses*", async (route) => {
+    providerRounds.push(route.request().postDataJSON());
+    logStep(`feature-issue/${backendScenario}: ronda ${providerRounds.length}`);
+    const responseFixture = providerRounds.length === 1
+      ? fixture("openai-feature-issue.sse")
+      : fixture("openai-final.sse");
+    await route.fulfill({
+      status: 200,
+      headers: {
+        "content-type": "text/event-stream; charset=utf-8",
+        "cache-control": "no-cache",
+      },
+      body: responseFixture,
+    });
+  });
+
+  logStep(`Abriendo el chat para pedir una mejora (backend: ${backendScenario})`);
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="chat-input"]')
+    .fill("Me gustaría poder exportar la dieta a PDF");
+  await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+
+  // Dos rondas: la tool y la respuesta final. Se espera al texto de
+  // openai-final.sse, que es lo que el harness ya usa como señal de cierre.
+  await page.locator('[data-testid^="chat-message-assistant-"]')
+    .filter({ hasText: "Tu objetivo es ganar masa muscular." })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+
+  assert.equal(
+    providerRounds.length,
+    2,
+    "El bucle de tools debe completar dos rondas: la herramienta y la respuesta final.",
+  );
+
+  const toolOutput = providerRounds[1]?.input
+    ?.find((item) => item?.type === "function_call_output")?.output ?? "";
+
+  if (backendScenario === "created") {
+    assert.equal(feedbackRequests.length, 1, "Debe enviarse exactamente una incidencia.");
+    const body = feedbackRequests[0];
+    assert.deepEqual(
+      Object.keys(body).sort(),
+      ["idempotency_key", "kind", "schema_version", "summary", "title"],
+      "El cuerpo solo puede llevar las cinco claves del contrato.",
+    );
+    assert.equal(body.kind, "feature");
+    assert.ok(
+      !JSON.stringify(body).includes("conversation"),
+      "No puede viajar conversación literal.",
+    );
+    assert.ok(
+      toolOutput.includes("41"),
+      `El modelo debe recibir el número real. Recibió: ${toolOutput}`,
+    );
+    logStep("feature-issue/created: número real devuelto al modelo");
+  } else {
+    // Ningún camino de fallo puede devolver una confirmación de creación.
+    assert.ok(
+      !/registrada con el n/i.test(toolOutput),
+      `El modelo NO puede recibir una confirmación de creación. Recibió: ${toolOutput}`,
+    );
+    assert.ok(
+      /no afirmes/i.test(toolOutput),
+      `El resultado debe prohibir afirmar la creación. Recibió: ${toolOutput}`,
+    );
+    logStep(`feature-issue/${backendScenario}: sin falso éxito`);
+  }
+
+  // En ningún caso la app abre GitHub ni habla con él directamente.
+  assert.ok(
+    !page.url().includes("github.com"),
+    "La app nunca debe llevar al usuario a GitHub.",
+  );
+}
+
 async function main() {
   const server = await ensureWebServer();
   let browser = null;
@@ -601,6 +746,24 @@ async function main() {
         await context.close().catch(() => {});
       }
     }
+    for (const backendScenario of ["created", "down", "malformed"]) {
+      const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+      const page = await context.newPage();
+      page.on("pageerror", (error) => {
+        console.error(`[agent-e2e][feature-issue/${backendScenario}][page] ${error.message}`);
+      });
+      try {
+        await runFeatureIssueE2E(page, server.baseUrl, backendScenario);
+      } catch (error) {
+        const screenshotPath = `/tmp/agent-chat-e2e-feature-${backendScenario}-failure.png`;
+        await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => {});
+        console.error(`[agent-e2e] Captura del fallo: ${screenshotPath}`);
+        throw error;
+      } finally {
+        await context.close().catch(() => {});
+      }
+    }
+
     const noKeyContext = await browser.newContext({ viewport: { width: 320, height: 568 } });
     const noKeyPage = await noKeyContext.newPage();
     try {
