@@ -9,7 +9,8 @@
     "SCHEDULE_EXACT_ALARM"
   ],
   "blockedPermissions": [
-    "USE_EXACT_ALARM"
+    "USE_EXACT_ALARM",
+    "REQUEST_INSTALL_PACKAGES"
   ],
   "rationale": {
     "FOREGROUND_SERVICE": "Declarado sin uso: no hay servicio ni foregroundServiceType. Retirada trazada en GYM-186; no se toca aquí para no cambiar comportamiento.",
@@ -17,7 +18,8 @@
     "VIBRATE": "Vibración configurable al terminar el descanso.",
     "RECEIVE_BOOT_COMPLETED": "Reprogramación de avisos tras reiniciar el dispositivo.",
     "SCHEDULE_EXACT_ALARM": "Alarma exacta para el aviso de fin de descanso. No está restringido por Google Play y lo concede el usuario desde 'Alarmas y recordatorios'.",
-    "USE_EXACT_ALARM": "Prohibido: Google Play lo reserva a apps cuya función principal es despertador o calendario. Gymnasia no lo es, y declararlo hace que la revisión rechace el AAB."
+    "USE_EXACT_ALARM": "Prohibido: Google Play lo reserva a apps cuya función principal es despertador o calendario. Gymnasia no lo es, y declararlo hace que la revisión rechace el AAB.",
+    "REQUEST_INSTALL_PACKAGES": "Prohibido: Gymnasia no instala paquetes externos. La variante de producción se actualiza exclusivamente mediante Google Play y ninguna dependencia puede reintroducir este permiso."
   },
   "nodeModulesRoots": [
     "node_modules",

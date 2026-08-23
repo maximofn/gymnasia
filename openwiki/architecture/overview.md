@@ -22,7 +22,7 @@ flowchart TD
     Shell --> Agent["Ejecución del agente en apps/mobile/agent"]
     Shell --> Catalogs["Catálogos de referencia de GitHub Raw"]
     Agent --> Prompt["Prompt mutable del entrenador en GitHub Raw"]
-    Shell --> APIs["OpenAI, Google, Open Food Facts, GitHub Releases, VivaGym"]
+    Shell --> APIs["OpenAI, Google, Open Food Facts, política de GitHub y VivaGym"]
     Agent --> APIs
     Shell --> Native["Capacidades nativas de Expo"]
     Shell -. "Anthropic durante el desarrollo en navegador" .-> Proxy["Proxy CORS de FastAPI"]
@@ -74,7 +74,7 @@ La aplicación también realiza llamadas salientes directas a:
 - Las API Messages y Models de Anthropic en entornos nativos, o al proxy configurado en la web;
 - Los modelos y endpoints de generación de Google Generative Language;
 - La búsqueda de productos de Open Food Facts;
-- GitHub Releases para detectar actualizaciones del APK. Existe código para escribir incidencias en GitHub, pero todos los escritores actuales de alimentos, ejercicios y funcionalidades regresan antes de realizar E/S de red porque su token compartido codificado de forma fija está vacío; por tanto, Issues no es actualmente una dependencia efectiva. No obstante, la herramienta de funcionalidades informa de un éxito falso. La duplicación de incidencias durante los reintentos del chat solo constituye un riesgo futuro si se habilita la escritura;
+- GitHub Deployments y releases de política para resolver las instrucciones del agente correspondientes al canal instalado. La aplicación no consulta releases de APK ni contiene un actualizador propio;
 - Los endpoints de VivaGym para el inicio de sesión y el acceso mediante QR.
 
 Estas llamadas trasladan datos de usuario o credenciales almacenados localmente a dominios de confianza de terceros. Las claves de los proveedores son credenciales BYOK; no establecen una cuenta de Gymnasia. El comportamiento de los proveedores, la ejecución de herramientas y la transmisión se describen en [Configuración de proveedores](../agent/provider-configuration.md), [Transmisión de proveedores](../agent/provider-streaming.md) y [Ejecución del agente](../agent/runtime.md).

@@ -17,9 +17,9 @@ const STAGING_NAMESPACE = "gymnasia.staging";
 const scopedKey = (key) => `${STAGING_NAMESPACE}:${key}`;
 const STORE_KEY = scopedKey("gymnasia.mobile.local.v3");
 const PERSONAL_DATA_KEY = scopedKey("gymnasia.mobile.personal_data.v1");
-const UPDATE_CHECK_KEY = scopedKey("gymnasia.mobile.lastUpdateCheck");
 const CHAT_PROMPT_CACHE_KEY = scopedKey("gymnasia.mobile.chat.system_prompt.v3");
 const TRACE_KEY = scopedKey("gymnasia_debug_traces");
+const LEGACY_RELEASES_API = "https://api.github.com/repos/maximofn/gymnasia/releases/latest";
 const PROMPT_NORMALIZATION_VERSION = 1;
 const SOURCE_COMMIT = "a".repeat(40);
 const POLICY_CANDIDATE = "policy-v2026.08.1-aaaaaaaaaaaa";
@@ -66,6 +66,14 @@ const PROMPT_SCENARIOS = {
 
 function logStep(message) {
   console.log(`[agent-e2e] ${message}`);
+}
+
+function trackLegacyUpdaterRequests(page) {
+  let requests = 0;
+  page.on("request", (request) => {
+    if (request.url() === LEGACY_RELEASES_API) requests += 1;
+  });
+  return () => assert.equal(requests, 0, "La app no debe consultar la última release de APK.");
 }
 
 async function isReachable(url) {
@@ -301,13 +309,12 @@ async function assertPersonalDataKeptAsPlainData(page) {
 }
 
 async function runNoKeyDisclosureE2E(page, baseUrl) {
-  await page.addInitScript(({ storeKey, updateCheckKey, store }) => {
+  const assertNoLegacyUpdaterRequests = trackLegacyUpdaterRequests(page);
+  await page.addInitScript(({ storeKey, store }) => {
     window.localStorage.clear();
     window.localStorage.setItem(storeKey, JSON.stringify(store));
-    window.localStorage.setItem(updateCheckKey, String(Date.now()));
   }, {
     storeKey: STORE_KEY,
-    updateCheckKey: UPDATE_CHECK_KEY,
     store: createSeedStoreWithoutKeys(),
   });
   await page.route("**/dev-store", async (route) => {
@@ -328,6 +335,7 @@ async function runNoKeyDisclosureE2E(page, baseUrl) {
   await page.getByText("API Key no configurada", { exact: true })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   assert.equal(await page.locator('[data-testid="chat-input"]').count(), 0);
+  assertNoLegacyUpdaterRequests();
 }
 
 async function runAgentChatE2E(
@@ -337,17 +345,16 @@ async function runAgentChatE2E(
   promptScenario = PROMPT_SCENARIOS.remote,
 ) {
   const requestBodies = [];
+  const assertNoLegacyUpdaterRequests = trackLegacyUpdaterRequests(page);
   await page.addInitScript(({
     storeKey,
     personalDataKey,
-    updateCheckKey,
     promptCacheKey,
     promptCache,
     store,
   }) => {
     window.localStorage.clear();
     window.localStorage.setItem(storeKey, JSON.stringify(store));
-    window.localStorage.setItem(updateCheckKey, String(Date.now()));
     // GYM-139: los dos campos de inyección permanecen en la memoria durante toda
     // la prueba. El test demuestra que su contenido no llega al system prompt
     // aunque los campos existan, que es más fuerte que comprobar que se borraron.
@@ -370,7 +377,6 @@ async function runAgentChatE2E(
   }, {
     storeKey: STORE_KEY,
     personalDataKey: PERSONAL_DATA_KEY,
-    updateCheckKey: UPDATE_CHECK_KEY,
     promptCacheKey: CHAT_PROMPT_CACHE_KEY,
     promptCache: promptScenario.source === "cache"
       ? createPromptCacheRecord(promptScenario.prompt)
@@ -577,6 +583,7 @@ async function runAgentChatE2E(
     await assertSpecializedAiDisclosures(page);
     await assertPersonalDataKeptAsPlainData(page);
   }
+  assertNoLegacyUpdaterRequests();
   logStep(
     `${provider}/${promptScenario.source} completado: UI → SSE → tool → segunda ronda → UI`,
   );
@@ -595,14 +602,13 @@ async function runAgentChatE2E(
 async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
   const providerRounds = [];
   const feedbackRequests = [];
+  const assertNoLegacyUpdaterRequests = trackLegacyUpdaterRequests(page);
 
-  await page.addInitScript(({ storeKey, updateCheckKey, store }) => {
+  await page.addInitScript(({ storeKey, store }) => {
     window.localStorage.clear();
     window.localStorage.setItem(storeKey, JSON.stringify(store));
-    window.localStorage.setItem(updateCheckKey, String(Date.now()));
   }, {
     storeKey: STORE_KEY,
-    updateCheckKey: UPDATE_CHECK_KEY,
     store: createSeedStore("openai"),
   });
 
@@ -715,6 +721,7 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
     !page.url().includes("github.com"),
     "La app nunca debe llevar al usuario a GitHub.",
   );
+  assertNoLegacyUpdaterRequests();
 }
 
 async function main() {

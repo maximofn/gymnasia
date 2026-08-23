@@ -242,7 +242,7 @@ Elimina de una etiqueta un sufijo SHA hexadecimal final antes de analizarla, cal
 
 `apps/mobile/eas.json` establece la CLI de EAS en `>= 18.4.0` y `appVersionSource: "remote"`. Su perfil de producción tiene `autoIncrement: true`; el de vista previa tiene distribución interna y `android.buildType: "apk"`. Por tanto, coexisten dos dimensiones de versión:
 
-- la versión de Expo visible para el usuario, escrita en `app.json` y utilizada para la comparación entre la etiqueta de Git y la actualización;
+- la versión de Expo visible para el usuario, escrita en `app.json` y utilizada por la convención de etiquetas y notas de publicación;
 - los números de compilación nativa remotos administrados por EAS, con incremento automático explícito solo en producción.
 
 ### Publicación de artefactos
@@ -268,9 +268,9 @@ El paso final confirma únicamente `apps/mobile/app.json` como `chore(release): 
 7. **No existe un control de pruebas para las publicaciones.** El trabajo de publicación no ejecuta `npm test`, TypeScript, Playwright ni pruebas rápidas nativas antes de publicar.
 8. **Divergencia entre etiqueta y versión.** El cálculo de la versión confía en las etiquetas Git, no en el archivo `app.json` confirmado actualmente. Las modificaciones manuales de la versión o los fallos de confirmaciones de versiones anteriores pueden hacer que la transición calculada no coincida con el estado del código fuente.
 9. **El análisis convencional solo considera el asunto.** No se inspecciona el texto de cambios incompatibles en el cuerpo de una confirmación, y el comportamiento de combinación o reformulación puede cambiar el incremento seleccionado. Las confirmaciones no reconocidas siempre generan un parche.
-10. **La corrección nativa prácticamente no se prueba.** Las pruebas E2E web no pueden validar los permisos de Android, los sonidos de notificaciones, las alarmas exactas, SecureStore, el comportamiento en segundo plano, la instalación del APK, las rutas de actualización ni la configuración de iOS.
+10. **La corrección nativa prácticamente no se prueba.** Las pruebas E2E web no pueden validar los permisos de Android, los sonidos de notificaciones, las alarmas exactas, SecureStore, el comportamiento en segundo plano, la instalación manual del APK ni la configuración de iOS.
 
-Antes de publicar una versión de Android para instalación directa, descargue la candidata, verifique que realmente sea un APK, instálela en un dispositivo representativo, confirme la versión mostrada, pruebe el comportamiento de actualización y la conservación de los datos locales, ejercite las notificaciones y la temporización en segundo plano, y compruebe el actualizador de publicaciones de GitHub integrado en la aplicación.
+Antes de publicar una versión de Android para instalación directa, descargue la candidata, verifique que realmente sea un APK, instálela en un dispositivo representativo, confirme la versión mostrada y la conservación de los datos locales, y ejercite las notificaciones y la temporización en segundo plano. La aplicación no contiene un actualizador de GitHub: la instalación de esos APK es un flujo manual separado de Google Play.
 
 ## El despliegue del tablero es independiente
 

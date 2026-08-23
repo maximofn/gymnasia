@@ -1,5 +1,5 @@
 ---
-version: 2026-08-v3
+version: 2026-08-v4
 effective_date: 2026-08-23
 locale: es
 lang: es
@@ -153,10 +153,9 @@ Además de los proveedores de IA:
 
 - **GitHub** (`raw.githubusercontent.com`, `api.github.com`, `github.com`): la
   aplicación descarga los catálogos públicos de ejercicios, alimentos, productos y
-  recetas, sus imágenes y las instrucciones del asistente; consulta qué versión de esas
-  instrucciones le corresponde; y comprueba si hay una versión nueva publicada. **No se
-  envía ningún dato tuyo**, pero GitHub, como cualquier servidor al que te conectas, ve
-  tu dirección IP.
+  recetas, sus imágenes y las instrucciones del asistente; y consulta qué versión de esas
+  instrucciones le corresponde. **No se envía ningún dato tuyo**, pero GitHub, como
+  cualquier servidor al que te conectas, ve tu dirección IP.
 - **Backend de incidencias de Gymnasia** (`gymnasia-feedback.maximofn.com`): solo si tú
   lo pides. Cuando propones una mejora al asistente, o cuando añades un alimento o un
   ejercicio que no está en el catálogo, la aplicación te muestra antes el título y el

@@ -173,10 +173,9 @@
       "key": "gymnasia.mobile.lastUpdateCheck",
       "backend": "async-storage",
       "personal": false,
-      "dataCategory": "app-activity",
-      "purpose": "Momento de la última comprobación de actualizaciones, para espaciarlas cada cuatro horas.",
-      "clearedBy": "never",
-      "plannedRemoval": "GYM-188"
+      "dataCategory": "legacy",
+      "purpose": "Marca heredada del actualizador de APK retirado. Ya no se lee ni se escribe; el arranque solo la elimina de instalaciones antiguas.",
+      "clearedBy": "startup-migration"
     },
     {
       "key": "gymnasia.mobile.body_fat_migration_done",
@@ -280,7 +279,7 @@
       "host": "api.github.com",
       "trigger": "automatic",
       "requiresUserKey": false,
-      "sends": "Nada del usuario. Consulta la última release publicada para avisar de actualizaciones (esa parte se retira en GYM-188) y los deployments del repositorio para resolver qué política del agente corresponde al canal de la instalación. La app ya no abre incidencias contra GitHub: eso pasó al backend de recepción en GYM-54, que es quien custodia la credencial.",
+      "sends": "Nada del usuario. Consulta los deployments del repositorio para resolver qué política del agente corresponde al canal de la instalación. La app no consulta releases de APK ni abre incidencias contra GitHub; las propuestas se envían al backend de recepción, que custodia la credencial de escritura.",
       "thirdParty": "GitHub"
     },
     {

@@ -12,6 +12,7 @@ on:
           - staging
           - preview
           - production
+          - production-apk
   push:
     branches: [main]
     paths:
@@ -37,7 +38,7 @@ jobs:
     # alone can exceed 60 min, which cancelled the job mid-wait (build kept
     # queued on Expo but no release was published). Give the queue extra margin.
     timeout-minutes: 120
-    environment: ${{ (github.event_name == 'workflow_dispatch' && inputs.profile == 'production') && 'Production' || 'Staging' }}
+    environment: ${{ (github.event_name == 'workflow_dispatch' && startsWith(inputs.profile, 'production')) && 'Production' || 'Staging' }}
     permissions:
       contents: write
 
@@ -70,7 +71,7 @@ jobs:
           BUILD_PROFILE: ${{ steps.profile.outputs.profile }}
         run: |
           ENVIRONMENT="staging"
-          test "$BUILD_PROFILE" != "production" || ENVIRONMENT="production"
+          case "$BUILD_PROFILE" in production|production-apk) ENVIRONMENT="production" ;; esac
           node scripts/policy-promotion/prepare-policy-snapshot.mjs \
             --environment "$ENVIRONMENT" \
             --github-env "$GITHUB_ENV"
@@ -162,8 +163,28 @@ jobs:
           curl -L "${{ steps.build.outputs.apk_url }}" -o gymnasia.apk
           ls -lh gymnasia.apk
 
+      - name: Verify the artifact really is an installable APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          # El perfil `production` de EAS produce un AAB, que es lo que exige
+          # Google Play pero NO se puede instalar en un móvil: Android responde
+          # "No se ha podido analizar el paquete". El workflow renombraba a .apk
+          # lo que bajara, sin mirarlo, así que las releases v1.22.0 y v1.23.0
+          # se publicaron con un bundle dentro. Esta comprobación lo impide.
+          if unzip -l gymnasia.apk | grep -qE "BUNDLE-METADATA/|^ *[0-9]+ .* base/manifest/"; then
+            echo "::error::El artefacto es un AAB, no un APK instalable."
+            echo "Usa el perfil production-apk (buildType: apk) para releases descargables."
+            exit 1
+          fi
+          if ! unzip -l gymnasia.apk | grep -q "AndroidManifest.xml"; then
+            echo "::error::El artefacto no contiene AndroidManifest.xml; no es un APK válido."
+            exit 1
+          fi
+          echo "Artefacto verificado como APK instalable."
+
       - name: Generate changelog
-        if: steps.profile.outputs.profile == 'production'
+        if: startsWith(steps.profile.outputs.profile, 'production')
         id: changelog
         run: |
           LATEST_TAG=$(git tag --list 'v*' --sort=-version:refname | head -1)
@@ -181,7 +202,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Upload internal Staging APK
-        if: steps.profile.outputs.profile != 'production'
+        if: ${{ !startsWith(steps.profile.outputs.profile, 'production') }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: gymnasia-${{ steps.profile.outputs.profile }}-${{ github.sha }}
@@ -190,7 +211,7 @@ jobs:
           retention-days: 14
 
       - name: Create draft APK release
-        if: steps.profile.outputs.profile == 'production'
+        if: startsWith(steps.profile.outputs.profile, 'production')
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
@@ -198,6 +219,7 @@ jobs:
           CURRENT_VERSION: ${{ steps.version.outputs.current }}
           VERSION_BUMP: ${{ steps.version.outputs.bump }}
           CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+          BUILD_PROFILE: ${{ steps.profile.outputs.profile }}
         shell: bash
         run: |
           set -euo pipefail
@@ -205,7 +227,7 @@ jobs:
           {
             echo "## Gymnasia ${NEXT_VERSION}"
             echo
-            echo "**Build profile:** production"
+            echo "**Build profile:** ${BUILD_PROFILE}"
             echo "**Version bump:** ${CURRENT_VERSION} -> ${NEXT_VERSION} (${VERSION_BUMP})"
             echo
             echo "### Changes"
@@ -222,13 +244,13 @@ jobs:
             --draft
 
       - name: Attach APK before publishing release
-        if: steps.profile.outputs.profile == 'production'
+        if: startsWith(steps.profile.outputs.profile, 'production')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "${{ steps.version.outputs.tag }}" gymnasia.apk --repo "$GITHUB_REPOSITORY"
 
       - name: Publish immutable APK release
-        if: steps.profile.outputs.profile == 'production'
+        if: startsWith(steps.profile.outputs.profile, 'production')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release edit "${{ steps.version.outputs.tag }}" --repo "$GITHUB_REPOSITORY" --draft=false --latest
