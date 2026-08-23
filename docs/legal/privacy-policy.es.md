@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v1
-effective_date: 2026-08-22
+version: 2026-08-v2
+effective_date: 2026-08-23
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -66,7 +66,8 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
 - **Memoria del asistente**: notas en texto libre que tú o el propio asistente guardáis
   para recordar cosas entre conversaciones. Puede contener cualquier dato que hayas
   contado en el chat, incluidos datos de salud.
-- **Preferencias**: ajustes de la interfaz y de las notificaciones.
+- **Preferencias**: ajustes de la interfaz y de las notificaciones, y tu consentimiento
+  por proveedor para la evaluación adicional opcional de seguridad sanitaria.
 - **Registro de depuración**: un histórico técnico de hasta 1000 entradas con los avisos
   de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de
   serie. Nunca se envía por red; puedes verlo y borrarlo desde Ajustes.
@@ -114,6 +115,13 @@ que hayas elegido. La petición incluye:
   o tus rutinas;
 - en el estimador de comida, **las imágenes que le proporcionas**, codificadas dentro
   de la petición.
+
+Si activas en Ajustes la **evaluación adicional de seguridad sanitaria** para un
+proveedor, el texto actual puede enviarse a ese mismo proveedor en una petición de
+clasificación separada antes de generar la respuesta normal. Esta opción está
+desactivada por defecto, requiere consentimiento independiente para cada proveedor y
+puedes revocarla en cualquier momento. Los mensajes que la comprobación local clasifica
+como riesgo alto o crítico se interceptan en el dispositivo y no se envían al proveedor.
 
 Ese contenido queda sujeto a la política de privacidad y a los términos del proveedor
 que hayas elegido, bajo tu propia cuenta con él:

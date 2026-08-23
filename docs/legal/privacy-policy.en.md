@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v1
-effective_date: 2026-08-22
+version: 2026-08-v2
+effective_date: 2026-08-23
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -65,7 +65,8 @@ All of the following is stored on your device only:
 - **Assistant memory**: free-text notes that you or the assistant save in order to
   remember things between conversations. It may contain anything you have mentioned in
   the chat, including health data.
-- **Preferences**: interface and notification settings.
+- **Preferences**: interface and notification settings, and your per-provider consent
+  for the optional additional health-safety evaluation.
 - **Debug log**: a technical record of up to 1000 entries covering the rest-timer alerts
   delivered, which include the exercise name and set number. It is never sent over the
   network; you can view and clear it from Settings.
@@ -109,6 +110,13 @@ The request includes:
 - the results of the tools the assistant uses at your request, which may include your
   weight, your body fat percentage, your measurements, the day's meals or your routines;
 - in the food estimator, **the images you provide**, encoded within the request.
+
+If you enable **additional health-safety evaluation** for a provider in Settings, the
+current text may be sent to that same provider in a separate classification request
+before the normal response is generated. This option is off by default, requires
+separate consent for each provider, and can be revoked at any time. Messages classified
+locally as high or critical risk are intercepted on the device and are not sent to the
+provider.
 
 That content is subject to the privacy policy and terms of the provider you chose, under
 your own account with them:
