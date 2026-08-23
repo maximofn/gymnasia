@@ -75,7 +75,7 @@
         {
           "id": "GYM-189",
           "title": "Añadir denuncia dentro de la app para respuestas generadas por IA",
-          "state": "todo",
+          "state": "done",
           "summary": "Añadir a cada respuesta una denuncia accesible que minimice datos, excluya claves BYOK y use un canal de recepción compatible con la arquitectura local-first.",
           "dependsOn": [
             "GYM-143",
@@ -2497,7 +2497,7 @@
         {
           "id": "GYM-12",
           "title": "Importar ejercicios del dataset hasaneyldrm/exercises-dataset",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Ampliar el repo local de ejercicios (~39 hoy) sin introducir backend: sigue siendo JSON estático.",
           "dependsOn": [],
           "related": []
