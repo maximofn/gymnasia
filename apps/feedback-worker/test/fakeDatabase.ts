@@ -8,6 +8,7 @@ type IssueRow = {
   issue_number: number | null;
   issue_url: string | null;
   created_at: number;
+  redacted_at: number | null;
 };
 
 type RequestRow = { identifier: string; created_at: number };
@@ -55,6 +56,25 @@ export function createFakeDatabase(options: { failInsert?: boolean } = {}) {
           }
           throw new Error(`Consulta no reconocida por el doble: ${query}`);
         },
+        async all<T>(): Promise<{ results: T[] }> {
+          if (query.includes("kind = 'report'") && query.includes("redacted_at IS NULL")) {
+            const [cutoff, limit] = bound as [number, number];
+            const matches = [...issues.values()]
+              .filter(
+                (row) =>
+                  row.kind === "report"
+                  && row.state === "created"
+                  && row.redacted_at === null
+                  && row.issue_number !== null
+                  && row.issue_url !== null
+                  && row.created_at <= cutoff,
+              )
+              .sort((left, right) => left.created_at - right.created_at)
+              .slice(0, limit);
+            return { results: matches as T[] };
+          }
+          throw new Error(`Consulta no reconocida por el doble: ${query}`);
+        },
         async run() {
           if (query.startsWith("INSERT INTO issues")) {
             if (options.failInsert) throw new Error("UNIQUE constraint failed");
@@ -68,16 +88,23 @@ export function createFakeDatabase(options: { failInsert?: boolean } = {}) {
               issue_number: null,
               issue_url: null,
               created_at: createdAt,
+              redacted_at: null,
             });
             return {};
           }
           if (query.startsWith("UPDATE issues")) {
-            const [issueNumber, issueUrl, key] = bound as [number, string, string];
-            const row = issues.get(key);
-            if (row) {
-              row.state = "created";
-              row.issue_number = issueNumber;
-              row.issue_url = issueUrl;
+            if (query.includes("SET redacted_at")) {
+              const [redactedAt, key] = bound as [number, string];
+              const row = issues.get(key);
+              if (row && row.kind === "report") row.redacted_at = redactedAt;
+            } else {
+              const [issueNumber, issueUrl, key] = bound as [number, string, string];
+              const row = issues.get(key);
+              if (row) {
+                row.state = "created";
+                row.issue_number = issueNumber;
+                row.issue_url = issueUrl;
+              }
             }
             return {};
           }

@@ -1,11 +1,11 @@
 # Gymnasia
 
-App movil de fitness construida con Expo React Native. Funciona en modo local-first: la app entera funciona sin ningun servicio. El unico backend es opcional y solo sirve para enviar propuestas de mejora (ver `apps/feedback-worker`).
+App movil de fitness construida con Expo React Native. Funciona en modo local-first: la app entera funciona sin ningun servicio. El unico backend es opcional y solo sirve para enviar propuestas de mejora y denuncias de respuestas de IA (ver `apps/feedback-worker`).
 
 ## Estructura
 
 - `apps/mobile`: App Expo React Native y web (unica aplicacion)
-- `apps/feedback-worker`: Worker de Cloudflare que recibe propuestas de mejora, alimentos y ejercicios desde la app y crea issues en un repositorio privado. Opcional: si esta caido, la app avisa y sigue funcionando
+- `apps/feedback-worker`: Worker de Cloudflare que recibe propuestas de mejora, alimentos, ejercicios y denuncias de respuestas de IA desde la app y crea issues en un repositorio privado. Opcional: si esta caido, la app avisa y sigue funcionando
 - `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa)
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SUMMARY_MAX_LENGTH, TITLE_MAX_LENGTH } from "../src/contract";
+import { REPORT_SUMMARY_MAX_LENGTH, SUMMARY_MAX_LENGTH, TITLE_MAX_LENGTH } from "../src/contract";
 import { validateFeedbackRequest } from "../src/schema";
 
 const validKey = `v1:feature:${"a".repeat(16)}`;
@@ -90,6 +90,21 @@ describe("validateFeedbackRequest", () => {
     if (result.ok) {
       expect(result.value.summary).not.toContain(secret);
       expect(result.value.summary).toContain("REDACTADO");
+    }
+  });
+
+  it("acepta denuncias con su límite ampliado sin cambiar el esquema", () => {
+    const summary = "r".repeat(SUMMARY_MAX_LENGTH + 500);
+    const result = validateFeedbackRequest(baseRequest({
+      kind: "report",
+      summary,
+      idempotency_key: `v1:report:${"b".repeat(16)}`,
+    }));
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.kind).toBe("report");
+      expect(result.value.summary).toBe(summary);
+      expect(result.value.summary.length).toBeLessThanOrEqual(REPORT_SUMMARY_MAX_LENGTH);
     }
   });
 

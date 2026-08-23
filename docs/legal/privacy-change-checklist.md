@@ -80,7 +80,5 @@ publicada afirma hoy cosas que dejarán de ser ciertas.
   SecureStore del inventario y la sección de credenciales de
   `play-declarations.md`. El guard rail avisará con `endpoint-stale` y
   `securestore-key-stale`.
-- **GYM-189 (denuncia dentro de la app)**: sustituir en `#denuncia` el canal de correo
-  por la acción in-app, y actualizar la declaración de IA generativa.
 - **GYM-147 (idioma de la app)**: cuando exista `appLanguage`, el enlace de la app debe
   elegir entre las dos URLs de la política en vez de apuntar siempre a la española.

@@ -2,6 +2,7 @@ import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import {
   FEEDBACK_ISSUE_KINDS,
+  REPORT_SUMMARY_MAX_LENGTH,
   SUMMARY_MAX_LENGTH,
   TITLE_MAX_LENGTH,
 } from "../src/contract";
@@ -112,7 +113,9 @@ describe("validateFeedbackRequest: propiedades", () => {
         });
         if (!result.ok) return;
         expect(result.value.title.length).toBeLessThanOrEqual(TITLE_MAX_LENGTH);
-        expect(result.value.summary.length).toBeLessThanOrEqual(SUMMARY_MAX_LENGTH);
+        expect(result.value.summary.length).toBeLessThanOrEqual(
+          raw.kind === "report" ? REPORT_SUMMARY_MAX_LENGTH : SUMMARY_MAX_LENGTH,
+        );
         expect(result.value.title.length).toBeGreaterThan(0);
         expect(result.value.summary.length).toBeGreaterThan(0);
         expect(containsSecret(result.value.title)).toBe(false);

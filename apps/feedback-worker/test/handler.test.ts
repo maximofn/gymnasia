@@ -1,21 +1,35 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import worker, { type Env } from "../src/index";
+import worker, {
+  RATE_LIMIT_COUNTER_CUTOFF_MS,
+  REPORT_REDACTION_BATCH_SIZE,
+  REPORT_RETENTION_MS,
+  pseudonymizeRateLimitIdentifier,
+  redactExpiredReports,
+  type Env,
+} from "../src/index";
+import { REDACTED_REPORT_BODY } from "../src/github";
 import { createFakeDatabase } from "./fakeDatabase";
 
 const ORIGIN = "https://gymnasia.maximofn.com";
 
-function makeEnv(overrides: Partial<Env> = {}): { env: Env; issues: Map<string, unknown> } {
-  const { database, issues } = createFakeDatabase();
+function makeEnv(overrides: Partial<Env> = {}): {
+  env: Env;
+  issues: Map<string, unknown>;
+  requests: Array<{ identifier: string; created_at: number }>;
+} {
+  const { database, issues, requests } = createFakeDatabase();
   return {
     env: {
       DB: database,
       GITHUB_TOKEN: "token-de-prueba",
       GITHUB_REPO: "maximofn/gymnasia-feedback",
+      RATE_LIMIT_SALT: "sal-de-prueba-no-secreta",
       ALLOWED_ORIGINS: ORIGIN,
       FEEDBACK_ENABLED: "true",
       ...overrides,
     },
     issues: issues as unknown as Map<string, unknown>,
+    requests,
   };
 }
 
@@ -195,6 +209,26 @@ describe("POST /feedback/issues", () => {
     expect(blocked.headers.get("retry-after")).toBeTruthy();
   });
 
+  it("solo persiste un HMAC de la IP para el rate limiting", async () => {
+    const { env, requests } = makeEnv();
+    const ip = "203.0.113.17";
+    await worker.fetch(makeRequest(validBody(), { "cf-connecting-ip": ip }), env);
+    expect(requests).toHaveLength(1);
+    expect(requests[0].identifier).not.toBe(ip);
+    expect(requests[0].identifier).toMatch(/^[0-9a-f]{64}$/);
+    await expect(pseudonymizeRateLimitIdentifier(ip, env.RATE_LIMIT_SALT)).resolves.toBe(
+      requests[0].identifier,
+    );
+  });
+
+  it("falla cerrado si falta el secreto del HMAC", async () => {
+    const { env } = makeEnv({ RATE_LIMIT_SALT: "" });
+    const response = await worker.fetch(makeRequest(validBody()), env);
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({ status: "unavailable" });
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it("responde unavailable cuando el interruptor está apagado", async () => {
     const { env } = makeEnv({ FEEDBACK_ENABLED: "false" });
     const response = await worker.fetch(makeRequest(validBody()), env);
@@ -241,6 +275,86 @@ describe("POST /feedback/issues", () => {
       env,
     );
     expect(response.status).toBe(400);
+  });
+});
+
+describe("retención de denuncias", () => {
+  function insertCreatedReport(
+    issues: Map<string, unknown>,
+    index: number,
+    createdAt: number,
+  ): void {
+    const key = `v1:report:${index.toString(16).padStart(16, "0")}`;
+    issues.set(key, {
+      idempotency_key: key,
+      kind: "report",
+      content_hash: `hash-${index}`,
+      state: "created",
+      issue_number: 100 + index,
+      issue_url: `https://github.com/maximofn/gymnasia-feedback/issues/${100 + index}`,
+      created_at: createdAt,
+      redacted_at: null,
+    });
+  }
+
+  it("redacta el cuerpo al cumplir 30 días y conserva solo una nota neutra", async () => {
+    const now = Date.UTC(2026, 7, 23, 12);
+    const { env, issues } = makeEnv();
+    insertCreatedReport(issues, 1, now - REPORT_RETENTION_MS);
+
+    await expect(redactExpiredReports(env, now)).resolves.toBe(1);
+    const [, init] = fetchSpy.mock.calls[0] as [string, RequestInit];
+    expect(init.method).toBe("PATCH");
+    expect(JSON.parse(String(init.body))).toEqual({ body: REDACTED_REPORT_BODY });
+    expect((issues.get(`v1:report:${"1".padStart(16, "0")}`) as { redacted_at: number }).redacted_at)
+      .toBe(now);
+  });
+
+  it("no toca denuncias con menos de 30 días", async () => {
+    const now = Date.UTC(2026, 7, 23, 12);
+    const { env, issues } = makeEnv();
+    insertCreatedReport(issues, 1, now - REPORT_RETENTION_MS + 1);
+    await expect(redactExpiredReports(env, now)).resolves.toBe(0);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("solo marca la limpieza tras un PATCH correcto y reintenta después", async () => {
+    const now = Date.UTC(2026, 7, 23, 12);
+    const { env, issues } = makeEnv();
+    insertCreatedReport(issues, 1, now - REPORT_RETENTION_MS);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("no", { status: 500 })));
+    await expect(redactExpiredReports(env, now)).resolves.toBe(0);
+    const row = issues.get(`v1:report:${"1".padStart(16, "0")}`) as { redacted_at: number | null };
+    expect(row.redacted_at).toBeNull();
+
+    vi.stubGlobal("fetch", githubOk(101));
+    await expect(redactExpiredReports(env, now + 60_000)).resolves.toBe(1);
+    expect(row.redacted_at).toBe(now + 60_000);
+  });
+
+  it("limita cada ejecución para respetar las subpeticiones del plan gratuito", async () => {
+    const now = Date.UTC(2026, 7, 23, 12);
+    const { env, issues } = makeEnv();
+    for (let index = 0; index < REPORT_REDACTION_BATCH_SIZE + 1; index += 1) {
+      insertCreatedReport(issues, index, now - REPORT_RETENTION_MS - index);
+    }
+    await expect(redactExpiredReports(env, now)).resolves.toBe(REPORT_REDACTION_BATCH_SIZE);
+    expect(fetchSpy).toHaveBeenCalledTimes(REPORT_REDACTION_BATCH_SIZE);
+  });
+
+  it("el trigger programado elimina identificadores HMAC antes de cumplir 48 horas", async () => {
+    const now = Date.UTC(2026, 7, 23, 12, 17);
+    const { env, requests } = makeEnv();
+    requests.push(
+      { identifier: "antiguo", created_at: now - RATE_LIMIT_COUNTER_CUTOFF_MS - 1 },
+      { identifier: "reciente", created_at: now - RATE_LIMIT_COUNTER_CUTOFF_MS + 1 },
+    );
+
+    await worker.scheduled({ scheduledTime: now }, env);
+
+    expect(requests).toEqual([
+      { identifier: "reciente", created_at: now - RATE_LIMIT_COUNTER_CUTOFF_MS + 1 },
+    ]);
   });
 });
 

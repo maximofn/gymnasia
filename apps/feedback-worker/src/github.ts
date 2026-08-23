@@ -4,6 +4,13 @@ export type GitHubIssueResult =
   | { ok: true; number: number; url: string }
   | { ok: false; reason: "upstream_failed"; status: number | null };
 
+export const REDACTED_REPORT_BODY = [
+  "## Contenido eliminado",
+  "",
+  "La pregunta y la respuesta originales se eliminaron automáticamente al cumplir 30 días.",
+  "La referencia se conserva para documentar que la denuncia fue recibida y revisada.",
+].join("\n");
+
 export type GitHubClientOptions = {
   token: string;
   /** `owner/repo`. Fijo en el servidor: el cliente no puede elegirlo. */
@@ -88,6 +95,57 @@ export async function createGitHubIssue(
       "github_issue_transport_failed",
       JSON.stringify({ name: (error as { name?: string } | null)?.name ?? "unknown" }),
     );
+    return { ok: false, reason: "upstream_failed", status: null };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function redactGitHubIssue(
+  issueNumber: number,
+  options: GitHubClientOptions,
+): Promise<GitHubIssueResult> {
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timeout = setTimeout(
+    () => controller?.abort(),
+    options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+  );
+
+  try {
+    const response = await fetchImpl(
+      `https://api.github.com/repos/${options.repository}/issues/${issueNumber}`,
+      {
+        method: "PATCH",
+        headers: {
+          authorization: `Bearer ${options.token}`,
+          accept: "application/vnd.github+json",
+          "content-type": "application/json",
+          "user-agent": "gymnasia-feedback-worker",
+          "x-github-api-version": "2022-11-28",
+        },
+        body: JSON.stringify({ body: REDACTED_REPORT_BODY }),
+        signal: controller?.signal,
+      },
+    );
+    if (!response.ok) {
+      console.error("github_report_redaction_failed", JSON.stringify({
+        status: response.status,
+        repository: options.repository,
+        issueNumber,
+      }));
+      return { ok: false, reason: "upstream_failed", status: response.status };
+    }
+    return {
+      ok: true,
+      number: issueNumber,
+      url: `https://github.com/${options.repository}/issues/${issueNumber}`,
+    };
+  } catch (error) {
+    console.error("github_report_redaction_transport_failed", JSON.stringify({
+      name: (error as { name?: string } | null)?.name ?? "unknown",
+      issueNumber,
+    }));
     return { ok: false, reason: "upstream_failed", status: null };
   } finally {
     clearTimeout(timeout);

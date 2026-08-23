@@ -3,6 +3,7 @@ import {
   FEEDBACK_ISSUE_KINDS,
   FEEDBACK_SCHEMA_VERSION,
   IDEMPOTENCY_KEY_PATTERN,
+  REPORT_SUMMARY_MAX_LENGTH,
   SUMMARY_MAX_LENGTH,
   TITLE_MAX_LENGTH,
   type FeedbackIssueKind,
@@ -59,11 +60,13 @@ export function validateFeedbackRequest(input: unknown): ValidationResult {
     return { ok: false, reason: "invalid_schema" };
   }
 
+  const summaryMaxLength = kind === "report" ? REPORT_SUMMARY_MAX_LENGTH : SUMMARY_MAX_LENGTH;
+
   // Se rechaza en vez de truncar lo que llega desmesurado: un cuerpo enorme es
   // una señal de abuso, no un usuario escribiendo de más.
   if (
     candidate.title.length > TITLE_MAX_LENGTH * 4
-    || candidate.summary.length > SUMMARY_MAX_LENGTH * 4
+    || candidate.summary.length > summaryMaxLength * 4
   ) {
     return { ok: false, reason: "too_long" };
   }
@@ -71,7 +74,7 @@ export function validateFeedbackRequest(input: unknown): ValidationResult {
   const title = truncate(redactSecrets(normalizeLine(candidate.title)), TITLE_MAX_LENGTH);
   const summary = truncate(
     redactSecrets(normalizeBlock(candidate.summary)),
-    SUMMARY_MAX_LENGTH,
+    summaryMaxLength,
   );
 
   if (!title || !summary) return { ok: false, reason: "empty" };
