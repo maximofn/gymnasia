@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-tras-espalda-barra",
+  "name": "Curl de muñeca tras la espalda con barra",
+  "image_male": "images/curl-muneca-tras-espalda-barra-male.webp",
+  "image_female": "images/curl-muneca-tras-espalda-barra-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["bíceps", "hombros"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie y sujeta una barra ligera detrás de los glúteos con las palmas hacia atrás. Mantén los brazos quietos y abre ligeramente los dedos para dejar bajar la barra con control. Cierra el agarre y flexiona las muñecas hacia arriba antes de descender lentamente."
+}

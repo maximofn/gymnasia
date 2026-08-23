@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
-<meta name="gymnasia-policy-version" content="2026-08-v2">
-<meta name="gymnasia-policy-digest" content="sha256:c84f5c58cdb6c88be02971afcc5878233e89f08d4fe320a5a7caa131dac421bf">
+<meta name="gymnasia-policy-version" content="2026-08-v3">
+<meta name="gymnasia-policy-digest" content="sha256:e006ef96985a50bb1a0b507b1fdd1e462c27b64a8e81bdd74bc4e84b43e18b94">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-08-v2 · in force since 2026-08-23 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-08-v3 · in force since 2026-08-23 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -82,7 +82,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="sin-cuenta">
     <h2><a href="#sin-cuenta">There is no account and no server</a></h2>
     <p>Gymnasia does not ask for an email address, a password or a username in order to work. No account system exists.</p>
-    <p>Neither does a Gymnasia server. The app does not send your data to any infrastructure controlled by the developer — not for storage, not for backups, not for analytics. <strong>There is no analytics, no telemetry and no automatic crash reporting</strong>: the app bundles no SDK of that kind.</p>
+    <p>Gymnasia does not store your data on any server. The app does not send it to infrastructure controlled by the developer — not for storage, not for backups, not for analytics. The only exception is sending improvement suggestions, which happens only when you expressly approve it and never includes your personal data (see [Third parties](#terceros)). <strong>There is no analytics, no telemetry and no automatic crash reporting</strong>: the app bundles no SDK of that kind.</p>
   </section>
 
   <section id="datos">
@@ -152,6 +152,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>Besides the AI providers:</p>
     <ul>
       <li><strong>GitHub</strong> (<code>raw.githubusercontent.com</code>, <code>api.github.com</code>, <code>github.com</code>): the app downloads the public catalogues of exercises, foods, products and recipes, their images and the assistant's instructions; checks which version of those instructions applies to it; and checks whether a newer release has been published. <strong>No data of yours is sent</strong>, but GitHub, like any server you connect to, sees your IP address.</li>
+      <li><strong>Gymnasia feedback backend</strong> (<code>gymnasia-feedback.maximofn.com</code>): only when you ask for it. When you suggest an assistant improvement, or submit a food or exercise that is missing from the catalogue, the app first shows you the exact title and summary and <strong>sends nothing until you approve them</strong>. It sends only that title, that summary, the proposal type and a technical identifier used to prevent duplicates. <strong>It does not send your conversation text, diet, training or measurement data, or any user identifier.</strong> The developer operates the service on Cloudflare infrastructure, and it creates a record from your proposal in a <strong>private</strong> GitHub repository visible only to the developer. Before storing it, the service automatically removes any API key or password you might have pasted by mistake. If you submit no proposal, this service is never used.</li>
       <li><strong>Open Food Facts</strong> (<code>world.openfoodfacts.org</code>): if the assistant reads a barcode in one of your photos, it looks that barcode up in their public database to obtain the product's nutritional information. The barcode is sent, not the image.</li>
       <li><strong>VivaGym / MyVitale</strong> (<code>vivagym.myvitale.com</code>): optional feature. If you choose to use it, you enter the email address and password of <strong>your VivaGym account</strong>, which are stored in the device's secure keystore and sent to VivaGym's servers to obtain your gym access QR code. That code contains your membership identifier. If you do not use this feature, nothing is sent. This integration is scheduled for removal in a future version.</li>
     </ul>
@@ -242,7 +243,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-08-v2 · 2026-08-23</p>
+    <p>Gymnasia Privacy Policy · 2026-08-v3 · 2026-08-23</p>
   </footer>
 </main>
 </body>

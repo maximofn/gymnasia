@@ -52,6 +52,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Cloudflare Workers local state
+.wrangler/
+
 # Local agent/tool state
 .playwright-mcp/
 

@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-pierna-alterna-sentado-barra",
+  "name": "Elevación alterna de pierna sentado con barra",
+  "image_male": "images/elevacion-pierna-alterna-sentado-barra-male.webp",
+  "image_female": "images/elevacion-pierna-alterna-sentado-barra-female.webp",
+  "muscle_group": "flexores de cadera",
+  "secondary_muscles": ["abdomen", "cuádriceps"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el borde de un banco con el torso erguido y una barra muy ligera estabilizada sobre los muslos. Mantén una pierna apoyada y eleva la otra desde la cadera sin balancear el tronco. Baja con control, alterna las piernas y evita que la barra ruede hacia las rodillas."
+}

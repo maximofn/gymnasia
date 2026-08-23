@@ -26,6 +26,7 @@ Este directorio centraliza toda la documentacion funcional y tecnica del proyect
 - `docs/architecture/chat-system-prompt.md`: fuente, fallback, caché, hash y verificación del prompt de Gymnasia Coach.
 - `docs/architecture/policy-environments.md`: variantes Expo, namespaces, promoción inmutable y recuperación por canal.
 - `docs/architecture/health-safety-policy.md`: reglas sanitarias canónicas, estados provisional/aprobado, CI y revisión profesional.
+- `docs/legal/trademark-clearance.md`: comprobación preliminar de la marca «Gymnasia» en OEPM, EUIPO y canales comerciales, con decisión y fecha.
 - `docs/openwiki-automation.md`: runner privado con cuota gratuita, OAuth cifrado, LangSmith, Telegram y Personal Brain.
 - `docs/design/README.md`: referencias de diseno Pencil para frontend.
 - `docs/design/frontend-implementation-guide.md`: guia de implementacion de frontend basada en capturas.

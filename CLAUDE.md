@@ -1,15 +1,57 @@
 # Repository Guidelines
 
+## Cómo referirse a los tickets
+- **Nunca cites un ticket solo por su identificador.** Escribe siempre
+  `GYM-X (ticket para hacer Y)`, con una descripción breve de qué trata.
+- Motivo: el mantenedor no se sabe los números de memoria, y un `GYM-54` suelto
+  obliga a ir a Linear a mirarlo para entender la frase.
+- Aplica a las respuestas en el chat, a los mensajes de commit, a las
+  descripciones de PR y a la documentación. Ejemplo:
+  `GYM-45 (ticket para añadir confirmación humana en tools con efectos)`.
+
+## Cambios en las instrucciones del agente: avisar y esperar aprobación
+- **Cuando un cambio toque `prompts/` o `policy/health-safety/`, para y avisa.**
+  Son las instrucciones que el modelo lee y obedece, y el repositorio las gobierna
+  aparte del código: el check `gymnasia/policy-promotion` se queda en amarillo
+  (`PENDING`) hasta que esa política se promociona a propósito.
+- Qué hacer, en este orden:
+  1. **Avisar en lenguaje natural**, sin jerga. Nada de `policy-promotion está
+     PENDING`: escribe qué ha pasado y por qué, como se lo contarías a alguien
+     que no ha visto el fichero.
+  2. **Explicar el cambio en lenguaje natural**: qué le permitías o le prohibías
+     hacer al agente antes, qué le permites o le prohíbes ahora, y qué consecuencia
+     tiene para el usuario de la app. El diff no vale como explicación.
+  3. **Esperar a que el mantenedor diga explícitamente que lo aprueba.**
+- **Nunca** lances la promoción (`promote-policy.yml`), ni fusiones la PR, ni saques
+  el cambio a otra rama para esquivar la puerta, sin esa aprobación explícita. Un
+  «adelante» sobre otro asunto no cuenta.
+- Motivo: cambiar lo que un agente tiene permitido hacer es más arriesgado que
+  cambiar código, porque el diff no muestra las consecuencias. La puerta está
+  echada a propósito; tratarla como un trámite anula su razón de ser.
+- El detalle del mecanismo vive en `docs/security/prompt-policy-governance.md`.
+
 ## Project Structure & Module Organization
-This repo contains a single Expo React Native mobile app.
+This repo contains an Expo React Native mobile app and un Worker de Cloudflare de apoyo.
 - `apps/mobile`: Expo React Native app (`App.tsx`, `theme.ts`). This is the only application.
 - `alimentos/`: repositorio de alimentos (JSONs con datos nutricionales). Ver skill `.claude/skills/generate-food-images.md` para generar JSONs.
+- `apps/feedback-worker`: Worker de Cloudflare que recibe incidencias de la app y
+  crea issues en un repositorio privado. Ver su `README.md` para despliegue,
+  secretos, rotación y apagado.
 - `ejercicios/`: repositorio de ejercicios (JSONs + imágenes generadas). Ver skill `.claude/skills/generate-exercise-images.md` para generar imágenes.
 
 ## Current Delivery Focus
-- `apps/mobile` is the only product surface. There is no backend, web frontend, or database.
+- `apps/mobile` is the only product surface. There is no web frontend or database.
 - All features must work fully local-first on mobile.
-- Do not introduce backend or database dependencies.
+- **No hay backend obligatorio.** La app funciona entera sin ningún servicio: si
+  el backend está caído o sin configurar, la funcionalidad afectada degrada en
+  silencio y nada más se rompe. Si alguna vez la app deja de arrancar o de
+  funcionar porque un servicio no responde, el diseño está mal.
+- La **única** excepción autorizada es `apps/feedback-worker` (GYM-54, ticket
+  para sustituir los escritores no-op de GitHub Issues por un flujo verificable):
+  crear una issue exige una credencial de escritura en GitHub y un cliente
+  estático nunca puede llevarla. Ver `apps/feedback-worker/README.md`.
+- No introduzcas ninguna otra dependencia de backend o de base de datos sin que
+  exista un ticket que autorice la excepción de forma explícita.
 
 ## Design System Source Of Truth
 - The system design reference is the attached `docs/design/Gimnasia Design System.png`.
@@ -134,6 +176,32 @@ Run from repo root unless noted.
   `/index.html` devuelve un `Redirecting...` en vez del HTML: es `cleanUrls` de
   `vercel.json` redirigiendo a `/`. Comprobar siempre contra `/`, no `/index.html`.
 
+## Backend de incidencias — Deploy Runbook (`apps/feedback-worker/`)
+- Qué es: Worker de Cloudflare que custodia el PAT de GitHub y crea las issues
+  que propone la app. Plan gratuito, sin caducidad. Detalle completo en
+  `apps/feedback-worker/README.md`.
+- **Un push a `main` NO lo despliega.** Igual que Vercel en este repo, hay que
+  lanzar la CLI a mano:
+  ```bash
+  npm --workspace apps/feedback-worker run deploy
+  ```
+- `wrangler` **no está instalado**: se baja al vuelo con `npm exec --yes --`,
+  igual que la CLI de Vercel. No usar `npx`: el hook de rtk lo reescribe a `npm`.
+- El secreto `GITHUB_TOKEN` vive solo en Cloudflare (`wrangler secret put`).
+  **Nunca** en el repositorio, que es público, ni en el bundle de la app.
+- Verificar tras desplegar:
+  ```bash
+  curl -sS https://gymnasia-feedback.maximofn.com/health
+  ```
+- **Trampa del subdominio**: tiene que ser de un solo nivel. El certificado
+  gratuito Universal SSL de Cloudflare cubre `maximofn.com` y `*.maximofn.com`,
+  pero **no** `*.gymnasia.maximofn.com`: los comodines no se encadenan. Por eso
+  `gymnasia-feedback.maximofn.com` y no `feedback.gymnasia.maximofn.com`, que
+  exigiría Advanced Certificate Manager (de pago).
+- Cambiar la URL de producción obliga a tocar `apps/mobile/app.config.ts` **y**
+  `scripts/data-inventory/inventory.json`: el escáner reconoce el host por su
+  literal y `npm run check:data-inventory` falla si no está declarado.
+
 ## Coding Style & Naming Conventions
 - TypeScript is `strict`; follow existing TS style: 2-space indentation, semicolons, double quotes.
 - React components/types: `PascalCase`; functions/variables: `camelCase`.
@@ -142,6 +210,7 @@ Run from repo root unless noted.
 ## Testing Guidelines
 The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - deterministic tests: `npm test`
+- backend de incidencias: `npm --workspace apps/feedback-worker run test`
 - browser E2E with a fake OpenAI provider: `npm run test:agent:e2e`
 - published privacy policy E2E: `npm run test:privacy:e2e` (exports the web build and
   reads it with a clean browser context; `PRIVACY_E2E_SKIP_EXPORT=1` reuses `dist/`)

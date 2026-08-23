@@ -1,5 +1,5 @@
 ---
-version: 2026-08-v2
+version: 2026-08-v3
 effective_date: 2026-08-23
 locale: en
 lang: en
@@ -42,8 +42,11 @@ protection officer.
 Gymnasia does not ask for an email address, a password or a username in order to work.
 No account system exists.
 
-Neither does a Gymnasia server. The app does not send your data to any infrastructure
-controlled by the developer — not for storage, not for backups, not for analytics.
+Gymnasia does not store your data on any server. The app does not send it to
+infrastructure controlled by the developer — not for storage, not for backups, not for
+analytics. The only exception is sending improvement suggestions, which happens only when
+you expressly approve it and never includes your personal data (see
+[Third parties](#terceros)).
 **There is no analytics, no telemetry and no automatic crash reporting**: the app bundles
 no SDK of that kind.
 
@@ -149,6 +152,17 @@ Besides the AI providers:
   images and the assistant's instructions; checks which version of those instructions
   applies to it; and checks whether a newer release has been published. **No data of
   yours is sent**, but GitHub, like any server you connect to, sees your IP address.
+- **Gymnasia feedback backend** (`gymnasia-feedback.maximofn.com`): only when you ask
+  for it. When you suggest an assistant improvement, or submit a food or exercise that
+  is missing from the catalogue, the app first shows you the exact title and summary
+  and **sends nothing until you approve them**. It sends only that title, that summary,
+  the proposal type and a technical identifier used to prevent duplicates. **It does
+  not send your conversation text, diet, training or measurement data, or any user
+  identifier.** The developer operates the service on Cloudflare infrastructure, and
+  it creates a record from your proposal in a **private** GitHub repository visible
+  only to the developer. Before storing it, the service automatically removes any API
+  key or password you might have pasted by mistake. If you submit no proposal, this
+  service is never used.
 - **Open Food Facts** (`world.openfoodfacts.org`): if the assistant reads a barcode in
   one of your photos, it looks that barcode up in their public database to obtain the
   product's nutritional information. The barcode is sent, not the image.

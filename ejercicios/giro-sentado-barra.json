@@ -1,0 +1,11 @@
+{
+  "id": "giro-sentado-barra",
+  "name": "Giro sentado con barra",
+  "image_male": "images/giro-sentado-barra-male.webp",
+  "image_female": "images/giro-sentado-barra-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen", "zona lumbar"],
+  "equipment": "barra",
+  "difficulty": "beginner",
+  "instructions": "Siéntate erguido en un banco con los pies firmes y coloca una barra ligera sobre la parte alta de la espalda. Mantén la pelvis inmóvil y el abdomen activo. Gira el torso de forma controlada hacia un lado, vuelve al centro y repite hacia el otro sin inclinarte ni usar impulso."
+}

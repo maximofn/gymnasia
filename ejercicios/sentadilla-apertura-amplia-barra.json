@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-apertura-amplia-barra",
+  "name": "Sentadilla con apertura amplia y barra",
+  "image_male": "images/sentadilla-apertura-amplia-barra-male.webp",
+  "image_female": "images/sentadilla-apertura-amplia-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "aductores"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Coloca la barra sobre la parte alta de la espalda y separa los pies más que los hombros, con las puntas ligeramente hacia fuera. Lleva las caderas atrás y abajo manteniendo el pecho elevado y las rodillas alineadas con los pies. Empuja el suelo para volver a levantarte sin perder la postura."
+}

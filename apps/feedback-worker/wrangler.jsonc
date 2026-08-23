@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gymnasia-feedback",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "observability": { "enabled": true },
+
+  // Variables NO secretas. Se dejan aquí a propósito para que sean auditables
+  // en el repositorio público. El token vive en `wrangler secret put`.
+  "vars": {
+    "GITHUB_REPO": "maximofn/gymnasia-feedback",
+    "ALLOWED_ORIGINS": "https://gymnasia.maximofn.com",
+    "FEEDBACK_ENABLED": "true"
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gymnasia-feedback",
+      "database_id": "c8c3d858-d2e4-420b-9f36-8198ff0d1196",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  "routes": [
+    {
+      "pattern": "gymnasia-feedback.maximofn.com",
+      "custom_domain": true
+    }
+  ]
+}

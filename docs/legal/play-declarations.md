@@ -6,7 +6,7 @@ es dejarlas escritas, verificadas contra el código y coherentes con la polític
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v2` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v3` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |

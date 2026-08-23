@@ -1,0 +1,11 @@
+{
+  "id": "giro-pie-barra",
+  "name": "Giro de pie con barra",
+  "image_male": "images/giro-pie-barra-male.webp",
+  "image_female": "images/giro-pie-barra-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen", "zona lumbar"],
+  "equipment": "barra",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies firmes y una barra ligera apoyada sobre la parte alta de la espalda. Mantén las caderas orientadas al frente y gira el torso suavemente hacia un lado. Regresa al centro y alterna, usando un recorrido corto y controlado sin impulso."
+}

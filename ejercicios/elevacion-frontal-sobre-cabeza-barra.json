@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-frontal-sobre-cabeza-barra",
+  "name": "Elevación frontal sobre la cabeza con barra",
+  "image_male": "images/elevacion-frontal-sobre-cabeza-barra-male.webp",
+  "image_female": "images/elevacion-frontal-sobre-cabeza-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios", "tríceps", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta una barra ligera delante de los muslos con agarre pronado. Con los codos apenas flexionados y el torso inmóvil, eleva la barra por delante hasta quedar sobre la cabeza. Evita arquear la espalda y desciende lentamente por el mismo recorrido."
+}
