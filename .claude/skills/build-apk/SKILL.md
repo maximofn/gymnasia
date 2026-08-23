@@ -34,15 +34,29 @@ Genera un APK instalable de `apps/mobile` usando EAS Build (Expo Application Ser
 
 ## Perfiles de build en `eas.json`
 
-El fichero `apps/mobile/eas.json` tiene tres perfiles:
+**Ojo con la ruta**: el fichero efectivo es `apps/mobile/eas.json`. El paso de
+compilacion hace `cd apps/mobile` antes de `eas build`, asi que EAS lee ese y no
+ningun otro. Ver la trampa de los dos ficheros mas abajo.
+
+Perfiles definidos:
 
 | Perfil | Uso | Tipo de artefacto |
 |--------|-----|-------------------|
 | `development` | Development client con dev tools | `.apk` (dev client) |
-| `preview` | APK instalable para testing | `.apk` |
+| `staging` | APK interno, `APP_ENV=staging` | `.apk` |
+| `preview` | Extiende `staging` | `.apk` |
 | `production` | AAB para Google Play Store | `.aab` |
+| `production-apk` | Extiende `production` con `buildType: apk`; es el que usa la release descargable | `.apk` |
 
-Para generar un **APK instalable** usar siempre el perfil `preview`.
+Para generar un **APK instalable** hay dos opciones segun para que sea:
+
+- Pruebas internas rapidas: `preview` o `staging`. Instalan como app aparte
+  (`com.maximofn.gymnasia.staging`) con almacen de datos propio.
+- Release publicable en GitHub: `production-apk`. Mismo identificador que la app
+  real, version autoincrementada y `APP_ENV=production`.
+
+**Nunca uses `production` para una release descargable**: genera un AAB, que es
+lo que exige Google Play pero **no se puede instalar** en un movil.
 
 **Importante**: el perfil `preview` debe tener `"buildType": "apk"` en la seccion `android`:
 
@@ -136,7 +150,9 @@ Requisitos adicionales para build local:
 | Problema | Causa | Solucion |
 |----------|-------|----------|
 | `Not logged in` | Sesion de EAS expirada | `npx eas-cli login` |
-| Build genera `.aab` en vez de `.apk` | Falta `buildType: "apk"` en eas.json | Anadir `"android": { "buildType": "apk" }` al perfil `preview` |
+| Build genera `.aab` en vez de `.apk` | Falta `buildType: "apk"` en el perfil | Anadir `"android": { "buildType": "apk" }`, o usar `production-apk` |
+| `No se ha podido analizar el paquete` al instalar | El fichero publicado es un AAB renombrado a `.apk` | Comprobar con `unzip -l x.apk \| grep BUNDLE-METADATA`. Si aparece, es un bundle. Rebuild con `production-apk` |
+| `Missing build profile in eas.json` | Se edito el `eas.json` que no es | Solo cuenta `apps/mobile/eas.json`. La lista de perfiles que imprime el error dice cual esta leyendo |
 | `Invalid projectId` | app.json desactualizado | Verificar `extra.eas.projectId` en `apps/mobile/app.json` |
 | Build falla por dependencias nativas | Modulo nativo incompatible | Verificar que todos los plugins estan en `app.json > plugins` |
 | `SDK version mismatch` | eas.json o app.json con SDK viejo | Alinear versiones con `npx expo install --check` |
