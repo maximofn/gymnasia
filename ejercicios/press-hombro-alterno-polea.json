@@ -1,0 +1,11 @@
+{
+  "id": "press-hombro-alterno-polea",
+  "name": "Press de hombro alterno en polea",
+  "image_male": "images/press-hombro-alterno-polea-male.webp",
+  "image_female": "images/press-hombro-alterno-polea-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["tríceps", "core"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate entre dos poleas bajas con una agarradera en cada mano a la altura de los hombros. Presiona un brazo sobre la cabeza mientras el otro permanece preparado, manteniendo el torso estable. Baja la primera agarradera con control y alterna los brazos."
+}

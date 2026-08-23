@@ -27,6 +27,7 @@
     "test:deterministic": "npm --workspace apps/mobile run test:deterministic",
     "test:llm": "npm --workspace apps/mobile run test:llm",
     "test:agent:e2e": "node apps/mobile/scripts/agent-chat.e2e.mjs && node apps/mobile/scripts/development-provider.e2e.mjs",
+    "test:update-removal:e2e": "node apps/mobile/scripts/update-removal.e2e.mjs",
     "test:privacy:e2e": "node apps/mobile/scripts/privacy-policy.e2e.mjs",
     "test:train:e2e": "node apps/mobile/scripts/train-usability.e2e.mjs",
     "test:train:e2e:headed": "TRAIN_E2E_HEADLESS=0 npm run test:train:e2e",

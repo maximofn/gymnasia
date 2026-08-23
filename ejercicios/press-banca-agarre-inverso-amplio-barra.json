@@ -1,0 +1,11 @@
+{
+  "id": "press-banca-agarre-inverso-amplio-barra",
+  "name": "Press de banca con agarre inverso amplio y barra",
+  "image_male": "images/press-banca-agarre-inverso-amplio-barra-male.webp",
+  "image_female": "images/press-banca-agarre-inverso-amplio-barra-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "barra y banco",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano y sujeta la barra con las palmas orientadas hacia ti y las manos más abiertas que los hombros. Mantén las muñecas alineadas y baja la barra hacia la parte baja del pecho con los codos controlados. Empuja de nuevo hasta extender los brazos; utiliza un observador para colocar y retirar la barra."
+}

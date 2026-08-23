@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-alterna-polea",
+  "name": "Extensión de tríceps alterna en polea",
+  "image_male": "images/extension-triceps-alterna-polea-male.webp",
+  "image_female": "images/extension-triceps-alterna-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros", "core"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte frente a una polea y eleva el brazo de trabajo con el codo flexionado y el brazo superior estable. Extiende el antebrazo contra la tensión hasta contraer el tríceps sin mover el hombro. Regresa despacio, completa el lado y alterna con el otro brazo."
+}

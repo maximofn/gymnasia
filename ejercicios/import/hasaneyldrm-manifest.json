@@ -323,6 +323,33 @@
         {"source_id": "0107", "id": "elevacion-frontal-sobre-cabeza-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "0112", "id": "giro-pie-barra", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 13,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "1629", "id": "curl-biceps-agarre-amplio-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1457", "id": "press-militar-agarre-amplio-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0113", "id": "curl-inverso-agarre-amplio-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0114", "id": "step-up-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0115", "id": "buenos-dias-piernas-rigidas-barra", "action": "create", "difficulty": "advanced", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0116", "id": "peso-muerto-piernas-rectas-barra", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0122", "id": "press-banca-agarre-amplio-barra", "action": "create", "difficulty": "intermediate", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1258", "id": "press-banca-agarre-inverso-amplio-barra", "action": "create", "difficulty": "advanced", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0123", "id": "remo-menton-agarre-amplio-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3212", "id": "tocar-puntas-pies-pie", "action": "create", "difficulty": "beginner", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1259", "id": "estiramiento-pecho-manos-tras-cabeza", "action": "create", "difficulty": "beginner", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0130", "id": "extension-cadera-banco-peso-corporal", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3639", "id": "giro-tumbado-rodillas-flexionadas", "action": "create", "difficulty": "beginner", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3168", "id": "remo-sentadilla-peso-corporal", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1374", "id": "salto-cajon-estabilizacion-unilateral", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2466", "id": "escalador-cruzado", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1494", "id": "postura-mariposa-yoga", "action": "create", "difficulty": "beginner", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0148", "id": "press-hombro-alterno-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0149", "id": "extension-triceps-alterna-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0157", "id": "peso-muerto-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

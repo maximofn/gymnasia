@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentadilla-peso-corporal",
+  "name": "Remo en sentadilla con peso corporal",
+  "image_male": "images/remo-sentadilla-peso-corporal-male.webp",
+  "image_female": "images/remo-sentadilla-peso-corporal-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "glúteos", "cuádriceps"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta un apoyo estable o unas correas de suspensión y desplaza el peso hacia atrás con los brazos extendidos. Baja a una sentadilla manteniendo el pecho elevado y, desde ahí, tira de los codos hacia atrás para acercar el torso a las manos. Extiende los brazos y las piernas con control para repetir."
+}

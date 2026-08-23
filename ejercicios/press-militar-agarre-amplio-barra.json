@@ -1,0 +1,11 @@
+{
+  "id": "press-militar-agarre-amplio-barra",
+  "name": "Press militar con agarre amplio y barra",
+  "image_male": "images/press-militar-agarre-amplio-barra-male.webp",
+  "image_female": "images/press-militar-agarre-amplio-barra-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["tríceps", "trapecios", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Sostén la barra frente a los hombros con agarre prono, algo más ancho que estos, y los codos ligeramente adelantados. Activa abdomen y glúteos y empuja la barra en vertical hasta extender los brazos sobre la cabeza. Baja con control sin arquear la zona lumbar."
+}

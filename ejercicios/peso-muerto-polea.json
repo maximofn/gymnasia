@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-polea",
+  "name": "Peso muerto en polea",
+  "image_male": "images/peso-muerto-polea-male.webp",
+  "image_female": "images/peso-muerto-polea-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "zona lumbar", "antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate frente a una polea baja y sujeta el accesorio con ambas manos y los brazos largos. Lleva las caderas hacia atrás, flexiona moderadamente las rodillas y mantén la espalda neutra. Empuja el suelo y extiende las caderas para ponerte de pie; vuelve a bajar sin perder tensión en el cable."
+}
