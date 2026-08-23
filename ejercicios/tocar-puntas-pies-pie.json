@@ -1,0 +1,11 @@
+{
+  "id": "tocar-puntas-pies-pie",
+  "name": "Toque de puntas de pie",
+  "image_male": "images/tocar-puntas-pies-pie-male.webp",
+  "image_female": "images/tocar-puntas-pies-pie-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "zona lumbar", "gemelos"],
+  "equipment": "ninguno",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con las piernas casi rectas y los pies a la anchura de las caderas. Inclínate desde las caderas y lleva las manos hacia las puntas de los pies sin forzar la espalda ni bloquear las rodillas. Mantén un instante el rango cómodo y vuelve lentamente a la vertical."
+}

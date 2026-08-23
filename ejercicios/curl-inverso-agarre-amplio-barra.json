@@ -1,0 +1,11 @@
+{
+  "id": "curl-inverso-agarre-amplio-barra",
+  "name": "Curl inverso con agarre amplio y barra",
+  "image_male": "images/curl-inverso-agarre-amplio-barra-male.webp",
+  "image_female": "images/curl-inverso-agarre-amplio-barra-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["bíceps", "braquiorradial"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con la barra frente a los muslos y usa un agarre prono más ancho que los hombros. Sin mover los brazos superiores ni balancear el tronco, flexiona los codos para elevar la barra hacia la parte alta del abdomen. Baja lentamente manteniendo las muñecas neutras."
+}

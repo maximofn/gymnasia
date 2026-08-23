@@ -1,0 +1,11 @@
+{
+  "id": "step-up-barra",
+  "name": "Step-up con barra",
+  "image_male": "images/step-up-barra-male.webp",
+  "image_female": "images/step-up-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca una barra estable sobre la parte alta de la espalda y sitúate frente a un cajón firme. Apoya por completo un pie y empuja con su talón para subir sin impulsarte con la pierna inferior. Termina erguido, baja con control y alterna la pierna de apoyo."
+}

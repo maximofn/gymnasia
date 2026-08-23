@@ -1,0 +1,11 @@
+{
+  "id": "press-banca-agarre-amplio-barra",
+  "name": "Press de banca con agarre amplio y barra",
+  "image_male": "images/press-banca-agarre-amplio-barra-male.webp",
+  "image_female": "images/press-banca-agarre-amplio-barra-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "barra y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano con los pies firmes y agarra la barra bastante más abierta que los hombros. Baja la barra hacia el pecho manteniendo los antebrazos estables y los omóplatos retraídos. Empuja hasta extender los brazos sin despegar la espalda del banco."
+}
