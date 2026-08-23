@@ -74,7 +74,7 @@ Después de las ramas de hidratación/carga y del esqueleto global opcional, el 
 | `diet` | Controlar la fecha seleccionada, el encabezado contraíble y las superposiciones de edición/copia/estimación | Indicadores de dieta y estimación; consulta [Dieta y estimación de alimentos](diet-and-food-estimation.md) |
 | `measures` | Controlar los desplegables de período/métrica del panel, la pantalla de entrada, la expansión del historial y la superposición de fotos | Indicadores de medición; consulta [Mediciones](measurements.md) |
 | `chat` | Controlar la selección del hilo, los mensajes, la entrada, la expansión del razonamiento, el desplazamiento con el teclado y la explicación de BYOK | Ciclo de vida del agente respaldado por el proveedor; consulta [Tiempo de ejecución del agente](../agent/runtime.md) |
-| `settings` | Enrutar entre 14 secciones de configuración y alojar los controles de restablecimiento/proveedor | `SettingsTabKey`, registros de detalle, desplegables de proveedor y estado de copia de seguridad/actualización/VivaGym |
+| `settings` | Enrutar entre 13 secciones de configuración y alojar los controles de restablecimiento/proveedor | `SettingsTabKey`, registros de detalle, desplegables de proveedor y estado de copia de seguridad/actualización |
 
 `headerTitle` se deriva en lugar de conservarse. Entrenamiento resuelve `Sesión Activa`, `Editar Rutina`, `Detalle Rutina` o `Mis Rutinas`; todas las demás pantallas que no son Inicio utilizan `tabLabel(tab)`. Inicio renderiza `Gymnasia` directamente.
 
@@ -107,13 +107,12 @@ Dado que las claves de fecha se basan en la conversión local de `Date`, las rac
 9. `preferences` — Preferencias
 10. `notifications` — Notificaciones
 11. `backup` — Copia de seguridad
-12. `vivagym` — VivaGym
-13. `updates` — Actualizaciones
-14. `traces` — Trazas
+12. `updates` — Actualizaciones
+13. `traces` — Trazas
 
-La barra mide los anchos del viewport y del contenido, y mantiene `settingsTabsCanScrollLeft` y `settingsTabsCanScrollRight`; al pulsar las flechas, se desplaza 160 píxeles. Seleccionar una sección también borra los detalles seleccionados de ejercicio/alimento/alimento personal y cierra el formulario de alimentos personales y el chat de IA. Algunas secciones activan efectos: entrar en `memory` llama de forma diferida a `loadMemoryFields`, y entrar en `vivagym` carga las credenciales o actualiza un QR guardado.
+La barra mide los anchos del viewport y del contenido, y mantiene `settingsTabsCanScrollLeft` y `settingsTabsCanScrollRight`; al pulsar las flechas, se desplaza 160 píxeles. Seleccionar una sección también borra los detalles seleccionados de ejercicio/alimento/alimento personal y cierra el formulario de alimentos personales y el chat de IA. Entrar en `memory` llama de forma diferida a `loadMemoryFields`.
 
-Configuración es una superficie de integración, no un límite de servicio independiente. Los registros de proveedor siguen formando parte del estado controlado por el shell, Memoria y los alimentos personales utilizan almacenes independientes, y las funciones de copia de seguridad/actualizaciones/VivaGym tienen su propio estado asíncrono de interfaz. Consulta [Configuración del proveedor](../agent/provider-configuration.md), [Estado local y copia de seguridad](local-state-and-backup.md) y [VivaGym y actualizaciones](../integrations/vivagym-and-updates.md).
+Configuración es una superficie de integración, no un límite de servicio independiente. Los registros de proveedor siguen formando parte del estado controlado por el shell, Memoria y los alimentos personales utilizan almacenes independientes, y las funciones de copia de seguridad y actualizaciones tienen su propio estado asíncrono de interfaz. Consulta [Configuración del proveedor](../agent/provider-configuration.md), [Estado local y copia de seguridad](local-state-and-backup.md) e [Integración retirada de VivaGym y actualizaciones](../integrations/vivagym-and-updates.md).
 
 ### Control compartido de Memoria
 
@@ -125,7 +124,7 @@ La exportación de la copia de seguridad también carga este registro directamen
 
 `resetLocalData` sustituye `store` por `createInitialStore()`, reconstruye el estado de borrador/estado/visibilidad del proveedor, cierra los desplegables del proveedor, vuelve a Inicio, selecciona el hilo inicial si existe y borra la interfaz de la sesión de entrenamiento activa/anterior. A continuación, los efectos normales de persistencia guardan el almacén sustituto y eliminan cualquier sesión activa ausente.
 
-La etiqueta `Restablecer datos locales` es más amplia que el alcance directo de la función. `resetLocalData` **no** restablece por sí misma `userPrefs` (incluidas las opciones de notificación), `personalFoods`, los campos de Memoria almacenados o cargados, los metadatos de copia de seguridad, las trazas, las credenciales seguras de VivaGym, las cachés ni todas las superposiciones abiertas. El código que necesite borrar por completo el dispositivo no debe llamar a esta función y asumir que todos los artefactos locales han desaparecido; utiliza el inventario de almacenamiento de [Estado local y copia de seguridad](local-state-and-backup.md) para definir y probar un comportamiento más amplio.
+La etiqueta `Restablecer datos locales` es más amplia que el alcance directo de la función. `resetLocalData` elimina las claves de API y las dos credenciales seguras heredadas, pero **no** restablece por sí misma `userPrefs` (incluidas las opciones de notificación), `personalFoods`, los campos de Memoria almacenados o cargados, los metadatos de copia de seguridad, las trazas, las cachés ni todas las superposiciones abiertas. El código que necesite borrar por completo el dispositivo no debe llamar a esta función y asumir que todos los artefactos locales han desaparecido; utiliza el inventario de almacenamiento de [Estado local y copia de seguridad](local-state-and-backup.md) para definir y probar un comportamiento más amplio.
 
 ### Control de la configuración de notificaciones
 

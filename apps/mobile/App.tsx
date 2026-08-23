@@ -6,7 +6,6 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop, Text as SvgText } from "react-native-svg";
 import ConfettiCannon from "react-native-confetti-cannon";
 import * as SecureStore from "expo-secure-store";
-import QRCode from "react-native-qrcode-svg";
 import Constants from "expo-constants";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
@@ -54,6 +53,7 @@ import {
   type ToolStore,
 } from "./agent/toolExecutor";
 import { resolveFeedbackEndpoint } from "./environment";
+import { RETAINED_LEGACY_SECURE_STORE_KEYS } from "./legacySecureStorage";
 import { createFeedbackIssueClient } from "./agent/feedbackClient";
 import {
   describeOutcomeForUser,
@@ -170,7 +170,7 @@ Notifications.setNotificationHandler({
 });
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "backup" | "updates" | "traces" | "vivagym";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "backup" | "updates" | "traces";
 
 type SeriesType =
   | "normal"
@@ -1634,7 +1634,6 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "preferences", label: "Preferencias" },
   { key: "notifications", label: "Notificaciones" },
   { key: "backup", label: "Copia de seguridad" },
-  { key: "vivagym", label: "VivaGym" },
   { key: "updates", label: "Actualizaciones" },
   { key: "traces", label: "Trazas" },
 ];
@@ -1780,117 +1779,6 @@ async function clearLegacyStorageData(secureStoreAvailable: boolean): Promise<vo
       PROVIDERS.map((provider) => SecureStore.deleteItemAsync(`${prefix}.${provider}`)),
     ),
   );
-}
-
-// ────────────────────────────────────────────────────────────────────────────
-// VivaGym (MyVitale) — QR de acceso (GYM-6)
-// El QR de acceso lo emite el servidor de MyVitale; reproducimos el mismo flujo
-// que la app oficial: token de app (client_credentials) → login de usuario →
-// GET del QR. El QR es un String "exerp:checkin:<socio>-<tsMs>-<firma>" que rota
-// en cada petición y caduca en servidor, así que se pide fresco al mostrarlo.
-// client_id/secret son credenciales de app embebidas en el APK oficial (no del usuario).
-const VIVAGYM_BASE_URL = "https://vivagym.myvitale.com";
-const VIVAGYM_CLIENT_ID = "4_43uq8rgou3y88ckkk0sgg8c408w4gwsssg8owg0ow4wcocgw0w";
-const VIVAGYM_CLIENT_SECRET = "1uiljdab2misc4owsc0kg0cw0kgw0k0gkgk0k8k488w8sskk4s";
-const VIVAGYM_APP_NAME = "vivagym";
-const VIVAGYM_USER_AGENT = "okhttp/4.12.0";
-const VIVAGYM_EMAIL_KEY = scopedSecureStoreKey("vivagym.email");
-const VIVAGYM_PASSWORD_KEY = scopedSecureStoreKey("vivagym.password");
-
-type VivaGymCredentials = { email: string; password: string };
-
-function encodeFormBody(params: Record<string, string>): string {
-  return Object.entries(params)
-    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-    .join("&");
-}
-
-async function readVivaGymCredentials(
-  secureStoreAvailable: boolean,
-): Promise<VivaGymCredentials> {
-  if (!secureStoreAvailable) return { email: "", password: "" };
-  const [email, password] = await Promise.all([
-    SecureStore.getItemAsync(VIVAGYM_EMAIL_KEY),
-    SecureStore.getItemAsync(VIVAGYM_PASSWORD_KEY),
-  ]);
-  return { email: (email ?? "").trim(), password: password ?? "" };
-}
-
-async function writeVivaGymCredentials(
-  creds: VivaGymCredentials,
-  secureStoreAvailable: boolean,
-): Promise<void> {
-  if (!secureStoreAvailable) return;
-  const email = creds.email.trim();
-  if (email) await SecureStore.setItemAsync(VIVAGYM_EMAIL_KEY, email);
-  else await SecureStore.deleteItemAsync(VIVAGYM_EMAIL_KEY);
-  if (creds.password) await SecureStore.setItemAsync(VIVAGYM_PASSWORD_KEY, creds.password);
-  else await SecureStore.deleteItemAsync(VIVAGYM_PASSWORD_KEY);
-}
-
-async function fetchVivaGymAppToken(): Promise<string> {
-  const query = encodeFormBody({
-    grant_type: "client_credentials",
-    client_id: VIVAGYM_CLIENT_ID,
-    client_secret: VIVAGYM_CLIENT_SECRET,
-  });
-  const res = await fetch(`${VIVAGYM_BASE_URL}/oauth/v2/token?${query}`, {
-    method: "GET",
-    headers: { "User-Agent": VIVAGYM_USER_AGENT },
-  });
-  if (!res.ok) throw new Error(`No se pudo conectar con VivaGym (${res.status}).`);
-  const data = await res.json();
-  if (!data?.access_token) throw new Error("Respuesta inesperada de VivaGym al pedir el token.");
-  return data.access_token as string;
-}
-
-async function loginVivaGym(appToken: string, email: string, password: string): Promise<string> {
-  const res = await fetch(`${VIVAGYM_BASE_URL}/api/v2.0/exerp/newAuth`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "User-Agent": VIVAGYM_USER_AGENT,
-    },
-    body: encodeFormBody({
-      access_token: appToken,
-      email,
-      password,
-      appName: VIVAGYM_APP_NAME,
-    }),
-  });
-  const text = await res.text();
-  if (res.status === 400) {
-    let msg = "Email o contraseña de VivaGym incorrectos.";
-    try {
-      const parsed = JSON.parse(text);
-      if (parsed?.message) msg = parsed.message;
-    } catch {}
-    throw new Error(msg);
-  }
-  if (!res.ok) throw new Error(`Error al iniciar sesión en VivaGym (${res.status}).`);
-  const data = JSON.parse(text);
-  if (!data?.access_token) throw new Error("Respuesta inesperada del login de VivaGym.");
-  return data.access_token as string;
-}
-
-async function fetchVivaGymQrValue(userToken: string): Promise<string> {
-  const res = await fetch(`${VIVAGYM_BASE_URL}/api/v2.0/exerp/qr`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${userToken}`,
-      "User-Agent": VIVAGYM_USER_AGENT,
-    },
-  });
-  if (!res.ok) throw new Error(`No se pudo obtener el QR de VivaGym (${res.status}).`);
-  const raw = (await res.text()).trim();
-  // El endpoint puede devolver el string entrecomillado como JSON.
-  return raw.replace(/^"|"$/g, "");
-}
-
-async function getVivaGymQr(email: string, password: string): Promise<string> {
-  const appToken = await fetchVivaGymAppToken();
-  const userToken = await loginVivaGym(appToken, email, password);
-  return fetchVivaGymQrValue(userToken);
 }
 
 // --- Copia de seguridad manual (GYM-5) ---
@@ -6560,72 +6448,6 @@ export default function App() {
     setSettingsTabsCanScrollRight(scrollX < maxScrollX - 4);
   }, []);
 
-  // VivaGym (GYM-6): credenciales + QR de acceso
-  const [vivagymCredsLoaded, setVivagymCredsLoaded] = useState(false);
-  const [vivagymEmail, setVivagymEmail] = useState("");
-  const [vivagymPassword, setVivagymPassword] = useState("");
-  const [vivagymShowPassword, setVivagymShowPassword] = useState(false);
-  const [vivagymHasSavedCreds, setVivagymHasSavedCreds] = useState(false);
-  const [vivagymQr, setVivagymQr] = useState<string | null>(null);
-  const [vivagymLoadingQr, setVivagymLoadingQr] = useState(false);
-  const [vivagymSaving, setVivagymSaving] = useState(false);
-  const [vivagymError, setVivagymError] = useState<string | null>(null);
-
-  const refreshVivagymQr = useCallback(
-    async (emailArg?: string, passwordArg?: string) => {
-      const email = (emailArg ?? vivagymEmail).trim();
-      const password = passwordArg ?? vivagymPassword;
-      if (!email || !password) return;
-      setVivagymLoadingQr(true);
-      setVivagymError(null);
-      try {
-        const value = await getVivaGymQr(email, password);
-        setVivagymQr(value);
-      } catch (error) {
-        setVivagymQr(null);
-        setVivagymError(error instanceof Error ? error.message : "No se pudo obtener el QR.");
-      } finally {
-        setVivagymLoadingQr(false);
-      }
-    },
-    [vivagymEmail, vivagymPassword],
-  );
-
-  const loadVivagymCreds = useCallback(async () => {
-    const available = await isSecureStoreAvailable();
-    const creds = await readVivaGymCredentials(available);
-    setVivagymEmail(creds.email);
-    setVivagymPassword(creds.password);
-    const hasCreds = !!creds.email && !!creds.password;
-    setVivagymHasSavedCreds(hasCreds);
-    setVivagymCredsLoaded(true);
-    if (hasCreds) {
-      void refreshVivagymQr(creds.email, creds.password);
-    }
-  }, [refreshVivagymQr]);
-
-  const saveVivagymCreds = useCallback(async () => {
-    const email = vivagymEmail.trim();
-    const password = vivagymPassword;
-    if (!email || !password) {
-      setVivagymError("Introduce email y contraseña de VivaGym.");
-      return;
-    }
-    setVivagymSaving(true);
-    setVivagymError(null);
-    try {
-      // Validamos las credenciales pidiendo el QR antes de guardarlas.
-      const value = await getVivaGymQr(email, password);
-      const available = await isSecureStoreAvailable();
-      await writeVivaGymCredentials({ email, password }, available);
-      setVivagymHasSavedCreds(true);
-      setVivagymQr(value);
-    } catch (error) {
-      setVivagymError(error instanceof Error ? error.message : "No se pudieron guardar las credenciales.");
-    } finally {
-      setVivagymSaving(false);
-    }
-  }, [vivagymEmail, vivagymPassword]);
   const [selectedExerciseDetail, setSelectedExerciseDetail] = useState<ExerciseRepoEntry | null>(null);
   const [exercisesRepo, setExercisesRepo] = useState<ExerciseRepoEntry[]>([]);
   const [exercisePickerOpen, setExercisePickerOpen] = useState(false);
@@ -7683,20 +7505,6 @@ export default function App() {
       loadMemoryFields();
     }
   }, [settingsTab, memoryLoaded]);
-
-  // VivaGym (GYM-6): al entrar en la subpestaña carga las credenciales guardadas;
-  // si ya están metidas, refresca el QR cada vez que se entra.
-  useEffect(() => {
-    if (settingsTab !== "vivagym") return;
-    if (!vivagymCredsLoaded) {
-      void loadVivagymCreds();
-      return;
-    }
-    if (vivagymHasSavedCreds) {
-      void refreshVivagymQr();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settingsTab]);
 
   useEffect(() => {
     if (heightInput.trim()) return;
@@ -12262,8 +12070,7 @@ export default function App() {
         ...LEGACY_SECURE_STORE_PREFIXES.flatMap((prefix) =>
           PROVIDERS.map((provider) => `${prefix}.${provider}`),
         ),
-        VIVAGYM_EMAIL_KEY,
-        VIVAGYM_PASSWORD_KEY,
+        ...RETAINED_LEGACY_SECURE_STORE_KEYS.map(scopedSecureStoreKey),
       ];
       await Promise.all(
         activeSecureStoreKeys.map((key) => SecureStore.deleteItemAsync(key)),
@@ -21329,188 +21136,6 @@ export default function App() {
                       Qué contiene este archivo
                     </Text>
                   </Pressable>
-                </View>
-              ) : null}
-
-              {settingsTab === "vivagym" ? (
-                <View style={{ gap: 12 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                    Acceso VivaGym
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>
-                    Vincula tu cuenta de VivaGym para mostrar tu QR de acceso desde GYMNASIA. Tus credenciales se guardan cifradas en tu dispositivo y solo se usan para pedir el QR al servidor de VivaGym.
-                  </Text>
-
-                  {/* Email */}
-                  <View style={{ gap: 4 }}>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>
-                      Email
-                    </Text>
-                    <View
-                      style={{
-                        minHeight: 48,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: "rgba(61,70,82,0.9)",
-                        backgroundColor: "#1A1E25",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        paddingLeft: 12,
-                        paddingRight: 8,
-                        gap: 8,
-                      }}
-                    >
-                      <Feather name="mail" size={14} color="#778091" />
-                      <TextInput
-                        style={{ flex: 1, minHeight: 40, color: mobileTheme.color.textPrimary, paddingHorizontal: 0 }}
-                        value={vivagymEmail}
-                        onChangeText={setVivagymEmail}
-                        placeholder="tu@email.com"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        keyboardType="email-address"
-                        textContentType="emailAddress"
-                        autoComplete="email"
-                      />
-                    </View>
-                  </View>
-
-                  {/* Contraseña con ojo */}
-                  <View style={{ gap: 4 }}>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>
-                      Contraseña
-                    </Text>
-                    <View
-                      style={{
-                        minHeight: 48,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: "rgba(61,70,82,0.9)",
-                        backgroundColor: "#1A1E25",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        paddingLeft: 12,
-                        paddingRight: 8,
-                        gap: 8,
-                      }}
-                    >
-                      <Feather name="lock" size={14} color="#778091" />
-                      <TextInput
-                        style={{ flex: 1, minHeight: 40, color: mobileTheme.color.textPrimary, paddingHorizontal: 0 }}
-                        value={vivagymPassword}
-                        onChangeText={setVivagymPassword}
-                        placeholder="Tu contraseña de VivaGym"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        secureTextEntry={!vivagymShowPassword}
-                        textContentType="password"
-                        autoComplete="password"
-                      />
-                      <Pressable
-                        onPress={() => setVivagymShowPassword((prev) => !prev)}
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: 10,
-                          backgroundColor: "#222833",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Feather
-                          name={vivagymShowPassword ? "eye-off" : "eye"}
-                          size={16}
-                          color={mobileTheme.color.textSecondary}
-                        />
-                      </Pressable>
-                    </View>
-                  </View>
-
-                  {vivagymError ? (
-                    <Text style={{ color: "#FF7A7A", fontSize: 12 }}>{vivagymError}</Text>
-                  ) : null}
-
-                  {/* Guardar credenciales */}
-                  <Pressable
-                    onPress={saveVivagymCreds}
-                    disabled={vivagymSaving}
-                    style={{
-                      height: 48,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.brandPrimary,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexDirection: "row",
-                      gap: 8,
-                      opacity: vivagymSaving ? 0.6 : 1,
-                    }}
-                  >
-                    {vivagymSaving ? (
-                      <ActivityIndicator size="small" color="#06090D" />
-                    ) : (
-                      <>
-                        <Feather name="save" size={18} color="#06090D" />
-                        <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>
-                          {vivagymHasSavedCreds ? "Actualizar credenciales" : "Guardar y vincular"}
-                        </Text>
-                      </>
-                    )}
-                  </Pressable>
-
-                  {/* QR */}
-                  {vivagymHasSavedCreds ? (
-                    <View style={{ gap: 12, alignItems: "center", marginTop: 4 }}>
-                      <View
-                        style={{
-                          width: 248,
-                          height: 248,
-                          borderRadius: mobileTheme.radius.lg,
-                          backgroundColor: "#FFFFFF",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {vivagymLoadingQr ? (
-                          <ActivityIndicator size="large" color="#06090D" />
-                        ) : vivagymQr ? (
-                          <QRCode value={vivagymQr} size={220} backgroundColor="#FFFFFF" color="#000000" />
-                        ) : (
-                          <Text style={{ color: "#6B7280", fontSize: 12, paddingHorizontal: 16, textAlign: "center" }}>
-                            No hay QR disponible. Pulsa Refrescar.
-                          </Text>
-                        )}
-                      </View>
-
-                      <Pressable
-                        onPress={() => refreshVivagymQr()}
-                        disabled={vivagymLoadingQr}
-                        style={{
-                          height: 48,
-                          alignSelf: "stretch",
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.brandPrimary,
-                          backgroundColor: "transparent",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexDirection: "row",
-                          gap: 8,
-                          opacity: vivagymLoadingQr ? 0.6 : 1,
-                        }}
-                      >
-                        <Feather name="refresh-cw" size={18} color={mobileTheme.color.brandPrimary} />
-                        <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 15 }}>
-                          Refrescar QR
-                        </Text>
-                      </Pressable>
-
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, textAlign: "center", lineHeight: 16 }}>
-                        El QR se renueva y caduca en el servidor de VivaGym. Si no te deja pasar, pulsa Refrescar para pedir uno nuevo.
-                      </Text>
-                    </View>
-                  ) : null}
                 </View>
               ) : null}
 

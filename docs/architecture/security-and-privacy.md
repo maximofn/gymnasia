@@ -40,6 +40,9 @@ vida, está en el inventario.
   SecureStore esté disponible**. En web no lo está, y la clave queda en el
   almacenamiento del navegador. La aplicación lo advierte en la pantalla del proveedor.
 - La copia de seguridad exportada nunca incluye claves de API.
+- Dos nombres de clave heredados de una integración retirada permanecen en SecureStore
+  para conservar sus valores durante una actualización normal. El build actual no los
+  lee ni transmite y el restablecimiento explícito los elimina.
 
 ## Copias de seguridad
 
@@ -50,8 +53,9 @@ conversaciones. Es el artefacto más sensible que produce la aplicación.
 ## Borrado
 
 `resetLocalData` es hoy un borrado **parcial**. No alcanza a la memoria del asistente,
-los alimentos personales, las preferencias, las trazas, las credenciales de VivaGym ni
-las cachés. GYM-162 lo corrige. La política publicada describe este comportamiento tal
+los alimentos personales, las preferencias, las trazas ni las cachés. Sí elimina las
+claves de API y las credenciales cifradas heredadas. GYM-162 (ticket para completar el
+borrado local) corrige el resto. La política publicada describe este comportamiento tal
 como es, no como debería ser.
 
 ## Trazas

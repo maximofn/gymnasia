@@ -22,10 +22,10 @@ en navegador usa `localStorage`.
 - La creación automática de issues en GitHub queda desactivada en el cliente
   estático. Un token de escritura nunca se inyecta en `EXPO_PUBLIC_*`; esa
   integración requiere un proxy/backend confiable.
-- Cámara, notificaciones nativas, audio de fondo y QR de VivaGym son funciones
-  degradadas en web. La app mantiene los controles disponibles cuando el
-  navegador los soporta; las notificaciones de descanso y el audio nativo no se
-  consideran garantías de la publicación web.
+- Cámara, notificaciones nativas y audio de fondo son funciones degradadas en web. La
+  app mantiene los controles disponibles cuando el navegador los soporta; las
+  notificaciones de descanso y el audio nativo no se consideran garantías de la
+  publicación web.
 
 ## Build y publicación
 

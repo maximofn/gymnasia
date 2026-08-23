@@ -4,6 +4,11 @@ Investigación de interoperabilidad (cuenta propia, fines de aprendizaje) sobre 
 app oficial de **VivaGym** genera el QR de acceso, para valorar y reproducir el flujo en
 GYMNASIA.
 
+> **Estado desde 2026-08-24:** la integración está retirada de todas las variantes por
+> GYM-192 (ticket para retirar temporalmente VivaGym de la versión pública). Este
+> documento conserva la investigación histórica para una posible reintroducción; no
+> describe una función disponible ni código incluido en el AAB.
+
 ## Resumen
 
 - La app oficial es **VivaGym MyApp** (`com.myvitale.vivagym.group`), nativa Android.
@@ -98,4 +103,9 @@ pintando el string devuelto. Consideraciones:
 - `client_id`/`client_secret` son credenciales **de app** (no del usuario) y son
   trivialmente extraíbles del APK público; se embeben igual que en la app oficial.
 - Revisar los términos de uso de VivaGym antes de cualquier uso en producción.
-- Implementación en GYMNASIA: Configuración → **VivaGym** (ver GYM-7).
+- La implementación histórica fue GYM-7 (ticket que implementó el QR de VivaGym).
+- Antes de reintroducirla hay que confirmar el encaje autorizado, reutilizar las claves
+  heredadas `vivagym.email` y `vivagym.password`, resolver GYM-154 (ticket para
+  endurecer solicitudes, validación y persistencia de VivaGym) y GYM-155 (ticket para
+  proteger secretos y códigos QR de VivaGym), actualizar la documentación legal y
+  volver a inspeccionar el AAB.

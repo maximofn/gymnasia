@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia (GYM-190). De aquí salen la política de privacidad publicada (docs/legal/) y las respuestas de Data safety (docs/security/play-declarations.md). Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198. Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-08-v3",
+  "policyVersion": "2026-08-v4",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -233,18 +233,16 @@
       "form": "literal",
       "personal": true,
       "dataCategory": "credentials, personal-info",
-      "purpose": "Correo de la cuenta de VivaGym del usuario, usado para obtener el QR de acceso al gimnasio.",
-      "clearedBy": "never",
-      "plannedRemoval": "GYM-192"
+      "purpose": "Correo heredado de una integración retirada. Permanece cifrado e inaccesible durante las actualizaciones normales para poder reutilizarlo si la función vuelve; la versión actual no lo lee ni lo transmite.",
+      "clearedBy": "reset"
     },
     {
       "key": "vivagym.password",
       "form": "literal",
       "personal": true,
       "dataCategory": "credentials",
-      "purpose": "Contraseña de la cuenta de VivaGym del usuario. Se guarda tal cual porque el proveedor la exige en cada inicio de sesión.",
-      "clearedBy": "never",
-      "plannedRemoval": "GYM-192"
+      "purpose": "Contraseña heredada de una integración retirada. Permanece cifrada e inaccesible durante las actualizaciones normales para poder reutilizarla si la función vuelve; la versión actual no la lee ni la transmite.",
+      "clearedBy": "reset"
     }
   ],
   "networkEndpoints": [
@@ -305,14 +303,6 @@
       "thirdParty": "Open Food Facts"
     },
     {
-      "host": "vivagym.myvitale.com",
-      "trigger": "user-initiated",
-      "requiresUserKey": false,
-      "sends": "Correo y contraseña de la cuenta de VivaGym del usuario, para obtener su QR de acceso. El QR contiene su identificador de socio.",
-      "thirdParty": "VivaGym / MyVitale",
-      "plannedRemoval": "GYM-192"
-    },
-    {
       "host": "gymnasia-feedback.maximofn.com",
       "trigger": "user-initiated",
       "requiresUserKey": false,
@@ -340,6 +330,7 @@
     "El escaneo de claves reconoce literales que empiezan por 'gymnasia.' o 'gymnasia_'. BACKUP_APP_ID vale exactamente 'gymnasia' y no es una clave de almacenamiento, por eso no aparece.",
     "Las claves BYOK se eliminan del estado antes de escribirlo en AsyncStorage solo si SecureStore está disponible. En web no lo está, así que la clave queda en el almacenamiento del navegador; la app ya lo advierte en Ajustes.",
     "La copia de seguridad exportada NO incluye las claves BYOK, pero sí medidas, dieta, historial de entrenamiento, memoria del coach y el historial completo de chats. En móvil el fichero se escribe en el directorio de caché de la app y no se borra tras compartirlo.",
+    "Una versión anterior pudo guardar dos credenciales de una integración ahora retirada. La versión actual conserva esos valores cifrados dentro del mismo package name durante una actualización normal, no los lee ni los transmite y los elimina cuando el usuario ejecuta Restablecer datos locales.",
     "'Restablecer datos locales' es un borrado parcial: solo alcanza a las entradas con clearedBy 'reset'. Todo lo marcado como 'never' sobrevive. GYM-162 lo corrige; hasta entonces la política publicada debe describirlo tal cual.",
     "Hasta agosto de 2026 la app inyectaba en cada instalación 92 mediciones de grasa corporal que no pertenecían al usuario. Se retiró junto con su marca de migración. Si vuelve a aparecer una siembra de datos con apariencia real, no es una semilla de demostración: es dato de salud de un tercero distribuido en el binario.",
     "Los permisos no se declaran aquí: la fuente es scripts/android-permissions/policy.json. Los permisos que las dependencias aportan por manifest merger deben verificarse sobre el manifest FUSIONADO del artefacto en GYM-198, no sobre el manifest de origen."

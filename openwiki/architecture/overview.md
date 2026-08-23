@@ -22,7 +22,7 @@ flowchart TD
     Shell --> Agent["Ejecución del agente en apps/mobile/agent"]
     Shell --> Catalogs["Catálogos de referencia de GitHub Raw"]
     Agent --> Prompt["Prompt mutable del entrenador en GitHub Raw"]
-    Shell --> APIs["OpenAI, Google, Open Food Facts, GitHub Releases, VivaGym"]
+    Shell --> APIs["OpenAI, Google, Open Food Facts and GitHub Releases"]
     Agent --> APIs
     Shell --> Native["Capacidades nativas de Expo"]
     Shell -. "Anthropic durante el desarrollo en navegador" .-> Proxy["Proxy CORS de FastAPI"]
@@ -44,7 +44,7 @@ La arquitectura tiene dos artefactos independientes orientados al usuario:
 | Capa | Rutas y símbolos canónicos | Responsabilidad | Puede depender de |
 |---|---|---|---|
 | Arranque y shell | `apps/mobile/index.js`, `apps/mobile/App.tsx::App`, `TabKey`, `DesktopSidebar` | Registrar la raíz de Expo, hidratar el estado, seleccionar la navegación adaptable y componer todas las pantallas y superposiciones | Lógica de dominio, agente, API de Expo/React Native, persistencia local y servicios remotos |
-| Dominios del producto | Principalmente funciones, tipos, estado y ramas de renderizado en `apps/mobile/App.tsx` | Entrenamiento, dieta, mediciones, Inicio, ajustes, copias de seguridad, actualizaciones y VivaGym | Estado y adaptadores propiedad del shell |
+| Dominios del producto | Principalmente funciones, tipos, estado y ramas de renderizado en `apps/mobile/App.tsx` | Entrenamiento, dieta, mediciones, Inicio, ajustes, copias de seguridad y actualizaciones | Estado y adaptadores propiedad del shell |
 | Ejecución del agente | `apps/mobile/agent/toolDefinitions.ts`, `toolExecutor.ts`, `providerToolLoop.ts`, `providerStreamParsers.ts`, `sse.ts` | Contrato canónico de herramientas, ejecución, rondas independientes del proveedor y análisis de transmisiones | Contexto proporcionado por `App`; transportes de proveedores |
 | Persistencia local | `LocalStore` y auxiliares de almacenamiento en `apps/mobile/App.tsx` | Hidratación, normalización, efectos de almacenamiento, separación de claves seguras, copia de seguridad/importación | `AsyncStorage`, `expo-secure-store`; un reflejo de archivos exclusivo para desarrollo |
 | Catálogos de referencia | `alimentos/`, `productos_comerciales/`, `recetas/`, `ejercicios/` | JSON e imágenes de ejecución servidos desde GitHub Raw; enriquecen los registros locales, pero no definen la política del agente | Archivos del repositorio y disponibilidad de GitHub |
@@ -75,7 +75,6 @@ La aplicación también realiza llamadas salientes directas a:
 - Los modelos y endpoints de generación de Google Generative Language;
 - La búsqueda de productos de Open Food Facts;
 - GitHub Releases para detectar actualizaciones del APK. Existe código para escribir incidencias en GitHub, pero todos los escritores actuales de alimentos, ejercicios y funcionalidades regresan antes de realizar E/S de red porque su token compartido codificado de forma fija está vacío; por tanto, Issues no es actualmente una dependencia efectiva. No obstante, la herramienta de funcionalidades informa de un éxito falso. La duplicación de incidencias durante los reintentos del chat solo constituye un riesgo futuro si se habilita la escritura;
-- Los endpoints de VivaGym para el inicio de sesión y el acceso mediante QR.
 
 Estas llamadas trasladan datos de usuario o credenciales almacenados localmente a dominios de confianza de terceros. Las claves de los proveedores son credenciales BYOK; no establecen una cuenta de Gymnasia. El comportamiento de los proveedores, la ejecución de herramientas y la transmisión se describen en [Configuración de proveedores](../agent/provider-configuration.md), [Transmisión de proveedores](../agent/provider-streaming.md) y [Ejecución del agente](../agent/runtime.md).
 

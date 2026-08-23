@@ -76,7 +76,7 @@ El agregado no constituye todo el modelo de persistencia. A continuación se enu
 | AsyncStorage `gymnasia.mobile.lastUpdateCheck` | Milisegundos desde el epoch como cadena | No | Limitación a cuatro horas de las comprobaciones de versiones. |
 | AsyncStorage `gymnasia_debug_traces` | Hasta 1000 objetos `TraceEntry` | No | Gestionado por `trace.ts`; se carga de forma diferida y se reescribe sin esperar el resultado. |
 | SecureStore `gymnasia.mobile.v3.provider.api_key.<provider>` | Una clave de API de proveedor sin espacios circundantes | No | Se combina con `LocalStore` en memoria; se establece/elimina cada vez que cambia `store.keys`. |
-| SecureStore `vivagym.email`, `vivagym.password` | Credenciales de VivaGym | No | Ciclo de vida de integración independiente; no forma parte de la hidratación ni del restablecimiento normales. |
+| SecureStore `vivagym.email`, `vivagym.password` | Credenciales heredadas de una integración retirada | No | La versión actual no las lee ni escribe durante la hidratación o el uso normal; una actualización dentro del mismo package name las conserva y `resetLocalData` las elimina. |
 | Archivo de desarrollo `apps/mobile/.dev-store.json` mediante `/dev-store` | JSON de `LocalStore` en memoria sin sanear | No | Solo para desarrollo web; lectura alternativa cuando AsyncStorage no tiene un agregado y escritura espejo después de cambios del almacén. |
 
 Las claves de agregado heredadas `gymnasia.mobile.local.v1` y `.v2`, junto con los prefijos antiguos de claves de proveedor `gymnasia.mobile.provider.api_key` y `gymnasia.mobile.v2.provider.api_key`, se **eliminan**, no se importan, durante cada hidratación. Por tanto, esa operación es una limpieza, no una migración de datos.
@@ -161,7 +161,7 @@ No valida en profundidad cada objeto. En particular, `threads` se acepta directa
 
 Cuando `SecureStore.isAvailableAsync()` se completa correctamente, `stripSensitiveStoreData` reemplaza cada `AIKey.api_key` por `""` antes de serializarlo para AsyncStorage o para una copia de seguridad. Durante la hidratación, `mergeStoreWithSecureApiKeys` da prioridad a un valor no vacío de SecureStore y, en caso contrario, conserva el valor del agregado. Esto permite migrar valores en texto sin formato desde el agregado y trasladarlos a SecureStore durante la reescritura inmediata.
 
-Cuando SecureStore no está disponible, todo el almacén —incluidas las claves de API de los proveedores— se conserva deliberadamente en AsyncStorage para que la web y los entornos no compatibles sigan funcionando; la interfaz de configuración advierte sobre esta alternativa. Las credenciales de VivaGym no tienen una alternativa en texto sin formato: los asistentes de lectura/escritura devuelven o no hacen nada cuando SecureStore no está disponible.
+Cuando SecureStore no está disponible, todo el almacén —incluidas las claves de API de los proveedores— se conserva deliberadamente en AsyncStorage para que la web y los entornos no compatibles sigan funcionando; la interfaz de configuración advierte sobre esta alternativa. Las dos credenciales heredadas de VivaGym no tienen alternativa en texto sin formato: la versión retirada no las lee ni las escribe en ninguna plataforma.
 
 Una excepción importante exclusiva del desarrollo es `saveDevStoreFile(JSON.stringify(store))`: a diferencia de la ruta de AsyncStorage, recibe el almacén **sin sanear**. Por ello, las claves de proveedores configuradas pueden escribirse en `apps/mobile/.dev-store.json` durante el desarrollo web. El middleware de Metro también sirve y acepta `/dev-store` con `Access-Control-Allow-Origin: *`, no realiza ninguna autenticación ni validación del cuerpo o del esquema y utiliza escrituras de archivo síncronas. Es infraestructura de desarrollo, no una API de producción, y el archivo debe tratarse como sensible.
 
@@ -203,7 +203,7 @@ Las trazas se excluyen de la copia de seguridad/importación y `resetLocalData` 
 
 `appVersion` procede de la configuración de Expo, con `0.0.0` como valor alternativo; es un metadato, no una comprobación de compatibilidad de importación. `schemaVersion` es el control de compatibilidad. El analizador acepta versiones de esquema inferiores o iguales a `BACKUP_SCHEMA_VERSION`, rechaza las versiones futuras y solo comprueba la identidad del sobre, la versión numérica y la presencia de `data.store`. No existen funciones explícitas de migración por versión.
 
-Los datos excluidos son importantes desde el punto de vista semántico: claves de API de proveedores, credenciales de VivaGym, entrenamiento activo e instantánea anterior a la sesión, cachés remotas, caché de prompts, trazas, metadatos de copias de seguridad/actualizaciones y marcadores de migración. Una cadena `photo_uri` dentro de una medición se incluye porque las mediciones residen en `store`, pero los bytes de la imagen referenciada **no** se copian en el JSON. Por tanto, un dispositivo restaurado puede contener URI `file:` o `content:` inservibles.
+Los datos excluidos son importantes desde el punto de vista semántico: claves de API de proveedores, credenciales heredadas de integraciones retiradas, entrenamiento activo e instantánea anterior a la sesión, cachés remotas, caché de prompts, trazas, metadatos de copias de seguridad/actualizaciones y marcadores de migración. Una cadena `photo_uri` dentro de una medición se incluye porque las mediciones residen en `store`, pero los bytes de la imagen referenciada **no** se copian en el JSON. Por tanto, un dispositivo restaurado puede contener URI `file:` o `content:` inservibles.
 
 ### Secuencias de exportación e importación
 
@@ -275,7 +275,8 @@ No existe ninguna transacción que abarque AsyncStorage, SecureStore, el estado 
 
 - reemplaza `LocalStore`, restablece el estado de la interfaz de proveedores, vuelve a Inicio y finaliza el entrenamiento activo;
 - a continuación, los efectos de persistencia ordinarios reescriben el agregado, eliminan las claves de API de proveedores ahora vacías y eliminan las claves de sesión;
-- **no** restablece `userPrefs` (incluida la configuración de notificaciones), `personalFoods`, los datos `personalData`/Memoria almacenados o cargados, las credenciales de VivaGym, las cachés, las trazas, los metadatos de copia de seguridad, el límite de actualizaciones ni el marcador de migración de grasa corporal;
+- elimina también las dos claves heredadas `vivagym.email` y `vivagym.password`, sin leer sus valores;
+- **no** restablece `userPrefs` (incluida la configuración de notificaciones), `personalFoods`, los datos `personalData`/Memoria almacenados o cargados, las cachés, las trazas, los metadatos de copia de seguridad, el límite de actualizaciones ni el marcador de migración de grasa corporal;
 - en desarrollo web, también replica el nuevo agregado en el archivo de desarrollo.
 
 Por consiguiente, no debe deducirse de esta función ningún texto de interfaz que implique un borrado completo del dispositivo.

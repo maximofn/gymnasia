@@ -76,10 +76,6 @@ publicada afirma hoy cosas que dejarán de ser ciertas.
 - **GYM-162 (borrado completo)**: la sección `#eliminacion` describe hoy un borrado
   parcial y enumera lo que *no* se borra. Al arreglar `resetLocalData`, reescribir esa
   sección, subir versión y republicar.
-- **GYM-192 (retirar VivaGym)**: elimina la entrada de `#terceros`, las dos entradas de
-  SecureStore del inventario y la sección de credenciales de
-  `play-declarations.md`. El guard rail avisará con `endpoint-stale` y
-  `securestore-key-stale`.
 - **GYM-188 (retirar el actualizador de GitHub)**: elimina `api.github.com` del
   inventario si deja de usarse por completo, y ajusta `#terceros`.
 - **GYM-189 (denuncia dentro de la app)**: sustituir en `#denuncia` el canal de correo

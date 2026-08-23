@@ -6,7 +6,7 @@ es dejarlas escritas, verificadas contra el código y coherentes con la polític
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v3` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v4` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -64,14 +64,10 @@ de "no" a "sí" tras un rechazo cuesta una nueva revisión; al revés, no.
   completo desde los ajustes del sistema, en la sección `#eliminacion`.
 - **Data types collected by third-party SDKs**: ninguno. La app no incorpora SDK de
   analítica, publicidad ni crash reporting.
-
-### Credenciales de VivaGym
-
-Mientras la integración de VivaGym siga en el build publicado, hay que declarar
-`Personal info › Email` y credenciales de usuario, porque el usuario introduce el correo
-y la contraseña de su cuenta de un tercero y ambos se envían a los servidores de
-VivaGym. **Retirarla (GYM-192) antes de publicar elimina esta declaración entera** y es
-la opción recomendada: evita declarar recogida de credenciales en una app de fitness.
+- **Credenciales heredadas de funciones retiradas**: pueden permanecer cifradas en el
+  llavero tras actualizar, pero el build actual no las lee ni las transmite y el
+  restablecimiento las elimina. Al no salir del dispositivo, no cuentan como
+  `Collected` ni `Shared`.
 
 ---
 
