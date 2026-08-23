@@ -241,6 +241,14 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   requires a current-commit approval from `@maximofn`; all merges remain manual.
 - If a PR touches build-triggering files under `apps/mobile/**`, ask for explicit
   confirmation before merging because Expo quota is limited.
+- **El entorno de build móvil por defecto es Producción.** Mientras el mantenedor
+  pruebe directamente en Producción y no haya usuarios, interpreta cualquier
+  petición genérica de compilar, generar un APK o lanzar una build como
+  `production-apk` (APK instalable con configuración de Producción). Usa
+  `production` solo cuando se pida un AAB para Google Play. No lances ni apruebes
+  una build `staging` salvo que el mantenedor solicite Staging explícitamente. Si
+  el push a `main` deja esperando la build automática de Staging, no la apruebes
+  por defecto: lanza y aprueba manualmente `production-apk`.
 - **Qué dispara realmente el build de Expo**: no todo push a `main`. El workflow
   `.github/workflows/build-apk.yml` filtra por rutas:
   ```yaml
