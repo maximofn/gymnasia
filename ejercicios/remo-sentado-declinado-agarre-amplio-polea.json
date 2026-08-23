@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentado-declinado-agarre-amplio-polea",
+  "name": "Remo sentado declinado con agarre amplio en polea",
+  "image_male": "images/remo-sentado-declinado-agarre-amplio-polea-male.webp",
+  "image_female": "images/remo-sentado-declinado-agarre-amplio-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate reclinado frente a una polea baja y sujeta una barra larga con agarre prono amplio. Mantén el pecho elevado y la espalda neutra. Lleva la barra hacia la parte baja del pecho abriendo los codos y juntando los omóplatos, y extiende los brazos lentamente."
+}

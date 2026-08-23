@@ -1,0 +1,11 @@
+{
+  "id": "remo-deltoide-posterior-rodillas-cuerda-polea",
+  "name": "Remo para deltoide posterior de rodillas con cuerda en polea",
+  "image_male": "images/remo-deltoide-posterior-rodillas-cuerda-polea-male.webp",
+  "image_female": "images/remo-deltoide-posterior-rodillas-cuerda-polea-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios", "romboides", "bíceps"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Arrodíllate frente a una polea baja y sujeta una cuerda con agarre neutro. Mantén el torso vertical y los brazos extendidos. Tira de los extremos de la cuerda hacia el pecho abriendo los codos y retrayendo los omóplatos, y vuelve lentamente al inicio."
+}

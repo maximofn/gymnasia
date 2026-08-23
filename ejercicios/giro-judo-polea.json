@@ -1,0 +1,11 @@
+{
+  "id": "giro-judo-polea",
+  "name": "Giro judo en polea",
+  "image_male": "images/giro-judo-polea-male.webp",
+  "image_female": "images/giro-judo-polea-female.webp",
+  "muscle_group": "abdominales",
+  "secondary_muscles": ["oblicuos", "hombros"],
+  "equipment": "polea",
+  "difficulty": "advanced",
+  "instructions": "Colócate de lado a una polea y toma la agarradera con ambas manos cerca del hombro más próximo. Activa el abdomen y rota las caderas y el torso mientras llevas el cable en diagonal por encima del hombro contrario. Regresa con control y completa las repeticiones antes de cambiar de lado."
+}

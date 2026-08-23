@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-inclinada-polea",
+  "name": "Extensión inclinada de tríceps en polea",
+  "image_male": "images/extension-triceps-inclinada-polea-male.webp",
+  "image_female": "images/extension-triceps-inclinada-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de espaldas a una polea baja, sujeta una barra recta sobre la cabeza e inclina ligeramente el torso al frente. Mantén los brazos superiores junto a las orejas. Flexiona los codos para bajar la barra detrás de la cabeza y extiéndelos por completo sin mover los hombros."
+}

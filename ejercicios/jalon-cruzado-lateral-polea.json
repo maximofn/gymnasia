@@ -1,0 +1,11 @@
+{
+  "id": "jalon-cruzado-lateral-polea",
+  "name": "Jalón cruzado lateral en polea",
+  "image_male": "images/jalon-cruzado-lateral-polea-male.webp",
+  "image_female": "images/jalon-cruzado-lateral-polea-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["bíceps", "romboides", "deltoides posteriores"],
+  "equipment": "polea",
+  "difficulty": "advanced",
+  "instructions": "Colócate en el centro de una polea doble y toma con cada mano la agarradera del lado contrario. Inclina ligeramente el torso con la espalda neutra. Tira de las agarraderas hacia abajo y hacia fuera cruzando la trayectoria, retrae los omóplatos y vuelve despacio al inicio."
+}

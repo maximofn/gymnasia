@@ -1,0 +1,11 @@
+{
+  "id": "press-declinado-unilateral-polea",
+  "name": "Press declinado unilateral en polea",
+  "image_male": "images/press-declinado-unilateral-polea-male.webp",
+  "image_female": "images/press-declinado-unilateral-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "polea",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco declinado entre las poleas y toma una agarradera con una mano a la altura del pecho. Mantén la espalda apoyada y el hombro estable. Empuja la agarradera hasta extender el brazo sin girar el torso y vuelve con control antes de cambiar de lado."
+}

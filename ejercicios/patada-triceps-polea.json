@@ -1,0 +1,11 @@
+{
+  "id": "patada-triceps-polea",
+  "name": "Patada de tríceps en polea",
+  "image_male": "images/patada-triceps-polea-male.webp",
+  "image_female": "images/patada-triceps-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte frente a una polea baja, toma una agarradera con una mano e inclina el torso desde las caderas. Mantén el brazo superior pegado al costado y el codo flexionado. Extiende el antebrazo hacia atrás hasta bloquear suavemente el codo y vuelve con control antes de cambiar de lado."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-concentrada-rodilla-polea",
+  "name": "Extensión de tríceps concentrada sobre rodilla en polea",
+  "image_male": "images/extension-triceps-concentrada-rodilla-polea-male.webp",
+  "image_female": "images/extension-triceps-concentrada-rodilla-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate junto a una polea baja, sujeta una agarradera y apoya el codo en la cara interna de la rodilla del mismo lado. Mantén el brazo superior fijo. Extiende el codo por completo, contrae el tríceps y vuelve lentamente a la posición flexionada antes de cambiar de brazo."
+}

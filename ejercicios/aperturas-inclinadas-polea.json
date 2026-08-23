@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inclinadas-polea",
+  "name": "Aperturas inclinadas en polea",
+  "image_male": "images/aperturas-inclinadas-polea-male.webp",
+  "image_female": "images/aperturas-inclinadas-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco inclinado entre dos poleas bajas y comienza con las agarraderas sobre el pecho. Mantén una ligera flexión en los codos. Abre los brazos de forma controlada hasta notar el estiramiento y vuelve a juntar las manos siguiendo un arco amplio."
+}
