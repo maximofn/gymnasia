@@ -6,7 +6,9 @@
 > viabilidad ni garantiza que el uso del nombre esté libre de riesgo. Sirve para
 > decidir si se sigue adelante con la ficha de Google Play o si hay que parar.
 
-- **Fecha de la comprobación:** 22 de agosto de 2026
+- **Fecha de la comprobación:** 22 de agosto de 2026 (consultas registrales
+  reproducidas y perfiles sociales verificados a mano el 23 de agosto de 2026,
+  con idéntico resultado)
 - **Signo evaluado:** `Gymnasia` (denominativo)
 - **Identidad actual del producto:** `apps/mobile/app.json` → `name: "Gymnasia"`,
   `package: "com.maximofn.gymnasia"`, dominio en uso `gymnasia.maximofn.com`
@@ -43,7 +45,7 @@ registrado.
 | Google Play | Apps publicadas con el término en el nombre | Búsqueda web y descarga directa de las fichas con `hl=es&gl=ES` |
 | App Store | Apps publicadas con el término en el nombre | Búsqueda web |
 | DNS / RDAP | Ocupación de dominios | `dig` contra `8.8.8.8` y RDAP de Verisign |
-| Perfiles públicos | Handles en GitHub y redes | API pública de GitHub y peticiones HTTP |
+| Perfiles públicos | Handles en GitHub y redes | API pública de GitHub; Instagram, X y LinkedIn revisados a mano con sesión iniciada |
 
 Clases de Niza consideradas relevantes para este producto: **9** (software),
 **41** (entrenamiento y actividad deportiva), **44** (servicios de salud), y de
@@ -138,9 +140,13 @@ nombre visible de la ficha no lo es.
 
 - `github.com/gymnasia`: ocupado desde 2015-11-13, organización con 3 repos
   públicos.
-- Los handles de Instagram, X y LinkedIn devuelven 200, pero esas plataformas
-  responden 200 también para perfiles inexistentes cuando no hay sesión: la
-  comprobación **no es concluyente** y habría que repetirla autenticado.
+- Instagram, X y LinkedIn devuelven 200 también para perfiles inexistentes
+  cuando no hay sesión iniciada, así que la comprobación automática no sirve
+  aquí. Las revisó a mano el mantenedor el 23 de agosto de 2026, con sesión:
+  - **X y LinkedIn:** no hay ninguna cuenta con ese nombre.
+  - **Instagram:** no hay ninguna cuenta llamada exactamente «gymnasia». Sí hay
+    varias que lo contienen dentro de un nombre más largo; son gimnasios
+    locales sin relación con el producto ni presencia en España.
 
 ## Valoración del riesgo
 
@@ -242,9 +248,11 @@ Detalles de la consulta que conviene conservar:
     principio. No hagas un barrido de decenas de términos.
   - Si te bloqueas a mitad, no insistas: pasa a las interfaces web de la OEPM y
     la EUIPO que se listan abajo, o repite desde otra red más tarde.
-  - Los resultados de este documento se obtuvieron antes del bloqueo. La
-    reproducción del comando anterior quedó **sin verificar de nuevo** el día de
-    la comprobación por este motivo.
+  - El bloqueo **sí caduca**: al día siguiente, 23 de agosto de 2026, la misma
+    IP volvía a recibir `HTTP 200`. Ese día se reprodujeron las tres consultas y
+    devolvieron exactamente lo mismo que la víspera: `gymnasia` en ES/EM → `0`,
+    el control `gimnasio` en ES/EM → `80`, `gymnasia` en todas las oficinas →
+    `45`. El comando de arriba queda por tanto **verificado**.
 
 Las interfaces web equivalentes, para verificación manual:
 
