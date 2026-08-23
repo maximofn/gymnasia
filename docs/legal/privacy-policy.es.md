@@ -1,5 +1,5 @@
 ---
-version: 2026-08-v4
+version: 2026-08-v5
 effective_date: 2026-08-23
 locale: es
 lang: es
@@ -14,16 +14,17 @@ toc_title: Contenido
 
 ## Resumen {#resumen}
 
-Gymnasia funciona **en tu dispositivo**. No hay cuenta, no hay registro y no existe
-ningún servidor de Gymnasia que reciba tus datos. Tus entrenamientos, tu dieta, tu
-peso, tus medidas y tus conversaciones con el asistente se guardan en el almacenamiento
-de la propia aplicación.
+Gymnasia funciona **principalmente en tu dispositivo**. No hay cuenta ni registro. Tus
+entrenamientos, tu dieta, tu peso, tus medidas y tus conversaciones con el asistente se
+guardan en el almacenamiento de la propia aplicación.
 
 Hay una excepción importante y es enteramente tuya: si activas el asistente de
 inteligencia artificial, **tú** aportas la clave de un proveedor (OpenAI, Anthropic o
 Google) y la aplicación habla **directamente** con ese proveedor desde tu dispositivo.
 Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta
-con ella. Nosotros no lo vemos, no lo almacenamos y no podemos recuperarlo.
+con ella. Nosotros no lo vemos ni lo almacenamos, salvo que decidas usar la acción
+**Denunciar** sobre una respuesta y apruebes expresamente la vista previa del contenido
+que se enviará.
 
 Esta política describe con detalle qué se guarda, qué sale del dispositivo y qué
 control tienes sobre ello.
@@ -43,12 +44,13 @@ protección de datos designado.
 Gymnasia no te pide un correo, ni una contraseña, ni un nombre de usuario para
 funcionar. No existe ningún sistema de cuentas.
 
-Gymnasia no guarda tus datos en ningún servidor. La aplicación no los envía a
-infraestructura controlada por el responsable, ni para almacenarlos, ni para hacer
-copias de seguridad, ni para analítica. La única excepción es el envío de propuestas de
-mejora, que solo ocurre cuando tú lo apruebas expresamente y que nunca incluye tus datos
-personales (ver [Terceros](#terceros)). **No hay analítica, ni telemetría, ni informes
-de fallos automáticos**: la aplicación no incorpora ningún SDK de ese tipo.
+Gymnasia no sincroniza tus datos con ningún servidor, no hace copias de seguridad en la
+nube y no los usa para analítica. La única excepción es el backend opcional de
+incidencias: recibe propuestas y denuncias solo después de una acción y una confirmación
+expresas (ver [Terceros](#terceros)). Una denuncia contiene la pregunta anterior y la
+respuesta elegida, por lo que puede incluir datos personales o de salud que aparezcan en
+esos dos mensajes. **No hay analítica, ni telemetría, ni informes de fallos automáticos**:
+la aplicación no incorpora ningún SDK de ese tipo.
 
 ## Qué datos guarda la aplicación {#datos}
 
@@ -161,12 +163,21 @@ Además de los proveedores de IA:
   ejercicio que no está en el catálogo, la aplicación te muestra antes el título y el
   resumen exactos y **no envía nada hasta que lo apruebas**. Lo que se envía es
   únicamente ese título, ese resumen, el tipo de propuesta y un identificador técnico
-  para no crear duplicados. **No se envía el texto de tu conversación, ni tus datos de
-  dieta, entrenamiento o medidas, ni ningún identificador tuyo.** El servicio lo opera el
-  responsable sobre infraestructura de Cloudflare y crea con tu propuesta una ficha en un
-  repositorio **privado** de GitHub, visible solo para el responsable. Antes de guardarla,
-  el servicio borra automáticamente cualquier clave o contraseña que hubieras pegado por
-  error. Si no propones nada, este servicio no se usa nunca.
+  para no crear duplicados. Las propuestas no incluyen el texto literal de una
+  conversación ni identificadores de usuario. Si usas **Denunciar** sobre una respuesta,
+  la vista previa incluye el motivo, tus detalles opcionales, la pregunta inmediatamente
+  anterior, la respuesta elegida y contexto técnico (superficie, origen, proveedor,
+  modelo, versión de la app y, cuando corresponda, datos de la intervención sanitaria).
+  No se envían el resto del hilo, el razonamiento interno, errores técnicos, claves de
+  API ni un identificador de cuenta. El servicio lo opera el responsable sobre
+  infraestructura de Cloudflare y crea una ficha en un repositorio **privado** de GitHub,
+  visible solo para el responsable. La app y el servicio eliminan patrones reconocibles
+  de claves y contraseñas antes de guardarla. Cloudflare recibe la dirección IP necesaria
+  para atender la conexión; el servicio la transforma mediante HMAC antes del límite de
+  uso, conserva solo ese valor seudónimo durante un máximo de 48 horas y no guarda la IP
+  en claro. El cuerpo de una denuncia se programa para sustituirse automáticamente por un
+  aviso de borrado al cumplir 30 días. Si no envías propuestas ni denuncias, este servicio
+  no se usa nunca.
 - **Open Food Facts** (`world.openfoodfacts.org`): si el asistente lee un código de
   barras en una foto tuya, consulta ese código en su base de datos pública para obtener
   la información nutricional del producto. Se envía el código de barras, no la imagen.
@@ -196,14 +207,20 @@ borrando los datos de la aplicación desde los ajustes del sistema.
 
 ## Denunciar una respuesta del asistente {#denuncia}
 
-Si el asistente genera una respuesta inapropiada, peligrosa o incorrecta, escribe a
-**maximofn@maximofn.com** describiendo lo ocurrido. Puedes adjuntar el texto de la
-respuesta si quieres, pero **no envíes tu clave de API** ni datos que prefieras no
-compartir: revisa lo que copias antes de mandarlo.
+Cada respuesta final visible del asistente que se pueda denunciar muestra la acción
+**Denunciar**. También está disponible en las intervenciones sanitarias generadas en el
+dispositivo, pero no en introducciones, errores técnicos, contenido aún en streaming ni
+razonamiento interno. Al pulsarla eliges un motivo, puedes añadir detalles y ves una
+vista previa exacta antes de confirmar.
+
+La denuncia incluye la pregunta inmediatamente anterior y la respuesta elegida; no el
+resto de la conversación. Revisa la vista previa porque esos dos mensajes pueden contener
+datos personales o de salud. La aplicación elimina patrones reconocibles de secretos,
+pero **no incluyas tu clave de API** ni datos que no quieras compartir.
 
 Las denuncias se revisan manualmente y pueden dar lugar a cambios en las instrucciones
-del asistente o en sus salvaguardas. En este momento la denuncia se gestiona por correo;
-una versión futura incorporará una acción dentro de la propia aplicación.
+del asistente o en sus salvaguardas. También puedes escribir a
+**maximofn@maximofn.com** si no puedes usar la acción dentro de la aplicación.
 
 ## Permisos que solicita la aplicación {#permisos}
 
@@ -234,6 +251,12 @@ borras tú.
 
 Los datos que hayas enviado a un proveedor de IA se rigen por el plazo de conservación
 de ese proveedor, según tu cuenta con él.
+
+Las propuestas permanecen en el repositorio privado mientras sean necesarias para
+gestionar el proyecto. En las denuncias de respuestas, el cuerpo que contiene la pregunta
+y la respuesta se programa para borrarse automáticamente al cumplir 30 días. Los
+registros técnicos de limitación de uso basados en el HMAC de la IP se eliminan en un
+máximo de 48 horas.
 
 ## Cómo eliminar tus datos {#eliminacion}
 

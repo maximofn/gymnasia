@@ -6,7 +6,7 @@ es dejarlas escritas, verificadas contra el código y coherentes con la polític
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v3` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v5` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -21,9 +21,13 @@ es dejarlas escritas, verificadas contra el código y coherentes con la polític
 
 ### Interpretación aplicada
 
-Google define **Collected** como los datos que salen del dispositivo hacia los
-servidores del desarrollador. Gymnasia no tiene servidores: nada llega al
-desarrollador, ni siquiera de forma efímera.
+Google define **Collected** como los datos que salen del dispositivo. Desde
+GYM-189 (ticket para añadir denuncia dentro de la app para respuestas generadas por IA),
+el backend opcional de incidencias recibe, tras vista previa y confirmación, la pregunta
+anterior, la respuesta denunciada y detalles opcionales. Ese contenido puede incluir
+mensajes y datos de salud. También trata la IP de conexión para limitar abusos: el Worker
+la convierte inmediatamente en un HMAC, conserva solo ese valor seudónimo y lo elimina
+en un máximo de 48 horas.
 
 Sí salen datos hacia **terceros que el usuario elige** (su proveedor de IA, con su
 propia clave). Para eso Google contempla una exención expresa de *Sharing*:
@@ -31,9 +35,14 @@ transferencias a un tercero **basadas en una acción concreta iniciada por el us
 en las que el usuario espera razonablemente que sus datos se compartan. Configurar una
 clave de API propia y escribir en un chat encaja en esa exención.
 
-**Decisión**: declarar `Collected: No` y `Shared: No` para las categorías que solo
-salen por esa vía, y documentar aquí el razonamiento. Es la lectura que corresponde a
-la arquitectura real.
+Cloudflare y GitHub actúan como proveedores de servicio del responsable para este flujo,
+por lo que no se declaran como `Shared` mientras usen los datos únicamente para prestar
+el servicio contratado. La denuncia es opcional: la app funciona completa sin usarla.
+
+**Decisión**: declarar `Collected: Yes`, `Shared: No` y `Optional: Yes` para las
+categorías que puede contener una denuncia. Para los datos que solo salen hacia un
+proveedor BYOK elegido por el usuario se mantiene la exención de *Sharing* descrita
+arriba.
 
 ⚠️ **Confirmar antes de enviar la ficha.** Si en la revisión hay dudas, la alternativa
 segura es declarar `Shared: Yes` con propósito *App functionality* y marcar los datos
@@ -44,11 +53,13 @@ de "no" a "sí" tras un rechazo cuesta una nueva revisión; al revés, no.
 
 | Categoría de Play | Collected | Shared | Opcional | Propósito | Respaldo |
 |---|---|---|---|---|---|
-| Health and fitness › Fitness info | No | No | — | Funcionalidad de la app | `gymnasia.mobile.local.v3` |
+| Health and fitness › Fitness info | Sí | No | Sí | Funcionalidad de la app: revisar una respuesta denunciada que puede contener datos de fitness | Denuncia in-app; cuerpo borrado a los 30 días |
 | Personal info › Name, Email | No | No | — | No se recogen | No hay cuenta |
 | Personal info › Other info (sexo, altura, fecha de nacimiento) | No | No | — | Cálculo de calorías y macros | `dietSettings` en `local.v3` |
 | Photos and videos › Photos | No | No | — | Estimación nutricional y seguimiento de progreso | Estimador y `photo_uri` |
-| Messages › Other in-app messages | No | No | — | Conversación con el asistente | `threads`, `messagesByThread` |
+| Messages › Other in-app messages | Sí | No | Sí | Funcionalidad de la app: revisar la pregunta y respuesta denunciadas | Denuncia in-app; cuerpo borrado a los 30 días |
+| Other user-generated content | Sí | No | Sí | Funcionalidad de la app: detalles opcionales escritos al denunciar | Denuncia in-app; cuerpo borrado a los 30 días |
+| Device or other IDs | Sí | No | Sí | Seguridad y prevención del fraude: rate limiting del backend opcional | HMAC de IP, máximo 48 h; nunca IP en claro en D1 |
 | App activity › App interactions | No | No | — | Funcionalidad de la app | `user_prefs.v1`, `backup_meta.v1` |
 | App info and performance › Diagnostics | No | No | — | Depuración local | `gymnasia_debug_traces` |
 | Financial info | No | No | — | No se tratan | — |
@@ -117,12 +128,11 @@ la opción recomendada: evita declarar recogida de credenciales en una app de fi
   `docs/architecture/health-safety-policy.md`. La clasificación local intercepta riesgo
   alto o crítico antes de cualquier proveedor; la evaluación adicional con el proveedor
   BYOK está desactivada por defecto y requiere consentimiento separado por proveedor.
-- **Mecanismo de denuncia de respuestas**: por correo a maximofn@maximofn.com,
-  documentado en la sección `#denuncia` de la política.
-
-  ⚠️ La política de IA generativa de Google Play puede exigir un mecanismo de denuncia
-  **dentro de la aplicación**. GYM-189 lo añade. Si la revisión lo reclama, esa es la
-  dependencia que hay que cerrar; el correo es el canal de la versión actual.
+- **Mecanismo de denuncia de respuestas**: acción **Denunciar** dentro de la aplicación
+  en las respuestas finales visibles de los tres chats y en las intervenciones sanitarias
+  locales. Excluye introducciones, errores técnicos, streaming y razonamiento interno.
+  Antes de enviar exige un motivo y muestra una vista previa exacta con la pregunta
+  anterior y la respuesta. El correo maximofn@maximofn.com queda como alternativa.
 
 ---
 

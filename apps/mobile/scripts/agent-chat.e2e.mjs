@@ -274,6 +274,22 @@ async function assertSpecializedAiDisclosures(page) {
     .filter({ hasText: "Gymnasia food es un agente de IA" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await assertDisclosurePlacement(page, "food-estimator");
+
+  const estimatorQuestion = "Tengo dolor fuerte en el pecho y me cuesta respirar.";
+  await page.locator('[data-testid="food-estimator-input"]').fill(estimatorQuestion);
+  await page.locator('[data-testid="food-estimator-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  const estimatorMessages = page.locator('[data-testid="chat-message-list-food-estimator"]');
+  await estimatorMessages.locator('[data-testid="health-safety-intervention"]')
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await estimatorMessages.locator('[data-testid^="report-ai-response-"]').last()
+    .click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="ai-report-reason-dangerous_or_harmful"]')
+    .click({ timeout: STEP_TIMEOUT_MS });
+  const estimatorPreview = await page.locator('[data-testid="ai-report-preview"]').innerText();
+  assert(estimatorPreview.includes(estimatorQuestion));
+  assert(estimatorPreview.includes("Estimador de comidas (food-estimator)"));
+  assert(estimatorPreview.includes("Origen: health_safety"));
+  await page.locator('[data-testid="ai-report-cancel"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.getByRole("button", { name: "Cerrar Gymnasia Food Estimator" })
     .click({ timeout: STEP_TIMEOUT_MS });
 
@@ -291,6 +307,22 @@ async function assertSpecializedAiDisclosures(page) {
     .filter({ hasText: "Gymnasia food es un agente de IA" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await assertDisclosurePlacement(page, "personal-food-assistant");
+
+  const personalFoodQuestion = "Tengo dolor fuerte en el pecho y me cuesta respirar, pero quiero terminar la serie.";
+  await page.locator('[data-testid="personal-food-assistant-input"]').fill(personalFoodQuestion);
+  await page.locator('[data-testid="personal-food-assistant-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  const personalFoodMessages = page.locator('[data-testid="chat-message-list-personal-food-assistant"]');
+  await personalFoodMessages.locator('[data-testid="health-safety-intervention"]')
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await personalFoodMessages.locator('[data-testid^="report-ai-response-"]').last()
+    .click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="ai-report-reason-dangerous_or_harmful"]')
+    .click({ timeout: STEP_TIMEOUT_MS });
+  const personalFoodPreview = await page.locator('[data-testid="ai-report-preview"]').innerText();
+  assert(personalFoodPreview.includes(personalFoodQuestion));
+  assert(personalFoodPreview.includes("Asistente de alimentos personales (personal-food-assistant)"));
+  assert(personalFoodPreview.includes("Origen: health_safety"));
+  await page.locator('[data-testid="ai-report-cancel"]').click({ timeout: STEP_TIMEOUT_MS });
 }
 
 async function assertPersonalDataKeptAsPlainData(page) {
@@ -345,6 +377,7 @@ async function runAgentChatE2E(
   promptScenario = PROMPT_SCENARIOS.remote,
 ) {
   const requestBodies = [];
+  const feedbackRequests = [];
   const assertNoLegacyUpdaterRequests = trackLegacyUpdaterRequests(page);
   await page.addInitScript(({
     storeKey,
@@ -433,6 +466,22 @@ async function runAgentChatE2E(
       status: promptScenario.response.status,
       contentType: promptScenario.response.contentType,
       body: promptScenario.response.body,
+    });
+  });
+  await page.route(`${FEEDBACK_BASE_URL}/**`, async (route) => {
+    feedbackRequests.push(route.request().postDataJSON());
+    const shouldFail = feedbackRequests.length === 1;
+    await route.fulfill({
+      status: shouldFail ? 503 : 201,
+      contentType: "application/json",
+      body: shouldFail
+        ? JSON.stringify({ status: "unavailable" })
+        : JSON.stringify({
+            status: "created",
+            number: 77,
+            url: "https://github.com/maximofn/gymnasia-feedback/issues/77",
+            deduplicated: false,
+          }),
     });
   });
 
@@ -547,6 +596,63 @@ async function runAgentChatE2E(
   }
   assert.equal(await page.locator('[data-testid^="chat-message-user-"]').last().innerText(),
     "Tú\n¿Cuál es mi objetivo?");
+
+  if (provider === "openai" && promptScenario.source === "remote") {
+    logStep("Comprobando vista previa, redacción local, fallo recuperable y envío de denuncia");
+    assert.equal(
+      await page.locator('[data-testid="ai-intro-message-main-chat"]')
+        .locator('[data-testid^="report-ai-response-"]').count(),
+      0,
+      "la introducción local no se puede denunciar",
+    );
+    const responseMessage = page.locator('[data-testid^="chat-message-assistant-"]')
+      .filter({ hasText: "Tu objetivo es ganar masa muscular." });
+    await responseMessage.locator('[data-testid^="report-ai-response-"]')
+      .click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="ai-report-reason-incorrect_or_misleading"]')
+      .click({ timeout: STEP_TIMEOUT_MS });
+    const accidentalSecret = "sk-abcdefghijklmnopqrstuvwxyz1234567890";
+    await page.locator('[data-testid="ai-report-details"]')
+      .fill(`La respuesta no coincide con mis datos. ${accidentalSecret}`);
+
+    const preview = await page.locator('[data-testid="ai-report-preview"]').innerText();
+    assert(preview.includes("¿Cuál es mi objetivo?"));
+    assert(preview.includes("Tu objetivo es ganar masa muscular."));
+    assert(preview.includes("Chat principal (main-chat)"));
+    assert(preview.includes("Proveedor: openai"));
+    assert(preview.includes("Origen: model"));
+    assert(preview.includes("[OPENAI_KEY REDACTADO]"));
+    assert(!preview.includes(accidentalSecret));
+
+    await page.locator('[data-testid="ai-report-submit"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="ai-report-status"]')
+      .filter({ hasText: "sigue preparado para reintentar" })
+      .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    assert.equal(
+      await page.locator('[data-testid="ai-report-details"]').inputValue(),
+      `La respuesta no coincide con mis datos. ${accidentalSecret}`,
+      "un fallo no debe borrar el borrador local",
+    );
+    await page.locator('[data-testid="ai-report-submit"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="ai-report-status"]')
+      .filter({ hasText: "Denuncia enviada. Referencia 77." })
+      .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    assert.equal(feedbackRequests.length, 2);
+    for (const body of feedbackRequests) {
+      assert.deepEqual(
+        Object.keys(body).sort(),
+        ["idempotency_key", "kind", "schema_version", "summary", "title"],
+      );
+      assert.equal(body.kind, "report");
+      assert(body.summary.includes("¿Cuál es mi objetivo?"));
+      assert(body.summary.includes("Tu objetivo es ganar masa muscular."));
+      assert(body.summary.includes("[OPENAI_KEY REDACTADO]"));
+      assert(!JSON.stringify(body).includes(accidentalSecret));
+      assert(!JSON.stringify(body).includes("e2e-local-fake-key"));
+    }
+    assert.equal(feedbackRequests[0].idempotency_key, feedbackRequests[1].idempotency_key);
+    await page.locator('[data-testid="ai-report-cancel"]').click({ timeout: STEP_TIMEOUT_MS });
+  }
 
   await page.locator('[data-testid="chat-input"]').fill("¿Eres humano?");
   await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });

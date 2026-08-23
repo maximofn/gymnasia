@@ -1,5 +1,5 @@
 ---
-version: 2026-08-v4
+version: 2026-08-v5
 effective_date: 2026-08-23
 locale: en
 lang: en
@@ -14,15 +14,16 @@ toc_title: Contents
 
 ## Summary {#resumen}
 
-Gymnasia runs **on your device**. There is no account, no sign-up, and no Gymnasia
-server that receives your data. Your workouts, your diet, your weight, your measurements
-and your conversations with the assistant are stored inside the app itself.
+Gymnasia runs **primarily on your device**. There is no account or sign-up. Your
+workouts, diet, weight, measurements and conversations with the assistant are stored
+inside the app itself.
 
 There is one important exception, and it is entirely yours: if you enable the artificial
 intelligence assistant, **you** supply an API key from a provider (OpenAI, Anthropic or
 Google), and the app talks **directly** to that provider from your device. Whatever you
 type into the chat travels to the company you chose, under your own account with them.
-We never see it, never store it, and cannot retrieve it.
+We do not see or store it unless you choose **Report** on a response and expressly
+approve the preview of the content that will be sent.
 
 This policy explains in detail what is stored, what leaves your device, and what control
 you have over it.
@@ -42,11 +43,11 @@ protection officer.
 Gymnasia does not ask for an email address, a password or a username in order to work.
 No account system exists.
 
-Gymnasia does not store your data on any server. The app does not send it to
-infrastructure controlled by the developer — not for storage, not for backups, not for
-analytics. The only exception is sending improvement suggestions, which happens only when
-you expressly approve it and never includes your personal data (see
-[Third parties](#terceros)).
+Gymnasia does not sync your data to a server, make cloud backups or use it for analytics.
+The only exception is the optional feedback backend: it receives suggestions and reports
+only after an express action and confirmation (see [Third parties](#terceros)). A report
+contains the preceding question and the selected response, so it may include personal or
+health data found in those two messages.
 **There is no analytics, no telemetry and no automatic crash reporting**: the app bundles
 no SDK of that kind.
 
@@ -156,12 +157,19 @@ Besides the AI providers:
   for it. When you suggest an assistant improvement, or submit a food or exercise that
   is missing from the catalogue, the app first shows you the exact title and summary
   and **sends nothing until you approve them**. It sends only that title, that summary,
-  the proposal type and a technical identifier used to prevent duplicates. **It does
-  not send your conversation text, diet, training or measurement data, or any user
-  identifier.** The developer operates the service on Cloudflare infrastructure, and
-  it creates a record from your proposal in a **private** GitHub repository visible
-  only to the developer. Before storing it, the service automatically removes any API
-  key or password you might have pasted by mistake. If you submit no proposal, this
+  the proposal type and a technical identifier used to prevent duplicates. Suggestions
+  do not include literal conversation text or user identifiers. If you use **Report** on
+  a response, the preview contains the reason, optional details, immediately preceding
+  question, selected response and technical context (surface, origin, provider, model,
+  app version and, where applicable, health-intervention data). It does not send the rest
+  of the thread, internal reasoning, technical errors, API keys or an account identifier.
+  The developer operates the service on Cloudflare infrastructure, and it creates a
+  record in a **private** GitHub repository visible only to the developer. The app and
+  service remove recognisable key and password patterns before storing it. Cloudflare
+  receives the IP address needed to serve the connection; the service applies an HMAC
+  before rate limiting, keeps only that pseudonymous value for up to 48 hours and does
+  not store the raw IP. A report body is scheduled to be automatically replaced with a
+  deletion notice when it reaches 30 days. If you submit no suggestion or report, this
   service is never used.
 - **Open Food Facts** (`world.openfoodfacts.org`): if the assistant reads a barcode in
   one of your photos, it looks that barcode up in their public database to obtain the
@@ -192,13 +200,19 @@ the app's data from your system settings.
 
 ## Reporting an assistant response {#denuncia}
 
-If the assistant produces an inappropriate, dangerous or incorrect response, write to
-**maximofn@maximofn.com** describing what happened. You may attach the text of the
-response if you wish, but **do not send your API key** or data you would rather not
-share: review what you copy before sending it.
+Every reportable final response shown by the assistant includes a **Report** action. It
+is also available on health interventions generated on the device, but not on
+introductions, technical errors, content that is still streaming or internal reasoning.
+After selecting it, you choose a reason, may add details, and see an exact preview before
+confirming.
+
+The report includes the immediately preceding question and selected response, not the
+rest of the conversation. Review the preview because those two messages may contain
+personal or health data. The app removes recognisable secret patterns, but **do not
+include your API key** or data you do not want to share.
 
 Reports are reviewed manually and may lead to changes in the assistant's instructions or
-safeguards. Reporting currently happens by email; a future version will add an in-app
+safeguards. You can also write to **maximofn@maximofn.com** if you cannot use the in-app
 action.
 
 ## Permissions the app requests {#permisos}
@@ -229,6 +243,11 @@ there is no server-side retention period to apply: you keep it and you delete it
 
 Data you have sent to an AI provider is governed by that provider's retention period,
 under your account with them.
+
+Suggestions remain in the private repository for as long as needed to manage the
+project. For assistant-response reports, the body containing the question and response
+is scheduled for automatic deletion when it reaches 30 days. Technical rate-limit
+records based on the IP HMAC are deleted within 48 hours.
 
 ## How to delete your data {#eliminacion}
 

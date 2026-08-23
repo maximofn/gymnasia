@@ -1,8 +1,10 @@
 # Backend de incidencias (`gymnasia-feedback`)
 
-Worker de Cloudflare que recibe propuestas de mejora, alimentos y ejercicios
-desde la app y las convierte en issues de GitHub. Implementa GYM-54 (ticket para
-sustituir los escritores no-op de GitHub Issues por un flujo verificable).
+Worker de Cloudflare que recibe propuestas de mejora, alimentos, ejercicios y
+denuncias de respuestas de IA desde la app y las convierte en issues de GitHub.
+Implementa GYM-54 (ticket para sustituir los escritores no-op de GitHub Issues por un
+flujo verificable) y da soporte a GYM-189 (ticket para añadir denuncia dentro de la app
+para respuestas generadas por IA).
 
 ## Por qué existe
 
@@ -22,9 +24,9 @@ herramienta devuelve `unavailable` y el agente lo dice; nada más se degrada.
 ```jsonc
 {
   "schema_version": 1,
-  "kind": "feature" | "food" | "exercise",
+  "kind": "feature" | "food" | "exercise" | "report",
   "title": "string, 1..120",
-  "summary": "string, 1..4000",
+  "summary": "string, 1..4000 (1..16000 para report)",
   "idempotency_key": "v1:<kind>:<16 hex>"
 }
 ```
@@ -56,7 +58,10 @@ npm --workspace apps/feedback-worker run migrate:remote
 # 3. Cargar el secreto (NUNCA en el repositorio: es público)
 npm exec --yes -- wrangler@latest secret put GITHUB_TOKEN --cwd apps/feedback-worker
 
-# 4. Desplegar
+# 4. Crear y cargar una sal aleatoria e independiente para el HMAC de IP
+openssl rand -base64 32 | npm exec --yes -- wrangler@latest secret put RATE_LIMIT_SALT --cwd apps/feedback-worker
+
+# 5. Desplegar
 npm --workspace apps/feedback-worker run deploy
 ```
 
@@ -93,10 +98,11 @@ descomprimiéndolo. Lo que sí se puede es subir el coste.
 
 Implementado:
 
-1. **Rate limiting por IP** con contadores en D1 (5/min, 30/día). Es el control
-   que de verdad protege. Se hace a mano porque D1 está garantizado en el plan
-   gratuito; el *Rate Limiting binding* nativo de Workers sería más limpio, pero
-   está sin confirmar en el plan gratuito. Si se confirma, sustituirlo.
+1. **Rate limiting por identificador HMAC de IP** con contadores en D1 (5/min,
+   30/día). La IP en claro solo existe en la cabecera que entrega Cloudflare: antes de
+   consultar o escribir D1 se firma con HMAC-SHA-256 y `RATE_LIMIT_SALT`. Los contadores
+   se eliminan a las 48 horas. Sin la sal el endpoint responde `503` para evitar una
+   degradación silenciosa a IP en claro. La sal nunca va en el repositorio ni en la app.
 2. **Secreto compartido opcional** (`APP_SHARED_SECRET`), rotado en cada build.
    Es ofuscación reconocida como tal: sube el listón de "hago un curl a la URL"
    a "descomprimo el APK y busco la cadena". No es un control de seguridad.
@@ -123,14 +129,56 @@ credenciales, ni dinero, ni datos de usuarios detrás.
 ## Privacidad
 
 Lo único que sale de la app es el tipo, el título, el resumen y la clave de
-idempotencia. **No se envía conversación literal**: el esquema de la herramienta
-ni siquiera tiene un campo donde meterla. Antes de persistir o mandar a GitHub,
-`src/sanitize.ts` redacta patrones de credenciales que el usuario haya pegado
-por accidente.
+idempotencia. Para propuestas de mejora, alimentos y ejercicios no se envía conversación
+literal. Una incidencia `report` sí contiene exactamente lo que el usuario ha visto en
+la vista previa: motivo, detalles opcionales, pregunta anterior, respuesta denunciada y
+contexto técnico. Nunca incluye el hilo completo, razonamiento interno, errores técnicos,
+una clave BYOK ni un identificador de cuenta. El cliente redacta primero patrones de
+secretos y `src/sanitize.ts` vuelve a hacerlo antes de persistir o mandar a GitHub.
 
 El destino es un repositorio **privado** de recepción. Si algún día se cambia a
 uno público, hay que advertirlo expresamente en la confirmación y revisar
 `docs/legal/privacy-change-checklist.md`.
+
+## Retención de denuncias y operación
+
+El trigger programado de `wrangler.jsonc` se ejecuta cada hora. Selecciona por lotes de
+40 las incidencias `report` que han cumplido 30 días, sustituye su cuerpo en GitHub por
+un aviso de borrado y solo entonces marca `redacted_at` en D1. Si GitHub falla, no marca
+el registro: la siguiente ejecución vuelve a intentarlo. Los títulos genéricos y la
+referencia técnica de la issue permanecen para conservar la trazabilidad sin el texto de
+la conversación.
+
+Despliegue de una versión que introduce o cambia retención:
+
+```bash
+# La migración debe existir antes de que el cron consulte redacted_at.
+npm --workspace apps/feedback-worker run migrate:remote
+
+# Confirma que ambos secretos existen; no muestres sus valores.
+npm exec --yes -- wrangler@latest secret list --cwd apps/feedback-worker
+
+npm --workspace apps/feedback-worker run deploy
+curl -sS https://gymnasia-feedback.maximofn.com/health
+```
+
+Comprobación operativa semanal y ante cualquier alerta:
+
+```bash
+# Debe devolver 0 filas. Una fila indica que GitHub lleva al menos una hora sin
+# aceptar la redacción o que el trigger no está ejecutándose.
+npm exec --yes -- wrangler@latest d1 execute gymnasia-feedback --remote --cwd apps/feedback-worker --command \
+  "SELECT issue_number, datetime(created_at/1000, 'unixepoch') AS created_utc FROM issues WHERE kind='report' AND state='created' AND redacted_at IS NULL AND created_at <= (unixepoch('now') - 30*24*60*60)*1000 LIMIT 50"
+
+# Buscar report_retention_completed y errores del trigger durante una observación.
+npm exec --yes -- wrangler@latest tail --cwd apps/feedback-worker
+```
+
+Si quedan filas vencidas, confirma primero que `GITHUB_TOKEN` sigue vigente y que el
+repositorio configurado es el privado correcto. Corrige el secreto o la configuración;
+el cron reintentará en la siguiente hora. Si la exposición no puede esperar, redacta
+manualmente los cuerpos afectados en el repositorio privado, registra `redacted_at` solo
+después de verificar cada cambio y deja constancia del incidente sin copiar el contenido.
 
 ## Tests
 

@@ -8,6 +8,7 @@
 export type SqlStatement = {
   bind: (...values: unknown[]) => SqlStatement;
   first: <T>() => Promise<T | null>;
+  all: <T>() => Promise<{ results: T[] }>;
   run: () => Promise<unknown>;
 };
 
@@ -20,6 +21,13 @@ export type IssueRecord = {
   state: "pending" | "created";
   issue_number: number | null;
   issue_url: string | null;
+};
+
+export type ExpiredReportRecord = {
+  idempotency_key: string;
+  issue_number: number;
+  issue_url: string;
+  created_at: number;
 };
 
 /**
@@ -93,6 +101,34 @@ export async function completeIdempotencyKey(
       "UPDATE issues SET state = 'created', issue_number = ?, issue_url = ? WHERE idempotency_key = ?",
     )
     .bind(issueNumber, issueUrl, key)
+    .run();
+}
+
+export async function listExpiredReports(
+  db: SqlDatabase,
+  cutoff: number,
+  limit: number,
+): Promise<ExpiredReportRecord[]> {
+  const result = await db
+    .prepare(
+      "SELECT idempotency_key, issue_number, issue_url, created_at FROM issues"
+        + " WHERE kind = 'report' AND state = 'created' AND redacted_at IS NULL"
+        + " AND issue_number IS NOT NULL AND issue_url IS NOT NULL AND created_at <= ?"
+        + " ORDER BY created_at ASC LIMIT ?",
+    )
+    .bind(cutoff, limit)
+    .all<ExpiredReportRecord>();
+  return result.results;
+}
+
+export async function markReportRedacted(
+  db: SqlDatabase,
+  key: string,
+  redactedAt: number,
+): Promise<void> {
+  await db
+    .prepare("UPDATE issues SET redacted_at = ? WHERE idempotency_key = ? AND kind = 'report'")
+    .bind(redactedAt, key)
     .run();
 }
 

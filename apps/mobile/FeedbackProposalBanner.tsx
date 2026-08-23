@@ -28,6 +28,8 @@ const COPY: Record<
   },
   // Las mejoras se confirman en la conversación del chat, no con un aviso.
   feature: null,
+  // Las denuncias tienen su propio diálogo con previsualización completa.
+  report: null,
 };
 
 export function FeedbackProposalBanner({

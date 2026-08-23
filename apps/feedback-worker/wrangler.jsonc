@@ -5,6 +5,10 @@
   "compatibility_date": "2026-08-01",
   "observability": { "enabled": true },
 
+  "triggers": {
+    "crons": ["17 * * * *"]
+  },
+
   // Variables NO secretas. Se dejan aquí a propósito para que sean auditables
   // en el repositorio público. El token vive en `wrangler secret put`.
   "vars": {
