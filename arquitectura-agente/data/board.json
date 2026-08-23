@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-22",
+    "updated": "2026-08-23",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -310,11 +310,11 @@
           "summary": "Formalizar entornos aislados y promover el mismo artefacto reutilizando `npm run check:health-safety` de GYM-145 como puerta obligatoria, con evidencia versionada y sin bypass en la vía crítica.",
           "baseline": "partial",
           "dependsOn": [
-            "GYM-142",
-            "GYM-145"
+            "GYM-142"
           ],
           "related": [
-            "GYM-124"
+            "GYM-124",
+            "GYM-145"
           ]
         },
         {
@@ -2027,11 +2027,13 @@
           "id": "GYM-54",
           "title": "Crear un backend seguro para incidencias y mantener create_feature_issue",
           "state": "in_progress",
-          "summary": "Eliminar el falso éxito de create_feature_issue y reemplazar los tres escritores inactivos por un handoff explícito y comprobable, sin incrustar tokens de escritura en la app.",
+          "summary": "Conservar create_feature_issue y canalizar las incidencias de funcionalidades, alimentos y ejercicios por un backend limitado que custodia GitHub, exige revisión en la app y solo confirma creaciones verificadas.",
           "dependsOn": [],
           "related": [
             "GYM-42",
-            "GYM-45"
+            "GYM-45",
+            "GYM-136",
+            "GYM-168"
           ]
         },
         {
@@ -2496,7 +2498,7 @@
         {
           "id": "GYM-12",
           "title": "Importar ejercicios del dataset hasaneyldrm/exercises-dataset",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Ampliar el repo local de ejercicios (~39 hoy) sin introducir backend: sigue siendo JSON estático.",
           "dependsOn": [],
           "related": []
