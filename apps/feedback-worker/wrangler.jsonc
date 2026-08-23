@@ -17,8 +17,7 @@
     {
       "binding": "DB",
       "database_name": "gymnasia-feedback",
-      // Se rellena con el id que devuelve `wrangler d1 create`.
-      "database_id": "REEMPLAZAR_TRAS_CREAR_LA_BASE_DE_DATOS",
+      "database_id": "c8c3d858-d2e4-420b-9f36-8198ff0d1196",
       "migrations_dir": "migrations"
     }
   ],
