@@ -54,10 +54,9 @@ const FEEDBACK_ENDPOINTS: Record<BuildEnvironment, string> = {
   // distinción staging/producción de este repositorio es del canal de la
   // política del agente, no del backend de incidencias.
   //
-  // No es un detalle menor: el APK que se distribuye desde GitHub se compila
-  // con el perfil `staging` (ver .github/workflows/build-apk.yml), así que
-  // dejarlo vacío mataba la funcionalidad en la única variante que la gente
-  // instala, sin que nada fallara de forma visible.
+  // Staging conserva el mismo backend para las pruebas manuales de esa variante.
+  // La release de GitHub se compila únicamente con `production-apk` y usa la
+  // entrada production (ver .github/workflows/build-apk.yml).
   //
   // Los tests siguen aislados porque inyectan FEEDBACK_API_BASE_URL, que tiene
   // prioridad sobre estos valores por defecto.

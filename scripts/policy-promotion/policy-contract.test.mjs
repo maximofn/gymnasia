@@ -49,12 +49,19 @@ test("el bootstrap solo puede ejecutarse una vez desde el HEAD actual de main", 
   assert.match(workflow, /another policy deployment won the bootstrap race/);
 });
 
-test("EAS conserva preview como alias de staging y separa producción", () => {
+test("EAS conserva perfiles locales y publica únicamente production-apk", () => {
   assert.equal(eas.build.preview.extends, "staging");
   assert.equal(eas.build.staging.env.APP_ENV, "staging");
   assert.equal(eas.build.staging.android.buildType, "apk");
   assert.equal(eas.build.production.env.APP_ENV, "production");
-  assert.match(buildWorkflow, /Prepare integrated snapshot from the active policy channel/);
+  assert.equal(eas.build["production-apk"].extends, "production");
+  assert.equal(eas.build["production-apk"].android.buildType, "apk");
+  assert.match(buildWorkflow, /PROFILE="production-apk"/);
+  assert.match(buildWorkflow, /environment: Production/);
+  assert.match(buildWorkflow, /Prepare integrated snapshot from the Production policy channel/);
+  assert.match(buildWorkflow, /--environment production/);
+  assert.doesNotMatch(buildWorkflow, /--environment staging/);
+  assert.doesNotMatch(buildWorkflow, /inputs\.profile/);
   assert.match(buildWorkflow, /Create draft APK release/);
   assert.match(buildWorkflow, /Attach APK before publishing release/);
   const snapshotScript = readFileSync(

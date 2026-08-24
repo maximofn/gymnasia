@@ -204,7 +204,7 @@ El flujo de trabajo de publicación de Android es una canalización de compilaci
 
 ## Publicación Android con EAS y flujo de versiones
 
-El flujo de trabajo `Build APK & Publish Release` puede iniciarse manualmente con el perfil `preview` o `production`. También se ejecuta en los envíos a `main` que afecten a `apps/mobile/**`, excepto `apps/mobile/scripts/**` y los archivos Markdown de la aplicación móvil. Los envíos utilizan `preview` de forma predeterminada.
+El flujo de trabajo `Build Production APK & Publish Release` puede iniciarse manualmente, pero no ofrece perfiles seleccionables. Tanto esa ejecución como los envíos a `main` que afecten a `apps/mobile/**` —excepto scripts, tests, Markdown y `public/`— usan exclusivamente `production-apk`. Ese perfil hereda `APP_ENV=production`, el package real y el incremento nativo de `production`, y añade `android.buildType: apk` para producir un artefacto instalable. Development, staging y preview nunca se compilan desde este workflow.
 
 ```mermaid
 sequenceDiagram
@@ -218,7 +218,7 @@ sequenceDiagram
     GH->>Git: Clasificar los asuntos de las confirmaciones
     GH->>GH: Calcular la siguiente versión semántica
     GH->>GH: Reescribir apps/mobile/app.json
-    GH->>EAS: Compilar Android con el perfil seleccionado
+    GH->>EAS: Compilar Android con production-apk
     EAS-->>GH: JSON de compilación y URL del artefacto
     GH->>EAS: Consultar la compilación cuando no haya URL
     GH->>GH: Descargar como gymnasia.apk
@@ -240,7 +240,7 @@ El flujo de trabajo busca la etiqueta más alta según el orden de versiones que
 
 Elimina de una etiqueta un sufijo SHA hexadecimal final antes de analizarla, calcula `vMAJOR.MINOR.PATCH` y reescribe `.expo.version` en `apps/mobile/app.json` mediante `jq`. La versión del paquete en `apps/mobile/package.json` no se actualiza.
 
-`apps/mobile/eas.json` establece la CLI de EAS en `>= 18.4.0` y `appVersionSource: "remote"`. Su perfil de producción tiene `autoIncrement: true`; el de vista previa tiene distribución interna y `android.buildType: "apk"`. Por tanto, coexisten dos dimensiones de versión:
+`apps/mobile/eas.json` establece la CLI de EAS en `>= 18.4.0` y `appVersionSource: "remote"`. `production-apk` extiende el perfil `production`, por lo que conserva `APP_ENV=production` y `autoIncrement: true`, y añade `android.buildType: "apk"`. Los perfiles de desarrollo, staging y preview siguen disponibles para invocaciones locales expresas, pero no para el workflow de publicación. Coexisten dos dimensiones de versión:
 
 - la versión de Expo visible para el usuario, escrita en `app.json` y utilizada para la comparación entre la etiqueta de Git y la actualización;
 - los números de compilación nativa remotos administrados por EAS, con incremento automático explícito solo en producción.
@@ -250,21 +250,21 @@ Elimina de una etiqueta un sufijo SHA hexadecimal final antes de analizarla, cal
 El flujo de trabajo se ejecuta desde `apps/mobile`:
 
 ```bash
-eas build --platform android --profile preview --non-interactive --json
+eas build --platform android --profile production-apk --non-interactive --json
 ```
 
-(o `production` cuando se selecciona). Espera hasta el límite de 120 minutos del trabajo, extrae `artifacts.buildUrl` o `artifacts.applicationArchiveUrl`, recurre a `eas build:view` cuando el JSON inicial no contiene una URL, descarga el resultado incondicionalmente como `gymnasia.apk` y adjunta ese archivo a una publicación de GitHub que no es borrador ni versión preliminar. El cuerpo de la publicación contiene hasta 30 asuntos de confirmaciones desde la etiqueta anterior.
+No existe una rama de selección de perfil. El trabajo espera hasta 120 minutos, extrae `artifacts.buildUrl` o `artifacts.applicationArchiveUrl`, recurre a `eas build:view` cuando el JSON inicial no contiene una URL, descarga el resultado como `gymnasia.apk`, comprueba su estructura ZIP y exige `AndroidManifest.xml` sin metadatos de Android App Bundle antes de adjuntarlo a una publicación estable de GitHub. El cuerpo de la publicación contiene hasta 30 asuntos de confirmaciones desde la etiqueta anterior.
 
 El paso final confirma únicamente `apps/mobile/app.json` como `chore(release): bump version to … [skip ci]`, intenta ejecutar `git pull --rebase || true` y realiza el envío.
 
 ## Riesgos de publicación y de los artefactos
 
-1. **Incompatibilidad del formato de producción.** La vista previa solicita explícitamente un APK; producción no. EAS suele generar un Android App Bundle en producción, salvo que se configure de otro modo. Aun así, el flujo de trabajo asigna al archivo descargado el nombre `gymnasia.apk` y lo documenta como tal. Verifique el tipo de artefacto antes de utilizar el perfil de producción o establezca `android.buildType: "apk"` si el requisito es la instalación directa del APK.
+1. **La publicación está cerrada a un APK de Production.** El workflow fija `production-apk`, prepara el snapshot del canal Production y rechaza tanto un AAB renombrado como un archivo sin `AndroidManifest.xml`. Un AAB para Google Play debe generarse mediante un flujo separado y explícito con el perfil `production`; no amplíe este workflow con perfiles seleccionables porque volvería a permitir que un push distribuyera otra variante.
 2. **La ausencia de URL no se rechaza de forma temprana.** Si ambas consultas JSON de EAS devuelven una URL vacía, el paso de descarga sigue llamando a `curl -L ""`. Añada una comprobación explícita de URL no vacía y del tipo/tamaño de archivo antes de la publicación para reforzar la seguridad de la publicación.
 3. **La publicación precede a la confirmación de la versión en el código fuente.** La publicación de GitHub se crea antes de actualizar la rama. Un fallo al reorganizar o enviar puede dejar una etiqueta y un APK publicados cuyo cambio de versión no aparezca en `main`.
 4. **La condición de carrera del envío se suprime.** `git pull --rebase || true` ignora los fallos de reorganización y continúa con `git push`; los cambios simultáneos en `main` aún pueden hacer que falle el envío final. La publicación permanece publicada porque no existe una reversión.
 5. **La cancelación puede dejar trabajo huérfano en EAS.** La concurrencia cancela un flujo de trabajo anterior para la misma referencia, pero una compilación EAS puede continuar de forma remota. El tiempo de espera de 120 minutos se eligió porque la cola del nivel gratuito puede superar los 60 minutos; un tiempo de espera agotado o una cancelación pueden producir un artefacto remoto sin referencia y ninguna publicación de GitHub.
-6. **Cada envío válido a la rama principal publica.** El disparador de rutas abarca la mayoría de los cambios móviles que no sean scripts y utiliza la vista previa de forma predeterminada, por lo que los envíos rutinarios de código fuente/configuración que no sean de documentación pueden crear una publicación y un incremento de parche nuevos. Este control de publicaciones no se activa mediante etiquetas.
+6. **Cada envío válido a la rama principal publica Production.** El disparador de rutas abarca la mayoría de los cambios móviles que no sean scripts, tests, Markdown o `public/`, por lo que los envíos rutinarios de código fuente/configuración pueden crear una publicación de Production y un incremento de parche nuevos. Este control de publicaciones no se activa mediante etiquetas.
 7. **No existe un control de pruebas para las publicaciones.** El trabajo de publicación no ejecuta `npm test`, TypeScript, Playwright ni pruebas rápidas nativas antes de publicar.
 8. **Divergencia entre etiqueta y versión.** El cálculo de la versión confía en las etiquetas Git, no en el archivo `app.json` confirmado actualmente. Las modificaciones manuales de la versión o los fallos de confirmaciones de versiones anteriores pueden hacer que la transición calculada no coincida con el estado del código fuente.
 9. **El análisis convencional solo considera el asunto.** No se inspecciona el texto de cambios incompatibles en el cuerpo de una confirmación, y el comportamiento de combinación o reformulación puede cambiar el incremento seleccionado. Las confirmaciones no reconocidas siempre generan un parche.

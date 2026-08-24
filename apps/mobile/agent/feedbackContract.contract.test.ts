@@ -82,11 +82,10 @@ describe("create_feature_issue: contrato de la tool", () => {
 });
 
 describe("el APK que se distribuye debe poder hablar con el backend", () => {
-  // Este contrato existe por un fallo real: `staging` estaba vacío y el APK que
-  // se distribuye desde GitHub se compila justo con ese perfil, así que la
-  // funcionalidad estaba muerta en la única variante que la gente instala. Nada
-  // fallaba de forma visible: la app decía "no disponible" y se quedaba tan
-  // ancha. Un test de comportamiento no lo habría cazado.
+  // Este contrato existe por un fallo real: el workflow distribuía staging y su
+  // endpoint estaba vacío. Ahora la publicación solo admite production-apk; el
+  // test ancla tanto esa variante como su backend para que no vuelva a degradar
+  // en silencio.
   const appConfig = readFileSync(join(__dirname, "..", "app.config.ts"), "utf8");
   const buildWorkflow = readFileSync(
     join(repositoryRoot, ".github", "workflows", "build-apk.yml"),
@@ -106,9 +105,12 @@ describe("el APK que se distribuye debe poder hablar con el backend", () => {
     return line.slice(environment.length + 1).replace(/,$/, "").trim();
   }
 
-  it("el perfil por defecto del workflow sigue siendo staging", () => {
-    // Si esto cambia, la comprobación de abajo deja de proteger lo que cree.
-    expect(buildWorkflow).toContain('PROFILE="${{ github.event.inputs.profile || \'staging\' }}"');
+  it("el workflow de publicación solo compila production-apk", () => {
+    expect(buildWorkflow).toContain('PROFILE="production-apk"');
+    expect(buildWorkflow).not.toContain("github.event.inputs.profile");
+    expect(buildWorkflow).not.toContain("inputs.profile");
+    expect(buildWorkflow).toContain("environment: Production");
+    expect(buildWorkflow).toContain("--environment production");
   });
 
   it("staging y production tienen endpoint configurado", () => {
