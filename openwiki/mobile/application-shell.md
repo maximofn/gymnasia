@@ -74,7 +74,7 @@ Después de las ramas de hidratación/carga y del esqueleto global opcional, el 
 | `diet` | Controlar la fecha seleccionada, el encabezado contraíble y las superposiciones de edición/copia/estimación | Indicadores de dieta y estimación; consulta [Dieta y estimación de alimentos](diet-and-food-estimation.md) |
 | `measures` | Controlar los desplegables de período/métrica del panel, la pantalla de entrada, la expansión del historial y la superposición de fotos | Indicadores de medición; consulta [Mediciones](measurements.md) |
 | `chat` | Controlar la selección del hilo, los mensajes, la entrada, la expansión del razonamiento, el desplazamiento con el teclado y la explicación de BYOK | Ciclo de vida del agente respaldado por el proveedor; consulta [Tiempo de ejecución del agente](../agent/runtime.md) |
-| `settings` | Enrutar entre 13 secciones de configuración y alojar los controles de restablecimiento/proveedor | `SettingsTabKey`, registros de detalle, desplegables de proveedor y estado de copia de seguridad/actualización |
+| `settings` | Enrutar entre 12 secciones de configuración y alojar los controles de restablecimiento/proveedor | `SettingsTabKey`, registros de detalle, desplegables de proveedor y estado de copia de seguridad |
 
 `headerTitle` se deriva en lugar de conservarse. Entrenamiento resuelve `Sesión Activa`, `Editar Rutina`, `Detalle Rutina` o `Mis Rutinas`; todas las demás pantallas que no son Inicio utilizan `tabLabel(tab)`. Inicio renderiza `Gymnasia` directamente.
 
@@ -107,12 +107,11 @@ Dado que las claves de fecha se basan en la conversión local de `Date`, las rac
 9. `preferences` — Preferencias
 10. `notifications` — Notificaciones
 11. `backup` — Copia de seguridad
-12. `updates` — Actualizaciones
-13. `traces` — Trazas
+12. `traces` — Trazas
 
 La barra mide los anchos del viewport y del contenido, y mantiene `settingsTabsCanScrollLeft` y `settingsTabsCanScrollRight`; al pulsar las flechas, se desplaza 160 píxeles. Seleccionar una sección también borra los detalles seleccionados de ejercicio/alimento/alimento personal y cierra el formulario de alimentos personales y el chat de IA. Entrar en `memory` llama de forma diferida a `loadMemoryFields`.
 
-Configuración es una superficie de integración, no un límite de servicio independiente. Los registros de proveedor siguen formando parte del estado controlado por el shell, Memoria y los alimentos personales utilizan almacenes independientes, y las funciones de copia de seguridad y actualizaciones tienen su propio estado asíncrono de interfaz. Consulta [Configuración del proveedor](../agent/provider-configuration.md), [Estado local y copia de seguridad](local-state-and-backup.md) e [Integración retirada de VivaGym y actualizaciones](../integrations/vivagym-and-updates.md).
+Configuración es una superficie de integración, no un límite de servicio independiente. Los registros de proveedor siguen formando parte del estado controlado por el shell, Memoria y los alimentos personales utilizan almacenes independientes, y la copia de seguridad tiene su propio estado asíncrono de interfaz. Consulta [Configuración del proveedor](../agent/provider-configuration.md), [Estado local y copia de seguridad](local-state-and-backup.md) e [Integración retirada de VivaGym y distribución de APK](../integrations/vivagym-and-updates.md).
 
 ### Control compartido de Memoria
 
@@ -175,7 +174,7 @@ El efecto `hydrate`, que solo se ejecuta durante el montaje, realiza la transici
 7. confirmar `store`, la sesión/instantánea, las preferencias y las selecciones de gráficos;
 8. en `finally`, establecer `loading` en false e `isHydrated` en true, incluso después de un fallo capturado.
 
-Tras quedar preparado, los efectos buscan actualizaciones, cargan repositorios remotos de ejercicios/alimentos/productos/recetas, cargan los alimentos personales y los metadatos de copia de seguridad, ejecutan la migración de grasa corporal, inicializan los borradores del proveedor, crean un hilo de chat nuevo para el inicio y habilitan los efectos de persistencia. La rama `catch` muestra `No se pudo cargar almacenamiento local.` o el mensaje lanzado, pero el shell abandona de todos modos el indicador de carga y renderiza con cualquier estado inicial que haya sobrevivido. Esto favorece la disponibilidad frente a un fallo de inicio definitivo y puede hacer que un inicio con el almacén dañado parezca una aplicación vacía/predeterminada.
+Tras quedar preparado, los efectos cargan repositorios remotos de ejercicios/alimentos/productos/recetas, los alimentos personales y los metadatos de copia de seguridad, inicializan los borradores del proveedor, crean un hilo de chat nuevo para el inicio y habilitan los efectos de persistencia. La rama `catch` muestra `No se pudo cargar almacenamiento local.` o el mensaje lanzado, pero el shell abandona de todos modos el indicador de carga y renderiza con cualquier estado inicial que haya sobrevivido. Esto favorece la disponibilidad frente a un fallo de inicio definitivo y puede hacer que un inicio con el almacén dañado parezca una aplicación vacía/predeterminada.
 
 ### Invariantes de preparación
 

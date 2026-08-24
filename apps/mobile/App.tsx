@@ -57,8 +57,12 @@ import { RETAINED_LEGACY_SECURE_STORE_KEYS } from "./legacySecureStorage";
 import { createFeedbackIssueClient } from "./agent/feedbackClient";
 import {
   describeOutcomeForUser,
+  findPreviousUserMessage,
   formatExerciseSummary,
   formatFoodSummary,
+  isReportableAssistantMessage,
+  type AiReportResponseOrigin,
+  type AiReportSurface,
   type FeedbackIssueDraft,
   type FeedbackIssueOutcome,
 } from "./agent/feedbackIssues";
@@ -117,6 +121,11 @@ import {
 } from "./AiIdentityDisclosure";
 import { HealthSafetyNotice } from "./HealthSafetyNotice";
 import {
+  AiResponseReportAction,
+  AiResponseReportModal,
+  type AiResponseReportContext,
+} from "./AiResponseReportModal";
+import {
   createFakeProviderResult,
   FAKE_PROVIDER_MODELS,
   providerCredential,
@@ -170,7 +179,7 @@ Notifications.setNotificationHandler({
 });
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "backup" | "updates" | "traces";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "backup" | "traces";
 
 type SeriesType =
   | "normal"
@@ -336,6 +345,11 @@ type ChatMessage = {
   content: string;
   kind?: ChatMessageKind;
   health_safety?: HealthSafetyMessageMetadata;
+  report_context?: {
+    provider?: string | null;
+    model?: string | null;
+    origin: AiReportResponseOrigin;
+  };
   thinking?: string | null;
   is_streaming?: boolean;
   created_at: string;
@@ -573,6 +587,9 @@ const SECURE_STORE_API_KEY_PREFIX = scopedSecureStoreKey("gymnasia.mobile.v3.pro
 const LEGACY_STORAGE_KEYS = [
   scopedStorageKey("gymnasia.mobile.local.v1"),
   scopedStorageKey("gymnasia.mobile.local.v2"),
+  // El actualizador de APK se retiró por completo. Esta marca solo limitaba sus
+  // consultas automáticas y se elimina al arrancar una instalación existente.
+  scopedStorageKey("gymnasia.mobile.lastUpdateCheck"),
   // Marcaba una migración que inyectaba un histórico de grasa corporal ajeno al
   // usuario. La migración se retiró; la marca solo sobrevive en instalaciones
   // antiguas y no significa nada.
@@ -612,45 +629,6 @@ const OPENAI_REASONING_EFFORT_LABELS: Record<OpenAIReasoningEffort, string> = {
 const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
-
-const GITHUB_RELEASES_API = "https://api.github.com/repos/maximofn/gymnasia/releases/latest";
-const UPDATE_CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000; // 4 hours
-const UPDATE_CHECK_KEY = scopedStorageKey("gymnasia.mobile.lastUpdateCheck");
-
-function compareVersions(a: string, b: string): number {
-  const pa = a.split(".").map(Number);
-  const pb = b.split(".").map(Number);
-  for (let i = 0; i < 3; i++) {
-    const diff = (pb[i] ?? 0) - (pa[i] ?? 0);
-    if (diff !== 0) return diff;
-  }
-  return 0;
-}
-
-async function checkForUpdate(): Promise<{ available: boolean; version: string; url: string } | null> {
-  try {
-    const currentVersion = Constants.expoConfig?.version ?? "0.0.0";
-    const lastCheck = await AsyncStorage.getItem(UPDATE_CHECK_KEY);
-    if (lastCheck) {
-      const elapsed = Date.now() - Number(lastCheck);
-      if (elapsed < UPDATE_CHECK_INTERVAL_MS) return null;
-    }
-    await AsyncStorage.setItem(UPDATE_CHECK_KEY, String(Date.now()));
-    const res = await fetch(GITHUB_RELEASES_API, {
-      headers: { Accept: "application/vnd.github+json" },
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const tagName: string = data.tag_name ?? "";
-    const remoteVersion = tagName.replace(/^v/, "");
-    if (!remoteVersion || compareVersions(currentVersion, remoteVersion) <= 0) return null;
-    const apkAsset = (data.assets ?? []).find((a: { name: string }) => a.name.endsWith(".apk"));
-    if (!apkAsset) return null;
-    return { available: true, version: remoteVersion, url: apkAsset.browser_download_url };
-  } catch {
-    return null;
-  }
-}
 
 const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
@@ -1634,7 +1612,6 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "preferences", label: "Preferencias" },
   { key: "notifications", label: "Notificaciones" },
   { key: "backup", label: "Copia de seguridad" },
-  { key: "updates", label: "Actualizaciones" },
   { key: "traces", label: "Trazas" },
 ];
 
@@ -3848,6 +3825,7 @@ function createHealthSafetyChatMessage(
     role: "assistant",
     kind: "health_safety_intervention",
     health_safety: response.metadata,
+    report_context: { origin: "health_safety" },
     content: `${response.reason}\n\n${response.message}`,
     created_at: new Date().toISOString(),
   };
@@ -5233,12 +5211,31 @@ function normalizeChatMessage(raw: ChatMessage, index: number): ChatMessage {
     && typeof raw.health_safety.policyVersion === "string"
       ? raw.health_safety
       : undefined;
+  const rawReportContext = raw?.report_context;
+  const reportOrigin: AiReportResponseOrigin | null = rawReportContext
+    && ["model", "health_safety", "unknown"].includes(rawReportContext.origin)
+      ? rawReportContext.origin
+      : kind === "health_safety_intervention"
+        ? "health_safety"
+        : null;
+  const reportContext = reportOrigin
+    ? {
+        provider: typeof rawReportContext?.provider === "string"
+          ? rawReportContext.provider
+          : undefined,
+        model: typeof rawReportContext?.model === "string"
+          ? rawReportContext.model
+          : undefined,
+        origin: reportOrigin,
+      }
+    : undefined;
   return {
     id: raw?.id?.trim() || uid(`msg-${index}`),
     role,
     content: typeof raw?.content === "string" ? raw.content : "",
     kind,
     health_safety: healthSafety,
+    report_context: reportContext,
     thinking,
     is_streaming: false,
     created_at:
@@ -5381,9 +5378,23 @@ type MiniChatProps = {
   title: string;
   healthSafetyEvaluatorConsent: Record<Provider, boolean>;
   onHealthSafetyConsentPrompt: (provider: Provider) => void;
+  onReportMessage: (message: ChatMessage, messages: ChatMessage[]) => void;
 };
 
-function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvider, contextLabel, onJsonResult, onClose, visible, title, healthSafetyEvaluatorConsent, onHealthSafetyConsentPrompt }: MiniChatProps) {
+function MiniChat({
+  systemPrompt,
+  providerKeys,
+  providerPriority,
+  preferredProvider,
+  contextLabel,
+  onJsonResult,
+  onClose,
+  visible,
+  title,
+  healthSafetyEvaluatorConsent,
+  onHealthSafetyConsentPrompt,
+  onReportMessage,
+}: MiniChatProps) {
   const [mcMessages, setMcMessages] = useState<ChatMessage[]>(() => [
     createAiIdentityChatMessage("msg", "personal-food-assistant"),
   ]);
@@ -5438,7 +5449,13 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
 
     const provider = resolvedProvider;
     if (!provider) {
-      setMcMessages((prev) => [...prev, { id: uid("msg"), role: "assistant", content: "No hay proveedor de IA configurado. Ve a Configuración → Proveedor IA para añadir una API key.", created_at: new Date().toISOString() }]);
+      setMcMessages((prev) => [...prev, {
+        id: uid("msg"),
+        role: "assistant",
+        kind: "technical_error",
+        content: "No hay proveedor de IA configurado. Ve a Configuración → Proveedor IA para añadir una API key.",
+        created_at: new Date().toISOString(),
+      }]);
       return;
     }
 
@@ -5477,8 +5494,25 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
       const response = await callProviderChatAPI(provider, history, "personal-food-assistant");
       const outputDecision = classifyHealthSafetyText(response, "output", healthSelection.policy);
       const assistantMsg: ChatMessage = outputDecision.level === "none"
-        ? { id: uid("msg"), role: "assistant", content: response, created_at: new Date().toISOString() }
-        : createHealthSafetyChatMessage(outputDecision, healthSelection.policy);
+        ? {
+            id: uid("msg"),
+            role: "assistant",
+            content: response,
+            report_context: {
+              provider: provider.provider,
+              model: provider.model,
+              origin: "model",
+            },
+            created_at: new Date().toISOString(),
+          }
+        : {
+            ...createHealthSafetyChatMessage(outputDecision, healthSelection.policy),
+            report_context: {
+              provider: provider.provider,
+              model: provider.model,
+              origin: "health_safety",
+            },
+          };
       setMcMessages((prev) => [...prev, assistantMsg]);
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : "Error desconocido";
@@ -5534,8 +5568,12 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
         </View>
         {mcMessages.map((msg) => (
           msg.kind === "health_safety_intervention" ? (
-            <View key={msg.id} style={{ marginBottom: 8 }}>
+            <View key={msg.id} style={{ marginBottom: 8, gap: 6 }}>
               <HealthSafetyNotice content={msg.content} metadata={msg.health_safety} compact />
+              <AiResponseReportAction
+                message={msg}
+                onPress={() => onReportMessage(msg, mcMessages)}
+              />
             </View>
           ) : (
             <View
@@ -5557,6 +5595,14 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
               <Text style={{ color: msg.kind === "technical_error" ? "#FF8A8A" : mobileTheme.color.textPrimary, fontSize: 13, lineHeight: 19 }}>
                 {msg.content}
               </Text>
+              {isReportableAssistantMessage(msg) ? (
+                <View style={{ marginTop: 7 }}>
+                  <AiResponseReportAction
+                    message={msg}
+                    onPress={() => onReportMessage(msg, mcMessages)}
+                  />
+                </View>
+              ) : null}
             </View>
           )
         ))}
@@ -5589,6 +5635,7 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
 
       <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
         <TextInput
+          testID="personal-food-assistant-input"
           value={mcInput}
           onChangeText={setMcInput}
           placeholder="Ej: tortilla de patatas..."
@@ -5610,6 +5657,7 @@ function MiniChat({ systemPrompt, providerKeys, providerPriority, preferredProvi
           }}
         />
         <Pressable
+          testID="personal-food-assistant-send"
           onPress={sendMcMessage}
           disabled={mcSending || !mcInput.trim()}
           accessibilityLabel="Enviar mensaje a Gymnasia Food Estimator"
@@ -5728,6 +5776,7 @@ type SharedChatPanelProps = {
   pendingStatusMessage?: string | null;
   scrollRef?: React.RefObject<ScrollView | null>;
   disclosureSurface?: AiConversationSurface;
+  onReportMessage: (message: ChatMessage, messages: ChatMessage[]) => void;
 };
 
 function SharedChatPanel({
@@ -5745,6 +5794,7 @@ function SharedChatPanel({
   pendingStatusMessage,
   scrollRef,
   disclosureSurface,
+  onReportMessage,
 }: SharedChatPanelProps) {
   const isEstimator = variant === "estimator";
   const hasStreamingMessage = messages.some((message) => message.is_streaming);
@@ -5775,7 +5825,15 @@ function SharedChatPanel({
             {messages.map((msg) => {
               const isAssistant = msg.role === "assistant";
               if (msg.kind === "health_safety_intervention") {
-                return <HealthSafetyNotice key={msg.id} content={msg.content} metadata={msg.health_safety} compact />;
+                return (
+                  <View key={msg.id} style={{ gap: 6 }}>
+                    <HealthSafetyNotice content={msg.content} metadata={msg.health_safety} compact />
+                    <AiResponseReportAction
+                      message={msg}
+                      onPress={() => onReportMessage(msg, messages)}
+                    />
+                  </View>
+                );
               }
               return (
                 <View
@@ -5867,6 +5925,10 @@ function SharedChatPanel({
                       </View>
                     ) : null}
                   </View>
+                  <AiResponseReportAction
+                    message={msg}
+                    onPress={() => onReportMessage(msg, messages)}
+                  />
                 </View>
               );
             })}
@@ -5902,7 +5964,15 @@ function SharedChatPanel({
           {disclosureSurface ? <AiIdentityDisclosure surface={disclosureSurface} /> : null}
           {messages.map((msg) => {
             if (msg.kind === "health_safety_intervention") {
-              return <HealthSafetyNotice key={msg.id} content={msg.content} metadata={msg.health_safety} />;
+              return (
+                <View key={msg.id} style={{ gap: 6 }}>
+                  <HealthSafetyNotice content={msg.content} metadata={msg.health_safety} />
+                  <AiResponseReportAction
+                    message={msg}
+                    onPress={() => onReportMessage(msg, messages)}
+                  />
+                </View>
+              );
             }
             return (
             <View
@@ -5984,6 +6054,10 @@ function SharedChatPanel({
                   </View>
                 ) : null}
               </View>
+              <AiResponseReportAction
+                message={msg}
+                onPress={() => onReportMessage(msg, messages)}
+              />
             </View>
             );
           })}
@@ -6008,6 +6082,7 @@ function SharedChatPanel({
       {isEstimator ? (
         <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
           <TextInput
+            testID={disclosureSurface ? `${disclosureSurface}-input` : undefined}
             style={{
               flex: 1,
               minHeight: 44,
@@ -6029,6 +6104,7 @@ function SharedChatPanel({
             multiline
           />
           <Pressable
+            testID={disclosureSurface ? `${disclosureSurface}-send` : undefined}
             onPress={onSend}
             disabled={sendDisabled}
             accessibilityLabel={sendLabel}
@@ -6288,6 +6364,37 @@ export default function App() {
     feedbackProposalStore.dismiss(proposal.id);
   }, []);
 
+  const [pendingAiReport, setPendingAiReport] = useState<AiResponseReportContext | null>(null);
+  const handleOpenAiReport = useCallback((
+    surface: AiReportSurface,
+    message: ChatMessage,
+    conversation: ChatMessage[],
+  ) => {
+    if (!isReportableAssistantMessage(message)) return;
+    const previousUserMessage = findPreviousUserMessage(conversation, message.id);
+    if (!previousUserMessage) return;
+
+    setPendingAiReport({
+      reportKey: `${surface}:${message.id}`,
+      surface,
+      question: previousUserMessage.content,
+      response: message.content,
+      appVersion: Constants.expoConfig?.version ?? "Desconocida",
+      provider: message.report_context?.provider,
+      model: message.report_context?.model,
+      origin: message.kind === "health_safety_intervention"
+        ? "health_safety"
+        : message.report_context?.origin ?? "unknown",
+      healthSafety: message.health_safety
+        ? {
+            level: message.health_safety.level,
+            policyVersion: message.health_safety.policyVersion,
+            ruleIds: message.health_safety.ruleIds,
+          }
+        : null,
+    });
+  }, []);
+
   const { width: viewportWidth } = useWindowDimensions();
   const isDesktopWeb = Platform.OS === "web" && viewportWidth >= 960;
   const [tab, setTab] = useState<TabKey>("home");
@@ -6295,18 +6402,6 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
-  const [updateInfo, setUpdateInfo] = useState<{ version: string; url: string } | null>(null);
-  // Manual update-check flow (Configuración → Actualizaciones), independent of the
-  // time-gated automatic check.
-  const [updatesChecking, setUpdatesChecking] = useState(false);
-  const [updatesCheckResult, setUpdatesCheckResult] = useState<
-    | null
-    | { status: "available"; remoteVersion: string; url: string }
-    | { status: "uptodate"; remoteVersion: string }
-    | { status: "error"; message: string }
-  >(null);
-  const [updatesConfirmInfo, setUpdatesConfirmInfo] = useState<{ remoteVersion: string; url: string } | null>(null);
-
   // Copia de seguridad manual (Configuración → Copia de seguridad, GYM-5).
   const [backupBusy, setBackupBusy] = useState<null | "export" | "import">(null);
   const [backupResult, setBackupResult] = useState<
@@ -7992,13 +8087,6 @@ export default function App() {
 
   useEffect(() => {
     if (!isHydrated) return;
-    checkForUpdate().then((info) => {
-      if (info?.available) setUpdateInfo({ version: info.version, url: info.url });
-    });
-  }, [isHydrated]);
-
-  useEffect(() => {
-    if (!isHydrated) return;
     loadExercisesRepo().then((repoExercises) => {
       setExercisesRepo(repoExercises);
       // Sync template exercises with repo data (image, muscle, etc.)
@@ -8531,6 +8619,11 @@ export default function App() {
         content: "",
         thinking: null,
         is_streaming: true,
+        report_context: {
+          provider: activeProvider.provider,
+          model: activeProvider.model,
+          origin: "model",
+        },
         created_at: createdAt,
       };
 
@@ -8662,6 +8755,10 @@ export default function App() {
         ...current,
         kind: "health_safety_intervention",
         health_safety: safetyResponse.metadata,
+        report_context: {
+          ...current.report_context,
+          origin: "health_safety",
+        },
         content: `${safetyResponse.reason}\n\n${safetyResponse.message}`,
         thinking: null,
         is_streaming: false,
@@ -9078,36 +9175,6 @@ export default function App() {
     return resolveFoodEstimatorProvider(store.keys);
   }
 
-  async function runManualUpdateCheck() {
-    setUpdatesChecking(true);
-    setUpdatesCheckResult(null);
-    try {
-      const currentVersion = Constants.expoConfig?.version ?? "0.0.0";
-      const res = await fetch(GITHUB_RELEASES_API, {
-        headers: { Accept: "application/vnd.github+json" },
-      });
-      if (!res.ok) throw new Error("No se pudo consultar GitHub. Inténtalo de nuevo.");
-      const data = await res.json();
-      const tagName: string = data.tag_name ?? "";
-      const remoteVersion = tagName.replace(/^v/, "");
-      if (!remoteVersion) throw new Error("No se encontró ninguna versión publicada.");
-      // Refresh the automatic-check timestamp so the background check doesn't fire again right away.
-      await AsyncStorage.setItem(UPDATE_CHECK_KEY, String(Date.now()));
-      if (compareVersions(currentVersion, remoteVersion) > 0) {
-        const apkAsset = (data.assets ?? []).find((a: { name: string }) => a.name.endsWith(".apk"));
-        if (apkAsset?.browser_download_url) {
-          setUpdatesCheckResult({ status: "available", remoteVersion, url: apkAsset.browser_download_url });
-          return;
-        }
-      }
-      setUpdatesCheckResult({ status: "uptodate", remoteVersion });
-    } catch (e) {
-      setUpdatesCheckResult({ status: "error", message: e instanceof Error ? e.message : "Error al comprobar actualizaciones." });
-    } finally {
-      setUpdatesChecking(false);
-    }
-  }
-
   // --- Copia de seguridad manual (GYM-5) ---
   // Exporta todos los datos de usuario a un archivo JSON versionado y abre la hoja
   // de compartir para que el usuario lo guarde donde quiera (Drive, Dropbox, etc.).
@@ -9432,6 +9499,11 @@ export default function App() {
       content: "",
       thinking: null,
       is_streaming: true,
+      report_context: {
+        provider: resolvedProvider.provider,
+        model: resolvedProvider.model,
+        origin: "model",
+      },
       created_at: userMessage.created_at,
     };
     const nextMessages = [...foodEstimatorMessages, userMessage];
@@ -9558,6 +9630,10 @@ export default function App() {
               ...message,
               kind: "health_safety_intervention",
               health_safety: safetyResponse.metadata,
+              report_context: {
+                ...message.report_context,
+                origin: "health_safety",
+              },
               content: `${safetyResponse.reason}\n\n${safetyResponse.message}`,
               thinking: null,
               is_streaming: false,
@@ -12400,7 +12476,15 @@ export default function App() {
                   <AiIdentityDisclosure surface="main-chat" />
                   {messages.map((msg) => {
                     if (msg.kind === "health_safety_intervention") {
-                      return <HealthSafetyNotice key={msg.id} content={msg.content} metadata={msg.health_safety} />;
+                      return (
+                        <View key={msg.id} style={{ gap: 6 }}>
+                          <HealthSafetyNotice content={msg.content} metadata={msg.health_safety} />
+                          <AiResponseReportAction
+                            message={msg}
+                            onPress={() => handleOpenAiReport("main-chat", msg, messages)}
+                          />
+                        </View>
+                      );
                     }
                     return (
                     <View
@@ -12469,6 +12553,10 @@ export default function App() {
                           </View>
                         ) : null}
                       </View>
+                      <AiResponseReportAction
+                        message={msg}
+                        onPress={() => handleOpenAiReport("main-chat", msg, messages)}
+                      />
                     </View>
                     );
                   })}
@@ -20114,6 +20202,9 @@ export default function App() {
                     providerPriority={FOOD_ESTIMATOR_PROVIDER_PRIORITY}
                     healthSafetyEvaluatorConsent={healthSafetyConsent.providers}
                     onHealthSafetyConsentPrompt={offerHealthSafetyEvaluatorConsent}
+                    onReportMessage={(message, conversation) => {
+                      handleOpenAiReport("personal-food-assistant", message, conversation);
+                    }}
                     onJsonResult={(json) => {
                       const entry: FoodRepoEntry = {
                         id: uid("food"),
@@ -21139,118 +21230,6 @@ export default function App() {
                 </View>
               ) : null}
 
-              {settingsTab === "updates" ? (
-                <View style={{ gap: 12 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                    Actualizaciones
-                  </Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: 12,
-                      padding: 14,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
-                      Versión actual
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
-                      v{Constants.expoConfig?.version ?? "?"}
-                    </Text>
-                  </View>
-                  <Pressable
-                    onPress={runManualUpdateCheck}
-                    disabled={updatesChecking}
-                    style={{
-                      height: 48,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.brandPrimary,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      opacity: updatesChecking ? 0.6 : 1,
-                    }}
-                  >
-                    {updatesChecking ? (
-                      <ActivityIndicator size="small" color="#06090D" />
-                    ) : (
-                      <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>
-                        Comprobar nuevas versiones
-                      </Text>
-                    )}
-                  </Pressable>
-
-                  {updatesCheckResult?.status === "available" ? (
-                    <View
-                      style={{
-                        gap: 12,
-                        backgroundColor: "rgba(203,255,26,0.10)",
-                        borderRadius: 12,
-                        padding: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(203,255,26,0.5)",
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>
-                        Hay una nueva versión disponible
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                        Nueva versión: v{updatesCheckResult.remoteVersion}
-                      </Text>
-                      <Pressable
-                        onPress={() =>
-                          setUpdatesConfirmInfo({
-                            remoteVersion: updatesCheckResult.remoteVersion,
-                            url: updatesCheckResult.url,
-                          })
-                        }
-                        style={{
-                          height: 44,
-                          borderRadius: mobileTheme.radius.md,
-                          backgroundColor: mobileTheme.color.brandPrimary,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 14 }}>
-                          Actualizar app
-                        </Text>
-                      </Pressable>
-                    </View>
-                  ) : null}
-
-                  {updatesCheckResult?.status === "uptodate" ? (
-                    <View
-                      style={{
-                        gap: 6,
-                        backgroundColor: mobileTheme.color.bgSurface,
-                        borderRadius: 12,
-                        padding: 14,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>
-                        No hay ninguna versión nueva
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                        Versión en GitHub: v{updatesCheckResult.remoteVersion}
-                      </Text>
-                    </View>
-                  ) : null}
-
-                  {updatesCheckResult?.status === "error" ? (
-                    <Text style={{ color: "#FF8A8A", fontSize: 13 }}>
-                      {updatesCheckResult.message}
-                    </Text>
-                  ) : null}
-                </View>
-              ) : null}
-
               {settingsTab === "traces" ? (
                 <View style={{ gap: 12 }}>
                   <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
@@ -22004,6 +21983,9 @@ export default function App() {
               pendingStatusMessage={foodEstimatorSending ? (foodEstimatorStatus || `${foodThinkingLabel}...`) : null}
               scrollRef={foodEstimatorScrollRef}
               disclosureSurface="food-estimator"
+              onReportMessage={(message, conversation) => {
+                handleOpenAiReport("food-estimator", message, conversation);
+              }}
             />
           </View>
 
@@ -22055,145 +22037,6 @@ export default function App() {
             ) : null}
           </View>
         </KeyboardAvoidingView>
-      ) : null}
-
-      {updateInfo ? (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.76)",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 900,
-            elevation: 90,
-          }}
-        >
-          <View
-            style={{
-              width: "85%",
-              maxWidth: 380,
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.08)",
-              backgroundColor: mobileTheme.color.bgSurface,
-              padding: 24,
-              alignItems: "center",
-              gap: 16,
-            }}
-          >
-            <Feather name="download" size={40} color={mobileTheme.color.brandPrimary} />
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800", textAlign: "center" }}>
-              Nueva versión disponible
-            </Text>
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>
-              Gymnasia v{updateInfo.version} está disponible.{"\n"}Tu versión actual es v{Constants.expoConfig?.version ?? "?"}.
-            </Text>
-            <Pressable
-              onPress={() => {
-                void openExternalUrl(updateInfo.url);
-                setUpdateInfo(null);
-              }}
-              style={{
-                width: "100%",
-                height: 48,
-                borderRadius: mobileTheme.radius.md,
-                backgroundColor: mobileTheme.color.brandPrimary,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>Descargar</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setUpdateInfo(null)}
-              style={{
-                width: "100%",
-                height: 44,
-                borderRadius: mobileTheme.radius.md,
-                borderWidth: 1,
-                borderColor: mobileTheme.color.borderSubtle,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Ahora no</Text>
-            </Pressable>
-          </View>
-        </View>
-      ) : null}
-
-      {updatesConfirmInfo ? (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.78)",
-            paddingHorizontal: 24,
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 910,
-            elevation: 91,
-          }}
-        >
-          <View
-            style={{
-              width: "85%",
-              maxWidth: 380,
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.08)",
-              backgroundColor: mobileTheme.color.bgSurface,
-              padding: 24,
-              alignItems: "center",
-              gap: 16,
-            }}
-          >
-            <Feather name="download" size={40} color={mobileTheme.color.brandPrimary} />
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800", textAlign: "center" }}>
-              ¿Actualizar la app?
-            </Text>
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>
-              Se abrirá la descarga de Gymnasia v{updatesConfirmInfo.remoteVersion}.{"\n"}¿Seguro que quieres actualizar?
-            </Text>
-            <Pressable
-              onPress={() => {
-                void openExternalUrl(updatesConfirmInfo.url);
-                setUpdatesConfirmInfo(null);
-              }}
-              style={{
-                width: "100%",
-                height: 48,
-                borderRadius: mobileTheme.radius.md,
-                backgroundColor: mobileTheme.color.brandPrimary,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>Sí, actualizar</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setUpdatesConfirmInfo(null)}
-              style={{
-                width: "100%",
-                height: 44,
-                borderRadius: mobileTheme.radius.md,
-                borderWidth: 1,
-                borderColor: mobileTheme.color.borderSubtle,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Cancelar</Text>
-            </Pressable>
-          </View>
-        </View>
       ) : null}
 
       {pendingImport ? (
@@ -23710,6 +23553,12 @@ export default function App() {
           </View>
         </View>
       )}
+
+      <AiResponseReportModal
+        context={pendingAiReport}
+        onClose={() => setPendingAiReport(null)}
+        onSubmit={submitFeedbackIssue}
+      />
 
       <StatusBar style="light" />
       </View>

@@ -1,0 +1,11 @@
+{
+  "id": "extension-cadera-banco-peso-corporal",
+  "name": "Extensión de cadera en banco con peso corporal",
+  "image_male": "images/extension-cadera-banco-peso-corporal-male.webp",
+  "image_female": "images/extension-cadera-banco-peso-corporal-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "core", "tríceps"],
+  "equipment": "banco",
+  "difficulty": "intermediate",
+  "instructions": "Apoya las manos detrás de ti en el borde de un banco y planta los pies delante con las rodillas flexionadas. Empuja el suelo y extiende las caderas hasta alinear hombros, caderas y rodillas en una mesa invertida. Contrae los glúteos arriba y desciende con control."
+}

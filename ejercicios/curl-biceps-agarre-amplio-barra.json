@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-agarre-amplio-barra",
+  "name": "Curl de bíceps con agarre amplio y barra",
+  "image_male": "images/curl-biceps-agarre-amplio-barra-male.webp",
+  "image_female": "images/curl-biceps-agarre-amplio-barra-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie y sujeta la barra con agarre supino, colocando las manos claramente más abiertas que los hombros. Mantén el torso quieto y los codos cerca de los costados mientras flexionas los brazos. Contrae los bíceps arriba y baja la barra con control hasta extender los codos."
+}

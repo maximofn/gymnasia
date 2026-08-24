@@ -5,7 +5,7 @@
 // La app enlaza la política publicada y declara el descargo sanitario desde aquí,
 // para que el texto legal tenga un único origen (GYM-190).
 
-export const PRIVACY_POLICY_VERSION = "2026-08-v4";
+export const PRIVACY_POLICY_VERSION = "2026-08-v6";
 export const PRIVACY_POLICY_EFFECTIVE_DATE = "2026-08-24";
 export const PRIVACY_POLICY_CONTACT = "maximofn@maximofn.com";
 
@@ -15,8 +15,8 @@ export const PRIVACY_POLICY_URLS = {
 } as const;
 
 export const PRIVACY_POLICY_DIGESTS = {
-  es: "sha256:afd6fdfe2a5a8bf121e967439714a1caa05e2979be0286febe0fe2bb90195854",
-  en: "sha256:6eaa56225f76721dba1aa4ed4e19a83b0d1fcb5739fe7752c28ab6ac61922feb",
+  es: "sha256:d55ed2d1590605e3ce15a13c03054f10e448faf3562a0ab0c4e995d23908e3ea",
+  en: "sha256:2619f8e83990b63be89ab42e01d4ea91f53ed484d558774c7e7697204171d93c",
 } as const;
 
 export const MEDICAL_DISCLAIMER = {

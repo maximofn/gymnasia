@@ -241,6 +241,14 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   requires a current-commit approval from `@maximofn`; all merges remain manual.
 - If a PR touches build-triggering files under `apps/mobile/**`, ask for explicit
   confirmation before merging because Expo quota is limited.
+- **El entorno de build móvil por defecto es Producción.** Mientras el mantenedor
+  pruebe directamente en Producción y no haya usuarios, interpreta cualquier
+  petición genérica de compilar, generar un APK o lanzar una build como
+  `production-apk` (APK instalable con configuración de Producción). Usa
+  `production` solo cuando se pida un AAB para Google Play. No lances ni apruebes
+  una build `staging` salvo que el mantenedor solicite Staging explícitamente. Si
+  el push a `main` deja esperando la build automática de Staging, no la apruebes
+  por defecto: lanza y aprueba manualmente `production-apk`.
 - **Qué dispara realmente el build de Expo**: no todo push a `main`. El workflow
   `.github/workflows/build-apk.yml` filtra por rutas:
   ```yaml
@@ -381,14 +389,20 @@ Only non-obvious gotchas that could recur are kept here.
 - Ninguno de los dos se despliega en el push: `vercel project ls` mostraba
   `gymnasia-web` sin actualizar desde hacía 15 días mientras `main` seguía avanzando.
   Mergear la política **no la publica**; hay que lanzar la CLI a mano.
-- `apps/mobile/` no tiene `.vercel/` (está git-ignored), así que desplegar sin enlazar
-  crearía un proyecto nuevo llamado `mobile`. Enlazar primero, siempre:
+- En un worktree, la raíz no tiene `.vercel/` (está git-ignored), así que desplegar
+  sin enlazar puede crear un proyecto equivocado. El proyecto remoto `gymnasia-web`
+  ya tiene `apps/mobile` como **Root Directory**: el vínculo y el deploy se hacen
+  desde la raíz del repositorio, no desde `apps/mobile/`. Enlazar primero, siempre:
   ```bash
-  npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd apps/mobile
-  npm exec --yes -- vercel@latest deploy --prod --yes --cwd apps/mobile
+  npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd .
+  npm exec --yes -- vercel@latest deploy --prod --yes --cwd .
   ```
   La salida debe decir `Deploying gymnasia-web` y aliar `gymnasia.maximofn.com`. Si dice
   `Created`, detente: está creando otro proyecto.
+- Si se enlaza dentro de `apps/mobile/`, Vercel sube esa carpeta como raíz y luego
+  intenta aplicar otra vez el Root Directory remoto. El build falla con
+  `The specified Root Directory "apps/mobile" does not exist`; no se corrige
+  reintentando, sino volviendo a enlazar y desplegar desde la raíz como arriba.
 - Verificar después, con `curl` y no con Playwright (no tiene salida a internet en el
   sandbox del agente):
   ```bash

@@ -72,8 +72,8 @@ El agregado no constituye todo el modelo de persistencia. A continuación se enu
 | AsyncStorage `gymnasia.mobile.products_repo.v1` | Caché remota de productos | No | Estrategia que prioriza la red y usa la caché como alternativa. |
 | AsyncStorage `gymnasia.mobile.recipes_repo.v1` | Caché remota de recetas | No | Estrategia que prioriza la red y usa la caché como alternativa. |
 | AsyncStorage `gymnasia.mobile.backup_meta.v1` | `{lastBackupAt: string | null}` | No | Se actualiza después de una ruta de exportación/uso compartido correcta; es solo informativo. |
-| AsyncStorage `gymnasia.mobile.body_fat_migration_done` | Cadena `"1"` | No | Marcador de migración única del historial de grasa corporal incluido. |
-| AsyncStorage `gymnasia.mobile.lastUpdateCheck` | Milisegundos desde el epoch como cadena | No | Limitación a cuatro horas de las comprobaciones de versiones. |
+| AsyncStorage `gymnasia.mobile.body_fat_migration_done` | Marca heredada de una migración retirada | No | Solo se elimina durante la limpieza de arranque de instalaciones antiguas; ya no se lee ni se escribe. |
+| AsyncStorage `gymnasia.mobile.lastUpdateCheck` | Marca heredada del actualizador retirado | No | Solo se elimina durante la limpieza de arranque de instalaciones antiguas; ya no se lee ni se escribe. |
 | AsyncStorage `gymnasia_debug_traces` | Hasta 1000 objetos `TraceEntry` | No | Gestionado por `trace.ts`; se carga de forma diferida y se reescribe sin esperar el resultado. |
 | SecureStore `gymnasia.mobile.v3.provider.api_key.<provider>` | Una clave de API de proveedor sin espacios circundantes | No | Se combina con `LocalStore` en memoria; se establece/elimina cada vez que cambia `store.keys`. |
 | SecureStore `vivagym.email`, `vivagym.password` | Credenciales heredadas de una integración retirada | No | La versión actual no las lee ni escribe durante la hidratación o el uso normal; una actualización dentro del mismo package name las conserva y `resetLocalData` las elimina. |
@@ -109,7 +109,7 @@ sequenceDiagram
     App->>SS: Rewrite provider keys
     App->>App: Publish store session preferences and hydrated flag
     App->>AS: Load caches personal foods and backup metadata
-    App->>App: Run body-fat migration
+    App->>AS: Delete retired updater and body-fat migration markers
 ```
 
 *Leyenda: La hidratación inicial canoniza el agregado, combina los secretos, reescribe ambos almacenes y solo entonces habilita los efectos de persistencia del dominio y los cargadores posteriores.*
@@ -121,8 +121,8 @@ Después de la hidratación:
 1. Cualquier cambio en `store` se serializa mediante `serializeStoreForAsyncStorage`, escribe el agregado y los secretos del proveedor, y llama a `saveDevStoreFile` de forma concurrente.
 2. `userPrefs`, `personalFoods` y `activeWorkoutSession` tienen efectos independientes y, por tanto, puntos de confirmación independientes.
 3. La eliminación de una sesión también elimina su instantánea de plantilla. Los fallos al escribir la instantánea se ignoran; los fallos de la sesión muestran un error global.
-4. Las cachés de repositorios, la caché del prompt del sistema, los datos personales, el límite de comprobación de actualizaciones, el marcador de migración, los metadatos de copia de seguridad y las trazas se escriben mediante sus propias funciones, no mediante el efecto principal de persistencia.
-5. `migrateBodyFatHistory` se ejecuta después de la hidratación. Completa un valor de grasa corporal ausente para una fecha coincidente o crea un registro al mediodía, guarda el agregado modificado mediante un asistente de lectura-modificación-escritura, actualiza el estado de React y, a continuación, marca la migración como completada. Todos los fallos de migración son silenciosos.
+4. Las cachés de repositorios, la caché del prompt del sistema, los datos personales, los metadatos de copia de seguridad y las trazas se escriben mediante sus propias funciones, no mediante el efecto principal de persistencia.
+5. Las marcas heredadas del actualizador y de la antigua migración de grasa corporal se eliminan durante la hidratación y no se vuelven a escribir.
 
 ### Copropiedad en memoria
 
@@ -203,7 +203,7 @@ Las trazas se excluyen de la copia de seguridad/importación y `resetLocalData` 
 
 `appVersion` procede de la configuración de Expo, con `0.0.0` como valor alternativo; es un metadato, no una comprobación de compatibilidad de importación. `schemaVersion` es el control de compatibilidad. El analizador acepta versiones de esquema inferiores o iguales a `BACKUP_SCHEMA_VERSION`, rechaza las versiones futuras y solo comprueba la identidad del sobre, la versión numérica y la presencia de `data.store`. No existen funciones explícitas de migración por versión.
 
-Los datos excluidos son importantes desde el punto de vista semántico: claves de API de proveedores, credenciales heredadas de integraciones retiradas, entrenamiento activo e instantánea anterior a la sesión, cachés remotas, caché de prompts, trazas, metadatos de copias de seguridad/actualizaciones y marcadores de migración. Una cadena `photo_uri` dentro de una medición se incluye porque las mediciones residen en `store`, pero los bytes de la imagen referenciada **no** se copian en el JSON. Por tanto, un dispositivo restaurado puede contener URI `file:` o `content:` inservibles.
+Los datos excluidos son importantes desde el punto de vista semántico: claves de API de proveedores, credenciales heredadas de integraciones retiradas, entrenamiento activo e instantánea anterior a la sesión, cachés remotas, caché de prompts, trazas, metadatos de copias de seguridad y marcas heredadas de funciones retiradas. Una cadena `photo_uri` dentro de una medición se incluye porque las mediciones residen en `store`, pero los bytes de la imagen referenciada **no** se copian en el JSON. Por tanto, un dispositivo restaurado puede contener URI `file:` o `content:` inservibles.
 
 ### Secuencias de exportación e importación
 
@@ -276,7 +276,7 @@ No existe ninguna transacción que abarque AsyncStorage, SecureStore, el estado 
 - reemplaza `LocalStore`, restablece el estado de la interfaz de proveedores, vuelve a Inicio y finaliza el entrenamiento activo;
 - a continuación, los efectos de persistencia ordinarios reescriben el agregado, eliminan las claves de API de proveedores ahora vacías y eliminan las claves de sesión;
 - elimina también las dos claves heredadas `vivagym.email` y `vivagym.password`, sin leer sus valores;
-- **no** restablece `userPrefs` (incluida la configuración de notificaciones), `personalFoods`, los datos `personalData`/Memoria almacenados o cargados, las cachés, las trazas, los metadatos de copia de seguridad, el límite de actualizaciones ni el marcador de migración de grasa corporal;
+- **no** restablece `userPrefs` (incluida la configuración de notificaciones), `personalFoods`, los datos `personalData`/Memoria almacenados o cargados, las cachés, las trazas ni los metadatos de copia de seguridad; las marcas heredadas del actualizador y de la migración de grasa corporal ya se eliminan al arrancar;
 - en desarrollo web, también replica el nuevo agregado en el archivo de desarrollo.
 
 Por consiguiente, no debe deducirse de esta función ningún texto de interfaz que implique un borrado completo del dispositivo.

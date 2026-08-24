@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia (GYM-190). De aquí salen la política de privacidad publicada (docs/legal/) y las respuestas de Data safety (docs/security/play-declarations.md). Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198. Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-08-v4",
+  "policyVersion": "2026-08-v6",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -173,10 +173,9 @@
       "key": "gymnasia.mobile.lastUpdateCheck",
       "backend": "async-storage",
       "personal": false,
-      "dataCategory": "app-activity",
-      "purpose": "Momento de la última comprobación de actualizaciones, para espaciarlas cada cuatro horas.",
-      "clearedBy": "never",
-      "plannedRemoval": "GYM-188"
+      "dataCategory": "legacy",
+      "purpose": "Marca heredada del actualizador de APK retirado. Ya no se lee ni se escribe; el arranque solo la elimina de instalaciones antiguas.",
+      "clearedBy": "startup-migration"
     },
     {
       "key": "gymnasia.mobile.body_fat_migration_done",
@@ -278,7 +277,7 @@
       "host": "api.github.com",
       "trigger": "automatic",
       "requiresUserKey": false,
-      "sends": "Nada del usuario. Consulta la última release publicada para avisar de actualizaciones (esa parte se retira en GYM-188) y los deployments del repositorio para resolver qué política del agente corresponde al canal de la instalación. La app ya no abre incidencias contra GitHub: eso pasó al backend de recepción en GYM-54, que es quien custodia la credencial.",
+      "sends": "Nada del usuario. Consulta los deployments del repositorio para resolver qué política del agente corresponde al canal de la instalación. La app no consulta releases de APK ni abre incidencias contra GitHub; las propuestas se envían al backend de recepción, que custodia la credencial de escritura.",
       "thirdParty": "GitHub"
     },
     {
@@ -306,7 +305,7 @@
       "host": "gymnasia-feedback.maximofn.com",
       "trigger": "user-initiated",
       "requiresUserKey": false,
-      "sends": "El tipo de incidencia (mejora, alimento o ejercicio), un título y un resumen, y una clave de idempotencia derivada de ese mismo texto. En el chat, el agente muestra antes el título y el resumen y solo llama a la herramienta si el usuario los aprueba; en alimentos y ejercicios el envío requiere pulsar un botón. No se envía conversación literal, ni identificadores de usuario, ni datos de dieta, entrenamiento o medidas.",
+      "sends": "El tipo de incidencia (mejora, alimento, ejercicio o denuncia), un título, un resumen y una clave de idempotencia derivada de ese mismo texto. Las propuestas muestran antes el contenido y requieren confirmación. Una denuncia muestra una vista previa exacta e incluye motivo, detalles opcionales, la pregunta inmediatamente anterior, la respuesta elegida y contexto técnico (superficie, origen, proveedor, modelo, versión de la app y metadatos sanitarios si existen). No incluye el resto del hilo, razonamiento interno, errores técnicos, claves BYOK ni identificadores de cuenta. Cloudflare recibe la IP de conexión; el Worker aplica HMAC antes de persistirla para rate limiting, conserva solo el valor seudónimo hasta 48 horas y no almacena la IP en claro. El cuerpo de la denuncia en GitHub se programa para redactarse a los 30 días.",
       "thirdParty": "Cloudflare (infraestructura del backend) y GitHub (repositorio privado de recepción de incidencias)"
     }
   ],
@@ -333,6 +332,7 @@
     "Una versión anterior pudo guardar dos credenciales de una integración ahora retirada. La versión actual conserva esos valores cifrados dentro del mismo package name durante una actualización normal, no los lee ni los transmite y los elimina cuando el usuario ejecuta Restablecer datos locales.",
     "'Restablecer datos locales' es un borrado parcial: solo alcanza a las entradas con clearedBy 'reset'. Todo lo marcado como 'never' sobrevive. GYM-162 lo corrige; hasta entonces la política publicada debe describirlo tal cual.",
     "Hasta agosto de 2026 la app inyectaba en cada instalación 92 mediciones de grasa corporal que no pertenecían al usuario. Se retiró junto con su marca de migración. Si vuelve a aparecer una siembra de datos con apariencia real, no es una semilla de demostración: es dato de salud de un tercero distribuido en el binario.",
+    "Las denuncias de respuestas son el único camino que envía texto literal de chat al backend propio: exactamente la pregunta anterior y la respuesta elegida, tras vista previa y confirmación. Su cuerpo se redacta automáticamente en GitHub a los 30 días; D1 solo conserva hashes, referencia de issue, estado y marcas temporales.",
     "Los permisos no se declaran aquí: la fuente es scripts/android-permissions/policy.json. Los permisos que las dependencias aportan por manifest merger deben verificarse sobre el manifest FUSIONADO del artefacto en GYM-198, no sobre el manifest de origen."
   ]
 }

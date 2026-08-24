@@ -1,0 +1,11 @@
+{
+  "id": "salto-cajon-estabilizacion-unilateral",
+  "name": "Salto al cajón con estabilización unilateral",
+  "image_male": "images/salto-cajon-estabilizacion-unilateral-male.webp",
+  "image_female": "images/salto-cajon-estabilizacion-unilateral-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "gemelos", "core"],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Colócate frente a un cajón estable, carga las caderas y salta hacia la superficie. Aterriza suavemente sobre un pie con la rodilla alineada y mantén la otra pierna en el aire. Estabiliza la posición antes de bajar con control y cambia de lado."
+}

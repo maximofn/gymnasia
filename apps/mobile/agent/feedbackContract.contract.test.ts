@@ -6,6 +6,7 @@ import {
   FEEDBACK_ISSUE_KINDS,
   FEEDBACK_ISSUE_PATH,
   FEEDBACK_SCHEMA_VERSION,
+  REPORT_SUMMARY_MAX_LENGTH,
   SUMMARY_MAX_LENGTH,
   TITLE_MAX_LENGTH,
 } from "./feedbackIssues";
@@ -27,6 +28,9 @@ describe("contrato cliente <-> Worker", () => {
   it("los límites de longitud coinciden", () => {
     expect(numericConstant(workerContract, "TITLE_MAX_LENGTH")).toBe(TITLE_MAX_LENGTH);
     expect(numericConstant(workerContract, "SUMMARY_MAX_LENGTH")).toBe(SUMMARY_MAX_LENGTH);
+    expect(numericConstant(workerContract, "REPORT_SUMMARY_MAX_LENGTH")).toBe(
+      REPORT_SUMMARY_MAX_LENGTH,
+    );
   });
 
   it("la versión de esquema coincide", () => {

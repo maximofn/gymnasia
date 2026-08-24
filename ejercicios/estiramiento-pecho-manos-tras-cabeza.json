@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-pecho-manos-tras-cabeza",
+  "name": "Estiramiento de pecho con manos tras la cabeza",
+  "image_male": "images/estiramiento-pecho-manos-tras-cabeza-male.webp",
+  "image_female": "images/estiramiento-pecho-manos-tras-cabeza-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombros", "trapecios"],
+  "equipment": "ninguno",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie, entrelaza los dedos detrás de la cabeza y abre los codos hacia los lados. Junta suavemente los omóplatos y eleva el esternón sin arquear la zona lumbar. Mantén el estiramiento respirando con normalidad y libera la posición despacio."
+}

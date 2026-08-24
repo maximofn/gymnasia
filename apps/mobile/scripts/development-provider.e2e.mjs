@@ -66,13 +66,15 @@ try {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   let providerRequests = 0;
   let deploymentRequests = 0;
+  let legacyUpdaterRequests = 0;
   let retiredIntegrationRequests = 0;
   await page.addInitScript(() => {
     localStorage.clear();
-    localStorage.setItem(
-      "gymnasia.development:gymnasia.mobile.lastUpdateCheck",
-      String(Date.now()),
-    );
+  });
+  page.on("request", (request) => {
+    if (request.url() === "https://api.github.com/repos/maximofn/gymnasia/releases/latest") {
+      legacyUpdaterRequests += 1;
+    }
   });
   await page.route("**/dev-store", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "{}" }));
   await page.route("https://raw.githubusercontent.com/**", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
@@ -113,13 +115,14 @@ try {
 
   const screenshotPath = process.env.DEVELOPMENT_PROVIDER_SCREENSHOT_PATH;
   if (screenshotPath) {
-    await page.locator('[data-testid="settings-tab-updates"]').scrollIntoViewIfNeeded();
+    await page.locator('[data-testid="settings-tab-traces"]').scrollIntoViewIfNeeded();
     await page.screenshot({ path: screenshotPath, fullPage: true });
     log(`captura de Ajustes guardada en ${screenshotPath}`);
   }
 
   assert.equal(providerRequests, 0, "development fake no debe llamar a proveedores reales");
   assert.equal(deploymentRequests, 0, "development no debe consultar GitHub Deployments");
+  assert.equal(legacyUpdaterRequests, 0, "development no debe consultar GitHub Releases para APK");
   assert.equal(retiredIntegrationRequests, 0, "la app retirada no debe contactar con MyVitale");
   log("fixture local verificado sin llamadas a proveedores ni deployments");
 } finally {

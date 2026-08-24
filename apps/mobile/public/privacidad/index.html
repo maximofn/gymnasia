@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-08-v4">
-<meta name="gymnasia-policy-digest" content="sha256:afd6fdfe2a5a8bf121e967439714a1caa05e2979be0286febe0fe2bb90195854">
+<meta name="gymnasia-policy-version" content="2026-08-v6">
+<meta name="gymnasia-policy-digest" content="sha256:d55ed2d1590605e3ce15a13c03054f10e448faf3562a0ab0c4e995d23908e3ea">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-08-v4 · en vigor desde 2026-08-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-08-v6 · en vigor desde 2026-08-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -67,8 +67,8 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="resumen">
     <h2><a href="#resumen">Resumen</a></h2>
-    <p>Gymnasia funciona <strong>en tu dispositivo</strong>. No hay cuenta, no hay registro y no existe ningún servidor de Gymnasia que reciba tus datos. Tus entrenamientos, tu dieta, tu peso, tus medidas y tus conversaciones con el asistente se guardan en el almacenamiento de la propia aplicación.</p>
-    <p>Hay una excepción importante y es enteramente tuya: si activas el asistente de inteligencia artificial, <strong>tú</strong> aportas la clave de un proveedor (OpenAI, Anthropic o Google) y la aplicación habla <strong>directamente</strong> con ese proveedor desde tu dispositivo. Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta con ella. Nosotros no lo vemos, no lo almacenamos y no podemos recuperarlo.</p>
+    <p>Gymnasia funciona <strong>principalmente en tu dispositivo</strong>. No hay cuenta ni registro. Tus entrenamientos, tu dieta, tu peso, tus medidas y tus conversaciones con el asistente se guardan en el almacenamiento de la propia aplicación.</p>
+    <p>Hay una excepción importante y es enteramente tuya: si activas el asistente de inteligencia artificial, <strong>tú</strong> aportas la clave de un proveedor (OpenAI, Anthropic o Google) y la aplicación habla <strong>directamente</strong> con ese proveedor desde tu dispositivo. Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta con ella. Nosotros no lo vemos ni lo almacenamos, salvo que decidas usar la acción <strong>Denunciar</strong> sobre una respuesta y apruebes expresamente la vista previa del contenido que se enviará.</p>
     <p>Esta política describe con detalle qué se guarda, qué sale del dispositivo y qué control tienes sobre ello.</p>
   </section>
 
@@ -82,7 +82,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="sin-cuenta">
     <h2><a href="#sin-cuenta">No hay cuenta ni servidor</a></h2>
     <p>Gymnasia no te pide un correo, ni una contraseña, ni un nombre de usuario para funcionar. No existe ningún sistema de cuentas.</p>
-    <p>Gymnasia no guarda tus datos en ningún servidor. La aplicación no los envía a infraestructura controlada por el responsable, ni para almacenarlos, ni para hacer copias de seguridad, ni para analítica. La única excepción es el envío de propuestas de mejora, que solo ocurre cuando tú lo apruebas expresamente y que nunca incluye tus datos personales (ver [Terceros](#terceros)). <strong>No hay analítica, ni telemetría, ni informes de fallos automáticos</strong>: la aplicación no incorpora ningún SDK de ese tipo.</p>
+    <p>Gymnasia no sincroniza tus datos con ningún servidor, no hace copias de seguridad en la nube y no los usa para analítica. La única excepción es el backend opcional de incidencias: recibe propuestas y denuncias solo después de una acción y una confirmación expresas (ver [Terceros](#terceros)). Una denuncia contiene la pregunta anterior y la respuesta elegida, por lo que puede incluir datos personales o de salud que aparezcan en esos dos mensajes. <strong>No hay analítica, ni telemetría, ni informes de fallos automáticos</strong>: la aplicación no incorpora ningún SDK de ese tipo.</p>
   </section>
 
   <section id="datos">
@@ -152,8 +152,8 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <h2><a href="#terceros">Terceros con los que se comunica la aplicación</a></h2>
     <p>Además de los proveedores de IA:</p>
     <ul>
-      <li><strong>GitHub</strong> (<code>raw.githubusercontent.com</code>, <code>api.github.com</code>, <code>github.com</code>): la aplicación descarga los catálogos públicos de ejercicios, alimentos, productos y recetas, sus imágenes y las instrucciones del asistente; consulta qué versión de esas instrucciones le corresponde; y comprueba si hay una versión nueva publicada. <strong>No se envía ningún dato tuyo</strong>, pero GitHub, como cualquier servidor al que te conectas, ve tu dirección IP.</li>
-      <li><strong>Backend de incidencias de Gymnasia</strong> (<code>gymnasia-feedback.maximofn.com</code>): solo si tú lo pides. Cuando propones una mejora al asistente, o cuando añades un alimento o un ejercicio que no está en el catálogo, la aplicación te muestra antes el título y el resumen exactos y <strong>no envía nada hasta que lo apruebas</strong>. Lo que se envía es únicamente ese título, ese resumen, el tipo de propuesta y un identificador técnico para no crear duplicados. <strong>No se envía el texto de tu conversación, ni tus datos de dieta, entrenamiento o medidas, ni ningún identificador tuyo.</strong> El servicio lo opera el responsable sobre infraestructura de Cloudflare y crea con tu propuesta una ficha en un repositorio <strong>privado</strong> de GitHub, visible solo para el responsable. Antes de guardarla, el servicio borra automáticamente cualquier clave o contraseña que hubieras pegado por error. Si no propones nada, este servicio no se usa nunca.</li>
+      <li><strong>GitHub</strong> (<code>raw.githubusercontent.com</code>, <code>api.github.com</code>, <code>github.com</code>): la aplicación descarga los catálogos públicos de ejercicios, alimentos, productos y recetas, sus imágenes y las instrucciones del asistente; y consulta qué versión de esas instrucciones le corresponde. <strong>No se envía ningún dato tuyo</strong>, pero GitHub, como cualquier servidor al que te conectas, ve tu dirección IP.</li>
+      <li><strong>Backend de incidencias de Gymnasia</strong> (<code>gymnasia-feedback.maximofn.com</code>): solo si tú lo pides. Cuando propones una mejora al asistente, o cuando añades un alimento o un ejercicio que no está en el catálogo, la aplicación te muestra antes el título y el resumen exactos y <strong>no envía nada hasta que lo apruebas</strong>. Lo que se envía es únicamente ese título, ese resumen, el tipo de propuesta y un identificador técnico para no crear duplicados. Las propuestas no incluyen el texto literal de una conversación ni identificadores de usuario. Si usas <strong>Denunciar</strong> sobre una respuesta, la vista previa incluye el motivo, tus detalles opcionales, la pregunta inmediatamente anterior, la respuesta elegida y contexto técnico (superficie, origen, proveedor, modelo, versión de la app y, cuando corresponda, datos de la intervención sanitaria). No se envían el resto del hilo, el razonamiento interno, errores técnicos, claves de API ni un identificador de cuenta. El servicio lo opera el responsable sobre infraestructura de Cloudflare y crea una ficha en un repositorio <strong>privado</strong> de GitHub, visible solo para el responsable. La app y el servicio eliminan patrones reconocibles de claves y contraseñas antes de guardarla. Cloudflare recibe la dirección IP necesaria para atender la conexión; el servicio la transforma mediante HMAC antes del límite de uso, conserva solo ese valor seudónimo durante un máximo de 48 horas y no guarda la IP en claro. El cuerpo de una denuncia se programa para sustituirse automáticamente por un aviso de borrado al cumplir 30 días. Si no envías propuestas ni denuncias, este servicio no se usa nunca.</li>
       <li><strong>Open Food Facts</strong> (<code>world.openfoodfacts.org</code>): si el asistente lee un código de barras en una foto tuya, consulta ese código en su base de datos pública para obtener la información nutricional del producto. Se envía el código de barras, no la imagen.</li>
     </ul>
   </section>
@@ -168,8 +168,9 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="denuncia">
     <h2><a href="#denuncia">Denunciar una respuesta del asistente</a></h2>
-    <p>Si el asistente genera una respuesta inapropiada, peligrosa o incorrecta, escribe a <strong>maximofn@maximofn.com</strong> describiendo lo ocurrido. Puedes adjuntar el texto de la respuesta si quieres, pero <strong>no envíes tu clave de API</strong> ni datos que prefieras no compartir: revisa lo que copias antes de mandarlo.</p>
-    <p>Las denuncias se revisan manualmente y pueden dar lugar a cambios en las instrucciones del asistente o en sus salvaguardas. En este momento la denuncia se gestiona por correo; una versión futura incorporará una acción dentro de la propia aplicación.</p>
+    <p>Cada respuesta final visible del asistente que se pueda denunciar muestra la acción <strong>Denunciar</strong>. También está disponible en las intervenciones sanitarias generadas en el dispositivo, pero no en introducciones, errores técnicos, contenido aún en streaming ni razonamiento interno. Al pulsarla eliges un motivo, puedes añadir detalles y ves una vista previa exacta antes de confirmar.</p>
+    <p>La denuncia incluye la pregunta inmediatamente anterior y la respuesta elegida; no el resto de la conversación. Revisa la vista previa porque esos dos mensajes pueden contener datos personales o de salud. La aplicación elimina patrones reconocibles de secretos, pero <strong>no incluyas tu clave de API</strong> ni datos que no quieras compartir.</p>
+    <p>Las denuncias se revisan manualmente y pueden dar lugar a cambios en las instrucciones del asistente o en sus salvaguardas. También puedes escribir a <strong>maximofn@maximofn.com</strong> si no puedes usar la acción dentro de la aplicación.</p>
   </section>
 
   <section id="permisos">
@@ -195,6 +196,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <h2><a href="#conservacion">Cuánto tiempo se conservan tus datos</a></h2>
     <p>Indefinidamente, mientras tú los mantengas. Como los datos no salen de tu dispositivo, no existe ningún plazo de conservación en servidor que aplicar: los conservas tú y los borras tú.</p>
     <p>Los datos que hayas enviado a un proveedor de IA se rigen por el plazo de conservación de ese proveedor, según tu cuenta con él.</p>
+    <p>Las propuestas permanecen en el repositorio privado mientras sean necesarias para gestionar el proyecto. En las denuncias de respuestas, el cuerpo que contiene la pregunta y la respuesta se programa para borrarse automáticamente al cumplir 30 días. Los registros técnicos de limitación de uso basados en el HMAC de la IP se eliminan en un máximo de 48 horas.</p>
   </section>
 
   <section id="eliminacion">
@@ -243,7 +245,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-08-v4 · 2026-08-24</p>
+    <p>Política de privacidad de Gymnasia · 2026-08-v6 · 2026-08-24</p>
   </footer>
 </main>
 </body>

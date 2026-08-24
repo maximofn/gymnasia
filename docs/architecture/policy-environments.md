@@ -82,8 +82,9 @@ node scripts/policy-promotion/prepare-policy-snapshot.mjs --environment staging|
 El script falla si no hay deployment, si la release/evidencia no existe o si
 algún digest difiere. El workflow de publicación siempre consulta Production e
 integra tanto `policy.md` como el snapshot TypeScript del guardrail sanitario en
-la APK. Las releases de política son `prerelease`, por lo que `/releases/latest`
-continúa señalando la última APK estable de Production.
+la APK. Esa publicación permanece como distribución manual: la aplicación no consulta
+`/releases/latest` ni utiliza el APK publicado para actualizarse. Las releases de
+política siguen siendo `prerelease`.
 
 ## Limpieza y caída de GitHub
 

@@ -9,12 +9,13 @@
 export const FEEDBACK_SCHEMA_VERSION = 1 as const;
 export const FEEDBACK_ISSUE_PATH = "/feedback/issues" as const;
 
-export const FEEDBACK_ISSUE_KINDS = ["feature", "food", "exercise"] as const;
+export const FEEDBACK_ISSUE_KINDS = ["feature", "food", "exercise", "report"] as const;
 export type FeedbackIssueKind = (typeof FEEDBACK_ISSUE_KINDS)[number];
 
 export const TITLE_MAX_LENGTH = 120;
 export const SUMMARY_MAX_LENGTH = 4000;
-export const IDEMPOTENCY_KEY_PATTERN = /^v1:(feature|food|exercise):[0-9a-f]{16}$/;
+export const REPORT_SUMMARY_MAX_LENGTH = 16000;
+export const IDEMPOTENCY_KEY_PATTERN = /^v1:(feature|food|exercise|report):[0-9a-f]{16}$/;
 
 /** Las cinco únicas claves que el cliente puede enviar. Cualquier otra se rechaza. */
 export const ALLOWED_REQUEST_KEYS = [
@@ -57,4 +58,5 @@ export const ISSUE_PRESENTATION: Record<
   feature: { titlePrefix: "[FEATURE]", labels: ["enhancement"] },
   food: { titlePrefix: "[Nuevo alimento]", labels: ["alimento"] },
   exercise: { titlePrefix: "[Nuevo ejercicio]", labels: ["ejercicio"] },
+  report: { titlePrefix: "[DENUNCIA IA]", labels: ["bug"] },
 };
