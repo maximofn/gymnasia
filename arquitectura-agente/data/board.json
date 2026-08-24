@@ -111,7 +111,7 @@
         {
           "id": "GYM-192",
           "title": "Retirar temporalmente la integración de VivaGym de la versión pública",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Quitar de la versión pública la interfaz, red, autenticación y datos sensibles de VivaGym sin romper los datos locales ni las funciones principales.",
           "dependsOn": [],
           "related": [
