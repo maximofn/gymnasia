@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-unilateral-polea",
+  "name": "Curl de bíceps unilateral en polea",
+  "image_male": "images/curl-biceps-unilateral-polea-male.webp",
+  "image_female": "images/curl-biceps-unilateral-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a una polea baja y sujeta una agarradera con una mano en supinación. Mantén el torso estable y el codo pegado al costado. Flexiona el brazo hasta acercar la mano al hombro, aprieta el bíceps y baja lentamente hasta casi extender el codo antes de cambiar de lado."
+}

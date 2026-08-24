@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inclinadas-unilateral-fitball-polea",
+  "name": "Aperturas inclinadas unilaterales sobre fitball en polea",
+  "image_male": "images/aperturas-inclinadas-unilateral-fitball-polea-male.webp",
+  "image_female": "images/aperturas-inclinadas-unilateral-fitball-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior", "core"],
+  "equipment": "polea y fitball",
+  "difficulty": "advanced",
+  "instructions": "Apoya la espalda en diagonal sobre un fitball frente a una polea baja y mantén los pies separados para estabilizarte. Con una agarradera en una mano y el codo ligeramente flexionado, abre el brazo al costado y llévalo en arco sobre la parte alta del pecho. Mantén las caderas elevadas y cambia de lado al terminar."
+}

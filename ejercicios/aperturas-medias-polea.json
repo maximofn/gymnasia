@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-medias-polea",
+  "name": "Aperturas medias en polea",
+  "image_male": "images/aperturas-medias-polea-male.webp",
+  "image_female": "images/aperturas-medias-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate entre dos poleas ajustadas a la altura del pecho, da un paso al frente y abre los brazos con los codos suavemente flexionados. Lleva ambas manos al frente siguiendo un arco horizontal hasta juntarlas frente al esternón. Contrae el pecho y regresa de forma controlada sin mover el torso."
+}

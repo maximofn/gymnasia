@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-rodillas-polea",
+  "name": "Extensión de tríceps de rodillas en polea",
+  "image_male": "images/extension-triceps-rodillas-polea-male.webp",
+  "image_female": "images/extension-triceps-rodillas-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Arrodíllate frente a una polea alta y sujeta una cuerda con las manos junto a los lados de la cabeza. Mantén el torso erguido, los codos orientados al frente y los brazos superiores inmóviles. Extiende los codos hasta separar los extremos de la cuerda y vuelve lentamente sin abrirlos hacia los lados."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "curl-tumbado-agarre-cerrado-polea",
+  "name": "Curl tumbado con agarre cerrado en polea",
+  "image_male": "images/curl-tumbado-agarre-cerrado-polea-male.webp",
+  "image_female": "images/curl-tumbado-agarre-cerrado-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco alineado con una polea baja y sujeta una barra corta con las manos juntas en supinación. Fija los brazos superiores a los costados. Lleva la barra hacia la parte alta del pecho flexionando solo los codos y desciende lentamente hasta recuperar la extensión."
+}

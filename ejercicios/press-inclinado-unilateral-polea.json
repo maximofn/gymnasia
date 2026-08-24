@@ -1,0 +1,11 @@
+{
+  "id": "press-inclinado-unilateral-polea",
+  "name": "Press inclinado unilateral en polea",
+  "image_male": "images/press-inclinado-unilateral-polea-male.webp",
+  "image_female": "images/press-inclinado-unilateral-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior", "tríceps", "core"],
+  "equipment": "polea",
+  "difficulty": "advanced",
+  "instructions": "Siéntate en un banco inclinado de espaldas a una polea baja y lleva una agarradera junto al hombro. Apoya la espalda y los pies con firmeza. Empuja la mano hacia arriba y al frente hasta extender el brazo sin girar el torso, y vuelve lentamente antes de cambiar de lado."
+}

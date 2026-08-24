@@ -377,6 +377,33 @@
         {"source_id": "0860", "id": "patada-triceps-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "3697", "id": "remo-deltoide-posterior-rodillas-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 15,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0176", "id": "extension-triceps-rodillas-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2330", "id": "jalon-dorsal-recorrido-completo-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0177", "id": "jalon-lateral-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2616", "id": "jalon-lateral-barra-v-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0179", "id": "aperturas-bajas-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0180", "id": "remo-bajo-sentado-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1634", "id": "curl-biceps-tumbado-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0182", "id": "curl-tumbado-agarre-cerrado-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0184", "id": "pullover-tumbado-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0185", "id": "aperturas-tumbado-polea", "action": "create", "difficulty": "intermediate", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0186", "id": "extension-triceps-tumbado-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0188", "id": "aperturas-medias-polea", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0189", "id": "remo-unilateral-inclinado-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0190", "id": "curl-biceps-unilateral-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1262", "id": "aperturas-declinadas-unilateral-polea", "action": "create", "difficulty": "advanced", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1263", "id": "aperturas-unilateral-fitball-polea", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1264", "id": "aperturas-inclinadas-unilateral-fitball-polea", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1265", "id": "press-inclinado-unilateral-polea", "action": "create", "difficulty": "advanced", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1266", "id": "press-inclinado-unilateral-fitball-polea", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0191", "id": "elevacion-lateral-inclinada-unilateral-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

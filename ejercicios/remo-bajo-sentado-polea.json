@@ -1,0 +1,11 @@
+{
+  "id": "remo-bajo-sentado-polea",
+  "name": "Remo bajo sentado en polea",
+  "image_male": "images/remo-bajo-sentado-polea-male.webp",
+  "image_female": "images/remo-bajo-sentado-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Siéntate frente a una polea baja con los pies apoyados y las rodillas ligeramente flexionadas. Sujeta una barra recta en pronación y mantén la espalda neutra. Lleva la barra hacia la parte baja del abdomen retrayendo los omóplatos y vuelve despacio hasta extender los brazos sin redondear el torso."
+}

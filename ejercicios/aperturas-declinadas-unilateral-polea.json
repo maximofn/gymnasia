@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-declinadas-unilateral-polea",
+  "name": "Aperturas declinadas unilaterales en polea",
+  "image_male": "images/aperturas-declinadas-unilateral-polea-male.webp",
+  "image_female": "images/aperturas-declinadas-unilateral-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior", "core"],
+  "equipment": "polea",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco declinado junto a una polea baja y sujeta una agarradera con una mano. Mantén una ligera flexión fija en el codo y el hombro apoyado. Abre el brazo hasta alinearlo con el hombro y ciérralo en un arco sobre la parte baja del pecho antes de cambiar de lado."
+}

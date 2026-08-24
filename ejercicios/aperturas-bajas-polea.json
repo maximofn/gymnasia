@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-bajas-polea",
+  "name": "Aperturas bajas en polea",
+  "image_male": "images/aperturas-bajas-polea-male.webp",
+  "image_female": "images/aperturas-bajas-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate entre dos poleas bajas con una agarradera en cada mano y adopta una postura escalonada. Mantén una ligera flexión fija en los codos. Eleva las manos en un arco ascendente hasta juntarlas frente a la parte alta del pecho y vuelve lentamente hasta que queden junto a las caderas."
+}

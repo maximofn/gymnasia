@@ -1,0 +1,11 @@
+{
+  "id": "pullover-tumbado-cuerda-polea",
+  "name": "Pullover tumbado con cuerda en polea",
+  "image_male": "images/pullover-tumbado-cuerda-polea-male.webp",
+  "image_female": "images/pullover-tumbado-cuerda-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["tríceps", "pecho"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco con la cabeza próxima a una polea alta y sujeta los extremos de una cuerda. Mantén los brazos casi rectos y comienza con las manos detrás de la cabeza. Traza un arco hasta llevarlas sobre el pecho contrayendo los dorsales y vuelve lentamente sin flexionar más los codos."
+}
