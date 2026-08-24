@@ -1,0 +1,11 @@
+{
+  "id": "remo-alto-rodillas-polea",
+  "name": "Remo alto de rodillas en polea",
+  "image_male": "images/remo-alto-rodillas-polea-male.webp",
+  "image_female": "images/remo-alto-rodillas-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Arrodíllate frente a una polea alta y sujeta una barra recta con agarre prono. Mantén el torso vertical y el abdomen activo. Tira de la barra hacia la parte superior del pecho llevando los codos atrás, junta los omóplatos y vuelve a extender los brazos con control."
+}

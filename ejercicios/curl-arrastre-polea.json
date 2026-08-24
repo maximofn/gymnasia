@@ -1,0 +1,11 @@
+{
+  "id": "curl-arrastre-polea",
+  "name": "Curl de arrastre en polea",
+  "image_male": "images/curl-arrastre-polea-male.webp",
+  "image_female": "images/curl-arrastre-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una polea baja y toma una barra recta con agarre supino. Lleva los codos hacia atrás mientras deslizas la barra cerca del torso hasta la parte alta del abdomen. Contrae los bíceps y baja la barra siguiendo la misma trayectoria sin balancear el cuerpo."
+}

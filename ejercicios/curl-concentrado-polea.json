@@ -1,0 +1,11 @@
+{
+  "id": "curl-concentrado-polea",
+  "name": "Curl concentrado en polea",
+  "image_male": "images/curl-concentrado-polea-male.webp",
+  "image_female": "images/curl-concentrado-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate frente a una polea baja y sujeta la agarradera con una mano en supinación. Apoya el codo en la cara interna del muslo y mantén el brazo superior quieto. Flexiona el codo hasta acercar la mano al hombro y vuelve a extenderlo con control antes de cambiar de lado."
+}

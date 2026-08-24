@@ -350,6 +350,33 @@
         {"source_id": "0149", "id": "extension-triceps-alterna-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "0157", "id": "peso-muerto-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 14,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0151", "id": "press-pecho-pie-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1630", "id": "curl-biceps-agarre-cerrado-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1631", "id": "curl-concentrado-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0152", "id": "extension-triceps-concentrada-rodilla-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0153", "id": "jalon-cruzado-lateral-polea", "action": "create", "difficulty": "advanced", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0158", "id": "aperturas-declinadas-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1260", "id": "press-declinado-unilateral-polea", "action": "create", "difficulty": "advanced", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1261", "id": "press-declinado-polea", "action": "create", "difficulty": "intermediate", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0159", "id": "remo-sentado-declinado-agarre-amplio-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1632", "id": "curl-arrastre-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0162", "id": "elevacion-frontal-polea", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0167", "id": "remo-alto-rodillas-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0168", "id": "aduccion-cadera-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0169", "id": "press-inclinado-polea", "action": "create", "difficulty": "intermediate", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1318", "id": "remo-banco-inclinado-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0171", "id": "aperturas-inclinadas-polea", "action": "create", "difficulty": "intermediate", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0173", "id": "extension-triceps-inclinada-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0174", "id": "giro-judo-polea", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0860", "id": "patada-triceps-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3697", "id": "remo-deltoide-posterior-rodillas-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "id": "aduccion-cadera-polea",
+  "name": "Aducción de cadera en polea",
+  "image_male": "images/aduccion-cadera-polea-male.webp",
+  "image_female": "images/aduccion-cadera-polea-female.webp",
+  "muscle_group": "aductores",
+  "secondary_muscles": ["glúteos", "cuádriceps"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Colócate de lado a una polea baja y fija la tobillera a la pierna más cercana. Sujétate a la máquina y mantén ambas piernas casi rectas. Cruza la pierna conectada por delante de la pierna de apoyo hacia la línea media y regresa lentamente sin inclinar el torso."
+}

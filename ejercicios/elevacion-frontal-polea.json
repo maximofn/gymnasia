@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-frontal-polea",
+  "name": "Elevación frontal en polea",
+  "image_male": "images/elevacion-frontal-polea-male.webp",
+  "image_female": "images/elevacion-frontal-polea-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios", "antebrazos"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Ponte de espaldas a una polea baja con el cable entre las piernas y sujeta una barra recta en pronación. Mantén el abdomen firme y los brazos casi extendidos. Eleva la barra al frente hasta la altura de los hombros y bájala lentamente sin impulsarte."
+}

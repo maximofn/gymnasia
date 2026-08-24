@@ -1,0 +1,11 @@
+{
+  "id": "press-inclinado-polea",
+  "name": "Press inclinado en polea",
+  "image_male": "images/press-inclinado-polea-male.webp",
+  "image_female": "images/press-inclinado-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombros", "tríceps"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco inclinado entre dos poleas bajas y coloca las agarraderas junto a los hombros. Mantén la espalda apoyada y los pies firmes. Empuja las manos hacia arriba y al frente hasta extender los brazos y vuelve despacio sin abrir en exceso los codos."
+}

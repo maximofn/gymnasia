@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-agarre-cerrado-polea",
+  "name": "Curl de bíceps con agarre cerrado en polea",
+  "image_male": "images/curl-biceps-agarre-cerrado-polea-male.webp",
+  "image_female": "images/curl-biceps-agarre-cerrado-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una polea baja y sujeta una barra recta con agarre supino y las manos juntas. Mantén los codos pegados a los costados y el torso inmóvil. Flexiona los codos para acercar la barra a los hombros, contrae los bíceps y baja lentamente."
+}
