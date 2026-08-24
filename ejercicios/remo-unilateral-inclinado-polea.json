@@ -1,0 +1,11 @@
+{
+  "id": "remo-unilateral-inclinado-polea",
+  "name": "Remo unilateral inclinado en polea",
+  "image_male": "images/remo-unilateral-inclinado-polea-male.webp",
+  "image_female": "images/remo-unilateral-inclinado-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte frente a una polea baja, flexiona ligeramente las rodillas e inclina el torso desde las caderas con la espalda neutra. Sujeta una agarradera con una mano y deja el brazo extendido. Lleva el codo cerca del costado hasta que la mano alcance la parte baja del pecho y vuelve con control antes de cambiar de lado."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-tumbado-cuerda-polea",
+  "name": "Extensión de tríceps tumbado con cuerda en polea",
+  "image_male": "images/extension-triceps-tumbado-cuerda-polea-male.webp",
+  "image_female": "images/extension-triceps-tumbado-cuerda-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco con la cabeza junto a una polea baja y sujeta una cuerda sobre el pecho. Mantén los brazos superiores verticales e inmóviles. Flexiona los codos para acercar los extremos a la frente y extiéndelos hasta separar ligeramente la cuerda, sin levantar los hombros."
+}

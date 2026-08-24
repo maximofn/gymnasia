@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-lateral-inclinada-unilateral-polea",
+  "name": "Elevación lateral inclinada unilateral en polea",
+  "image_male": "images/elevacion-lateral-inclinada-unilateral-polea-male.webp",
+  "image_female": "images/elevacion-lateral-inclinada-unilateral-polea-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": ["trapecio", "core"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte frente a una polea baja, da un paso atrás e inclina el torso desde las caderas con la espalda neutra. Sujeta una agarradera con una mano y mantén el codo ligeramente flexionado. Eleva el brazo hacia el costado hasta quedar paralelo al suelo y vuelve despacio antes de cambiar de lado."
+}

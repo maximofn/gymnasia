@@ -1,0 +1,11 @@
+{
+  "id": "press-inclinado-unilateral-fitball-polea",
+  "name": "Press inclinado unilateral sobre fitball en polea",
+  "image_male": "images/press-inclinado-unilateral-fitball-polea-male.webp",
+  "image_female": "images/press-inclinado-unilateral-fitball-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior", "tríceps", "core"],
+  "equipment": "polea y fitball",
+  "difficulty": "advanced",
+  "instructions": "Apoya la espalda alta en diagonal sobre un fitball y planta bien los pies. Sujeta una agarradera de polea baja junto al hombro con el codo flexionado. Presiona hacia arriba y al frente hasta extender el brazo, mantén las caderas elevadas y evita rotar el tronco antes de cambiar de lado."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "jalon-lateral-cuerda-polea",
+  "name": "Jalón lateral con cuerda en polea",
+  "image_male": "images/jalon-lateral-cuerda-polea-male.webp",
+  "image_female": "images/jalon-lateral-cuerda-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una polea alta y sujeta los extremos de una cuerda con agarre neutro. Inclina ligeramente el torso hacia atrás sin arquear la zona lumbar. Lleva los extremos hacia los lados de la parte superior del pecho, baja los hombros y junta las escápulas antes de volver con control."
+}

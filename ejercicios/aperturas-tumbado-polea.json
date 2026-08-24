@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-tumbado-polea",
+  "name": "Aperturas tumbado en polea",
+  "image_male": "images/aperturas-tumbado-polea-male.webp",
+  "image_female": "images/aperturas-tumbado-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano entre dos poleas bajas y sujeta una agarradera con cada mano. Mantén una ligera flexión en los codos. Abre los brazos en un arco amplio hasta notar un estiramiento cómodo y vuelve a juntar las manos sobre el centro del pecho sin despegar la espalda del banco."
+}

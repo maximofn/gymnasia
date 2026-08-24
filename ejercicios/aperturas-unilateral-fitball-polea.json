@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-unilateral-fitball-polea",
+  "name": "Aperturas unilaterales sobre fitball en polea",
+  "image_male": "images/aperturas-unilateral-fitball-polea-male.webp",
+  "image_female": "images/aperturas-unilateral-fitball-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior", "core"],
+  "equipment": "polea y fitball",
+  "difficulty": "advanced",
+  "instructions": "Apoya la espalda alta sobre un fitball con los pies firmes y las caderas elevadas. Sujeta una agarradera con una mano y abre el brazo a la altura del pecho con el codo suavemente flexionado. Lleva la mano en arco sobre el esternón manteniendo estable el tronco y repite después con el otro lado."
+}

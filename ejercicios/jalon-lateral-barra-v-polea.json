@@ -1,0 +1,11 @@
+{
+  "id": "jalon-lateral-barra-v-polea",
+  "name": "Jalón lateral con barra V en polea",
+  "image_male": "images/jalon-lateral-barra-v-polea-male.webp",
+  "image_female": "images/jalon-lateral-barra-v-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en la máquina de jalón con los muslos asegurados y sujeta una barra V con agarre neutro. Mantén el pecho elevado y una ligera inclinación hacia atrás. Lleva la barra hacia la parte superior del pecho manteniendo los codos cerca del torso y extiende de nuevo los brazos sin perder la tensión."
+}

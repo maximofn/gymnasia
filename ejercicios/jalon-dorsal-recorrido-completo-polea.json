@@ -1,0 +1,11 @@
+{
+  "id": "jalon-dorsal-recorrido-completo-polea",
+  "name": "Jalón dorsal de recorrido completo en polea",
+  "image_male": "images/jalon-dorsal-recorrido-completo-polea-male.webp",
+  "image_female": "images/jalon-dorsal-recorrido-completo-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en la máquina de jalón con los muslos sujetos y agarra una barra ancha en pronación. Empieza con los brazos completamente extendidos y los hombros elevados de forma controlada. Baja primero las escápulas y después lleva la barra a la parte superior del pecho; regresa hasta recuperar toda la extensión sin balancearte."
+}
