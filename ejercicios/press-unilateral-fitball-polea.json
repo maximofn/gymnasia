@@ -1,0 +1,11 @@
+{
+  "id": "press-unilateral-fitball-polea",
+  "name": "Press unilateral sentado sobre fitball en polea",
+  "image_male": "images/press-unilateral-fitball-polea-male.webp",
+  "image_female": "images/press-unilateral-fitball-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros", "core"],
+  "equipment": "polea y fitball",
+  "difficulty": "advanced",
+  "instructions": "Siéntate erguido sobre un fitball, de espaldas a una polea situada a la altura del pecho, con ambos pies firmes en el suelo. Sujeta un asa con una mano y coloca el codo flexionado junto al torso. Presiona hacia delante hasta extender el brazo sin girar el tronco; regresa despacio y cambia de lado tras completar la serie."
+}

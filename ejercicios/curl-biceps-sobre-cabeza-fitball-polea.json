@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-sobre-cabeza-fitball-polea",
+  "name": "Curl de bíceps sobre la cabeza en fitball y polea",
+  "image_male": "images/curl-biceps-sobre-cabeza-fitball-polea-male.webp",
+  "image_female": "images/curl-biceps-sobre-cabeza-fitball-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "core"],
+  "equipment": "polea y fitball",
+  "difficulty": "advanced",
+  "instructions": "Siéntate erguido sobre un fitball frente a una polea alta y sujeta la barra con agarre supino. Mantén los brazos elevados, los codos cerca de la cabeza y el abdomen firme. Flexiona los codos para acercar la barra a la frente, pausa al contraer los bíceps y vuelve lentamente a la extensión sin perder el equilibrio."
+}

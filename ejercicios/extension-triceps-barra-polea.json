@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-barra-polea",
+  "name": "Extensión de tríceps con barra en polea",
+  "image_male": "images/extension-triceps-barra-polea-male.webp",
+  "image_female": "images/extension-triceps-barra-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y barra",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a una polea alta y toma una barra recta en pronación. Mantén los codos pegados a los costados, el pecho estable y las muñecas neutras. Extiende los codos hasta llevar la barra hacia los muslos, contrae los tríceps y deja subir la barra de forma controlada sin mover los brazos superiores."
+}

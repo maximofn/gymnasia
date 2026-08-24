@@ -1,0 +1,11 @@
+{
+  "id": "remo-alto-unilateral-arrodillado-polea",
+  "name": "Remo alto unilateral arrodillado en polea",
+  "image_male": "images/remo-alto-unilateral-arrodillado-polea-male.webp",
+  "image_female": "images/remo-alto-unilateral-arrodillado-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Arrodíllate frente a una polea colocada entre la cintura y el pecho y sujeta un asa con una mano. Mantén el torso erguido y el abdomen firme. Lleva el codo hacia atrás hasta acercar el asa al pecho, junta los omóplatos sin encoger el hombro y regresa despacio hasta extender el brazo. Cambia de lado al finalizar."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "jalon-barra-dorsal-profesional-polea",
+  "name": "Jalón con barra dorsal profesional en polea",
+  "image_male": "images/jalon-barra-dorsal-profesional-polea-male.webp",
+  "image_female": "images/jalon-barra-dorsal-profesional-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea y barra dorsal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate con los muslos sujetos y agarra los extremos angulados de una barra dorsal profesional con las palmas hacia delante. Mantén el pecho alto y una ligera inclinación hacia atrás. Baja los codos hasta llevar la barra a la parte superior del pecho, aprieta la espalda y vuelve de forma controlada a la extensión completa."
+}

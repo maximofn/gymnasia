@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-sobre-cabeza-polea",
+  "name": "Curl de bíceps sobre la cabeza en polea",
+  "image_male": "images/curl-biceps-sobre-cabeza-polea-male.webp",
+  "image_female": "images/curl-biceps-sobre-cabeza-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "hombros"],
+  "equipment": "polea y barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una polea alta y toma una barra recta con agarre supino. Mantén los brazos elevados y los codos orientados al frente. Flexiona los codos para acercar la barra a la frente sin mover los brazos superiores, contrae los bíceps y vuelve lentamente hasta extender los codos sin perder tensión."
+}

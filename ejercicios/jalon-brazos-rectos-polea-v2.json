@@ -1,0 +1,11 @@
+{
+  "id": "jalon-brazos-rectos-polea-v2",
+  "name": "Jalón de brazos rectos en polea, variante 2",
+  "image_male": "images/jalon-brazos-rectos-polea-v2-male.webp",
+  "image_female": "images/jalon-brazos-rectos-polea-v2-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "polea y barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una polea alta, flexiona ligeramente las rodillas y toma una barra recta en pronación. Inclina un poco el torso con la espalda neutra y mantén los codos casi extendidos. Lleva la barra en un arco hasta los muslos usando los dorsales y regresa despacio sin doblar los codos ni balancearte."
+}

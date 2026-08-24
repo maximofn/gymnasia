@@ -1,0 +1,11 @@
+{
+  "id": "jalon-curl-biceps-polea",
+  "name": "Jalón con curl de bíceps en polea",
+  "image_male": "images/jalon-curl-biceps-polea-male.webp",
+  "image_female": "images/jalon-curl-biceps-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "espalda"],
+  "equipment": "polea y barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una polea alta y toma una barra recta con agarre supino. Empieza con los brazos elevados y casi extendidos. Mantén los codos estables mientras flexionas los brazos y bajas la barra en un arco hacia la parte superior del pecho; contrae los bíceps y regresa lentamente sin balancear el torso."
+}

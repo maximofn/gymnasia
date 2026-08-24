@@ -1,0 +1,11 @@
+{
+  "id": "remo-deltoide-posterior-agarraderas-polea",
+  "name": "Remo para deltoide posterior con agarraderas en polea",
+  "image_male": "images/remo-deltoide-posterior-agarraderas-polea-male.webp",
+  "image_female": "images/remo-deltoide-posterior-agarraderas-polea-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios", "romboides", "bíceps"],
+  "equipment": "polea y agarraderas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte frente a dos poleas bajas y toma las agarraderas cruzadas, la izquierda con la mano derecha y la derecha con la mano izquierda. Inclina el torso desde la cadera con la espalda neutra. Abre los codos hacia fuera y atrás hasta alinear los brazos con los hombros, junta los omóplatos y vuelve lentamente."
+}

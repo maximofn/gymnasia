@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-cuerda-polea",
+  "name": "Extensión de tríceps con cuerda en polea",
+  "image_male": "images/extension-triceps-cuerda-polea-male.webp",
+  "image_female": "images/extension-triceps-cuerda-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y cuerda",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a una polea alta y toma los extremos de una cuerda con agarre neutro. Fija los codos junto a los costados. Extiende los brazos hacia abajo y separa ligeramente los extremos al llegar a los muslos; contrae los tríceps y vuelve lentamente sin dejar que los codos se adelanten."
+}

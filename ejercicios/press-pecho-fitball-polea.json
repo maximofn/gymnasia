@@ -1,0 +1,11 @@
+{
+  "id": "press-pecho-fitball-polea",
+  "name": "Press de pecho sentado sobre fitball en polea",
+  "image_male": "images/press-pecho-fitball-polea-male.webp",
+  "image_female": "images/press-pecho-fitball-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros", "core"],
+  "equipment": "polea y fitball",
+  "difficulty": "advanced",
+  "instructions": "Siéntate erguido sobre un fitball de espaldas a dos poleas situadas a la altura del pecho. Sujeta un asa en cada mano con los codos flexionados y los pies firmes en el suelo. Presiona ambas manos hacia delante hasta extender los brazos sin arquear la espalda; pausa y regresa lentamente manteniendo el equilibrio."
+}
