@@ -1,0 +1,11 @@
+{
+  "id": "remo-banco-inclinado-polea",
+  "name": "Remo en banco inclinado con polea",
+  "image_male": "images/remo-banco-inclinado-polea-male.webp",
+  "image_female": "images/remo-banco-inclinado-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "deltoides posteriores"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho en un banco inclinado frente a una polea baja y sujeta una barra o doble agarradera. Comienza con los brazos extendidos y la espalda neutra. Lleva las manos hacia los costados del pecho retrayendo los omóplatos y vuelve lentamente al inicio."
+}

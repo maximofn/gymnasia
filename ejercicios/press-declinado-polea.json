@@ -1,0 +1,11 @@
+{
+  "id": "press-declinado-polea",
+  "name": "Press declinado en polea",
+  "image_male": "images/press-declinado-polea-male.webp",
+  "image_female": "images/press-declinado-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco declinado entre dos poleas y coloca las agarraderas junto al pecho. Apoya bien la espalda y los pies. Empuja ambas manos al frente hasta extender los brazos, junta ligeramente las agarraderas y vuelve despacio manteniendo los cables tensos."
+}

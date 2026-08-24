@@ -1,0 +1,11 @@
+{
+  "id": "press-pecho-pie-polea",
+  "name": "Press de pecho de pie en polea",
+  "image_male": "images/press-pecho-pie-polea-male.webp",
+  "image_female": "images/press-pecho-pie-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de espaldas entre dos poleas ajustadas a la altura del pecho y avanza hasta tensar los cables. Lleva las manos junto a los hombros con los codos flexionados y el abdomen firme. Empuja ambas agarraderas al frente hasta extender los brazos y regresa con control."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-declinadas-polea",
+  "name": "Aperturas declinadas en polea",
+  "image_male": "images/aperturas-declinadas-polea-male.webp",
+  "image_female": "images/aperturas-declinadas-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombros", "tríceps"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie de espaldas entre dos poleas altas y sujeta las agarraderas con los brazos abiertos y los codos ligeramente flexionados. Mantén el tronco estable. Junta las manos en una trayectoria descendente delante del abdomen y regresa de forma controlada sin perder tensión."
+}
