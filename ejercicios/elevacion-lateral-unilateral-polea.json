@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-lateral-unilateral-polea",
+  "name": "Elevación lateral unilateral en polea",
+  "image_male": "images/elevacion-lateral-unilateral-polea-male.webp",
+  "image_female": "images/elevacion-lateral-unilateral-polea-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Colócate de lado junto a una polea baja y sujeta el asa con la mano exterior. Mantén el torso estable, el hombro bajo y el codo ligeramente flexionado. Eleva el brazo hacia el costado hasta la altura del hombro, haz una pausa breve y desciende de forma controlada sin perder la tensión. Completa las repeticiones y cambia de lado."
+}

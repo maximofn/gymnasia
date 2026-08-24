@@ -1,0 +1,11 @@
+{
+  "id": "jalon-al-pecho-polea",
+  "name": "Jalón al pecho en polea",
+  "image_male": "images/jalon-al-pecho-polea-male.webp",
+  "image_female": "images/jalon-al-pecho-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en la máquina con los muslos sujetos y toma una barra algo más ancha que los hombros en pronación. Eleva el pecho e inclínate apenas hacia atrás. Lleva los codos hacia abajo para acercar la barra a la parte superior del pecho, junta los omóplatos y vuelve lentamente hasta extender los brazos."
+}

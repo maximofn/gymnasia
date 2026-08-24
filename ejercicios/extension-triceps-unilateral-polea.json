@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-unilateral-polea",
+  "name": "Extensión de tríceps unilateral en polea",
+  "image_male": "images/extension-triceps-unilateral-polea-male.webp",
+  "image_female": "images/extension-triceps-unilateral-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a una polea alta y sujeta un asa con una mano en pronación. Fija el codo junto al costado y mantén el torso estable. Extiende el codo hasta llevar la mano hacia el muslo, contrae el tríceps y deja que el antebrazo suba de forma controlada sin mover el brazo superior. Completa la serie y cambia de lado."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "curl-predicador-unilateral-polea",
+  "name": "Curl predicador unilateral en polea",
+  "image_male": "images/curl-predicador-unilateral-polea-male.webp",
+  "image_female": "images/curl-predicador-unilateral-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y banco predicador",
+  "difficulty": "intermediate",
+  "instructions": "Sitúate detrás de un banco predicador frente a una polea baja. Apoya por completo la parte posterior del brazo en la almohadilla y sujeta un asa con agarre supino. Flexiona el codo para acercar la mano al hombro sin despegar el brazo del soporte; contrae arriba y baja lentamente hasta casi extenderlo. Cambia de brazo al terminar."
+}

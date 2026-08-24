@@ -1,0 +1,11 @@
+{
+  "id": "remo-rotacion-palmas-polea",
+  "name": "Remo con rotación de palmas en polea",
+  "image_male": "images/remo-rotacion-palmas-polea-male.webp",
+  "image_female": "images/remo-rotacion-palmas-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una polea media con las rodillas ligeramente flexionadas y sujeta dos asas con las palmas hacia abajo. Tira de ellas hacia las costillas mientras rotas las palmas hacia arriba y juntas los omóplatos. Mantén el torso quieto y vuelve despacio, deshaciendo la rotación hasta extender los brazos."
+}

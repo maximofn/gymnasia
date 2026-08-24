@@ -1,0 +1,11 @@
+{
+  "id": "jalon-unilateral-polea",
+  "name": "Jalón unilateral en polea",
+  "image_male": "images/jalon-unilateral-polea-male.webp",
+  "image_female": "images/jalon-unilateral-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una polea alta y sujeta un asa con una mano en pronación. Empieza con el brazo extendido, el pecho elevado y el abdomen firme. Baja el codo pegado al costado hasta llevar el asa junto a las costillas, contrae el dorsal y vuelve lentamente a la extensión completa. Repite con el otro lado."
+}
