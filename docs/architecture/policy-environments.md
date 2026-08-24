@@ -10,10 +10,13 @@ Toda configuración Expo exige `APP_ENV`. No hay valor implícito en builds:
 | `staging` | Gymnasia Staging | `com.maximofn.gymnasia.staging` | `Staging` | BYOK |
 | `production` | Gymnasia | `com.maximofn.gymnasia` | `Production` | BYOK |
 
-`preview` extiende `staging` en EAS y sigue produciendo una APK interna. Los
-IDs distintos permiten instalar las tres variantes simultáneamente. Las claves
-de AsyncStorage y SecureStore se prefijan en development y staging; Production
-conserva literalmente las claves históricas para no perder datos existentes.
+`preview` extiende `staging` en EAS y sigue disponible para compilaciones locales
+explícitas. El workflow de publicación no admite perfiles seleccionables: tanto
+los pushes a `main` como las ejecuciones manuales usan exclusivamente
+`production-apk`, que hereda `APP_ENV=production` y genera un APK instalable. Los
+IDs distintos permiten instalar las tres variantes simultáneamente. Las claves de
+AsyncStorage y SecureStore se prefijan en development y staging; Production conserva
+literalmente las claves históricas para no perder datos existentes.
 
 Los comandos locales de `package.json` fijan development. Para comprobar un
 proveedor real en esa variante hay que optar expresamente por él:
@@ -67,8 +70,8 @@ bootstrap falla cerrado.
 
 ## Builds y secretos
 
-Staging y Production deben tener cada uno su secreto de environment
-`EXPO_TOKEN`; no debe existir un `EXPO_TOKEN` de repositorio. Ningún workflow de
+Production debe tener su secreto de environment `EXPO_TOKEN`; no debe existir un
+`EXPO_TOKEN` de repositorio. Ningún workflow de
 política recibe claves BYOK ni secretos de LLM. Antes de invocar EAS, el workflow
 de APK resuelve el deployment activo de su canal y ejecuta:
 
@@ -77,11 +80,11 @@ node scripts/policy-promotion/prepare-policy-snapshot.mjs --environment staging|
 ```
 
 El script falla si no hay deployment, si la release/evidencia no existe o si
-algún digest difiere. Integra tanto `policy.md` como el snapshot TypeScript del
-guardrail sanitario en la APK. Una APK interna se conserva como artifact de
-Actions; solo Production crea una release APK estable. Esas publicaciones permanecen
-como distribución manual: la aplicación no consulta `/releases/latest` ni utiliza los
-APK publicados para actualizarse. Las releases de política siguen siendo `prerelease`.
+algún digest difiere. El workflow de publicación siempre consulta Production e
+integra tanto `policy.md` como el snapshot TypeScript del guardrail sanitario en
+la APK. Esa publicación permanece como distribución manual: la aplicación no consulta
+`/releases/latest` ni utiliza el APK publicado para actualizarse. Las releases de
+política siguen siendo `prerelease`.
 
 ## Limpieza y caída de GitHub
 

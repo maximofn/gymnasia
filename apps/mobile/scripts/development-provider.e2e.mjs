@@ -67,6 +67,7 @@ try {
   let providerRequests = 0;
   let deploymentRequests = 0;
   let legacyUpdaterRequests = 0;
+  let retiredIntegrationRequests = 0;
   await page.addInitScript(() => {
     localStorage.clear();
   });
@@ -79,6 +80,10 @@ try {
   await page.route("https://raw.githubusercontent.com/**", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
   await page.route("https://api.github.com/repos/maximofn/gymnasia/deployments**", (route) => {
     deploymentRequests += 1;
+    return route.abort();
+  });
+  await page.route("https://vivagym.myvitale.com/**", (route) => {
+    retiredIntegrationRequests += 1;
     return route.abort();
   });
   for (const pattern of [
@@ -101,9 +106,24 @@ try {
     .filter({ hasText: "Fixture local de Gymnasia Coach" })
     .waitFor({ state: "visible", timeout: 30_000 });
 
+  await page.locator('[data-testid="nav-tab-settings"]').click();
+  assert.equal(
+    await page.locator('[data-testid="settings-tab-vivagym"]').count(),
+    0,
+    "Ajustes no debe exponer la integración retirada",
+  );
+
+  const screenshotPath = process.env.DEVELOPMENT_PROVIDER_SCREENSHOT_PATH;
+  if (screenshotPath) {
+    await page.locator('[data-testid="settings-tab-traces"]').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    log(`captura de Ajustes guardada en ${screenshotPath}`);
+  }
+
   assert.equal(providerRequests, 0, "development fake no debe llamar a proveedores reales");
   assert.equal(deploymentRequests, 0, "development no debe consultar GitHub Deployments");
   assert.equal(legacyUpdaterRequests, 0, "development no debe consultar GitHub Releases para APK");
+  assert.equal(retiredIntegrationRequests, 0, "la app retirada no debe contactar con MyVitale");
   log("fixture local verificado sin llamadas a proveedores ni deployments");
 } finally {
   await browser.close();

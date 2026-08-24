@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v5
-effective_date: 2026-08-23
+version: 2026-08-v6
+effective_date: 2026-08-24
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -70,6 +70,10 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
 - **Memoria del asistente**: notas en texto libre que tú o el propio asistente guardáis
   para recordar cosas entre conversaciones. Puede contener cualquier dato que hayas
   contado en el chat, incluidos datos de salud.
+- **Credenciales heredadas de funciones retiradas**: si una versión anterior guardó
+  credenciales en el llavero seguro, una actualización normal puede conservarlas
+  cifradas para reutilizarlas si la función vuelve. La versión actual no las lee ni las
+  transmite. «Restablecer datos locales» las elimina.
 - **Preferencias**: ajustes de la interfaz y de las notificaciones, y tu consentimiento
   por proveedor para la evaluación adicional opcional de seguridad sanitaria.
 - **Registro de depuración**: un histórico técnico de hasta 1000 entradas con los avisos
@@ -81,8 +85,9 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
 En el almacenamiento privado de la aplicación dentro de tu dispositivo. En Android,
 otras aplicaciones no pueden leerlo.
 
-Las **claves de API** son el único dato que recibe un trato distinto: se guardan en el
-llavero seguro del sistema operativo, separadas del resto.
+Las **claves de API** y, si proceden de una versión anterior, las credenciales
+heredadas de funciones retiradas reciben un trato distinto: se guardan en el llavero
+seguro del sistema operativo, separadas del resto.
 
 Si tu dispositivo tiene activada la copia de seguridad de Android, el sistema operativo
 puede incluir los datos de la aplicación en la copia de tu cuenta de Google. Eso lo
@@ -181,13 +186,6 @@ Además de los proveedores de IA:
 - **Open Food Facts** (`world.openfoodfacts.org`): si el asistente lee un código de
   barras en una foto tuya, consulta ese código en su base de datos pública para obtener
   la información nutricional del producto. Se envía el código de barras, no la imagen.
-- **VivaGym / MyVitale** (`vivagym.myvitale.com`): función opcional. Si decides usarla,
-  introduces el correo y la contraseña de **tu cuenta de VivaGym**, que se guardan en el
-  llavero seguro del dispositivo y se envían a los servidores de VivaGym para obtener tu
-  código QR de acceso al gimnasio. Ese código contiene tu identificador de socio. Si no
-  usas esta función, no se envía nada. Esta integración está prevista para retirarse en
-  una versión futura.
-
 ## Copias de seguridad y exportación {#copias}
 
 Puedes exportar todos tus datos a un fichero JSON desde Ajustes, y volver a importarlo
@@ -199,7 +197,8 @@ entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la me
 del asistente y **el historial íntegro de tus conversaciones**. Es el fichero más
 sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.
 
-El fichero **no contiene** tus claves de API.
+El fichero **no contiene** tus claves de API ni las credenciales heredadas de funciones
+retiradas.
 
 Al exportar, el fichero se escribe en el almacenamiento temporal de la aplicación antes
 de que elijas dónde compartirlo, y esa copia temporal permanece ahí. Puedes eliminarla
@@ -263,12 +262,12 @@ máximo de 48 horas.
 Con transparencia sobre lo que hace hoy cada opción:
 
 **"Restablecer datos locales"** (Ajustes) es un borrado **parcial**. Elimina tus
-rutinas, tu historial de entrenamiento, tu dieta, tus medidas, tus conversaciones y tus
-claves de API. **No elimina**: la memoria del asistente, los alimentos que has creado,
-tus preferencias, el registro de depuración, las credenciales de VivaGym, las copias de
-seguridad que hayas exportado ni los catálogos descargados. Estamos trabajando en que
-esta acción borre todo lo que promete; hasta entonces, esta política describe su
-comportamiento real.
+rutinas, tu historial de entrenamiento, tu dieta, tus medidas, tus conversaciones, tus
+claves de API y las credenciales cifradas heredadas de funciones retiradas. **No
+elimina**: la memoria del asistente, los alimentos que has creado, tus preferencias, el
+registro de depuración, las copias de seguridad que hayas exportado ni los catálogos
+descargados. Estamos trabajando en que esta acción borre todo lo que promete; hasta
+entonces, esta política describe su comportamiento real.
 
 **El registro de depuración** se borra con su propio botón, en Ajustes → Trazas.
 

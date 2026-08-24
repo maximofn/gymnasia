@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v5
-effective_date: 2026-08-23
+version: 2026-08-v6
+effective_date: 2026-08-24
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -69,6 +69,10 @@ All of the following is stored on your device only:
 - **Assistant memory**: free-text notes that you or the assistant save in order to
   remember things between conversations. It may contain anything you have mentioned in
   the chat, including health data.
+- **Legacy credentials from removed features**: if an earlier version stored credentials
+  in the secure keystore, a normal update may keep them encrypted so they can be reused
+  if the feature returns. The current version neither reads nor transmits them. “Reset
+  local data” deletes them.
 - **Preferences**: interface and notification settings, and your per-provider consent
   for the optional additional health-safety evaluation.
 - **Debug log**: a technical record of up to 1000 entries covering the rest-timer alerts
@@ -79,8 +83,9 @@ All of the following is stored on your device only:
 
 In the app's private storage on your device. On Android, other apps cannot read it.
 
-**API keys** are the only data treated differently: they are stored in the operating
-system's secure keystore, separate from everything else.
+**API keys** and, when left by an earlier version, legacy credentials from removed
+features are treated differently: they are stored in the operating system's secure
+keystore, separate from everything else.
 
 If your device has Android backup enabled, the operating system may include the app's
 data in your Google account backup. That is governed by your device settings and
@@ -174,13 +179,6 @@ Besides the AI providers:
 - **Open Food Facts** (`world.openfoodfacts.org`): if the assistant reads a barcode in
   one of your photos, it looks that barcode up in their public database to obtain the
   product's nutritional information. The barcode is sent, not the image.
-- **VivaGym / MyVitale** (`vivagym.myvitale.com`): optional feature. If you choose to
-  use it, you enter the email address and password of **your VivaGym account**, which
-  are stored in the device's secure keystore and sent to VivaGym's servers to obtain
-  your gym access QR code. That code contains your membership identifier. If you do not
-  use this feature, nothing is sent. This integration is scheduled for removal in a
-  future version.
-
 ## Backups and export {#copias}
 
 You can export all your data to a JSON file from Settings, and import it back later. It
@@ -192,7 +190,7 @@ your personal settings (sex, height, date of birth), the assistant's memory and 
 entire history of your conversations**. It is the most sensitive file the app produces:
 store it carefully and think about who you send it to.
 
-The file does **not** contain your API keys.
+The file does **not** contain your API keys or legacy credentials from removed features.
 
 When exporting, the file is written to the app's temporary storage before you choose
 where to share it, and that temporary copy stays there. You can remove it by clearing
@@ -254,11 +252,11 @@ records based on the IP HMAC are deleted within 48 hours.
 Being explicit about what each option does today:
 
 **"Reset local data"** (Settings) is a **partial** deletion. It removes your routines,
-your training history, your diet, your measurements, your conversations and your API
-keys. It does **not** remove: the assistant's memory, the foods you created, your
-preferences, the debug log, your VivaGym credentials, any backups you exported, or the
-downloaded catalogues. Work is under way to make this action delete everything it
-promises; until then, this policy describes its actual behaviour.
+your training history, your diet, your measurements, your conversations, your API keys
+and encrypted credentials left by removed features. It does **not** remove: the
+assistant's memory, the foods you created, your preferences, the debug log, any backups
+you exported, or the downloaded catalogues. Work is under way to make this action delete
+everything it promises; until then, this policy describes its actual behaviour.
 
 **The debug log** is cleared with its own button, under Settings → Traces.
 

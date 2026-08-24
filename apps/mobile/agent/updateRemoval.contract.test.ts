@@ -50,8 +50,9 @@ describe("retirada completa del actualizador de APK", () => {
     expect(appSource).toContain("await AsyncStorage.multiRemove(LEGACY_STORAGE_KEYS)");
   });
 
-  it("mantiene la publicación manual separada del cliente", () => {
-    expect(buildWorkflow).toContain("Upload internal Staging APK");
+  it("mantiene la publicación manual de Production separada del cliente", () => {
+    expect(buildWorkflow).toContain('PROFILE="production-apk"');
+    expect(buildWorkflow).not.toContain("Upload internal Staging APK");
     expect(buildWorkflow).toContain("Create draft APK release");
     expect(buildWorkflow).toContain("Publish immutable APK release");
   });

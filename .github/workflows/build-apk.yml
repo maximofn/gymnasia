@@ -1,18 +1,7 @@
-name: Build APK & Publish Release
+name: Build Production APK & Publish Release
 
 on:
   workflow_dispatch:
-    inputs:
-      profile:
-        description: "EAS build profile"
-        required: true
-        default: "preview"
-        type: choice
-        options:
-          - staging
-          - preview
-          - production
-          - production-apk
   push:
     branches: [main]
     paths:
@@ -38,7 +27,7 @@ jobs:
     # alone can exceed 60 min, which cancelled the job mid-wait (build kept
     # queued on Expo but no release was published). Give the queue extra margin.
     timeout-minutes: 120
-    environment: ${{ (github.event_name == 'workflow_dispatch' && startsWith(inputs.profile, 'production')) && 'Production' || 'Staging' }}
+    environment: Production
     permissions:
       contents: write
 
@@ -63,17 +52,16 @@ jobs:
       - name: Resolve build profile
         id: profile
         run: |
-          PROFILE="${{ github.event.inputs.profile || 'staging' }}"
+          # La publicación automatizada solo puede producir la variante real de
+          # producción. `production-apk` hereda APP_ENV=production y añade el
+          # buildType instalable que exige este workflow.
+          PROFILE="production-apk"
           echo "profile=$PROFILE" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare integrated snapshot from the active policy channel
-        env:
-          BUILD_PROFILE: ${{ steps.profile.outputs.profile }}
+      - name: Prepare integrated snapshot from the Production policy channel
         run: |
-          ENVIRONMENT="staging"
-          case "$BUILD_PROFILE" in production|production-apk) ENVIRONMENT="production" ;; esac
           node scripts/policy-promotion/prepare-policy-snapshot.mjs \
-            --environment "$ENVIRONMENT" \
+            --environment production \
             --github-env "$GITHUB_ENV"
 
       - name: Setup EAS CLI
@@ -184,7 +172,6 @@ jobs:
           echo "Artefacto verificado como APK instalable."
 
       - name: Generate changelog
-        if: startsWith(steps.profile.outputs.profile, 'production')
         id: changelog
         run: |
           LATEST_TAG=$(git tag --list 'v*' --sort=-version:refname | head -1)
@@ -201,17 +188,7 @@ jobs:
             echo "CHANGELOG_EOF"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Upload internal Staging APK
-        if: ${{ !startsWith(steps.profile.outputs.profile, 'production') }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: gymnasia-${{ steps.profile.outputs.profile }}-${{ github.sha }}
-          path: gymnasia.apk
-          if-no-files-found: error
-          retention-days: 14
-
       - name: Create draft APK release
-        if: startsWith(steps.profile.outputs.profile, 'production')
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
@@ -244,13 +221,11 @@ jobs:
             --draft
 
       - name: Attach APK before publishing release
-        if: startsWith(steps.profile.outputs.profile, 'production')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "${{ steps.version.outputs.tag }}" gymnasia.apk --repo "$GITHUB_REPOSITORY"
 
       - name: Publish immutable APK release
-        if: startsWith(steps.profile.outputs.profile, 'production')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release edit "${{ steps.version.outputs.tag }}" --repo "$GITHUB_REPOSITORY" --draft=false --latest

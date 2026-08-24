@@ -1,3 +1,3 @@
 # Archivos
 
-- [Acceso a VivaGym y distribución manual de APK](vivagym-and-updates.md) - Ciclo de vida del QR de VivaGym y frontera entre la aplicación, Google Play y los APK publicados manualmente.
+- [Integración retirada de VivaGym y distribución de APK](vivagym-and-updates.md) - Estado de la retirada, guía de reintroducción y frontera entre Google Play y los APK manuales de Production.

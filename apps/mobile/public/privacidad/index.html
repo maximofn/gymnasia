@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-08-v5">
-<meta name="gymnasia-policy-digest" content="sha256:fadbe8e6c3d9eecf76599ee4f52766ea5db81a36b1dda1bf07aac0b82dd3726d">
+<meta name="gymnasia-policy-version" content="2026-08-v6">
+<meta name="gymnasia-policy-digest" content="sha256:d55ed2d1590605e3ce15a13c03054f10e448faf3562a0ab0c4e995d23908e3ea">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-08-v5 · en vigor desde 2026-08-23 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-08-v6 · en vigor desde 2026-08-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -95,6 +95,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Datos personales de cálculo</strong>: sexo, altura, fecha de nacimiento, objetivo (definición, volumen o mantenimiento) y nivel de actividad. Se usan para estimar tus calorías y macronutrientes.</li>
       <li><strong>Conversaciones con el asistente</strong>: el historial completo de tus hilos de chat, incluidos los mensajes del modelo.</li>
       <li><strong>Memoria del asistente</strong>: notas en texto libre que tú o el propio asistente guardáis para recordar cosas entre conversaciones. Puede contener cualquier dato que hayas contado en el chat, incluidos datos de salud.</li>
+      <li><strong>Credenciales heredadas de funciones retiradas</strong>: si una versión anterior guardó credenciales en el llavero seguro, una actualización normal puede conservarlas cifradas para reutilizarlas si la función vuelve. La versión actual no las lee ni las transmite. «Restablecer datos locales» las elimina.</li>
       <li><strong>Preferencias</strong>: ajustes de la interfaz y de las notificaciones, y tu consentimiento por proveedor para la evaluación adicional opcional de seguridad sanitaria.</li>
       <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie. Nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
     </ul>
@@ -103,7 +104,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="almacenamiento-local">
     <h2><a href="#almacenamiento-local">Dónde se guarda</a></h2>
     <p>En el almacenamiento privado de la aplicación dentro de tu dispositivo. En Android, otras aplicaciones no pueden leerlo.</p>
-    <p>Las <strong>claves de API</strong> son el único dato que recibe un trato distinto: se guardan en el llavero seguro del sistema operativo, separadas del resto.</p>
+    <p>Las <strong>claves de API</strong> y, si proceden de una versión anterior, las credenciales heredadas de funciones retiradas reciben un trato distinto: se guardan en el llavero seguro del sistema operativo, separadas del resto.</p>
     <p>Si tu dispositivo tiene activada la copia de seguridad de Android, el sistema operativo puede incluir los datos de la aplicación en la copia de tu cuenta de Google. Eso lo gobiernan los ajustes de tu dispositivo y la política de privacidad de Google, no esta aplicación.</p>
   </section>
 
@@ -154,7 +155,6 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>GitHub</strong> (<code>raw.githubusercontent.com</code>, <code>api.github.com</code>, <code>github.com</code>): la aplicación descarga los catálogos públicos de ejercicios, alimentos, productos y recetas, sus imágenes y las instrucciones del asistente; y consulta qué versión de esas instrucciones le corresponde. <strong>No se envía ningún dato tuyo</strong>, pero GitHub, como cualquier servidor al que te conectas, ve tu dirección IP.</li>
       <li><strong>Backend de incidencias de Gymnasia</strong> (<code>gymnasia-feedback.maximofn.com</code>): solo si tú lo pides. Cuando propones una mejora al asistente, o cuando añades un alimento o un ejercicio que no está en el catálogo, la aplicación te muestra antes el título y el resumen exactos y <strong>no envía nada hasta que lo apruebas</strong>. Lo que se envía es únicamente ese título, ese resumen, el tipo de propuesta y un identificador técnico para no crear duplicados. Las propuestas no incluyen el texto literal de una conversación ni identificadores de usuario. Si usas <strong>Denunciar</strong> sobre una respuesta, la vista previa incluye el motivo, tus detalles opcionales, la pregunta inmediatamente anterior, la respuesta elegida y contexto técnico (superficie, origen, proveedor, modelo, versión de la app y, cuando corresponda, datos de la intervención sanitaria). No se envían el resto del hilo, el razonamiento interno, errores técnicos, claves de API ni un identificador de cuenta. El servicio lo opera el responsable sobre infraestructura de Cloudflare y crea una ficha en un repositorio <strong>privado</strong> de GitHub, visible solo para el responsable. La app y el servicio eliminan patrones reconocibles de claves y contraseñas antes de guardarla. Cloudflare recibe la dirección IP necesaria para atender la conexión; el servicio la transforma mediante HMAC antes del límite de uso, conserva solo ese valor seudónimo durante un máximo de 48 horas y no guarda la IP en claro. El cuerpo de una denuncia se programa para sustituirse automáticamente por un aviso de borrado al cumplir 30 días. Si no envías propuestas ni denuncias, este servicio no se usa nunca.</li>
       <li><strong>Open Food Facts</strong> (<code>world.openfoodfacts.org</code>): si el asistente lee un código de barras en una foto tuya, consulta ese código en su base de datos pública para obtener la información nutricional del producto. Se envía el código de barras, no la imagen.</li>
-      <li><strong>VivaGym / MyVitale</strong> (<code>vivagym.myvitale.com</code>): función opcional. Si decides usarla, introduces el correo y la contraseña de <strong>tu cuenta de VivaGym</strong>, que se guardan en el llavero seguro del dispositivo y se envían a los servidores de VivaGym para obtener tu código QR de acceso al gimnasio. Ese código contiene tu identificador de socio. Si no usas esta función, no se envía nada. Esta integración está prevista para retirarse en una versión futura.</li>
     </ul>
   </section>
 
@@ -162,7 +162,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <h2><a href="#copias">Copias de seguridad y exportación</a></h2>
     <p>Puedes exportar todos tus datos a un fichero JSON desde Ajustes, y volver a importarlo después. Es una acción manual: no hay copia automática.</p>
     <p>El fichero exportado <strong>contiene</strong>: tus medidas y porcentajes de grasa, la referencia a tus fotografías de progreso, tu registro de dieta completo, tu historial de entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la memoria del asistente y <strong>el historial íntegro de tus conversaciones</strong>. Es el fichero más sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.</p>
-    <p>El fichero <strong>no contiene</strong> tus claves de API.</p>
+    <p>El fichero <strong>no contiene</strong> tus claves de API ni las credenciales heredadas de funciones retiradas.</p>
     <p>Al exportar, el fichero se escribe en el almacenamiento temporal de la aplicación antes de que elijas dónde compartirlo, y esa copia temporal permanece ahí. Puedes eliminarla borrando los datos de la aplicación desde los ajustes del sistema.</p>
   </section>
 
@@ -202,7 +202,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="eliminacion">
     <h2><a href="#eliminacion">Cómo eliminar tus datos</a></h2>
     <p>Con transparencia sobre lo que hace hoy cada opción:</p>
-    <p><strong>&quot;Restablecer datos locales&quot;</strong> (Ajustes) es un borrado <strong>parcial</strong>. Elimina tus rutinas, tu historial de entrenamiento, tu dieta, tus medidas, tus conversaciones y tus claves de API. <strong>No elimina</strong>: la memoria del asistente, los alimentos que has creado, tus preferencias, el registro de depuración, las credenciales de VivaGym, las copias de seguridad que hayas exportado ni los catálogos descargados. Estamos trabajando en que esta acción borre todo lo que promete; hasta entonces, esta política describe su comportamiento real.</p>
+    <p><strong>&quot;Restablecer datos locales&quot;</strong> (Ajustes) es un borrado <strong>parcial</strong>. Elimina tus rutinas, tu historial de entrenamiento, tu dieta, tus medidas, tus conversaciones, tus claves de API y las credenciales cifradas heredadas de funciones retiradas. <strong>No elimina</strong>: la memoria del asistente, los alimentos que has creado, tus preferencias, el registro de depuración, las copias de seguridad que hayas exportado ni los catálogos descargados. Estamos trabajando en que esta acción borre todo lo que promete; hasta entonces, esta política describe su comportamiento real.</p>
     <p><strong>El registro de depuración</strong> se borra con su propio botón, en Ajustes → Trazas.</p>
     <p><strong>Borrado completo</strong>: elimina los datos de la aplicación desde los ajustes de tu dispositivo, o desinstálala. Eso elimina todo lo anterior sin excepción. Recuerda que los ficheros de copia de seguridad que hayas exportado y guardado en otro sitio sobreviven, y que las fotografías tomadas con la cámara siguen en tu galería.</p>
     <p><strong>Datos en poder de un proveedor de IA</strong>: se solicitan directamente a ese proveedor, desde tu cuenta con él. Gymnasia no puede borrarlos por ti.</p>
@@ -245,7 +245,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-08-v5 · 2026-08-23</p>
+    <p>Política de privacidad de Gymnasia · 2026-08-v6 · 2026-08-24</p>
   </footer>
 </main>
 </body>

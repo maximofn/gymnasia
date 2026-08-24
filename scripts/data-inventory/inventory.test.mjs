@@ -99,7 +99,10 @@ test("un destino declarado que ya no existe menciona su ticket de retirada", () 
     inventory: {
       storageKeys: [],
       secureStoreKeys: [],
-      networkEndpoints: [{ host: "vivagym.myvitale.com", plannedRemoval: "GYM-192" }],
+      networkEndpoints: [{
+        host: "vivagym.myvitale.com",
+        plannedRemoval: "GYM-192 (ticket para retirar temporalmente VivaGym de la versión pública)",
+      }],
     },
     sources: fixtureSources,
     permissions: emptyPermissions,

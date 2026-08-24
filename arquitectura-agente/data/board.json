@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-23",
+    "updated": "2026-08-24",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -111,7 +111,7 @@
         {
           "id": "GYM-192",
           "title": "Retirar temporalmente la integración de VivaGym de la versión pública",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Quitar de la versión pública la interfaz, red, autenticación y datos sensibles de VivaGym sin romper los datos locales ni las funciones principales.",
           "dependsOn": [],
           "related": [
