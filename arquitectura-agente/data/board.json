@@ -2113,6 +2113,72 @@
       ]
     },
     {
+      "id": "GYM-214",
+      "kind": "epic",
+      "title": "Exponer Gymnasia a otros agentes y automatizaciones",
+      "state": "backlog",
+      "summary": "Ofrecer un contrato común y seguro para que agentes y automatizaciones usen Gymnasia mediante CLI de npm, CLI de PyPI y un servidor MCP local, sin acoplarse al almacenamiento ni introducir un backend obligatorio.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-215",
+          "title": "Definir el contrato y los permisos de las interfaces externas de Gymnasia",
+          "state": "backlog",
+          "summary": "Elegir el transporte entre móvil y procesos externos y fijar un contrato versionado de capacidades, permisos, confirmaciones, idempotencia, errores y compatibilidad reutilizable por todas las interfaces.",
+          "dependsOn": [],
+          "related": [
+            "GYM-24",
+            "GYM-45",
+            "GYM-52",
+            "GYM-135",
+            "GYM-168"
+          ]
+        },
+        {
+          "id": "GYM-216",
+          "title": "Publicar una CLI de Gymnasia en npm",
+          "state": "backlog",
+          "summary": "Distribuir una CLI multiplataforma ejecutable con npm o npx, con salida humana y JSON estable, códigos deterministas, dry-run, confirmaciones y publicación segura.",
+          "dependsOn": [
+            "GYM-215"
+          ],
+          "related": [
+            "GYM-24",
+            "GYM-45",
+            "GYM-52"
+          ]
+        },
+        {
+          "id": "GYM-217",
+          "title": "Publicar una CLI de Gymnasia en PyPI",
+          "state": "backlog",
+          "summary": "Distribuir mediante pip y pipx una CLI equivalente a la de npm, con wheel y sdist verificables y la misma semántica y suite de conformidad.",
+          "dependsOn": [
+            "GYM-215"
+          ],
+          "related": [
+            "GYM-24",
+            "GYM-45",
+            "GYM-52"
+          ]
+        },
+        {
+          "id": "GYM-218",
+          "title": "Exponer Gymnasia mediante un servidor MCP local",
+          "state": "backlog",
+          "summary": "Crear un servidor MCP local por stdio que exponga herramientas y recursos autorizados de Gymnasia y reserve cualquier servidor remoto para una excepción de backend separada.",
+          "dependsOn": [
+            "GYM-215"
+          ],
+          "related": [
+            "GYM-45",
+            "GYM-52",
+            "GYM-168"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -2844,6 +2910,17 @@
       "why": "Antes de añadir permisos, módulos nativos o conectores de fabricante, GYM-213 contrasta las capacidades oficiales, el encaje con Expo y las obligaciones de privacidad para elegir un MVP local-first y crear después subtareas con contratos reales.",
       "tickets": [
         "GYM-213"
+      ]
+    },
+    {
+      "id": "interfaces-agentes",
+      "title": "Abrir Gymnasia a agentes y automatizaciones",
+      "why": "GYM-215 fija primero el contrato, el transporte local-first y los permisos para no duplicar ni acoplar las interfaces al almacenamiento móvil. Después las CLI de npm y PyPI y el servidor MCP pueden avanzar en paralelo usando los mismos fixtures; GYM-52 conserva aparte el futuro diálogo agente-a-agente mediante A2A.",
+      "tickets": [
+        "GYM-215",
+        "GYM-216",
+        "GYM-217",
+        "GYM-218"
       ]
     },
     {
