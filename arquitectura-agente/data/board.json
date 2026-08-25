@@ -1230,6 +1230,85 @@
       ]
     },
     {
+      "id": "GYM-205",
+      "kind": "epic",
+      "title": "El agente conoce la app y sabe explicarla",
+      "state": "backlog",
+      "summary": "Crear documentación verificable y recuperación bajo demanda para que el agente explique la app sin inventar rutas y sepa cuándo conviene actuar en lugar de enseñar.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-206",
+          "title": "1. Manual de la app como fuente única verificable",
+          "state": "backlog",
+          "summary": "Crear un manual de uso como fuente única, generar sus artefactos y hacer que CI detecte rutas, símbolos o textos de interfaz obsoletos.",
+          "dependsOn": [],
+          "related": [
+            "GYM-122",
+            "GYM-160"
+          ]
+        },
+        {
+          "id": "GYM-207",
+          "title": "2. Comprobar que la documentación de OpenWiki dice la verdad",
+          "state": "backlog",
+          "summary": "Auditar la deriva de OpenWiki y comprobar automáticamente frescura, rutas, símbolos y enlaces sin confundir la wiki técnica con el manual de usuario.",
+          "dependsOn": [],
+          "related": [
+            "GYM-122",
+            "GYM-153",
+            "GYM-160"
+          ]
+        },
+        {
+          "id": "GYM-208",
+          "title": "3. Skill del agente para consultar la documentación",
+          "state": "backlog",
+          "summary": "Permitir que el agente descubra y consulte solo la documentación necesaria, y que admita no saber cuando el corpus no contiene una respuesta.",
+          "dependsOn": [
+            "GYM-206",
+            "GYM-207"
+          ],
+          "related": [
+            "GYM-46",
+            "GYM-51",
+            "GYM-92",
+            "GYM-103"
+          ]
+        },
+        {
+          "id": "GYM-209",
+          "title": "4. Decidir entre explicar y hacer",
+          "state": "backlog",
+          "summary": "Separar capacidades de detalles internos y definir cuándo el agente debe explicar una función, ejecutarla o pedir aclaración antes de actuar.",
+          "dependsOn": [
+            "GYM-208"
+          ],
+          "related": [
+            "GYM-45"
+          ]
+        },
+        {
+          "id": "GYM-210",
+          "title": "5. Evals de las respuestas de ayuda",
+          "state": "backlog",
+          "summary": "Medir veracidad de rutas, abstención, decisión entre explicar y actuar y utilidad con casos anclados al código antes de publicar la ayuda.",
+          "dependsOn": [
+            "GYM-208",
+            "GYM-209"
+          ],
+          "related": [
+            "GYM-71",
+            "GYM-72",
+            "GYM-73",
+            "GYM-76",
+            "GYM-77",
+            "GYM-79"
+          ]
+        }
+      ]
+    },
+    {
       "id": "GYM-106",
       "kind": "epic",
       "title": "Backend Engineering",
@@ -2035,6 +2114,19 @@
           "related": []
         },
         {
+          "id": "GYM-211",
+          "title": "Analizar y mejorar la técnica de ejercicios mediante vídeo",
+          "state": "backlog",
+          "summary": "Convertir este marcador en una futura épica para grabar ejercicios y ofrecer coaching sencillo a novatos o análisis detallado y mejoras justificadas a expertos.",
+          "dependsOn": [],
+          "related": [
+            "GYM-12",
+            "GYM-183",
+            "GYM-202",
+            "GYM-203"
+          ]
+        },
+        {
           "id": "GYM-53",
           "title": "Eliminar documentación de la arquitectura backend/web obsoleta",
           "state": "todo",
@@ -2838,6 +2930,18 @@
         "GYM-96",
         "GYM-95",
         "GYM-97"
+      ]
+    },
+    {
+      "id": "agente-ayuda",
+      "title": "Hacer que el agente conozca la app sin inventar",
+      "why": "GYM-206 crea el manual de usuario verificable y GYM-207 sanea OpenWiki en paralelo. Con ambos corpus fiables, GYM-208 añade consulta bajo demanda; después GYM-209 decide cuándo explicar o actuar y GYM-210 mide si las respuestas son verdaderas y útiles.",
+      "tickets": [
+        "GYM-206",
+        "GYM-207",
+        "GYM-208",
+        "GYM-209",
+        "GYM-210"
       ]
     },
     {
