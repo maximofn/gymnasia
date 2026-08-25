@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "version": "2026.08.2",
+  "critical": false,
+  "minClientProtocol": 1,
+  "requiredTools": [
+    "create_feature_issue",
+    "list_personal_data_keys",
+    "read_field_description",
+    "read_field_value",
+    "save_personal_data"
+  ]
+}

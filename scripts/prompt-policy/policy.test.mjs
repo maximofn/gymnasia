@@ -141,7 +141,7 @@ test("solo el contenido de política exige promover exactamente el SHA actual", 
       task: "gymnasia-policy",
       environment: "Production",
       latestStatus: "success",
-      payload: { schemaVersion: 1, sourceCommit: "b".repeat(40) },
+      payload: { schemaVersion: 2, sourceCommit: base.headSha },
     }],
   }).state, "pending");
   assert.equal(evaluatePolicyPromotion({
@@ -150,7 +150,11 @@ test("solo el contenido de política exige promover exactamente el SHA actual", 
       task: "gymnasia-policy",
       environment: "Production",
       latestStatus: "success",
-      payload: { schemaVersion: 1, sourceCommit: base.headSha },
+      payload: {
+        schemaVersion: 3,
+        sourceCommit: base.headSha,
+        activation: { id: "activation-example" },
+      },
     }],
   }).state, "success");
   assert.equal(evaluatePolicyPromotion({

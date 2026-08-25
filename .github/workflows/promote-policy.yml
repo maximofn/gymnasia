@@ -1,36 +1,37 @@
-name: Promote policy
+name: Promote signed policy
 
 on:
   workflow_dispatch:
     inputs:
       operation:
-        description: "Promotion operation"
+        description: "Signed policy operation"
         required: true
         type: choice
-        options:
-          - staging
-          - production
+        options: [staging, production, rollback]
       pr_number:
         description: "Open PR number (staging only)"
         required: false
         type: string
       bootstrap_main:
-        description: "One-time Staging bootstrap from the current protected main commit"
+        description: "One-time signed bootstrap from the current protected main commit"
         required: false
         default: false
         type: boolean
       candidate:
-        description: "Immutable policy tag (production only)"
+        description: "Immutable signed policy bundle id (production/rollback)"
         required: false
         type: string
-      critical:
-        description: "Use the separately audited Production Critical path"
-        required: false
-        default: false
-        type: boolean
+      activation_base64:
+        description: "Base64-encoded canonical PolicyActivationV1"
+        required: true
+        type: string
+      activation_signature_base64:
+        description: "Base64-encoded PolicySignatureEnvelopeV1"
+        required: true
+        type: string
 
 concurrency:
-  group: policy-promotion-${{ inputs.operation }}-${{ inputs.pr_number || inputs.candidate }}
+  group: signed-policy-${{ inputs.operation == 'staging' && 'staging-channel' || 'production-channel' }}
   cancel-in-progress: false
 
 jobs:
@@ -43,14 +44,12 @@ jobs:
       pull-requests: read
       checks: read
       statuses: read
-      deployments: read
     outputs:
+      candidate: ${{ steps.verify.outputs.candidate }}
       source_commit: ${{ steps.pr.outputs.source_commit }}
       bootstrap: ${{ steps.pr.outputs.bootstrap }}
-      candidate: ${{ steps.evidence.outputs.candidate }}
-
     steps:
-      - name: Resolve an open PR or the one-time main bootstrap
+      - name: Resolve authorized open PR
         id: pr
         env:
           GH_TOKEN: ${{ github.token }}
@@ -59,116 +58,96 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if test "$BOOTSTRAP_MAIN" = "true"; then
+          test "$GITHUB_REF" = "refs/heads/main"
+          if test "$BOOTSTRAP_MAIN" = true; then
             test -z "$PR_NUMBER" || { echo "bootstrap_main and pr_number are mutually exclusive"; exit 1; }
-            test "$GITHUB_REF" = "refs/heads/main" || { echo "bootstrap_main must run from main"; exit 1; }
             SOURCE_COMMIT="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq .object.sha)"
             test "$SOURCE_COMMIT" = "$GITHUB_SHA" || { echo "bootstrap_main requires the current main HEAD"; exit 1; }
-            test "$(gh api "repos/${GITHUB_REPOSITORY}/deployments?task=gymnasia-policy&per_page=1" --jq length)" = "0" \
-              || { echo "bootstrap_main is disabled after the first policy deployment"; exit 1; }
+            SIGNED_COUNT="$(gh api --paginate --slurp \
+              "repos/${GITHUB_REPOSITORY}/deployments?task=gymnasia-policy&per_page=100" \
+              --jq 'add | [.[] | select(.payload.schemaVersion == 3)] | length')"
+            test "$SIGNED_COUNT" = 0 \
+              || { echo "bootstrap_main is disabled after the first signed policy deployment"; exit 1; }
           else
             [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || { echo "pr_number is required for staging"; exit 1; }
             gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" > /tmp/pr.json
             test "$(jq -r .state /tmp/pr.json)" = "open"
             test "$(jq -r .base.ref /tmp/pr.json)" = "main"
             SOURCE_COMMIT="$(jq -r .head.sha /tmp/pr.json)"
-          fi
-          CHECKS="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SOURCE_COMMIT}/check-runs")"
-          jq -e '.check_runs | any(.name == "prompt-policy" and .conclusion == "success")' <<<"$CHECKS"
-          if test "$BOOTSTRAP_MAIN" != "true"; then
+            CHECKS="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SOURCE_COMMIT}/check-runs")"
+            jq -e '.check_runs | any(.name == "prompt-policy" and .conclusion == "success")' <<<"$CHECKS"
             STATUSES="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${SOURCE_COMMIT}/status")"
             jq -e '.statuses | any(.context == "gymnasia/owner-authorization" and .state == "success")' <<<"$STATUSES"
           fi
           echo "source_commit=$SOURCE_COMMIT" >> "$GITHUB_OUTPUT"
           echo "bootstrap=$BOOTSTRAP_MAIN" >> "$GITHUB_OUTPUT"
-
-      - name: Check out the exact untrusted commit without credentials
+      - name: Check out candidate and trusted verifier
         env:
           SOURCE_COMMIT: ${{ steps.pr.outputs.source_commit }}
         shell: bash
         run: |
           set -euo pipefail
-          git init .
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git -c protocol.version=2 fetch --no-tags --depth=1 origin "$SOURCE_COMMIT"
-          git checkout --detach FETCH_HEAD
-
+          git init /tmp/policy-candidate-source
+          git -C /tmp/policy-candidate-source remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -C /tmp/policy-candidate-source -c protocol.version=2 fetch --no-tags --depth=1 origin "$SOURCE_COMMIT"
+          git -C /tmp/policy-candidate-source checkout --detach FETCH_HEAD
+          git init /tmp/policy-trusted
+          git -C /tmp/policy-trusted remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -C /tmp/policy-trusted -c protocol.version=2 fetch --no-tags --depth=1 origin "$GITHUB_SHA"
+          git -C /tmp/policy-trusted checkout --detach FETCH_HEAD
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
-          cache: npm
-
-      - name: Install dependencies without lifecycle scripts
-        run: npm ci --ignore-scripts
-
-      - name: Run the exact blocking health gate
-        run: npm run check:health-safety
-
-      - name: Generate non-authorizing report and candidate metadata
-        id: evidence
+      - name: Run deterministic health gate without secrets
+        working-directory: /tmp/policy-candidate-source
+        run: |
+          npm ci --ignore-scripts
+          npm run check:health-safety
+      - name: Decode and verify signed Staging activation
+        id: verify
         env:
+          ACTIVATION_BASE64: ${{ inputs.activation_base64 }}
+          ACTIVATION_SIGNATURE_BASE64: ${{ inputs.activation_signature_base64 }}
+          BOOTSTRAP_MAIN: ${{ steps.pr.outputs.bootstrap }}
           SOURCE_COMMIT: ${{ steps.pr.outputs.source_commit }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/policy-candidate
-          cp prompts/AGENTS.md /tmp/policy-candidate/policy.md
-          cp policy/health-safety/runtime.json /tmp/policy-candidate/health-safety-runtime.json
-          npm run report:health-safety -- --output /tmp/policy-candidate/health-safety-report.json
-          POLICY_VERSION="$(jq -r .policyVersion policy/health-safety/manifest.json)"
-          CANDIDATE="policy-v${POLICY_VERSION}-${SOURCE_COMMIT:0:12}"
-          ASSET_SHA="$(sha256sum /tmp/policy-candidate/policy.md | cut -d' ' -f1)"
-          RUNTIME_SHA="$(sha256sum /tmp/policy-candidate/health-safety-runtime.json | cut -d' ' -f1)"
-          REPORT_SHA="$(sha256sum /tmp/policy-candidate/health-safety-report.json | cut -d' ' -f1)"
-          test "$(jq -r .policyVersion /tmp/policy-candidate/health-safety-runtime.json)" = "$POLICY_VERSION"
-          jq -e --arg digest "$ASSET_SHA" '
-            .authorizing == false
-            and .summary.failed == 0
-            and .promptVersion == ("sha256:" + $digest)
-          ' /tmp/policy-candidate/health-safety-report.json
-          jq -n \
-            --arg candidate "$CANDIDATE" \
-            --arg sourceCommit "$SOURCE_COMMIT" \
-            --arg policyVersion "$POLICY_VERSION" \
-            --arg assetSha256 "$ASSET_SHA" \
-            --arg runtimePolicySha256 "$RUNTIME_SHA" \
+          cp /tmp/policy-candidate-source/policy/signing/current.bundle.json /tmp/policy-candidate/policy.bundle.json
+          cp /tmp/policy-candidate-source/policy/signing/current.bundle.signature.json /tmp/policy-candidate/policy.bundle.signature.json
+          printf '%s' "$ACTIVATION_BASE64" | base64 --decode > /tmp/policy-candidate/policy.activation.json
+          printf '%s' "$ACTIVATION_SIGNATURE_BASE64" | base64 --decode > /tmp/policy-candidate/policy.activation.signature.json
+          node /tmp/policy-trusted/scripts/policy-promotion/verify-artifacts.mjs \
+            --bundle /tmp/policy-candidate/policy.bundle.json \
+            --signature /tmp/policy-candidate/policy.bundle.signature.json \
+            --activation /tmp/policy-candidate/policy.activation.json \
+            --activation-signature /tmp/policy-candidate/policy.activation.signature.json \
+            --channel Staging --roots /tmp/policy-trusted/policy/signing/trusted-roots.json \
+            --source-root /tmp/policy-candidate-source > /tmp/verified.json
+          test "$(jq -r .action /tmp/verified.json)" = activate
+          CANDIDATE="$(jq -r .bundleId /tmp/verified.json)"
+          REPORT_PATH=/tmp/policy-candidate/health-safety-report.json
+          (cd /tmp/policy-candidate-source && npm run report:health-safety -- --output "$REPORT_PATH")
+          REPORT_SHA="$(sha256sum "$REPORT_PATH" | cut -d' ' -f1)"
+          jq -n --arg candidate "$CANDIDATE" --arg sourceCommit "$SOURCE_COMMIT" \
+            --arg bundleSha256 "$(jq -r .bundleSha256 /tmp/verified.json)" \
             --arg reportSha256 "$REPORT_SHA" \
-            --arg sourcePr "${{ inputs.pr_number }}" \
             --arg runUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            '{
-              schemaVersion: 2,
-              candidate: $candidate,
-              sourceCommit: $sourceCommit,
-              policyVersion: $policyVersion,
-              datasetVersion: $policyVersion,
-              promptVersion: ("sha256:" + $assetSha256),
-              assetSha256: $assetSha256,
-              runtimePolicySha256: $runtimePolicySha256,
-              healthSafetyReportSha256: $reportSha256,
-              sourcePullRequest: (if $sourcePr == "" then null else ($sourcePr | tonumber) end),
-              bootstrapMain: ($sourcePr == ""),
-              owner: "maximofn",
-              gate: {command: "npm run check:health-safety", passed: true, authorizingReport: false},
-              workflowRunUrl: $runUrl
-            }' > /tmp/policy-candidate/promotion-evidence.json
-          jq -n \
-            --arg sourceCommit "$SOURCE_COMMIT" \
-            --arg candidate "$CANDIDATE" \
-            '{sourceCommit: $sourceCommit, candidate: $candidate}' \
-            > /tmp/policy-candidate/source.json
+            --argjson bootstrapMain "$BOOTSTRAP_MAIN" \
+            '{schemaVersion: 3, candidate: $candidate, sourceCommit: $sourceCommit, bundleSha256: $bundleSha256, healthSafetyReportSha256: $reportSha256, bootstrapMain: $bootstrapMain, owner: "maximofn", gate: {command: "npm run check:health-safety", passed: true, authorizingReport: false}, workflowRunUrl: $runUrl}' \
+            > /tmp/policy-candidate/promotion-evidence.json
           echo "candidate=$CANDIDATE" >> "$GITHUB_OUTPUT"
-
-      - name: Upload validated candidate
+      - name: Upload verified signed candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: policy-candidate-${{ steps.evidence.outputs.candidate }}
+          name: signed-policy-${{ steps.verify.outputs.candidate }}
           path: /tmp/policy-candidate
           if-no-files-found: error
           retention-days: 7
 
   publish-staging:
-    if: inputs.operation == 'staging'
     needs: validate-staging
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -176,276 +155,196 @@ jobs:
     permissions:
       contents: write
       deployments: write
-
     steps:
-      - name: Download only the validated candidate
+      - name: Download verified candidate
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: policy-candidate-${{ needs.validate-staging.outputs.candidate }}
+          name: signed-policy-${{ needs.validate-staging.outputs.candidate }}
           path: /tmp/policy-candidate
-
-      - name: Publish immutable prerelease and Staging deployment
+      - name: Publish immutable release and Staging deployment
         env:
           GH_TOKEN: ${{ github.token }}
           CANDIDATE: ${{ needs.validate-staging.outputs.candidate }}
           SOURCE_COMMIT: ${{ needs.validate-staging.outputs.source_commit }}
-          BOOTSTRAP_MAIN: ${{ needs.validate-staging.outputs.bootstrap }}
         shell: bash
         run: |
           set -euo pipefail
           cd /tmp/policy-candidate
           test "$(jq -r .candidate promotion-evidence.json)" = "$CANDIDATE"
           test "$(jq -r .sourceCommit promotion-evidence.json)" = "$SOURCE_COMMIT"
-          test "$(jq -r .owner promotion-evidence.json)" = "maximofn"
-          test "$(jq -r .gate.command promotion-evidence.json)" = "npm run check:health-safety"
-          test "$(jq -r .gate.authorizingReport promotion-evidence.json)" = "false"
-          if test "$BOOTSTRAP_MAIN" = "true"; then
-            test "$(jq -r .bootstrapMain promotion-evidence.json)" = "true"
-            test "$(gh api "repos/${GITHUB_REPOSITORY}/deployments?task=gymnasia-policy&per_page=1" --jq length)" = "0" \
-              || { echo "another policy deployment won the bootstrap race"; exit 1; }
-          fi
-          ASSET_SHA="$(sha256sum policy.md | cut -d' ' -f1)"
-          RUNTIME_SHA="$(sha256sum health-safety-runtime.json | cut -d' ' -f1)"
+          BUNDLE_SHA="$(sha256sum policy.bundle.json | cut -d' ' -f1)"
           REPORT_SHA="$(sha256sum health-safety-report.json | cut -d' ' -f1)"
-          test "$ASSET_SHA" = "$(jq -r .assetSha256 promotion-evidence.json)"
-          test "$RUNTIME_SHA" = "$(jq -r .runtimePolicySha256 promotion-evidence.json)"
+          test "$BUNDLE_SHA" = "$(jq -r .bundleSha256 promotion-evidence.json)"
           test "$REPORT_SHA" = "$(jq -r .healthSafetyReportSha256 promotion-evidence.json)"
-          gh release create "$CANDIDATE" \
-            --repo "$GITHUB_REPOSITORY" \
-            --target "$SOURCE_COMMIT" \
-            --title "$CANDIDATE" \
-            --notes "Immutable Gymnasia policy candidate validated by deterministic health-safety gates." \
-            --draft \
-            --prerelease
-          gh release upload "$CANDIDATE" policy.md health-safety-runtime.json health-safety-report.json promotion-evidence.json \
-            --repo "$GITHUB_REPOSITORY"
+          gh release create "$CANDIDATE" --repo "$GITHUB_REPOSITORY" --target "$SOURCE_COMMIT" \
+            --title "$CANDIDATE" --notes "Immutable Gymnasia policy bundle authenticated with Ed25519." --draft --prerelease
+          gh release upload "$CANDIDATE" policy.bundle.json policy.bundle.signature.json health-safety-report.json promotion-evidence.json --repo "$GITHUB_REPOSITORY"
           gh release edit "$CANDIDATE" --repo "$GITHUB_REPOSITORY" --draft=false --prerelease
-          ASSET_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/policy.md"
-          RUNTIME_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/health-safety-runtime.json"
-          POLICY_VERSION="$(jq -r .policyVersion promotion-evidence.json)"
-          jq -n \
-            --arg ref "$SOURCE_COMMIT" \
-            --arg candidate "$CANDIDATE" \
-            --arg assetUrl "$ASSET_URL" \
-            --arg assetSha256 "$ASSET_SHA" \
-            --arg runtimePolicyUrl "$RUNTIME_URL" \
-            --arg runtimePolicySha256 "$RUNTIME_SHA" \
-            --arg policyVersion "$POLICY_VERSION" \
-            --arg reportSha256 "$REPORT_SHA" \
-            --arg workflowRunUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            '{
-              ref: $ref,
-              task: "gymnasia-policy",
-              environment: "Staging",
-              auto_merge: false,
-              required_contexts: [],
-              payload: {
-                schemaVersion: 2,
-                candidate: $candidate,
-                sourceCommit: $ref,
-                assetUrl: $assetUrl,
-                assetSha256: $assetSha256,
-                runtimePolicyUrl: $runtimePolicyUrl,
-                runtimePolicySha256: $runtimePolicySha256,
-                runtimePolicyVersion: $policyVersion,
-                policyVersion: $policyVersion,
-                datasetVersion: $policyVersion,
-                promptVersion: ("sha256:" + $assetSha256),
-                reportSha256: $reportSha256,
-                workflowRunUrl: $workflowRunUrl
-              }
-            }' > /tmp/deployment.json
+          BUNDLE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/policy.bundle.json"
+          SIGNATURE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/policy.bundle.signature.json"
+          jq -n --arg ref "$SOURCE_COMMIT" --arg candidate "$CANDIDATE" --arg bundleUrl "$BUNDLE_URL" \
+            --arg signatureUrl "$SIGNATURE_URL" --arg bundleSha256 "$BUNDLE_SHA" \
+            --slurpfile activation policy.activation.json --slurpfile activationSignature policy.activation.signature.json \
+            '{ref: $ref, task: "gymnasia-policy", environment: "Staging", auto_merge: false, required_contexts: [], payload: {schemaVersion: 3, candidate: $candidate, sourceCommit: $ref, bundleUrl: $bundleUrl, signatureUrl: $signatureUrl, bundleSha256: $bundleSha256, activation: $activation[0], activationSignature: $activationSignature[0]}}' > /tmp/deployment.json
           DEPLOYMENT_ID="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input /tmp/deployment.json --jq .id)"
-          jq -n \
-            --arg state success \
-            --arg environment Staging \
-            --arg environmentUrl "$ASSET_URL" \
+          jq -n --arg state success --arg environment Staging --arg environmentUrl "$BUNDLE_URL" \
             --arg logUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            '{state: $state, environment: $environment, environment_url: $environmentUrl, log_url: $logUrl}' \
-            > /tmp/deployment-status.json
-          gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" \
-            --input /tmp/deployment-status.json >/dev/null
+            '{state: $state, environment: $environment, environment_url: $environmentUrl, log_url: $logUrl}' > /tmp/status.json
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" --input /tmp/status.json >/dev/null
 
   validate-production:
-    if: inputs.operation == 'production'
+    if: inputs.operation == 'production' || inputs.operation == 'rollback'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: read
       deployments: read
     outputs:
-      candidate: ${{ steps.candidate.outputs.candidate }}
-      source_commit: ${{ steps.candidate.outputs.source_commit }}
-      staging_deployment_id: ${{ steps.candidate.outputs.staging_deployment_id }}
-
+      candidate: ${{ steps.verify.outputs.candidate }}
+      source_commit: ${{ steps.verify.outputs.source_commit }}
+      critical: ${{ steps.verify.outputs.critical }}
+      operation: ${{ steps.verify.outputs.operation }}
     steps:
-      - name: Download candidate and verify prior Staging deployment
-        id: candidate
+      - name: Download signed candidate and activation
         env:
           GH_TOKEN: ${{ github.token }}
           CANDIDATE: ${{ inputs.candidate }}
+          ACTIVATION_BASE64: ${{ inputs.activation_base64 }}
+          ACTIVATION_SIGNATURE_BASE64: ${{ inputs.activation_signature_base64 }}
         shell: bash
         run: |
           set -euo pipefail
           [[ "$CANDIDATE" =~ ^policy-v[0-9]{4}\.[0-9]{2}\.[0-9]+-[a-f0-9]{12}$ ]]
           mkdir -p /tmp/policy-production
           BASE="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}"
-          curl -fsSL "$BASE/policy.md" -o /tmp/policy-production/policy.md
-          curl -fsSL "$BASE/health-safety-runtime.json" -o /tmp/policy-production/health-safety-runtime.json
+          curl -fsSL "$BASE/policy.bundle.json" -o /tmp/policy-production/policy.bundle.json
+          curl -fsSL "$BASE/policy.bundle.signature.json" -o /tmp/policy-production/policy.bundle.signature.json
           curl -fsSL "$BASE/health-safety-report.json" -o /tmp/policy-production/health-safety-report.json
           curl -fsSL "$BASE/promotion-evidence.json" -o /tmp/policy-production/promotion-evidence.json
-          SOURCE_COMMIT="$(jq -r .sourceCommit /tmp/policy-production/promotion-evidence.json)"
-          test "$(jq -r .candidate /tmp/policy-production/promotion-evidence.json)" = "$CANDIDATE"
-          test "$(jq -r .owner /tmp/policy-production/promotion-evidence.json)" = "maximofn"
-          test "$(jq -r .gate.command /tmp/policy-production/promotion-evidence.json)" = "npm run check:health-safety"
-          test "$(sha256sum /tmp/policy-production/policy.md | cut -d' ' -f1)" = "$(jq -r .assetSha256 /tmp/policy-production/promotion-evidence.json)"
-          test "$(sha256sum /tmp/policy-production/health-safety-runtime.json | cut -d' ' -f1)" = "$(jq -r .runtimePolicySha256 /tmp/policy-production/promotion-evidence.json)"
-          gh api "repos/${GITHUB_REPOSITORY}/deployments?environment=Staging&ref=${SOURCE_COMMIT}&task=gymnasia-policy&per_page=100" > /tmp/staging-deployments.json
-          STAGING_ID="$(jq -r --arg candidate "$CANDIDATE" '
-            [.[] | select((.payload.candidate // "") == $candidate)] | first | .id // empty
-          ' /tmp/staging-deployments.json)"
-          test -n "$STAGING_ID"
-          test "$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${STAGING_ID}/statuses" --jq '.[0].state')" = "success"
-          echo "candidate=$CANDIDATE" >> "$GITHUB_OUTPUT"
-          echo "source_commit=$SOURCE_COMMIT" >> "$GITHUB_OUTPUT"
-          echo "staging_deployment_id=$STAGING_ID" >> "$GITHUB_OUTPUT"
-
-      - name: Check out the exact source commit without credentials
-        env:
-          SOURCE_COMMIT: ${{ steps.candidate.outputs.source_commit }}
+          printf '%s' "$ACTIVATION_BASE64" | base64 --decode > /tmp/policy-production/policy.activation.json
+          printf '%s' "$ACTIVATION_SIGNATURE_BASE64" | base64 --decode > /tmp/policy-production/policy.activation.signature.json
+      - name: Check out exact source and trusted verifier
         shell: bash
         run: |
           set -euo pipefail
-          git init .
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
-          git -c protocol.version=2 fetch --no-tags --depth=1 origin "$SOURCE_COMMIT"
-          git checkout --detach FETCH_HEAD
-          cp /tmp/policy-production/policy.md prompts/AGENTS.md
-          cp /tmp/policy-production/health-safety-runtime.json policy/health-safety/runtime.json
-
+          test "$GITHUB_REF" = "refs/heads/main"
+          SOURCE_COMMIT="$(jq -r .sourceCommit /tmp/policy-production/promotion-evidence.json)"
+          git init /tmp/policy-production-source
+          git -C /tmp/policy-production-source remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -C /tmp/policy-production-source -c protocol.version=2 fetch --no-tags --depth=1 origin "$SOURCE_COMMIT"
+          git -C /tmp/policy-production-source checkout --detach FETCH_HEAD
+          git init /tmp/policy-trusted
+          git -C /tmp/policy-trusted remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -C /tmp/policy-trusted -c protocol.version=2 fetch --no-tags --depth=1 origin "$GITHUB_SHA"
+          git -C /tmp/policy-trusted checkout --detach FETCH_HEAD
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
-          cache: npm
-
-      - name: Install dependencies without lifecycle scripts
-        run: npm ci --ignore-scripts
-
-      - name: Re-run the exact blocking health gate on the same content
-        run: npm run check:health-safety
-
-      - name: Generate fresh non-authorizing validation report
+      - name: Re-run health gate and verify Production authorization
+        id: verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE: ${{ inputs.candidate }}
+          OPERATION: ${{ inputs.operation }}
         shell: bash
         run: |
           set -euo pipefail
-          npm run report:health-safety -- --output /tmp/policy-production/production-health-safety-report.json
-          jq -e '.authorizing == false and .summary.failed == 0' /tmp/policy-production/production-health-safety-report.json
-
-      - name: Upload validated production evidence
+          cd /tmp/policy-production-source
+          npm ci --ignore-scripts
+          npm run check:health-safety
+          node /tmp/policy-trusted/scripts/policy-promotion/verify-artifacts.mjs \
+            --bundle /tmp/policy-production/policy.bundle.json --signature /tmp/policy-production/policy.bundle.signature.json \
+            --activation /tmp/policy-production/policy.activation.json --activation-signature /tmp/policy-production/policy.activation.signature.json \
+            --channel Production --roots /tmp/policy-trusted/policy/signing/trusted-roots.json \
+            --source-root /tmp/policy-production-source > /tmp/verified.json
+          test "$(jq -r .bundleId /tmp/verified.json)" = "$CANDIDATE"
+          BUNDLE_SHA="$(sha256sum /tmp/policy-production/policy.bundle.json | cut -d' ' -f1)"
+          REPORT_SHA="$(sha256sum /tmp/policy-production/health-safety-report.json | cut -d' ' -f1)"
+          test "$(jq -r .schemaVersion /tmp/policy-production/promotion-evidence.json)" = 3
+          test "$(jq -r .candidate /tmp/policy-production/promotion-evidence.json)" = "$CANDIDATE"
+          test "$(jq -r .bundleSha256 /tmp/policy-production/promotion-evidence.json)" = "$BUNDLE_SHA"
+          test "$(jq -r .healthSafetyReportSha256 /tmp/policy-production/promotion-evidence.json)" = "$REPORT_SHA"
+          test "$(jq -r .owner /tmp/policy-production/promotion-evidence.json)" = maximofn
+          test "$(jq -r .gate.command /tmp/policy-production/promotion-evidence.json)" = "npm run check:health-safety"
+          test "$(jq -r .gate.passed /tmp/policy-production/promotion-evidence.json)" = true
+          test "$(jq -r .gate.authorizingReport /tmp/policy-production/promotion-evidence.json)" = false
+          EXPECTED_ACTION=activate
+          test "$OPERATION" != rollback || EXPECTED_ACTION=rollback
+          test "$(jq -r .action /tmp/verified.json)" = "$EXPECTED_ACTION"
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/deployments?environment=Staging&task=gymnasia-policy&per_page=100" \
+            | jq 'add' > /tmp/staging.json
+          STAGING_ID="$(jq -r --arg candidate "$CANDIDATE" '[.[] | select(.payload.schemaVersion == 3 and .payload.candidate == $candidate)] | first | .id // empty' /tmp/staging.json)"
+          test -n "$STAGING_ID"
+          test "$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${STAGING_ID}/statuses" --jq '.[0].state')" = success
+          LATEST_STAGING_CANDIDATE="$(jq -r \
+            '[.[] | select(.payload.schemaVersion == 3)] | max_by(.payload.activation.sequence) | .payload.candidate // empty' \
+            /tmp/staging.json)"
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/deployments?environment=Production&task=gymnasia-policy&per_page=100" \
+            | jq 'add' > /tmp/production.json
+          LATEST_SEQUENCE="$(jq -r '[.[] | select(.payload.schemaVersion == 3) | .payload.activation.sequence] | max // 0' /tmp/production.json)"
+          test "$(jq -r .sequence /tmp/verified.json)" -gt "$LATEST_SEQUENCE"
+          CURRENT_BUNDLE="$(jq -r \
+            '[.[] | select(.payload.schemaVersion == 3)] | max_by(.payload.activation.sequence) | .payload.candidate // empty' \
+            /tmp/production.json)"
+          if test "$OPERATION" = rollback; then
+            test "$(jq -r .fromBundleId /tmp/policy-production/policy.activation.json)" = "$CURRENT_BUNDLE"
+            jq -e --arg candidate "$CANDIDATE" 'any(.[]; .payload.schemaVersion == 3 and .payload.candidate == $candidate)' /tmp/production.json
+          else
+            test "$CANDIDATE" = "$LATEST_STAGING_CANDIDATE"
+            test -z "$CURRENT_BUNDLE" || test "$CANDIDATE" != "$CURRENT_BUNDLE"
+          fi
+          {
+            echo "candidate=$CANDIDATE"
+            echo "source_commit=$(jq -r .sourceCommit /tmp/policy-production/promotion-evidence.json)"
+            echo "critical=$(jq -r .critical /tmp/verified.json)"
+            echo "operation=$OPERATION"
+          } >> "$GITHUB_OUTPUT"
+      - name: Upload verified Production payload
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: policy-production-${{ steps.candidate.outputs.candidate }}
+          name: signed-production-${{ steps.verify.outputs.candidate }}-${{ steps.verify.outputs.operation }}
           path: /tmp/policy-production
           if-no-files-found: error
           retention-days: 7
 
   publish-production:
-    if: inputs.operation == 'production'
     needs: validate-production
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: ${{ inputs.critical && 'Production Critical' || 'Production' }}
+    environment: ${{ needs.validate-production.outputs.critical == 'true' && 'Production Critical' || 'Production' }}
     permissions:
-      contents: read
       deployments: write
       statuses: write
-
     steps:
-      - name: Download only validated production evidence
+      - name: Download verified Production payload
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: policy-production-${{ needs.validate-production.outputs.candidate }}
+          name: signed-production-${{ needs.validate-production.outputs.candidate }}-${{ needs.validate-production.outputs.operation }}
           path: /tmp/policy-production
-
-      - name: Promote the same immutable asset to Production
+      - name: Publish Production deployment and promotion status
         env:
           GH_TOKEN: ${{ github.token }}
           CANDIDATE: ${{ needs.validate-production.outputs.candidate }}
           SOURCE_COMMIT: ${{ needs.validate-production.outputs.source_commit }}
-          STAGING_DEPLOYMENT_ID: ${{ needs.validate-production.outputs.staging_deployment_id }}
-          CRITICAL: ${{ inputs.critical }}
         shell: bash
         run: |
           set -euo pipefail
           cd /tmp/policy-production
-          test "$(jq -r .candidate promotion-evidence.json)" = "$CANDIDATE"
-          test "$(jq -r .sourceCommit promotion-evidence.json)" = "$SOURCE_COMMIT"
-          test "$(jq -r .owner promotion-evidence.json)" = "maximofn"
-          test "$(jq -r .gate.command promotion-evidence.json)" = "npm run check:health-safety"
-          jq -e '.authorizing == false and .summary.failed == 0' production-health-safety-report.json
-          ASSET_SHA="$(jq -r .assetSha256 promotion-evidence.json)"
-          REPORT_SHA="$(jq -r .healthSafetyReportSha256 promotion-evidence.json)"
-          RUNTIME_SHA="$(jq -r .runtimePolicySha256 promotion-evidence.json)"
-          POLICY_VERSION="$(jq -r .policyVersion promotion-evidence.json)"
-          ASSET_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/policy.md"
-          RUNTIME_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/health-safety-runtime.json"
-          ENVIRONMENT_NAME="Production"
-          test "$CRITICAL" != "true" || ENVIRONMENT_NAME="Production Critical"
-          jq -n \
-            --arg ref "$SOURCE_COMMIT" \
-            --arg candidate "$CANDIDATE" \
-            --arg assetUrl "$ASSET_URL" \
-            --arg assetSha256 "$ASSET_SHA" \
-            --arg runtimePolicyUrl "$RUNTIME_URL" \
-            --arg runtimePolicySha256 "$RUNTIME_SHA" \
-            --arg policyVersion "$POLICY_VERSION" \
-            --arg reportSha256 "$REPORT_SHA" \
-            --arg workflowRunUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            --arg stagingDeploymentId "$STAGING_DEPLOYMENT_ID" \
-            --arg environmentName "$ENVIRONMENT_NAME" \
-            --argjson critical "$CRITICAL" \
-            '{
-              ref: $ref,
-              task: "gymnasia-policy",
-              environment: "Production",
-              auto_merge: false,
-              required_contexts: [],
-              payload: {
-                schemaVersion: 2,
-                candidate: $candidate,
-                sourceCommit: $ref,
-                assetUrl: $assetUrl,
-                assetSha256: $assetSha256,
-                runtimePolicyUrl: $runtimePolicyUrl,
-                runtimePolicySha256: $runtimePolicySha256,
-                runtimePolicyVersion: $policyVersion,
-                policyVersion: $policyVersion,
-                datasetVersion: $policyVersion,
-                promptVersion: ("sha256:" + $assetSha256),
-                reportSha256: $reportSha256,
-                workflowRunUrl: $workflowRunUrl,
-                stagingDeploymentId: ($stagingDeploymentId | tonumber),
-                critical: $critical,
-                approval: {owner: "maximofn", environment: $environmentName, gateCommand: "npm run check:health-safety"}
-              }
-            }' > /tmp/deployment.json
+          BUNDLE_SHA="$(sha256sum policy.bundle.json | cut -d' ' -f1)"
+          BUNDLE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/policy.bundle.json"
+          SIGNATURE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${CANDIDATE}/policy.bundle.signature.json"
+          jq -n --arg ref "$SOURCE_COMMIT" --arg candidate "$CANDIDATE" --arg bundleUrl "$BUNDLE_URL" \
+            --arg signatureUrl "$SIGNATURE_URL" --arg bundleSha256 "$BUNDLE_SHA" \
+            --slurpfile activation policy.activation.json --slurpfile activationSignature policy.activation.signature.json \
+            '{ref: $ref, task: "gymnasia-policy", environment: "Production", auto_merge: false, required_contexts: [], payload: {schemaVersion: 3, candidate: $candidate, sourceCommit: $ref, bundleUrl: $bundleUrl, signatureUrl: $signatureUrl, bundleSha256: $bundleSha256, activation: $activation[0], activationSignature: $activationSignature[0]}}' > /tmp/deployment.json
           DEPLOYMENT_ID="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input /tmp/deployment.json --jq .id)"
-          jq -n \
-            --arg state success \
-            --arg environment Production \
-            --arg environmentUrl "$ASSET_URL" \
+          jq -n --arg state success --arg environment Production --arg environmentUrl "$BUNDLE_URL" \
             --arg logUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            '{state: $state, environment: $environment, environment_url: $environmentUrl, log_url: $logUrl}' \
-            > /tmp/deployment-status.json
-          gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" \
-            --input /tmp/deployment-status.json >/dev/null
-          jq -n \
-            --arg state success \
-            --arg context gymnasia/policy-promotion \
-            --arg description "Exact policy commit promoted to Production" \
+            '{state: $state, environment: $environment, environment_url: $environmentUrl, log_url: $logUrl}' > /tmp/status.json
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" --input /tmp/status.json >/dev/null
+          jq -n --arg state success --arg context gymnasia/policy-promotion \
+            --arg description "Signed policy ${CANDIDATE} promoted to Production" \
             --arg targetUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            '{state: $state, context: $context, description: $description, target_url: $targetUrl}' \
-            > /tmp/status.json
-          gh api --method POST "repos/${GITHUB_REPOSITORY}/statuses/${SOURCE_COMMIT}" \
-            --input /tmp/status.json >/dev/null
+            '{state: $state, context: $context, description: $description, target_url: $targetUrl}' > /tmp/commit-status.json
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/statuses/${SOURCE_COMMIT}" --input /tmp/commit-status.json >/dev/null
