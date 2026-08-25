@@ -2089,6 +2089,30 @@
       ]
     },
     {
+      "id": "GYM-212",
+      "kind": "epic",
+      "title": "Sincronizar Gymnasia con wearables y relojes inteligentes",
+      "state": "backlog",
+      "summary": "Intercambiar entrenamientos y señales autorizadas con relojes y wearables, con procedencia, deduplicación, privacidad y funcionamiento local-first sin dispositivo obligatorio.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-213",
+          "title": "Investigar ecosistemas, datos y arquitectura para integrar wearables",
+          "state": "backlog",
+          "summary": "Comparar rutas oficiales de Android, iOS y fabricantes y elegir un MVP viable sin prometer paridad ni introducir un backend obligatorio.",
+          "dependsOn": [],
+          "related": [
+            "GYM-5",
+            "GYM-171",
+            "GYM-177",
+            "GYM-179",
+            "GYM-202"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -2812,6 +2836,14 @@
       "why": "Antes de desglosar e implementar cambios transversales, GYM-204 identifica una organización o comunidad adecuada, distingue pruebas con usuarios de auditoría o certificación y prepara un piloto seguro para que los criterios de la épica partan de feedback real.",
       "tickets": [
         "GYM-204"
+      ]
+    },
+    {
+      "id": "wearables",
+      "title": "Diseñar la integración con wearables",
+      "why": "Antes de añadir permisos, módulos nativos o conectores de fabricante, GYM-213 contrasta las capacidades oficiales, el encaje con Expo y las obligaciones de privacidad para elegir un MVP local-first y crear después subtareas con contratos reales.",
+      "tickets": [
+        "GYM-213"
       ]
     },
     {
