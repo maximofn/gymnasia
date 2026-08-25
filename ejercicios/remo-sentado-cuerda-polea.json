@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentado-cuerda-polea",
+  "name": "Remo sentado con cuerda en polea",
+  "image_male": "images/remo-sentado-cuerda-polea-male.webp",
+  "image_female": "images/remo-sentado-cuerda-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea y cuerda",
+  "difficulty": "beginner",
+  "instructions": "Siéntate frente a una polea baja con los pies apoyados y las rodillas ligeramente flexionadas. Sujeta una cuerda con agarre neutro, mantén la espalda recta y lleva los extremos hacia el abdomen, dejando los codos cerca del cuerpo y juntando las escápulas. Vuelve despacio hasta extender los brazos sin redondear el torso."
+}

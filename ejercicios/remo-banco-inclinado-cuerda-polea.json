@@ -1,0 +1,11 @@
+{
+  "id": "remo-banco-inclinado-cuerda-polea",
+  "name": "Remo con cuerda en banco inclinado y polea",
+  "image_male": "images/remo-banco-inclinado-cuerda-polea-male.webp",
+  "image_female": "images/remo-banco-inclinado-cuerda-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "deltoides posteriores"],
+  "equipment": "polea, cuerda y banco inclinado",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho en un banco inclinado frente a una polea baja y sujeta una cuerda con ambas manos. Mantén el cuerpo alineado y los brazos extendidos. Lleva los extremos hacia los costados del pecho, separándolos ligeramente y retrayendo las escápulas; vuelve despacio sin despegar el torso del respaldo."
+}

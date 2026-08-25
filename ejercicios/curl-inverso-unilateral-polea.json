@@ -1,0 +1,11 @@
+{
+  "id": "curl-inverso-unilateral-polea",
+  "name": "Curl inverso unilateral en polea",
+  "image_male": "images/curl-inverso-unilateral-polea-male.webp",
+  "image_female": "images/curl-inverso-unilateral-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte frente a una polea baja y sujeta un asa con una mano en pronación, con la palma hacia abajo. Mantén el codo pegado al costado y la muñeca neutra mientras flexionas el antebrazo hacia el hombro. Baja lentamente hasta casi extender el brazo y completa la serie antes de cambiar de lado."
+}

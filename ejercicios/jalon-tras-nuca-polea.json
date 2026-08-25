@@ -1,0 +1,11 @@
+{
+  "id": "jalon-tras-nuca-polea",
+  "name": "Jalón tras nuca en polea",
+  "image_male": "images/jalon-tras-nuca-polea-male.webp",
+  "image_female": "images/jalon-tras-nuca-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "deltoides posteriores"],
+  "equipment": "polea y barra dorsal",
+  "difficulty": "advanced",
+  "instructions": "Siéntate erguido de espaldas a una polea alta y toma una barra dorsal con agarre amplio. Mantén el pecho elevado y lleva la barra con control hasta la parte posterior de los hombros, dirigiendo los codos hacia abajo. Detente antes de forzar la movilidad del hombro y extiende de nuevo los brazos lentamente."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-inverso-polea",
+  "name": "Curl de muñeca inverso en polea",
+  "image_male": "images/curl-muneca-inverso-polea-male.webp",
+  "image_female": "images/curl-muneca-inverso-polea-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["muñecas"],
+  "equipment": "polea y barra",
+  "difficulty": "beginner",
+  "instructions": "Siéntate frente a una polea baja, sujeta una barra con las palmas hacia abajo y apoya los antebrazos sobre los muslos, dejando las muñecas fuera del borde. Sin levantar los antebrazos, extiende las muñecas para elevar el dorso de las manos. Haz una pausa breve y baja la barra con control."
+}

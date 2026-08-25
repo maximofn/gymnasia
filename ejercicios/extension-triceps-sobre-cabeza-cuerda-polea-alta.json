@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-sobre-cabeza-cuerda-polea-alta",
+  "name": "Extensión de tríceps sobre la cabeza con cuerda en polea alta",
+  "image_male": "images/extension-triceps-sobre-cabeza-cuerda-polea-alta-male.webp",
+  "image_female": "images/extension-triceps-sobre-cabeza-cuerda-polea-alta-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros", "abdomen"],
+  "equipment": "polea y cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de espaldas a una polea alta en posición escalonada y lleva los extremos de la cuerda detrás de la cabeza. Inclina ligeramente el torso y fija los brazos superiores junto a las orejas. Extiende los codos hacia delante y arriba, separa la cuerda al final y vuelve lentamente sin mover los hombros."
+}

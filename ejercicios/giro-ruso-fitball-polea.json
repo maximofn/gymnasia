@@ -1,0 +1,11 @@
+{
+  "id": "giro-ruso-fitball-polea",
+  "name": "Giro ruso sobre fitball en polea",
+  "image_male": "images/giro-ruso-fitball-polea-male.webp",
+  "image_female": "images/giro-ruso-fitball-polea-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "zona lumbar"],
+  "equipment": "polea y fitball",
+  "difficulty": "advanced",
+  "instructions": "Apoya la parte alta de la espalda sobre un fitball, planta los pies y eleva las caderas. Sujeta con ambas manos un asa conectada a una polea alta y extiende los brazos sobre el pecho. Manteniendo pelvis y piernas estables, gira el torso para llevar las manos hacia un lado y vuelve al centro con control antes de alternar."
+}

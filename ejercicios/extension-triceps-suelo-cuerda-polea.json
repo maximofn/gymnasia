@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-suelo-cuerda-polea",
+  "name": "Extensión de tríceps en el suelo con cuerda y polea",
+  "image_male": "images/extension-triceps-suelo-cuerda-polea-male.webp",
+  "image_female": "images/extension-triceps-suelo-cuerda-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "polea y cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con la cabeza junto a una polea baja y sujeta una cuerda por encima del pecho. Mantén los brazos superiores verticales e inmóviles. Flexiona los codos para acercar los extremos a la frente y extiéndelos hasta separar ligeramente la cuerda, sin levantar los hombros ni arquear la espalda."
+}
