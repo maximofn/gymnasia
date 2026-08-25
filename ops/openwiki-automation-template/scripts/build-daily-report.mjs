@@ -80,6 +80,50 @@ function formatReportDate(now) {
     .replaceAll(".", "");
 }
 
+function formatHistoryDate(value) {
+  const date = safeDate(value);
+  return date ? formatReportDate(date) : "fecha desconocida";
+}
+
+function failureHistory(payload) {
+  const runs = Array.isArray(payload?.workflow_runs)
+    ? payload.workflow_runs
+    : [];
+  const latest = runs[0];
+  if (
+    latest?.status !== "completed" ||
+    !latest.conclusion ||
+    latest.conclusion === "success"
+  ) {
+    return [];
+  }
+
+  const streak = [];
+  let lastSuccess;
+  for (const run of runs) {
+    if (run?.status !== "completed") {
+      continue;
+    }
+    if (run.conclusion === "success") {
+      lastSuccess = run;
+      break;
+    }
+    streak.push(run);
+  }
+
+  if (streak.length === 0) {
+    return [];
+  }
+
+  const oldestFailure = streak.at(-1);
+  return [
+    `🔁 Fallos consecutivos: ${streak.length} · desde ${formatHistoryDate(oldestFailure?.created_at)}`,
+    lastSuccess
+      ? `🕘 Último éxito: ${formatHistoryDate(lastSuccess.created_at)}`
+      : "🕘 Último éxito: no aparece en las últimas 30 ejecuciones",
+  ];
+}
+
 function safeGitHubUrl(value, fallback) {
   try {
     const url = new URL(String(value));
@@ -230,7 +274,7 @@ function sourceLabel(jobs) {
   return "Fuentes: sin confirmación";
 }
 
-function pullRequestSummary(pullRequests) {
+function pullRequestSummary(pullRequests, currentRunPublished) {
   const pull = Array.isArray(pullRequests) ? pullRequests[0] : undefined;
   if (!pull || !Number.isInteger(pull.number)) {
     return { label: "🟰 Sin PR de documentación", url: "" };
@@ -250,11 +294,33 @@ function pullRequestSummary(pullRequests) {
     icon = "✅";
   }
 
+  const context = currentRunPublished
+    ? "PR de esta ejecución:"
+    : "Última PR conocida:";
+
   return {
     highlights: pullRequestHighlights(pull),
-    label: `${icon} PR #${pull.number} ${state} · ${stats}`,
+    label: `${icon} ${context} #${pull.number} ${state} · ${stats}`,
     url: safeGitHubUrl(pull.url, ""),
   };
+}
+
+function recoveryGuidance(jobs) {
+  if (stepSucceeded(jobs, "Mark OpenAI OAuth failure")) {
+    return [
+      "",
+      "🚨 ACCIÓN NECESARIA",
+      "Abre OpenWiki en el Mac, ejecuta una consulta breve para renovar la sesión y vuelve a cargar el OAuth cifrado del runner.",
+    ];
+  }
+  if (stepSucceeded(jobs, "Mark encrypted OAuth state failure")) {
+    return [
+      "",
+      "🚨 ACCIÓN NECESARIA",
+      "Vuelve a cargar el OAuth cifrado del runner; el estado guardado no se pudo descifrar.",
+    ];
+  }
+  return [];
 }
 
 function pullRequestHighlights(pull) {
@@ -308,7 +374,13 @@ export function buildDailyReport({ runs, jobs, pullRequests, now = new Date() })
   const duration = jobDuration(jobs);
   const trigger = triggerLabel(run?.event);
   const meta = duration ? `⏱ ${duration} · ${trigger}` : `⏱ ${trigger}`;
-  const pull = pullRequestSummary(pullRequests);
+  const currentRunPublished = stepSucceeded(
+    jobs,
+    "Push fixed branch and create or update pull request",
+  );
+  const pull = pullRequestSummary(pullRequests, currentRunPublished);
+  const history = failureHistory(runs);
+  const guidance = recoveryGuidance(jobs);
 
   const lines = [
     `🧠 OpenWiki Gymnasia · ${formatReportDate(now)}`,
@@ -316,6 +388,7 @@ export function buildDailyReport({ runs, jobs, pullRequests, now = new Date() })
     overallStatus(run, now),
     meta,
     `🤖 ${MODEL_LABEL}`,
+    ...history,
     "",
     "📚 CODE BRAIN",
     codeBrainLabel(jobs),
@@ -326,6 +399,7 @@ export function buildDailyReport({ runs, jobs, pullRequests, now = new Date() })
     oauthLabel(jobs, run),
     personalBrainLabel(jobs, run),
     sourceLabel(jobs),
+    ...guidance,
     "",
     "📦 DOCUMENTACIÓN",
     pull.label,

@@ -98,7 +98,7 @@ jobs:
           report_path="$RUNNER_TEMP/openwiki-daily-report.txt"
 
           GH_TOKEN="$AUTOMATION_GH_TOKEN" \
-            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/openwiki-update.yml/runs?per_page=1" \
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/openwiki-update.yml/runs?per_page=30" \
               > "$runs_path"
           run_id="$(jq -r '.workflow_runs[0].id // empty' "$runs_path")"
           if [ -n "$run_id" ]; then

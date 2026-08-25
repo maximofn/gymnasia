@@ -72,10 +72,28 @@ test("publishes source presence as metadata-only job steps", async () => {
   assert.match(workflow, /name: Confirm Personal Brain Tavily source/u);
 });
 
+test("preserves reviewed repository instructions when publishing docs", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.match(
+    workflow,
+    /git restore --source=origin\/main -- AGENTS\.md CLAUDE\.md/u,
+  );
+  assert.match(workflow, /git add -A -- openwiki \.openwikiignore/u);
+  assert.doesNotMatch(
+    workflow,
+    /git add -A -- openwiki \.openwikiignore AGENTS\.md CLAUDE\.md/u,
+  );
+});
+
 test("builds the Telegram report from sanitized metadata", async () => {
   const workflow = await readFile(reportWorkflowUrl, "utf8");
 
   assert.match(workflow, /node scripts\/build-daily-report\.mjs/u);
+  assert.match(
+    workflow,
+    /openwiki-update\.yml\/runs\?per_page=30/u,
+  );
   assert.match(
     workflow,
     /--json additions,changedFiles,deletions,files,mergedAt,number,state,updatedAt,url/u,
