@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-piernas-rectas-silla-romana",
+  "name": "Elevación de piernas rectas en silla romana",
+  "image_male": "images/elevacion-piernas-rectas-silla-romana-male.webp",
+  "image_female": "images/elevacion-piernas-rectas-silla-romana-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "silla romana",
+  "difficulty": "advanced",
+  "instructions": "Apoya la espalda y los antebrazos en una silla romana y deja las piernas juntas bajo el cuerpo. Estabiliza los hombros y eleva las piernas rectas hasta dejarlas paralelas al suelo. Haz una pausa y baja lentamente evitando balancearte."
+}

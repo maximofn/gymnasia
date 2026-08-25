@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-gemelo-tumbado-cuerda",
+  "name": "Estiramiento de gemelo tumbado con cuerda",
+  "image_male": "images/estiramiento-gemelo-tumbado-cuerda-male.webp",
+  "image_female": "images/estiramiento-gemelo-tumbado-cuerda-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["isquiotibiales"],
+  "equipment": "cuerda",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con una pierna extendida y pasa una cuerda por la planta del otro pie. Eleva esa pierna y tira suavemente de los extremos para acercar los dedos hacia ti, manteniendo la rodilla casi recta. Sostén la tensión sin levantar la pelvis y cambia de lado."
+}

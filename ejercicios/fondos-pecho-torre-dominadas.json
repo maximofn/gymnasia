@@ -1,0 +1,11 @@
+{
+  "id": "fondos-pecho-torre-dominadas",
+  "name": "Fondos de pecho en torre de dominadas",
+  "image_male": "images/fondos-pecho-torre-dominadas-male.webp",
+  "image_female": "images/fondos-pecho-torre-dominadas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "torre de fondos",
+  "difficulty": "intermediate",
+  "instructions": "Sujétate en las barras paralelas de una torre con los brazos extendidos y los pies suspendidos. Inclina ligeramente el torso y baja flexionando los codos hasta que los hombros queden cerca de su altura. Empuja las barras para subir sin balancearte ni encoger los hombros."
+}

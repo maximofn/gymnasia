@@ -1,0 +1,11 @@
+{
+  "id": "remo-alto-sentado-barra-recta-polea",
+  "name": "Remo alto sentado con barra recta en polea",
+  "image_male": "images/remo-alto-sentado-barra-recta-polea-male.webp",
+  "image_female": "images/remo-alto-sentado-barra-recta-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "hombro posterior"],
+  "equipment": "polea, barra recta y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido frente a una polea a la altura del pecho y toma una barra recta con agarre prono amplio. Tira de la barra hacia la parte alta del pecho llevando los codos hacia atrás y juntando los omóplatos. Extiende los brazos lentamente sin balancear el torso."
+}

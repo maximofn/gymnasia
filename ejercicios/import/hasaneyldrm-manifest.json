@@ -512,6 +512,33 @@
         {"source_id": "2405", "id": "jalon-triceps-barra-v-arm-blaster-polea", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "0242", "id": "crunch-inverso-agrupado-polea", "action": "create", "difficulty": "advanced", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 20,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0243", "id": "giro-torso-de-pie-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0862", "id": "giro-diagonal-alto-bajo-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0244", "id": "tiron-unilateral-con-giro-polea", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1645", "id": "curl-biceps-banco-inclinado-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1728", "id": "patada-triceps-bilateral-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0245", "id": "jalon-supino-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1270", "id": "cruces-pectorales-ascendentes-polea", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1324", "id": "remo-alto-sentado-barra-recta-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0246", "id": "remo-menton-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1325", "id": "jalon-tras-nuca-agarre-amplio-polea", "action": "create", "difficulty": "advanced", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0247", "id": "curl-muneca-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1407", "id": "estiramiento-gemelo-pie-pared", "action": "create", "difficulty": "beginner", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1377", "id": "estiramiento-gemelo-manos-pared", "action": "create", "difficulty": "beginner", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1378", "id": "estiramiento-gemelo-tumbado-cuerda", "action": "create", "difficulty": "beginner", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0248", "id": "remo-tumbado-boca-abajo-barra-curva", "action": "create", "difficulty": "intermediate", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2963", "id": "elevacion-piernas-rectas-silla-romana", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1548", "id": "estiramiento-pierna-extendida-silla", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1271", "id": "estiramiento-pecho-hombro-pasada-barra", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1430", "id": "fondos-pecho-torre-dominadas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2462", "id": "fondos-pecho-barra-recta", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

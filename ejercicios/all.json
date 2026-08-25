@@ -384,6 +384,20 @@
     "instructions": "Parte con la barra en el suelo, espalda neutra y pies al ancho de las caderas. Extiende piernas y caderas de forma explosiva, mantén la barra cerca y recíbela sobre los hombros con los codos al frente. Desde esa posición, estabiliza el torso y presiona la barra por encima de la cabeza hasta extender los brazos."
   },
   {
+    "id": "cruces-pectorales-ascendentes-polea",
+    "name": "Cruces pectorales ascendentes en polea",
+    "image_male": "images/cruces-pectorales-ascendentes-polea-male.webp",
+    "image_female": "images/cruces-pectorales-ascendentes-polea-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombro anterior",
+      "tríceps"
+    ],
+    "equipment": "polea",
+    "difficulty": "intermediate",
+    "instructions": "Colócate entre dos poleas bajas con una agarradera en cada mano, un pie adelantado y los brazos abiertos. Mantén una ligera flexión de codos y junta las manos siguiendo una trayectoria ascendente hasta delante de la parte alta del pecho. Abre de nuevo con control sin elevar los hombros."
+  },
+  {
     "id": "cruces-pectorales-de-pie-polea",
     "name": "Cruces pectorales de pie en polea",
     "image_male": "images/cruces-pectorales-de-pie-polea-male.webp",
@@ -699,6 +713,19 @@
     "equipment": "barra y arm blaster",
     "difficulty": "intermediate",
     "instructions": "Coloca el arm blaster contra el torso y apoya los brazos superiores sobre sus extremos. Sujeta la barra con agarre supino y extiende los codos sin bloquearlos. Flexiona los brazos manteniendo los codos inmóviles hasta acercar la barra a los hombros. Contrae los bíceps y baja lentamente sin separar los brazos del soporte."
+  },
+  {
+    "id": "curl-biceps-banco-inclinado-polea",
+    "name": "Curl de bíceps en banco inclinado con polea",
+    "image_male": "images/curl-biceps-banco-inclinado-polea-male.webp",
+    "image_female": "images/curl-biceps-banco-inclinado-polea-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "polea y banco inclinado",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate con la espalda apoyada en un banco inclinado y toma una agarradera baja en cada mano con las palmas hacia arriba. Deja los brazos extendidos a los lados y flexiona los codos sin adelantar los hombros. Contrae los bíceps arriba y desciende lentamente hasta recuperar la extensión."
   },
   {
     "id": "curl-biceps-barra",
@@ -1122,6 +1149,19 @@
     "equipment": "polea y barra",
     "difficulty": "beginner",
     "instructions": "Siéntate frente a una polea baja, sujeta una barra con las palmas hacia abajo y apoya los antebrazos sobre los muslos, dejando las muñecas fuera del borde. Sin levantar los antebrazos, extiende las muñecas para elevar el dorso de las manos. Haz una pausa breve y baja la barra con control."
+  },
+  {
+    "id": "curl-muneca-polea",
+    "name": "Curl de muñeca en polea",
+    "image_male": "images/curl-muneca-polea-male.webp",
+    "image_female": "images/curl-muneca-polea-female.webp",
+    "muscle_group": "antebrazos",
+    "secondary_muscles": [
+      "bíceps"
+    ],
+    "equipment": "polea, barra recta y banco",
+    "difficulty": "beginner",
+    "instructions": "Siéntate frente a una polea baja y apoya los antebrazos sobre los muslos o el borde de un banco, dejando las muñecas libres. Sujeta una barra recta con las palmas hacia arriba y flexiona únicamente las muñecas. Baja con control manteniendo los antebrazos inmóviles."
   },
   {
     "id": "curl-muneca-prono-banco-barra",
@@ -1649,6 +1689,19 @@
     "instructions": "Túmbate boca arriba, pasa la banda por los arcos de ambos pies y sujeta los extremos junto a las caderas. Mantén las piernas juntas y casi rectas mientras las elevas hasta quedar perpendiculares al suelo. Presiona la zona lumbar contra el suelo y baja lentamente las piernas sin que los talones lleguen a apoyarse."
   },
   {
+    "id": "elevacion-piernas-rectas-silla-romana",
+    "name": "Elevación de piernas rectas en silla romana",
+    "image_male": "images/elevacion-piernas-rectas-silla-romana-male.webp",
+    "image_female": "images/elevacion-piernas-rectas-silla-romana-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "silla romana",
+    "difficulty": "advanced",
+    "instructions": "Apoya la espalda y los antebrazos en una silla romana y deja las piernas juntas bajo el cuerpo. Estabiliza los hombros y eleva las piernas rectas hasta dejarlas paralelas al suelo. Haz una pausa y baja lentamente evitando balancearte."
+  },
+  {
     "id": "elevacion-rodillas-oblicua-colgado",
     "name": "Elevación oblicua de rodillas colgado",
     "image_male": "images/elevacion-rodillas-oblicua-colgado-male.webp",
@@ -1890,6 +1943,58 @@
     "instructions": "Sujeta una barra ligera delante de los muslos, flexiona ligeramente rodillas y caderas y mantén el tronco firme. Extiende las piernas mientras guías la barra hacia la parte alta del pecho con los codos elevados. Amortigua al volver a la posición inicial y conserva la barra cerca del cuerpo durante todo el movimiento."
   },
   {
+    "id": "estiramiento-gemelo-manos-pared",
+    "name": "Estiramiento de gemelo con las manos en la pared",
+    "image_male": "images/estiramiento-gemelo-manos-pared-male.webp",
+    "image_female": "images/estiramiento-gemelo-manos-pared-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "isquiotibiales"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Apoya las manos en una pared y da un paso largo hacia atrás con una pierna. Mantén esa rodilla extendida y el talón pegado al suelo mientras flexionas la pierna delantera e inclinas el cuerpo hacia la pared. Sostén el estiramiento y repite con el otro lado."
+  },
+  {
+    "id": "estiramiento-gemelo-pie-pared",
+    "name": "Estiramiento de gemelo con el pie en la pared",
+    "image_male": "images/estiramiento-gemelo-pie-pared-male.webp",
+    "image_female": "images/estiramiento-gemelo-pie-pared-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "isquiotibiales"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Coloca la punta de un pie contra la pared con el talón apoyado en el suelo y la pierna casi recta. Apoya las manos en la pared y acerca suavemente la cadera hasta notar tensión en la pantorrilla. Mantén la posición sin rebotes y cambia de pierna."
+  },
+  {
+    "id": "estiramiento-gemelo-tumbado-cuerda",
+    "name": "Estiramiento de gemelo tumbado con cuerda",
+    "image_male": "images/estiramiento-gemelo-tumbado-cuerda-male.webp",
+    "image_female": "images/estiramiento-gemelo-tumbado-cuerda-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "isquiotibiales"
+    ],
+    "equipment": "cuerda",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba con una pierna extendida y pasa una cuerda por la planta del otro pie. Eleva esa pierna y tira suavemente de los extremos para acercar los dedos hacia ti, manteniendo la rodilla casi recta. Sostén la tensión sin levantar la pelvis y cambia de lado."
+  },
+  {
+    "id": "estiramiento-pecho-hombro-pasada-barra",
+    "name": "Estiramiento de pecho y hombros con pasada de barra",
+    "image_male": "images/estiramiento-pecho-hombro-pasada-barra-male.webp",
+    "image_female": "images/estiramiento-pecho-hombro-pasada-barra-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "barra ligera",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie y sujeta una barra ligera con un agarre muy amplio y los brazos rectos delante de los muslos. Eleva la barra por encima de la cabeza y llévala suavemente hacia atrás dentro de un rango cómodo. Invierte el recorrido sin flexionar los codos ni arquear la zona lumbar."
+  },
+  {
     "id": "estiramiento-pecho-manos-tras-cabeza",
     "name": "Estiramiento de pecho con manos tras la cabeza",
     "image_male": "images/estiramiento-pecho-manos-tras-cabeza-male.webp",
@@ -1902,6 +2007,20 @@
     "equipment": "ninguno",
     "difficulty": "beginner",
     "instructions": "Ponte de pie, entrelaza los dedos detrás de la cabeza y abre los codos hacia los lados. Junta suavemente los omóplatos y eleva el esternón sin arquear la zona lumbar. Mantén el estiramiento respirando con normalidad y libera la posición despacio."
+  },
+  {
+    "id": "estiramiento-pierna-extendida-silla",
+    "name": "Estiramiento de pierna extendida en silla",
+    "image_male": "images/estiramiento-pierna-extendida-silla-male.webp",
+    "image_female": "images/estiramiento-pierna-extendida-silla-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "gemelos",
+      "cuádriceps"
+    ],
+    "equipment": "silla",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en el borde de una silla y extiende una pierna al frente con el talón apoyado y la rodilla recta. Mantén la espalda larga e inclina ligeramente el torso desde las caderas hasta notar tensión en la parte posterior del muslo. Sostén la posición y cambia de pierna."
   },
   {
     "id": "extension-cadera-banco-peso-corporal",
@@ -2478,6 +2597,34 @@
     "instructions": "Ajusta la asistencia y apoya las rodillas sobre la plataforma de la máquina. Inclina ligeramente el torso hacia delante y baja flexionando los codos hasta que los brazos queden cerca de la horizontal. Empuja las asas para volver arriba sin bloquear los hombros ni dejar que la plataforma rebote."
   },
   {
+    "id": "fondos-pecho-barra-recta",
+    "name": "Fondos de pecho en barra recta",
+    "image_male": "images/fondos-pecho-barra-recta-male.webp",
+    "image_female": "images/fondos-pecho-barra-recta-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombro anterior"
+    ],
+    "equipment": "barra recta",
+    "difficulty": "advanced",
+    "instructions": "Sostén el cuerpo sobre una única barra horizontal con ambas manos, los brazos extendidos y la barra delante de la cadera. Inclina el pecho sobre la barra y baja flexionando los codos hacia atrás hasta un rango estable. Empuja para volver arriba manteniendo la barra cerca del torso y evitando el balanceo."
+  },
+  {
+    "id": "fondos-pecho-torre-dominadas",
+    "name": "Fondos de pecho en torre de dominadas",
+    "image_male": "images/fondos-pecho-torre-dominadas-male.webp",
+    "image_female": "images/fondos-pecho-torre-dominadas-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombro anterior"
+    ],
+    "equipment": "torre de fondos",
+    "difficulty": "intermediate",
+    "instructions": "Sujétate en las barras paralelas de una torre con los brazos extendidos y los pies suspendidos. Inclina ligeramente el torso y baja flexionando los codos hasta que los hombros queden cerca de su altura. Empuja las barras para subir sin balancearte ni encoger los hombros."
+  },
+  {
     "id": "gemelos-de-pie",
     "name": "Gemelos de pie en máquina",
     "image_male": "images/gemelos-de-pie-male.webp",
@@ -2528,6 +2675,20 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Siéntate en la máquina de gemelos con las almohadillas sobre los muslos cerca de las rodillas. Coloca la punta de los pies en la plataforma con los talones colgando. Eleva los talones lo más alto posible contrayendo los gemelos. Baja de forma controlada hasta sentir un estiramiento completo."
+  },
+  {
+    "id": "giro-diagonal-alto-bajo-polea",
+    "name": "Giro diagonal de arriba abajo en polea",
+    "image_male": "images/giro-diagonal-alto-bajo-polea-male.webp",
+    "image_female": "images/giro-diagonal-alto-bajo-polea-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "abdomen",
+      "hombros"
+    ],
+    "equipment": "polea",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de lado a una polea alta y toma la agarradera con ambas manos por encima del hombro más cercano. Gira el torso y lleva las manos en diagonal hacia la cadera contraria, manteniendo los brazos casi rectos y las rodillas suaves. Controla el regreso y cambia de lado al terminar la serie."
   },
   {
     "id": "giro-judo-polea",
@@ -2611,6 +2772,19 @@
     "equipment": "barra",
     "difficulty": "beginner",
     "instructions": "Siéntate erguido en un banco con los pies firmes y coloca una barra ligera sobre la parte alta de la espalda. Mantén la pelvis inmóvil y el abdomen activo. Gira el torso de forma controlada hacia un lado, vuelve al centro y repite hacia el otro sin inclinarte ni usar impulso."
+  },
+  {
+    "id": "giro-torso-de-pie-polea",
+    "name": "Giro de torso de pie en polea",
+    "image_male": "images/giro-torso-de-pie-polea-male.webp",
+    "image_female": "images/giro-torso-de-pie-polea-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "abdomen"
+    ],
+    "equipment": "polea",
+    "difficulty": "intermediate",
+    "instructions": "Colócate de lado a una polea a la altura del pecho y sujeta una agarradera con ambas manos y los brazos casi extendidos. Mantén las caderas estables y gira el torso para alejar las manos de la máquina. Regresa despacio resistiendo la tensión y completa la serie antes de cambiar de lado."
   },
   {
     "id": "giro-torso-sentado-polea",
@@ -2908,6 +3082,35 @@
     "instructions": "Ancla la banda por encima de la cabeza y agárrala con las palmas orientadas hacia ti. Parte con los brazos extendidos y el torso erguido. Lleva los codos hacia abajo y atrás hasta acercar las manos a la parte alta del pecho, contrayendo los dorsales. Regresa lentamente sin elevar los hombros ni perder tensión."
   },
   {
+    "id": "jalon-supino-polea",
+    "name": "Jalón supino en polea",
+    "image_male": "images/jalon-supino-polea-male.webp",
+    "image_female": "images/jalon-supino-polea-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "polea y barra dorsal",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate frente a una polea alta y toma la barra con las palmas hacia ti y las manos algo más separadas que los hombros. Eleva el pecho y lleva los codos hacia abajo hasta acercar la barra a la parte superior del pecho. Extiende los brazos con control sin encoger los hombros."
+  },
+  {
+    "id": "jalon-tras-nuca-agarre-amplio-polea",
+    "name": "Jalón tras nuca con agarre amplio en polea",
+    "image_male": "images/jalon-tras-nuca-agarre-amplio-polea-male.webp",
+    "image_female": "images/jalon-tras-nuca-agarre-amplio-polea-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "bíceps",
+      "romboides",
+      "hombro posterior"
+    ],
+    "equipment": "polea y barra dorsal",
+    "difficulty": "advanced",
+    "instructions": "Siéntate erguido frente a una polea alta y toma la barra con un agarre prono amplio. Lleva los codos hacia abajo para acercar la barra con control a la parte posterior de los hombros, sin adelantar la cabeza. Detén el recorrido antes de forzar la movilidad y extiende de nuevo los brazos lentamente."
+  },
+  {
     "id": "jalon-tras-nuca-polea",
     "name": "Jalón tras nuca en polea",
     "image_male": "images/jalon-tras-nuca-polea-male.webp",
@@ -3044,6 +3247,19 @@
     "equipment": "mancuernas",
     "difficulty": "beginner",
     "instructions": "Sujeta una mancuerna pesada en cada mano con los brazos extendidos a los lados. Mantén el torso erguido, los hombros estables y el abdomen firme mientras avanzas con pasos cortos y regulares. Evita inclinarte o balancear las cargas y apóyalas con cuidado al terminar el recorrido."
+  },
+  {
+    "id": "patada-triceps-bilateral-polea",
+    "name": "Patada bilateral de tríceps en polea",
+    "image_male": "images/patada-triceps-bilateral-polea-male.webp",
+    "image_female": "images/patada-triceps-bilateral-polea-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "polea",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de espaldas a dos poleas bajas, inclina el torso y sujeta una agarradera en cada mano con los codos flexionados junto a las costillas. Mantén quietos los brazos superiores y extiende ambos antebrazos hacia atrás hasta bloquear los codos. Regresa despacio sin perder la postura."
   },
   {
     "id": "patada-triceps-mancuernas",
@@ -4185,6 +4401,20 @@
     "instructions": "Siéntate erguido frente a una polea alta y toma una barra dorsal con agarre supino. Inicia con los brazos extendidos y el pecho elevado. Lleva la barra hacia la parte superior del pecho dirigiendo los codos hacia abajo y atrás, junta las escápulas y vuelve lentamente sin balancear el torso."
   },
   {
+    "id": "remo-alto-sentado-barra-recta-polea",
+    "name": "Remo alto sentado con barra recta en polea",
+    "image_male": "images/remo-alto-sentado-barra-recta-polea-male.webp",
+    "image_female": "images/remo-alto-sentado-barra-recta-polea-female.webp",
+    "muscle_group": "espalda alta",
+    "secondary_muscles": [
+      "bíceps",
+      "hombro posterior"
+    ],
+    "equipment": "polea, barra recta y banco",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate erguido frente a una polea a la altura del pecho y toma una barra recta con agarre prono amplio. Tira de la barra hacia la parte alta del pecho llevando los codos hacia atrás y juntando los omóplatos. Extiende los brazos lentamente sin balancear el torso."
+  },
+  {
     "id": "remo-alto-sentado-barra-v-polea",
     "name": "Remo alto sentado con barra V en polea",
     "image_male": "images/remo-alto-sentado-barra-v-polea-male.webp",
@@ -4521,6 +4751,20 @@
     "instructions": "Ponte de pie y sujeta la barra delante de los muslos con agarre prono. Eleva la barra cerca del cuerpo guiando el movimiento con los codos, que deben quedar por encima de las manos, hasta llegar a la parte alta del pecho. Baja de forma controlada sin balancear el torso ni encoger excesivamente los hombros."
   },
   {
+    "id": "remo-menton-polea",
+    "name": "Remo al mentón en polea",
+    "image_male": "images/remo-menton-polea-male.webp",
+    "image_female": "images/remo-menton-polea-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "trapecios",
+      "bíceps"
+    ],
+    "equipment": "polea y barra recta",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie sobre una polea baja y toma la barra con agarre prono delante de los muslos. Eleva la barra cerca del cuerpo guiando el movimiento con los codos hasta la altura del pecho. Baja despacio y detén el recorrido si notas molestias en los hombros."
+  },
+  {
     "id": "remo-pendlay-barra",
     "name": "Remo Pendlay con barra",
     "image_male": "images/remo-pendlay-barra-male.webp",
@@ -4723,6 +4967,20 @@
     "equipment": "máquina",
     "difficulty": "intermediate",
     "instructions": "Apoya el pecho en la almohadilla de la máquina y fija los pies en la plataforma. Agarra las asas con los brazos extendidos y tira de ellas hacia el torso juntando las escápulas sin despegar el pecho. Pausa en la contracción y extiende lentamente los brazos hasta recuperar la posición inicial."
+  },
+  {
+    "id": "remo-tumbado-boca-abajo-barra-curva",
+    "name": "Remo tumbado boca abajo con barra curva",
+    "image_male": "images/remo-tumbado-boca-abajo-barra-curva-male.webp",
+    "image_female": "images/remo-tumbado-boca-abajo-barra-curva-female.webp",
+    "muscle_group": "espalda alta",
+    "secondary_muscles": [
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "barra curva y banco",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca abajo en un banco alto con el pecho apoyado y toma una barra curva situada debajo con agarre prono. Tira de la barra hacia la parte baja del pecho juntando los omóplatos y manteniendo el cuello neutro. Baja hasta extender los brazos sin despegar el torso del banco."
   },
   {
     "id": "remo-unilateral-bajo-banda",
@@ -5572,6 +5830,21 @@
     "equipment": "barra",
     "difficulty": "advanced",
     "instructions": "Sostén la barra sobre la parte frontal de los hombros con los codos ligeramente adelantados. Desciende en sentadilla manteniendo el pecho elevado y, al subir, extiende caderas y rodillas con potencia para impulsar la barra por encima de la cabeza. Baja la barra de nuevo a los hombros antes de iniciar la siguiente repetición."
+  },
+  {
+    "id": "tiron-unilateral-con-giro-polea",
+    "name": "Tirón unilateral con giro en polea",
+    "image_male": "images/tiron-unilateral-con-giro-polea-male.webp",
+    "image_female": "images/tiron-unilateral-con-giro-polea-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "hombros",
+      "bíceps",
+      "oblicuos"
+    ],
+    "equipment": "polea",
+    "difficulty": "advanced",
+    "instructions": "Colócate frente a una polea baja con las piernas separadas, el torso inclinado y una agarradera en una mano. Tira hacia las costillas mientras extiendes la cadera y giras el pecho hacia el brazo de trabajo. Vuelve con control hasta extender el brazo y completa las repeticiones antes de cambiar de lado."
   },
   {
     "id": "tocar-puntas-pies-pie",

@@ -1,0 +1,11 @@
+{
+  "id": "patada-triceps-bilateral-polea",
+  "name": "Patada bilateral de tríceps en polea",
+  "image_male": "images/patada-triceps-bilateral-polea-male.webp",
+  "image_female": "images/patada-triceps-bilateral-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de espaldas a dos poleas bajas, inclina el torso y sujeta una agarradera en cada mano con los codos flexionados junto a las costillas. Mantén quietos los brazos superiores y extiende ambos antebrazos hacia atrás hasta bloquear los codos. Regresa despacio sin perder la postura."
+}

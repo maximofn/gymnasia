@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-gemelo-pie-pared",
+  "name": "Estiramiento de gemelo con el pie en la pared",
+  "image_male": "images/estiramiento-gemelo-pie-pared-male.webp",
+  "image_female": "images/estiramiento-gemelo-pie-pared-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["isquiotibiales"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Coloca la punta de un pie contra la pared con el talón apoyado en el suelo y la pierna casi recta. Apoya las manos en la pared y acerca suavemente la cadera hasta notar tensión en la pantorrilla. Mantén la posición sin rebotes y cambia de pierna."
+}

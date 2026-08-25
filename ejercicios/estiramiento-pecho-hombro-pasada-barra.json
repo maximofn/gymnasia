@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-pecho-hombro-pasada-barra",
+  "name": "Estiramiento de pecho y hombros con pasada de barra",
+  "image_male": "images/estiramiento-pecho-hombro-pasada-barra-male.webp",
+  "image_female": "images/estiramiento-pecho-hombro-pasada-barra-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombros"],
+  "equipment": "barra ligera",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie y sujeta una barra ligera con un agarre muy amplio y los brazos rectos delante de los muslos. Eleva la barra por encima de la cabeza y llévala suavemente hacia atrás dentro de un rango cómodo. Invierte el recorrido sin flexionar los codos ni arquear la zona lumbar."
+}

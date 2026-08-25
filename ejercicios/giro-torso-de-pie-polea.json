@@ -1,0 +1,11 @@
+{
+  "id": "giro-torso-de-pie-polea",
+  "name": "Giro de torso de pie en polea",
+  "image_male": "images/giro-torso-de-pie-polea-male.webp",
+  "image_female": "images/giro-torso-de-pie-polea-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de lado a una polea a la altura del pecho y sujeta una agarradera con ambas manos y los brazos casi extendidos. Mantén las caderas estables y gira el torso para alejar las manos de la máquina. Regresa despacio resistiendo la tensión y completa la serie antes de cambiar de lado."
+}

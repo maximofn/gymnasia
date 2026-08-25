@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-banco-inclinado-polea",
+  "name": "Curl de bíceps en banco inclinado con polea",
+  "image_male": "images/curl-biceps-banco-inclinado-polea-male.webp",
+  "image_female": "images/curl-biceps-banco-inclinado-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y banco inclinado",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate con la espalda apoyada en un banco inclinado y toma una agarradera baja en cada mano con las palmas hacia arriba. Deja los brazos extendidos a los lados y flexiona los codos sin adelantar los hombros. Contrae los bíceps arriba y desciende lentamente hasta recuperar la extensión."
+}
