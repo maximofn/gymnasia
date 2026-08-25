@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07090d" />
+    <title>Gymnasia · Tool calling</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="presentation" id="presentation">
+      <header class="presenter-bar" data-hud>
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">G</span>
+          <span>GYMNASIA</span>
+          <span class="brand-divider">/</span>
+          <span class="brand-topic">TOOL CALLING</span>
+        </div>
+        <div class="scene-meta">
+          <span id="sceneTitle">El flujo completo</span>
+          <span class="meta-divider">·</span>
+          <span id="sceneCounter">01 / 15</span>
+        </div>
+      </header>
+
+      <div class="ambient-grid" aria-hidden="true"></div>
+      <div class="signal-orb" aria-hidden="true"></div>
+
+      <div class="scene-stage" id="sceneStage" tabindex="0" aria-label="Presentación interactiva. Haz clic para avanzar.">
+        <section class="scene is-active" data-scene data-title="El flujo completo" data-max-step="7">
+          <div class="scene-heading compact">
+            <span class="eyebrow">01 · CICLO DE UNA TOOL</span>
+            <h1>Del mensaje a una acción real</h1>
+            <p>Cada clic activa el siguiente paso del recorrido.</p>
+          </div>
+
+          <div class="flow-map" aria-label="Flujo completo de una llamada a una tool">
+            <article class="flow-node flow-user grid-user" data-reveal-step="0" data-active-steps="0">
+              <span class="node-index">01</span>
+              <strong>La persona pide algo</strong>
+              <small>«¿Cuánto pesaba el 18 de agosto?»</small>
+            </article>
+            <span class="flow-arrow grid-arrow-a" data-reveal-step="1" aria-hidden="true">→</span>
+            <article class="flow-node grid-request" data-reveal-step="1" data-active-steps="1">
+              <span class="node-index">02</span>
+              <strong>El harness prepara la petición</strong>
+              <small>Mensajes + system prompt + tools</small>
+            </article>
+            <span class="flow-arrow grid-arrow-b" data-reveal-step="2" aria-hidden="true">→</span>
+            <article class="flow-node grid-llm-a" data-reveal-step="2" data-active-steps="2">
+              <span class="node-index">03</span>
+              <strong>El LLM decide</strong>
+              <small>Necesita una capacidad externa</small>
+            </article>
+            <span class="flow-arrow grid-arrow-c" data-reveal-step="3" aria-hidden="true">→</span>
+            <article class="flow-node grid-call" data-reveal-step="3" data-active-steps="3">
+              <span class="node-index">04</span>
+              <strong>Solicita una tool</strong>
+              <small>Nombre + argumentos</small>
+            </article>
+
+            <span class="flow-arrow flow-drop grid-drop" data-reveal-step="4" aria-hidden="true">↓</span>
+
+            <article class="flow-node grid-handler" data-reveal-step="4" data-active-steps="4">
+              <span class="node-index">05</span>
+              <strong>El harness ejecuta</strong>
+              <small>Valida y llama al handler</small>
+            </article>
+            <span class="flow-arrow grid-arrow-d" data-reveal-step="5" aria-hidden="true">←</span>
+            <article class="flow-node grid-result" data-reveal-step="5" data-active-steps="5">
+              <span class="node-index">06</span>
+              <strong>Resultado de la tool</strong>
+              <small>Texto o JSON serializado</small>
+            </article>
+            <span class="flow-arrow grid-arrow-e" data-reveal-step="6" aria-hidden="true">←</span>
+            <article class="flow-node grid-llm-b" data-reveal-step="6" data-active-steps="6">
+              <span class="node-index">07</span>
+              <strong>El LLM continúa</strong>
+              <small>Ya tiene la información real</small>
+            </article>
+            <span class="flow-arrow grid-arrow-f" data-reveal-step="7" aria-hidden="true">←</span>
+            <article class="flow-node flow-success grid-answer" data-reveal-step="7" data-active-steps="7">
+              <span class="node-index">08</span>
+              <strong>Respuesta final</strong>
+              <small>«Pesabas 78,4 kilos»</small>
+            </article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Petición, tool y respuesta" data-max-step="2">
+          <div class="scene-heading compact">
+            <span class="eyebrow">02 · UNA RESPUESTA CON TOOL CALL</span>
+            <h1>El LLM pide datos antes de responder</h1>
+          </div>
+
+          <div class="conversation-sequence">
+            <article class="message-card user-message" data-reveal-step="0" data-active-steps="0">
+              <span class="message-role">USUARIO</span>
+              <p>¿Cuánto pesaba el 18 de agosto?</p>
+            </article>
+            <span class="sequence-arrow" data-reveal-step="1" aria-hidden="true">→</span>
+            <article class="code-window compact-code" data-reveal-step="1" data-active-steps="1">
+              <div class="window-bar"><span></span><span></span><span></span><strong>TOOL CALL</strong></div>
+              <pre><code>{
+  <span class="token-key">"name"</span>: <span class="token-string">"read_measurement"</span>,
+  <span class="token-key">"arguments"</span>: {
+    <span class="token-key">"date"</span>: <span class="token-string">"2026-08-18"</span>
+  }
+}</code></pre>
+            </article>
+            <span class="sequence-arrow" data-reveal-step="2" aria-hidden="true">→</span>
+            <article class="message-card assistant-message" data-reveal-step="2" data-active-steps="2">
+              <span class="message-role">LLM</span>
+              <p>El 18 de agosto pesabas <strong>78,4 kilos</strong>.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Anatomía de una tool" data-max-step="6">
+          <div class="scene-heading side-heading">
+            <span class="eyebrow">03 · TOOLDEFINITIONS.TS</span>
+            <h1>Una tool es un contrato</h1>
+            <p>Los primeros clics recorren el schema. Los tres últimos aíslan las piezas que el LLM necesita para elegir bien.</p>
+            <div class="focus-legend">
+              <span data-reveal-step="1">Tipo del schema</span>
+              <span data-reveal-step="2">Argumento</span>
+              <span data-reveal-step="3">Obligatorio</span>
+              <span data-reveal-step="4">name</span>
+              <span data-reveal-step="5">description</span>
+              <span data-reveal-step="6">inputSchema</span>
+            </div>
+          </div>
+
+          <article class="code-window hero-code tool-definition-code">
+            <div class="window-bar"><span></span><span></span><span></span><strong>toolDefinitions.ts</strong></div>
+            <pre><code><span class="code-line">{</span>
+<span class="code-line" data-active-steps="4">  <span class="token-key">name</span>: <span class="token-string">"read_measurement"</span>,</span>
+<span class="code-line" data-active-steps="5">  <span class="token-key">description</span>:</span>
+<span class="code-line" data-active-steps="5">    <span class="token-string">"Lee las medidas corporales del usuario para una fecha específica. "</span> +</span>
+<span class="code-line" data-active-steps="5">    <span class="token-string">"Devuelve el registro de medidas de ese día si existe. "</span> +</span>
+<span class="code-line" data-active-steps="5">    <span class="token-string">"Usa esta tool cuando el usuario pregunte por un día concreto."</span>,</span>
+<span class="code-line" data-active-steps="6">  <span class="token-key">inputSchema</span>: {</span>
+<span class="code-line" data-active-steps="1,6">    <span class="token-key">type</span>: <span class="token-string">"object"</span>,</span>
+<span class="code-line" data-active-steps="6">    <span class="token-key">properties</span>: {</span>
+<span class="code-line" data-active-steps="2,6">      <span class="token-key">date</span>: {</span>
+<span class="code-line" data-active-steps="2,6">        <span class="token-key">type</span>: <span class="token-string">"string"</span>,</span>
+<span class="code-line" data-active-steps="2,6">        <span class="token-key">description</span>: <span class="token-string">"Fecha en formato YYYY-MM-DD"</span></span>
+<span class="code-line" data-active-steps="2,6">      }</span>
+<span class="code-line" data-active-steps="6">    },</span>
+<span class="code-line" data-active-steps="3,6">    <span class="token-key">required</span>: [<span class="token-string">"date"</span>]</span>
+<span class="code-line" data-active-steps="6">  }</span>
+<span class="code-line">}</span></code></pre>
+          </article>
+        </section>
+
+        <section class="scene output-scene" data-scene data-title="¿outputSchema?" data-max-step="0">
+          <div class="schema-ghost" aria-hidden="true">
+            <span>{</span><span>output</span><span>:</span><span>{ ... }</span><span>}</span>
+          </div>
+          <div class="output-question">
+            <span class="eyebrow">04 · CONTRATO DE SALIDA</span>
+            <h1>¿outputSchema?</h1>
+            <span class="optional-pill">OPCIONAL</span>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="La descripción también es prompt" data-max-step="9">
+          <div class="scene-heading compact centered">
+            <span class="eyebrow">05 · DISCOVERABILITY</span>
+            <h1>La descripción también es prompt</h1>
+          </div>
+
+          <div class="description-lab">
+            <article class="bad-description" data-reveal-step="1">
+              <span class="status-dot"></span>
+              <code>description: <span class="token-string">"Lee medidas"</span></code>
+            </article>
+
+            <div class="question-cloud" data-visible-steps="2-5">
+              <p data-reveal-step="2" data-active-steps="2">¿Lee la última medida?</p>
+              <p data-reveal-step="3" data-active-steps="3">¿Necesita una fecha?</p>
+              <p data-reveal-step="4" data-active-steps="4">¿Devuelve todas las medidas?</p>
+              <p data-reveal-step="5" data-active-steps="5">¿Debe usarla para responder una pregunta general sobre entrenamiento?</p>
+            </div>
+
+            <div class="prompt-checklist" data-visible-steps="6-9">
+              <article data-reveal-step="6" data-active-steps="6"><span>01</span><strong>Qué hace la tool.</strong></article>
+              <article data-reveal-step="7" data-active-steps="7"><span>02</span><strong>Cuándo debe utilizarla.</strong></article>
+              <article data-reveal-step="8" data-active-steps="8"><span>03</span><strong>Qué devuelve.</strong></article>
+              <article data-reveal-step="9" data-active-steps="9"><span>04</span><strong>Qué condiciones o pasos previos necesita.</strong></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="La petición al proveedor" data-max-step="3">
+          <div class="scene-heading compact centered">
+            <span class="eyebrow">06 · DOS FUENTES DE CONTEXTO</span>
+            <h1>Una petición, dos piezas distintas</h1>
+          </div>
+
+          <div class="split-request">
+            <article class="request-source prompt-source" data-reveal-step="1" data-active-steps="1">
+              <span class="source-label">SYSTEM PROMPT</span>
+              <h2>Cómo debe comportarse</h2>
+              <ul>
+                <li>Rol del agente</li>
+                <li>Reglas generales</li>
+                <li>Orden entre capacidades</li>
+              </ul>
+            </article>
+            <article class="request-source tools-source" data-reveal-step="2" data-active-steps="2">
+              <span class="source-label">TOOLS</span>
+              <h2>Qué puede ejecutar</h2>
+              <ul>
+                <li>name</li>
+                <li>description</li>
+                <li>inputSchema</li>
+              </ul>
+            </article>
+            <div class="merge-lines" data-reveal-step="3" aria-hidden="true"><span></span><span></span></div>
+            <article class="provider-request" data-reveal-step="3" data-active-steps="3">
+              <span class="pulse-icon">↗</span>
+              <div><small>PETICIÓN AL PROVEEDOR</small><strong>El LLM recibe ambas piezas</strong></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Un único catálogo" data-max-step="2">
+          <div class="scene-heading compact centered">
+            <span class="eyebrow">07 · ORGANIZACIÓN</span>
+            <h1>De tools dispersas a una única fuente</h1>
+          </div>
+
+          <div class="catalog-animation">
+            <div class="scattered-tools" data-visible-steps="0-1">
+              <article class="mini-file file-a"><small>measurements.ts</small><code>read_measurement</code></article>
+              <article class="mini-file file-b"><small>foods.ts</small><code>search_foods</code></article>
+              <article class="mini-file file-c"><small>routines.ts</small><code>create_routine</code></article>
+              <article class="mini-file file-d"><small>memory.ts</small><code>save_personal_data</code></article>
+              <article class="mini-file file-e"><small>issues.ts</small><code>create_feature_issue</code></article>
+              <svg class="tangled-lines" viewBox="0 0 1000 440" preserveAspectRatio="none" data-reveal-step="1" aria-hidden="true">
+                <path d="M120 90 C430 30 580 370 870 120" />
+                <path d="M210 350 C340 150 650 120 820 340" />
+                <path d="M500 60 C360 220 710 230 500 390" />
+              </svg>
+            </div>
+
+            <div class="central-catalog" data-visible-steps="2">
+              <article class="catalog-file">
+                <div class="window-bar"><span></span><span></span><span></span><strong>toolDefinitions.ts</strong></div>
+                <div class="catalog-list">
+                  <code>read_measurement</code>
+                  <code>write_measurement</code>
+                  <code>search_foods</code>
+                  <code>create_routine</code>
+                  <code>create_feature_issue</code>
+                </div>
+              </article>
+              <div class="catalog-output output-a">PROVEEDORES</div>
+              <div class="catalog-output output-b">HANDLERS</div>
+              <div class="catalog-output output-c">TESTS</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Adaptadores de proveedor" data-max-step="4">
+          <div class="scene-heading side-heading">
+            <span class="eyebrow">08 · UNA DEFINICIÓN</span>
+            <h1>El formato cambia.<br />El significado no.</h1>
+            <div class="provider-pills" data-reveal-step="1">
+              <span data-active-steps="1">OPENAI</span>
+              <span data-active-steps="2">ANTHROPIC</span>
+              <span data-active-steps="3">GOOGLE</span>
+              <span data-active-steps="4">MISMO CONTRATO</span>
+            </div>
+          </div>
+
+          <div class="code-carousel">
+            <article class="code-window hero-code" data-visible-steps="0">
+              <div class="window-bar"><span></span><span></span><span></span><strong>Contrato común</strong></div>
+              <pre><code><span class="token-keyword">type</span> AgentToolDefinition = {
+  <span class="token-key">name</span>: <span class="token-type">string</span>;
+  <span class="token-key">description</span>: <span class="token-type">string</span>;
+  <span class="token-key">inputSchema</span>: <span class="token-type">ToolInputSchema</span>;
+};</code></pre>
+            </article>
+
+            <article class="code-window adapter-code" data-visible-steps="1-4">
+              <div class="window-bar"><span></span><span></span><span></span><strong>providerAdapters.ts</strong></div>
+              <pre><code><span class="code-line"><span class="token-keyword">const</span> CHAT_TOOLS = {</span>
+<span class="code-line" data-active-steps="1,4">  <span class="token-key">openai</span>: definitions.map((tool) =&gt; ({</span>
+<span class="code-line" data-active-steps="1,4">    <span class="token-key">type</span>: <span class="token-string">"function"</span>,</span>
+<span class="code-line" data-active-steps="1,4">    <span class="token-key">name</span>: tool.name,</span>
+<span class="code-line" data-active-steps="1,4">    <span class="token-key">description</span>: tool.description,</span>
+<span class="code-line" data-active-steps="1,4">    <span class="token-key">parameters</span>: tool.inputSchema</span>
+<span class="code-line" data-active-steps="1,4">  })),</span>
+<span class="code-line"> </span>
+<span class="code-line" data-active-steps="2,4">  <span class="token-key">anthropic</span>: definitions.map((tool) =&gt; ({</span>
+<span class="code-line" data-active-steps="2,4">    <span class="token-key">name</span>: tool.name,</span>
+<span class="code-line" data-active-steps="2,4">    <span class="token-key">description</span>: tool.description,</span>
+<span class="code-line" data-active-steps="2,4">    <span class="token-key">input_schema</span>: tool.inputSchema</span>
+<span class="code-line" data-active-steps="2,4">  })),</span>
+<span class="code-line"> </span>
+<span class="code-line" data-active-steps="3,4">  <span class="token-key">google</span>: [{</span>
+<span class="code-line" data-active-steps="3,4">    <span class="token-key">functionDeclarations</span>: definitions.map((tool) =&gt; ({</span>
+<span class="code-line" data-active-steps="3,4">      <span class="token-key">name</span>: tool.name,</span>
+<span class="code-line" data-active-steps="3,4">      <span class="token-key">description</span>: tool.description,</span>
+<span class="code-line" data-active-steps="3,4">      <span class="token-key">parameters</span>: tool.inputSchema</span>
+<span class="code-line" data-active-steps="3,4">    }))</span>
+<span class="code-line" data-active-steps="3,4">  }]</span>
+<span class="code-line">};</span></code></pre>
+            </article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Del contrato al handler" data-max-step="2">
+          <div class="scene-heading compact">
+            <span class="eyebrow">09 · EJECUCIÓN CONTROLADA</span>
+            <h1>El nombre conecta con código real</h1>
+          </div>
+
+          <div class="dual-code-stage">
+            <article class="code-window hero-code" data-visible-steps="0-1">
+              <div class="window-bar"><span></span><span></span><span></span><strong>toolExecutor.ts · registro</strong></div>
+              <pre><code><span class="token-keyword">const</span> AGENT_TOOL_HANDLERS = {
+  <span class="code-line" data-active-steps="1"><span class="token-key">read_measurement</span>: readMeasurement,</span>
+  <span class="code-line" data-active-steps="1"><span class="token-key">write_measurement</span>: writeMeasurement,</span>
+  <span class="code-line" data-active-steps="1"><span class="token-key">search_foods</span>: searchFoods,</span>
+  <span class="code-line" data-active-steps="1"><span class="token-key">add_meal_food</span>: addMealFood,</span>
+  <span class="code-line" data-active-steps="1"><span class="token-key">create_routine</span>: createRoutine</span>
+};</code></pre>
+            </article>
+
+            <article class="code-window hero-code" data-visible-steps="2">
+              <div class="window-bar"><span></span><span></span><span></span><strong>toolExecutor.ts · ejecución</strong></div>
+              <pre><code><span class="token-keyword">const</span> handler = AGENT_TOOL_HANDLERS[name];
+
+<span class="token-keyword">if</span> (!handler) {
+  <span class="token-keyword">return</span> <span class="token-string">"Tool no reconocida."</span>;
+}
+
+<span class="token-keyword">return</span> handler(args, context, dependencies);</code></pre>
+            </article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="El viaje de vuelta" data-max-step="4">
+          <div class="scene-heading compact centered">
+            <span class="eyebrow">10 · TOOL RESULT</span>
+            <h1>La información vuelve al modelo</h1>
+            <p>El recorrido ahora avanza de derecha a izquierda.</p>
+          </div>
+
+          <div class="return-journey">
+            <article class="return-node" data-reveal-step="4" data-active-steps="4"><span>05</span><strong>Respuesta final</strong><small>Visible para la persona</small></article>
+            <span class="return-arrow" data-reveal-step="4">←</span>
+            <article class="return-node" data-reveal-step="3" data-active-steps="3"><span>04</span><strong>El LLM redacta</strong><small>Combina contexto y resultado</small></article>
+            <span class="return-arrow" data-reveal-step="3">←</span>
+            <article class="return-node" data-reveal-step="2" data-active-steps="2"><span>03</span><strong>El proveedor recibe</strong><small>Resultado asociado a la llamada</small></article>
+            <span class="return-arrow" data-reveal-step="2">←</span>
+            <article class="return-node" data-reveal-step="1" data-active-steps="1"><span>02</span><strong>El harness serializa</strong><small>Texto o JSON</small></article>
+            <span class="return-arrow" data-reveal-step="1">←</span>
+            <article class="return-node start-node" data-reveal-step="0" data-active-steps="0"><span>01</span><strong>El handler responde</strong><small>Dato real</small></article>
+          </div>
+        </section>
+
+        <section class="scene result-scene" data-scene data-title="Resultado estructurado" data-max-step="0">
+          <div class="scene-heading side-heading">
+            <span class="eyebrow">11 · TOOL RESULT</span>
+            <h1>Información que el LLM no tenía</h1>
+          </div>
+          <article class="code-window giant-code">
+            <div class="window-bar"><span></span><span></span><span></span><strong>read_measurement · result</strong></div>
+            <pre><code>{
+  <span class="token-key">"date"</span>: <span class="token-string">"2026-08-18"</span>,
+  <span class="token-key">"weight_kg"</span>: <span class="token-number">78.4</span>,
+  <span class="token-key">"body_fat_pct"</span>: <span class="token-number">17.8</span>
+}</code></pre>
+          </article>
+        </section>
+
+        <section class="scene" data-scene data-title="Varias tools, una respuesta" data-max-step="6">
+          <div class="scene-heading side-heading">
+            <span class="eyebrow">12 · MULTI-STEP</span>
+            <h1>Una respuesta visible.<br />Varias llamadas internas.</h1>
+          </div>
+
+          <div class="vertical-tool-flow">
+            <article data-reveal-step="0" data-active-steps="0"><span>USUARIO</span><strong>“Necesito una rutina de pecho con mancuernas”</strong></article>
+            <i data-reveal-step="1">↓</i>
+            <article data-reveal-step="1" data-active-steps="1"><span>TOOL 01</span><strong>search_exercises</strong></article>
+            <i data-reveal-step="2">↓</i>
+            <article data-reveal-step="2" data-active-steps="2"><span>RESULTADO</span><strong>Resultados exactos del catálogo</strong></article>
+            <i data-reveal-step="3">↓</i>
+            <article data-reveal-step="3" data-active-steps="3"><span>TOOL 02</span><strong>create_routine</strong></article>
+            <i data-reveal-step="4">↓</i>
+            <article data-reveal-step="4" data-active-steps="4"><span>RESULTADO</span><strong>Rutina creada</strong></article>
+            <i data-reveal-step="5">↓</i>
+            <article class="final-flow-item" data-reveal-step="6" data-active-steps="6"><span>LLM</span><strong>Respuesta final</strong></article>
+          </div>
+        </section>
+
+        <section class="scene validation-scene" data-scene data-title="Validar antes de ejecutar" data-max-step="2">
+          <div class="scene-heading side-heading">
+            <span class="eyebrow">13 · FRONTERA DE SEGURIDAD</span>
+            <h1>No ejecutes a ciegas lo que devuelve un LLM</h1>
+            <div class="validation-status">
+              <span data-reveal-step="1">01 · Validar contra el schema</span>
+              <span data-reveal-step="2">02 · Detener argumentos incorrectos</span>
+            </div>
+          </div>
+          <article class="code-window giant-code">
+            <div class="window-bar"><span></span><span></span><span></span><strong>validateToolInput.ts</strong></div>
+            <pre><code><span class="code-line" data-active-steps="1"><span class="token-keyword">const</span> result = validateToolInput(tool.inputSchema, input);</span>
+
+<span class="code-line" data-active-steps="2"><span class="token-keyword">if</span> (!result.valid) {</span>
+<span class="code-line" data-active-steps="2">  <span class="token-keyword">return</span> result.errors;</span>
+<span class="code-line" data-active-steps="2">}</span></code></pre>
+          </article>
+        </section>
+
+        <section class="scene parity-scene" data-scene data-title="Test de paridad" data-max-step="2">
+          <div class="scene-heading compact centered">
+            <span class="eyebrow">14 · CONTRATO ↔ EJECUTOR</span>
+            <h1>¿Declaramos exactamente lo que podemos ejecutar?</h1>
+          </div>
+          <article class="code-window parity-code">
+            <div class="window-bar"><span></span><span></span><span></span><strong>toolDefinitions.test.ts</strong></div>
+            <pre><code><span class="code-line" data-active-steps="1">expect([...<span class="token-key">AGENT_TOOL_NAMES</span>].sort())</span>
+<span class="code-line" data-active-steps="2">  .toEqual([...<span class="token-key">AGENT_TOOL_HANDLER_NAMES</span>].sort());</span></code></pre>
+          </article>
+          <div class="parity-badges">
+            <span data-reveal-step="1">DEFINICIONES</span>
+            <i data-reveal-step="2">=</i>
+            <span data-reveal-step="2">HANDLERS</span>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Una petición termina en GitHub" data-max-step="2">
+          <div class="scene-heading side-heading">
+            <span class="eyebrow">15 · CREATE_FEATURE_ISSUE</span>
+            <h1>Una conversación puede activar un flujo externo</h1>
+            <div class="feature-progress">
+              <span data-active-steps="0">01 · DEFINICIÓN</span>
+              <span data-active-steps="1">02 · TOOL CALL</span>
+              <span data-active-steps="2">03 · HANDLER</span>
+            </div>
+          </div>
+
+          <div class="feature-code-stage">
+            <article class="code-window feature-code" data-visible-steps="0">
+              <div class="window-bar"><span></span><span></span><span></span><strong>toolDefinitions.ts</strong></div>
+              <pre><code>{
+  <span class="token-key">name</span>: <span class="token-string">"create_feature_issue"</span>,
+  <span class="token-key">description</span>:
+    <span class="token-string">"Crea una issue en GitHub cuando el usuario solicita una mejora "</span> +
+    <span class="token-string">"o una nueva funcionalidad para la app."</span>,
+  <span class="token-key">inputSchema</span>: {
+    <span class="token-key">type</span>: <span class="token-string">"object"</span>,
+    <span class="token-key">properties</span>: {
+      <span class="token-key">title_summary</span>: { <span class="token-key">type</span>: <span class="token-string">"string"</span> },
+      <span class="token-key">conversation_excerpt</span>: { <span class="token-key">type</span>: <span class="token-string">"string"</span> },
+      <span class="token-key">interpretation</span>: { <span class="token-key">type</span>: <span class="token-string">"string"</span> }
+    },
+    <span class="token-key">required</span>: [
+      <span class="token-string">"title_summary"</span>,
+      <span class="token-string">"conversation_excerpt"</span>,
+      <span class="token-string">"interpretation"</span>
+    ]
+  }
+}</code></pre>
+            </article>
+
+            <article class="code-window feature-code call-code" data-visible-steps="1">
+              <div class="window-bar"><span></span><span></span><span></span><strong>LLM · tool call</strong></div>
+              <pre><code>{
+  <span class="token-key">"name"</span>: <span class="token-string">"create_feature_issue"</span>,
+  <span class="token-key">"arguments"</span>: {
+    <span class="token-key">"title_summary"</span>: <span class="token-string">"Copiar comidas entre fechas"</span>,
+    <span class="token-key">"conversation_excerpt"</span>:
+      <span class="token-string">"Me gustaría poder copiar todas las comidas de ayer al día de hoy."</span>,
+    <span class="token-key">"interpretation"</span>:
+      <span class="token-string">"El usuario quiere duplicar las comidas registradas de una fecha a otra."</span>
+  }
+}</code></pre>
+            </article>
+
+            <article class="code-window feature-code short-code" data-visible-steps="2">
+              <div class="window-bar"><span></span><span></span><span></span><strong>toolExecutor.ts</strong></div>
+              <pre><code><span class="token-keyword">const</span> createFeatureIssue = <span class="token-keyword">async</span> (args, context, dependencies) =&gt; {
+  <span class="token-keyword">await</span> dependencies.createFeatureIssue({
+    <span class="token-key">title_summary</span>: args.title_summary,
+    <span class="token-key">conversation_excerpt</span>: args.conversation_excerpt,
+    <span class="token-key">interpretation</span>: args.interpretation
+  });
+
+  <span class="token-keyword">return</span> <span class="token-string">"Issue de mejora creada en GitHub correctamente."</span>;
+};</code></pre>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <footer class="presenter-controls" data-hud>
+        <div class="control-group">
+          <button type="button" id="previousScene" aria-label="Escena anterior">←</button>
+          <button type="button" id="resetScene" aria-label="Reiniciar escena">↺</button>
+        </div>
+        <div class="step-status">
+          <span class="step-track"><i id="stepProgress"></i></span>
+          <span id="stepCounter">STEP 0 / 7</span>
+          <span class="click-label">CLIC PARA AVANZAR</span>
+        </div>
+        <div class="control-group">
+          <button type="button" id="toggleHud" aria-label="Ocultar controles">H</button>
+          <button type="button" id="toggleFullscreen" aria-label="Pantalla completa">⛶</button>
+          <button type="button" id="nextScene" aria-label="Escena siguiente">→</button>
+        </div>
+      </footer>
+
+      <nav class="scene-dots" id="sceneDots" data-hud aria-label="Escenas"></nav>
+    </main>
+  </body>
+</html>
