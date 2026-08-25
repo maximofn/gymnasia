@@ -129,7 +129,7 @@ export function evaluatePolicyPromotion({ policy, headSha, files, deployments })
     return deployment?.task === "gymnasia-policy"
       && deployment?.environment === "Production"
       && deployment?.latestStatus === "success"
-      && payload?.schemaVersion === 1
+      && payload?.schemaVersion === 3
       && payload?.sourceCommit === headSha;
   });
   return {

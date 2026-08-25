@@ -84,7 +84,7 @@ function readBundledPolicyMetadata(environment: BuildEnvironment): {
       "utf8",
     )) as Record<string, unknown>;
     if (
-      snapshot.schemaVersion === 1
+      (snapshot.schemaVersion === 1 || snapshot.schemaVersion === 2)
       && snapshot.environment === environment
       && snapshot.sha256 === sha256
       && typeof snapshot.candidate === "string"

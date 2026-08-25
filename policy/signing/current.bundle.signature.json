@@ -1,0 +1,19 @@
+{
+  "algorithm": "Ed25519",
+  "certificate": {
+    "payload": {
+      "algorithm": "Ed25519",
+      "keyId": "gymnasia-policy-signer-2026-08",
+      "notAfter": "2027-08-25T00:00:00.000Z",
+      "notBefore": "2026-08-25T18:16:19.593Z",
+      "publicKeyBase64Url": "rh-7NAa2O9d4Ft_hvHhldi-sdgz8Kq61Q7TcJesGLRo",
+      "purpose": "gymnasia-policy",
+      "rootKeyId": "gymnasia-policy-root-2026-08",
+      "schemaVersion": 1
+    },
+    "rootSignatureBase64Url": "E-UebQ9AjYXrlYg3fmHQmIhvPuldERGp1tGnjxGq2EQN7L5iwNw0KfarrTPhxr35z_6xkZbvZ-TrFWvzAhQZCQ"
+  },
+  "schemaVersion": 1,
+  "signatureBase64Url": "BjofH0kudrqcl3gkwX8F1xRcoJQ58_0vgfNMpTSiB-T4Cy2GkJ0ayxTQqSF1amN2FS12-GpykP_of5rtzcsHBQ",
+  "signedSha256": "c9e7d0b6a875e3a500cca17481205733ee3dd4b440302f8b90008c8bdfb40403"
+}

@@ -15,11 +15,11 @@ const eas = JSON.parse(readFileSync(
   "utf8",
 ));
 
-test("staging y producción ejecutan la puerta sanitaria exacta", () => {
-  const exactCommands = workflow.match(/^\s+run: npm run check:health-safety\s*$/gm) || [];
-  assert.equal(exactCommands.length, 2);
+test("staging y producción ejecutan la puerta sanitaria determinista", () => {
+  assert.equal((workflow.match(/^\s+npm run check:health-safety\s*$/gm) || []).length, 2);
   assert.doesNotMatch(workflow, /authorizingReport:\s*true/);
-  assert.match(workflow, /\.authorizing == false and \.summary\.failed == 0/);
+  assert.match(workflow, /authorizingReport: false/);
+  assert.match(workflow, /npm run report:health-safety/);
 });
 
 test("solo maximofn puede constar como propietario o aprobador", () => {
@@ -27,26 +27,46 @@ test("solo maximofn puede constar como propietario o aprobador", () => {
   assert.doesNotMatch(workflow, /owner:\s*"(?!maximofn")[^"]+"/);
   assert.match(workflow, /environment: Staging/);
   assert.match(workflow, /'Production Critical'/);
+  assert.match(workflow, /gymnasia\/owner-authorization/);
 });
 
-test("producción reutiliza candidato y digest de staging", () => {
-  assert.match(workflow, /verify prior Staging deployment/);
-  assert.match(workflow, /stagingDeploymentId/);
-  assert.match(workflow, /ASSET_SHA="\$\(jq -r \.assetSha256 promotion-evidence\.json\)"/);
+test("producción reutiliza exactamente el bundle firmado de staging", () => {
+  assert.match(workflow, /deployments\?environment=Staging/);
+  assert.match(workflow, /STAGING_ID/);
+  assert.match(workflow, /policy\.bundle\.json/);
+  assert.match(workflow, /policy\.bundle\.signature\.json/);
+  assert.match(workflow, /bundleSha256/);
+  assert.match(workflow, /sourceCommit/);
   assert.doesNotMatch(workflow, /raw\.githubusercontent\.com.*main.*prompts\/AGENTS\.md/);
-  assert.match(workflow, /health-safety-runtime\.json/);
-  assert.match(workflow, /runtimePolicySha256/);
-  assert.equal((workflow.match(/schemaVersion: 2/g) || []).length, 3);
+  assert.ok((workflow.match(/schemaVersion: 3/g) || []).length >= 2);
 });
 
-test("el bootstrap solo puede ejecutarse una vez desde el HEAD actual de main", () => {
-  assert.match(workflow, /bootstrap_main:/);
-  assert.match(workflow, /test "\$GITHUB_REF" = "refs\/heads\/main"/);
-  assert.match(workflow, /test "\$SOURCE_COMMIT" = "\$GITHUB_SHA"/);
-  const absenceChecks = workflow.match(/deployments\?task=gymnasia-policy&per_page=1/g) || [];
-  assert.equal(absenceChecks.length, 2);
-  assert.match(workflow, /bootstrap_main is disabled after the first policy deployment/);
-  assert.match(workflow, /another policy deployment won the bootstrap race/);
+test("activación y rollback están firmados fuera de GitHub", () => {
+  assert.match(workflow, /activation_base64/);
+  assert.match(workflow, /activation_signature_base64/);
+  assert.match(workflow, /verify-artifacts\.mjs/);
+  assert.match(workflow, /trusted-roots\.json/);
+  assert.match(workflow, /operation == 'rollback'/);
+  assert.match(workflow, /fromBundleId/);
+  assert.match(workflow, /LATEST_SEQUENCE/);
+  assert.match(workflow, /LATEST_STAGING_CANDIDATE/);
+  assert.match(workflow, /max_by\(\.payload\.activation\.sequence\)/);
+  assert.match(workflow, /test "\$CANDIDATE" = "\$LATEST_STAGING_CANDIDATE"/);
+  assert.doesNotMatch(workflow, /BITWARDEN_POLICY_(?:ROOT|SIGNER)_ITEM_ID/);
+  assert.doesNotMatch(workflow, /ed25519_pkcs8_base64/);
+});
+
+test("el arranque inicial firmado solo se admite una vez desde main protegido", () => {
+  assert.match(workflow, /bootstrap_main/);
+  assert.match(workflow, /bootstrap_main requires the current main HEAD/);
+  assert.match(workflow, /bootstrap_main is disabled after the first signed policy deployment/);
+  assert.match(workflow, /bootstrap_main and pr_number are mutually exclusive/);
+  assert.match(workflow, /select\(\.payload\.schemaVersion == 3\)/);
+});
+
+test("el verificador confiable siempre procede de main", () => {
+  assert.equal((workflow.match(/test "\$GITHUB_REF" = "refs\/heads\/main"/g) || []).length, 2);
+  assert.equal((workflow.match(/fetch --no-tags --depth=1 origin "\$GITHUB_SHA"/g) || []).length, 2);
 });
 
 test("EAS conserva perfiles locales y publica únicamente production-apk", () => {

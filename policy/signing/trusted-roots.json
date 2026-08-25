@@ -1,0 +1,10 @@
+{
+  "roots": [
+    {
+      "algorithm": "Ed25519",
+      "keyId": "gymnasia-policy-root-2026-08",
+      "publicKeyBase64Url": "P9L3a3d2BrpWxUl_PkY_zJ651zy2HTXOyBDhb18-Ys8"
+    }
+  ],
+  "schemaVersion": 1
+}

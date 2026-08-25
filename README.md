@@ -11,8 +11,9 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
 - `arquitectura-agente/`: Tablero de seguimiento de epicas y tickets (espejo manual de Linear, sitio estatico en Vercel)
 - `policy/health-safety/`: Reglas y casos sanitarios versionados que generan la protección del agente
+- `policy/signing/`: Raíces y certificados públicos, configuración y bundle firmado actual; nunca contiene claves privadas
 - `scripts/health-safety/`: Generador, puerta determinista, fixtures e informes sanitarios
-- `scripts/policy-promotion/`: Contratos y preparación de snapshots por canal
+- `scripts/policy-promotion/`: Firma Ed25519, contratos, promoción y preparación de snapshots por canal
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
 
 ## Arranque rapido
@@ -54,6 +55,8 @@ red, claves ni tokens:
 npm test                # unitarios, integración, contrato, regresión y fuzzing
 npm run check:health-safety # política, prompt, snapshot y fixtures sanitarios
 npm run test:health-safety  # regresiones y propiedades sanitarias sin red
+npm run policy:bundle:check # verifica bundle, certificado y firma públicos
+npm run check:policy-trust  # verifica la raíz pública integrada en la app
 npm run test:agent:e2e  # app web + Playwright + proveedores falsos
 ```
 
@@ -74,6 +77,8 @@ El flujo remoto, caché e integrado del prompt y del guardrail sanitario se docu
 `docs/architecture/chat-system-prompt.md`.
 Las variantes instalables y la promoción inmutable se documentan en
 `docs/architecture/policy-environments.md`.
+La app verifica las firmas Ed25519 localmente mediante `@noble/ed25519` y
+`@noble/hashes`; GitHub distribuye únicamente artefactos públicos y no custodia claves.
 
 ## Front web
 

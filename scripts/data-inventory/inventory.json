@@ -146,28 +146,12 @@
       "clearedBy": "never"
     },
     {
-      "key": "gymnasia.mobile.chat.system_prompt.v3",
+      "key": "gymnasia.mobile.signed_policy.cache.v1",
       "backend": "async-storage",
       "personal": false,
       "dataCategory": "public-catalog-cache",
-      "purpose": "Caché del system prompt del coach descargado del repositorio público.",
+      "purpose": "Registro local del canal de política: conserva la política firmada actual, una segunda copia firmada anterior y la mayor secuencia de activación observada para impedir replays y downgrades. No contiene datos ni respuestas del usuario.",
       "clearedBy": "never"
-    },
-    {
-      "key": "gymnasia.mobile.chat.system_prompt.v2",
-      "backend": "async-storage",
-      "personal": false,
-      "dataCategory": "legacy",
-      "purpose": "Versión anterior de la caché del system prompt. Se conserva la constante para poder leer instalaciones antiguas.",
-      "clearedBy": "never"
-    },
-    {
-      "key": "gymnasia.mobile.health_safety.runtime.v1",
-      "backend": "async-storage",
-      "personal": false,
-      "dataCategory": "public-catalog-cache",
-      "purpose": "Caché firmada de la política pública de seguridad sanitaria seleccionada para el canal de la instalación. No contiene datos ni respuestas del usuario.",
-      "clearedBy": "reset"
     },
     {
       "key": "gymnasia.mobile.lastUpdateCheck",
@@ -270,21 +254,21 @@
       "host": "raw.githubusercontent.com",
       "trigger": "automatic",
       "requiresUserKey": false,
-      "sends": "Nada del usuario. Descarga los catálogos públicos de ejercicios, alimentos, productos y recetas, sus imágenes y el system prompt del coach. GitHub ve la dirección IP y el User-Agent.",
+      "sends": "Nada del usuario. Descarga los catálogos públicos de ejercicios, alimentos, productos y recetas y sus imágenes. GitHub ve la dirección IP y el User-Agent.",
       "thirdParty": "GitHub"
     },
     {
       "host": "api.github.com",
       "trigger": "automatic",
       "requiresUserKey": false,
-      "sends": "Nada del usuario. Consulta los deployments del repositorio para resolver qué política del agente corresponde al canal de la instalación. La app no consulta releases de APK ni abre incidencias contra GitHub; las propuestas se envían al backend de recepción, que custodia la credencial de escritura.",
+      "sends": "Nada del usuario. Consulta los deployments del repositorio para resolver la activación firmada y el bundle de política que corresponden al canal de la instalación. La app no consulta releases de APK ni abre incidencias contra GitHub; las propuestas se envían al backend de recepción, que custodia la credencial de escritura.",
       "thirdParty": "GitHub"
     },
     {
       "host": "github.com",
       "trigger": "automatic",
       "requiresUserKey": false,
-      "sends": "Nada del usuario. Descarga el artefacto de la política del agente publicado como asset de una release, y valida la URL del run que lo produjo.",
+      "sends": "Nada del usuario. Descarga el bundle público de política y su firma Ed25519 desde una release inmutable.",
       "thirdParty": "GitHub"
     },
     {
