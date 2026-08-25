@@ -2015,6 +2015,20 @@
           "related": []
         },
         {
+          "id": "GYM-203",
+          "title": "Añadir accesibilidad integral a la app",
+          "state": "backlog",
+          "summary": "Convertir este marcador en una futura épica y desglosar la accesibilidad integral de todos los flujos antes de implementar cambios.",
+          "dependsOn": [],
+          "related": [
+            "GYM-8",
+            "GYM-121",
+            "GYM-146",
+            "GYM-160",
+            "GYM-202"
+          ]
+        },
+        {
           "id": "GYM-53",
           "title": "Eliminar documentación de la arquitectura backend/web obsoleta",
           "state": "todo",
