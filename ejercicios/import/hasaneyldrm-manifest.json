@@ -485,6 +485,33 @@
         {"source_id": "0225", "id": "aperturas-inversas-altas-cruzadas-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "0226", "id": "crunch-de-pie-polea", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 19,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0874", "id": "crunch-de-pie-cuerda-polea", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0228", "id": "extension-cadera-de-pie-polea", "action": "create", "difficulty": "beginner", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0229", "id": "curl-interno-de-pie-polea", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0230", "id": "elevacion-diagonal-de-pie-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0231", "id": "extension-triceps-unilateral-de-pie-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1376", "id": "elevacion-talon-unilateral-de-pie-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0232", "id": "jalon-de-pie-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0233", "id": "remo-deltoide-posterior-de-pie-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1727", "id": "extension-triceps-unilateral-supina-sobre-cabeza-polea", "action": "create", "difficulty": "advanced", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0234", "id": "remo-de-pie-barra-v-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0235", "id": "rotacion-externa-hombro-de-pie-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0236", "id": "remo-con-giro-de-pie-barra-v-polea", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1269", "id": "cruces-pectorales-de-pie-polea", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0237", "id": "jalon-brazos-rectos-cuerda-polea", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0239", "id": "remo-sentado-espalda-recta-polea", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0240", "id": "aperturas-inversas-tumbado-boca-arriba-polea", "action": "create", "difficulty": "intermediate", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2464", "id": "remo-kayak-thibaudeau-polea", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0241", "id": "jalon-triceps-barra-v-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2405", "id": "jalon-triceps-barra-v-arm-blaster-polea", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0242", "id": "crunch-inverso-agrupado-polea", "action": "create", "difficulty": "advanced", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-unilateral-supina-sobre-cabeza-polea",
+  "name": "Extensión de tríceps unilateral supina sobre la cabeza en polea",
+  "image_male": "images/extension-triceps-unilateral-supina-sobre-cabeza-polea-male.webp",
+  "image_female": "images/extension-triceps-unilateral-supina-sobre-cabeza-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros", "antebrazos"],
+  "equipment": "polea y agarradera",
+  "difficulty": "advanced",
+  "instructions": "Colócate de espaldas a una polea baja y lleva una agarradera sobre la cabeza con agarre supino. Mantén el brazo superior vertical y el codo cerca de la cabeza. Extiende el codo hasta elevar por completo la mano, aprieta el tríceps y baja la agarradera detrás de la cabeza con control antes de cambiar de brazo."
+}

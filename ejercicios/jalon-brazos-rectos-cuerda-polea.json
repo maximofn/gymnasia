@@ -1,0 +1,11 @@
+{
+  "id": "jalon-brazos-rectos-cuerda-polea",
+  "name": "Jalón de brazos rectos con cuerda en polea",
+  "image_male": "images/jalon-brazos-rectos-cuerda-polea-male.webp",
+  "image_female": "images/jalon-brazos-rectos-cuerda-polea-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["tríceps", "antebrazos"],
+  "equipment": "polea y cuerda",
+  "difficulty": "beginner",
+  "instructions": "Sujeta una cuerda conectada a una polea alta y da un paso atrás. Inclina ligeramente el torso y mantén los codos casi extendidos. Lleva la cuerda en arco hasta los muslos, separa los extremos y contrae los dorsales; regresa despacio hasta que los brazos queden elevados."
+}

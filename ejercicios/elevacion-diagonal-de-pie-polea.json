@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-diagonal-de-pie-polea",
+  "name": "Elevación diagonal de pie en polea",
+  "image_male": "images/elevacion-diagonal-de-pie-polea-male.webp",
+  "image_female": "images/elevacion-diagonal-de-pie-polea-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdominales", "espalda baja"],
+  "equipment": "polea y agarradera",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de lado junto a una polea baja y sujeta la agarradera con ambas manos cerca de la cadera más próxima. Con los brazos casi rectos y el abdomen firme, gira el torso y eleva la carga en diagonal hasta el hombro opuesto. Mantén la pelvis estable y vuelve lentamente antes de cambiar de lado."
+}

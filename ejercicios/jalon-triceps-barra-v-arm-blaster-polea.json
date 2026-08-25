@@ -1,0 +1,11 @@
+{
+  "id": "jalon-triceps-barra-v-arm-blaster-polea",
+  "name": "Jalón de tríceps con barra V y arm blaster en polea",
+  "image_male": "images/jalon-triceps-barra-v-arm-blaster-polea-male.webp",
+  "image_female": "images/jalon-triceps-barra-v-arm-blaster-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea, barra V y arm blaster",
+  "difficulty": "advanced",
+  "instructions": "Coloca el arm blaster sobre el pecho y apoya los codos en sus extremos. Agarra una barra V conectada a una polea alta y mantén los brazos superiores inmóviles contra el soporte. Extiende los codos hasta llevar la barra hacia los muslos, aprieta los tríceps y vuelve con control sin despegar los codos."
+}

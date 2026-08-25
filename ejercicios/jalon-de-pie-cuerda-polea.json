@@ -1,0 +1,11 @@
+{
+  "id": "jalon-de-pie-cuerda-polea",
+  "name": "Jalón de pie con cuerda en polea",
+  "image_male": "images/jalon-de-pie-cuerda-polea-male.webp",
+  "image_female": "images/jalon-de-pie-cuerda-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "hombros"],
+  "equipment": "polea y cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Colócate frente a una polea alta y agarra los extremos de la cuerda con las palmas orientadas hacia abajo. Mantén el torso erguido y los brazos elevados. Flexiona los codos para tirar de la cuerda hacia la frente, separa ligeramente los extremos y vuelve despacio sin perder la tensión."
+}
