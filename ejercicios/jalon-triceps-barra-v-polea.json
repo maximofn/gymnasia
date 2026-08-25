@@ -1,0 +1,11 @@
+{
+  "id": "jalon-triceps-barra-v-polea",
+  "name": "Jalón de tríceps con barra V en polea",
+  "image_male": "images/jalon-triceps-barra-v-polea-male.webp",
+  "image_female": "images/jalon-triceps-barra-v-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y barra V",
+  "difficulty": "beginner",
+  "instructions": "Coloca una barra V en una polea alta y agárrala con las palmas enfrentadas. Mantén el torso erguido, los codos pegados a los costados y los brazos superiores inmóviles. Empuja la barra hasta extender por completo los codos, contrae los tríceps y regresa lentamente."
+}

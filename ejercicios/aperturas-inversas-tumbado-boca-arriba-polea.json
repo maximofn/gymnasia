@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inversas-tumbado-boca-arriba-polea",
+  "name": "Aperturas inversas tumbado boca arriba en polea",
+  "image_male": "images/aperturas-inversas-tumbado-boca-arriba-polea-male.webp",
+  "image_female": "images/aperturas-inversas-tumbado-boca-arriba-polea-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios", "romboides"],
+  "equipment": "doble polea, agarraderas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco situado entre dos poleas y toma la agarradera opuesta con cada mano. Comienza con los brazos elevados sobre el pecho y los codos ligeramente flexionados. Abre los brazos hacia los lados hasta alinearlos con los hombros, junta las escápulas y vuelve lentamente al centro."
+}

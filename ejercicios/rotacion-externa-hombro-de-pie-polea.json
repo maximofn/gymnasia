@@ -1,0 +1,11 @@
+{
+  "id": "rotacion-externa-hombro-de-pie-polea",
+  "name": "Rotación externa de hombro de pie en polea",
+  "image_male": "images/rotacion-externa-hombro-de-pie-polea-male.webp",
+  "image_female": "images/rotacion-externa-hombro-de-pie-polea-female.webp",
+  "muscle_group": "manguito rotador",
+  "secondary_muscles": ["hombros", "trapecios"],
+  "equipment": "polea y agarradera",
+  "difficulty": "beginner",
+  "instructions": "Colócate de lado respecto a una polea situada a la altura del codo y sujeta la agarradera con la mano más alejada. Flexiona el codo a 90 grados y mantenlo pegado al costado. Sin mover el brazo superior, rota el antebrazo hacia fuera y vuelve lentamente hasta el abdomen; repite por ambos lados."
+}

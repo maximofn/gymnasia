@@ -1,0 +1,11 @@
+{
+  "id": "cruces-pectorales-de-pie-polea",
+  "name": "Cruces pectorales de pie en polea",
+  "image_male": "images/cruces-pectorales-de-pie-polea-male.webp",
+  "image_female": "images/cruces-pectorales-de-pie-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombros", "tríceps"],
+  "equipment": "doble polea y agarraderas",
+  "difficulty": "intermediate",
+  "instructions": "Sitúate erguido entre dos poleas a la altura de los hombros y toma una agarradera con cada mano. Con los codos ligeramente flexionados, lleva las manos al frente hasta cruzarlas delante del pecho. Contrae los pectorales y abre los brazos lentamente sin dejar que los hombros se adelanten."
+}

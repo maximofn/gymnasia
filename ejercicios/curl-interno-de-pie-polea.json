@@ -1,0 +1,11 @@
+{
+  "id": "curl-interno-de-pie-polea",
+  "name": "Curl interno de pie en polea",
+  "image_male": "images/curl-interno-de-pie-polea-male.webp",
+  "image_female": "images/curl-interno-de-pie-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "hombros"],
+  "equipment": "doble polea y agarraderas",
+  "difficulty": "intermediate",
+  "instructions": "Sitúate entre dos poleas altas y toma una agarradera con cada mano. Eleva los brazos a la altura de los hombros, con los codos fijos y las palmas hacia arriba. Flexiona los codos para acercar las manos a la cabeza, contrae los bíceps y extiende de nuevo los antebrazos con control."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentado-espalda-recta-polea",
+  "name": "Remo sentado con espalda recta en polea",
+  "image_male": "images/remo-sentado-espalda-recta-polea-male.webp",
+  "image_female": "images/remo-sentado-espalda-recta-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "antebrazos", "hombros"],
+  "equipment": "polea y banco de remo",
+  "difficulty": "beginner",
+  "instructions": "Siéntate frente a una polea baja con los pies apoyados, las rodillas ligeramente flexionadas y la espalda neutra. Sujeta las dos agarraderas y llévalas hacia el abdomen mientras juntas las escápulas. Evita balancear el torso y extiende los brazos de manera controlada."
+}

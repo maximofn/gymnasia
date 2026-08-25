@@ -1,0 +1,11 @@
+{
+  "id": "crunch-de-pie-cuerda-polea",
+  "name": "Crunch de pie con cuerda en polea",
+  "image_male": "images/crunch-de-pie-cuerda-polea-male.webp",
+  "image_female": "images/crunch-de-pie-cuerda-polea-female.webp",
+  "muscle_group": "abdominales",
+  "secondary_muscles": ["oblicuos"],
+  "equipment": "polea y cuerda",
+  "difficulty": "beginner",
+  "instructions": "Colócate de pie de espaldas a una polea alta y sujeta los extremos de la cuerda junto a las sienes. Mantén las rodillas ligeramente flexionadas y la cadera estable. Contrae el abdomen para enrollar el torso hacia delante, acerca los codos a las rodillas y vuelve despacio sin tirar con los brazos."
+}

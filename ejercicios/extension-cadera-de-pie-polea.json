@@ -1,0 +1,11 @@
+{
+  "id": "extension-cadera-de-pie-polea",
+  "name": "Extensión de cadera de pie en polea",
+  "image_male": "images/extension-cadera-de-pie-polea-male.webp",
+  "image_female": "images/extension-cadera-de-pie-polea-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales"],
+  "equipment": "polea y tobillera",
+  "difficulty": "beginner",
+  "instructions": "Ajusta una tobillera a una polea baja y colócate de espaldas a la máquina con el abdomen firme. Mantén la pierna de apoyo ligeramente flexionada y extiende la pierna conectada hacia atrás sin arquear la zona lumbar. Contrae el glúteo al final y regresa de forma controlada antes de cambiar de lado."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "remo-kayak-thibaudeau-polea",
+  "name": "Remo kayak Thibaudeau en polea",
+  "image_male": "images/remo-kayak-thibaudeau-polea-male.webp",
+  "image_female": "images/remo-kayak-thibaudeau-polea-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["bíceps", "romboides", "hombros posteriores"],
+  "equipment": "polea y cuerda",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie frente a una polea alta y sujeta ambos extremos de una cuerda larga. Tira de una mano hacia la cadera mientras la otra permanece elevada y adelantada, acompañando con una pequeña rotación controlada del torso. Invierte el gesto de forma fluida para alternar los lados sin perder la tensión."
+}

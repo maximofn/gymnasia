@@ -1,0 +1,11 @@
+{
+  "id": "crunch-inverso-agrupado-polea",
+  "name": "Crunch inverso agrupado en polea",
+  "image_male": "images/crunch-inverso-agrupado-polea-male.webp",
+  "image_female": "images/crunch-inverso-agrupado-polea-female.webp",
+  "muscle_group": "abdominales",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "polea y esterilla",
+  "difficulty": "advanced",
+  "instructions": "Túmbate boca arriba con la cabeza próxima a una polea baja y sujeta la agarradera con ambas manos sobre el pecho. Eleva las piernas con las rodillas flexionadas y contrae el abdomen para acercarlas al torso mientras enrollas la pelvis y separas las caderas del suelo. Pausa arriba y desciende lentamente sin perder la tensión del cable."
+}

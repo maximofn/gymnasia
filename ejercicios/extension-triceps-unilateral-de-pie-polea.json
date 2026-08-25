@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-unilateral-de-pie-polea",
+  "name": "Extensión de tríceps unilateral de pie en polea",
+  "image_male": "images/extension-triceps-unilateral-de-pie-polea-male.webp",
+  "image_female": "images/extension-triceps-unilateral-de-pie-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y agarradera",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie junto a una polea alta y toma la agarradera con una mano. Fija el codo al costado y mantén el brazo superior inmóvil. Extiende el codo hasta llevar la mano junto al muslo, aprieta el tríceps y regresa despacio sin adelantar el hombro; completa ambos lados."
+}

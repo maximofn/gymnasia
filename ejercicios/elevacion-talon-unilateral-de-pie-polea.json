@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-talon-unilateral-de-pie-polea",
+  "name": "Elevación de talón unilateral de pie en polea",
+  "image_male": "images/elevacion-talon-unilateral-de-pie-polea-male.webp",
+  "image_female": "images/elevacion-talon-unilateral-de-pie-polea-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["sóleo", "tobillos"],
+  "equipment": "polea y escalón",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el antepié de una pierna sobre un escalón junto a la polea y sujeta la estructura para mantener el equilibrio. Eleva la otra pierna, baja el talón de la pierna de apoyo y empuja después hasta quedar sobre la punta. Pausa arriba y desciende de forma controlada antes de cambiar de lado."
+}

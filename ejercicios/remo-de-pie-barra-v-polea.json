@@ -1,0 +1,11 @@
+{
+  "id": "remo-de-pie-barra-v-polea",
+  "name": "Remo de pie con barra V en polea",
+  "image_male": "images/remo-de-pie-barra-v-polea-male.webp",
+  "image_female": "images/remo-de-pie-barra-v-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "hombros"],
+  "equipment": "polea y barra V",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una polea a la altura del pecho y sujeta la barra V con agarre neutro. Mantén el abdomen firme, el pecho abierto y las rodillas ligeramente flexionadas. Lleva la barra hacia el abdomen retrayendo las escápulas, mantén los codos cerca del cuerpo y extiende los brazos lentamente."
+}

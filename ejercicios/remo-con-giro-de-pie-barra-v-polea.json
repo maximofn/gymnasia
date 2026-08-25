@@ -1,0 +1,11 @@
+{
+  "id": "remo-con-giro-de-pie-barra-v-polea",
+  "name": "Remo con giro de pie y barra V en polea",
+  "image_male": "images/remo-con-giro-de-pie-barra-v-polea-male.webp",
+  "image_female": "images/remo-con-giro-de-pie-barra-v-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "hombros", "oblicuos"],
+  "equipment": "polea y barra V",
+  "difficulty": "advanced",
+  "instructions": "Sujeta una barra V conectada a una polea a la altura del pecho y retrocede hasta tensar el cable. Rema hacia un lado de las costillas mientras giras los hombros en esa dirección, manteniendo la pelvis estable. Extiende los brazos y deshaz el giro con control; alterna el lado en cada repetición."
+}
