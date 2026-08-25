@@ -43,8 +43,9 @@ No existe bypass del ruleset. Si falla la infraestructura de checks:
 4. Documentar en la PR el incidente, comandos y resultados.
 
 La eliminación de `main` y los force-push permanecen bloqueados incluso durante
-una emergencia. La firma criptográfica de bundles pertenece a GYM-140 y tampoco
-se puede omitir mediante este procedimiento.
+una emergencia. La firma criptográfica de bundles definida en GYM-140 (ticket para
+autenticar bundles de política con firmas verificables) tampoco se puede omitir mediante
+este procedimiento.
 
 ## Seguridad de la cuenta del propietario
 

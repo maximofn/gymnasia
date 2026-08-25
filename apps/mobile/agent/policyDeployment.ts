@@ -1,29 +1,25 @@
+import type { PolicyActivation, PolicySignatureEnvelope } from "./signedPolicy";
 import type { PolicyChannel } from "../environment";
 
 export const POLICY_DEPLOYMENT_TASK = "gymnasia-policy" as const;
-export const POLICY_DEPLOYMENT_SCHEMA_VERSION = 2 as const;
+export const POLICY_DEPLOYMENT_SCHEMA_VERSION = 3 as const;
 export const POLICY_DEPLOYMENT_REFRESH_MS = 5 * 60 * 1000;
 
 const REPOSITORY = "maximofn/gymnasia";
 const DEPLOYMENTS_API = `https://api.github.com/repos/${REPOSITORY}/deployments`;
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 const COMMIT_PATTERN = /^[a-f0-9]{40}$/;
-const POLICY_VERSION_PATTERN = /^\d{4}\.\d{2}\.\d+$/;
+const CANDIDATE_PATTERN = /^policy-v\d{4}\.\d{2}\.\d+-[a-f0-9]{12}$/;
 
 export type PolicyDeploymentPayload = {
-  schemaVersion: 1 | typeof POLICY_DEPLOYMENT_SCHEMA_VERSION;
+  schemaVersion: typeof POLICY_DEPLOYMENT_SCHEMA_VERSION;
   candidate: string;
   sourceCommit: string;
-  assetUrl: string;
-  assetSha256: string;
-  policyVersion: string;
-  datasetVersion: string;
-  promptVersion: string;
-  reportSha256: string;
-  workflowRunUrl: string;
-  runtimePolicyUrl?: string;
-  runtimePolicySha256?: string;
-  runtimePolicyVersion?: string;
+  bundleUrl: string;
+  signatureUrl: string;
+  bundleSha256: string;
+  activation: PolicyActivation;
+  activationSignature: PolicySignatureEnvelope;
 };
 
 export type ActivePolicyDeployment = PolicyDeploymentPayload & {
@@ -47,18 +43,16 @@ type CacheEntry = {
 
 const deploymentCache = new Map<string, CacheEntry>();
 
-function isAllowedAssetUrl(value: string, candidate: string): boolean {
+function isAllowedReleaseUrl(value: string, candidate: string, filename: string): boolean {
   const expectedPrefix = `https://github.com/${REPOSITORY}/releases/download/${encodeURIComponent(candidate)}/`;
-  return value === `${expectedPrefix}policy.md`;
+  return value === `${expectedPrefix}${filename}`;
 }
 
-function isAllowedRuntimePolicyUrl(value: string, candidate: string): boolean {
-  const expectedPrefix = `https://github.com/${REPOSITORY}/releases/download/${encodeURIComponent(candidate)}/`;
-  return value === `${expectedPrefix}health-safety-runtime.json`;
-}
-
-function isAllowedWorkflowRunUrl(value: string): boolean {
-  return new RegExp(`^https://github\\.com/${REPOSITORY}/actions/runs/[0-9]+$`).test(value);
+function hasExactKeys(value: Record<string, unknown>, keys: string[]): boolean {
+  const actual = Object.keys(value).sort();
+  const expected = [...keys].sort();
+  return actual.length === expected.length
+    && actual.every((key, index) => key === expected[index]);
 }
 
 export function parsePolicyDeploymentPayload(
@@ -77,35 +71,36 @@ export function parsePolicyDeploymentPayload(
   }
   const payload = candidateValue as Record<string, unknown>;
   if (
-    (payload.schemaVersion !== 1 && payload.schemaVersion !== POLICY_DEPLOYMENT_SCHEMA_VERSION)
+    !hasExactKeys(payload, [
+      "activation",
+      "activationSignature",
+      "bundleSha256",
+      "bundleUrl",
+      "candidate",
+      "schemaVersion",
+      "signatureUrl",
+      "sourceCommit",
+    ])
+    || payload.schemaVersion !== POLICY_DEPLOYMENT_SCHEMA_VERSION
     || typeof payload.candidate !== "string"
-    || !/^policy-v\d{4}\.\d{2}\.\d+-[a-f0-9]{12}$/.test(payload.candidate)
+    || !CANDIDATE_PATTERN.test(payload.candidate)
     || typeof payload.sourceCommit !== "string"
     || !COMMIT_PATTERN.test(payload.sourceCommit)
-    || typeof payload.assetUrl !== "string"
-    || !isAllowedAssetUrl(payload.assetUrl, payload.candidate)
-    || typeof payload.assetSha256 !== "string"
-    || !SHA256_PATTERN.test(payload.assetSha256)
-    || typeof payload.policyVersion !== "string"
-    || !POLICY_VERSION_PATTERN.test(payload.policyVersion)
-    || typeof payload.datasetVersion !== "string"
-    || payload.datasetVersion !== payload.policyVersion
-    || typeof payload.promptVersion !== "string"
-    || payload.promptVersion !== `sha256:${payload.assetSha256}`
-    || typeof payload.reportSha256 !== "string"
-    || !SHA256_PATTERN.test(payload.reportSha256)
-    || typeof payload.workflowRunUrl !== "string"
-    || !isAllowedWorkflowRunUrl(payload.workflowRunUrl)
+    || typeof payload.bundleUrl !== "string"
+    || !isAllowedReleaseUrl(payload.bundleUrl, payload.candidate, "policy.bundle.json")
+    || typeof payload.signatureUrl !== "string"
+    || !isAllowedReleaseUrl(payload.signatureUrl, payload.candidate, "policy.bundle.signature.json")
+    || typeof payload.bundleSha256 !== "string"
+    || !SHA256_PATTERN.test(payload.bundleSha256)
+    || !payload.activation
+    || typeof payload.activation !== "object"
+    || Array.isArray(payload.activation)
+    || !payload.activationSignature
+    || typeof payload.activationSignature !== "object"
+    || Array.isArray(payload.activationSignature)
+    || JSON.stringify(payload.activation).length > 16 * 1024
+    || JSON.stringify(payload.activationSignature).length > 32 * 1024
   ) {
-    return null;
-  }
-  if (payload.schemaVersion === POLICY_DEPLOYMENT_SCHEMA_VERSION && (
-    typeof payload.runtimePolicyUrl !== "string"
-    || !isAllowedRuntimePolicyUrl(payload.runtimePolicyUrl, payload.candidate)
-    || typeof payload.runtimePolicySha256 !== "string"
-    || !SHA256_PATTERN.test(payload.runtimePolicySha256)
-    || payload.runtimePolicyVersion !== payload.policyVersion
-  )) {
     return null;
   }
   return payload as PolicyDeploymentPayload;
@@ -157,6 +152,8 @@ export async function fetchActivePolicyDeployment(
         deployment.task !== POLICY_DEPLOYMENT_TASK
         || deployment.environment !== channel
         || typeof deployment.id !== "number"
+        || !Number.isSafeInteger(deployment.id)
+        || deployment.id < 1
         || typeof deployment.statuses_url !== "string"
       ) {
         continue;
@@ -164,14 +161,14 @@ export async function fetchActivePolicyDeployment(
       const payload = parsePolicyDeploymentPayload(deployment.payload);
       if (!payload) continue;
       if (!await deploymentSucceeded(deployment.id, deployment.statuses_url, fetchImpl)) continue;
-      const value = { ...payload, deploymentId: deployment.id, channel };
+      const resolved = { ...payload, deploymentId: deployment.id, channel };
       deploymentCache.set(channel, {
-        value,
+        value: resolved,
         expiresAt: now + POLICY_DEPLOYMENT_REFRESH_MS,
       });
-      return value;
+      return resolved;
     }
-    throw new Error(`No existe un deployment válido para ${channel}.`);
+    throw new Error(`No existe un deployment firmado válido para ${channel}.`);
   } catch (error) {
     const message = error instanceof Error ? error.message : `No se pudo resolver la política ${channel}.`;
     deploymentCache.set(channel, {

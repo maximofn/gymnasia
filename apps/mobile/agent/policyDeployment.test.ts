@@ -9,67 +9,56 @@ import {
 
 const SHA = "a".repeat(40);
 const DIGEST = "b".repeat(64);
-const REPORT_DIGEST = "c".repeat(64);
-const CANDIDATE = "policy-v2026.08.1-aaaaaaaaaaaa";
+const CANDIDATE = "policy-v2026.08.2-aaaaaaaaaaaa";
 
 function payload(overrides: Record<string, unknown> = {}) {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     candidate: CANDIDATE,
     sourceCommit: SHA,
-    assetUrl: `https://github.com/maximofn/gymnasia/releases/download/${CANDIDATE}/policy.md`,
-    assetSha256: DIGEST,
-    policyVersion: "2026.08.1",
-    datasetVersion: "2026.08.1",
-    promptVersion: `sha256:${DIGEST}`,
-    reportSha256: REPORT_DIGEST,
-    workflowRunUrl: "https://github.com/maximofn/gymnasia/actions/runs/123",
-    runtimePolicyUrl: `https://github.com/maximofn/gymnasia/releases/download/${CANDIDATE}/health-safety-runtime.json`,
-    runtimePolicySha256: "d".repeat(64),
-    runtimePolicyVersion: "2026.08.1",
+    bundleUrl: `https://github.com/maximofn/gymnasia/releases/download/${CANDIDATE}/policy.bundle.json`,
+    signatureUrl: `https://github.com/maximofn/gymnasia/releases/download/${CANDIDATE}/policy.bundle.signature.json`,
+    bundleSha256: DIGEST,
+    activation: {
+      action: "activate",
+      bundleId: CANDIDATE,
+      sequence: 1,
+    },
+    activationSignature: {
+      algorithm: "Ed25519",
+      signatureBase64Url: "A".repeat(86),
+    },
     ...overrides,
   };
 }
 
 describe("policy deployment contract", () => {
-  it("accepts the complete public payload", () => {
+  it("acepta el puntero público al bundle y a sus firmas", () => {
     expect(parsePolicyDeploymentPayload(payload())).toEqual(payload());
   });
 
   it.each([
-    { schemaVersion: 3 },
+    { schemaVersion: 2 },
     { candidate: "main" },
     { sourceCommit: "abc" },
-    { assetUrl: "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md" },
-    { assetSha256: "no" },
-    { datasetVersion: "other" },
-    { promptVersion: "sha256:other" },
-    { workflowRunUrl: "https://evil.example/run/1" },
-    { runtimePolicyUrl: "https://evil.example/runtime.json" },
-    { runtimePolicySha256: "no" },
-    { runtimePolicyVersion: "2026.07.1" },
-  ])("rejects invalid combinations %#", (override) => {
+    { bundleUrl: "https://raw.githubusercontent.com/maximofn/gymnasia/main/prompts/AGENTS.md" },
+    { signatureUrl: "https://evil.example/signature.json" },
+    { bundleSha256: "no" },
+    { activation: null },
+    { activationSignature: "signature" },
+    { extra: true },
+  ])("rechaza combinaciones no firmadas o ambiguas %#", (override) => {
     expect(parsePolicyDeploymentPayload(payload(override))).toBeNull();
   });
 
-  it("keeps reading schema v1 deployments without a runtime overlay", () => {
-    const legacy = payload({
-      schemaVersion: 1,
-      runtimePolicyUrl: undefined,
-      runtimePolicySha256: undefined,
-      runtimePolicyVersion: undefined,
-    });
-    expect(parsePolicyDeploymentPayload(legacy)).toEqual(legacy);
-  });
-
-  it("never accepts an arbitrary non-release URL", () => {
-    fc.assert(fc.property(fc.webUrl(), (assetUrl) => {
-      fc.pre(!assetUrl.startsWith("https://github.com/maximofn/gymnasia/releases/download/"));
-      expect(parsePolicyDeploymentPayload(payload({ assetUrl }))).toBeNull();
+  it("nunca acepta una URL arbitraria aunque parezca una release", () => {
+    fc.assert(fc.property(fc.webUrl(), (bundleUrl) => {
+      fc.pre(bundleUrl !== payload().bundleUrl);
+      expect(parsePolicyDeploymentPayload(payload({ bundleUrl }))).toBeNull();
     }));
   });
 
-  it("resolves the latest successful deployment and caches it for five minutes", async () => {
+  it("resuelve el último deployment firmado exitoso y lo cachea cinco minutos", async () => {
     clearPolicyDeploymentResolutionCache();
     const fetchMock = vi.fn(async (url: string | URL | Request) => {
       const target = String(url);
@@ -88,13 +77,35 @@ describe("policy deployment contract", () => {
 
     const first = await fetchActivePolicyDeployment("Staging", fetchImpl, 1_000);
     const second = await fetchActivePolicyDeployment("Staging", fetchImpl, 2_000);
-    expect(first).toMatchObject({ deploymentId: 44, channel: "Staging" });
+    expect(first).toMatchObject({ deploymentId: 44, channel: "Staging", schemaVersion: 3 });
     expect(second).toEqual(first);
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(String(fetchMock.mock.calls[0]?.[0])).toContain("task=gymnasia-policy");
   });
 
-  it("throttles failed GitHub resolutions for the same five-minute window", async () => {
+  it("ignora deployments heredados y exige estado success", async () => {
+    clearPolicyDeploymentResolutionCache();
+    const fetchMock = vi.fn(async (url: string | URL | Request) => {
+      const target = String(url);
+      if (target.includes("?environment=Production")) {
+        return new Response(JSON.stringify([{
+          id: 45,
+          task: "gymnasia-policy",
+          environment: "Production",
+          payload: payload({ schemaVersion: 2 }),
+          statuses_url: "https://api.github.com/repos/maximofn/gymnasia/deployments/45/statuses",
+        }]), { status: 200 });
+      }
+      return new Response(JSON.stringify([{ state: "success" }]), { status: 200 });
+    });
+    await expect(fetchActivePolicyDeployment(
+      "Production",
+      fetchMock as unknown as typeof fetch,
+      3_000,
+    )).rejects.toThrow(/deployment firmado/);
+  });
+
+  it("limita durante cinco minutos los fallos de GitHub", async () => {
     clearPolicyDeploymentResolutionCache();
     const fetchImpl = vi.fn(async () => new Response("offline", { status: 503 })) as unknown as typeof fetch;
     await expect(fetchActivePolicyDeployment("Production", fetchImpl, 10_000)).rejects.toThrow("503");
