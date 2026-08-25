@@ -75,7 +75,7 @@ El workflow tiene solo `contents: read`, `pull-requests: read` y `statuses: writ
 2. Si cambia la política, conserva `schemaVersion: 1`, `defaultBranch: "main"`, el propietario y el catálogo de checks que `validatePolicy` exige, salvo que el código y las pruebas de la política cambien de forma coordinada.
 3. Ejecuta `npm run sync:prompt-policy`; revisa el diff de `.github/CODEOWNERS` y `.github/rulesets/protect-main.json` como salidas derivadas.
 4. Ejecuta `npm run check:prompt-policy` y `npm run test:prompt-policy`. La segunda batería cubre clasificación de rutas, descendientes, falsos prefijos, autorización por autor/revisión/SHA, determinismo de artefactos y restricciones de workflows.
-5. Si cambias `prompts/AGENTS.md`, además sigue la receta de [entorno de ejecución del agente](../agent/runtime.md): sincroniza y verifica el snapshot integrado con `npm run sync:chat-prompt` y `npm run check:chat-prompt`. La protección de la ruta no prueba la paridad ni el comportamiento del prompt.
+5. Si cambias `prompts/AGENTS.md`, además sigue la receta de [Seguridad sanitaria y transparencia de IA](../agent/health-safety.md): sincroniza y verifica el snapshot integrado con `npm run sync:chat-prompt` y `npm run check:chat-prompt`; ejecuta también `npm run check:health-safety` porque el prompt contiene su bloque sanitario gestionado. La protección de la ruta no prueba la paridad ni el comportamiento del prompt.
 6. Para un cambio que alcance `apps/mobile` o el prompt integrado, añade los controles del agente que correspondan en [compilación, publicación y pruebas](build-release-and-testing.md); `check:prompt-policy` solo verifica gobierno y configuración.
 
 ## Límites y riesgos
