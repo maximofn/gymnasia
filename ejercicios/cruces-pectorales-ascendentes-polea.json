@@ -1,0 +1,11 @@
+{
+  "id": "cruces-pectorales-ascendentes-polea",
+  "name": "Cruces pectorales ascendentes en polea",
+  "image_male": "images/cruces-pectorales-ascendentes-polea-male.webp",
+  "image_female": "images/cruces-pectorales-ascendentes-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro anterior", "tríceps"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate entre dos poleas bajas con una agarradera en cada mano, un pie adelantado y los brazos abiertos. Mantén una ligera flexión de codos y junta las manos siguiendo una trayectoria ascendente hasta delante de la parte alta del pecho. Abre de nuevo con control sin elevar los hombros."
+}

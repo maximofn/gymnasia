@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-pierna-extendida-silla",
+  "name": "Estiramiento de pierna extendida en silla",
+  "image_male": "images/estiramiento-pierna-extendida-silla-male.webp",
+  "image_female": "images/estiramiento-pierna-extendida-silla-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["gemelos", "cuádriceps"],
+  "equipment": "silla",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el borde de una silla y extiende una pierna al frente con el talón apoyado y la rodilla recta. Mantén la espalda larga e inclina ligeramente el torso desde las caderas hasta notar tensión en la parte posterior del muslo. Sostén la posición y cambia de pierna."
+}

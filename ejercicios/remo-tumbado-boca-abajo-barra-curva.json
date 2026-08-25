@@ -1,0 +1,11 @@
+{
+  "id": "remo-tumbado-boca-abajo-barra-curva",
+  "name": "Remo tumbado boca abajo con barra curva",
+  "image_male": "images/remo-tumbado-boca-abajo-barra-curva-male.webp",
+  "image_female": "images/remo-tumbado-boca-abajo-barra-curva-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "barra curva y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo en un banco alto con el pecho apoyado y toma una barra curva situada debajo con agarre prono. Tira de la barra hacia la parte baja del pecho juntando los omóplatos y manteniendo el cuello neutro. Baja hasta extender los brazos sin despegar el torso del banco."
+}

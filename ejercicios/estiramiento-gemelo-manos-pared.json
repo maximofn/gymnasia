@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-gemelo-manos-pared",
+  "name": "Estiramiento de gemelo con las manos en la pared",
+  "image_male": "images/estiramiento-gemelo-manos-pared-male.webp",
+  "image_female": "images/estiramiento-gemelo-manos-pared-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["isquiotibiales"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Apoya las manos en una pared y da un paso largo hacia atrás con una pierna. Mantén esa rodilla extendida y el talón pegado al suelo mientras flexionas la pierna delantera e inclinas el cuerpo hacia la pared. Sostén el estiramiento y repite con el otro lado."
+}

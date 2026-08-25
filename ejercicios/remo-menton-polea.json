@@ -1,0 +1,11 @@
+{
+  "id": "remo-menton-polea",
+  "name": "Remo al mentón en polea",
+  "image_male": "images/remo-menton-polea-male.webp",
+  "image_female": "images/remo-menton-polea-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios", "bíceps"],
+  "equipment": "polea y barra recta",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie sobre una polea baja y toma la barra con agarre prono delante de los muslos. Eleva la barra cerca del cuerpo guiando el movimiento con los codos hasta la altura del pecho. Baja despacio y detén el recorrido si notas molestias en los hombros."
+}

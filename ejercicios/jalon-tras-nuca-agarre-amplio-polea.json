@@ -1,0 +1,11 @@
+{
+  "id": "jalon-tras-nuca-agarre-amplio-polea",
+  "name": "Jalón tras nuca con agarre amplio en polea",
+  "image_male": "images/jalon-tras-nuca-agarre-amplio-polea-male.webp",
+  "image_female": "images/jalon-tras-nuca-agarre-amplio-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "romboides", "hombro posterior"],
+  "equipment": "polea y barra dorsal",
+  "difficulty": "advanced",
+  "instructions": "Siéntate erguido frente a una polea alta y toma la barra con un agarre prono amplio. Lleva los codos hacia abajo para acercar la barra con control a la parte posterior de los hombros, sin adelantar la cabeza. Detén el recorrido antes de forzar la movilidad y extiende de nuevo los brazos lentamente."
+}

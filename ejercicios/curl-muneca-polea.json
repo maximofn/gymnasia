@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-polea",
+  "name": "Curl de muñeca en polea",
+  "image_male": "images/curl-muneca-polea-male.webp",
+  "image_female": "images/curl-muneca-polea-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["bíceps"],
+  "equipment": "polea, barra recta y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate frente a una polea baja y apoya los antebrazos sobre los muslos o el borde de un banco, dejando las muñecas libres. Sujeta una barra recta con las palmas hacia arriba y flexiona únicamente las muñecas. Baja con control manteniendo los antebrazos inmóviles."
+}

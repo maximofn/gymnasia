@@ -1,0 +1,11 @@
+{
+  "id": "tiron-unilateral-con-giro-polea",
+  "name": "Tirón unilateral con giro en polea",
+  "image_male": "images/tiron-unilateral-con-giro-polea-male.webp",
+  "image_female": "images/tiron-unilateral-con-giro-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["hombros", "bíceps", "oblicuos"],
+  "equipment": "polea",
+  "difficulty": "advanced",
+  "instructions": "Colócate frente a una polea baja con las piernas separadas, el torso inclinado y una agarradera en una mano. Tira hacia las costillas mientras extiendes la cadera y giras el pecho hacia el brazo de trabajo. Vuelve con control hasta extender el brazo y completa las repeticiones antes de cambiar de lado."
+}

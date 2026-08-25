@@ -1,0 +1,11 @@
+{
+  "id": "jalon-supino-polea",
+  "name": "Jalón supino en polea",
+  "image_male": "images/jalon-supino-polea-male.webp",
+  "image_female": "images/jalon-supino-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea y barra dorsal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate frente a una polea alta y toma la barra con las palmas hacia ti y las manos algo más separadas que los hombros. Eleva el pecho y lleva los codos hacia abajo hasta acercar la barra a la parte superior del pecho. Extiende los brazos con control sin encoger los hombros."
+}

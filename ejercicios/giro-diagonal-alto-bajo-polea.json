@@ -1,0 +1,11 @@
+{
+  "id": "giro-diagonal-alto-bajo-polea",
+  "name": "Giro diagonal de arriba abajo en polea",
+  "image_male": "images/giro-diagonal-alto-bajo-polea-male.webp",
+  "image_female": "images/giro-diagonal-alto-bajo-polea-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen", "hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de lado a una polea alta y toma la agarradera con ambas manos por encima del hombro más cercano. Gira el torso y lleva las manos en diagonal hacia la cadera contraria, manteniendo los brazos casi rectos y las rodillas suaves. Controla el regreso y cambia de lado al terminar la serie."
+}

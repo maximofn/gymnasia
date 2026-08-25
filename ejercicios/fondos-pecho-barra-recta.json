@@ -1,0 +1,11 @@
+{
+  "id": "fondos-pecho-barra-recta",
+  "name": "Fondos de pecho en barra recta",
+  "image_male": "images/fondos-pecho-barra-recta-male.webp",
+  "image_female": "images/fondos-pecho-barra-recta-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "barra recta",
+  "difficulty": "advanced",
+  "instructions": "Sostén el cuerpo sobre una única barra horizontal con ambas manos, los brazos extendidos y la barra delante de la cadera. Inclina el pecho sobre la barra y baja flexionando los codos hacia atrás hasta un rango estable. Empuja para volver arriba manteniendo la barra cerca del torso y evitando el balanceo."
+}
