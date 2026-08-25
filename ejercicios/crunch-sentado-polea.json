@@ -1,0 +1,11 @@
+{
+  "id": "crunch-sentado-polea",
+  "name": "Crunch sentado en polea",
+  "image_male": "images/crunch-sentado-polea-male.webp",
+  "image_female": "images/crunch-sentado-polea-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos"],
+  "equipment": "polea y cuerda",
+  "difficulty": "beginner",
+  "instructions": "Siéntate de espaldas a una polea alta y sujeta la cuerda a ambos lados de la cabeza. Mantén las caderas estables y flexiona la columna para acercar las costillas a la pelvis, llevando el pecho hacia las rodillas. Contrae el abdomen abajo y vuelve lentamente sin tirar de la cuerda con los brazos."
+}

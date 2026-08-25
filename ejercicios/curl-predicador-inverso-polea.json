@@ -1,0 +1,11 @@
+{
+  "id": "curl-predicador-inverso-polea",
+  "name": "Curl predicador inverso en polea",
+  "image_male": "images/curl-predicador-inverso-polea-male.webp",
+  "image_female": "images/curl-predicador-inverso-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y banco predicador",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco predicador frente a una polea baja y apoya por completo ambos brazos superiores en la almohadilla. Toma una barra con agarre prono y muñecas neutras. Flexiona los codos sin despegar los brazos del soporte, haz una pausa arriba y baja lentamente hasta casi extenderlos."
+}

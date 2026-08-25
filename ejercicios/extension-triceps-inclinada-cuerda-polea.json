@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-inclinada-cuerda-polea",
+  "name": "Extensión inclinada de tríceps con cuerda en polea",
+  "image_male": "images/extension-triceps-inclinada-cuerda-polea-male.webp",
+  "image_female": "images/extension-triceps-inclinada-cuerda-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "polea, cuerda y banco inclinado",
+  "difficulty": "advanced",
+  "instructions": "Recuéstate en un banco inclinado con la cabeza próxima a una polea baja situada detrás y sujeta una cuerda con agarre neutro. Mantén los brazos superiores junto a la cabeza. Flexiona los codos para llevar los extremos detrás de la coronilla y extiéndelos hasta alinear los brazos sin despegar la espalda del banco."
+}

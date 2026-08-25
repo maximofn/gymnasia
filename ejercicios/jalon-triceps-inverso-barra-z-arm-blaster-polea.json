@@ -1,0 +1,11 @@
+{
+  "id": "jalon-triceps-inverso-barra-z-arm-blaster-polea",
+  "name": "Jalón de tríceps inverso con barra Z y arm blaster",
+  "image_male": "images/jalon-triceps-inverso-barra-z-arm-blaster-polea-male.webp",
+  "image_female": "images/jalon-triceps-inverso-barra-z-arm-blaster-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea, barra Z y arm blaster",
+  "difficulty": "advanced",
+  "instructions": "Coloca un arm blaster sobre el torso y apoya los brazos superiores en sus extremos. Frente a una polea alta, sujeta una barra Z con agarre supino y fija los codos junto al cuerpo. Empuja la barra hacia abajo hasta extender los codos, contrae los tríceps y permite que suba de forma controlada sin separar los brazos del soporte."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "curl-inverso-polea",
+  "name": "Curl inverso en polea",
+  "image_male": "images/curl-inverso-polea-male.webp",
+  "image_female": "images/curl-inverso-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y barra",
+  "difficulty": "beginner",
+  "instructions": "Ponte frente a una polea baja y sujeta una barra recta con agarre prono, palmas hacia abajo. Mantén las muñecas neutras y los codos pegados al torso mientras flexionas la barra hacia los hombros. Haz una pausa breve y desciende lentamente hasta casi extender los brazos sin mover los hombros."
+}

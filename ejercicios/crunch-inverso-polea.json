@@ -1,0 +1,11 @@
+{
+  "id": "crunch-inverso-polea",
+  "name": "Crunch inverso en polea",
+  "image_male": "images/crunch-inverso-polea-male.webp",
+  "image_female": "images/crunch-inverso-polea-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "polea y tobillera",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con los pies orientados hacia una polea baja y fija el cable a los tobillos. Flexiona caderas y rodillas hasta aproximar los muslos al pecho. Desde ahí, contrae el abdomen para enrollar la pelvis y despegar ligeramente las caderas del suelo; baja vértebra a vértebra y extiende las piernas con control sin arquear la zona lumbar."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "extension-horizontal-unilateral-triceps-polea",
+  "name": "Extensión horizontal unilateral de tríceps en polea",
+  "image_male": "images/extension-horizontal-unilateral-triceps-polea-male.webp",
+  "image_female": "images/extension-horizontal-unilateral-triceps-polea-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de espaldas a una polea ajustada a la altura del hombro y sujeta un asa con una mano. Eleva el brazo hasta dejarlo paralelo al suelo y flexiona el codo con el puño cerca del hombro. Sin mover el brazo superior, extiende el codo hacia delante hasta alinear el brazo, contrae el tríceps y regresa lentamente antes de cambiar de lado."
+}

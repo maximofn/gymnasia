@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-predicador-cuerda-polea",
+  "name": "Curl martillo predicador con cuerda en polea",
+  "image_male": "images/curl-martillo-predicador-cuerda-polea-male.webp",
+  "image_female": "images/curl-martillo-predicador-cuerda-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea, cuerda y banco predicador",
+  "difficulty": "intermediate",
+  "instructions": "Colócate detrás de un banco predicador frente a una polea baja y apoya ambos brazos superiores en la almohadilla. Sujeta los extremos de una cuerda con agarre neutro. Flexiona los codos acercando las manos a los hombros sin mover los brazos, contrae arriba y baja lentamente hasta casi extenderlos."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentado-cuerda-cruzada-polea",
+  "name": "Remo sentado con cuerda cruzada en polea",
+  "image_male": "images/remo-sentado-cuerda-cruzada-polea-male.webp",
+  "image_female": "images/remo-sentado-cuerda-cruzada-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "deltoides posteriores"],
+  "equipment": "polea y cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate frente a una polea baja con los pies apoyados y sujeta los extremos de la cuerda cruzando las manos. Mantén la espalda neutra y lleva cada extremo hacia el lado opuesto del torso mientras abres los codos y retraes las escápulas. Regresa con control hasta extender los brazos sin redondear la espalda."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "remo-alto-sentado-agarre-inverso-polea",
+  "name": "Remo alto sentado con agarre inverso en polea",
+  "image_male": "images/remo-alto-sentado-agarre-inverso-polea-male.webp",
+  "image_female": "images/remo-alto-sentado-agarre-inverso-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea y barra dorsal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido frente a una polea alta y toma una barra dorsal con agarre supino. Inicia con los brazos extendidos y el pecho elevado. Lleva la barra hacia la parte superior del pecho dirigiendo los codos hacia abajo y atrás, junta las escápulas y vuelve lentamente sin balancear el torso."
+}

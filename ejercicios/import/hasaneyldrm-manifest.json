@@ -431,6 +431,33 @@
         {"source_id": "0202", "id": "remo-deltoide-posterior-agarraderas-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "0203", "id": "remo-deltoide-posterior-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 17,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0204", "id": "extension-horizontal-unilateral-triceps-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0205", "id": "jalon-tras-nuca-polea", "action": "create", "difficulty": "advanced", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0873", "id": "crunch-inverso-polea", "action": "create", "difficulty": "intermediate", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0206", "id": "curl-inverso-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2406", "id": "jalon-triceps-inverso-barra-z-arm-blaster-polea", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1413", "id": "curl-inverso-unilateral-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0209", "id": "curl-predicador-inverso-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0210", "id": "curl-muneca-inverso-polea", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0208", "id": "remo-alto-sentado-agarre-inverso-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1320", "id": "remo-sentado-cuerda-cruzada-polea", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1321", "id": "remo-sentado-elevado-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1322", "id": "remo-banco-inclinado-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1639", "id": "curl-martillo-predicador-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1724", "id": "extension-triceps-sobre-cabeza-cuerda-polea-alta", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1725", "id": "extension-triceps-inclinada-cuerda-polea", "action": "create", "difficulty": "advanced", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1726", "id": "extension-triceps-suelo-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1640", "id": "curl-martillo-predicador-unilateral-cuerda-polea", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1323", "id": "remo-sentado-cuerda-polea", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0211", "id": "giro-ruso-fitball-polea", "action": "create", "difficulty": "advanced", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0212", "id": "crunch-sentado-polea", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

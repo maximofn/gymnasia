@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentado-elevado-cuerda-polea",
+  "name": "Remo sentado elevado con cuerda en polea",
+  "image_male": "images/remo-sentado-elevado-cuerda-polea-male.webp",
+  "image_female": "images/remo-sentado-elevado-cuerda-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "polea y cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco elevado frente a una polea baja, apoya los pies y sujeta una cuerda con agarre neutro. Mantén el torso erguido y lleva los extremos hacia la parte alta del abdomen, retrayendo los omóplatos y dejando los codos cerca del cuerpo. Extiende los brazos lentamente sin perder la postura."
+}
