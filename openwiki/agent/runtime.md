@@ -122,6 +122,12 @@ flowchart TD
 
 `toolExecutor.test.ts` comprueba un guardado válido del arreglo completo, pero no cubre el borrado debido a entradas con formato incorrecto, la búsqueda con distinción entre mayúsculas y minúsculas, las claves duplicadas, las actualizaciones perdidas entre Configuración y las herramientas, la inyección de depuración, la sustitución mediante copia de seguridad/importación ni la excepción del restablecimiento general. Estos son los casos de regresión críticos para cualquier cambio en la memoria personal.
 
+## Frontera de feedback verificable
+
+La creación de propuestas y denuncias ya no debe depender de un escritor de GitHub dentro de `App.tsx`. `apps/mobile/agent/feedbackIssues.ts` prepara el único borrador que puede salir (`kind`, `title`, `summary`) y deriva una `idempotency_key` estable con `buildIdempotencyKey`; el receptor remoto fija repositorio y etiquetas, sanea de nuevo y solo confirma éxito con número y URL de issue. Consulte [Worker de feedback e incidencias verificables](../services/feedback-worker.md) para el protocolo, la retención y el despliegue.
+
+Esta es una frontera de privacidad: `formatAiResponseReport` prepara una denuncia explícitamente previsualizada y saneada, no el hilo completo ni el razonamiento. Al cambiar `create_feature_issue`, los límites o la URL del receptor, actualice la réplica del contrato y ejecute `feedbackContract.contract.test.ts` además de las pruebas del Worker; la prueba ancla también que el APK publicado tenga endpoint de producción y que no regresen credenciales/escrituras directas de GitHub al cliente.
+
 ## Catálogo canónico de herramientas
 
 Todos los nombres siguientes aparecen tanto en `AGENT_TOOL_DEFINITIONS` como en `AGENT_TOOL_HANDLERS`; `toolDefinitions.test.ts` verifica la igualdad exacta de los conjuntos y la equivalencia de los esquemas de OpenAI, Anthropic y Google.
