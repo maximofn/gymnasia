@@ -1,0 +1,11 @@
+{
+  "id": "crunch-de-pie-polea",
+  "name": "Crunch de pie en polea",
+  "image_male": "images/crunch-de-pie-polea-male.webp",
+  "image_female": "images/crunch-de-pie-polea-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Colócate de espaldas a una polea alta y sujeta la agarradera detrás de la cabeza con ambas manos. Flexiona ligeramente las rodillas y fija las caderas. Redondea el torso llevando las costillas hacia la pelvis, contrae el abdomen y vuelve lentamente sin tirar del cuello ni extender la espalda."
+}

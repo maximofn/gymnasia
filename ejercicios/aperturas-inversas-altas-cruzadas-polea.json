@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inversas-altas-cruzadas-polea",
+  "name": "Aperturas inversas altas cruzadas en polea",
+  "image_male": "images/aperturas-inversas-altas-cruzadas-polea-male.webp",
+  "image_female": "images/aperturas-inversas-altas-cruzadas-polea-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": ["trapecios", "romboides"],
+  "equipment": "polea y agarraderas",
+  "difficulty": "intermediate",
+  "instructions": "Colócate entre dos poleas altas y toma la agarradera derecha con la mano izquierda y la izquierda con la mano derecha. Con los brazos al frente y los codos ligeramente flexionados, abre los brazos hacia los lados hasta alinearlos con los hombros. Junta los omóplatos y vuelve despacio manteniendo los cables cruzados."
+}

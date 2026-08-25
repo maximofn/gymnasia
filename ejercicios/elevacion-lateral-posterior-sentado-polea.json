@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-lateral-posterior-sentado-polea",
+  "name": "Elevación lateral posterior sentado en polea",
+  "image_male": "images/elevacion-lateral-posterior-sentado-polea-male.webp",
+  "image_female": "images/elevacion-lateral-posterior-sentado-polea-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": ["trapecios", "romboides"],
+  "equipment": "polea y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco frente a dos poleas bajas, inclina el torso sobre los muslos y cruza las agarraderas delante de las piernas. Con los codos ligeramente flexionados, abre los brazos hacia los lados hasta alinearlos con los hombros. Junta los omóplatos y vuelve lentamente sin balancear el torso."
+}

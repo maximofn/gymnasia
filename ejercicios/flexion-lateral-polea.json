@@ -1,0 +1,11 @@
+{
+  "id": "flexion-lateral-polea",
+  "name": "Flexión lateral en polea",
+  "image_male": "images/flexion-lateral-polea-male.webp",
+  "image_female": "images/flexion-lateral-polea-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Colócate de lado a una polea baja y sujeta la agarradera con la mano más próxima, manteniendo el brazo extendido. Activa el abdomen y flexiona el tronco lateralmente con un recorrido corto y controlado. Regresa a la vertical sin girar las caderas y completa las repeticiones antes de cambiar de lado."
+}

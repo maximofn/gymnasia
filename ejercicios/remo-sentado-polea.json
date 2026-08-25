@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentado-polea",
+  "name": "Remo sentado en polea",
+  "image_male": "images/remo-sentado-polea-male.webp",
+  "image_female": "images/remo-sentado-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["dorsales", "bíceps", "antebrazos"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Siéntate frente a una polea baja con los pies apoyados, las rodillas ligeramente flexionadas y una agarradera en cada mano. Mantén la columna neutra y lleva las manos hacia el abdomen guiando los codos hacia atrás. Junta los omóplatos y extiende los brazos de nuevo de forma controlada."
+}

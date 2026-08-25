@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-sentadilla-polea",
+  "name": "Curl de bíceps en sentadilla con polea",
+  "image_male": "images/curl-biceps-sentadilla-polea-male.webp",
+  "image_female": "images/curl-biceps-sentadilla-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "cuádriceps", "glúteos"],
+  "equipment": "polea y barra",
+  "difficulty": "intermediate",
+  "instructions": "Frente a una polea baja, sujeta una barra corta con agarre supino y baja a una sentadilla estable. Mantén los codos cerca del cuerpo y flexiónalos para llevar la barra hacia los hombros sin perder la postura. Extiende los brazos lentamente y conserva la tensión durante toda la serie."
+}

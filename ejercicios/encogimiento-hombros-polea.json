@@ -1,0 +1,11 @@
+{
+  "id": "encogimiento-hombros-polea",
+  "name": "Encogimiento de hombros en polea",
+  "image_male": "images/encogimiento-hombros-polea-male.webp",
+  "image_female": "images/encogimiento-hombros-polea-female.webp",
+  "muscle_group": "trapecios",
+  "secondary_muscles": ["hombros", "antebrazos"],
+  "equipment": "polea y barra",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a una polea baja y sujeta una barra recta con agarre prono y los brazos extendidos. Mantén el pecho elevado y eleva los hombros verticalmente hacia las orejas sin flexionar los codos. Sostén la contracción un instante y baja despacio hasta la posición inicial."
+}

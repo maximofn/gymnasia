@@ -1,0 +1,11 @@
+{
+  "id": "remo-alto-sentado-barra-v-polea",
+  "name": "Remo alto sentado con barra V en polea",
+  "image_male": "images/remo-alto-sentado-barra-v-polea-male.webp",
+  "image_female": "images/remo-alto-sentado-barra-v-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["dorsales", "bíceps", "hombro posterior"],
+  "equipment": "polea y barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate frente a una polea alta y sujeta la barra V con agarre neutro. Mantén el torso erguido, el pecho elevado y los brazos extendidos por encima de la cabeza. Lleva la barra hacia la parte alta del pecho guiando los codos hacia abajo y atrás, junta los omóplatos y regresa de forma controlada."
+}

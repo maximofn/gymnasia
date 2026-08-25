@@ -1,0 +1,11 @@
+{
+  "id": "curl-concentrado-sentado-unilateral-polea",
+  "name": "Curl concentrado sentado unilateral en polea",
+  "image_male": "images/curl-concentrado-sentado-unilateral-polea-male.webp",
+  "image_female": "images/curl-concentrado-sentado-unilateral-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate frente a una polea baja, inclina ligeramente el torso y apoya el codo de trabajo en la cara interna del muslo. Sujeta una agarradera con la palma hacia arriba y flexiona el codo hasta acercar la mano al hombro. Aprieta el bíceps, baja con control y completa las repeticiones antes de cambiar de brazo."
+}
