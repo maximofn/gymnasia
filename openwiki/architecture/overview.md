@@ -39,6 +39,8 @@ La arquitectura tiene dos artefactos independientes orientados al usuario:
 
 `apps/anthropic_proxy/cors-proxy.py::app` es un puente de desarrollo limitado basado en FastAPI. Su ruta `/health` y sus tres rutas `/chat/providers/anthropic/*` actúan como proxy para la verificación de Anthropic, el listado de modelos y los mensajes. Existe porque las llamadas a Anthropic desde el navegador encuentran restricciones de CORS; los clientes nativos llaman directamente a Anthropic. No es un backend general de Gymnasia ni es propietario de registros del producto. Consulte [Proxy de Anthropic](../services/anthropic-proxy.md).
 
+`apps/feedback-worker` es una excepción distinta y limitada: un Worker de Cloudflare recibe únicamente feedback para crear incidencias verificables de GitHub, porque el cliente no puede custodiar esa credencial de escritura. No autentica usuarios ni conserva el estado del producto; sus límites de esquema, deduplicación, privacidad y retención se documentan en [Worker de feedback e incidencias verificables](../services/feedback-worker.md).
+
 ## Composición de la ejecución y dirección de las dependencias
 
 | Capa | Rutas y símbolos canónicos | Responsabilidad | Puede depender de |
