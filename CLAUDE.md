@@ -289,10 +289,18 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   el inventario deja de describir el código.
 - Update `README.md` whenever the project structure, dependencies, or startup instructions change.
 
-## Skill Routing (OpenWiki)
-- Para cualquier tarea de OpenWiki, carga `.claude/skills/openwiki/SKILL.md`.
-  Las reglas operativas, de seguridad, compatibilidad y mantenimiento específicas
-  de OpenWiki viven solo en esa skill; no las dupliques aquí.
+## Repository Documentation and Skill Routing (OpenWiki)
+- `openwiki/` es la wiki técnica generada del repositorio: documenta la
+  arquitectura, los componentes, los flujos, las integraciones, las operaciones,
+  las pruebas y los riesgos conocidos. Su punto de entrada es
+  `openwiki/quickstart.md`.
+- Para comprender una parte del sistema o localizar el código responsable,
+  consulta primero `openwiki/quickstart.md` y la página temática correspondiente.
+  Usa la wiki como mapa de navegación y verifica después las conclusiones en el
+  código y las pruebas, que son la fuente de verdad.
+- Para cualquier tarea de operación o mantenimiento de OpenWiki, carga
+  `.claude/skills/openwiki/SKILL.md`. Sus reglas de seguridad, compatibilidad y
+  automatización viven solo en esa skill; no las dupliques aquí.
 
 ## Skill Maintenance Rule (Linear)
 - **Cada descubrimiento nuevo sobre Linear implica actualizar la skill `linear-tickets`.**
