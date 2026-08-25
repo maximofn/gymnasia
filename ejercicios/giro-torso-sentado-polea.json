@@ -1,0 +1,11 @@
+{
+  "id": "giro-torso-sentado-polea",
+  "name": "Giro de torso sentado en polea",
+  "image_male": "images/giro-torso-sentado-polea-male.webp",
+  "image_female": "images/giro-torso-sentado-polea-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen"],
+  "equipment": "polea y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate de lado a una polea, planta los pies y sujeta una agarradera con ambas manos y los brazos extendidos. Mantén las caderas estables y gira el torso alejando las manos de la máquina. Controla el retorno, evita tirar con los brazos y completa la serie antes de cambiar la orientación."
+}

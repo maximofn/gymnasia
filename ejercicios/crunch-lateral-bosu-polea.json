@@ -1,0 +1,11 @@
+{
+  "id": "crunch-lateral-bosu-polea",
+  "name": "Crunch lateral sobre BOSU en polea",
+  "image_male": "images/crunch-lateral-bosu-polea-male.webp",
+  "image_female": "images/crunch-lateral-bosu-polea-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen"],
+  "equipment": "polea y bosu",
+  "difficulty": "advanced",
+  "instructions": "Siéntate sobre un BOSU junto a una polea alta, apoya bien los pies y sujeta la agarradera junto a un lado de la cabeza. Reclina ligeramente el torso sobre la cúpula y flexiónalo en diagonal acercando el hombro a la cadera contraria. Regresa con control, mantén las caderas estables y cambia de lado al completar la serie."
+}

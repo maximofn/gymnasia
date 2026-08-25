@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentado-agarre-amplio-polea",
+  "name": "Remo sentado con agarre amplio en polea",
+  "image_male": "images/remo-sentado-agarre-amplio-polea-male.webp",
+  "image_female": "images/remo-sentado-agarre-amplio-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["dorsales", "bíceps", "hombro posterior"],
+  "equipment": "polea y barra",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate frente a una polea baja, apoya los pies y sujeta una barra larga con agarre prono más ancho que los hombros. Mantén el torso erguido y lleva la barra hacia la parte baja del pecho con los codos abiertos. Junta los omóplatos y extiende los brazos lentamente sin redondear la espalda."
+}

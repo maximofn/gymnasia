@@ -1,0 +1,11 @@
+{
+  "id": "curl-sentado-sobre-cabeza-polea",
+  "name": "Curl sentado sobre la cabeza en polea",
+  "image_male": "images/curl-sentado-sobre-cabeza-polea-male.webp",
+  "image_female": "images/curl-sentado-sobre-cabeza-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "hombros"],
+  "equipment": "polea y banco",
+  "difficulty": "advanced",
+  "instructions": "Siéntate centrado entre dos poleas altas y sujeta una agarradera en cada mano con las palmas hacia arriba. Eleva los brazos hacia los lados y fija los codos a la altura de los hombros. Flexiona ambos codos llevando las manos hacia la cabeza, contrae los bíceps y extiende de nuevo sin bajar los brazos."
+}

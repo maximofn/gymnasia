@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-sentado-polea",
+  "name": "Curl de bíceps sentado en polea",
+  "image_male": "images/curl-biceps-sentado-polea-male.webp",
+  "image_female": "images/curl-biceps-sentado-polea-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "polea y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco frente a una polea baja y sujeta una barra corta con agarre supino. Apoya bien los pies, mantén la espalda neutra y los codos junto al cuerpo. Flexiona los codos hasta acercar la barra a los hombros, contrae los bíceps y vuelve despacio hasta extender los brazos sin perder la tensión."
+}

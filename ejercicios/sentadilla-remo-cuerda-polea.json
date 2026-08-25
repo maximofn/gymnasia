@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-remo-cuerda-polea",
+  "name": "Sentadilla con remo de cuerda en polea",
+  "image_male": "images/sentadilla-remo-cuerda-polea-male.webp",
+  "image_female": "images/sentadilla-remo-cuerda-polea-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "glúteos", "cuádriceps"],
+  "equipment": "polea y cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta una cuerda conectada a una polea baja y retrocede hasta tensar el cable. Baja en sentadilla con el pecho elevado y los brazos extendidos. Al subir, lleva los extremos de la cuerda hacia el abdomen y junta los omóplatos; después extiende los brazos y desciende de nuevo con control."
+}

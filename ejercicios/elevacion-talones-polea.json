@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-talones-polea",
+  "name": "Elevación de talones en polea",
+  "image_male": "images/elevacion-talones-polea-male.webp",
+  "image_female": "images/elevacion-talones-polea-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["sóleo"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie sobre una plataforma baja frente a la polea y sujeta el apoyo o las agarraderas para mantener el equilibrio. Con las rodillas casi extendidas, eleva los talones todo lo posible apoyándote en las puntas. Contrae los gemelos y baja despacio hasta que los talones queden por debajo de la plataforma."
+}

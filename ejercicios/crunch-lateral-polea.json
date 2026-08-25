@@ -1,0 +1,11 @@
+{
+  "id": "crunch-lateral-polea",
+  "name": "Crunch lateral en polea",
+  "image_male": "images/crunch-lateral-polea-male.webp",
+  "image_female": "images/crunch-lateral-polea-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie de lado a una polea alta y sujeta la agarradera junto a la cabeza con el codo flexionado. Mantén la pelvis estable y flexiona el torso lateralmente llevando el codo hacia la cadera. Contrae los oblicuos y vuelve despacio a la posición vertical antes de completar el otro lado."
+}

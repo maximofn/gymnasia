@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-trasero-polea",
+  "name": "Curl de muñeca trasero en polea",
+  "image_male": "images/curl-muneca-trasero-polea-male.webp",
+  "image_female": "images/curl-muneca-trasero-polea-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["bíceps"],
+  "equipment": "polea y barra",
+  "difficulty": "beginner",
+  "instructions": "Colócate de espaldas a una polea baja y sujeta detrás de los muslos una barra recta con agarre prono. Mantén los brazos extendidos y pegados al cuerpo. Eleva la barra flexionando únicamente las muñecas, haz una pausa y baja lentamente sin mover los codos ni los hombros."
+}

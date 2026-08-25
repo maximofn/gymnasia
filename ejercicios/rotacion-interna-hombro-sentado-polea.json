@@ -1,0 +1,11 @@
+{
+  "id": "rotacion-interna-hombro-sentado-polea",
+  "name": "Rotación interna de hombro sentado en polea",
+  "image_male": "images/rotacion-interna-hombro-sentado-polea-male.webp",
+  "image_female": "images/rotacion-interna-hombro-sentado-polea-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["manguito rotador"],
+  "equipment": "polea y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate de lado a una polea situada a la altura del codo y sujeta la agarradera con el brazo más próximo. Mantén el codo flexionado a noventa grados y pegado al costado. Rota el antebrazo hacia el abdomen sin mover el brazo superior, haz una pausa y regresa lentamente antes de cambiar de lado."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentado-unilateral-alternado-polea",
+  "name": "Remo sentado unilateral alternado en polea",
+  "image_male": "images/remo-sentado-unilateral-alternado-polea-male.webp",
+  "image_female": "images/remo-sentado-unilateral-alternado-polea-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["dorsales", "bíceps", "antebrazos"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate frente a dos poleas bajas con los pies apoyados y una agarradera en cada mano. Mantén el torso estable y tira de una agarradera hacia el costado mientras el otro brazo permanece extendido. Controla el regreso y repite con el brazo contrario, alternando sin girar el tronco."
+}
