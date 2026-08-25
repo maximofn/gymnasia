@@ -117,7 +117,10 @@ test("builds a useful successful report from metadata only", () => {
     report,
     /Fuentes confirmadas: Linear \(solo metadatos\) · maximofn\.com · Tavily/u,
   );
-  assert.match(report, /✅ PR #18 fusionada · 9 archivos · \+122\/−9/u);
+  assert.match(
+    report,
+    /✅ PR de esta ejecución: #18 fusionada · 9 archivos · \+122\/−9/u,
+  );
   assert.match(report, /Cambios destacados:/u);
   assert.match(report, /• Gobierno de políticas de prompt · \+97\/−0/u);
   assert.match(report, /• Compilación, publicación y pruebas · \+10\/−1/u);
@@ -137,7 +140,7 @@ test("distinguishes a successful run with no documentation changes", () => {
 
   const report = buildDailyReport({ ...payload, now });
   assert.match(report, /🟰 Sin cambios documentales nuevos/u);
-  assert.match(report, /✅ PR #18 fusionada/u);
+  assert.match(report, /✅ Última PR conocida: #18 fusionada/u);
 });
 
 test("reports OAuth failure without copying untrusted fields", () => {
@@ -145,9 +148,27 @@ test("reports OAuth failure without copying untrusted fields", () => {
   const payload = successfulPayload();
   payload.runs.workflow_runs[0].conclusion = "failure";
   payload.runs.workflow_runs[0].private_log = secret;
+  payload.runs.workflow_runs.push(
+    {
+      conclusion: "timed_out",
+      created_at: "2026-08-19T10:00:00.000Z",
+      event: "schedule",
+      status: "completed",
+    },
+    {
+      conclusion: "success",
+      created_at: "2026-08-18T10:00:00.000Z",
+      event: "schedule",
+      status: "completed",
+    },
+  );
   payload.jobs.jobs[0].steps.find(
     ({ name }) => name === "Mark OpenAI OAuth failure",
   ).conclusion = "success";
+  payload.jobs.jobs[0].steps.find(
+    ({ name }) => name ===
+      "Push fixed branch and create or update pull request",
+  ).conclusion = "skipped";
   payload.pullRequests[0].title = secret;
   payload.pullRequests[0].url = `https://example.com/${secret}`;
 
@@ -155,6 +176,30 @@ test("reports OAuth failure without copying untrusted fields", () => {
   assert.match(report, /🔴 Actualización fallida/u);
   assert.match(report, /🔴 Code Brain bloqueado por OAuth/u);
   assert.match(report, /🔴 OAuth: login expirado o revocado/u);
+  assert.match(report, /🔁 Fallos consecutivos: 2 · desde 19 ago 2026/u);
+  assert.match(report, /🕘 Último éxito: 18 ago 2026/u);
+  assert.match(report, /🚨 ACCIÓN NECESARIA/u);
+  assert.match(report, /ejecuta una consulta breve/u);
+  assert.match(report, /✅ Última PR conocida: #18 fusionada/u);
   assert.doesNotMatch(report, new RegExp(secret, "u"));
   assert.doesNotMatch(report, /example\.com/u);
+});
+
+test("reports when no successful run appears in the retained history", () => {
+  const payload = successfulPayload();
+  payload.runs.workflow_runs = [
+    {
+      conclusion: "failure",
+      created_at: "2026-08-20T09:07:50.000Z",
+      event: "schedule",
+      status: "completed",
+    },
+  ];
+
+  const report = buildDailyReport({ ...payload, now });
+  assert.match(report, /🔁 Fallos consecutivos: 1 · desde 20 ago 2026/u);
+  assert.match(
+    report,
+    /🕘 Último éxito: no aparece en las últimas 30 ejecuciones/u,
+  );
 });

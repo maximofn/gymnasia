@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenWiki"
+  short_description: "Opera y actualiza OpenWiki con seguridad"
+  default_prompt: "Usa $openwiki para revisar o mantener la instalación de OpenWiki de Gymnasia."

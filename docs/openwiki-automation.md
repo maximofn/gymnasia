@@ -1,5 +1,9 @@
 # Automatización privada de OpenWiki
 
+Para decisiones y procedimientos de agentes, la fuente canónica es
+`.claude/skills/openwiki/SKILL.md`. Este documento mantiene el runbook humano;
+no dupliques aquí gotchas de compatibilidad que pertenezcan a la skill.
+
 ## Decisión de arquitectura
 
 `maximofn/gymnasia` es público. La autenticación de ChatGPT se trata como una
@@ -27,11 +31,15 @@ que no puede generar cargos accidentales al agotar la cuota gratuita.
   - actualiza el Code Brain de Gymnasia con la suscripción de ChatGPT;
   - reutiliza siempre la rama `openwiki/update` y crea o actualiza una única PR;
   - actualiza opcionalmente Personal Brain desde Linear, maximofn.com y Tavily;
-  - cifra de nuevo el OAuth rotado y el estado privado antes de persistirlos.
+  - cifra de nuevo el OAuth rotado y el estado privado antes de persistirlos;
+  - restaura `AGENTS.md` y `CLAUDE.md` desde `main` antes del commit, de modo que
+    el runner solo publica `openwiki/` y `.openwikiignore`.
 - `openwiki-report.yml`, a las 12:00 UTC: consulta el workflow anterior y envía
   a Telegram duración y disparador, estado de Code Brain, configuración de
   LangSmith, persistencia OAuth, Personal Brain y fuentes confirmadas, además
-  del estado y estadísticas de la PR. No lee ni envía logs ni contenidos.
+  del estado y estadísticas de la PR. Distingue la PR de la ejecución actual de
+  la última PR conocida y, ante fallos, muestra la racha, el último éxito y una
+  acción de recuperación. No lee ni envía logs ni contenidos.
 - `tests.yml`: valida cifrado, filtrado OAuth, export seguro de Linear y
   configuración de Personal Brain.
 
@@ -106,15 +114,18 @@ activos. Todos los secretos y la variable de las tablas anteriores están
 configurados; `OPENWIKI_OAUTH_SEED` se eliminó después de verificar la
 restauración desde artefacto.
 
-Puesta en servicio verificada el 20 de agosto de 2026:
+Versión `0.3.3` verificada el 25 de agosto de 2026:
 
-- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/32352293394)
-  terminó correctamente con Code Brain, LangSmith, Personal Brain y la PR;
+- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/32868306275)
+  terminó correctamente con Code Brain, LangSmith, Personal Brain, renovación
+  cifrada y publicación documental;
 - los artefactos `openwiki-oauth-state` y `openwiki-personal-state` se crearon
   cifrados desde esa misma ejecución;
-- la rama fija actualizó la [PR de documentación #18](https://github.com/maximofn/gymnasia/pull/18);
-- el [informe manual](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/32353104131)
-  fue aceptado correctamente por la API de Telegram.
+- la rama fija creó la [PR de documentación #75](https://github.com/maximofn/gymnasia/pull/75);
+- el control de políticas rechazó una modificación incompatible de las
+  instrucciones y, tras restaurarlas, todos los checks quedaron en verde;
+- la plantilla pública y el repositorio privado están sincronizados en los
+  workflows, scripts, tests, versión y lockfile.
 
 ### Permiso de PR
 
@@ -221,10 +232,10 @@ npm test
 
 Antes de activar o modificar los horarios hay que validar los YAML, comprobar
 los scripts shell con `bash -n`, pasar `zizmor` y ejecutar manualmente ambos
-workflows. La puesta en servicio actual pasó la batería de la plantilla, el CI del
-repositorio privado, 61 tests deterministas de Gymnasia, `zizmor` sin hallazgos
-y las dos ejecuciones manuales; estas comprobaciones deben repetirse cuando
-cambie la plantilla.
+workflows. Cuando cambie la versión de OpenWiki, sigue además el protocolo de
+`.claude/skills/openwiki/references/version-and-agent-instructions.md`; incluye
+un checkout desechable y la validación explícita del enlace simbólico y los
+delimitadores antes de publicar.
 
 ## Referencias oficiales
 

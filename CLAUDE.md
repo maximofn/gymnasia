@@ -287,9 +287,20 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   actualizar `scripts/data-inventory/inventory.json` y recorrer
   `docs/legal/privacy-change-checklist.md`. `npm run check:data-inventory` falla si
   el inventario deja de describir el código.
-- Keep `AGENTS.md` and root `CLAUDE.md` synchronized whenever repository instructions change.
-- `AGENTS.md` es un link de `CLAUDE.md` por lo que modificando uno se debe actualizar el otro.
 - Update `README.md` whenever the project structure, dependencies, or startup instructions change.
+
+## Repository Documentation and Skill Routing (OpenWiki)
+- `openwiki/` es la wiki técnica generada del repositorio: documenta la
+  arquitectura, los componentes, los flujos, las integraciones, las operaciones,
+  las pruebas y los riesgos conocidos. Su punto de entrada es
+  `openwiki/quickstart.md`.
+- Para comprender una parte del sistema o localizar el código responsable,
+  consulta primero `openwiki/quickstart.md` y la página temática correspondiente.
+  Usa la wiki como mapa de navegación y verifica después las conclusiones en el
+  código y las pruebas, que son la fuente de verdad.
+- Para cualquier tarea de operación o mantenimiento de OpenWiki, carga
+  `.claude/skills/openwiki/SKILL.md`. Sus reglas de seguridad, compatibilidad y
+  automatización viven solo en esa skill; no las dupliques aquí.
 
 ## Skill Maintenance Rule (Linear)
 - **Cada descubrimiento nuevo sobre Linear implica actualizar la skill `linear-tickets`.**
@@ -460,16 +471,6 @@ Only non-obvious gotchas that could recur are kept here.
   plantilla del repositorio privado puede usar `actions/checkout` porque no
   contiene esos gitlinks.
 
-### OpenWiki reemplaza todo el contenido entre sus marcadores
-- Gotcha: `openwiki code --update` regenera íntegramente el bloque delimitado por
-  los comentarios `OPENWIKI:START` y `OPENWIKI:END` en `CLAUDE.md`. Además,
-  OpenWiki busca literalmente los delimitadores completos: mencionarlos otra vez
-  en la prosa hace que aborte por marcadores duplicados o malformados. Cualquier
-  regla operativa añadida a mano dentro del bloque desaparece en la siguiente PR.
-- Fix: conservar exactamente una pareja de delimitadores, no reproducirlos
-  literalmente en ningún otro texto y mantener fuera del bloque todas las reglas
-  propias de seguridad, OAuth, runners y mantenimiento.
-
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:
 ```bash
@@ -489,16 +490,6 @@ un push que sí entre en el filtro gasta build; el resto, no.
 The APK workflow changes `apps/mobile/app.json` only inside the build workspace;
 the GitHub tag and Release persist the published version. It must never commit a
 version bump directly to `main`.
-
-## OpenWiki automation security
-
-ChatGPT OAuth automation must not run from this public repository. The separate repository `maximofn/gymnasia-openwiki-automation` is private and is sourced from the reviewed template in `ops/openwiki-automation-template/`; it refuses to run with non-private visibility. It uses a fixed `openwiki/update` branch, encrypted OAuth and Personal Brain artifacts, and a separate sanitized Telegram report. Setup, threat boundaries, operational status, and recovery instructions live in `docs/openwiki-automation.md`.
-
-The legacy public OpenWiki workflow was removed after the private runner completed its end-to-end verification. Do not add ChatGPT OAuth secrets or a replacement OpenWiki schedule to this public repository.
-
-`openwiki cron` only manages local Personal Brain connector ingestion schedules. It does not list or schedule Code Brain repository updates; those use the private automation repository's GitHub Actions workflow.
-
-Do not hand-edit generated OpenWiki pages unless explicitly asked; prefer updating source code/docs and letting OpenWiki regenerate.
 
 <!-- OPENWIKI:START -->
 
