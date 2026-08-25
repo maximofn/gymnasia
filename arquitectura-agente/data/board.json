@@ -1990,6 +1990,26 @@
       ]
     },
     {
+      "id": "GYM-203",
+      "kind": "epic",
+      "title": "Añadir accesibilidad integral a la app",
+      "state": "backlog",
+      "summary": "Hacer que todos los flujos de Gymnasia puedan utilizarse de forma efectiva por personas con distintas capacidades y validar las mejoras con usuarios reales.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-204",
+          "title": "Investigar colaboración con ONCE y otras organizaciones para probar la accesibilidad",
+          "state": "backlog",
+          "summary": "Comparar organizaciones y comunidades, recomendar una colaboración y preparar un piloto seguro que convierta el feedback de participantes diversos en trabajo accionable.",
+          "dependsOn": [],
+          "related": [
+            "GYM-202"
+          ]
+        }
+      ]
+    },
+    {
       "id": "otros",
       "kind": "group",
       "title": "Tickets sueltos (sin épica)",
@@ -2013,20 +2033,6 @@
           "summary": "Unificar los muchos componentes repetidos de la interfaz en uno solo.",
           "dependsOn": [],
           "related": []
-        },
-        {
-          "id": "GYM-203",
-          "title": "Añadir accesibilidad integral a la app",
-          "state": "backlog",
-          "summary": "Convertir este marcador en una futura épica y desglosar la accesibilidad integral de todos los flujos antes de implementar cambios.",
-          "dependsOn": [],
-          "related": [
-            "GYM-8",
-            "GYM-121",
-            "GYM-146",
-            "GYM-160",
-            "GYM-202"
-          ]
         },
         {
           "id": "GYM-53",
@@ -2706,6 +2712,14 @@
         "GYM-147",
         "GYM-148",
         "GYM-149"
+      ]
+    },
+    {
+      "id": "accesibilidad",
+      "title": "Validar la accesibilidad con usuarios reales",
+      "why": "Antes de desglosar e implementar cambios transversales, GYM-204 identifica una organización o comunidad adecuada, distingue pruebas con usuarios de auditoría o certificación y prepara un piloto seguro para que los criterios de la épica partan de feedback real.",
+      "tickets": [
+        "GYM-204"
       ]
     },
     {
