@@ -437,7 +437,7 @@
           </div>
         </section>
 
-        <section class="scene" data-scene data-title="Una petición termina en GitHub" data-max-step="2">
+        <section class="scene" data-scene data-title="Una petición termina en GitHub" data-max-step="3">
           <div class="scene-heading side-heading">
             <span class="eyebrow">15 · CREATE_FEATURE_ISSUE</span>
             <h1>Una conversación puede activar un flujo externo</h1>
@@ -445,29 +445,27 @@
               <span data-active-steps="0">01 · DEFINICIÓN</span>
               <span data-active-steps="1">02 · TOOL CALL</span>
               <span data-active-steps="2">03 · HANDLER</span>
+              <span data-active-steps="3">04 · WORKER SEGURO</span>
             </div>
           </div>
 
           <div class="feature-code-stage">
             <article class="code-window feature-code" data-visible-steps="0">
-              <div class="window-bar"><span></span><span></span><span></span><strong>toolDefinitions.ts</strong></div>
+              <div class="window-bar"><span></span><span></span><span></span><strong>toolDefinitions.ts · fragmento</strong></div>
               <pre><code>{
   <span class="token-key">name</span>: <span class="token-string">"create_feature_issue"</span>,
+  <span class="token-key">effect</span>: <span class="token-string">"external_write"</span>,
   <span class="token-key">description</span>:
-    <span class="token-string">"Crea una issue en GitHub cuando el usuario solicita una mejora "</span> +
-    <span class="token-string">"o una nueva funcionalidad para la app."</span>,
+    <span class="token-string">"Envía al equipo de Gymnasia una solicitud de mejora. "</span> +
+    <span class="token-string">"Antes de llamarla, muestra el título y el resumen "</span> +
+    <span class="token-string">"y espera a que el usuario los apruebe."</span>,
   <span class="token-key">inputSchema</span>: {
     <span class="token-key">type</span>: <span class="token-string">"object"</span>,
     <span class="token-key">properties</span>: {
-      <span class="token-key">title_summary</span>: { <span class="token-key">type</span>: <span class="token-string">"string"</span> },
-      <span class="token-key">conversation_excerpt</span>: { <span class="token-key">type</span>: <span class="token-string">"string"</span> },
-      <span class="token-key">interpretation</span>: { <span class="token-key">type</span>: <span class="token-string">"string"</span> }
+      <span class="token-key">title</span>: { <span class="token-key">type</span>: <span class="token-string">"string"</span> },
+      <span class="token-key">summary</span>: { <span class="token-key">type</span>: <span class="token-string">"string"</span> }
     },
-    <span class="token-key">required</span>: [
-      <span class="token-string">"title_summary"</span>,
-      <span class="token-string">"conversation_excerpt"</span>,
-      <span class="token-string">"interpretation"</span>
-    ]
+    <span class="token-key">required</span>: [<span class="token-string">"title"</span>, <span class="token-string">"summary"</span>]
   }
 }</code></pre>
             </article>
@@ -477,26 +475,52 @@
               <pre><code>{
   <span class="token-key">"name"</span>: <span class="token-string">"create_feature_issue"</span>,
   <span class="token-key">"arguments"</span>: {
-    <span class="token-key">"title_summary"</span>: <span class="token-string">"Copiar comidas entre fechas"</span>,
-    <span class="token-key">"conversation_excerpt"</span>:
-      <span class="token-string">"Me gustaría poder copiar todas las comidas de ayer al día de hoy."</span>,
-    <span class="token-key">"interpretation"</span>:
-      <span class="token-string">"El usuario quiere duplicar las comidas registradas de una fecha a otra."</span>
+    <span class="token-key">"title"</span>: <span class="token-string">"Copiar comidas entre fechas"</span>,
+    <span class="token-key">"summary"</span>:
+      <span class="token-string">"Permitir duplicar las comidas registradas de una fecha a otra."</span>
   }
 }</code></pre>
             </article>
 
-            <article class="code-window feature-code short-code" data-visible-steps="2">
+            <article class="code-window feature-code handler-code" data-visible-steps="2">
               <div class="window-bar"><span></span><span></span><span></span><strong>toolExecutor.ts</strong></div>
-              <pre><code><span class="token-keyword">const</span> createFeatureIssue = <span class="token-keyword">async</span> (args, context, dependencies) =&gt; {
-  <span class="token-keyword">await</span> dependencies.createFeatureIssue({
-    <span class="token-key">title_summary</span>: args.title_summary,
-    <span class="token-key">conversation_excerpt</span>: args.conversation_excerpt,
-    <span class="token-key">interpretation</span>: args.interpretation
+              <pre><code><span class="token-keyword">const</span> createFeatureIssue = <span class="token-keyword">async</span> (args, _context, dependencies) =&gt; {
+  <span class="token-keyword">const</span> draft = sanitizeFeedbackDraft({
+    <span class="token-key">kind</span>: <span class="token-string">"feature"</span>,
+    <span class="token-key">title</span>: <span class="token-keyword">typeof</span> args.title === <span class="token-string">"string"</span> ? args.title : <span class="token-string">""</span>,
+    <span class="token-key">summary</span>: <span class="token-keyword">typeof</span> args.summary === <span class="token-string">"string"</span> ? args.summary : <span class="token-string">""</span>
   });
 
-  <span class="token-keyword">return</span> <span class="token-string">"Issue de mejora creada en GitHub correctamente."</span>;
+  <span class="token-keyword">if</span> (!draft) <span class="token-keyword">return</span> <span class="token-string">"Falta el título o el resumen."</span>;
+  <span class="token-keyword">const</span> outcome = <span class="token-keyword">await</span> dependencies.submitFeedbackIssue(draft);
+  <span class="token-keyword">return</span> describeOutcomeForModel(outcome);
 };</code></pre>
+            </article>
+
+            <article class="feature-worker-flow" data-visible-steps="3" aria-label="La solicitud viaja desde Gymnasia hasta GitHub mediante un Worker seguro">
+              <div class="worker-node app-node">
+                <span>01 · APP</span>
+                <strong>Gymnasia</strong>
+                <small>Solo envía título y resumen aprobados</small>
+              </div>
+              <i aria-hidden="true">→</i>
+              <div class="worker-node endpoint-node">
+                <span>02 · ENDPOINT</span>
+                <strong>/feedback/issues</strong>
+                <small>Valida, limita y evita duplicados</small>
+              </div>
+              <i aria-hidden="true">→</i>
+              <div class="worker-node secret-node">
+                <span>03 · CLOUDFLARE</span>
+                <strong>Worker seguro</strong>
+                <small>El token nunca llega a la app</small>
+              </div>
+              <i aria-hidden="true">→</i>
+              <div class="worker-node github-node">
+                <span>04 · RESULTADO</span>
+                <strong>Issue en GitHub</strong>
+                <small>Devuelve un número de referencia real</small>
+              </div>
             </article>
           </div>
         </section>
