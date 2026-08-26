@@ -64,6 +64,13 @@ test("el arranque inicial firmado solo se admite una vez desde main protegido", 
   assert.match(workflow, /select\(\.payload\.schemaVersion == 3\)/);
 });
 
+test("la paginación de gh es compatible con la versión del runner", () => {
+  const unfoldedWorkflow = workflow.replace(/\\\r?\n\s*/g, " ");
+  assert.doesNotMatch(unfoldedWorkflow, /gh api[^\n]*--slurp[^\n]*--jq/);
+  assert.doesNotMatch(unfoldedWorkflow, /gh api[^\n]*--jq[^\n]*--slurp/);
+  assert.match(unfoldedWorkflow, /gh api --paginate --slurp[^\n]*\| jq 'add \|/);
+});
+
 test("el verificador confiable siempre procede de main", () => {
   assert.equal((workflow.match(/test "\$GITHUB_REF" = "refs\/heads\/main"/g) || []).length, 2);
   assert.equal((workflow.match(/fetch --no-tags --depth=1 origin "\$GITHUB_SHA"/g) || []).length, 2);
