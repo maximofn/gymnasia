@@ -474,10 +474,10 @@ async function runAgentChatE2E(
     ({ traceKey, expectedSource, expectedHash }) => {
       const entries = JSON.parse(window.localStorage.getItem(traceKey) ?? "[]");
       return entries.some((entry) => (
-        entry?.tag === "chatPrompt"
-        && entry?.message === "selected"
+        entry?.tag === "signedPolicy"
+        && entry?.message === "lease-acquired"
         && entry?.data?.source === expectedSource
-        && entry?.data?.sha256 === expectedHash
+        && entry?.data?.bundleSha256 === expectedHash
         && entry?.data?.version === `sha256:${expectedHash}`
         && !("content" in entry.data)
       ));

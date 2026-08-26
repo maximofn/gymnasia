@@ -8,6 +8,11 @@ on:
         required: true
         type: choice
         options: [staging, production, rollback]
+      reason_code:
+        description: "Coded operational reason"
+        required: true
+        type: choice
+        options: [routine-release, critical-policy-fix, incident-response, rollback-drill]
       pr_number:
         description: "Open PR number (staging only)"
         required: false
@@ -276,7 +281,8 @@ jobs:
             | jq 'add' > /tmp/staging.json
           STAGING_ID="$(jq -r --arg candidate "$CANDIDATE" '[.[] | select(.payload.schemaVersion == 3 and .payload.candidate == $candidate)] | first | .id // empty' /tmp/staging.json)"
           test -n "$STAGING_ID"
-          test "$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${STAGING_ID}/statuses" --jq '.[0].state')" = success
+          STAGING_STATE="$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${STAGING_ID}/statuses" --jq '.[0].state')"
+          test "$STAGING_STATE" = success || { test "$OPERATION" = rollback && test "$STAGING_STATE" = inactive; }
           LATEST_STAGING_CANDIDATE="$(jq -r \
             '[.[] | select(.payload.schemaVersion == 3)] | max_by(.payload.activation.sequence) | .payload.candidate // empty' \
             /tmp/staging.json)"
@@ -289,7 +295,10 @@ jobs:
             /tmp/production.json)"
           if test "$OPERATION" = rollback; then
             test "$(jq -r .fromBundleId /tmp/policy-production/policy.activation.json)" = "$CURRENT_BUNDLE"
-            jq -e --arg candidate "$CANDIDATE" 'any(.[]; .payload.schemaVersion == 3 and .payload.candidate == $candidate)' /tmp/production.json
+            TARGET_PRODUCTION_ID="$(jq -r --arg candidate "$CANDIDATE" '[.[] | select(.payload.schemaVersion == 3 and .payload.candidate == $candidate)] | first | .id // empty' /tmp/production.json)"
+            test -n "$TARGET_PRODUCTION_ID"
+            TARGET_PRODUCTION_STATE="$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${TARGET_PRODUCTION_ID}/statuses" --jq '.[0].state')"
+            test "$TARGET_PRODUCTION_STATE" = success || test "$TARGET_PRODUCTION_STATE" = inactive
           else
             test "$CANDIDATE" = "$LATEST_STAGING_CANDIDATE"
             test -z "$CURRENT_BUNDLE" || test "$CANDIDATE" != "$CURRENT_BUNDLE"
@@ -348,3 +357,34 @@ jobs:
             --arg targetUrl "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
             '{state: $state, context: $context, description: $description, target_url: $targetUrl}' > /tmp/commit-status.json
           gh api --method POST "repos/${GITHUB_REPOSITORY}/statuses/${SOURCE_COMMIT}" --input /tmp/commit-status.json >/dev/null
+
+  audit-and-notify:
+    if: always()
+    needs: [validate-staging, publish-staging, validate-production, publish-production]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Check out trusted audit implementation
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+      - name: Record PolicyOperationAuditV1 and notify Telegram
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          POLICY_ACTIVATION_BASE64: ${{ inputs.activation_base64 }}
+          POLICY_CANDIDATE: ${{ inputs.operation == 'staging' && needs.validate-staging.outputs.candidate || needs.validate-production.outputs.candidate || inputs.candidate }}
+          POLICY_OPERATION: ${{ inputs.operation }}
+          POLICY_PUBLICATION_RESULT: ${{ inputs.operation == 'staging' && needs.publish-staging.result || needs.publish-production.result }}
+          POLICY_REASON_CODE: ${{ inputs.reason_code }}
+          POLICY_SOURCE_COMMIT: ${{ inputs.operation == 'staging' && needs.validate-staging.outputs.source_commit || needs.validate-production.outputs.source_commit }}
+          POLICY_TELEGRAM_BOT_TOKEN: ${{ secrets.POLICY_TELEGRAM_BOT_TOKEN }}
+          POLICY_TELEGRAM_CHAT_ID: ${{ secrets.POLICY_TELEGRAM_CHAT_ID }}
+          POLICY_VALIDATION_RESULT: ${{ inputs.operation == 'staging' && needs.validate-staging.result || needs.validate-production.result }}
+        run: node scripts/policy-promotion/policy-audit.mjs

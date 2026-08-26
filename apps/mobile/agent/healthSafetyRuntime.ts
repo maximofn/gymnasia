@@ -1,11 +1,11 @@
 import { pushTrace } from "../trace";
-import { RUNTIME_ENVIRONMENT } from "../runtimeEnvironment";
 import {
   BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY,
-  mergeHealthSafetyPolicies,
   type HealthSafetyRuntimePolicy,
 } from "./healthSafety";
-import { clearSignedPolicyMemoryCache, loadSignedPolicy } from "./signedPolicyRuntime";
+import { RUNTIME_ENVIRONMENT } from "../runtimeEnvironment";
+import { acquireAgentPolicyLease } from "./agentPolicyRuntime";
+import { clearSignedPolicyMemoryCache } from "./signedPolicyRuntime";
 
 type HealthSafetyPolicySource = "bundled" | "remote" | "cache";
 
@@ -26,34 +26,23 @@ function bundledSelection(): HealthSafetyPolicySelection {
 }
 
 export async function loadHealthSafetyPolicy(): Promise<HealthSafetyPolicySelection> {
-  if (RUNTIME_ENVIRONMENT.policyChannel === "Local") return bundledSelection();
   try {
-    const signed = await loadSignedPolicy();
-    const merged = mergeHealthSafetyPolicies(
-      BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY,
-      signed.bundle.healthSafetyRuntime.content,
-    );
-    if (merged.errors.length > 0) throw new Error("signed-runtime-contract");
+    const lease = await acquireAgentPolicyLease("background");
     const value: HealthSafetyPolicySelection = {
-      policy: merged.policy,
-      source: signed.source === "remote"
-        ? "remote"
-        : signed.source === "bundled" ? "bundled" : "cache",
-      candidate: signed.bundle.id,
-      deploymentId: signed.package.deploymentId,
+      ...lease.healthSafety,
     };
     void pushTrace("healthSafety", "signed-policy-selected", {
       source: value.source,
       candidate: value.candidate,
       policyVersion: value.policy.policyVersion,
-      sequence: signed.activation.sequence,
+      sequence: lease.context.sequence,
     });
     return value;
-  } catch (error) {
+  } catch {
     const value = bundledSelection();
     void pushTrace("healthSafety", "signed-policy-fallback", {
       source: value.source,
-      reason: error instanceof Error ? error.message : "unknown",
+      reasonCode: "signed-policy-unavailable",
     });
     return value;
   }

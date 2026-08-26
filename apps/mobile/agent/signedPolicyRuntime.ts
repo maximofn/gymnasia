@@ -16,10 +16,13 @@ import {
 } from "./signedPolicy";
 import {
   selectSignedPolicy,
+  signedPolicyDiagnosticPayload,
+  type PolicyBoundary,
   type SignedPolicyDiagnostic,
-  type SignedPolicySelection,
+  type SignedPolicyResolution,
 } from "./signedPolicySelection";
 import {
+  clearPolicyDeploymentResolutionCache,
   fetchActivePolicyDeployment,
   POLICY_DEPLOYMENT_REFRESH_MS,
 } from "./policyDeployment";
@@ -32,12 +35,16 @@ const ACCEPTED_JSON_TYPES = new Set([
   "text/plain",
 ]);
 
-let memorySelection: { expiresAt: number; value: SignedPolicySelection } | null = null;
-let pendingSelection: Promise<SignedPolicySelection> | null = null;
+let policyOperationQueue: Promise<void> = Promise.resolve();
+let remotePackageCache: {
+  deploymentId: number;
+  expiresAt: number;
+  value: SignedPolicyPackage;
+} | null = null;
 
 function traceSignedPolicy(diagnostic: SignedPolicyDiagnostic): void {
-  const { event, ...data } = diagnostic;
-  void pushTrace("signedPolicy", event, data);
+  const { event } = diagnostic;
+  void pushTrace("signedPolicy", event, signedPolicyDiagnosticPayload(diagnostic));
 }
 
 async function downloadUtf8(
@@ -102,6 +109,13 @@ async function fetchRemotePackage(): Promise<SignedPolicyPackage> {
   const channel = RUNTIME_ENVIRONMENT.policyChannel;
   if (channel === "Local") throw new Error("Local no tiene deployment remoto.");
   const deployment = await fetchActivePolicyDeployment(channel);
+  if (
+    remotePackageCache
+    && remotePackageCache.deploymentId === deployment.deploymentId
+    && remotePackageCache.expiresAt > Date.now()
+  ) {
+    return remotePackageCache.value;
+  }
   const [bundleBody, signatureBody] = await Promise.all([
     downloadUtf8(deployment.bundleUrl, MAX_POLICY_BUNDLE_BYTES),
     downloadUtf8(deployment.signatureUrl, 64 * 1024),
@@ -109,7 +123,7 @@ async function fetchRemotePackage(): Promise<SignedPolicyPackage> {
   if (policySha256Hex(bundleBody) !== deployment.bundleSha256) {
     throw new Error("policy-deployment-bundle-digest");
   }
-  return {
+  const packageValue: SignedPolicyPackage = {
     activationBody: canonicalPolicyJson(deployment.activation),
     activationSignature: deployment.activationSignature,
     bundleBody,
@@ -120,9 +134,15 @@ async function fetchRemotePackage(): Promise<SignedPolicyPackage> {
     environment: RUNTIME_ENVIRONMENT.environment,
     schemaVersion: 1,
   };
+  remotePackageCache = {
+    deploymentId: deployment.deploymentId,
+    expiresAt: Date.now() + POLICY_DEPLOYMENT_REFRESH_MS,
+    value: packageValue,
+  };
+  return packageValue;
 }
 
-async function resolveSignedPolicy(): Promise<SignedPolicySelection> {
+async function resolveSignedPolicy(boundary: PolicyBoundary): Promise<SignedPolicyResolution> {
   if (!BUNDLED_SIGNED_POLICY_PACKAGE) {
     throw new Error("La compilación no contiene un snapshot firmado.");
   }
@@ -137,29 +157,35 @@ async function resolveSignedPolicy(): Promise<SignedPolicySelection> {
       channel: RUNTIME_ENVIRONMENT.policyChannel as "Staging" | "Production",
     },
     diagnostic: traceSignedPolicy,
-  });
+  }, boundary);
 }
 
-export async function loadSignedPolicy(): Promise<SignedPolicySelection> {
+function serializePolicyOperation<T>(operation: () => Promise<T>): Promise<T> {
+  const result = policyOperationQueue.then(operation, operation);
+  policyOperationQueue = result.then(() => undefined, () => undefined);
+  return result;
+}
+
+export async function loadSignedPolicy({
+  boundary = "background",
+  force = false,
+}: {
+  boundary?: PolicyBoundary;
+  force?: boolean;
+} = {}): Promise<SignedPolicyResolution> {
   if (RUNTIME_ENVIRONMENT.policyChannel === "Local") {
     throw new Error("El entorno Local usa exclusivamente el snapshot de desarrollo.");
   }
-  const now = Date.now();
-  if (memorySelection && memorySelection.expiresAt > now) return memorySelection.value;
-  if (!pendingSelection) {
-    pendingSelection = resolveSignedPolicy()
-      .then((value) => {
-        memorySelection = { value, expiresAt: Date.now() + POLICY_DEPLOYMENT_REFRESH_MS };
-        return value;
-      })
-      .finally(() => {
-        pendingSelection = null;
-      });
-  }
-  return pendingSelection;
+  return serializePolicyOperation(async () => {
+    if (force) {
+      clearPolicyDeploymentResolutionCache();
+      remotePackageCache = null;
+    }
+    return resolveSignedPolicy(boundary);
+  });
 }
 
 export function clearSignedPolicyMemoryCache(): void {
-  memorySelection = null;
-  pendingSelection = null;
+  clearPolicyDeploymentResolutionCache();
+  remotePackageCache = null;
 }
