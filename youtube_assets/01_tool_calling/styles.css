@@ -157,10 +157,6 @@ button {
   text-transform: uppercase;
 }
 
-.meta-divider {
-  color: var(--accent);
-}
-
 .scene-stage {
   position: absolute;
   inset: 0;
@@ -1253,22 +1249,21 @@ pre {
   box-shadow: 0 0 16px rgba(203, 255, 26, 0.4);
 }
 
-.hud-hidden [data-hud] {
+.controls-hidden .presenter-controls,
+.controls-hidden .scene-dots {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(8px);
 }
 
-.hud-hidden .presenter-bar {
-  transform: translateY(-8px);
+.controls-hidden .presenter-controls {
+  transform: translateY(12px);
 }
 
-.hud-hidden .scene {
-  padding-top: 6vh;
+.controls-hidden .scene {
   padding-bottom: 6vh;
 }
 
-.hud-hidden .scene-dots {
+.controls-hidden .scene-dots {
   transform: translate(-50%, 8px);
 }
 
