@@ -1,0 +1,11 @@
+{
+  "id": "dominada-agarre-paralelo-estrecho",
+  "name": "Dominada con agarre paralelo estrecho",
+  "image_male": "images/dominada-agarre-paralelo-estrecho-male.webp",
+  "image_female": "images/dominada-agarre-paralelo-estrecho-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "barra de dominadas",
+  "difficulty": "intermediate",
+  "instructions": "Cuélgate de unas asas paralelas estrechas con las palmas enfrentadas y los brazos extendidos. Deprime los hombros y tira del pecho hacia las manos manteniendo los codos cerca del torso. Supera la altura de las asas con la barbilla y desciende lentamente sin balancearte."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "crunch-suelo",
+  "name": "Crunch en el suelo",
+  "image_male": "images/crunch-suelo-male.webp",
+  "image_female": "images/crunch-suelo-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y las manos detrás de la cabeza. Eleva solo los hombros acercando las costillas a la pelvis y mantén la zona lumbar en el suelo. Baja despacio sin tirar del cuello."
+}

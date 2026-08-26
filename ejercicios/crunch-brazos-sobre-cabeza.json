@@ -1,0 +1,11 @@
+{
+  "id": "crunch-brazos-sobre-cabeza",
+  "name": "Crunch con brazos sobre la cabeza",
+  "image_male": "images/crunch-brazos-sobre-cabeza-male.webp",
+  "image_female": "images/crunch-brazos-sobre-cabeza-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y los brazos extendidos junto a las orejas. Contrae el abdomen para despegar los hombros y acercar las manos hacia arriba y delante. Desciende despacio manteniendo la zona lumbar estable."
+}

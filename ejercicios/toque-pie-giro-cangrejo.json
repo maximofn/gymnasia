@@ -1,0 +1,11 @@
+{
+  "id": "toque-pie-giro-cangrejo",
+  "name": "Toque de pie con giro en cangrejo",
+  "image_male": "images/toque-pie-giro-cangrejo-male.webp",
+  "image_female": "images/toque-pie-giro-cangrejo-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen", "flexores de cadera", "hombros"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate con las rodillas flexionadas, apoya las manos detrás y eleva la cadera en posición de cangrejo. Extiende una pierna hacia arriba mientras giras el torso para tocar el pie con la mano contraria. Regresa con control y alterna el lado manteniendo la cadera elevada."
+}

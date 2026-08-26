@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-reverencia",
+  "name": "Sentadilla de reverencia",
+  "image_male": "images/sentadilla-reverencia-male.webp",
+  "image_female": "images/sentadilla-reverencia-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Desde de pie, lleva una pierna en diagonal hacia atrás y crúzala por detrás de la pierna de apoyo. Flexiona ambas rodillas manteniendo el pecho erguido y la rodilla delantera alineada con el pie. Empuja el suelo para regresar y alterna el lado."
+}

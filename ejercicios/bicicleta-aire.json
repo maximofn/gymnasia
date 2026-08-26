@@ -1,0 +1,11 @@
+{
+  "id": "bicicleta-aire",
+  "name": "Bicicleta de aire",
+  "image_male": "images/bicicleta-aire-male.webp",
+  "image_female": "images/bicicleta-aire-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "glúteos", "hombros"],
+  "equipment": "bicicleta de aire",
+  "difficulty": "beginner",
+  "instructions": "Ajusta el asiento para pedalear sin bloquear las rodillas y sujeta los manillares móviles. Pedalea mientras empujas y tiras de las asas de forma alterna, manteniendo el torso estable. Regula el ritmo y la resistencia mediante la velocidad del movimiento."
+}

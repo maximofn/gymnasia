@@ -1,0 +1,11 @@
+{
+  "id": "crunch-fitball-brazos-rectos",
+  "name": "Crunch sobre fitball con brazos rectos",
+  "image_male": "images/crunch-fitball-brazos-rectos-male.webp",
+  "image_female": "images/crunch-fitball-brazos-rectos-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "hombros"],
+  "equipment": "fitball",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la espalda baja sobre un fitball, planta los pies y extiende ambos brazos hacia el techo. Contrae el abdomen para elevar los hombros manteniendo los brazos rectos y verticales. Baja con control sin dejar que el balón ruede."
+}
