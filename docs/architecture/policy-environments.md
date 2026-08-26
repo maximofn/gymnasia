@@ -93,8 +93,8 @@ no exista ningún deployment firmado schema v3, se permite un único arranque fi
 deployments heredados schema v1/v2 no lo bloquean porque todavía no llevan firmas:
 
 ```bash
-npm run policy:promote -- --operation staging --bootstrap-main true
-npm run policy:promote -- --operation production
+npm run policy:promote -- --operation staging --bootstrap-main true --reason-code routine-release
+npm run policy:promote -- --operation production --reason-code routine-release
 ```
 
 El workflow exige que el commit sea exactamente el `main` actual y que no exista ningún
@@ -112,7 +112,7 @@ siempre y todas las promociones posteriores vuelven a exigir una PR abierta.
    documentos públicos:
 
    ```bash
-   npm run policy:promote -- --operation staging --pr <número>
+   npm run policy:promote -- --operation staging --pr <número> --reason-code routine-release
    ```
 
 4. El workflow verifica PR, autorización, puerta sanitaria, raíz, certificado, firmas,
@@ -124,7 +124,7 @@ siempre y todas las promociones posteriores vuelven a exigir una PR abierta.
 5. Tras probar exactamente ese candidato, promoverlo a Production sin reconstruirlo:
 
    ```bash
-   npm run policy:promote -- --operation production
+   npm run policy:promote -- --operation production --reason-code routine-release
    ```
 
 6. Production exige el deployment exitoso de Staging, repite la puerta sanitaria,
@@ -132,9 +132,18 @@ siempre y todas las promociones posteriores vuelven a exigir una PR abierta.
    environment correspondiente. El check `gymnasia/policy-promotion` se publica sobre el
    commit exacto y la PR se fusiona manualmente.
 
-`critical: true` en la configuración del bundle selecciona el environment separado
+Toda operación exige uno de estos motivos cerrados: `routine-release`,
+`critical-policy-fix`, `incident-response` o `rollback-drill`. No se admite texto libre
+en el workflow ni en la CLI. `critical: true` en la configuración del bundle selecciona el environment separado
 `Production Critical`; no elimina Staging, la firma, la revisión del propietario ni las
 evidencias. Los workflows nunca reciben claves privadas ni secretos de proveedores.
+
+En el dispositivo, una política normal verificada queda pendiente y se activa en el
+primer envío de una conversación nueva. Una política crítica se activa al comenzar el
+siguiente envío seguro. Cada petición adquiere un único lease inmutable: prompt y
+guardrail sanitario proceden del mismo bundle y se conservan durante reintentos y rondas
+de tools. Una comprobación manual ignora el TTL de red, pero usa la frontera `background`,
+por lo que nunca cambia a mitad de conversación la política que ya estaba activa.
 
 ## Rollback autenticado
 
@@ -146,12 +155,68 @@ el bundle actualmente activo:
 npm run policy:promote -- \
   --operation rollback \
   --candidate policy-vAAAA.MM.N-<sha12> \
-  --rollback-from policy-vAAAA.MM.N-<sha12 actual>
+  --reason-code incident-response \
+  --dry-run
 ```
 
-Actions descarga el bundle histórico, verifica su firma y su paso anterior por Staging y
-Production, y comprueba la relación `fromBundleId`. Una simple repetición de un deployment
-viejo no es un rollback: su secuencia es menor y la app lo rechaza.
+La previsualización resuelve automáticamente el bundle activo de Production, comprueba
+que el destino histórico tuvo deployments correctos en Staging y Production, descarga
+y verifica su firma, y muestra candidato, origen y próxima secuencia sin acceder a la
+clave privada ni lanzar Actions. Si es correcto, se repite sin `--dry-run`:
+
+```bash
+npm run policy:promote -- \
+  --operation rollback \
+  --candidate policy-vAAAA.MM.N-<sha12> \
+  --reason-code incident-response
+```
+
+`--rollback-from` sigue aceptándose como comprobación adicional, pero debe coincidir con
+el bundle activo resuelto por la CLI. Actions vuelve a verificar firma, historia y
+`fromBundleId`. Una simple repetición de un deployment viejo no es un rollback: su
+secuencia es menor y la app lo rechaza. El móvil trata toda activación `rollback` como
+urgente aunque el bundle histórico tenga `critical: false`, y la aplica al comenzar el
+siguiente envío seguro.
+
+## Auditoría operativa y Telegram
+
+El último job del workflow se ejecuta incluso si la validación rechaza la operación. Crea
+un deployment separado con task `gymnasia-policy-audit` y payload
+`PolicyOperationAuditV1`: operación, resultado, entorno, commit, bundle, actor, motivo,
+checks, activación y enlaces. No contiene prompts, mensajes, claves, inputs, outputs ni
+datos de salud. Consultar los últimos registros:
+
+```bash
+gh api --paginate --slurp \
+  'repos/maximofn/gymnasia/deployments?task=gymnasia-policy-audit&per_page=100' \
+  | jq 'add | sort_by(.created_at) | reverse | .[:20] | map(.payload)'
+```
+
+El mismo job intenta avisar mediante un bot dedicado. Configurar como secrets del
+repositorio, nunca en `.env`, en el bundle móvil ni en capturas:
+
+- `POLICY_TELEGRAM_BOT_TOKEN`: token de un bot dedicado exclusivamente a operaciones de
+  política.
+- `POLICY_TELEGRAM_CHAT_ID`: chat privado o grupo operativo al que ya pertenezca el bot.
+
+El mensaje usa solo la allowlist de metadatos de la auditoría y lleva un `eventId`
+determinista. Un reintento no vuelve a enviar un evento que ya conste como enviado. Si
+faltan secretos o Telegram falla, el deployment registra `skipped` o `failed` con un
+código genérico; la política publicada o rechazada no se revierte ni queda bloqueada por
+el canal de avisos.
+
+## Recuperación cuando el último bundle está roto
+
+1. No edites la Release ni repitas su deployment: conserva la evidencia del incidente.
+2. Localiza el último candidato anterior que figure correcto en Staging y Production.
+3. Ejecuta primero el rollback con `--dry-run` y motivo `incident-response`.
+4. Lanza el rollback real, aprueba el environment correspondiente y confirma el
+   deployment `gymnasia-policy` y su auditoría `gymnasia-policy-audit`.
+5. En un dispositivo afectado, abre Ajustes → Trazas y pulsa «Comprobar actualización».
+   Debe aparecer pendiente; se activa al comenzar el siguiente envío seguro.
+6. Corrige el bundle en una PR nueva, vuelve a pasar Staging y Production y restáuralo
+   mediante una activación nueva. Nunca reduzcas la secuencia ni borres la caché para
+   forzar la recuperación.
 
 ## Builds y funcionamiento sin red
 
@@ -173,15 +238,23 @@ En ejecución, la app selecciona en este orden:
 3. segunda copia firmada anterior si la actual se ha corrompido;
 4. snapshot firmado integrado en el APK.
 
-Las dos copias y la mayor secuencia observada viven juntas en
+Los bundles activo, anterior y pendiente, la mayor secuencia observada y la última
+comprobación viven juntos en
 `gymnasia.mobile.signed_policy.cache.v1` dentro de AsyncStorage, aislada por variante. Todo
 se vuelve a verificar al leerlo. El runtime nunca mezcla el prompt de un candidato con la
 política sanitaria de otro. La política sanitaria firmada se fusiona además de forma
 monotónica con el guardrail compilado.
+
+Cada respuesta persistida incluye `policy_context` con candidato, versión, hash, fuente,
+activación y secuencia. No incluye el prompt. La tarjeta de Ajustes → Trazas muestra
+estado activo o pendiente, origen, canal, última comprobación, degradación offline y el
+tiempo de propagación observado localmente. No se envían métricas desde los móviles ni se
+calculan recuentos de clientes en fallback.
 
 GitHub puede dejar el canal sin actualizaciones, pero no puede fabricar una política que
 la app acepte sin la clave firmante. Si la red o GitHub fallan, la app sigue funcionando
 con caché o snapshot; no salta a `main`, Staging, otro entorno ni un payload heredado.
 
 Esta implementación corresponde a GYM-140 (ticket para autenticar bundles de política
-con firmas verificables, rotación y protección anti-rollback).
+con firmas verificables, rotación y protección anti-rollback) y GYM-141 (ticket para
+añadir rollback, auditoría y alertas de la política).
