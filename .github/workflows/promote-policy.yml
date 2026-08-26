@@ -65,7 +65,7 @@ jobs:
             test "$SOURCE_COMMIT" = "$GITHUB_SHA" || { echo "bootstrap_main requires the current main HEAD"; exit 1; }
             SIGNED_COUNT="$(gh api --paginate --slurp \
               "repos/${GITHUB_REPOSITORY}/deployments?task=gymnasia-policy&per_page=100" \
-              --jq 'add | [.[] | select(.payload.schemaVersion == 3)] | length')"
+              | jq 'add | [.[] | select(.payload.schemaVersion == 3)] | length')"
             test "$SIGNED_COUNT" = 0 \
               || { echo "bootstrap_main is disabled after the first signed policy deployment"; exit 1; }
           else
