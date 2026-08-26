@@ -1,0 +1,11 @@
+{
+  "id": "flexion-reloj",
+  "name": "Flexión en reloj",
+  "image_male": "images/flexion-reloj-male.webp",
+  "image_female": "images/flexion-reloj-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros", "abdomen"],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Adopta una plancha alta y realiza una flexión manteniendo el cuerpo alineado. Al extender los brazos, desplaza una mano y el pie contrario lateralmente para girar el cuerpo alrededor de los pies como las agujas de un reloj. Repite la flexión y continúa avanzando por posiciones alrededor del punto central."
+}

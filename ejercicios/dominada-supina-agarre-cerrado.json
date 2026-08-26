@@ -1,0 +1,11 @@
+{
+  "id": "dominada-supina-agarre-cerrado",
+  "name": "Dominada supina con agarre cerrado",
+  "image_male": "images/dominada-supina-agarre-cerrado-male.webp",
+  "image_female": "images/dominada-supina-agarre-cerrado-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "barra de dominadas",
+  "difficulty": "intermediate",
+  "instructions": "Cuélgate de una barra con las palmas hacia ti y las manos más juntas que los hombros. Lleva los codos hacia abajo y tira del pecho hacia la barra sin balancear las piernas. Supera la barra con la barbilla y baja con control hasta extender los brazos."
+}

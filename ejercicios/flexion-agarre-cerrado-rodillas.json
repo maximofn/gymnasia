@@ -1,0 +1,11 @@
+{
+  "id": "flexion-agarre-cerrado-rodillas",
+  "name": "Flexión con agarre cerrado sobre rodillas",
+  "image_male": "images/flexion-agarre-cerrado-rodillas-male.webp",
+  "image_female": "images/flexion-agarre-cerrado-rodillas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombros"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Apoya las manos juntas bajo el pecho y las rodillas en el suelo, formando una línea recta desde la cabeza hasta las rodillas. Flexiona los codos cerca del torso para bajar el pecho. Empuja con las palmas y vuelve a extender los brazos sin arquear la espalda."
+}

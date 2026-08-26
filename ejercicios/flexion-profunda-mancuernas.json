@@ -1,0 +1,11 @@
+{
+  "id": "flexion-profunda-mancuernas",
+  "name": "Flexión profunda sobre mancuernas",
+  "image_male": "images/flexion-profunda-mancuernas-male.webp",
+  "image_female": "images/flexion-profunda-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Coloca dos mancuernas estables algo más separadas que los hombros y adopta una plancha agarrando sus asas. Baja el pecho entre las mancuernas para conseguir un recorrido mayor, manteniendo los codos controlados y el cuerpo alineado. Empuja hasta extender los brazos sin perder la estabilidad."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "crunch-fitball",
+  "name": "Crunch sobre fitball",
+  "image_male": "images/crunch-fitball-male.webp",
+  "image_female": "images/crunch-fitball-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "fitball",
+  "difficulty": "beginner",
+  "instructions": "Apoya la zona lumbar sobre un fitball con los pies firmes en el suelo y las manos cruzadas sobre el pecho. Flexiona el torso acercando las costillas a la pelvis sin mover el balón. Haz una pausa arriba y vuelve lentamente hasta extender el abdomen."
+}

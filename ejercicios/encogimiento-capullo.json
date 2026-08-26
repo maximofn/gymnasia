@@ -1,0 +1,11 @@
+{
+  "id": "encogimiento-capullo",
+  "name": "Encogimiento capullo",
+  "image_male": "images/encogimiento-capullo-male.webp",
+  "image_female": "images/encogimiento-capullo-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "espalda baja"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con piernas y brazos extendidos sin apoyar completamente las extremidades. Contrae el abdomen para acercar simultáneamente las rodillas al pecho y los brazos a las piernas, formando una posición agrupada. Extiéndete de nuevo con control sin arquear la zona lumbar."
+}

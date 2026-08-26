@@ -1,0 +1,11 @@
+{
+  "id": "crunch-cruzado",
+  "name": "Crunch cruzado",
+  "image_male": "images/crunch-cruzado-male.webp",
+  "image_female": "images/crunch-cruzado-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": ["abdomen"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas y las manos detrás de la cabeza. Eleva los hombros y gira el torso para acercar un codo a la rodilla contraria. Baja lentamente y alterna el lado sin tirar del cuello."
+}
