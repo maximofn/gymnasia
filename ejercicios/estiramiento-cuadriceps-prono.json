@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-cuadriceps-prono",
+  "name": "Estiramiento de cuádriceps prono",
+  "image_male": "images/estiramiento-cuadriceps-prono-male.webp",
+  "image_female": "images/estiramiento-cuadriceps-prono-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca abajo con las piernas extendidas. Flexiona una rodilla, agarra el tobillo del mismo lado y acerca suavemente el talón al glúteo manteniendo ambas caderas contra el suelo. Sostén el estiramiento sin arquear la espalda, suelta despacio y cambia de pierna."
+}

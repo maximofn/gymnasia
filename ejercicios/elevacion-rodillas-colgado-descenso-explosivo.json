@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-rodillas-colgado-descenso-explosivo",
+  "name": "Elevación de rodillas colgado con descenso explosivo",
+  "image_male": "images/elevacion-rodillas-colgado-descenso-explosivo-male.webp",
+  "image_female": "images/elevacion-rodillas-colgado-descenso-explosivo-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "zona lumbar", "antebrazos"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de una barra con los hombros activos y lleva las rodillas juntas hacia el pecho. Desde la posición alta, extiende las piernas con energía hacia abajo sin perder el control del tronco ni arquear la zona lumbar. Frena el balanceo, vuelve a recoger las rodillas y repite."
+}

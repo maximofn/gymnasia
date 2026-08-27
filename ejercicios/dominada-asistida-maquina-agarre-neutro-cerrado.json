@@ -1,0 +1,11 @@
+{
+  "id": "dominada-asistida-maquina-agarre-neutro-cerrado",
+  "name": "Dominada asistida en máquina con agarre neutro cerrado",
+  "image_male": "images/dominada-asistida-maquina-agarre-neutro-cerrado-male.webp",
+  "image_female": "images/dominada-asistida-maquina-agarre-neutro-cerrado-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "máquina asistida",
+  "difficulty": "beginner",
+  "instructions": "Ajusta el contrapeso, apoya las rodillas en la plataforma y toma las asas paralelas con las palmas enfrentadas y las manos juntas. Activa los hombros y sube llevando los codos hacia las costillas hasta superar las asas con la barbilla. Desciende lentamente sin dejar que la plataforma rebote."
+}
