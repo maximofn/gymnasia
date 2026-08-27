@@ -8,6 +8,30 @@ export type FakeProviderResult = {
   thinking: null;
 };
 
+export const DEFAULT_GOOGLE_MODEL = "gemini-3.6-flash";
+const LEGACY_GOOGLE_DEFAULT_MODELS = new Set([
+  "gemini-1.5-flash",
+  "gemini-3-flash-preview",
+]);
+
+export function normalizeGoogleModel(rawModel: string | null | undefined): string {
+  const model = (rawModel ?? "").trim();
+  if (!model || LEGACY_GOOGLE_DEFAULT_MODELS.has(model)) {
+    return DEFAULT_GOOGLE_MODEL;
+  }
+  return model;
+}
+
+export function googleApiHeaders(
+  apiKey: string,
+  extraHeaders: Record<string, string> = {},
+): Record<string, string> {
+  return {
+    ...extraHeaders,
+    "x-goog-api-key": apiKey.trim(),
+  };
+}
+
 const PERSONAL_FOOD_FIXTURE = {
   name: "Yogur de desarrollo",
   category: "lácteos",
