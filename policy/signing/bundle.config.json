@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": "2026.08.2",
+  "version": "2026.08.3",
   "critical": false,
   "minClientProtocol": 1,
   "requiredTools": [
