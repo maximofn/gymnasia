@@ -385,7 +385,7 @@
         {
           "id": "GYM-141",
           "title": "Añadir rollback, auditoría y alertas de la política",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Atribuir cada ejecución a una versión, promocionar o revertir artefactos firmados y avisar por Telegram sin incluir prompts, conversaciones, claves ni datos de salud.",
           "baseline": "missing",
           "dependsOn": [
