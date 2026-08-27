@@ -1,6 +1,7 @@
 import argparse
 import io
 import importlib.util
+import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -24,6 +25,19 @@ COMPLETE_PLAN = """Contexto del ticket.
 - [ ] Regresión: No aplica: no corrige ningún bug existente.
 - [X] Fuzzing / property-based: genera argumentos arbitrarios.
 """
+
+
+class ApiKeyLoadingTests(unittest.TestCase):
+    def test_loads_a_quoted_key_from_an_explicit_env_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            env_path = Path(directory) / ".env"
+            env_path.write_text('LINEAR_API_KEY="lin_api_worktree"\n')
+            with mock.patch.dict(
+                "os.environ",
+                {"LINEAR_ENV_FILE": str(env_path)},
+                clear=True,
+            ):
+                self.assertEqual(linear.load_api_key(), "lin_api_worktree")
 
 
 class TestPlanValidationTests(unittest.TestCase):

@@ -64,6 +64,8 @@ El ruido de onboarding de Linear (GYM-1 a GYM-4) está en `meta.ignore` de
   ```bash
   grep -q '^LINEAR_API_KEY=' .env && echo ok || echo falta
   ```
+- En un worktree sin `.env`, apunta al fichero privado del checkout principal
+  sin copiarlo: `LINEAR_ENV_FILE=/ruta/checkout/.env python3 <ruta>/linear.py ...`.
 - Python 3 (stdlib únicamente; sin dependencias externas).
 
 ## Uso
@@ -204,7 +206,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Trece cosas que cuestan tiempo si no se saben:
+Catorce cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -322,6 +324,12 @@ Trece cosas que cuestan tiempo si no se saben:
     Usa `unlink TARGET --blocked-by BLOCKER` primero sin flags para comprobar la
     dirección y repítelo con `--apply`; el comando localiza el UUID exacto y no
     borra nada si alguno de los bloqueos solicitados no existe.
+
+14. **Extraer `LINEAR_API_KEY` con `sed` puede conservar las comillas del
+    `.env`.** El síntoma es un `HTTP 401 Authentication required` aunque la key
+    correcta exista: el valor enviado es literalmente `"lin_api_..."`. En un
+    worktree usa `LINEAR_ENV_FILE=/ruta/checkout/.env`; `linear.py` elimina las
+    comillas de forma segura sin copiar el secreto al worktree ni imprimirlo.
 
 ## Notas
 

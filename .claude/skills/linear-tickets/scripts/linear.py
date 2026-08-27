@@ -72,7 +72,8 @@ def load_api_key() -> str:
     if env_value:
         return env_value
 
-    env_path = repo_root() / ".env"
+    configured_env_path = os.environ.get("LINEAR_ENV_FILE", "").strip()
+    env_path = Path(configured_env_path) if configured_env_path else repo_root() / ".env"
     if not env_path.exists():
         sys.exit(f"No existe {env_path}")
     for raw in env_path.read_text().splitlines():
