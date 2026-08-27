@@ -1134,9 +1134,77 @@ pre {
   line-height: 1.55;
 }
 
-.feature-code.short-code pre {
-  font-size: clamp(15px, 1.08vw, 21px);
-  line-height: 1.62;
+.feature-code.handler-code pre {
+  font-size: clamp(11px, 0.82vw, 16px);
+  line-height: 1.46;
+}
+
+.feature-worker-flow {
+  top: 50% !important;
+  bottom: auto !important;
+  display: grid;
+  grid-template-columns: 1fr 28px 1fr 28px 1fr 28px 1fr;
+  align-items: center;
+  gap: 8px;
+  height: auto !important;
+  transform: translateY(-50%);
+}
+
+.worker-node {
+  min-height: 190px;
+  display: grid;
+  align-content: center;
+  gap: 12px;
+  padding: 22px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(20, 24, 32, 0.94);
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.28);
+}
+
+.worker-node > span {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+}
+
+.worker-node strong {
+  font-size: clamp(15px, 1.04vw, 20px);
+  line-height: 1.12;
+}
+
+.worker-node small {
+  color: var(--muted);
+  font-size: clamp(10px, 0.72vw, 13px);
+  line-height: 1.45;
+}
+
+.feature-worker-flow > i {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 900;
+  text-align: center;
+  text-shadow: 0 0 18px rgba(203, 255, 26, 0.42);
+}
+
+.worker-node.secret-node {
+  border-color: rgba(203, 255, 26, 0.42);
+  background: linear-gradient(145deg, rgba(203, 255, 26, 0.12), rgba(20, 24, 32, 0.96) 62%);
+}
+
+.worker-node.github-node {
+  color: #0b0d0f;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.worker-node.github-node > span,
+.worker-node.github-node small {
+  color: rgba(11, 13, 15, 0.68);
 }
 
 .presenter-controls {
@@ -1422,6 +1490,22 @@ pre {
   .dual-code-stage,
   .feature-code-stage {
     min-height: 560px;
+  }
+
+  .feature-worker-flow {
+    top: 0 !important;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    transform: none;
+  }
+
+  .feature-worker-flow > i {
+    line-height: 1;
+    transform: rotate(90deg);
+  }
+
+  .worker-node {
+    min-height: 108px;
   }
 
   .flow-map,
