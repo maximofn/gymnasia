@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07090d" />
+    <title>Gymnasia · Presentación</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="presentation controls-hidden" id="presentation">
+      <header class="presenter-bar">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">G</span>
+          <span>GYMNASIA</span>
+          <span class="brand-divider">/</span>
+          <span class="brand-topic">PRESENTACIÓN</span>
+        </div>
+        <div class="scene-meta"><span id="sceneTitle">Un agente especializado</span></div>
+      </header>
+
+      <div class="ambient-grid" aria-hidden="true"></div>
+      <div class="kinetic-ring" aria-hidden="true"></div>
+      <div class="energy-line" aria-hidden="true"></div>
+
+      <div class="scene-stage" id="sceneStage" tabindex="0" aria-label="Presentación interactiva. Haz clic para avanzar.">
+        <section class="scene hero-scene is-active" data-scene data-title="Un agente especializado" data-max-step="2">
+          <div class="scene-heading centered hero-heading">
+            <span class="eyebrow">GYMNASIA · EPISODIO CERO</span>
+            <h1>De un chat genérico a un <em>agente especializado</em></h1>
+          </div>
+
+          <div class="cold-open">
+            <article class="chat-shell generic-shell" data-reveal-step="0" data-active-steps="0">
+              <span class="shell-label">HARNESS GENÉRICO</span>
+              <div class="chat-line user-line">Créame una rutina de pecho.</div>
+              <div class="chat-line model-line">Aquí tienes una propuesta para copiar manualmente…</div>
+              <span class="shell-foot">Sabe responder</span>
+            </article>
+
+            <span class="morph-arrow" data-reveal-step="1" aria-hidden="true">→</span>
+
+            <article class="chat-shell specialist-shell" data-reveal-step="1" data-active-steps="1-2">
+              <span class="shell-label">GYMNASIA</span>
+              <div class="coach-core"><span>G</span><strong>Gymnasia Coach</strong></div>
+              <div class="specialist-actions">
+                <span>Busca ejercicios</span><span>Crea la rutina</span><span>La guarda en la app</span>
+              </div>
+              <span class="shell-foot">Sabe actuar</span>
+            </article>
+          </div>
+
+          <div class="hero-promise" data-reveal-step="2" data-active-steps="2">
+            <span>TYPE·SCRIPT</span>
+            <strong>UN HARNESS DESDE CERO</strong>
+            <span>SIN LANGGRAPH</span>
+          </div>
+        </section>
+
+        <section class="scene product-scene" data-scene data-title="Gymnasia en una mirada" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">UNA APP · CUATRO ÁREAS CONECTADAS</span>
+            <h1>Entrenamiento, dieta, medidas y progreso</h1>
+          </div>
+
+          <div class="phone-showcase">
+            <figure class="phone-shot" data-reveal-step="0" data-active-steps="0">
+              <img src="assets/home.png" alt="Pantalla de inicio de Gymnasia" />
+              <figcaption><span>01</span> Inicio</figcaption>
+            </figure>
+            <figure class="phone-shot" data-reveal-step="1" data-active-steps="1">
+              <img src="assets/rutinas.png" alt="Pantalla de rutinas de Gymnasia" />
+              <figcaption><span>02</span> Entrenamiento</figcaption>
+            </figure>
+            <figure class="phone-shot" data-reveal-step="2" data-active-steps="2">
+              <img src="assets/dieta.png" alt="Pantalla de dieta de Gymnasia" />
+              <figcaption><span>03</span> Nutrición</figcaption>
+            </figure>
+            <figure class="phone-shot" data-reveal-step="3" data-active-steps="3">
+              <img src="assets/medidas.png" alt="Pantalla de medidas de Gymnasia" />
+              <figcaption><span>04</span> Medidas</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="El agente conectado a la app" data-max-step="5">
+          <div class="scene-heading centered compact">
+            <span class="eyebrow">GYMNASIA COACH</span>
+            <h1>El agente comparte el contexto de la aplicación</h1>
+          </div>
+
+          <div class="agent-hub">
+            <article class="hub-node node-training" data-reveal-step="1" data-active-steps="1"><span>RUTINAS</span><strong>Entrenamientos</strong></article>
+            <article class="hub-node node-diet" data-reveal-step="2" data-active-steps="2"><span>NUTRICIÓN</span><strong>Comidas</strong></article>
+            <article class="hub-core" data-reveal-step="0" data-active-steps="0-5"><span class="hub-g">G</span><strong>Gymnasia Coach</strong><small>Harness especializado</small></article>
+            <article class="hub-node node-measures" data-reveal-step="3" data-active-steps="3"><span>PROGRESO</span><strong>Medidas</strong></article>
+            <article class="hub-node node-memory" data-reveal-step="4" data-active-steps="4"><span>CONTEXTO</span><strong>Memoria</strong></article>
+            <article class="hub-node node-catalog" data-reveal-step="5" data-active-steps="5"><span>CATÁLOGO</span><strong>Ejercicios y alimentos</strong></article>
+            <span class="hub-line line-a" data-reveal-step="1"></span>
+            <span class="hub-line line-b" data-reveal-step="2"></span>
+            <span class="hub-line line-c" data-reveal-step="3"></span>
+            <span class="hub-line line-d" data-reveal-step="4"></span>
+            <span class="hub-line line-e" data-reveal-step="5"></span>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Genérico frente a especializado" data-max-step="3">
+          <div class="scene-heading centered compact">
+            <span class="eyebrow">MISMO LLM · DISTINTO HARNESS</span>
+            <h1>No cambia solo la respuesta. Cambia lo que puede hacer.</h1>
+          </div>
+
+          <div class="comparison-stage">
+            <article class="comparison-panel generic-panel" data-reveal-step="0" data-active-steps="0">
+              <span class="comparison-kicker">GENÉRICO</span>
+              <h2>ChatGPT · Claude</h2>
+              <ul><li>Contexto que copias manualmente</li><li>Respuesta en texto</li><li>Capacidades para cualquier tema</li></ul>
+            </article>
+            <div class="versus-mark" data-reveal-step="1"><span>VS</span></div>
+            <article class="comparison-panel specialist-panel" data-reveal-step="1" data-active-steps="1-3">
+              <span class="comparison-kicker">ESPECIALIZADO</span>
+              <h2>Gymnasia</h2>
+              <ul><li>Contexto estructurado de la app</li><li>Tools que ejecutan acciones</li><li>Reglas de entrenamiento y nutrición</li></ul>
+            </article>
+          </div>
+
+          <div class="comparison-result" data-reveal-step="2" data-active-steps="2-3">
+            <span>El LLM puede ser generalista</span><strong>El harness es quien lo especializa</strong>
+          </div>
+          <div class="comparison-proof" data-reveal-step="3"><span>Pregunta</span><b>→</b><span>Busca datos</span><b>→</b><span>Actúa</span><b>→</b><span>Confirma</span></div>
+        </section>
+
+        <section class="scene" data-scene data-title="Tools para un dominio" data-max-step="6">
+          <div class="scene-heading side-heading">
+            <span class="eyebrow">CAPACIDADES A MEDIDA</span>
+            <h1>Una tool para cada acción real</h1>
+            <p>El agente no necesita hacerlo todo. Necesita dominar su ámbito.</p>
+          </div>
+
+          <div class="tool-orbit">
+            <div class="domain-core"><span>FITNESS</span><strong>&amp;</strong><span>NUTRICIÓN</span></div>
+            <article class="tool-chip tool-pos-a" data-reveal-step="1" data-active-steps="1"><small>MEDIDAS</small><strong>read_measurement</strong></article>
+            <article class="tool-chip tool-pos-b" data-reveal-step="2" data-active-steps="2"><small>DIETA</small><strong>add_meal_food</strong></article>
+            <article class="tool-chip tool-pos-c" data-reveal-step="3" data-active-steps="3"><small>CATÁLOGO</small><strong>search_foods</strong></article>
+            <article class="tool-chip tool-pos-d" data-reveal-step="4" data-active-steps="4"><small>EJERCICIOS</small><strong>search_exercises</strong></article>
+            <article class="tool-chip tool-pos-e" data-reveal-step="5" data-active-steps="5"><small>RUTINAS</small><strong>create_routine</strong></article>
+            <article class="tool-chip tool-pos-f" data-reveal-step="6" data-active-steps="6"><small>MEMORIA</small><strong>save_personal_data</strong></article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="El modelo puede ser el mismo" data-max-step="4">
+          <div class="scene-heading compact centered">
+            <span class="eyebrow">PROVEEDOR ≠ PRODUCTO</span>
+            <h1>El modelo es una pieza intercambiable</h1>
+          </div>
+
+          <div class="model-lab">
+            <div class="provider-rail" data-reveal-step="1">
+              <span class="provider openai">OpenAI</span><span class="provider anthropic">Anthropic</span><span class="provider google">Google</span><span class="provider future">+ futuros</span>
+            </div>
+            <div class="model-core" data-reveal-step="0" data-active-steps="0-4"><small>LLM</small><strong>Modelo generalista</strong></div>
+            <div class="specialization-ring ring-prompt" data-reveal-step="2" data-active-steps="2"><span>System prompt</span></div>
+            <div class="specialization-ring ring-tools" data-reveal-step="3" data-active-steps="3"><span>Tools + ejecución</span></div>
+            <div class="specialization-ring ring-policy" data-reveal-step="4" data-active-steps="4"><span>Memoria + seguridad</span></div>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="El futuro vive en el teléfono" data-max-step="4">
+          <div class="scene-heading compact">
+            <span class="eyebrow">OBJETIVO A FUTURO</span>
+            <h1>Reducir la nube hasta que todo quepa en el dispositivo</h1>
+          </div>
+
+          <div class="local-model-stage">
+            <article class="cloud-model" data-visible-steps="0-4" data-active-steps="0-1">
+              <span class="cloud-symbol">☁</span><strong>LLM en la nube</strong><small>OpenAI · Anthropic · Google</small>
+            </article>
+            <span class="migration-arrow" data-reveal-step="1">→</span>
+            <article class="device-shell" data-reveal-step="2" data-active-steps="2-4">
+              <span class="device-speaker"></span>
+              <div class="device-screen"><span class="device-g">G</span><strong>Gymnasia</strong><small>Runtime local</small></div>
+              <div class="local-stack">
+                <span data-reveal-step="2">Datos locales</span>
+                <span data-reveal-step="3">Tools + harness local</span>
+                <span data-reveal-step="4">LLM local</span>
+              </div>
+            </article>
+          </div>
+          <p class="local-model-note" data-reveal-step="4">Un dominio más limitado permite experimentar con modelos más pequeños.</p>
+        </section>
+
+        <section class="scene" data-scene data-title="Tres razones" data-max-step="3">
+          <div class="scene-heading centered compact">
+            <span class="eyebrow">POR QUÉ EXISTE GYMNASIA</span>
+            <h1>Tres razones. Un mismo proyecto.</h1>
+          </div>
+          <div class="reason-grid">
+            <article class="reason-card" data-reveal-step="1" data-active-steps="1"><span>01</span><small>PARA MÍ</small><strong>Un agente realmente especializado</strong><p>Menos copiar y pegar. Más acciones conectadas con mis datos.</p></article>
+            <article class="reason-card featured" data-reveal-step="2" data-active-steps="2"><span>02</span><small>PARA TODOS</small><strong>Una app abierta y accesible</strong><p>Demostrar utilidad antes de decidir cómo sostenerla.</p></article>
+            <article class="reason-card" data-reveal-step="3" data-active-steps="3"><span>03</span><small>PARA APRENDER</small><strong>Compartir cómo se construye</strong><p>Un harness real explicado en español.</p></article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Abierta y sostenible" data-max-step="3">
+          <div class="scene-heading centered compact">
+            <span class="eyebrow">PRODUCTO ABIERTO</span>
+            <h1>Abierta no significa imposible de monetizar</h1>
+          </div>
+          <div class="sustainability-path">
+            <article data-reveal-step="0" data-active-steps="0"><span>01</span><strong>Abrir el proyecto</strong><small>Reducir la barrera de entrada</small></article>
+            <i data-reveal-step="1">→</i>
+            <article data-reveal-step="1" data-active-steps="1"><span>02</span><strong>Demostrar utilidad</strong><small>Personas que realmente lo usan</small></article>
+            <i data-reveal-step="2">→</i>
+            <article data-reveal-step="2" data-active-steps="2"><span>03</span><strong>Hacerlo sostenible</strong><small>Monetizar solo si llega el caso</small></article>
+          </div>
+          <div class="future-video-card" data-reveal-step="3"><span>▶</span><div><small>POSIBLE VÍDEO FUTURO</small><strong>Cómo monetizar Gymnasia sin traicionar el proyecto</strong></div></div>
+        </section>
+
+        <section class="scene" data-scene data-title="La serie sobre harnesses" data-max-step="6">
+          <div class="scene-heading side-heading">
+            <span class="eyebrow">TERCERA RAZÓN</span>
+            <h1>Enseñar a construir el sistema alrededor del LLM</h1>
+            <p>La app aporta los casos reales. La serie abre el harness.</p>
+          </div>
+          <div class="series-roadmap">
+            <article data-reveal-step="1" data-active-steps="1"><span>01</span><strong>Tools</strong><small>Qué puede hacer</small></article>
+            <article data-reveal-step="2" data-active-steps="2"><span>02</span><strong>Proveedores</strong><small>Cómo cambiar de LLM</small></article>
+            <article data-reveal-step="3" data-active-steps="3"><span>03</span><strong>Memoria</strong><small>Qué contexto conserva</small></article>
+            <article data-reveal-step="4" data-active-steps="4"><span>04</span><strong>Seguridad</strong><small>Qué puede ejecutar</small></article>
+            <article data-reveal-step="5" data-active-steps="5"><span>05</span><strong>Tests y evals</strong><small>Cómo medirlo</small></article>
+            <article data-reveal-step="6" data-active-steps="6"><span>06</span><strong>Trazas</strong><small>Cómo depurarlo</small></article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Un harness desde cero" data-max-step="4">
+          <div class="scene-heading compact centered">
+            <span class="eyebrow">SIN FRAMEWORK DE AGENTES</span>
+            <h1>El runtime mobile cambia las reglas</h1>
+          </div>
+          <div class="framework-stage">
+            <article class="server-stack" data-reveal-step="0" data-active-steps="0">
+              <span class="stack-label">SERVIDOR</span><strong>LangGraph</strong><small>Runtime pensado para backend</small>
+              <div><i></i><i></i><i></i></div>
+            </article>
+            <div class="runtime-barrier" data-reveal-step="1"><span>NO CABE EN EL RUNTIME MOBILE</span><b>×</b></div>
+            <article class="mobile-runtime" data-reveal-step="2" data-active-steps="2-4">
+              <span class="phone-mini">G</span>
+              <div><span class="stack-label">REACT NATIVE</span><strong>Harness propio</strong><small>TypeScript dentro de la app</small></div>
+            </article>
+          </div>
+          <div class="build-layers" data-reveal-step="3">
+            <span>Providers</span><span>Tool loops</span><span>Validación</span><span>Streaming</span><span>Memoria</span>
+          </div>
+          <div class="educational-payoff" data-reveal-step="4"><strong>No configuramos una caja negra.</strong><span>Construimos cada capa y entendemos por qué existe.</span></div>
+        </section>
+
+        <section class="scene" data-scene data-title="La app es el caso práctico" data-max-step="1">
+          <div class="scene-heading centered compact">
+            <span class="eyebrow">LÍMITE DE LA SERIE</span>
+            <h1>La aplicación se ve. El harness se explica.</h1>
+          </div>
+          <div class="scope-split">
+            <article class="scope-mobile" data-reveal-step="0" data-active-steps="0">
+              <img src="assets/home.png" alt="Interfaz mobile de Gymnasia" />
+              <div><small>CONTEXTO</small><strong>Desarrollo mobile</strong><span>Pantallas · navegación · publicación</span></div>
+            </article>
+            <article class="scope-harness" data-reveal-step="1" data-active-steps="1">
+              <small>CONTENIDO DE LA SERIE</small><strong>Desarrollo de harnesses</strong>
+              <div><span>System prompt</span><span>Tools</span><span>Providers</span><span>Memoria</span><span>Seguridad</span><span>Observabilidad</span></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Anatomía de un harness" data-max-step="7">
+          <div class="scene-heading side-heading">
+            <span class="eyebrow">ANATOMÍA DEL AGENTE</span>
+            <h1>El rack que convierte texto en acciones</h1>
+            <p>Cada barra añade una responsabilidad alrededor del LLM.</p>
+          </div>
+          <div class="harness-rack">
+            <span class="rack-post post-left"></span><span class="rack-post post-right"></span>
+            <div class="rack-core"><small>LLM</small><strong>Propone</strong></div>
+            <article data-reveal-step="1" data-active-steps="1"><span>01</span><strong>System prompt</strong><small>Identidad y reglas</small></article>
+            <article data-reveal-step="2" data-active-steps="2"><span>02</span><strong>Contexto</strong><small>Datos relevantes</small></article>
+            <article data-reveal-step="3" data-active-steps="3"><span>03</span><strong>Tools</strong><small>Capacidades disponibles</small></article>
+            <article data-reveal-step="4" data-active-steps="4"><span>04</span><strong>Validación</strong><small>Argumentos seguros</small></article>
+            <article data-reveal-step="5" data-active-steps="5"><span>05</span><strong>Ejecución</strong><small>Código propio</small></article>
+            <article data-reveal-step="6" data-active-steps="6"><span>06</span><strong>Reintentos</strong><small>Fallos recuperables</small></article>
+            <article data-reveal-step="7" data-active-steps="7"><span>07</span><strong>Observabilidad</strong><small>Entender el recorrido</small></article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="El ciclo de una acción" data-max-step="7">
+          <div class="scene-heading compact">
+            <span class="eyebrow">DEL MENSAJE AL RESULTADO</span>
+            <h1>El LLM propone. El harness controla y ejecuta.</h1>
+          </div>
+          <div class="action-flow">
+            <article data-reveal-step="0" data-active-steps="0"><span>01</span><strong>Persona</strong><small>«Crea una rutina»</small></article><i data-reveal-step="1">→</i>
+            <article data-reveal-step="1" data-active-steps="1"><span>02</span><strong>LLM</strong><small>Interpreta la intención</small></article><i data-reveal-step="2">→</i>
+            <article data-reveal-step="2" data-active-steps="2"><span>03</span><strong>Tool call</strong><small>Nombre + argumentos</small></article><i data-reveal-step="3">→</i>
+            <article data-reveal-step="3" data-active-steps="3"><span>04</span><strong>Harness</strong><small>Valida y despacha</small></article>
+            <article class="flow-return" data-reveal-step="7" data-active-steps="7"><span>08</span><strong>Respuesta</strong><small>Confirma el resultado</small></article><i class="reverse" data-reveal-step="7">←</i>
+            <article data-reveal-step="6" data-active-steps="6"><span>07</span><strong>LLM</strong><small>Continúa la conversación</small></article><i class="reverse" data-reveal-step="6">←</i>
+            <article data-reveal-step="5" data-active-steps="5"><span>06</span><strong>Resultado</strong><small>Dato real de la app</small></article><i class="reverse" data-reveal-step="5">←</i>
+            <article data-reveal-step="4" data-active-steps="4"><span>05</span><strong>Código</strong><small>Ejecuta la acción</small></article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Por qué local-first" data-max-step="4">
+          <div class="scene-heading centered compact">
+            <span class="eyebrow">UNA DECISIÓN DE PRODUCTO Y ARQUITECTURA</span>
+            <h1>El teléfono es la fuente principal</h1>
+          </div>
+          <div class="local-first-map">
+            <article class="local-reason reason-privacy" data-reveal-step="1" data-active-steps="1"><span>PRIVACIDAD</span><strong>Los datos no viven en una base central</strong></article>
+            <article class="local-reason reason-device" data-reveal-step="2" data-active-steps="2"><span>USO REAL</span><strong>La mayoría lo usará solo en el móvil</strong></article>
+            <div class="local-phone" data-reveal-step="0" data-active-steps="0-4"><span>G</span><strong>Fuente de verdad</strong><small>Entrenos · dieta · medidas</small></div>
+            <article class="local-reason reason-cost" data-reveal-step="3" data-active-steps="3"><span>COSTE</span><strong>Sin cuentas ni sincronización innecesaria</strong></article>
+            <article class="local-reason reason-risk" data-reveal-step="4" data-active-steps="4"><span>RIESGO</span><strong>Menos backend que mantener y securizar</strong></article>
+          </div>
+        </section>
+
+        <section class="scene" data-scene data-title="Local-first no significa sin red" data-max-step="3">
+          <div class="scene-heading compact centered">
+            <span class="eyebrow">EL LÍMITE DE CONFIANZA</span>
+            <h1>Local-first no significa vivir desconectado</h1>
+          </div>
+          <div class="trust-map">
+            <article class="trust-device" data-reveal-step="0" data-active-steps="0-3"><span>DISPOSITIVO</span><strong>Estado de Gymnasia</strong><small>Entrenos · dieta · medidas · memoria</small></article>
+            <div class="trust-route provider-route" data-reveal-step="1"><span>Solo el contexto necesario</span><i>→</i></div>
+            <article class="trust-provider" data-reveal-step="1" data-active-steps="1"><span>PROVEEDOR ELEGIDO</span><strong>LLM en la nube</strong><small>Petición directa</small></article>
+            <article class="ghost-backend" data-reveal-step="2" data-active-steps="2"><span>GYMNASIA DB</span><strong>Sin base central de usuarios</strong><b>×</b></article>
+          </div>
+          <div class="source-truth" data-reveal-step="3"><span>FUENTE PRINCIPAL</span><strong>El dispositivo conserva la autoridad sobre los datos.</strong></div>
+        </section>
+
+        <section class="scene" data-scene data-title="Primera excepción: GitHub" data-max-step="4">
+          <div class="scene-heading compact">
+            <span class="eyebrow">BACKEND 01 · FEEDBACK</span>
+            <h1>Un token de escritura nunca puede vivir en el APK</h1>
+          </div>
+          <div class="issue-flow">
+            <article class="apk-danger" data-reveal-step="0" data-active-steps="0"><span>APK</span><strong>GITHUB_TOKEN</strong><b>!</b><small>Extraíble · reutilizable · peligroso</small></article>
+            <article class="approval-card" data-reveal-step="1" data-active-steps="1"><span>APROBACIÓN HUMANA</span><strong>La persona revisa título y resumen</strong><small>No necesita conocer GitHub.</small></article>
+            <i data-reveal-step="2">→</i>
+            <article class="worker-card" data-reveal-step="2" data-active-steps="2"><span>BACKEND MÍNIMO</span><strong>Feedback Worker</strong><small>Custodia la credencial</small></article>
+            <i data-reveal-step="3">→</i>
+            <article class="github-card" data-reveal-step="3" data-active-steps="3"><span>DESTINO PRIVADO</span><strong>GitHub Issue</strong><small>Número verificable</small></article>
+          </div>
+          <div class="exception-rule" data-reveal-step="4"><span>SI FALLA</span><strong>No se envía la propuesta. Gymnasia sigue funcionando.</strong></div>
+        </section>
+
+        <section class="scene" data-scene data-title="Las trazas son los nuevos logs" data-max-step="6">
+          <div class="scene-heading compact centered">
+            <span class="eyebrow">BACKEND 02 · OBSERVABILIDAD</span>
+            <h1>En los agentes, las trazas son los nuevos logs</h1>
+          </div>
+          <div class="trace-timeline">
+            <article data-reveal-step="0" data-active-steps="0"><span>01</span><strong>Prompt</strong><small>Qué instrucciones recibió</small></article>
+            <article data-reveal-step="1" data-active-steps="1"><span>02</span><strong>Contexto</strong><small>Qué información conocía</small></article>
+            <article data-reveal-step="2" data-active-steps="2"><span>03</span><strong>Tool</strong><small>Qué decidió utilizar</small></article>
+            <article data-reveal-step="3" data-active-steps="3"><span>04</span><strong>Argumentos</strong><small>Qué intentó ejecutar</small></article>
+            <article data-reveal-step="4" data-active-steps="4"><span>05</span><strong>Resultado</strong><small>Qué devolvió el código</small></article>
+            <article data-reveal-step="5" data-active-steps="5"><span>06</span><strong>Reintento</strong><small>Cómo cambió el recorrido</small></article>
+            <article class="trace-error" data-reveal-step="6" data-active-steps="6"><span>07</span><strong>Fallo</strong><small>Dónde · por qué · cómo arreglarlo</small></article>
+          </div>
+          <div class="trace-beam" data-reveal-step="1"><i></i></div>
+        </section>
+
+        <section class="scene" data-scene data-title="Observabilidad con control" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">TRAZAS ACTIVADAS POR DEFECTO</span>
+            <h1>Observar para mejorar, con una salida clara</h1>
+          </div>
+          <div class="observability-stage">
+            <article class="trace-setting" data-visible-steps="0-2" data-active-steps="0">
+              <div><small>DIAGNÓSTICO</small><strong>Compartir trazas</strong><span>Ayuda a detectar y corregir fallos del agente.</span></div>
+              <span class="toggle is-on"><i></i></span>
+            </article>
+            <div class="trace-export" data-visible-steps="1-2">
+              <article><span>APP</span><strong>Traza técnica</strong></article><i>→</i>
+              <article data-reveal-step="2"><span>SANEADO</span><strong>Sin secretos ni datos innecesarios</strong></article><i data-reveal-step="2">→</i>
+              <article data-reveal-step="2"><span>OBSERVABILIDAD</span><strong>LangSmith o Langfuse</strong></article>
+            </div>
+            <article class="trace-setting off-setting" data-visible-steps="3" data-active-steps="3">
+              <div><small>CONTROL DEL USUARIO</small><strong>Compartir trazas</strong><span>Desactivado. Ninguna traza sale del dispositivo.</span></div>
+              <span class="toggle"><i></i></span>
+            </article>
+          </div>
+        </section>
+
+        <section class="scene closing-scene" data-scene data-title="Un proyecto real para aprender" data-max-step="5">
+          <div class="scene-heading centered hero-heading">
+            <span class="eyebrow">GYMNASIA</span>
+            <h1>Una app real. Un harness desde cero.</h1>
+          </div>
+          <div class="closing-grid">
+            <article data-reveal-step="1"><span>01</span><strong>Especializado</strong><small>Fitness y nutrición</small></article>
+            <article data-reveal-step="2"><span>02</span><strong>Abierto</strong><small>Útil antes que monetizable</small></article>
+            <article data-reveal-step="3"><span>03</span><strong>Local-first</strong><small>El móvil conserva los datos</small></article>
+            <article data-reveal-step="4"><span>04</span><strong>Educativo</strong><small>Sin abstraer el harness</small></article>
+          </div>
+          <div class="next-episode" data-reveal-step="5"><small>SIGUIENTE VÍDEO</small><strong>Cómo funcionan realmente las <em>tools</em></strong><span>→</span></div>
+        </section>
+      </div>
+
+      <footer class="presenter-controls">
+        <div class="control-group">
+          <button type="button" id="previousScene" aria-label="Escena anterior">←</button>
+          <button type="button" id="resetScene" aria-label="Reiniciar escena">↺</button>
+        </div>
+        <div class="step-status">
+          <span class="step-track"><i id="stepProgress"></i></span>
+          <span id="stepCounter">STEP 0 / 2</span>
+          <span class="click-label">CLIC PARA AVANZAR</span>
+        </div>
+        <div class="control-group">
+          <button type="button" id="toggleControls" aria-label="Mostrar controles">S</button>
+          <button type="button" id="toggleFullscreen" aria-label="Pantalla completa">⛶</button>
+          <button type="button" id="nextScene" aria-label="Escena siguiente">→</button>
+        </div>
+      </footer>
+
+      <nav class="scene-dots" id="sceneDots" aria-label="Escenas"></nav>
+    </main>
+  </body>
+</html>
