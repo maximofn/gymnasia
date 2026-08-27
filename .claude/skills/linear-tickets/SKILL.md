@@ -129,6 +129,13 @@ python3 .claude/skills/linear-tickets/scripts/linear.py update GYM-12 --parent G
 # Añadir dependencias (repite --blocked-by para varios bloqueantes)
 python3 .claude/skills/linear-tickets/scripts/linear.py link GYM-12 \
   --blocked-by GYM-10 --blocked-by GYM-11
+# Quitar dependencias: primero previsualizar y después aplicar
+python3 .claude/skills/linear-tickets/scripts/linear.py unlink GYM-12 \
+  --blocked-by GYM-10
+python3 .claude/skills/linear-tickets/scripts/linear.py unlink GYM-12 \
+  --blocked-by GYM-10 --apply
+# Relación informativa, sin bloqueo
+python3 .claude/skills/linear-tickets/scripts/linear.py relate GYM-12 --with GYM-13
 # Comentar
 python3 .claude/skills/linear-tickets/scripts/linear.py comment GYM-12 --body "Comentario"
 ```
@@ -197,7 +204,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Doce cosas que cuestan tiempo si no se saben:
+Trece cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -309,6 +316,13 @@ Doce cosas que cuestan tiempo si no se saben:
     lo imprimas. Así `board --apply` modifica el checkout que se va a commitear
     sin copiar el fichero de secretos.
 
+13. **`issueRelationDelete` borra por UUID de relación, no por UUID de issue.**
+    El síntoma al intentar quitar un bloqueo con cualquiera de los identifiers
+    de los tickets es un error GraphQL o que no desaparece la relación esperada.
+    Usa `unlink TARGET --blocked-by BLOCKER` primero sin flags para comprobar la
+    dirección y repítelo con `--apply`; el comando localiza el UUID exacto y no
+    borra nada si alguno de los bloqueos solicitados no existe.
+
 ## Notas
 
 - **Prioridades**: `none | urgent | high | medium | low`.
@@ -322,6 +336,9 @@ Doce cosas que cuestan tiempo si no se saben:
 - En `link TARGET --blocked-by BLOCKER`, la relación GraphQL se crea en la
   dirección `BLOCKER blocks TARGET`; invertir ambos UUID hace que Linear muestre
   la dependencia al revés.
+- `unlink TARGET --blocked-by BLOCKER` usa la misma dirección, previsualiza por
+  defecto y solo borra con `--apply`. `relate ISSUE --with OTHER` es simétrico e
+  idempotente.
 - Los estados por defecto de un equipo Linear suelen ser: `Backlog`, `Todo`,
   `In Progress`, `In Review`, `Done`, `Canceled` (verifícalos con `states`).
 - Para completar un ticket usa `close`; `update --state Done` está bloqueado.
