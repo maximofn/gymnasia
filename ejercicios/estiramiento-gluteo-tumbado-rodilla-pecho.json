@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-gluteo-tumbado-rodilla-pecho",
+  "name": "Estiramiento de glúteo tumbado con rodilla al pecho",
+  "image_male": "images/estiramiento-gluteo-tumbado-rodilla-pecho-male.webp",
+  "image_female": "images/estiramiento-gluteo-tumbado-rodilla-pecho-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con una pierna extendida. Abraza la rodilla contraria con ambas manos y acércala suavemente hacia el pecho sin levantar la pelvis ni tensar los hombros. Mantén el estiramiento, suelta de forma controlada y repite con la otra pierna."
+}

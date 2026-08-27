@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-recto-femoral-prono-correa",
+  "name": "Estiramiento prono del recto femoral con correa",
+  "image_male": "images/estiramiento-recto-femoral-prono-correa-male.webp",
+  "image_female": "images/estiramiento-recto-femoral-prono-correa-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "correa",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca abajo y pasa una correa alrededor de un tobillo. Flexiona esa rodilla y tira de la correa por encima del hombro para acercar el talón al glúteo, manteniendo la pelvis apoyada y el muslo alineado. Sostén la tensión sin dolor y repite con la otra pierna."
+}

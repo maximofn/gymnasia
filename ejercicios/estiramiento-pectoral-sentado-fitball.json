@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-pectoral-sentado-fitball",
+  "name": "Estiramiento pectoral sentado en fitball",
+  "image_male": "images/estiramiento-pectoral-sentado-fitball-male.webp",
+  "image_female": "images/estiramiento-pectoral-sentado-fitball-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombros", "bíceps"],
+  "equipment": "fitball",
+  "difficulty": "beginner",
+  "instructions": "Siéntate estable sobre un fitball con los pies bien apoyados. Entrelaza las manos detrás de la espalda, extiende suavemente los codos y lleva los brazos hacia atrás mientras juntas los omóplatos y elevas el pecho. Mantén el abdomen activo, sostén el estiramiento y vuelve despacio."
+}

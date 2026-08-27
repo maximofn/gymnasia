@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-rodillas-colgado-asistida-banda",
+  "name": "Elevación de rodillas colgado asistida con banda",
+  "image_male": "images/elevacion-rodillas-colgado-asistida-banda-male.webp",
+  "image_female": "images/elevacion-rodillas-colgado-asistida-banda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "antebrazos"],
+  "equipment": "barra y banda elástica",
+  "difficulty": "intermediate",
+  "instructions": "Fija una banda ancha a la barra, apoya los pies en el lazo y cuélgate con agarre prono. Estabiliza los hombros y lleva las rodillas hacia el pecho aprovechando la asistencia de la banda sin balancear el cuerpo. Pausa arriba y extiende las piernas lentamente."
+}

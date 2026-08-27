@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-piernas-tumbado-descenso-lateral",
+  "name": "Elevación de piernas tumbado con descenso lateral",
+  "image_male": "images/elevacion-piernas-tumbado-descenso-lateral-male.webp",
+  "image_female": "images/elevacion-piernas-tumbado-descenso-lateral-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "oblicuos"],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Túmbate boca arriba con los brazos abiertos para estabilizarte y eleva las piernas juntas hasta la vertical. Manteniéndolas casi rectas, bájalas de forma controlada hacia un lado sin despegar el hombro contrario. Activa los oblicuos para volver al centro y alterna el descenso hacia el otro lado."
+}

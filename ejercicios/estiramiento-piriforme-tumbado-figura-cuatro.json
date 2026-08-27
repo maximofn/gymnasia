@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-piriforme-tumbado-figura-cuatro",
+  "name": "Estiramiento de piriforme tumbado en figura cuatro",
+  "image_male": "images/estiramiento-piriforme-tumbado-figura-cuatro-male.webp",
+  "image_female": "images/estiramiento-piriforme-tumbado-figura-cuatro-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["piriforme", "isquiotibiales"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba, flexiona ambas rodillas y cruza un tobillo sobre el muslo contrario. Pasa las manos por detrás del muslo de apoyo y acércalo al pecho hasta notar el estiramiento en el glúteo de la pierna cruzada. Mantén la pelvis apoyada y cambia de lado."
+}

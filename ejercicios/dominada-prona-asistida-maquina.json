@@ -1,0 +1,11 @@
+{
+  "id": "dominada-prona-asistida-maquina",
+  "name": "Dominada prona asistida en máquina",
+  "image_male": "images/dominada-prona-asistida-maquina-male.webp",
+  "image_female": "images/dominada-prona-asistida-maquina-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "máquina asistida",
+  "difficulty": "beginner",
+  "instructions": "Selecciona la asistencia, apoya las rodillas en la plataforma y toma las asas con agarre prono algo más ancho que los hombros. Lleva el pecho hacia arriba mientras diriges los codos hacia abajo hasta que la barbilla supere las manos. Baja con control hasta extender los brazos sin relajar los hombros."
+}

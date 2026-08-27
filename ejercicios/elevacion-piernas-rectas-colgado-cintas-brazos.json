@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-piernas-rectas-colgado-cintas-brazos",
+  "name": "Elevación de piernas rectas colgado con cintas para brazos",
+  "image_male": "images/elevacion-piernas-rectas-colgado-cintas-brazos-male.webp",
+  "image_female": "images/elevacion-piernas-rectas-colgado-cintas-brazos-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "hombros", "espalda"],
+  "equipment": "barra y cintas abdominales",
+  "difficulty": "advanced",
+  "instructions": "Apoya los brazos en las cintas abdominales suspendidas de una barra y estabiliza los hombros. Mantén las piernas juntas y casi extendidas mientras las elevas por delante hasta dejarlas paralelas al suelo. Evita tomar impulso, sostén brevemente la posición y baja con control."
+}

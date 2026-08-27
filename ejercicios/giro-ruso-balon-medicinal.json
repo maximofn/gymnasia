@@ -1,0 +1,11 @@
+{
+  "id": "giro-ruso-balon-medicinal",
+  "name": "Giro ruso con balón medicinal",
+  "image_male": "images/giro-ruso-balon-medicinal-male.webp",
+  "image_female": "images/giro-ruso-balon-medicinal-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "zona lumbar"],
+  "equipment": "balón medicinal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate con las rodillas flexionadas, reclina ligeramente el torso y sujeta un balón medicinal con ambas manos. Mantén la espalda neutra y gira el pecho para llevar el balón junto a una cadera. Vuelve al centro y repite hacia el lado contrario sin mover las rodillas ni perder el equilibrio."
+}
