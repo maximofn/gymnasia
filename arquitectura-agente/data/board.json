@@ -158,7 +158,7 @@
         {
           "id": "GYM-196",
           "title": "Preparar credenciales BYOK temporales para la revisión de Google Play",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Crear una credencial de revisión aislada, limitada y temporal, probarla con el AAB y compartirla solo mediante App access para revocarla al terminar.",
           "dependsOn": [
             "GYM-195"
@@ -194,12 +194,12 @@
             "GYM-190",
             "GYM-191",
             "GYM-192",
-            "GYM-195",
-            "GYM-196"
+            "GYM-195"
           ],
           "related": [
             "GYM-158",
             "GYM-159",
+            "GYM-196",
             "GYM-199"
           ]
         },
