@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-26",
+    "updated": "2026-08-27",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -145,7 +145,7 @@
         {
           "id": "GYM-195",
           "title": "Crear Gymnasia en Google Play Console e importar la clave actual de EAS",
-          "state": "todo",
+          "state": "done",
           "summary": "Dar de alta package name e identidad definitivos, importar antes de la primera release la clave que firma los APK de EAS y probar una actualización sin desinstalar ni perder datos locales.",
           "dependsOn": [
             "GYM-193",
