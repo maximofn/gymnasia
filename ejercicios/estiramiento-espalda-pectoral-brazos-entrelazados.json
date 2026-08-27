@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-espalda-pectoral-brazos-entrelazados",
+  "name": "Estiramiento de espalda y pectoral con brazos entrelazados",
+  "image_male": "images/estiramiento-espalda-pectoral-brazos-entrelazados-male.webp",
+  "image_female": "images/estiramiento-espalda-pectoral-brazos-entrelazados-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["hombros", "pecho"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie, cruza los brazos frente al pecho y entrelaza los dedos. Gira las palmas hacia fuera y empuja las manos al frente mientras redondeas suavemente la parte alta de la espalda. Eleva ligeramente los brazos hasta notar el estiramiento, sin encoger los hombros, y mantén la posición."
+}

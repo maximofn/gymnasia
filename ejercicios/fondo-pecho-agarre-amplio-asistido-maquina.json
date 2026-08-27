@@ -1,0 +1,11 @@
+{
+  "id": "fondo-pecho-agarre-amplio-asistido-maquina",
+  "name": "Fondo de pecho asistido con agarre amplio",
+  "image_male": "images/fondo-pecho-agarre-amplio-asistido-maquina-male.webp",
+  "image_female": "images/fondo-pecho-agarre-amplio-asistido-maquina-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "máquina asistida",
+  "difficulty": "intermediate",
+  "instructions": "Apoya ambas rodillas en la plataforma asistida y toma las barras con un agarre amplio. Inclina ligeramente el torso hacia delante y baja flexionando los codos hasta que los brazos queden cerca de la horizontal. Empuja con el pecho y los tríceps para regresar arriba manteniendo los hombros estables."
+}

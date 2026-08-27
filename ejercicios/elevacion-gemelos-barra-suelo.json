@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-gemelos-barra-suelo",
+  "name": "Elevación de gemelos sobre barra en el suelo",
+  "image_male": "images/elevacion-gemelos-barra-suelo-male.webp",
+  "image_female": "images/elevacion-gemelos-barra-suelo-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["isquiotibiales"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Coloca una barra descargada y bien inmovilizada en el suelo y apoya la parte delantera de ambos pies sobre el eje, dejando los talones libres. Sujétate a un soporte estable, eleva los talones todo lo posible y aprieta los gemelos. Desciende lentamente hasta notar el estiramiento sin perder el equilibrio."
+}

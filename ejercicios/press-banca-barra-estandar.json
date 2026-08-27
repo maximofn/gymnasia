@@ -1,0 +1,11 @@
+{
+  "id": "press-banca-barra-estandar",
+  "name": "Press de banca estándar con barra",
+  "image_male": "images/press-banca-barra-estandar-male.webp",
+  "image_female": "images/press-banca-barra-estandar-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "barra y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano con los pies firmes en el suelo y agarra la barra algo más abierta que los hombros. Sácala del soporte, baja de forma controlada hasta el pecho manteniendo las muñecas alineadas y empuja hasta extender los brazos. Conserva los glúteos y la parte alta de la espalda apoyados."
+}

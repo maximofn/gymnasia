@@ -1,0 +1,11 @@
+{
+  "id": "jalon-banda-supino-de-pie",
+  "name": "Jalón supino con banda de pie",
+  "image_male": "images/jalon-banda-supino-de-pie-male.webp",
+  "image_female": "images/jalon-banda-supino-de-pie-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["bíceps", "romboides", "hombro posterior"],
+  "equipment": "banda elástica",
+  "difficulty": "intermediate",
+  "instructions": "Ancla una banda por encima de la cabeza y aléjate hasta crear tensión. Agarra los extremos con las palmas hacia ti, activa el abdomen y tira hacia el pecho guiando el movimiento con los codos. Junta los omóplatos al final y vuelve a extender los brazos de forma lenta."
+}
