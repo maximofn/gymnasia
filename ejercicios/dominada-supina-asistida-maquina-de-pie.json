@@ -1,0 +1,11 @@
+{
+  "id": "dominada-supina-asistida-maquina-de-pie",
+  "name": "Dominada supina asistida de pie en máquina",
+  "image_male": "images/dominada-supina-asistida-maquina-de-pie-male.webp",
+  "image_female": "images/dominada-supina-asistida-maquina-de-pie-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "máquina asistida",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la asistencia y sube a la plataforma de la máquina. Sujeta las agarraderas con las palmas hacia ti, mantén el pecho elevado y lleva los codos hacia abajo para acercar la barbilla a las manos. Desciende con control hasta extender los brazos sin perder la tensión de la espalda."
+}

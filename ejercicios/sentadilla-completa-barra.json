@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-completa-barra",
+  "name": "Sentadilla completa con barra",
+  "image_male": "images/sentadilla-completa-barra-male.webp",
+  "image_female": "images/sentadilla-completa-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Coloca la barra sobre la parte alta de la espalda y separa los pies al ancho de los hombros. Lleva las caderas atrás y abajo mientras las rodillas siguen la dirección de los pies, descendiendo por debajo de la paralela si tu movilidad lo permite. Impúlsate con los talones para extender caderas y rodillas."
+}

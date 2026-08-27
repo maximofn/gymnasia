@@ -1,0 +1,11 @@
+{
+  "id": "salto-hacia-atras",
+  "name": "Salto hacia atrás",
+  "image_male": "images/salto-hacia-atras-male.webp",
+  "image_female": "images/salto-hacia-atras-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["isquiotibiales", "glúteos", "gemelos"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Separa los pies al ancho de los hombros y flexiona rodillas y caderas para cargar el salto. Impúlsate con ambos pies para desplazarte hacia atrás y mantén el abdomen activo durante el vuelo. Aterriza sobre ambos pies con las rodillas flexionadas para amortiguar y estabilízate antes de repetir."
+}

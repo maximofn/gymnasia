@@ -1,0 +1,11 @@
+{
+  "id": "dominada-prona-asistida-maquina-de-pie",
+  "name": "Dominada prona asistida de pie en máquina",
+  "image_male": "images/dominada-prona-asistida-maquina-de-pie-male.webp",
+  "image_female": "images/dominada-prona-asistida-maquina-de-pie-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "máquina asistida",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la asistencia, colócate sobre la plataforma y agarra las asas con las palmas hacia delante, algo más abiertas que los hombros. Activa el abdomen y tira de los codos hacia los costados hasta llevar la barbilla por encima de las asas. Regresa lentamente a la posición inicial."
+}

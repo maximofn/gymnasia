@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-asistida-toalla-de-pie",
+  "name": "Extensión de tríceps asistida con toalla de pie",
+  "image_male": "images/extension-triceps-asistida-toalla-de-pie-male.webp",
+  "image_female": "images/extension-triceps-asistida-toalla-de-pie-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros"],
+  "equipment": "toalla",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie y sujeta una toalla tensa con ambas manos detrás de la cabeza. Mantén los codos orientados al frente y cerca de las orejas mientras extiendes los antebrazos hacia arriba. Aprieta los tríceps al final y vuelve a flexionar los codos de forma controlada."
+}

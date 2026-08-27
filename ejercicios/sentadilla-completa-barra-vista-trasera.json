@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-completa-barra-vista-trasera",
+  "name": "Sentadilla completa con barra desde atrás",
+  "image_male": "images/sentadilla-completa-barra-vista-trasera-male.webp",
+  "image_female": "images/sentadilla-completa-barra-vista-trasera-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la barra sobre los trapecios y adopta una postura estable con las puntas ligeramente abiertas. Desciende llevando las caderas atrás y separando las rodillas en línea con los pies hasta alcanzar una sentadilla profunda. Mantén la espalda neutra y empuja el suelo de forma uniforme para subir."
+}

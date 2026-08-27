@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-completa-barra-vista-lateral",
+  "name": "Sentadilla completa con barra desde el lateral",
+  "image_male": "images/sentadilla-completa-barra-vista-lateral-male.webp",
+  "image_female": "images/sentadilla-completa-barra-vista-lateral-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos", "core"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Con la barra apoyada en la parte alta de la espalda, fija la mirada al frente y activa el abdomen. Flexiona caderas y rodillas a la vez para bajar con el centro de gravedad sobre el medio del pie, manteniendo la columna neutra. Alcanza una profundidad cómoda y extiende las piernas para regresar de pie."
+}

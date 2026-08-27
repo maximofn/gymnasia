@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-alterno-barras-cortas",
+  "name": "Curl de bíceps alterno con barras cortas",
+  "image_male": "images/curl-biceps-alterno-barras-cortas-male.webp",
+  "image_female": "images/curl-biceps-alterno-barras-cortas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie sosteniendo una barra corta en cada mano con las palmas hacia delante. Mantén los brazos superiores pegados al cuerpo y flexiona un codo para llevar una barra hacia el hombro mientras el otro brazo permanece extendido. Baja con control y alterna el movimiento sin balancear el tronco."
+}

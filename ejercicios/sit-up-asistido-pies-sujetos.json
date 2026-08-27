@@ -1,0 +1,11 @@
+{
+  "id": "sit-up-asistido-pies-sujetos",
+  "name": "Sit-up asistido con pies sujetos",
+  "image_male": "images/sit-up-asistido-pies-sujetos-male.webp",
+  "image_female": "images/sit-up-asistido-pies-sujetos-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "banco",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies sujetos bajo un apoyo estable. Coloca las manos detrás de la cabeza sin tirar del cuello, activa el abdomen y eleva el torso hasta unos 45 grados. Haz una pausa y vuelve a bajar lentamente manteniendo la zona lumbar controlada."
+}

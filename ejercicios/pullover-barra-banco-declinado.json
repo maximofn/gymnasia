@@ -1,0 +1,11 @@
+{
+  "id": "pullover-barra-banco-declinado",
+  "name": "Pullover con barra en banco declinado",
+  "image_male": "images/pullover-barra-banco-declinado-male.webp",
+  "image_female": "images/pullover-barra-banco-declinado-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros", "dorsales"],
+  "equipment": "barra y banco declinado",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco declinado con los pies sujetos y la cabeza más baja que las caderas. Sostén la barra sobre el pecho con los codos ligeramente flexionados y llévala en un arco por detrás de la cabeza. Detente cuando notes el estiramiento y devuelve la barra sobre el pecho sin cambiar el ángulo de los codos."
+}

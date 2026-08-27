@@ -593,6 +593,33 @@
         {"source_id": "0017", "id": "dominada-prona-asistida-maquina", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "1716", "id": "estiramiento-pectoral-sentado-fitball", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 23,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "1712", "id": "estiramiento-aductores-tumbado-lateral-apoyo", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1758", "id": "sit-up-asistido-pies-sujetos", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1431", "id": "dominada-supina-asistida-maquina-de-pie", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1432", "id": "dominada-prona-asistida-maquina-de-pie", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0018", "id": "extension-triceps-asistida-toalla-de-pie", "action": "create", "difficulty": "beginner", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0019", "id": "fondo-triceps-asistido-maquina-rodillas", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2364", "id": "fondo-pecho-agarre-amplio-asistido-maquina", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3672", "id": "paso-zancada-adelante-atras", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1405", "id": "estiramiento-espalda-pectoral-brazos-entrelazados", "action": "create", "difficulty": "beginner", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1473", "id": "salto-hacia-atras", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3117", "id": "jalon-banda-agarre-cerrado-sentado", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3116", "id": "jalon-banda-supino-de-pie", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0023", "id": "curl-biceps-alterno-barras-cortas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0025", "id": "press-banca-barra-estandar", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1255", "id": "pullover-barra-banco-declinado", "action": "create", "difficulty": "advanced", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1370", "id": "elevacion-gemelos-barra-suelo", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0039", "id": "sentadilla-frontal-barra-pecho", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0043", "id": "sentadilla-completa-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1461", "id": "sentadilla-completa-barra-vista-trasera", "action": "create", "difficulty": "intermediate", "view": "rear view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1462", "id": "sentadilla-completa-barra-vista-lateral", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

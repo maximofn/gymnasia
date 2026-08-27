@@ -1,0 +1,11 @@
+{
+  "id": "paso-zancada-adelante-atras",
+  "name": "Paso en zancada hacia delante y atrás",
+  "image_male": "images/paso-zancada-adelante-atras-male.webp",
+  "image_female": "images/paso-zancada-adelante-atras-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "glúteos", "gemelos"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Desde una postura erguida, da un paso al frente y baja en zancada con ambas rodillas flexionadas. Impúlsate con el pie delantero para volver al centro y lleva ese mismo pie hacia atrás en otra zancada. Alterna las piernas a un ritmo continuo, manteniendo el tronco estable."
+}

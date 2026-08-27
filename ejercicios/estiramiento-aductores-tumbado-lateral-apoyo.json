@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-aductores-tumbado-lateral-apoyo",
+  "name": "Estiramiento asistido de aductores tumbado de lado",
+  "image_male": "images/estiramiento-aductores-tumbado-lateral-apoyo-male.webp",
+  "image_female": "images/estiramiento-aductores-tumbado-lateral-apoyo-female.webp",
+  "muscle_group": "aductores",
+  "secondary_muscles": ["isquiotibiales", "glúteos"],
+  "equipment": "banco",
+  "difficulty": "beginner",
+  "instructions": "Túmbate de lado junto a un banco bajo y apoya sobre él el pie de la pierna superior, manteniéndola recta. Flexiona ligeramente la pierna inferior para estabilizarte y deja que la pelvis descienda con control hasta notar el estiramiento en la cara interna del muslo. Mantén la posición sin girar el tronco y repite al otro lado."
+}

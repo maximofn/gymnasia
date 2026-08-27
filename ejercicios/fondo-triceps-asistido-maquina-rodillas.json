@@ -1,0 +1,11 @@
+{
+  "id": "fondo-triceps-asistido-maquina-rodillas",
+  "name": "Fondo de tríceps asistido en máquina de rodillas",
+  "image_male": "images/fondo-triceps-asistido-maquina-rodillas-male.webp",
+  "image_female": "images/fondo-triceps-asistido-maquina-rodillas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombros"],
+  "equipment": "máquina asistida",
+  "difficulty": "beginner",
+  "instructions": "Arrodíllate sobre la plataforma móvil de la máquina y sujeta las barras paralelas con los brazos casi extendidos. Mantén el torso vertical y los codos cerca del cuerpo mientras desciendes hasta que queden flexionados unos 90 grados. Empuja las barras para volver arriba sin bloquear bruscamente los codos."
+}

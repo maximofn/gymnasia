@@ -1,0 +1,11 @@
+{
+  "id": "jalon-banda-agarre-cerrado-sentado",
+  "name": "Jalón con banda y agarre cerrado sentado",
+  "image_male": "images/jalon-banda-agarre-cerrado-sentado-male.webp",
+  "image_female": "images/jalon-banda-agarre-cerrado-sentado-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "banda y banco",
+  "difficulty": "beginner",
+  "instructions": "Fija una banda por encima de la cabeza y siéntate frente al anclaje con el torso erguido. Sujeta los extremos juntos con las palmas hacia ti y tira hacia la parte alta del pecho, llevando los codos hacia abajo y atrás. Extiende los brazos lentamente sin dejar que la banda pierda tensión."
+}
