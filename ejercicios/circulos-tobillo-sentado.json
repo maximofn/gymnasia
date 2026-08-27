@@ -1,0 +1,11 @@
+{
+  "id": "circulos-tobillo-sentado",
+  "name": "Círculos de tobillo sentado",
+  "image_male": "images/circulos-tobillo-sentado-male.webp",
+  "image_female": "images/circulos-tobillo-sentado-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["estabilizadores del tobillo"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate con una pierna extendida y eleva ligeramente el pie del suelo. Mantén quietos la rodilla y el muslo mientras dibujas círculos amplios y controlados con el tobillo. Completa las repeticiones en un sentido, cambia de dirección y repite con la otra pierna."
+}

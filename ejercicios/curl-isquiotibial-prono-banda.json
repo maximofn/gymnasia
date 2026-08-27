@@ -1,0 +1,11 @@
+{
+  "id": "curl-isquiotibial-prono-banda",
+  "name": "Curl de isquiotibiales prono con banda",
+  "image_male": "images/curl-isquiotibial-prono-banda-male.webp",
+  "image_female": "images/curl-isquiotibial-prono-banda-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "gemelos"],
+  "equipment": "banda elástica",
+  "difficulty": "intermediate",
+  "instructions": "Ancla una banda a un punto bajo y coloca el otro extremo alrededor de un tobillo. Túmbate boca abajo con las caderas apoyadas y flexiona la rodilla para acercar el talón al glúteo sin levantar el muslo. Haz una pausa arriba y extiende la pierna lentamente contra la tensión."
+}

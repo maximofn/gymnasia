@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-rodillas-colgado-cintas-brazos",
+  "name": "Elevación de rodillas colgado con cintas para brazos",
+  "image_male": "images/elevacion-rodillas-colgado-cintas-brazos-male.webp",
+  "image_female": "images/elevacion-rodillas-colgado-cintas-brazos-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "hombros", "espalda"],
+  "equipment": "barra y cintas abdominales",
+  "difficulty": "intermediate",
+  "instructions": "Asegura las cintas abdominales a la barra y apoya los brazos en ellas con los hombros estables. Parte con las piernas juntas y flexiona caderas y rodillas para acercarlas al pecho sin balancearte. Haz una pausa arriba y desciende lentamente hasta recuperar la posición inicial."
+}

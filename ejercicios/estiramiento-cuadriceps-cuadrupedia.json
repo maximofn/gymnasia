@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-cuadriceps-cuadrupedia",
+  "name": "Estiramiento de cuádriceps en cuadrupedia",
+  "image_male": "images/estiramiento-cuadriceps-cuadrupedia-male.webp",
+  "image_female": "images/estiramiento-cuadriceps-cuadrupedia-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["isquiotibiales", "glúteos"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Colócate en cuadrupedia con las manos bajo los hombros y las rodillas bajo las caderas. Extiende una pierna hacia atrás, flexiona la rodilla y acerca el talón al glúteo sin girar la pelvis. Mantén el abdomen activo y lleva suavemente las caderas hacia abajo hasta notar el estiramiento en la parte frontal del muslo. Sostén la posición y cambia de pierna."
+}

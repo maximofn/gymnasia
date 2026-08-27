@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-gemelo-tumbado-correa",
+  "name": "Estiramiento de gemelo tumbado con correa",
+  "image_male": "images/estiramiento-gemelo-tumbado-correa-male.webp",
+  "image_female": "images/estiramiento-gemelo-tumbado-correa-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["isquiotibiales"],
+  "equipment": "correa",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba y pasa una correa por la parte delantera de un pie. Eleva esa pierna casi recta y tira suavemente de la correa para acercar los dedos hacia la espinilla, manteniendo la rodilla extendida. Sostén el estiramiento sin despegar la pelvis y cambia de lado."
+}

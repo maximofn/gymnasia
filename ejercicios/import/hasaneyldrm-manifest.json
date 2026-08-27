@@ -566,6 +566,33 @@
         {"source_id": "0277", "id": "crunch-declinado", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "1274", "id": "flexion-profunda-mancuernas", "action": "create", "difficulty": "advanced", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 22,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "1512", "id": "estiramiento-cuadriceps-cuadrupedia", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1368", "id": "circulos-tobillo-sentado", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2355", "id": "elevacion-rodillas-colgado-cintas-brazos", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2333", "id": "elevacion-piernas-rectas-colgado-cintas-brazos", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3214", "id": "toque-punta-pie-equilibrio-brazos-abiertos", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3204", "id": "sit-up-completo-brazos-sobre-cabeza", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0011", "id": "elevacion-rodillas-colgado-asistida-banda", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0010", "id": "elevacion-rodillas-colgado-descenso-explosivo", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1708", "id": "estiramiento-gemelo-tumbado-correa", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1709", "id": "estiramiento-gluteo-tumbado-rodilla-pecho", "action": "create", "difficulty": "beginner", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1710", "id": "estiramiento-piriforme-tumbado-figura-cuatro", "action": "create", "difficulty": "beginner", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0012", "id": "elevacion-piernas-tumbado-descenso-lateral", "action": "create", "difficulty": "advanced", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0013", "id": "elevacion-piernas-tumbado-descenso-explosivo", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0014", "id": "giro-ruso-balon-medicinal", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0015", "id": "dominada-asistida-maquina-agarre-neutro-cerrado", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0016", "id": "curl-isquiotibial-prono-banda", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1713", "id": "estiramiento-cuadriceps-prono", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1714", "id": "estiramiento-recto-femoral-prono-correa", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0017", "id": "dominada-prona-asistida-maquina", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1716", "id": "estiramiento-pectoral-sentado-fitball", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }
