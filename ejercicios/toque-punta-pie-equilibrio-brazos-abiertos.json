@@ -1,0 +1,11 @@
+{
+  "id": "toque-punta-pie-equilibrio-brazos-abiertos",
+  "name": "Toque de punta de pie en equilibrio con brazos abiertos",
+  "image_male": "images/toque-punta-pie-equilibrio-brazos-abiertos-male.webp",
+  "image_female": "images/toque-punta-pie-equilibrio-brazos-abiertos-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "cuádriceps", "gemelos"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los brazos abiertos y transfiere el peso a una pierna. Inclina el torso desde la cadera mientras extiendes la pierna contraria hacia atrás y lleva una mano hacia la punta del pie de apoyo. Mantén la espalda larga, recupera el equilibrio al subir y alterna los lados."
+}

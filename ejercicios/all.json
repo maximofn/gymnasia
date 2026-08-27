@@ -398,6 +398,19 @@
     "instructions": "Junta los pies, flexiona ligeramente las rodillas y apoya las manos sobre ellas. Manteniendo las plantas de los pies en el suelo, dibuja círculos pequeños y controlados con ambas rodillas juntas. Cambia el sentido del giro y evita que el movimiento resulte doloroso."
   },
   {
+    "id": "circulos-tobillo-sentado",
+    "name": "Círculos de tobillo sentado",
+    "image_male": "images/circulos-tobillo-sentado-male.webp",
+    "image_female": "images/circulos-tobillo-sentado-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "estabilizadores del tobillo"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Siéntate con una pierna extendida y eleva ligeramente el pie del suelo. Mantén quietos la rodilla y el muslo mientras dibujas círculos amplios y controlados con el tobillo. Completa las repeticiones en un sentido, cambia de dirección y repite con la otra pierna."
+  },
+  {
     "id": "clean-and-press-barra",
     "name": "Clean and press con barra",
     "image_male": "images/clean-and-press-barra-male.webp",
@@ -1146,6 +1159,20 @@
     "instructions": "Ponte frente a una polea baja y sujeta un asa con una mano en pronación, con la palma hacia abajo. Mantén el codo pegado al costado y la muñeca neutra mientras flexionas el antebrazo hacia el hombro. Baja lentamente hasta casi extender el brazo y completa la serie antes de cambiar de lado."
   },
   {
+    "id": "curl-isquiotibial-prono-banda",
+    "name": "Curl de isquiotibiales prono con banda",
+    "image_male": "images/curl-isquiotibial-prono-banda-male.webp",
+    "image_female": "images/curl-isquiotibial-prono-banda-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos",
+      "gemelos"
+    ],
+    "equipment": "banda elástica",
+    "difficulty": "intermediate",
+    "instructions": "Ancla una banda a un punto bajo y coloca el otro extremo alrededor de un tobillo. Túmbate boca abajo con las caderas apoyadas y flexiona la rodilla para acercar el talón al glúteo sin levantar el muslo. Haz una pausa arriba y extiende la pierna lentamente contra la tensión."
+  },
+  {
     "id": "curl-mancuernas-sentado",
     "name": "Curl con mancuernas sentado",
     "image_male": "images/curl-mancuernas-sentado-male.webp",
@@ -1475,6 +1502,34 @@
     "equipment": "barra de dominadas",
     "difficulty": "advanced",
     "instructions": "Cuélgate de la barra con un agarre prono muy amplio y activa el abdomen. Sube desplazando el pecho hacia una mano, flexionando ese codo mientras el brazo contrario se mantiene casi recto sobre la barra. Desciende con control y repite hacia el otro lado sin perder la estabilidad de los hombros."
+  },
+  {
+    "id": "dominada-asistida-maquina-agarre-neutro-cerrado",
+    "name": "Dominada asistida en máquina con agarre neutro cerrado",
+    "image_male": "images/dominada-asistida-maquina-agarre-neutro-cerrado-male.webp",
+    "image_female": "images/dominada-asistida-maquina-agarre-neutro-cerrado-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "máquina asistida",
+    "difficulty": "beginner",
+    "instructions": "Ajusta el contrapeso, apoya las rodillas en la plataforma y toma las asas paralelas con las palmas enfrentadas y las manos juntas. Activa los hombros y sube llevando los codos hacia las costillas hasta superar las asas con la barbilla. Desciende lentamente sin dejar que la plataforma rebote."
+  },
+  {
+    "id": "dominada-prona-asistida-maquina",
+    "name": "Dominada prona asistida en máquina",
+    "image_male": "images/dominada-prona-asistida-maquina-male.webp",
+    "image_female": "images/dominada-prona-asistida-maquina-female.webp",
+    "muscle_group": "espalda",
+    "secondary_muscles": [
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "máquina asistida",
+    "difficulty": "beginner",
+    "instructions": "Selecciona la asistencia, apoya las rodillas en la plataforma y toma las asas con agarre prono algo más ancho que los hombros. Lleva el pecho hacia arriba mientras diriges los codos hacia abajo hasta que la barbilla supere las manos. Baja con control hasta extender los brazos sin relajar los hombros."
   },
   {
     "id": "dominada-supina-agarre-cerrado",
@@ -1839,6 +1894,21 @@
     "instructions": "Túmbate boca arriba, pasa la banda por los arcos de ambos pies y sujeta los extremos junto a las caderas. Mantén las piernas juntas y casi rectas mientras las elevas hasta quedar perpendiculares al suelo. Presiona la zona lumbar contra el suelo y baja lentamente las piernas sin que los talones lleguen a apoyarse."
   },
   {
+    "id": "elevacion-piernas-rectas-colgado-cintas-brazos",
+    "name": "Elevación de piernas rectas colgado con cintas para brazos",
+    "image_male": "images/elevacion-piernas-rectas-colgado-cintas-brazos-male.webp",
+    "image_female": "images/elevacion-piernas-rectas-colgado-cintas-brazos-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera",
+      "hombros",
+      "espalda"
+    ],
+    "equipment": "barra y cintas abdominales",
+    "difficulty": "advanced",
+    "instructions": "Apoya los brazos en las cintas abdominales suspendidas de una barra y estabiliza los hombros. Mantén las piernas juntas y casi extendidas mientras las elevas por delante hasta dejarlas paralelas al suelo. Evita tomar impulso, sostén brevemente la posición y baja con control."
+  },
+  {
     "id": "elevacion-piernas-rectas-silla-romana",
     "name": "Elevación de piernas rectas en silla romana",
     "image_male": "images/elevacion-piernas-rectas-silla-romana-male.webp",
@@ -1850,6 +1920,78 @@
     "equipment": "silla romana",
     "difficulty": "advanced",
     "instructions": "Apoya la espalda y los antebrazos en una silla romana y deja las piernas juntas bajo el cuerpo. Estabiliza los hombros y eleva las piernas rectas hasta dejarlas paralelas al suelo. Haz una pausa y baja lentamente evitando balancearte."
+  },
+  {
+    "id": "elevacion-piernas-tumbado-descenso-explosivo",
+    "name": "Elevación de piernas tumbado con descenso explosivo",
+    "image_male": "images/elevacion-piernas-tumbado-descenso-explosivo-male.webp",
+    "image_female": "images/elevacion-piernas-tumbado-descenso-explosivo-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera",
+      "cuádriceps"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Túmbate boca arriba con los brazos a los lados y eleva las piernas juntas hasta la vertical. Inicia un descenso rápido manteniendo las rodillas extendidas y frénalo con el abdomen antes de que los talones toquen el suelo. Lleva las piernas de nuevo arriba sin arquear la zona lumbar."
+  },
+  {
+    "id": "elevacion-piernas-tumbado-descenso-lateral",
+    "name": "Elevación de piernas tumbado con descenso lateral",
+    "image_male": "images/elevacion-piernas-tumbado-descenso-lateral-male.webp",
+    "image_female": "images/elevacion-piernas-tumbado-descenso-lateral-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera",
+      "oblicuos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Túmbate boca arriba con los brazos abiertos para estabilizarte y eleva las piernas juntas hasta la vertical. Manteniéndolas casi rectas, bájalas de forma controlada hacia un lado sin despegar el hombro contrario. Activa los oblicuos para volver al centro y alterna el descenso hacia el otro lado."
+  },
+  {
+    "id": "elevacion-rodillas-colgado-asistida-banda",
+    "name": "Elevación de rodillas colgado asistida con banda",
+    "image_male": "images/elevacion-rodillas-colgado-asistida-banda-male.webp",
+    "image_female": "images/elevacion-rodillas-colgado-asistida-banda-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera",
+      "antebrazos"
+    ],
+    "equipment": "barra y banda elástica",
+    "difficulty": "intermediate",
+    "instructions": "Fija una banda ancha a la barra, apoya los pies en el lazo y cuélgate con agarre prono. Estabiliza los hombros y lleva las rodillas hacia el pecho aprovechando la asistencia de la banda sin balancear el cuerpo. Pausa arriba y extiende las piernas lentamente."
+  },
+  {
+    "id": "elevacion-rodillas-colgado-cintas-brazos",
+    "name": "Elevación de rodillas colgado con cintas para brazos",
+    "image_male": "images/elevacion-rodillas-colgado-cintas-brazos-male.webp",
+    "image_female": "images/elevacion-rodillas-colgado-cintas-brazos-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera",
+      "hombros",
+      "espalda"
+    ],
+    "equipment": "barra y cintas abdominales",
+    "difficulty": "intermediate",
+    "instructions": "Asegura las cintas abdominales a la barra y apoya los brazos en ellas con los hombros estables. Parte con las piernas juntas y flexiona caderas y rodillas para acercarlas al pecho sin balancearte. Haz una pausa arriba y desciende lentamente hasta recuperar la posición inicial."
+  },
+  {
+    "id": "elevacion-rodillas-colgado-descenso-explosivo",
+    "name": "Elevación de rodillas colgado con descenso explosivo",
+    "image_male": "images/elevacion-rodillas-colgado-descenso-explosivo-male.webp",
+    "image_female": "images/elevacion-rodillas-colgado-descenso-explosivo-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera",
+      "zona lumbar",
+      "antebrazos"
+    ],
+    "equipment": "barra",
+    "difficulty": "advanced",
+    "instructions": "Cuélgate de una barra con los hombros activos y lleva las rodillas juntas hacia el pecho. Desde la posición alta, extiende las piernas con energía hacia abajo sin perder el control del tronco ni arquear la zona lumbar. Frena el balanceo, vuelve a recoger las rodillas y repite."
   },
   {
     "id": "elevacion-rodillas-oblicua-colgado",
@@ -2107,6 +2249,33 @@
     "instructions": "Sujeta una barra ligera delante de los muslos, flexiona ligeramente rodillas y caderas y mantén el tronco firme. Extiende las piernas mientras guías la barra hacia la parte alta del pecho con los codos elevados. Amortigua al volver a la posición inicial y conserva la barra cerca del cuerpo durante todo el movimiento."
   },
   {
+    "id": "estiramiento-cuadriceps-cuadrupedia",
+    "name": "Estiramiento de cuádriceps en cuadrupedia",
+    "image_male": "images/estiramiento-cuadriceps-cuadrupedia-male.webp",
+    "image_female": "images/estiramiento-cuadriceps-cuadrupedia-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "glúteos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Colócate en cuadrupedia con las manos bajo los hombros y las rodillas bajo las caderas. Extiende una pierna hacia atrás, flexiona la rodilla y acerca el talón al glúteo sin girar la pelvis. Mantén el abdomen activo y lleva suavemente las caderas hacia abajo hasta notar el estiramiento en la parte frontal del muslo. Sostén la posición y cambia de pierna."
+  },
+  {
+    "id": "estiramiento-cuadriceps-prono",
+    "name": "Estiramiento de cuádriceps prono",
+    "image_male": "images/estiramiento-cuadriceps-prono-male.webp",
+    "image_female": "images/estiramiento-cuadriceps-prono-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca abajo con las piernas extendidas. Flexiona una rodilla, agarra el tobillo del mismo lado y acerca suavemente el talón al glúteo manteniendo ambas caderas contra el suelo. Sostén el estiramiento sin arquear la espalda, suelta despacio y cambia de pierna."
+  },
+  {
     "id": "estiramiento-gemelo-manos-pared",
     "name": "Estiramiento de gemelo con las manos en la pared",
     "image_male": "images/estiramiento-gemelo-manos-pared-male.webp",
@@ -2133,6 +2302,19 @@
     "instructions": "Coloca la punta de un pie contra la pared con el talón apoyado en el suelo y la pierna casi recta. Apoya las manos en la pared y acerca suavemente la cadera hasta notar tensión en la pantorrilla. Mantén la posición sin rebotes y cambia de pierna."
   },
   {
+    "id": "estiramiento-gemelo-tumbado-correa",
+    "name": "Estiramiento de gemelo tumbado con correa",
+    "image_male": "images/estiramiento-gemelo-tumbado-correa-male.webp",
+    "image_female": "images/estiramiento-gemelo-tumbado-correa-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "isquiotibiales"
+    ],
+    "equipment": "correa",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba y pasa una correa por la parte delantera de un pie. Eleva esa pierna casi recta y tira suavemente de la correa para acercar los dedos hacia la espinilla, manteniendo la rodilla extendida. Sostén el estiramiento sin despegar la pelvis y cambia de lado."
+  },
+  {
     "id": "estiramiento-gemelo-tumbado-cuerda",
     "name": "Estiramiento de gemelo tumbado con cuerda",
     "image_male": "images/estiramiento-gemelo-tumbado-cuerda-male.webp",
@@ -2144,6 +2326,19 @@
     "equipment": "cuerda",
     "difficulty": "beginner",
     "instructions": "Túmbate boca arriba con una pierna extendida y pasa una cuerda por la planta del otro pie. Eleva esa pierna y tira suavemente de los extremos para acercar los dedos hacia ti, manteniendo la rodilla casi recta. Sostén la tensión sin levantar la pelvis y cambia de lado."
+  },
+  {
+    "id": "estiramiento-gluteo-tumbado-rodilla-pecho",
+    "name": "Estiramiento de glúteo tumbado con rodilla al pecho",
+    "image_male": "images/estiramiento-gluteo-tumbado-rodilla-pecho-male.webp",
+    "image_female": "images/estiramiento-gluteo-tumbado-rodilla-pecho-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba con una pierna extendida. Abraza la rodilla contraria con ambas manos y acércala suavemente hacia el pecho sin levantar la pelvis ni tensar los hombros. Mantén el estiramiento, suelta de forma controlada y repite con la otra pierna."
   },
   {
     "id": "estiramiento-pecho-fitball",
@@ -2187,6 +2382,20 @@
     "instructions": "Ponte de pie, entrelaza los dedos detrás de la cabeza y abre los codos hacia los lados. Junta suavemente los omóplatos y eleva el esternón sin arquear la zona lumbar. Mantén el estiramiento respirando con normalidad y libera la posición despacio."
   },
   {
+    "id": "estiramiento-pectoral-sentado-fitball",
+    "name": "Estiramiento pectoral sentado en fitball",
+    "image_male": "images/estiramiento-pectoral-sentado-fitball-male.webp",
+    "image_female": "images/estiramiento-pectoral-sentado-fitball-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombros",
+      "bíceps"
+    ],
+    "equipment": "fitball",
+    "difficulty": "beginner",
+    "instructions": "Siéntate estable sobre un fitball con los pies bien apoyados. Entrelaza las manos detrás de la espalda, extiende suavemente los codos y lleva los brazos hacia atrás mientras juntas los omóplatos y elevas el pecho. Mantén el abdomen activo, sostén el estiramiento y vuelve despacio."
+  },
+  {
     "id": "estiramiento-pierna-extendida-silla",
     "name": "Estiramiento de pierna extendida en silla",
     "image_male": "images/estiramiento-pierna-extendida-silla-male.webp",
@@ -2199,6 +2408,33 @@
     "equipment": "silla",
     "difficulty": "beginner",
     "instructions": "Siéntate en el borde de una silla y extiende una pierna al frente con el talón apoyado y la rodilla recta. Mantén la espalda larga e inclina ligeramente el torso desde las caderas hasta notar tensión en la parte posterior del muslo. Sostén la posición y cambia de pierna."
+  },
+  {
+    "id": "estiramiento-piriforme-tumbado-figura-cuatro",
+    "name": "Estiramiento de piriforme tumbado en figura cuatro",
+    "image_male": "images/estiramiento-piriforme-tumbado-figura-cuatro-male.webp",
+    "image_female": "images/estiramiento-piriforme-tumbado-figura-cuatro-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "piriforme",
+      "isquiotibiales"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba, flexiona ambas rodillas y cruza un tobillo sobre el muslo contrario. Pasa las manos por detrás del muslo de apoyo y acércalo al pecho hasta notar el estiramiento en el glúteo de la pierna cruzada. Mantén la pelvis apoyada y cambia de lado."
+  },
+  {
+    "id": "estiramiento-recto-femoral-prono-correa",
+    "name": "Estiramiento prono del recto femoral con correa",
+    "image_male": "images/estiramiento-recto-femoral-prono-correa-male.webp",
+    "image_female": "images/estiramiento-recto-femoral-prono-correa-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "correa",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca abajo y pasa una correa alrededor de un tobillo. Flexiona esa rodilla y tira de la correa por encima del hombro para acercar el talón al glúteo, manteniendo la pelvis apoyada y el muslo alineado. Sostén la tensión sin dolor y repite con la otra pierna."
   },
   {
     "id": "extension-cadera-banco-peso-corporal",
@@ -2967,6 +3203,20 @@
     "equipment": "barra",
     "difficulty": "beginner",
     "instructions": "Ponte de pie con los pies firmes y una barra ligera apoyada sobre la parte alta de la espalda. Mantén las caderas orientadas al frente y gira el torso suavemente hacia un lado. Regresa al centro y alterna, usando un recorrido corto y controlado sin impulso."
+  },
+  {
+    "id": "giro-ruso-balon-medicinal",
+    "name": "Giro ruso con balón medicinal",
+    "image_male": "images/giro-ruso-balon-medicinal-male.webp",
+    "image_female": "images/giro-ruso-balon-medicinal-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "oblicuos",
+      "zona lumbar"
+    ],
+    "equipment": "balón medicinal",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate con las rodillas flexionadas, reclina ligeramente el torso y sujeta un balón medicinal con ambas manos. Mantén la espalda neutra y gira el pecho para llevar el balón junto a una cadera. Vuelve al centro y repite hacia el lado contrario sin mover las rodillas ni perder el equilibrio."
   },
   {
     "id": "giro-ruso-fitball-polea",
@@ -5955,6 +6205,20 @@
     "instructions": "Coloca la barra en el pliegue de los codos, junta las manos delante del pecho y mantén los antebrazos elevados. Separa los pies a la anchura de los hombros, activa el core y desciende entre las caderas con el torso erguido. Baja solo mientras mantengas las rodillas alineadas y la espalda neutra; empuja con todo el pie para volver a la posición inicial."
   },
   {
+    "id": "sit-up-completo-brazos-sobre-cabeza",
+    "name": "Sit-up completo con brazos sobre la cabeza",
+    "image_male": "images/sit-up-completo-brazos-sobre-cabeza-male.webp",
+    "image_female": "images/sit-up-completo-brazos-sobre-cabeza-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera",
+      "zona lumbar"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y los brazos rectos sobre la cabeza. Activa el abdomen y eleva el torso de forma continua hasta quedar sentado, conservando los brazos alineados con las orejas. Haz una pausa arriba y vuelve al suelo lentamente sin dejarte caer."
+  },
+  {
     "id": "sit-up-declinado",
     "name": "Sit-up declinado",
     "image_male": "images/sit-up-declinado-male.webp",
@@ -6140,6 +6404,21 @@
     "equipment": "peso corporal",
     "difficulty": "intermediate",
     "instructions": "Siéntate con las rodillas flexionadas, apoya las manos detrás y eleva la cadera en posición de cangrejo. Extiende una pierna hacia arriba mientras giras el torso para tocar el pie con la mano contraria. Regresa con control y alterna el lado manteniendo la cadera elevada."
+  },
+  {
+    "id": "toque-punta-pie-equilibrio-brazos-abiertos",
+    "name": "Toque de punta de pie en equilibrio con brazos abiertos",
+    "image_male": "images/toque-punta-pie-equilibrio-brazos-abiertos-male.webp",
+    "image_female": "images/toque-punta-pie-equilibrio-brazos-abiertos-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "cuádriceps",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los brazos abiertos y transfiere el peso a una pierna. Inclina el torso desde la cadera mientras extiendes la pierna contraria hacia atrás y lleva una mano hacia la punta del pie de apoyo. Mantén la espalda larga, recupera el equilibrio al subir y alterna los lados."
   },
   {
     "id": "toques-talon-alternos",

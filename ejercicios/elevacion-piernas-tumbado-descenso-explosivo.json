@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-piernas-tumbado-descenso-explosivo",
+  "name": "Elevación de piernas tumbado con descenso explosivo",
+  "image_male": "images/elevacion-piernas-tumbado-descenso-explosivo-male.webp",
+  "image_female": "images/elevacion-piernas-tumbado-descenso-explosivo-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "cuádriceps"],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Túmbate boca arriba con los brazos a los lados y eleva las piernas juntas hasta la vertical. Inicia un descenso rápido manteniendo las rodillas extendidas y frénalo con el abdomen antes de que los talones toquen el suelo. Lleva las piernas de nuevo arriba sin arquear la zona lumbar."
+}

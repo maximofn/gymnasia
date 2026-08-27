@@ -1,0 +1,11 @@
+{
+  "id": "sit-up-completo-brazos-sobre-cabeza",
+  "name": "Sit-up completo con brazos sobre la cabeza",
+  "image_male": "images/sit-up-completo-brazos-sobre-cabeza-male.webp",
+  "image_female": "images/sit-up-completo-brazos-sobre-cabeza-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera", "zona lumbar"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y los brazos rectos sobre la cabeza. Activa el abdomen y eleva el torso de forma continua hasta quedar sentado, conservando los brazos alineados con las orejas. Haz una pausa arriba y vuelve al suelo lentamente sin dejarte caer."
+}
