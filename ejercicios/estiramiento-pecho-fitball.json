@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-pecho-fitball",
+  "name": "Estiramiento de pecho con fitball",
+  "image_male": "images/estiramiento-pecho-fitball-male.webp",
+  "image_female": "images/estiramiento-pecho-fitball-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombros", "tríceps"],
+  "equipment": "fitball",
+  "difficulty": "beginner",
+  "instructions": "Arrodíllate junto a un fitball, apoya una mano en el suelo bajo el hombro y extiende el otro brazo sobre el balón. Lleva suavemente el pecho hacia el suelo mientras haces rodar el balón hacia delante, manteniendo la cadera estable. Sostén el estiramiento y cambia de brazo."
+}

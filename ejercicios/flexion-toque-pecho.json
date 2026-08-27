@@ -1,0 +1,11 @@
+{
+  "id": "flexion-toque-pecho",
+  "name": "Flexión con toque de pecho",
+  "image_male": "images/flexion-toque-pecho-male.webp",
+  "image_female": "images/flexion-toque-pecho-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros", "abdomen"],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en plancha alta con los pies algo separados para ganar estabilidad. Baja en una flexión y, al volver arriba, transfiere el peso a una mano para tocar el pecho con la otra sin girar la pelvis. Apoya de nuevo la mano y alterna el lado en cada repetición."
+}

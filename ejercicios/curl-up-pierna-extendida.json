@@ -1,0 +1,11 @@
+{
+  "id": "curl-up-pierna-extendida",
+  "name": "Curl-up con una pierna extendida",
+  "image_male": "images/curl-up-pierna-extendida-male.webp",
+  "image_female": "images/curl-up-pierna-extendida-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["flexores de cadera"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con una pierna extendida y la otra rodilla flexionada con el pie apoyado. Coloca las manos detrás de la cabeza y eleva ligeramente cabeza y hombros contrayendo el abdomen, sin redondear en exceso la zona lumbar. Baja con control y cambia la posición de las piernas al terminar la serie."
+}

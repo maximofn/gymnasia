@@ -105,6 +105,24 @@ try {
   await page.locator('[data-testid^="chat-message-assistant-"]')
     .filter({ hasText: "Fixture local de Gymnasia Coach" })
     .waitFor({ state: "visible", timeout: 30_000 });
+  const policyContext = await page.waitForFunction(() => {
+    const raw = localStorage.getItem("gymnasia.development:gymnasia.mobile.local.v3");
+    if (!raw) return null;
+    const store = JSON.parse(raw);
+    const assistant = Object.values(store.messagesByThread ?? {})
+      .flat()
+      .find((message) => message?.role === "assistant" && message?.policy_context);
+    return assistant?.policy_context ?? null;
+  }).then((handle) => handle.jsonValue());
+  assert.deepEqual(Object.keys(policyContext).sort(), [
+    "activation",
+    "bundle_sha256",
+    "candidate",
+    "sequence",
+    "source",
+    "version",
+  ]);
+  assert.equal(JSON.stringify(policyContext).includes("Fixture local"), false);
 
   await page.locator('[data-testid="nav-tab-settings"]').click();
   assert.equal(
@@ -112,10 +130,18 @@ try {
     0,
     "Ajustes no debe exponer la integración retirada",
   );
+  await page.locator('[data-testid="settings-tab-traces"]').scrollIntoViewIfNeeded();
+  await page.locator('[data-testid="settings-tab-traces"]').click();
+  await page.locator('[data-testid="policy-status-card"]')
+    .filter({ hasText: "Política verificada" })
+    .waitFor({ state: "visible", timeout: 30_000 });
+  await page.locator('[data-testid="policy-refresh-button"]').click();
+  await page.locator('[data-testid="policy-refresh-result"]')
+    .filter({ hasText: "actualizada" })
+    .waitFor({ state: "visible", timeout: 30_000 });
 
   const screenshotPath = process.env.DEVELOPMENT_PROVIDER_SCREENSHOT_PATH;
   if (screenshotPath) {
-    await page.locator('[data-testid="settings-tab-traces"]').scrollIntoViewIfNeeded();
     await page.screenshot({ path: screenshotPath, fullPage: true });
     log(`captura de Ajustes guardada en ${screenshotPath}`);
   }

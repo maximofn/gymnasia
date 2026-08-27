@@ -1,0 +1,11 @@
+{
+  "id": "circulos-rodillas",
+  "name": "Círculos de rodillas",
+  "image_male": "images/circulos-rodillas-male.webp",
+  "image_female": "images/circulos-rodillas-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["isquiotibiales", "cuádriceps"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Junta los pies, flexiona ligeramente las rodillas y apoya las manos sobre ellas. Manteniendo las plantas de los pies en el suelo, dibuja círculos pequeños y controlados con ambas rodillas juntas. Cambia el sentido del giro y evita que el movimiento resulte doloroso."
+}

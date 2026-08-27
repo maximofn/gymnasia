@@ -539,6 +539,33 @@
         {"source_id": "1430", "id": "fondos-pecho-torre-dominadas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "2462", "id": "fondos-pecho-barra-recta", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 21,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "1272", "id": "estiramiento-pecho-fitball", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3216", "id": "flexion-toque-pecho", "action": "create", "difficulty": "advanced", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0253", "id": "dominada-agarre-paralelo-estrecho", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0257", "id": "circulos-rodillas", "action": "create", "difficulty": "beginner", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0258", "id": "flexion-reloj", "action": "create", "difficulty": "advanced", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1327", "id": "dominada-supina-agarre-cerrado", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0259", "id": "flexion-agarre-cerrado", "action": "create", "difficulty": "intermediate", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2398", "id": "flexion-agarre-cerrado-rodillas", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0260", "id": "encogimiento-capullo", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1468", "id": "toque-pie-giro-cangrejo", "action": "create", "difficulty": "intermediate", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0262", "id": "crunch-cruzado", "action": "create", "difficulty": "intermediate", "view": "slightly elevated front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0267", "id": "crunch-brazos-sobre-cabeza", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0271", "id": "crunch-fitball", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0272", "id": "crunch-fitball-brazos-rectos", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0274", "id": "crunch-suelo", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3016", "id": "curl-up-pierna-extendida", "action": "create", "difficulty": "beginner", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3769", "id": "sentadilla-reverencia", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2331", "id": "bicicleta-aire", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0277", "id": "crunch-declinado", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1274", "id": "flexion-profunda-mancuernas", "action": "create", "difficulty": "advanced", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

@@ -28,6 +28,7 @@ import {
   validateTrustedRoots,
   verifySignatureEnvelope,
 } from "./signing.mjs";
+import { POLICY_REASON_CODES } from "./policy-audit.mjs";
 
 const PRIVATE_KEY_FIELD = "ed25519_pkcs8_base64";
 const PUBLIC_KEY_FIELD = "ed25519_public_base64url";
@@ -41,17 +42,24 @@ function usage() {
     "  node scripts/policy-promotion/sign-policy.mjs bundle-sign [--issued-at ISO]",
     "  node scripts/policy-promotion/sign-policy.mjs bundle-check",
     "  node scripts/policy-promotion/sign-policy.mjs activation-sign --channel Staging|Production --sequence N [--rollback-from ID] --output DIR",
-    "  node scripts/policy-promotion/sign-policy.mjs promote --operation staging|production|rollback [--pr N | --bootstrap-main true] [--candidate ID] [--sequence N] [--rollback-from ID]",
+    "  node scripts/policy-promotion/sign-policy.mjs promote --operation staging|production|rollback --reason-code routine-release|critical-policy-fix|incident-response|rollback-drill [--pr N | --bootstrap-main true] [--candidate ID] [--sequence N] [--rollback-from ID] [--dry-run]",
   ].join("\n");
 }
 
 function parseOptions(args) {
   const options = {};
-  for (let index = 0; index < args.length; index += 2) {
+  for (let index = 0; index < args.length;) {
     const name = args[index];
     const value = args[index + 1];
-    if (!name?.startsWith("--") || value === undefined) throw new Error(usage());
+    if (!name?.startsWith("--")) throw new Error(usage());
+    if (name === "--dry-run" && (value === undefined || value.startsWith("--"))) {
+      options["dry-run"] = "true";
+      index += 1;
+      continue;
+    }
+    if (value === undefined || value.startsWith("--")) throw new Error(usage());
     options[name.slice(2)] = value;
+    index += 2;
   }
   return options;
 }
@@ -321,10 +329,94 @@ function nextChannelSequence(repository, channel) {
   return current + 1;
 }
 
+function channelDeployments(repository, channel) {
+  const response = JSON.parse(runGh([
+    "api",
+    "--paginate",
+    "--slurp",
+    `repos/${repository}/deployments?environment=${encodeURIComponent(channel)}&task=gymnasia-policy&per_page=100`,
+  ]));
+  return response.flat().filter((deployment) => {
+    const payload = deploymentPayload(deployment?.payload);
+    return Number.isSafeInteger(deployment?.id)
+      && payload.schemaVersion === 3
+      && Number.isSafeInteger(payload.activation?.sequence)
+      && typeof payload.candidate === "string";
+  });
+}
+
+function deploymentWasSuccessful(repository, deployment) {
+  const state = runGh([
+    "api",
+    `repos/${repository}/deployments/${deployment.id}/statuses`,
+    "--jq",
+    ".[0].state // \"\"",
+  ]).trim();
+  return state === "success" || state === "inactive";
+}
+
+function activePolicyDeployment(repository, deployments) {
+  return orderPolicyDeploymentsBySequence(deployments)
+    .find((deployment) => deploymentWasSuccessful(repository, deployment)) ?? null;
+}
+
+export function orderPolicyDeploymentsBySequence(deployments) {
+  return [...deployments].sort((left, right) => {
+    const leftSequence = deploymentPayload(left?.payload).activation?.sequence ?? 0;
+    const rightSequence = deploymentPayload(right?.payload).activation?.sequence ?? 0;
+    return rightSequence - leftSequence;
+  });
+}
+
+function historicalCandidateWasSuccessful(repository, deployments, candidate) {
+  return deployments
+    .filter((deployment) => deploymentPayload(deployment.payload).candidate === candidate)
+    .some((deployment) => deploymentWasSuccessful(repository, deployment));
+}
+
+export function validatePolicyReasonCode(reasonCode) {
+  if (!POLICY_REASON_CODES.includes(reasonCode)) {
+    throw new Error(`--reason-code debe ser uno de: ${POLICY_REASON_CODES.join(", ")}.`);
+  }
+  return reasonCode;
+}
+
+export function validateRollbackPlan({
+  candidate,
+  currentCandidate,
+  productionCandidates,
+  requestedFrom,
+  stagingCandidates,
+}) {
+  if (!CANDIDATE_PATTERN.test(candidate || "")) {
+    throw new Error("El rollback exige --candidate con el bundle histórico de destino.");
+  }
+  if (!CANDIDATE_PATTERN.test(currentCandidate || "")) {
+    throw new Error("No se pudo resolver automáticamente el bundle activo de Production.");
+  }
+  if (requestedFrom && requestedFrom !== currentCandidate) {
+    throw new Error("--rollback-from no coincide con el bundle activo resuelto en Production.");
+  }
+  if (candidate === currentCandidate) {
+    throw new Error("El destino del rollback ya es el bundle activo de Production.");
+  }
+  if (!stagingCandidates.includes(candidate) || !productionCandidates.includes(candidate)) {
+    throw new Error("El destino histórico no consta como deployment correcto en Staging y Production.");
+  }
+  return { candidate, fromBundleId: currentCandidate };
+}
+
+const CANDIDATE_PATTERN = /^policy-v\d{4}\.\d{2}\.\d+-[a-f0-9]{12}$/;
+
 function commandPromote(options) {
   const operation = options.operation;
   if (!["staging", "production", "rollback"].includes(operation)) {
     throw new Error("promote exige --operation staging, production o rollback.");
+  }
+  const reasonCode = validatePolicyReasonCode(options["reason-code"]);
+  const dryRun = options["dry-run"] === "true";
+  if (options["dry-run"] !== undefined && options["dry-run"] !== "true") {
+    throw new Error("--dry-run no admite valor o debe ser true.");
   }
   const bootstrapMain = options["bootstrap-main"] === "true";
   if (options["bootstrap-main"] !== undefined && !["true", "false"].includes(options["bootstrap-main"])) {
@@ -339,10 +431,7 @@ function commandPromote(options) {
       "La promoción a staging exige exactamente una PR abierta o --bootstrap-main true para el arranque único.",
     );
   }
-  if (operation === "rollback" && !options["rollback-from"]) {
-    throw new Error("El rollback exige --rollback-from con el bundle activo actual.");
-  }
-  if (operation === "rollback" && !/^policy-v\d{4}\.\d{2}\.\d+-[a-f0-9]{12}$/.test(options.candidate || "")) {
+  if (operation === "rollback" && !CANDIDATE_PATTERN.test(options.candidate || "")) {
     throw new Error("El rollback exige --candidate con el bundle histórico de destino.");
   }
   if (operation !== "rollback" && options["rollback-from"]) {
@@ -360,7 +449,29 @@ function commandPromote(options) {
 
   const directory = mkdtempSync(resolve(tmpdir(), "gymnasia-policy-promotion-"));
   try {
+    let rollbackFrom = null;
     if (operation === "rollback") {
+      const stagingDeployments = channelDeployments(repository, "Staging");
+      const productionDeployments = channelDeployments(repository, "Production");
+      const current = activePolicyDeployment(repository, productionDeployments);
+      const stagingTargetVerified = historicalCandidateWasSuccessful(
+        repository,
+        stagingDeployments,
+        options.candidate,
+      );
+      const productionTargetVerified = historicalCandidateWasSuccessful(
+        repository,
+        productionDeployments,
+        options.candidate,
+      );
+      const plan = validateRollbackPlan({
+        candidate: options.candidate,
+        currentCandidate: deploymentPayload(current?.payload).candidate,
+        requestedFrom: options["rollback-from"],
+        stagingCandidates: stagingTargetVerified ? [options.candidate] : [],
+        productionCandidates: productionTargetVerified ? [options.candidate] : [],
+      });
+      rollbackFrom = plan.fromBundleId;
       runGh([
         "release",
         "download",
@@ -374,12 +485,31 @@ function commandPromote(options) {
         "--dir",
         directory,
       ]);
+      const historical = verifyBundleFiles({
+        bundlePath: resolve(directory, "policy.bundle.json"),
+        signaturePath: resolve(directory, "policy.bundle.signature.json"),
+        rootsPath: trustedRootsPath,
+      });
+      if (historical.bundle.id !== options.candidate) {
+        throw new Error("El bundle histórico firmado no corresponde al destino solicitado.");
+      }
     }
+    const preview = {
+      operation,
+      reasonCode,
+      channel,
+      candidate: operation === "rollback" ? options.candidate : verifyCurrentBundleFiles().bundle.id,
+      fromBundleId: rollbackFrom,
+      sequence,
+      dispatch: !dryRun,
+    };
+    console.log(`Previsualización:\n${JSON.stringify(preview, null, 2)}`);
+    if (dryRun) return;
     const activation = writeSignedActivation({
       channel,
       sequence: String(sequence),
       output: directory,
-      ...(operation === "rollback" ? { "rollback-from": options["rollback-from"] } : {}),
+      ...(operation === "rollback" ? { "rollback-from": rollbackFrom } : {}),
       ...(operation === "rollback" ? {
         "bundle-path": resolve(directory, "policy.bundle.json"),
         "bundle-signature-path": resolve(directory, "policy.bundle.signature.json"),
@@ -398,6 +528,8 @@ function commandPromote(options) {
       "main",
       "-f",
       `operation=${operation}`,
+      "-f",
+      `reason_code=${reasonCode}`,
       "-f",
       `activation_base64=${readFileSync(resolve(directory, "policy.activation.json")).toString("base64")}`,
       "-f",

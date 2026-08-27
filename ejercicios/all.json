@@ -307,6 +307,22 @@
     "instructions": "Colócate a cuatro apoyos con las manos bajo los hombros y las rodillas bajo las caderas. Eleva las rodillas unos centímetros, mantén la espalda plana y avanza a la vez con una mano y el pie contrario. Alterna los apoyos con pasos cortos, sin elevar la cadera ni perder la tensión abdominal."
   },
   {
+    "id": "bicicleta-aire",
+    "name": "Bicicleta de aire",
+    "image_male": "images/bicicleta-aire-male.webp",
+    "image_female": "images/bicicleta-aire-female.webp",
+    "muscle_group": "cardio",
+    "secondary_muscles": [
+      "cuádriceps",
+      "isquiotibiales",
+      "glúteos",
+      "hombros"
+    ],
+    "equipment": "bicicleta de aire",
+    "difficulty": "beginner",
+    "instructions": "Ajusta el asiento para pedalear sin bloquear las rodillas y sujeta los manillares móviles. Pedalea mientras empujas y tiras de las asas de forma alterna, manteniendo el torso estable. Regula el ritmo y la resistencia mediante la velocidad del movimiento."
+  },
+  {
     "id": "buenos-dias-barra",
     "name": "Buenos días con barra",
     "image_male": "images/buenos-dias-barra-male.webp",
@@ -366,6 +382,20 @@
     "equipment": "peso corporal",
     "difficulty": "intermediate",
     "instructions": "Comienza de pie y baja a una sentadilla para apoyar las manos en el suelo. Lleva los pies hacia atrás hasta quedar en posición de plancha y realiza una flexión manteniendo el cuerpo alineado. Acerca de nuevo los pies a las manos y salta verticalmente con los brazos por encima de la cabeza. Aterriza suavemente y enlaza la siguiente repetición."
+  },
+  {
+    "id": "circulos-rodillas",
+    "name": "Círculos de rodillas",
+    "image_male": "images/circulos-rodillas-male.webp",
+    "image_female": "images/circulos-rodillas-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "cuádriceps"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Junta los pies, flexiona ligeramente las rodillas y apoya las manos sobre ellas. Manteniendo las plantas de los pies en el suelo, dibuja círculos pequeños y controlados con ambas rodillas juntas. Cambia el sentido del giro y evita que el movimiento resulte doloroso."
   },
   {
     "id": "clean-and-press-barra",
@@ -453,6 +483,32 @@
     "instructions": "Túmbate boca arriba con las manos detrás de la cabeza y eleva las piernas con las rodillas flexionadas. Acerca el codo derecho a la rodilla izquierda mientras extiendes la pierna derecha sin apoyar el talón. Alterna el movimiento hacia el otro lado con un pedaleo controlado, manteniendo la zona lumbar estable y evitando tirar del cuello."
   },
   {
+    "id": "crunch-brazos-sobre-cabeza",
+    "name": "Crunch con brazos sobre la cabeza",
+    "image_male": "images/crunch-brazos-sobre-cabeza-male.webp",
+    "image_female": "images/crunch-brazos-sobre-cabeza-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y los brazos extendidos junto a las orejas. Contrae el abdomen para despegar los hombros y acercar las manos hacia arriba y delante. Desciende despacio manteniendo la zona lumbar estable."
+  },
+  {
+    "id": "crunch-cruzado",
+    "name": "Crunch cruzado",
+    "image_male": "images/crunch-cruzado-male.webp",
+    "image_female": "images/crunch-cruzado-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "abdomen"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba con las rodillas flexionadas y las manos detrás de la cabeza. Eleva los hombros y gira el torso para acercar un codo a la rodilla contraria. Baja lentamente y alterna el lado sin tirar del cuello."
+  },
+  {
     "id": "crunch-de-pie-cuerda-polea",
     "name": "Crunch de pie con cuerda en polea",
     "image_male": "images/crunch-de-pie-cuerda-polea-male.webp",
@@ -477,6 +533,46 @@
     "equipment": "polea",
     "difficulty": "beginner",
     "instructions": "Colócate de espaldas a una polea alta y sujeta la agarradera detrás de la cabeza con ambas manos. Flexiona ligeramente las rodillas y fija las caderas. Redondea el torso llevando las costillas hacia la pelvis, contrae el abdomen y vuelve lentamente sin tirar del cuello ni extender la espalda."
+  },
+  {
+    "id": "crunch-declinado",
+    "name": "Crunch declinado",
+    "image_male": "images/crunch-declinado-male.webp",
+    "image_female": "images/crunch-declinado-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "banco declinado",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate en un banco declinado con los pies sujetos y las rodillas flexionadas. Contrae el abdomen para elevar los hombros y acercar las costillas a la pelvis sin incorporarte por completo. Haz una pausa y vuelve lentamente al banco."
+  },
+  {
+    "id": "crunch-fitball-brazos-rectos",
+    "name": "Crunch sobre fitball con brazos rectos",
+    "image_male": "images/crunch-fitball-brazos-rectos-male.webp",
+    "image_female": "images/crunch-fitball-brazos-rectos-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera",
+      "hombros"
+    ],
+    "equipment": "fitball",
+    "difficulty": "intermediate",
+    "instructions": "Apoya la espalda baja sobre un fitball, planta los pies y extiende ambos brazos hacia el techo. Contrae el abdomen para elevar los hombros manteniendo los brazos rectos y verticales. Baja con control sin dejar que el balón ruede."
+  },
+  {
+    "id": "crunch-fitball",
+    "name": "Crunch sobre fitball",
+    "image_male": "images/crunch-fitball-male.webp",
+    "image_female": "images/crunch-fitball-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "fitball",
+    "difficulty": "beginner",
+    "instructions": "Apoya la zona lumbar sobre un fitball con los pies firmes en el suelo y las manos cruzadas sobre el pecho. Flexiona el torso acercando las costillas a la pelvis sin mover el balón. Haz una pausa arriba y vuelve lentamente hasta extender el abdomen."
   },
   {
     "id": "crunch-giratorio-arrodillado-banda",
@@ -607,6 +703,19 @@
     "equipment": "polea y cuerda",
     "difficulty": "beginner",
     "instructions": "Siéntate de espaldas a una polea alta y sujeta la cuerda a ambos lados de la cabeza. Mantén las caderas estables y flexiona la columna para acercar las costillas a la pelvis, llevando el pecho hacia las rodillas. Contrae el abdomen abajo y vuelve lentamente sin tirar de la cuerda con los brazos."
+  },
+  {
+    "id": "crunch-suelo",
+    "name": "Crunch en el suelo",
+    "image_male": "images/crunch-suelo-male.webp",
+    "image_female": "images/crunch-suelo-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y las manos detrás de la cabeza. Eleva solo los hombros acercando las costillas a la pelvis y mantén la zona lumbar en el suelo. Baja despacio sin tirar del cuello."
   },
   {
     "id": "cuerdas-batalla",
@@ -1312,6 +1421,19 @@
     "instructions": "Túmbate boca arriba en un banco alineado con una polea baja y sujeta una barra corta con las manos juntas en supinación. Fija los brazos superiores a los costados. Lleva la barra hacia la parte alta del pecho flexionando solo los codos y desciende lentamente hasta recuperar la extensión."
   },
   {
+    "id": "curl-up-pierna-extendida",
+    "name": "Curl-up con una pierna extendida",
+    "image_male": "images/curl-up-pierna-extendida-male.webp",
+    "image_female": "images/curl-up-pierna-extendida-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate boca arriba con una pierna extendida y la otra rodilla flexionada con el pie apoyado. Coloca las manos detrás de la cabeza y eleva ligeramente cabeza y hombros contrayendo el abdomen, sin redondear en exceso la zona lumbar. Baja con control y cambia la posición de las piernas al terminar la serie."
+  },
+  {
     "id": "dead-bug",
     "name": "Dead bug",
     "image_male": "images/dead-bug-male.webp",
@@ -1324,6 +1446,20 @@
     "equipment": "peso corporal",
     "difficulty": "beginner",
     "instructions": "Túmbate boca arriba con los brazos apuntando al techo y las caderas y rodillas flexionadas a 90 grados. Presiona suavemente la zona lumbar contra el suelo. Extiende a la vez un brazo por detrás de la cabeza y la pierna contraria sin que lleguen a tocar el suelo. Regresa al centro con control y alterna el lado manteniendo el abdomen activo."
+  },
+  {
+    "id": "dominada-agarre-paralelo-estrecho",
+    "name": "Dominada con agarre paralelo estrecho",
+    "image_male": "images/dominada-agarre-paralelo-estrecho-male.webp",
+    "image_female": "images/dominada-agarre-paralelo-estrecho-female.webp",
+    "muscle_group": "espalda alta",
+    "secondary_muscles": [
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "barra de dominadas",
+    "difficulty": "intermediate",
+    "instructions": "Cuélgate de unas asas paralelas estrechas con las palmas enfrentadas y los brazos extendidos. Deprime los hombros y tira del pecho hacia las manos manteniendo los codos cerca del torso. Supera la altura de las asas con la barbilla y desciende lentamente sin balancearte."
   },
   {
     "id": "dominada-arquero",
@@ -1339,6 +1475,20 @@
     "equipment": "barra de dominadas",
     "difficulty": "advanced",
     "instructions": "Cuélgate de la barra con un agarre prono muy amplio y activa el abdomen. Sube desplazando el pecho hacia una mano, flexionando ese codo mientras el brazo contrario se mantiene casi recto sobre la barra. Desciende con control y repite hacia el otro lado sin perder la estabilidad de los hombros."
+  },
+  {
+    "id": "dominada-supina-agarre-cerrado",
+    "name": "Dominada supina con agarre cerrado",
+    "image_male": "images/dominada-supina-agarre-cerrado-male.webp",
+    "image_female": "images/dominada-supina-agarre-cerrado-female.webp",
+    "muscle_group": "dorsales",
+    "secondary_muscles": [
+      "bíceps",
+      "antebrazos"
+    ],
+    "equipment": "barra de dominadas",
+    "difficulty": "intermediate",
+    "instructions": "Cuélgate de una barra con las palmas hacia ti y las manos más juntas que los hombros. Lleva los codos hacia abajo y tira del pecho hacia la barra sin balancear las piernas. Supera la barra con la barbilla y baja con control hasta extender los brazos."
   },
   {
     "id": "dominadas-agarre-neutro",
@@ -1827,6 +1977,20 @@
     "instructions": "Cuélgate de una barra con los brazos extendidos y estabiliza los hombros. Mantén las piernas juntas y eleva los pies por delante flexionando las caderas hasta que las piernas queden al menos paralelas al suelo. Evita balancearte o tomar impulso. Haz una pausa breve y baja las piernas lentamente hasta recuperar la posición inicial."
   },
   {
+    "id": "encogimiento-capullo",
+    "name": "Encogimiento capullo",
+    "image_male": "images/encogimiento-capullo-male.webp",
+    "image_female": "images/encogimiento-capullo-female.webp",
+    "muscle_group": "abdomen",
+    "secondary_muscles": [
+      "flexores de cadera",
+      "espalda baja"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba con piernas y brazos extendidos sin apoyar completamente las extremidades. Contrae el abdomen para acercar simultáneamente las rodillas al pecho y los brazos a las piernas, formando una posición agrupada. Extiéndete de nuevo con control sin arquear la zona lumbar."
+  },
+  {
     "id": "encogimiento-hombros-polea",
     "name": "Encogimiento de hombros en polea",
     "image_male": "images/encogimiento-hombros-polea-male.webp",
@@ -1980,6 +2144,20 @@
     "equipment": "cuerda",
     "difficulty": "beginner",
     "instructions": "Túmbate boca arriba con una pierna extendida y pasa una cuerda por la planta del otro pie. Eleva esa pierna y tira suavemente de los extremos para acercar los dedos hacia ti, manteniendo la rodilla casi recta. Sostén la tensión sin levantar la pelvis y cambia de lado."
+  },
+  {
+    "id": "estiramiento-pecho-fitball",
+    "name": "Estiramiento de pecho con fitball",
+    "image_male": "images/estiramiento-pecho-fitball-male.webp",
+    "image_female": "images/estiramiento-pecho-fitball-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombros",
+      "tríceps"
+    ],
+    "equipment": "fitball",
+    "difficulty": "beginner",
+    "instructions": "Arrodíllate junto a un fitball, apoya una mano en el suelo bajo el hombro y extiende el otro brazo sobre el balón. Lleva suavemente el pecho hacia el suelo mientras haces rodar el balón hacia delante, manteniendo la cadera estable. Sostén el estiramiento y cambia de brazo."
   },
   {
     "id": "estiramiento-pecho-hombro-pasada-barra",
@@ -2444,6 +2622,34 @@
     "instructions": "Túmbate boca abajo en la máquina de femoral con los tobillos debajo del rodillo acolchado y las rodillas justo al borde del banco. Sujétate de las asas frontales. Flexiona las rodillas llevando los talones hacia los glúteos, apretando los isquiotibiales en la parte alta. Baja de forma controlada."
   },
   {
+    "id": "flexion-agarre-cerrado-rodillas",
+    "name": "Flexión con agarre cerrado sobre rodillas",
+    "image_male": "images/flexion-agarre-cerrado-rodillas-male.webp",
+    "image_female": "images/flexion-agarre-cerrado-rodillas-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Apoya las manos juntas bajo el pecho y las rodillas en el suelo, formando una línea recta desde la cabeza hasta las rodillas. Flexiona los codos cerca del torso para bajar el pecho. Empuja con las palmas y vuelve a extender los brazos sin arquear la espalda."
+  },
+  {
+    "id": "flexion-agarre-cerrado",
+    "name": "Flexión con agarre cerrado",
+    "image_male": "images/flexion-agarre-cerrado-male.webp",
+    "image_female": "images/flexion-agarre-cerrado-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Colócate en plancha alta con las manos juntas bajo el centro del pecho y el cuerpo en línea recta. Baja flexionando los codos y manteniéndolos cerca de las costillas. Empuja el suelo hasta extender los brazos sin dejar caer la cadera."
+  },
+  {
     "id": "flexion-arquero",
     "name": "Flexión arquero",
     "image_male": "images/flexion-arquero-male.webp",
@@ -2498,6 +2704,50 @@
     "equipment": "polea",
     "difficulty": "beginner",
     "instructions": "Colócate de lado a una polea baja y sujeta la agarradera con la mano más próxima, manteniendo el brazo extendido. Activa el abdomen y flexiona el tronco lateralmente con un recorrido corto y controlado. Regresa a la vertical sin girar las caderas y completa las repeticiones antes de cambiar de lado."
+  },
+  {
+    "id": "flexion-profunda-mancuernas",
+    "name": "Flexión profunda sobre mancuernas",
+    "image_male": "images/flexion-profunda-mancuernas-male.webp",
+    "image_female": "images/flexion-profunda-mancuernas-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombros"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Coloca dos mancuernas estables algo más separadas que los hombros y adopta una plancha agarrando sus asas. Baja el pecho entre las mancuernas para conseguir un recorrido mayor, manteniendo los codos controlados y el cuerpo alineado. Empuja hasta extender los brazos sin perder la estabilidad."
+  },
+  {
+    "id": "flexion-reloj",
+    "name": "Flexión en reloj",
+    "image_male": "images/flexion-reloj-male.webp",
+    "image_female": "images/flexion-reloj-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombros",
+      "abdomen"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Adopta una plancha alta y realiza una flexión manteniendo el cuerpo alineado. Al extender los brazos, desplaza una mano y el pie contrario lateralmente para girar el cuerpo alrededor de los pies como las agujas de un reloj. Repite la flexión y continúa avanzando por posiciones alrededor del punto central."
+  },
+  {
+    "id": "flexion-toque-pecho",
+    "name": "Flexión con toque de pecho",
+    "image_male": "images/flexion-toque-pecho-male.webp",
+    "image_female": "images/flexion-toque-pecho-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombros",
+      "abdomen"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Comienza en plancha alta con los pies algo separados para ganar estabilidad. Baja en una flexión y, al volver arriba, transfiere el peso a una mano para tocar el pecho con la otra sin girar la pelvis. Apoya de nuevo la mano y alterna el lado en cada repetición."
   },
   {
     "id": "flexiones-agarre-cerrado-banda",
@@ -5586,6 +5836,21 @@
     "instructions": "Sujeta una cuerda conectada a una polea baja y retrocede hasta tensar el cable. Baja en sentadilla con el pecho elevado y los brazos extendidos. Al subir, lleva los extremos de la cuerda hacia el abdomen y junta los omóplatos; después extiende los brazos y desciende de nuevo con control."
   },
   {
+    "id": "sentadilla-reverencia",
+    "name": "Sentadilla de reverencia",
+    "image_male": "images/sentadilla-reverencia-male.webp",
+    "image_female": "images/sentadilla-reverencia-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "cuádriceps",
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Desde de pie, lleva una pierna en diagonal hacia atrás y crúzala por detrás de la pierna de apoyo. Flexiona ambas rodillas manteniendo el pecho erguido y la rodilla delantera alineada con el pie. Empuja el suelo para regresar y alterna el lado."
+  },
+  {
     "id": "sentadilla-rodillas-barra",
     "name": "Sentadilla de rodillas con barra",
     "image_male": "images/sentadilla-rodillas-barra-male.webp",
@@ -5860,6 +6125,21 @@
     "equipment": "ninguno",
     "difficulty": "beginner",
     "instructions": "Ponte de pie con las piernas casi rectas y los pies a la anchura de las caderas. Inclínate desde las caderas y lleva las manos hacia las puntas de los pies sin forzar la espalda ni bloquear las rodillas. Mantén un instante el rango cómodo y vuelve lentamente a la vertical."
+  },
+  {
+    "id": "toque-pie-giro-cangrejo",
+    "name": "Toque de pie con giro en cangrejo",
+    "image_male": "images/toque-pie-giro-cangrejo-male.webp",
+    "image_female": "images/toque-pie-giro-cangrejo-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "abdomen",
+      "flexores de cadera",
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate con las rodillas flexionadas, apoya las manos detrás y eleva la cadera en posición de cangrejo. Extiende una pierna hacia arriba mientras giras el torso para tocar el pie con la mano contraria. Regresa con control y alterna el lado manteniendo la cadera elevada."
   },
   {
     "id": "toques-talon-alternos",

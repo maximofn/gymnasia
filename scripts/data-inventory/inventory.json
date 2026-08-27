@@ -38,7 +38,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Estado principal: rutinas, historial de entrenamiento, dieta por día, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con peso y porcentaje de grasa, e hilos y mensajes completos del chat con la IA.",
+      "purpose": "Estado principal: rutinas, historial de entrenamiento, dieta por día, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con peso y porcentaje de grasa, e hilos y mensajes completos del chat con la IA. Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
       "clearedBy": "reset"
     },
     {
@@ -110,7 +110,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "diagnostics",
-      "purpose": "Registro local de depuración, máximo 1000 entradas. Incluye títulos y cuerpos de las notificaciones entregadas, que llevan el nombre del ejercicio y el número de serie. Nunca se envía por red; el usuario puede copiarlo al portapapeles desde Ajustes.",
+      "purpose": "Registro local de depuración, máximo 1000 entradas. Incluye títulos y cuerpos de las notificaciones entregadas, que llevan el nombre del ejercicio y el número de serie, y eventos allowlist de selección de política sin prompts ni contenido del chat. Nunca se envía por red; el usuario puede copiarlo al portapapeles desde Ajustes.",
       "clearedBy": "traces-button"
     },
     {
@@ -150,7 +150,7 @@
       "backend": "async-storage",
       "personal": false,
       "dataCategory": "public-catalog-cache",
-      "purpose": "Registro local del canal de política: conserva la política firmada actual, una segunda copia firmada anterior y la mayor secuencia de activación observada para impedir replays y downgrades. No contiene datos ni respuestas del usuario.",
+      "purpose": "Máquina de estados local del canal de política: conserva bundles firmados activo, anterior y pendiente, la mayor secuencia observada, la última comprobación y el instante de activación para aplicar fronteras seguras, detectar degradación offline e impedir replays y downgrades. No contiene datos ni respuestas del usuario.",
       "clearedBy": "never"
     },
     {

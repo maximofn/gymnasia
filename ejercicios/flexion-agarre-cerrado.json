@@ -1,0 +1,11 @@
+{
+  "id": "flexion-agarre-cerrado",
+  "name": "Flexión con agarre cerrado",
+  "image_male": "images/flexion-agarre-cerrado-male.webp",
+  "image_female": "images/flexion-agarre-cerrado-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombros"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Colócate en plancha alta con las manos juntas bajo el centro del pecho y el cuerpo en línea recta. Baja flexionando los codos y manteniéndolos cerca de las costillas. Empuja el suelo hasta extender los brazos sin dejar caer la cadera."
+}
