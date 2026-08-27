@@ -64,3 +64,17 @@ En Linear se registra únicamente que la revisión se realizó, nunca sus datos.
 Tras cambiar la política, comprobar el ruleset efectivo, el emisor de ambos
 checks y los estados de Secret Scanning, Push Protection y Dependabot. Las PR y
 sus reviews son el registro de autorización; no se habilita auto-merge.
+
+Cada publicación, promoción, rechazo y rollback crea además un deployment con task
+`gymnasia-policy-audit` y schema `PolicyOperationAuditV1`. Este registro es distinto del
+deployment `gymnasia-policy` que consume la app: no puede confundirse con un bundle
+activo. Su payload está limitado a metadatos operativos y excluye de forma contractual
+prompts, mensajes, claves, inputs, outputs y datos de salud. El job se ejecuta con
+`if: always()` y deja diagnosticada también la ausencia o el fallo del aviso Telegram.
+
+Los procedimientos de consulta, motivos cerrados, bot dedicado y recuperación están en
+`docs/architecture/policy-environments.md`. El ensayo real exigido por GYM-141 (ticket
+para añadir rollback, auditoría y alertas de la política) debe conservar como evidencia
+la activación del patch sin cambios de contenido, el rollback y la restauración final;
+ninguno de esos pasos autoriza a saltarse la aprobación explícita de cambios en
+instrucciones.

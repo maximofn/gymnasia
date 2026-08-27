@@ -9,8 +9,8 @@
     <script src="script.js" defer></script>
   </head>
   <body>
-    <main class="presentation" id="presentation">
-      <header class="presenter-bar" data-hud>
+    <main class="presentation controls-hidden" id="presentation">
+      <header class="presenter-bar">
         <div class="brand-lockup">
           <span class="brand-mark" aria-hidden="true">G</span>
           <span>GYMNASIA</span>
@@ -19,8 +19,6 @@
         </div>
         <div class="scene-meta">
           <span id="sceneTitle">El flujo completo</span>
-          <span class="meta-divider">·</span>
-          <span id="sceneCounter">01 / 15</span>
         </div>
       </header>
 
@@ -526,7 +524,7 @@
         </section>
       </div>
 
-      <footer class="presenter-controls" data-hud>
+      <footer class="presenter-controls">
         <div class="control-group">
           <button type="button" id="previousScene" aria-label="Escena anterior">←</button>
           <button type="button" id="resetScene" aria-label="Reiniciar escena">↺</button>
@@ -537,13 +535,13 @@
           <span class="click-label">CLIC PARA AVANZAR</span>
         </div>
         <div class="control-group">
-          <button type="button" id="toggleHud" aria-label="Ocultar controles">H</button>
+          <button type="button" id="toggleControls" aria-label="Mostrar controles">S</button>
           <button type="button" id="toggleFullscreen" aria-label="Pantalla completa">⛶</button>
           <button type="button" id="nextScene" aria-label="Escena siguiente">→</button>
         </div>
       </footer>
 
-      <nav class="scene-dots" id="sceneDots" data-hud aria-label="Escenas"></nav>
+      <nav class="scene-dots" id="sceneDots" aria-label="Escenas"></nav>
     </main>
   </body>
 </html>

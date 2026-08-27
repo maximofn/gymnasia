@@ -3,14 +3,13 @@
   const stage = document.querySelector("#sceneStage");
   const scenes = [...document.querySelectorAll("[data-scene]")];
   const sceneTitle = document.querySelector("#sceneTitle");
-  const sceneCounter = document.querySelector("#sceneCounter");
   const stepCounter = document.querySelector("#stepCounter");
   const stepProgress = document.querySelector("#stepProgress");
   const sceneDots = document.querySelector("#sceneDots");
   const previousSceneButton = document.querySelector("#previousScene");
   const nextSceneButton = document.querySelector("#nextScene");
   const resetSceneButton = document.querySelector("#resetScene");
-  const toggleHudButton = document.querySelector("#toggleHud");
+  const toggleControlsButton = document.querySelector("#toggleControls");
   const toggleFullscreenButton = document.querySelector("#toggleFullscreen");
 
   const sceneSteps = scenes.map(() => 0);
@@ -80,7 +79,6 @@
     });
 
     sceneTitle.textContent = scene.dataset.title || `Escena ${currentSceneIndex + 1}`;
-    sceneCounter.textContent = `${pad(currentSceneIndex + 1)} / ${pad(scenes.length)}`;
     stepCounter.textContent = maxStep === 0
       ? "STEP ÚNICO"
       : `STEP ${currentStep} / ${maxStep}`;
@@ -158,9 +156,14 @@
     window.setTimeout(() => ripple.remove(), 520);
   }
 
-  function toggleHud() {
-    presentation.classList.toggle("hud-hidden");
-    toggleHudButton.textContent = presentation.classList.contains("hud-hidden") ? "S" : "H";
+  function toggleControls() {
+    presentation.classList.toggle("controls-hidden");
+    const controlsAreHidden = presentation.classList.contains("controls-hidden");
+    toggleControlsButton.textContent = controlsAreHidden ? "S" : "H";
+    toggleControlsButton.setAttribute(
+      "aria-label",
+      controlsAreHidden ? "Mostrar controles" : "Ocultar controles",
+    );
   }
 
   async function toggleFullscreen() {
@@ -202,7 +205,7 @@
   previousSceneButton.addEventListener("click", () => goToScene(currentSceneIndex - 1));
   nextSceneButton.addEventListener("click", () => goToScene(currentSceneIndex + 1));
   resetSceneButton.addEventListener("click", resetScene);
-  toggleHudButton.addEventListener("click", toggleHud);
+  toggleControlsButton.addEventListener("click", toggleControls);
   toggleFullscreenButton.addEventListener("click", toggleFullscreen);
 
   document.addEventListener("keydown", (event) => {
@@ -238,7 +241,7 @@
     }
 
     if (key === "h") {
-      toggleHud();
+      toggleControls();
       return;
     }
 

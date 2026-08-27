@@ -10,6 +10,10 @@ const buildWorkflow = readFileSync(
   new URL("../../.github/workflows/build-apk.yml", import.meta.url),
   "utf8",
 );
+const auditSource = readFileSync(
+  new URL("./policy-audit.mjs", import.meta.url),
+  "utf8",
+);
 const eas = JSON.parse(readFileSync(
   new URL("../../apps/mobile/eas.json", import.meta.url),
   "utf8",
@@ -56,12 +60,40 @@ test("activación y rollback están firmados fuera de GitHub", () => {
   assert.doesNotMatch(workflow, /ed25519_pkcs8_base64/);
 });
 
+test("toda operación exige motivo cerrado y termina en auditoría separada", () => {
+  assert.match(workflow, /reason_code:/);
+  for (const reason of [
+    "routine-release",
+    "critical-policy-fix",
+    "incident-response",
+    "rollback-drill",
+  ]) {
+    assert.match(workflow, new RegExp(reason));
+  }
+  assert.match(workflow, /audit-and-notify:/);
+  assert.match(workflow, /if: always\(\)/);
+  assert.match(workflow, /gymnasia-policy-audit|policy-audit\.mjs/);
+  assert.match(workflow, /POLICY_TELEGRAM_BOT_TOKEN/);
+  assert.match(workflow, /POLICY_TELEGRAM_CHAT_ID/);
+  assert.doesNotMatch(workflow, /^\s+TELEGRAM_(?:BOT_TOKEN|CHAT_ID):/m);
+  assert.match(auditSource, /POLICY_AUDIT_TASK = "gymnasia-policy-audit"/);
+  assert.match(auditSource, /auto_inactive: false/);
+  assert.doesNotMatch(auditSource, /POLICY_AUDIT_TASK = "gymnasia-policy"/);
+});
+
 test("el arranque inicial firmado solo se admite una vez desde main protegido", () => {
   assert.match(workflow, /bootstrap_main/);
   assert.match(workflow, /bootstrap_main requires the current main HEAD/);
   assert.match(workflow, /bootstrap_main is disabled after the first signed policy deployment/);
   assert.match(workflow, /bootstrap_main and pr_number are mutually exclusive/);
   assert.match(workflow, /select\(\.payload\.schemaVersion == 3\)/);
+});
+
+test("la paginación de gh es compatible con la versión del runner", () => {
+  const unfoldedWorkflow = workflow.replace(/\\\r?\n\s*/g, " ");
+  assert.doesNotMatch(unfoldedWorkflow, /gh api[^\n]*--slurp[^\n]*--jq/);
+  assert.doesNotMatch(unfoldedWorkflow, /gh api[^\n]*--jq[^\n]*--slurp/);
+  assert.match(unfoldedWorkflow, /gh api --paginate --slurp[^\n]*\| jq 'add \|/);
 });
 
 test("el verificador confiable siempre procede de main", () => {

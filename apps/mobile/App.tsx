@@ -92,8 +92,16 @@ import {
   type AiConversationSurface,
   type AiDisclosureMessageKind,
 } from "./agent/aiTransparency";
-import { loadChatSystemPrompt } from "./agent/chatSystemPromptRuntime";
 import type { ChatSystemPromptSelection } from "./agent/chatSystemPrompt";
+import {
+  acquireAgentPolicyLease,
+} from "./agent/agentPolicyRuntime";
+import {
+  normalizePolicyContext,
+  type PolicyContext,
+} from "./agent/policyContext";
+import type { PolicyRuntimeStatus } from "./agent/signedPolicySelection";
+import { policyStatusPresentation } from "./agent/policyStatusPresentation";
 import {
   BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY,
   classifyHealthSafetyText,
@@ -107,7 +115,6 @@ import {
   type HealthSafetyMessageMetadata,
   type HealthSafetyRuntimePolicy,
 } from "./agent/healthSafety";
-import { loadHealthSafetyPolicy } from "./agent/healthSafetyRuntime";
 import {
   belongsToActiveStorageNamespace,
   IS_FAKE_PROVIDER_MODE,
@@ -345,6 +352,7 @@ type ChatMessage = {
   content: string;
   kind?: ChatMessageKind;
   health_safety?: HealthSafetyMessageMetadata;
+  policy_context?: PolicyContext;
   report_context?: {
     provider?: string | null;
     model?: string | null;
@@ -5229,6 +5237,7 @@ function normalizeChatMessage(raw: ChatMessage, index: number): ChatMessage {
         origin: reportOrigin,
       }
     : undefined;
+  const policyContext = normalizePolicyContext(raw?.policy_context);
   return {
     id: raw?.id?.trim() || uid(`msg-${index}`),
     role,
@@ -5236,6 +5245,7 @@ function normalizeChatMessage(raw: ChatMessage, index: number): ChatMessage {
     kind,
     health_safety: healthSafety,
     report_context: reportContext,
+    policy_context: policyContext,
     thinking,
     is_streaming: false,
     created_at:
@@ -5433,18 +5443,11 @@ function MiniChat({
     if (!text || mcSending) return;
 
     const userMsg: ChatMessage = { id: uid("msg"), role: "user", content: text, created_at: new Date().toISOString() };
-    const bundledDecision = classifyHealthSafetyText(text);
-    if (isBlockingHealthRisk(bundledDecision.level)) {
-      setMcMessages((prev) => [
-        ...prev,
-        userMsg,
-        createHealthSafetyChatMessage(bundledDecision, BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY),
-      ]);
-      setMcInput("");
-      return;
-    }
-
-    const healthSelection = await loadHealthSafetyPolicy();
+    const boundary = mcMessages.some((message) => message.role === "user")
+      ? "turn"
+      : "new-conversation";
+    const policyLease = await acquireAgentPolicyLease(boundary);
+    const healthSelection = policyLease.healthSafety;
     let healthDecision = classifyHealthSafetyText(text, "input", healthSelection.policy);
 
     const provider = resolvedProvider;
@@ -5454,6 +5457,7 @@ function MiniChat({
         role: "assistant",
         kind: "technical_error",
         content: "No hay proveedor de IA configurado. Ve a Configuración → Proveedor IA para añadir una API key.",
+        policy_context: { ...policyLease.context },
         created_at: new Date().toISOString(),
       }]);
       return;
@@ -5475,7 +5479,10 @@ function MiniChat({
       setMcMessages((prev) => [
         ...prev,
         userMsg,
-        createHealthSafetyChatMessage(healthDecision, healthSelection.policy),
+        {
+          ...createHealthSafetyChatMessage(healthDecision, healthSelection.policy),
+          policy_context: { ...policyLease.context },
+        },
       ]);
       setMcInput("");
       return;
@@ -5487,7 +5494,7 @@ function MiniChat({
 
     try {
       const history: ChatInputMessage[] = [
-        { role: "system", content: systemPrompt },
+        { role: "system", content: `${policyLease.prompt.content}\n\n${systemPrompt}` },
         ...excludeLocalDisclosureMessages(mcMessages).map((m) => ({ role: m.role, content: m.content })),
         { role: "user" as const, content: text },
       ];
@@ -5503,6 +5510,7 @@ function MiniChat({
               model: provider.model,
               origin: "model",
             },
+            policy_context: { ...policyLease.context },
             created_at: new Date().toISOString(),
           }
         : {
@@ -5512,11 +5520,19 @@ function MiniChat({
               model: provider.model,
               origin: "health_safety",
             },
+            policy_context: { ...policyLease.context },
           };
       setMcMessages((prev) => [...prev, assistantMsg]);
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : "Error desconocido";
-      setMcMessages((prev) => [...prev, { id: uid("msg"), role: "assistant", kind: "technical_error", content: `Error: ${errMsg}`, created_at: new Date().toISOString() }]);
+      setMcMessages((prev) => [...prev, {
+        id: uid("msg"),
+        role: "assistant",
+        kind: "technical_error",
+        content: `Error: ${errMsg}`,
+        policy_context: { ...policyLease.context },
+        created_at: new Date().toISOString(),
+      }]);
     } finally {
       setMcSending(false);
       setTimeout(() => mcScrollRef.current?.scrollToEnd({ animated: true }), 100);
@@ -6342,6 +6358,169 @@ function TracePanel() {
   );
 }
 
+function formatPolicyCheckTime(value: string | null): string {
+  if (!value) return "Aún no comprobada";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Fecha no disponible";
+  return date.toLocaleString("es-ES", {
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    month: "short",
+  });
+}
+
+function formatPolicyVersion(value: string): string {
+  return value.startsWith("sha256:") ? `${value.slice(0, 19)}…` : value;
+}
+
+function PolicyStatusCard({
+  busy,
+  onRefresh,
+  result,
+  status,
+}: {
+  busy: boolean;
+  onRefresh: () => void;
+  result: string | null;
+  status: PolicyRuntimeStatus | null;
+}) {
+  const presentation = status ? policyStatusPresentation(status) : null;
+  const isHealthy = presentation?.tone === "healthy";
+  const accent = isHealthy ? mobileTheme.color.brandPrimary : "#F3B95F";
+  return (
+    <View
+      testID="policy-status-card"
+      accessibilityLiveRegion="polite"
+      style={{
+        borderWidth: 1,
+        borderColor: status ? `${accent}66` : mobileTheme.color.borderSubtle,
+        backgroundColor: status ? `${accent}0F` : mobileTheme.color.bgSurface,
+        borderRadius: mobileTheme.radius.lg,
+        padding: 16,
+        gap: 14,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+        <View
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: 17,
+            backgroundColor: status ? `${accent}1F` : mobileTheme.color.bgApp,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {status ? (
+            <Feather
+              name={status.state === "active" ? "shield" : "clock"}
+              size={17}
+              color={accent}
+            />
+          ) : (
+            <ActivityIndicator size="small" color={mobileTheme.color.textSecondary} />
+          )}
+        </View>
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={{ color: status ? accent : mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "800", letterSpacing: 0.7, textTransform: "uppercase" }}>
+            {presentation?.title ?? "Comprobando política"}
+          </Text>
+          <Text numberOfLines={1} style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "700" }}>
+            {status?.active.candidate ?? RUNTIME_ENVIRONMENT.policyCandidate}
+          </Text>
+        </View>
+      </View>
+
+      {status ? (
+        <View style={{ gap: 8 }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Versión</Text>
+            <Text numberOfLines={1} style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700", flex: 1, textAlign: "right" }}>
+              {formatPolicyVersion(status.active.version)}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Hash</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace" }}>{status.active.bundleSha256.slice(0, 12)}</Text>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Origen · canal</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600", textAlign: "right" }}>{presentation?.sourceLabel} · {status.channel}</Text>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Última comprobación</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, textAlign: "right" }}>{formatPolicyCheckTime(status.lastCheckedAt)}</Text>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Propagación local</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12 }}>
+              {status.propagationMs === null ? "Sin dato" : `${Math.round(status.propagationMs / 1000)} s`}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
+      {status?.pending ? (
+        <View
+          testID="policy-pending-status"
+          style={{
+            borderTopWidth: 1,
+            borderTopColor: `${accent}4D`,
+            paddingTop: 12,
+            gap: 4,
+          }}
+        >
+          <Text style={{ color: accent, fontSize: 12, fontWeight: "800" }}>
+            {presentation?.pendingInstruction}
+          </Text>
+          <Text numberOfLines={1} style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+            {status.pending.candidate} · {status.pending.bundleSha256.slice(0, 12)}
+          </Text>
+        </View>
+      ) : null}
+      {status && status.degradation !== "none" ? (
+        <Text testID="policy-degraded-status" style={{ color: accent, fontSize: 12, lineHeight: 17 }}>
+          {presentation?.degradationMessage}
+        </Text>
+      ) : null}
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Comprobar actualización de política"
+        testID="policy-refresh-button"
+        disabled={busy}
+        onPress={onRefresh}
+        style={{
+          minHeight: 44,
+          borderRadius: mobileTheme.radius.md,
+          borderWidth: 1,
+          borderColor: mobileTheme.color.brandPrimary,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "row",
+          gap: 8,
+          opacity: busy ? 0.6 : 1,
+        }}
+      >
+        {busy ? (
+          <ActivityIndicator size="small" color={mobileTheme.color.brandPrimary} />
+        ) : (
+          <Feather name="refresh-cw" size={15} color={mobileTheme.color.brandPrimary} />
+        )}
+        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "800" }}>
+          {busy ? "Comprobando…" : "Comprobar actualización"}
+        </Text>
+      </Pressable>
+      {result ? (
+        <Text testID="policy-refresh-result" style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
+          {result}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
 export default function App() {
   // Propuestas pendientes de alimento y ejercicio. El store vive fuera de React
   // porque lo alimentan funciones de módulo; aquí solo se observa.
@@ -6423,12 +6602,18 @@ export default function App() {
   const [showByokExplain, setShowByokExplain] = useState(false);
   const [activePolicySelection, setActivePolicySelection] =
     useState<ChatSystemPromptSelection | null>(null);
+  const [policyRuntimeStatus, setPolicyRuntimeStatus] =
+    useState<PolicyRuntimeStatus | null>(null);
+  const [policyRefreshBusy, setPolicyRefreshBusy] = useState(false);
+  const [policyRefreshResult, setPolicyRefreshResult] = useState<string | null>(null);
   useEffect(() => {
     let mounted = true;
     const refreshPolicy = () => {
-      void loadChatSystemPrompt()
-        .then((selection) => {
-          if (mounted) setActivePolicySelection(selection);
+      void acquireAgentPolicyLease("background")
+        .then((lease) => {
+          if (!mounted) return;
+          setActivePolicySelection({ ...lease.prompt });
+          setPolicyRuntimeStatus({ ...lease.status });
         })
         .catch(() => {});
     };
@@ -6438,6 +6623,32 @@ export default function App() {
       mounted = false;
       clearInterval(interval);
     };
+  }, []);
+  const handlePolicyRefresh = useCallback(() => {
+    setPolicyRefreshBusy(true);
+    setPolicyRefreshResult(null);
+    void acquireAgentPolicyLease("background", { force: true })
+      .then((lease) => {
+        setActivePolicySelection({ ...lease.prompt });
+        setPolicyRuntimeStatus({ ...lease.status });
+        if (lease.status.pending) {
+          setPolicyRefreshResult(
+            lease.status.pending.action === "rollback" || lease.status.pending.critical
+              ? "Actualización verificada. Se aplicará en el siguiente envío seguro."
+              : "Actualización verificada. Se aplicará al iniciar una conversación nueva.",
+          );
+        } else if (lease.status.degradation === "offline") {
+          setPolicyRefreshResult("No hubo conexión. La política segura activa no ha cambiado.");
+        } else if (lease.status.degradation !== "none") {
+          setPolicyRefreshResult("La actualización no superó la comprobación. La política segura activa no ha cambiado.");
+        } else {
+          setPolicyRefreshResult("La política activa ya está actualizada.");
+        }
+      })
+      .catch(() => {
+        setPolicyRefreshResult("No se pudo comprobar ahora. La política segura activa no ha cambiado.");
+      })
+      .finally(() => setPolicyRefreshBusy(false));
   }, []);
   const chatScrollRef = useRef<ScrollView>(null);
   const mainScrollRef = useRef<ScrollView>(null);
@@ -8554,20 +8765,6 @@ export default function App() {
       content: userInput,
       created_at: new Date().toISOString(),
     };
-    const bundledDecision = classifyHealthSafetyText(userInput);
-    if (isBlockingHealthRisk(bundledDecision.level)) {
-      appendMessagesToThread(threadId, [
-        userMessage,
-        createHealthSafetyChatMessage(bundledDecision, BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY),
-      ]);
-      setChatInput("");
-      void pushTrace("healthSafety", "provider-bypassed", {
-        level: bundledDecision.level,
-        ruleIds: bundledDecision.ruleIds,
-        policyVersion: bundledDecision.policyVersion,
-      });
-      return;
-    }
 
     if (!activeProvider) {
       setError("Selecciona un proveedor activo en Ajustes.");
@@ -8584,7 +8781,15 @@ export default function App() {
     setError(null);
 
     try {
-      const healthSelection = await loadHealthSafetyPolicy();
+      const threadMessages = store.messagesByThread[threadId] ?? [];
+      const policyBoundary = threadMessages.some((message) => message.role === "user")
+        ? "turn"
+        : "new-conversation";
+      const policyLease = await acquireAgentPolicyLease(policyBoundary);
+      const healthSelection = policyLease.healthSafety;
+      const systemPromptSelection = policyLease.prompt;
+      setActivePolicySelection({ ...systemPromptSelection });
+      setPolicyRuntimeStatus({ ...policyLease.status });
       let healthDecision = classifyHealthSafetyText(userInput, "input", healthSelection.policy);
       if (healthDecision.level === "elevated") {
         if (healthSafetyConsent.providers[activeProvider.provider]) {
@@ -8601,7 +8806,10 @@ export default function App() {
       if (isBlockingHealthRisk(healthDecision.level)) {
         appendMessagesToThread(threadId, [
           userMessage,
-          createHealthSafetyChatMessage(healthDecision, healthSelection.policy),
+          {
+            ...createHealthSafetyChatMessage(healthDecision, healthSelection.policy),
+            policy_context: { ...policyLease.context },
+          },
         ]);
         setChatInput("");
         void pushTrace("healthSafety", "provider-bypassed", {
@@ -8624,10 +8832,10 @@ export default function App() {
           model: activeProvider.model,
           origin: "model",
         },
+        policy_context: { ...policyLease.context },
         created_at: createdAt,
       };
 
-      const threadMessages = store.messagesByThread[threadId] ?? [];
       appendMessagesToThread(threadId, [userMessage, assistantDraft]);
       setExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: true }));
       setChatInput("");
@@ -8692,8 +8900,6 @@ export default function App() {
       // seleccionada más la política local de transparencia que añade
       // composeAiSystemPrompt. Ningún dato local puede sumar texto aquí, así que
       // esta ruta no lee la memoria personal en absoluto.
-      const systemPromptSelection = await loadChatSystemPrompt();
-      setActivePolicySelection(systemPromptSelection);
       void pushTrace("chatPrompt", "chat-request", {
         source: systemPromptSelection.source,
         version: systemPromptSelection.version,
@@ -8702,6 +8908,8 @@ export default function App() {
         candidate: systemPromptSelection.candidate,
         sha256: systemPromptSelection.sha256,
         deploymentId: systemPromptSelection.deploymentId,
+        activationId: policyLease.context.activation.id,
+        sequence: policyLease.context.sequence,
         basePromptChars: systemPromptSelection.content.length,
         localPromptOverrides: 0,
       });
@@ -9443,22 +9651,6 @@ export default function App() {
       content: messageText,
       created_at: new Date().toISOString(),
     };
-    const bundledDecision = classifyHealthSafetyText(messageText);
-    if (isBlockingHealthRisk(bundledDecision.level)) {
-      setFoodEstimatorHasLLMResponse(false);
-      setFoodEstimatorMessages((previous) => [
-        ...previous,
-        userMessage,
-        createHealthSafetyChatMessage(
-          bundledDecision,
-          BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY,
-          "food_est_msg",
-        ),
-      ]);
-      if (!forcedMessage) setFoodEstimatorInput("");
-      return;
-    }
-
     const resolvedProvider = resolveFoodEstimatorProviderFromState();
 
     if (!resolvedProvider) {
@@ -9466,7 +9658,13 @@ export default function App() {
       return;
     }
 
-    const healthSelection = await loadHealthSafetyPolicy();
+    const policyBoundary = foodEstimatorMessages.some((message) => message.role === "user")
+      ? "turn"
+      : "new-conversation";
+    const policyLease = await acquireAgentPolicyLease(policyBoundary);
+    const healthSelection = policyLease.healthSafety;
+    setActivePolicySelection({ ...policyLease.prompt });
+    setPolicyRuntimeStatus({ ...policyLease.status });
     let healthDecision = classifyHealthSafetyText(messageText, "input", healthSelection.policy);
     if (healthDecision.level === "elevated") {
       if (healthSafetyConsent.providers[resolvedProvider.provider]) {
@@ -9485,7 +9683,10 @@ export default function App() {
       setFoodEstimatorMessages((previous) => [
         ...previous,
         userMessage,
-        createHealthSafetyChatMessage(healthDecision, healthSelection.policy, "food_est_msg"),
+        {
+          ...createHealthSafetyChatMessage(healthDecision, healthSelection.policy, "food_est_msg"),
+          policy_context: { ...policyLease.context },
+        },
       ]);
       if (!forcedMessage) setFoodEstimatorInput("");
       return;
@@ -9504,6 +9705,7 @@ export default function App() {
         model: resolvedProvider.model,
         origin: "model",
       },
+      policy_context: { ...policyLease.context },
       created_at: userMessage.created_at,
     };
     const nextMessages = [...foodEstimatorMessages, userMessage];
@@ -9570,7 +9772,10 @@ export default function App() {
         flushAssistantDraft(true);
       };
       const estimatorHistory: ChatInputMessage[] = [
-        { role: "system", content: FOOD_ESTIMATOR_SYSTEM_PROMPT },
+        {
+          role: "system",
+          content: `${policyLease.prompt.content}\n\n${FOOD_ESTIMATOR_SYSTEM_PROMPT}`,
+        },
         ...excludeLocalDisclosureMessages(nextMessages).map<ChatInputMessage>((message) => ({
           role: message.role === "assistant" ? "assistant" : "user",
           content: message.content,
@@ -11639,7 +11844,12 @@ export default function App() {
       },
     }));
     setActiveThreadId(id);
-    void loadChatSystemPrompt().then(setActivePolicySelection).catch(() => {});
+    void acquireAgentPolicyLease("background")
+      .then((lease) => {
+        setActivePolicySelection({ ...lease.prompt });
+        setPolicyRuntimeStatus({ ...lease.status });
+      })
+      .catch(() => {});
   }
 
   function setActiveProvider(provider: Provider) {
@@ -21236,8 +21446,15 @@ export default function App() {
                     Trazas de depuración
                   </Text>
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                    Registro de notificaciones, descansos y selección de política del agente. Cada entrada lleva timestamp ISO. Las trazas del agente muestran solo fuente, hash y versión; nunca el prompt ni datos personales.
+                    Registro de notificaciones, descansos y selección de política del agente. Cada entrada lleva timestamp ISO. Las trazas del agente muestran solo metadatos técnicos allowlist; nunca el prompt ni datos personales.
                   </Text>
+
+                  <PolicyStatusCard
+                    busy={policyRefreshBusy}
+                    onRefresh={handlePolicyRefresh}
+                    result={policyRefreshResult}
+                    status={policyRuntimeStatus}
+                  />
 
                   <TracePanel />
 

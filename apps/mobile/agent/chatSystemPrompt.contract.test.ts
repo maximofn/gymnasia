@@ -47,7 +47,8 @@ describe("contrato del snapshot integrado del system prompt", () => {
   });
 
   it("impide que App.tsx vuelva a mantener un fallback manual", () => {
-    expect(appSource).toContain('from "./agent/chatSystemPromptRuntime"');
+    expect(appSource).toContain('from "./agent/agentPolicyRuntime"');
+    expect(appSource).toContain("acquireAgentPolicyLease");
     expect(appSource).not.toContain("DEFAULT_CHAT_SYSTEM_PROMPT");
     expect(appSource).not.toContain("gymnasia.mobile.chat.system_prompt.v1");
     expect(appSource).toContain("FOOD_ESTIMATOR_SYSTEM_PROMPT");
