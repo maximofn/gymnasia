@@ -1,0 +1,11 @@
+{
+  "id": "press-inclinado-agarre-inverso-barra-v2",
+  "name": "Press inclinado con barra y agarre inverso, variante 2",
+  "image_male": "images/press-inclinado-agarre-inverso-barra-v2-male.webp",
+  "image_female": "images/press-inclinado-agarre-inverso-barra-v2-female.webp",
+  "muscle_group": "pecho superior",
+  "secondary_muscles": ["tríceps", "hombro anterior"],
+  "equipment": "barra y banco inclinado",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco inclinado a unos 45 grados y toma la barra con agarre supino ligeramente más ancho que los hombros. Bájala hacia la parte alta del pecho manteniendo los codos cerca del torso. Empuja hasta extender los brazos sin perder el apoyo de la espalda."
+}

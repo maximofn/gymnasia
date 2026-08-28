@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-gemelos-balanceo-barra",
+  "name": "Elevación de gemelos con balanceo y barra",
+  "image_male": "images/elevacion-gemelos-balanceo-barra-male.webp",
+  "image_female": "images/elevacion-gemelos-balanceo-barra-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["sóleo", "tibial anterior"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Coloca la barra sobre la espalda y elévate sobre los antepiés contrayendo los gemelos. Desciende los talones con control y transfiere suavemente el peso hacia ellos para levantar ligeramente las puntas de los pies. Continúa alternando ambas posiciones sin perder la alineación del cuerpo."
+}

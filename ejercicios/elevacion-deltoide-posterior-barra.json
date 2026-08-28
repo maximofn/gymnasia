@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-deltoide-posterior-barra",
+  "name": "Elevación de deltoide posterior con barra",
+  "image_male": "images/elevacion-deltoide-posterior-barra-male.webp",
+  "image_female": "images/elevacion-deltoide-posterior-barra-female.webp",
+  "muscle_group": "deltoides posteriores",
+  "secondary_muscles": ["trapecios", "romboides"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Inclina el torso desde las caderas con la espalda neutra y sujeta la barra con agarre prono amplio. Eleva la barra hacia la parte alta del pecho guiando con los codos abiertos, sin encoger los hombros. Pausa arriba y baja de forma controlada."
+}

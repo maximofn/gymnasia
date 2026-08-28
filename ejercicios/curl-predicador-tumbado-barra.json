@@ -1,0 +1,11 @@
+{
+  "id": "curl-predicador-tumbado-barra",
+  "name": "Curl predicador tumbado con barra",
+  "image_male": "images/curl-predicador-tumbado-barra-male.webp",
+  "image_female": "images/curl-predicador-tumbado-barra-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "braquial"],
+  "equipment": "barra y banco predicador",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho en la cara inclinada de un banco predicador y deja ambos brazos extendidos sobre el borde. Sujeta la barra con agarre supino y flexiona los codos sin despegar los brazos del apoyo. Acerca la barra a los hombros y desciende lentamente hasta casi extender los codos."
+}

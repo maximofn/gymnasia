@@ -1,0 +1,11 @@
+{
+  "id": "curl-concentrado-bilateral-barra-sentado",
+  "name": "Curl concentrado bilateral sentado con barra",
+  "image_male": "images/curl-concentrado-bilateral-barra-sentado-male.webp",
+  "image_female": "images/curl-concentrado-bilateral-barra-sentado-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazos"],
+  "equipment": "barra y banco",
+  "difficulty": "advanced",
+  "instructions": "Siéntate con las piernas separadas e inclina ligeramente el torso hacia delante. Apoya la parte posterior de ambos brazos contra la cara interna de los muslos y sujeta la barra con agarre supino cerrado. Flexiona los codos sin mover los brazos superiores y baja la barra de forma controlada."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "remo-menton-barra-v3",
+  "name": "Remo al mentón con barra, variante 3",
+  "image_male": "images/remo-menton-barra-v3-male.webp",
+  "image_female": "images/remo-menton-barra-v3-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios", "bíceps"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con el core activo y toma la barra con agarre prono a la anchura de los hombros. Eleva la barra cerca del cuerpo hasta la altura del pecho llevando los codos hacia arriba y hacia fuera. Pausa brevemente y vuelve a la posición inicial de forma controlada."
+}

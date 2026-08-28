@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-inverso-sentado-barra-v2",
+  "name": "Curl inverso de muñeca sentado con barra, variante 2",
+  "image_male": "images/curl-muneca-inverso-sentado-barra-v2-male.webp",
+  "image_female": "images/curl-muneca-inverso-sentado-barra-v2-female.webp",
+  "muscle_group": "extensores del antebrazo",
+  "secondary_muscles": ["braquiorradial"],
+  "equipment": "barra y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate y apoya los antebrazos sobre los muslos con las palmas hacia abajo y las muñecas fuera de las rodillas. Deja descender la barra con control y luego extiende las muñecas para elevarla sin mover los codos. Mantén los antebrazos apoyados durante todo el recorrido."
+}

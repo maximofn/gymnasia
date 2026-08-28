@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-inverso-barra-de-pie",
+  "name": "Curl de bíceps inverso de pie con barra",
+  "image_male": "images/curl-biceps-inverso-barra-de-pie-male.webp",
+  "image_female": "images/curl-biceps-inverso-barra-de-pie-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["bíceps", "braquial"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie y sujeta la barra con agarre prono a la anchura de los hombros. Mantén los codos pegados al torso y flexiónalos para elevar la barra sin doblar las muñecas. Contrae arriba y desciende de forma controlada hasta casi extender los brazos."
+}
