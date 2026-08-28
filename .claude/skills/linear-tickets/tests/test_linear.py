@@ -1,6 +1,7 @@
 import argparse
 import io
 import importlib.util
+import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -24,6 +25,19 @@ COMPLETE_PLAN = """Contexto del ticket.
 - [ ] Regresión: No aplica: no corrige ningún bug existente.
 - [X] Fuzzing / property-based: genera argumentos arbitrarios.
 """
+
+
+class ApiKeyLoadingTests(unittest.TestCase):
+    def test_loads_a_quoted_key_from_an_explicit_env_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            env_path = Path(directory) / ".env"
+            env_path.write_text('LINEAR_API_KEY="lin_api_worktree"\n')
+            with mock.patch.dict(
+                "os.environ",
+                {"LINEAR_ENV_FILE": str(env_path)},
+                clear=True,
+            ):
+                self.assertEqual(linear.load_api_key(), "lin_api_worktree")
 
 
 class TestPlanValidationTests(unittest.TestCase):
@@ -274,6 +288,130 @@ class IssueRelationTests(unittest.TestCase):
                 },
             ],
         )
+
+    @staticmethod
+    def relation(relation_id="relation-196-198", relation_type="blocks"):
+        return {
+            "id": relation_id,
+            "type": relation_type,
+            "issue": {"id": "uuid-196", "identifier": "GYM-196"},
+            "relatedIssue": {"id": "uuid-198", "identifier": "GYM-198"},
+        }
+
+    def test_unlink_previews_without_deleting(self):
+        calls = []
+
+        def fake_resolve(identifier):
+            return {"GYM-196": "uuid-196", "GYM-198": "uuid-198"}[identifier]
+
+        def fake_query(gql, variables=None):
+            calls.append((gql, variables))
+            return {
+                "issue": {
+                    "relations": {"nodes": []},
+                    "inverseRelations": {"nodes": [self.relation()]},
+                }
+            }
+
+        args = argparse.Namespace(id="GYM-198", blocked_by=["GYM-196"], apply=False)
+        with (
+            mock.patch.object(linear, "resolve_issue_uuid", side_effect=fake_resolve),
+            mock.patch.object(linear, "query", side_effect=fake_query),
+        ):
+            linear.cmd_unlink(args)
+
+        self.assertEqual(len(calls), 1)
+        self.assertIn("IssueRelations", calls[0][0])
+
+    def test_unlink_deletes_the_relation_uuid_in_the_correct_direction(self):
+        def fake_resolve(identifier):
+            return {"GYM-196": "uuid-196", "GYM-198": "uuid-198"}[identifier]
+
+        def fake_query(gql, variables=None):
+            if "IssueRelations" in gql:
+                return {
+                    "issue": {
+                        "relations": {"nodes": []},
+                        "inverseRelations": {"nodes": [self.relation()]},
+                    }
+                }
+            self.assertIn("issueRelationDelete", gql)
+            self.assertEqual(variables, {"id": "relation-196-198"})
+            return {"issueRelationDelete": {"success": True}}
+
+        args = argparse.Namespace(id="GYM-198", blocked_by=["GYM-196"], apply=True)
+        with (
+            mock.patch.object(linear, "resolve_issue_uuid", side_effect=fake_resolve),
+            mock.patch.object(linear, "query", side_effect=fake_query),
+        ):
+            linear.cmd_unlink(args)
+
+    def test_unlink_refuses_missing_relations_before_deleting(self):
+        args = argparse.Namespace(id="GYM-198", blocked_by=["GYM-196"], apply=True)
+        with (
+            mock.patch.object(
+                linear,
+                "resolve_issue_uuid",
+                side_effect=lambda value: {"GYM-196": "uuid-196", "GYM-198": "uuid-198"}[value],
+            ),
+            mock.patch.object(
+                linear,
+                "query",
+                return_value={"issue": {"relations": {"nodes": []}, "inverseRelations": {"nodes": []}}},
+            ) as mocked_query,
+        ):
+            with self.assertRaisesRegex(SystemExit, "no se ha borrado nada"):
+                linear.cmd_unlink(args)
+
+        self.assertEqual(mocked_query.call_count, 1)
+
+    def test_relate_creates_a_related_relation(self):
+        calls = []
+
+        def fake_resolve(identifier):
+            return {"GYM-196": "uuid-196", "GYM-198": "uuid-198"}[identifier]
+
+        def fake_query(gql, variables=None):
+            if "IssueRelations" in gql:
+                return {"issue": {"relations": {"nodes": []}, "inverseRelations": {"nodes": []}}}
+            calls.append(variables["input"])
+            return {
+                "issueRelationCreate": {
+                    "success": True,
+                    "issueRelation": {"id": "related-id", "type": "related"},
+                }
+            }
+
+        args = argparse.Namespace(id="GYM-196", with_id="GYM-198")
+        with (
+            mock.patch.object(linear, "resolve_issue_uuid", side_effect=fake_resolve),
+            mock.patch.object(linear, "query", side_effect=fake_query),
+        ):
+            linear.cmd_relate(args)
+
+        self.assertEqual(
+            calls,
+            [{"issueId": "uuid-196", "relatedIssueId": "uuid-198", "type": "related"}],
+        )
+
+    def test_relate_is_idempotent(self):
+        relation = self.relation(relation_type="related")
+        args = argparse.Namespace(id="GYM-196", with_id="GYM-198")
+        with (
+            mock.patch.object(
+                linear,
+                "resolve_issue_uuid",
+                side_effect=lambda value: {"GYM-196": "uuid-196", "GYM-198": "uuid-198"}[value],
+            ),
+            mock.patch.object(
+                linear,
+                "query",
+                return_value={"issue": {"relations": {"nodes": [relation]}, "inverseRelations": {"nodes": []}}},
+            ) as mocked_query,
+        ):
+            linear.cmd_relate(args)
+
+        self.assertEqual(mocked_query.call_count, 1)
 
 
 if __name__ == "__main__":

@@ -167,7 +167,7 @@ function createSeedStore(activeProvider) {
         provider: "google",
         is_active: activeProvider === "google",
         api_key: activeProvider === "google" ? "e2e-local-fake-key" : "",
-        model: "gemini-3-flash-preview",
+        model: "gemini-3.6-flash",
       },
     ],
     chatProvider: activeProvider,
@@ -321,6 +321,149 @@ async function runNoKeyDisclosureE2E(page, baseUrl) {
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   assert.equal(await page.locator('[data-testid="chat-input"]').count(), 0);
   assertNoLegacyUpdaterRequests();
+}
+
+async function runByokLifecycleE2E(page, baseUrl) {
+  const invalidKey = "invalid-review-key";
+  const firstKey = "review-key-one";
+  const rotatedKey = "review-key-two";
+  const verificationKeys = [];
+  const chatRequests = [];
+
+  await page.addInitScript(({ storeKey, traceKey, store }) => {
+    window.localStorage.clear();
+    window.localStorage.setItem(storeKey, JSON.stringify(store));
+    window.localStorage.setItem(traceKey, "[]");
+  }, {
+    storeKey: STORE_KEY,
+    traceKey: TRACE_KEY,
+    store: createSeedStoreWithoutKeys(),
+  });
+  await page.route("**/dev-store", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+  });
+  await page.route("https://raw.githubusercontent.com/**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+  await page.route("https://api.github.com/repos/maximofn/gymnasia/deployments**", async (route) => {
+    await route.fulfill({ status: 503, contentType: "application/json", body: "{}" });
+  });
+  await page.route("https://generativelanguage.googleapis.com/**", async (route) => {
+    const request = route.request();
+    const url = request.url();
+    const apiKey = request.headers()["x-goog-api-key"] ?? "";
+    assert(!/[?&]key=/.test(url), `la clave no puede viajar en URL: ${url}`);
+
+    if (url.includes(":streamGenerateContent")) {
+      chatRequests.push({
+        apiKey,
+        url,
+        body: request.postData() ?? "",
+      });
+      const responseFixture = chatRequests.length === 1
+        ? fixture("google-tool-call.sse")
+        : chatRequests.length === 2
+          ? fixture("google-final.sse")
+          : fixture("google-identity.sse");
+      await route.fulfill({
+        status: 200,
+        headers: { "content-type": "text/event-stream; charset=utf-8" },
+        body: responseFixture,
+      });
+      return;
+    }
+
+    verificationKeys.push(apiKey);
+    if (apiKey === invalidKey) {
+      await route.fulfill({
+        status: 401,
+        contentType: "application/json",
+        body: JSON.stringify({ error: { message: "Credencial inválida" } }),
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ name: "models/gemini-3.6-flash" }),
+    });
+  });
+
+  logStep("Comprobando alta, rotación y borrado de BYOK sin filtrar la clave");
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="settings-tab-provider"]').click({ timeout: STEP_TIMEOUT_MS });
+
+  const keyInput = page.locator('[data-testid="provider-api-key-google"]');
+  const saveButton = page.locator('[data-testid="provider-save-google"]');
+  await keyInput.fill(invalidKey);
+  await saveButton.click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="provider-status-detail-google"]')
+    .filter({ hasText: "Credencial inválida" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await page.waitForFunction(
+    ({ storeKey }) => {
+      const store = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
+      return store.keys?.find((item) => item.provider === "google")?.api_key === "";
+    },
+    { storeKey: STORE_KEY },
+    { timeout: STEP_TIMEOUT_MS },
+  );
+
+  await keyInput.fill(firstKey);
+  await saveButton.click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="provider-status-detail-google"]')
+    .filter({ hasText: "Conexión verificada" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+
+  await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="chat-input"]').fill("¿Cuál es mi objetivo?");
+  await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid^="chat-message-assistant-"]')
+    .filter({ hasText: "Tu objetivo es ganar masa muscular." })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  assert.deepEqual(chatRequests.slice(0, 2).map((request) => request.apiKey), [firstKey, firstKey]);
+
+  await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="settings-tab-provider"]').click({ timeout: STEP_TIMEOUT_MS });
+  await keyInput.fill(rotatedKey);
+  await saveButton.click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="provider-status-detail-google"]')
+    .filter({ hasText: "Conexión verificada" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+
+  await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="chat-input"]').fill("¿Eres humano?");
+  await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid^="chat-message-assistant-"]')
+    .filter({ hasText: "No. Soy Gymnasia Coach, un sistema de inteligencia artificial." })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  assert.equal(chatRequests.at(-1)?.apiKey, rotatedKey);
+
+  await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="settings-tab-provider"]').click({ timeout: STEP_TIMEOUT_MS });
+  const deleteButton = page.locator('[data-testid="provider-delete-google"]');
+  await deleteButton.scrollIntoViewIfNeeded();
+  await deleteButton.click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="provider-delete-confirm"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.waitForFunction(
+    ({ storeKey }) => {
+      const store = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
+      return store.keys?.find((item) => item.provider === "google")?.api_key === "";
+    },
+    { storeKey: STORE_KEY },
+    { timeout: STEP_TIMEOUT_MS },
+  );
+
+  assert.deepEqual(verificationKeys, [invalidKey, firstKey, rotatedKey]);
+  for (const secret of [invalidKey, firstKey, rotatedKey]) {
+    assert(
+      chatRequests.every((request) => !request.url.includes(secret) && !request.body.includes(secret)),
+      "ninguna credencial puede aparecer en URL o body",
+    );
+    const traces = await page.evaluate((traceKey) => window.localStorage.getItem(traceKey) ?? "", TRACE_KEY);
+    assert(!traces.includes(secret), "ninguna credencial puede aparecer en trazas");
+  }
 }
 
 async function runAgentChatE2E(
@@ -781,6 +924,19 @@ async function main() {
       await runNoKeyDisclosureE2E(noKeyPage, server.baseUrl);
     } finally {
       await noKeyContext.close().catch(() => {});
+    }
+
+    const byokContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const byokPage = await byokContext.newPage();
+    try {
+      await runByokLifecycleE2E(byokPage, server.baseUrl);
+    } catch (error) {
+      const screenshotPath = "/tmp/agent-chat-e2e-byok-lifecycle-failure.png";
+      await byokPage.screenshot({ path: screenshotPath, fullPage: true }).catch(() => {});
+      console.error(`[agent-e2e] Captura del fallo: ${screenshotPath}`);
+      throw error;
+    } finally {
+      await byokContext.close().catch(() => {});
     }
   } catch (error) {
     throw error;

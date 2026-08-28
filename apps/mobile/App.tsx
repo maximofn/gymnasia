@@ -134,9 +134,18 @@ import {
 } from "./AiResponseReportModal";
 import {
   createFakeProviderResult,
+  DEFAULT_GOOGLE_MODEL,
   FAKE_PROVIDER_MODELS,
+  googleApiHeaders,
+  normalizeGoogleModel,
   providerCredential,
 } from "./agent/providerTransport";
+import {
+  maskApiKey,
+  readProviderApiKeys,
+  stripProviderApiKeys,
+  writeProviderApiKeys,
+} from "./agent/providerCredentials";
 import { LegalFooter } from "./LegalFooter";
 import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
 import { openExternalUrl } from "./openExternalUrl";
@@ -610,10 +619,9 @@ const LEGACY_SECURE_STORE_PREFIXES = [
 const DEFAULT_MODELS: Record<Provider, string> = {
   openai: "gpt-5-mini",
   anthropic: "claude-3-5-sonnet-latest",
-  google: "gemini-3-flash-preview",
+  google: DEFAULT_GOOGLE_MODEL,
 };
 const LEGACY_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
-const LEGACY_GOOGLE_DEFAULT_MODEL = "gemini-1.5-flash";
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
 const DEFAULT_OPENAI_REASONING_EFFORT: OpenAIReasoningEffort = "medium";
@@ -700,13 +708,13 @@ const BACKUP_APP_ID = "gymnasia";
 const BACKUP_SCHEMA_VERSION = 1;
 
 function normalizeProviderModel(provider: Provider, rawModel: string | null | undefined): string {
+  if (provider === "google") {
+    return normalizeGoogleModel(rawModel);
+  }
   const trimmed = (rawModel ?? "").trim();
   const model = trimmed || DEFAULT_MODELS[provider];
   if (provider === "openai" && model === LEGACY_OPENAI_DEFAULT_MODEL) {
     return DEFAULT_MODELS.openai;
-  }
-  if (provider === "google" && model === LEGACY_GOOGLE_DEFAULT_MODEL) {
-    return DEFAULT_MODELS.google;
   }
   return model;
 }
@@ -1684,10 +1692,7 @@ function emptyProviderApiKeys(): Record<Provider, string> {
 }
 
 function stripSensitiveStoreData(store: LocalStore): LocalStore {
-  return {
-    ...store,
-    keys: store.keys.map((item) => ({ ...item, api_key: "" })),
-  };
+  return stripProviderApiKeys(store);
 }
 
 function serializeStoreForAsyncStorage(
@@ -1727,13 +1732,7 @@ async function readProviderApiKeysFromSecureStore(
 ): Promise<Record<Provider, string>> {
   if (!secureStoreAvailable) return emptyProviderApiKeys();
 
-  const entries = await Promise.all(
-    PROVIDERS.map(async (provider) => {
-      const value = await SecureStore.getItemAsync(secureStoreKey(provider));
-      return [provider, (value ?? "").trim()] as const;
-    }),
-  );
-  return Object.fromEntries(entries) as Record<Provider, string>;
+  return readProviderApiKeys(SecureStore, PROVIDERS, secureStoreKey);
 }
 
 async function writeProviderApiKeysToSecureStore(
@@ -1742,17 +1741,7 @@ async function writeProviderApiKeysToSecureStore(
 ): Promise<void> {
   if (!secureStoreAvailable) return;
 
-  await Promise.all(
-    keys.map(async (item) => {
-      const key = secureStoreKey(item.provider);
-      const value = item.api_key.trim();
-      if (!value) {
-        await SecureStore.deleteItemAsync(key);
-        return;
-      }
-      await SecureStore.setItemAsync(key, value);
-    }),
-  );
+  await writeProviderApiKeys(SecureStore, keys, secureStoreKey);
 }
 
 async function clearLegacyStorageData(secureStoreAvailable: boolean): Promise<void> {
@@ -1850,13 +1839,6 @@ function backupFileName(now = new Date()): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
   return `gymnasia_backup_${stamp}.json`;
-}
-
-function maskApiKey(value: string): string {
-  const trimmed = value.trim();
-  if (!trimmed) return "Sin API key";
-  if (trimmed.length < 10) return `${trimmed.slice(0, 2)}***`;
-  return `${trimmed.slice(0, 4)}...${trimmed.slice(-4)}`;
 }
 
 function extractErrorMessage(payload: unknown, fallback: string): string {
@@ -2039,9 +2021,10 @@ async function fetchOpenAIModelsDirect(apiKey: string): Promise<OpenAIModelOptio
 async function fetchGoogleModelsDirect(apiKey: string): Promise<GoogleModelOption[]> {
   if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.google];
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`,
+    "https://generativelanguage.googleapis.com/v1beta/models",
     {
       method: "GET",
+      headers: googleApiHeaders(apiKey),
     },
   );
 
@@ -2243,8 +2226,8 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
       return { ok: true, severity: "success", message: PROVIDER_STATUS_COPY.success };
     } else {
       response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}?key=${encodeURIComponent(apiKey)}`,
-        { method: "GET" },
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}`,
+        { method: "GET", headers: googleApiHeaders(apiKey) },
       );
     }
 
@@ -3010,12 +2993,12 @@ async function callProviderChatAPI(
   }));
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(normalizeProviderModel("google", provider.model))}:generateContent?key=${encodeURIComponent(provider.api_key)}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(normalizeProviderModel("google", provider.model))}:generateContent`,
     {
       method: "POST",
-      headers: {
+      headers: googleApiHeaders(provider.api_key, {
         "Content-Type": "application/json",
-      },
+      }),
       body: JSON.stringify({
         contents: googleMessages,
         systemInstruction: { parts: [{ text: systemPrompt }] },
@@ -3329,7 +3312,7 @@ async function callProviderChatAPIWithTools(
       options?.onThinkingDelta?.(delta, streamedThinking);
     },
   };
-  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(normalizeProviderModel("google", provider.model))}:streamGenerateContent?alt=sse&key=${encodeURIComponent(provider.api_key)}`;
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(normalizeProviderModel("google", provider.model))}:streamGenerateContent?alt=sse`;
 
   const makeGoogleRequest = async (msgs: any[], includeTools: boolean) => {
     const body: any = {
@@ -3346,10 +3329,10 @@ async function callProviderChatAPIWithTools(
     if (Platform.OS === "web") {
       return streamGoogleRequestViaFetch(
         googleUrl,
-        {
+        googleApiHeaders(provider.api_key, {
           "Content-Type": "application/json",
           Accept: "text/event-stream",
-        },
+        }),
         body,
         streamHandlers,
         "No se pudo conectar con Google AI.",
@@ -3358,10 +3341,10 @@ async function callProviderChatAPIWithTools(
     }
     return streamGoogleRequestViaXHR(
       googleUrl,
-      {
+      googleApiHeaders(provider.api_key, {
         "Content-Type": "application/json",
         Accept: "text/event-stream",
-      },
+      }),
       body,
       streamHandlers,
       "No se pudo conectar con Google AI.",
@@ -3732,7 +3715,7 @@ async function callFoodEstimatorAPI(
       options?.onThinkingDelta?.(delta, streamedThinking);
     },
   };
-  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse&key=${encodeURIComponent(provider.api_key)}`;
+  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
   const makeGoogleRequest = async (contents: any[]) => {
     const body = {
       contents,
@@ -3748,10 +3731,10 @@ async function callFoodEstimatorAPI(
     if (Platform.OS === "web") {
       return streamGoogleRequestViaFetch(
         googleUrl,
-        {
+        googleApiHeaders(provider.api_key, {
           "Content-Type": "application/json",
           Accept: "text/event-stream",
-        },
+        }),
         body,
         streamHandlers,
         "No se pudo conectar con Google AI.",
@@ -3760,10 +3743,10 @@ async function callFoodEstimatorAPI(
     }
     return streamGoogleRequestViaXHR(
       googleUrl,
-      {
+      googleApiHeaders(provider.api_key, {
         "Content-Type": "application/json",
         Accept: "text/event-stream",
-      },
+      }),
       body,
       streamHandlers,
       "No se pudo conectar con Google AI.",
@@ -9955,10 +9938,10 @@ export default function App() {
     // Google — responseSchema does not support additionalProperties
     const { additionalProperties: _ap, ...googleSchema } = jsonSchema;
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${provider.api_key}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: googleApiHeaders(provider.api_key, { "Content-Type": "application/json" }),
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: extractPrompt }] }],
           generationConfig: {
@@ -18665,6 +18648,7 @@ export default function App() {
                     return (
                       <View
                         key={key.provider}
+                        testID={`provider-card-${key.provider}`}
                         style={{
                           borderWidth: 1,
                           borderColor: mobileTheme.color.borderSubtle,
@@ -18752,6 +18736,7 @@ export default function App() {
                         >
                           <Feather name="key" size={14} color="#778091" />
                           <TextInput
+                            testID={`provider-api-key-${key.provider}`}
                             style={{
                               flex: 1,
                               minHeight: 40,
@@ -18791,6 +18776,7 @@ export default function App() {
 
                         <View style={{ flexDirection: "row", gap: 8 }}>
                           <Pressable
+                            testID={`provider-save-${key.provider}`}
                             onPress={() => saveProviderApiKey(key.provider)}
                             disabled={isSavingProvider}
                             style={{
@@ -18808,6 +18794,7 @@ export default function App() {
                             </Text>
                           </Pressable>
                           <Pressable
+                            testID={`provider-delete-${key.provider}`}
                             onPress={() => {
                               if (!hasPersistedProviderApiKey) return;
                               openDeleteProviderApiKeyModal(key.provider);
@@ -18841,7 +18828,10 @@ export default function App() {
                           </Pressable>
                         </View>
 
-                        <Text style={{ color: providerConnectionDetailColor, fontSize: 12 }}>
+                        <Text
+                          testID={`provider-status-detail-${key.provider}`}
+                          style={{ color: providerConnectionDetailColor, fontSize: 12 }}
+                        >
                           {connectionStatus.detail}
                         </Text>
 
@@ -22692,6 +22682,7 @@ export default function App() {
             </View>
 
             <Pressable
+              testID="provider-delete-confirm"
               onPress={confirmDeleteProviderApiKey}
               style={{
                 width: "100%",

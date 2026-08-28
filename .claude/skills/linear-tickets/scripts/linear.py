@@ -72,7 +72,8 @@ def load_api_key() -> str:
     if env_value:
         return env_value
 
-    env_path = repo_root() / ".env"
+    configured_env_path = os.environ.get("LINEAR_ENV_FILE", "").strip()
+    env_path = Path(configured_env_path) if configured_env_path else repo_root() / ".env"
     if not env_path.exists():
         sys.exit(f"No existe {env_path}")
     for raw in env_path.read_text().splitlines():
@@ -676,6 +677,104 @@ def cmd_link(args):
         print(f"{args.id} bloqueado por {blocker_id}")
 
 
+def _issue_relations(issue_uuid):
+    """Devuelve relaciones salientes y entrantes con ambos extremos resueltos."""
+    gql = """
+    query IssueRelations($id: String!) {
+      issue(id: $id) {
+        relations {
+          nodes {
+            id type
+            issue { id identifier }
+            relatedIssue { id identifier }
+          }
+        }
+        inverseRelations {
+          nodes {
+            id type
+            issue { id identifier }
+            relatedIssue { id identifier }
+          }
+        }
+      }
+    }
+    """
+    issue = query(gql, {"id": issue_uuid})["issue"]
+    return issue["relations"]["nodes"] + issue["inverseRelations"]["nodes"]
+
+
+def cmd_unlink(args):
+    """Quita relaciones `BLOCKER blocks TARGET`; sin --apply solo previsualiza."""
+    target_uuid = resolve_issue_uuid(args.id)
+    relations = _issue_relations(target_uuid)
+    matches = []
+
+    for blocker_id in args.blocked_by:
+        blocker_uuid = resolve_issue_uuid(blocker_id)
+        relation = next(
+            (
+                item
+                for item in relations
+                if item["type"] == "blocks"
+                and item["issue"]["id"] == blocker_uuid
+                and item["relatedIssue"]["id"] == target_uuid
+            ),
+            None,
+        )
+        if relation is None:
+            sys.exit(f"No existe el bloqueo {blocker_id} -> {args.id}; no se ha borrado nada.")
+        matches.append((blocker_id, relation["id"]))
+
+    if not args.apply:
+        for blocker_id, _relation_id in matches:
+            print(f"[dry-run] quitaría el bloqueo {blocker_id} -> {args.id}")
+        print("Repite con --apply para borrar las relaciones.")
+        return
+
+    gql = """
+    mutation DeleteIssueRelation($id: String!) {
+      issueRelationDelete(id: $id) { success }
+    }
+    """
+    for blocker_id, relation_id in matches:
+        res = query(gql, {"id": relation_id})["issueRelationDelete"]
+        if not res["success"]:
+            sys.exit(f"No se pudo quitar el bloqueo {blocker_id} -> {args.id}.")
+        print(f"Bloqueo eliminado: {blocker_id} -> {args.id}")
+
+
+def cmd_relate(args):
+    """Crea relaciones simétricas `related` sin duplicarlas."""
+    issue_uuid = resolve_issue_uuid(args.id)
+    related_uuid = resolve_issue_uuid(args.with_id)
+    if issue_uuid == related_uuid:
+        sys.exit("Un issue no puede relacionarse consigo mismo.")
+
+    for item in _issue_relations(issue_uuid):
+        endpoints = {item["issue"]["id"], item["relatedIssue"]["id"]}
+        if item["type"] == "related" and endpoints == {issue_uuid, related_uuid}:
+            print(f"{args.id} ya está relacionado con {args.with_id}")
+            return
+
+    gql = """
+    mutation RelateIssues($input: IssueRelationCreateInput!) {
+      issueRelationCreate(input: $input) {
+        success
+        issueRelation { id type }
+      }
+    }
+    """
+    inp = {
+        "issueId": issue_uuid,
+        "relatedIssueId": related_uuid,
+        "type": "related",
+    }
+    res = query(gql, {"input": inp})["issueRelationCreate"]
+    if not res["success"]:
+        sys.exit(f"No se pudo relacionar {args.id} con {args.with_id}.")
+    print(f"Relacionados: {args.id} <-> {args.with_id}")
+
+
 def main():
     p = argparse.ArgumentParser(description="Cliente Linear GraphQL (leer/crear/modificar)")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -766,6 +865,29 @@ def main():
         help="identifier bloqueante; se puede repetir",
     )
     plink.set_defaults(func=cmd_link)
+
+    punlink = sub.add_parser(
+        "unlink",
+        help="quitar dependencias; previsualiza salvo que se pase --apply",
+    )
+    punlink.add_argument("id", help="issue bloqueado, p.ej. GYM-12")
+    punlink.add_argument(
+        "--blocked-by",
+        action="append",
+        required=True,
+        help="identifier bloqueante; se puede repetir",
+    )
+    punlink.add_argument(
+        "--apply",
+        action="store_true",
+        help="borrar realmente las relaciones encontradas",
+    )
+    punlink.set_defaults(func=cmd_unlink)
+
+    prelate = sub.add_parser("relate", help="relacionar dos issues sin crear un bloqueo")
+    prelate.add_argument("id", help="primer issue, p.ej. GYM-12")
+    prelate.add_argument("--with", dest="with_id", required=True, help="segundo issue")
+    prelate.set_defaults(func=cmd_relate)
 
     args = p.parse_args()
     args.func(args)

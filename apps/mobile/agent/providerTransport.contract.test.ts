@@ -30,4 +30,9 @@ describe("provider transport contract", () => {
     expect(appSource).not.toContain("DEV_PROVIDER_API_KEY");
     expect(appSource).toContain("providerCredential(configured.api_key, IS_FAKE_PROVIDER_MODE)");
   });
+
+  it("never puts Google API keys in request URLs", () => {
+    expect(appSource).not.toMatch(/generativelanguage\.googleapis\.com[^"`\n]*(?:\?|&)key=/);
+    expect(appSource.match(/googleApiHeaders\(/g)?.length).toBeGreaterThanOrEqual(6);
+  });
 });
