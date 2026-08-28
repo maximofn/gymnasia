@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-tumbado-barra-v3",
+  "name": "Extensión de tríceps tumbado con barra, variante 3",
+  "image_male": "images/extension-triceps-tumbado-barra-v3-male.webp",
+  "image_female": "images/extension-triceps-tumbado-barra-v3-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos", "hombros"],
+  "equipment": "barra y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con la cabeza cerca del extremo del banco y sostén la barra con agarre prono. Lleva los brazos superiores ligeramente hacia atrás y flexiona los codos para bajar la barra justo detrás de la coronilla. Extiende los codos manteniendo los hombros estables."
+}

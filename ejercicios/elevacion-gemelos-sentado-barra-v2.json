@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-gemelos-sentado-barra-v2",
+  "name": "Elevación de gemelos sentado con barra, variante 2",
+  "image_male": "images/elevacion-gemelos-sentado-barra-v2-male.webp",
+  "image_female": "images/elevacion-gemelos-sentado-barra-v2-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["sóleo"],
+  "equipment": "barra, banco y plataforma",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate con la barra apoyada sobre los muslos cerca de las rodillas y coloca los antepiés en una plataforma baja. Deja bajar los talones hasta notar el estiramiento y después elévalos todo lo posible. Mantén las rodillas estables y controla el descenso."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-tumbado-agarre-cerrado-barra",
+  "name": "Extensión de tríceps tumbado con barra y agarre cerrado",
+  "image_male": "images/extension-triceps-tumbado-agarre-cerrado-barra-male.webp",
+  "image_female": "images/extension-triceps-tumbado-agarre-cerrado-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazos", "hombros"],
+  "equipment": "barra y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba y sostén la barra sobre el pecho con un agarre cerrado y los brazos extendidos. Mantén los brazos superiores verticales y flexiona solo los codos para acercar la barra a la frente. Extiende de nuevo los codos sin abrirlos hacia los lados."
+}

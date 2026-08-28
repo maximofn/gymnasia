@@ -620,6 +620,33 @@
         {"source_id": "1461", "id": "sentadilla-completa-barra-vista-trasera", "action": "create", "difficulty": "intermediate", "view": "rear view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "1462", "id": "sentadilla-completa-barra-vista-lateral", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 24,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0055", "id": "press-banca-agarre-cerrado-barra-v2", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0056", "id": "extension-triceps-tumbado-agarre-cerrado-barra", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0057", "id": "extension-triceps-tumbado-barra-v2", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0059", "id": "curl-predicador-tumbado-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0061", "id": "extension-triceps-tumbado-barra-v3", "action": "create", "difficulty": "intermediate", "view": "slightly elevated side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0075", "id": "elevacion-deltoide-posterior-barra", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0077", "id": "zancada-atras-barra-v2", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0079", "id": "curl-muneca-inverso-sentado-barra-v2", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1257", "id": "press-inclinado-agarre-inverso-barra-v2", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0082", "id": "curl-muneca-inverso-sentado-barra", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1371", "id": "elevacion-gemelos-sentado-barra-v2", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0089", "id": "curl-concentrado-bilateral-barra-sentado", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0097", "id": "sentadilla-lateral-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2800", "id": "elevacion-pierna-alterna-sentado-barra-v2", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2810", "id": "sentadilla-dividida-barra-v2", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0108", "id": "elevacion-gemelos-de-pie-barra-v2", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0110", "id": "curl-biceps-inverso-barra-de-pie", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0111", "id": "elevacion-gemelos-balanceo-barra", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0119", "id": "remo-menton-barra-v2", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0121", "id": "remo-menton-barra-v3", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

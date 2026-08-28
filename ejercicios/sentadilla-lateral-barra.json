@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-lateral-barra",
+  "name": "Sentadilla lateral con barra",
+  "image_male": "images/sentadilla-lateral-barra-male.webp",
+  "image_female": "images/sentadilla-lateral-barra-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "aductores"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Coloca la barra sobre la espalda y adopta una postura más ancha que los hombros. Desplaza la cadera hacia un lado flexionando esa rodilla mientras la pierna contraria permanece extendida y ambos pies apoyados. Empuja el suelo para volver al centro y repite hacia el otro lado."
+}

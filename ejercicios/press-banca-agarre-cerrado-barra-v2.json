@@ -1,0 +1,11 @@
+{
+  "id": "press-banca-agarre-cerrado-barra-v2",
+  "name": "Press de banca con barra y agarre cerrado, variante 2",
+  "image_male": "images/press-banca-agarre-cerrado-barra-v2-male.webp",
+  "image_female": "images/press-banca-agarre-cerrado-barra-v2-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombro anterior"],
+  "equipment": "barra y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano con los pies firmes y toma la barra con las manos a la anchura de los hombros. Bájala hacia la zona media del pecho manteniendo los codos cerca del torso. Empuja verticalmente hasta extender los brazos sin perder la estabilidad de los hombros."
+}
