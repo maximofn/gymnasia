@@ -1,0 +1,11 @@
+{
+  "id": "dominadas-en-banco",
+  "name": "Dominadas en banco",
+  "image_male": "images/dominadas-en-banco-male.webp",
+  "image_female": "images/dominadas-en-banco-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "banco y barra baja",
+  "difficulty": "intermediate",
+  "instructions": "Colócate bajo una barra horizontal baja con los talones apoyados y el cuerpo recto. Agarra la barra algo más abierta que los hombros y tira del pecho hacia ella juntando los omóplatos. Baja con control hasta extender los brazos sin dejar caer las caderas."
+}

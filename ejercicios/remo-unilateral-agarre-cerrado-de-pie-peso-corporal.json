@@ -1,0 +1,11 @@
+{
+  "id": "remo-unilateral-agarre-cerrado-de-pie-peso-corporal",
+  "name": "Remo unilateral de pie con agarre cerrado y peso corporal",
+  "image_male": "images/remo-unilateral-agarre-cerrado-de-pie-peso-corporal-male.webp",
+  "image_female": "images/remo-unilateral-agarre-cerrado-de-pie-peso-corporal-female.webp",
+  "muscle_group": "espalda superior",
+  "secondary_muscles": ["bíceps", "antebrazos", "core"],
+  "equipment": "soporte fijo",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta con una mano un soporte fijo a la altura del pecho y adelanta los pies para reclinar el cuerpo en bloque. Tira del pecho hacia la mano llevando el codo pegado al costado y evitando que las caderas roten. Extiende el brazo con control antes de cambiar de lado."
+}

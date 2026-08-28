@@ -1,0 +1,11 @@
+{
+  "id": "plancha-lateral-inclinada-peso-corporal",
+  "name": "Plancha lateral inclinada con peso corporal",
+  "image_male": "images/plancha-lateral-inclinada-peso-corporal-male.webp",
+  "image_female": "images/plancha-lateral-inclinada-peso-corporal-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": ["oblicuos", "hombros"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Apoya un antebrazo sobre una superficie baja y estable, justo bajo el hombro, y extiende las piernas con los pies apilados. Eleva las caderas hasta formar una línea recta de cabeza a talones. Mantén el abdomen activo y evita que el tronco rote o se hunda."
+}

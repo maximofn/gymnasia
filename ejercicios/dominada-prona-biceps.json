@@ -1,0 +1,11 @@
+{
+  "id": "dominada-prona-biceps",
+  "name": "Dominada prona para bíceps",
+  "image_male": "images/dominada-prona-biceps-male.webp",
+  "image_female": "images/dominada-prona-biceps-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["espalda", "antebrazos", "hombros"],
+  "equipment": "barra de dominadas",
+  "difficulty": "intermediate",
+  "instructions": "Cuélgate con agarre prono a la anchura de los hombros. Inicia el movimiento bajando las escápulas y flexiona los codos para acercar el pecho a la barra sin balancearte. Haz una pausa arriba y baja con control hasta recuperar la extensión completa."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "curl-concentrado-biceps-con-pierna",
+  "name": "Curl concentrado de bíceps con la pierna",
+  "image_male": "images/curl-concentrado-biceps-con-pierna-male.webp",
+  "image_female": "images/curl-concentrado-biceps-con-pierna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate con las piernas separadas, apoya el codo de trabajo en la cara interna del muslo y pasa la mano bajo el muslo contrario, cerca de la rodilla. Relaja esa pierna y elévala flexionando el codo como resistencia corporal. Baja lentamente y repite antes de cambiar de brazo."
+}

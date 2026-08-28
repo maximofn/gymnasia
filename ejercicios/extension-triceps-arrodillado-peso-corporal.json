@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-arrodillado-peso-corporal",
+  "name": "Extensión de tríceps arrodillado con peso corporal",
+  "image_male": "images/extension-triceps-arrodillado-peso-corporal-male.webp",
+  "image_female": "images/extension-triceps-arrodillado-peso-corporal-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros", "pecho", "core"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Arrodíllate y coloca las manos en el suelo por delante de los hombros, manteniendo el cuerpo alineado desde las rodillas. Flexiona los codos hacia delante hasta acercar los antebrazos al suelo sin abrirlos. Extiende los codos con los tríceps para regresar, manteniendo quietas las caderas."
+}
