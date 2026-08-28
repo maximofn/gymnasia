@@ -186,7 +186,7 @@
         {
           "id": "GYM-198",
           "title": "Generar y validar el Android App Bundle de producción",
-          "state": "todo",
+          "state": "done",
           "summary": "Generar un AAB reproducible, firmado y trazable tras pasar las pruebas e inspeccionar manifest, permisos, SDK, versión, package name y componentes excluidos.",
           "dependsOn": [
             "GYM-188",
