@@ -1,0 +1,11 @@
+{
+  "id": "remo-unilateral-de-pie-peso-corporal",
+  "name": "Remo unilateral de pie con peso corporal",
+  "image_male": "images/remo-unilateral-de-pie-peso-corporal-male.webp",
+  "image_female": "images/remo-unilateral-de-pie-peso-corporal-female.webp",
+  "muscle_group": "espalda superior",
+  "secondary_muscles": ["bíceps", "antebrazos", "core"],
+  "equipment": "soporte fijo",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta una barra fija con una mano y reclina el cuerpo manteniendo una línea recta de cabeza a talones. Tira acercando el hombro y el pecho al soporte, con el codo ligeramente abierto para enfatizar la espalda superior. Regresa despacio sin permitir que el torso gire."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-salto-pies-juntos",
+  "name": "Sentadilla con salto y pies juntos",
+  "image_male": "images/sentadilla-salto-pies-juntos-male.webp",
+  "image_female": "images/sentadilla-salto-pies-juntos-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Desciende a una sentadilla con los pies a la anchura de los hombros y salta de forma explosiva extendiendo caderas, rodillas y tobillos. Junta los pies durante el vuelo y aterriza suavemente sobre los antepiés. Amortigua la caída y vuelve a separar los pies para la siguiente repetición."
+}

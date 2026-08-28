@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-tumbado-lateral-peso-corporal",
+  "name": "Curl de bíceps tumbado de lado con peso corporal",
+  "image_male": "images/curl-biceps-tumbado-lateral-peso-corporal-male.webp",
+  "image_female": "images/curl-biceps-tumbado-lateral-peso-corporal-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "core"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate de lado con las piernas apiladas y el cuerpo estable. Mantén el brazo superior pegado al torso y flexiona el codo llevando la mano hacia el hombro mientras contraes el bíceps. Baja lentamente el antebrazo sin rotar el tronco y repite al otro lado."
+}

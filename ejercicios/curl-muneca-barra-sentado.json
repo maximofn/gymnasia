@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-barra-sentado",
+  "name": "Curl de muñeca sentado con barra",
+  "image_male": "images/curl-muneca-barra-sentado-male.webp",
+  "image_female": "images/curl-muneca-barra-sentado-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["bíceps", "braquial"],
+  "equipment": "barra y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate con los antebrazos apoyados sobre los muslos y toma la barra con las palmas hacia arriba. Deja que la barra ruede de forma controlada hacia los dedos y vuelve a cerrarlos antes de flexionar las muñecas. Mantén antebrazos y codos inmóviles durante todo el recorrido."
+}

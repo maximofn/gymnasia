@@ -1,0 +1,11 @@
+{
+  "id": "remo-agarre-cerrado-de-pie-peso-corporal",
+  "name": "Remo de pie con agarre cerrado y peso corporal",
+  "image_male": "images/remo-agarre-cerrado-de-pie-peso-corporal-male.webp",
+  "image_female": "images/remo-agarre-cerrado-de-pie-peso-corporal-female.webp",
+  "muscle_group": "espalda superior",
+  "secondary_muscles": ["bíceps", "antebrazos"],
+  "equipment": "soporte fijo",
+  "difficulty": "beginner",
+  "instructions": "Agarra con ambas manos un soporte fijo a la altura del pecho y camina los pies hacia delante para reclinarte con el cuerpo recto. Tira del torso hacia el soporte manteniendo los codos cerca de las costillas y juntando los omóplatos. Vuelve a extender los brazos sin doblar las caderas."
+}

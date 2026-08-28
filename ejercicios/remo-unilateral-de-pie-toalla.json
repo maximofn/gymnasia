@@ -1,0 +1,11 @@
+{
+  "id": "remo-unilateral-de-pie-toalla",
+  "name": "Remo unilateral de pie con toalla",
+  "image_male": "images/remo-unilateral-de-pie-toalla-male.webp",
+  "image_female": "images/remo-unilateral-de-pie-toalla-female.webp",
+  "muscle_group": "espalda superior",
+  "secondary_muscles": ["bíceps", "antebrazos", "core"],
+  "equipment": "toalla",
+  "difficulty": "intermediate",
+  "instructions": "Ancla una toalla a la altura del pecho, toma un extremo con una mano y reclina el cuerpo con el brazo extendido. Tira de la toalla llevando el codo hacia atrás y acercando el pecho al anclaje sin rotar la pelvis. Extiende el brazo con control y repite al otro lado."
+}

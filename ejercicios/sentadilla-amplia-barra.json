@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-amplia-barra",
+  "name": "Sentadilla amplia con barra",
+  "image_male": "images/sentadilla-amplia-barra-male.webp",
+  "image_female": "images/sentadilla-amplia-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "gemelos"],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Coloca la barra sobre los trapecios y separa los pies más que los hombros, con las puntas ligeramente hacia fuera. Activa el core y desciende llevando las caderas atrás mientras las rodillas siguen la dirección de los pies. Empuja el suelo con todo el pie para volver arriba sin perder la espalda neutra."
+}

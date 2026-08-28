@@ -1,0 +1,11 @@
+{
+  "id": "remo-sentadilla-toalla",
+  "name": "Remo en sentadilla con toalla",
+  "image_male": "images/remo-sentadilla-toalla-male.webp",
+  "image_female": "images/remo-sentadilla-toalla-female.webp",
+  "muscle_group": "espalda superior",
+  "secondary_muscles": ["bíceps", "hombros", "cuádriceps"],
+  "equipment": "toalla",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta una toalla anclada a la altura del pecho y reclina el cuerpo con los brazos extendidos. Desciende a una sentadilla manteniendo el pecho elevado y tira simultáneamente de la toalla hacia las costillas. Extiende brazos y piernas de forma controlada para volver al inicio."
+}

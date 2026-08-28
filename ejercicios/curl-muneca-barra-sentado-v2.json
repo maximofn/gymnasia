@@ -1,0 +1,11 @@
+{
+  "id": "curl-muneca-barra-sentado-v2",
+  "name": "Curl de muñeca sentado con barra, variante 2",
+  "image_male": "images/curl-muneca-barra-sentado-v2-male.webp",
+  "image_female": "images/curl-muneca-barra-sentado-v2-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": ["flexores de muñeca", "agarre"],
+  "equipment": "barra y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate con los pies firmes y apoya los antebrazos sobre los muslos, dejando las muñecas más allá de las rodillas. Sujeta la barra con agarre supino y elévala flexionando únicamente las muñecas. Haz una pausa arriba y baja con control sin levantar los antebrazos."
+}

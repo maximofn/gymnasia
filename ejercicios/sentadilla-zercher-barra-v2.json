@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-zercher-barra-v2",
+  "name": "Sentadilla Zercher con barra, variante 2",
+  "image_male": "images/sentadilla-zercher-barra-v2-male.webp",
+  "image_female": "images/sentadilla-zercher-barra-v2-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "isquiotibiales", "gemelos", "core"],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Sostén la barra en los pliegues de los codos con las manos juntas y el pecho elevado. Separa los pies a la anchura de los hombros y desciende entre las caderas manteniendo las rodillas alineadas con los pies. Empuja con todo el pie para levantarte sin redondear la espalda."
+}

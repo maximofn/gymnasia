@@ -1,0 +1,11 @@
+{
+  "id": "fondo-banco-en-suelo",
+  "name": "Fondo de banco con apoyo en el suelo",
+  "image_male": "images/fondo-banco-en-suelo-male.webp",
+  "image_female": "images/fondo-banco-en-suelo-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombros"],
+  "equipment": "banco",
+  "difficulty": "beginner",
+  "instructions": "Apoya las manos en el borde de un banco detrás de las caderas y coloca los talones en el suelo. Desliza el cuerpo delante del banco y baja flexionando los codos hacia atrás hasta una profundidad cómoda. Extiende los brazos para subir manteniendo la espalda cerca del banco."
+}

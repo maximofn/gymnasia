@@ -1,0 +1,11 @@
+{
+  "id": "body-up-triceps",
+  "name": "Body-up para tríceps",
+  "image_male": "images/body-up-triceps-male.webp",
+  "image_female": "images/body-up-triceps-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombros", "core"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Adopta una plancha sobre antebrazos y puntas de los pies, con el cuerpo en línea recta. Presiona las palmas contra el suelo y extiende ambos codos para elevarte hasta apoyar las manos. Flexiona de nuevo los codos y vuelve a los antebrazos sin mover las caderas."
+}

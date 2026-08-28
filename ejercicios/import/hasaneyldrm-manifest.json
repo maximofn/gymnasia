@@ -647,6 +647,33 @@
         {"source_id": "0119", "id": "remo-menton-barra-v2", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "0121", "id": "remo-menton-barra-v3", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 25,
+      "size": 20,
+      "status": "approved",
+      "records": [
+        {"source_id": "0124", "id": "sentadilla-amplia-barra", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0126", "id": "curl-muneca-barra-sentado", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0125", "id": "curl-muneca-barra-sentado-v2", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0127", "id": "sentadilla-zercher-barra-v2", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1399", "id": "fondo-banco-en-suelo", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3019", "id": "dominadas-en-banco", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1770", "id": "curl-concentrado-biceps-con-pierna", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0139", "id": "dominada-supina-biceps-agarre-estrecho", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0140", "id": "dominada-prona-biceps", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0137", "id": "body-up-triceps", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3543", "id": "sentadilla-salto-pies-juntos", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3544", "id": "plancha-lateral-inclinada-peso-corporal", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1771", "id": "extension-triceps-arrodillado-peso-corporal", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1769", "id": "curl-biceps-tumbado-lateral-peso-corporal", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3167", "id": "remo-sentadilla-toalla", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1373", "id": "elevacion-gemelos-de-pie-peso-corporal", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3156", "id": "remo-unilateral-agarre-cerrado-de-pie-peso-corporal", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3158", "id": "remo-agarre-cerrado-de-pie-peso-corporal", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3162", "id": "remo-unilateral-de-pie-peso-corporal", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3161", "id": "remo-unilateral-de-pie-toalla", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "id": "dominada-supina-biceps-agarre-estrecho",
+  "name": "Dominada supina estrecha para bíceps",
+  "image_male": "images/dominada-supina-biceps-agarre-estrecho-male.webp",
+  "image_female": "images/dominada-supina-biceps-agarre-estrecho-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "espalda", "hombros"],
+  "equipment": "barra de dominadas",
+  "difficulty": "intermediate",
+  "instructions": "Cuélgate de la barra con las palmas hacia ti y las manos más estrechas que los hombros. Activa abdomen y escápulas, y tira llevando el pecho hacia la barra mientras los codos bajan junto al torso. Desciende de forma controlada hasta extender los brazos."
+}

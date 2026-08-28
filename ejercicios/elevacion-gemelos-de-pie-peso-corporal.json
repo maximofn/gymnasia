@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-gemelos-de-pie-peso-corporal",
+  "name": "Elevación de gemelos de pie con peso corporal",
+  "image_male": "images/elevacion-gemelos-de-pie-peso-corporal-male.webp",
+  "image_female": "images/elevacion-gemelos-de-pie-peso-corporal-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["tobillos", "pies"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies paralelos y apoya una mano en una superficie estable. Eleva lentamente los talones hasta quedar sobre los antepiés, manteniendo rodillas y caderas alineadas. Haz una pausa arriba y baja con control hasta apoyar de nuevo los talones."
+}
