@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "locale": "es-ES",
+  "productDetails": {
+    "appName": "Gymnasia",
+    "shortDescription": "Agente de IA para entrenamiento y nutrición, con tu propia clave",
+    "fullDescription": "Gymnasia pone una capa de producto alrededor del modelo de inteligencia artificial que tú eliges: contexto, herramientas para actuar sobre tus datos, identificación visible como IA, guardarraíles sanitarios y denuncia de respuestas.\n\nTú aportas tu propia clave de OpenAI, Anthropic o Google. Gymnasia no incluye acceso a esos servicios ni envía tu clave a servidores propios; la utiliza para autenticar las peticiones ante el proveedor elegido. Sin una clave configurada, las funciones de seguimiento siguen disponibles.\n\nCon Gymnasia puedes:\n\n• Hablar con Gymnasia Coach sobre entrenamiento y nutrición.\n• Crear rutinas, registrar series y controlar los descansos.\n• Organizar comidas y estimar alimentos mediante texto o fotografías.\n• Registrar peso, composición corporal y otras medidas.\n• Consultar tu progreso y mantener los datos principales en el dispositivo.\n• Exportar una copia de seguridad manual de tus datos.\n\nLas respuestas del agente las genera un modelo de terceros y pueden contener errores. Gymnasia aplica límites de seguridad, identifica de forma permanente las superficies de IA y permite denunciar una respuesta desde la propia aplicación.\n\nGymnasia no es un dispositivo médico, no diagnostica, trata, cura ni previene ninguna enfermedad y no sustituye el asesoramiento de un profesional sanitario. Sus cálculos y estimaciones no son mediciones clínicas. Consulta a un profesional cualificado antes de tomar decisiones sobre lesiones, enfermedades, medicación o restricciones alimentarias."
+  },
+  "classification": {
+    "appOrGame": "app",
+    "category": "Salud y fitness",
+    "preferredTags": [
+      "Entrenamientos",
+      "Nutrición",
+      "Seguimiento de actividad",
+      "Control del peso",
+      "Asistente personal"
+    ]
+  },
+  "contacts": {
+    "supportEmail": "maximofn@maximofn.com",
+    "website": "https://gymnasia.maximofn.com",
+    "privacyPolicy": "https://gymnasia.maximofn.com/privacidad"
+  },
+  "audience": {
+    "ageGroups": ["16-17", "18+"],
+    "designedForChildren": false,
+    "restrictMinorAccess": false
+  },
+  "ads": false,
+  "featureGraphicMessage": "IA para entrenamiento y nutrición, bajo tu control",
+  "assets": {
+    "icon": {
+      "path": "docs/store/google-play/assets/icon-512.png",
+      "width": 512,
+      "height": 512,
+      "pngColorType": 6,
+      "maxBytes": 1048576,
+      "aiGenerated": true,
+      "altText": "Icono negro de Gymnasia con un rayo verde neón en el centro"
+    },
+    "featureGraphic": {
+      "path": "docs/store/google-play/assets/feature-graphic-1024x500.png",
+      "width": 1024,
+      "height": 500,
+      "pngColorType": 2,
+      "aiGenerated": true,
+      "altText": "Gráfico oscuro de Gymnasia con un rayo verde y el mensaje IA para entrenamiento y nutrición, bajo tu control"
+    },
+    "screenshots": [
+      {
+        "id": "chat",
+        "rawPath": "docs/store/google-play/assets/raw/01-chat.png",
+        "path": "docs/store/google-play/assets/screenshots/01-chat.png",
+        "caption": "Habla con un agente de IA con límites claros",
+        "altText": "Chat de Gymnasia Coach con identificación como IA, una respuesta sobre entrenamiento y la acción Denunciar",
+        "aiGenerated": true
+      },
+      {
+        "id": "home",
+        "rawPath": "docs/store/google-play/assets/raw/02-inicio.png",
+        "path": "docs/store/google-play/assets/screenshots/02-inicio.png",
+        "caption": "Entrenamiento, dieta y progreso en un solo lugar",
+        "altText": "Pantalla de inicio de Gymnasia con rutina destacada, progreso semanal y resumen de dieta y medidas",
+        "aiGenerated": false
+      },
+      {
+        "id": "workout",
+        "rawPath": "docs/store/google-play/assets/raw/03-sesion.png",
+        "path": "docs/store/google-play/assets/screenshots/03-sesion.png",
+        "caption": "Registra cada serie mientras entrenas",
+        "altText": "Sesión activa de Gymnasia con un ejercicio personalizado, series, peso, repeticiones y descanso",
+        "aiGenerated": false
+      },
+      {
+        "id": "food-estimator",
+        "rawPath": "docs/store/google-play/assets/raw/04-estimador.png",
+        "path": "docs/store/google-play/assets/screenshots/04-estimador.png",
+        "caption": "Estima comidas mediante texto o fotografías",
+        "altText": "Estimador de comida de Gymnasia con identificación como IA y una estimación nutricional ficticia",
+        "aiGenerated": true
+      },
+      {
+        "id": "measures",
+        "rawPath": "docs/store/google-play/assets/raw/05-medidas.png",
+        "path": "docs/store/google-play/assets/screenshots/05-medidas.png",
+        "caption": "Sigue tus medidas en tu dispositivo",
+        "altText": "Panel de medidas de Gymnasia con valores sintéticos y un gráfico de evolución",
+        "aiGenerated": false
+      },
+      {
+        "id": "provider",
+        "rawPath": "docs/store/google-play/assets/raw/06-proveedor.png",
+        "path": "docs/store/google-play/assets/screenshots/06-proveedor.png",
+        "caption": "Elige proveedor y usa tu propia clave",
+        "altText": "Configuración de proveedor de IA en Gymnasia con la credencial completamente oculta",
+        "aiGenerated": false
+      }
+    ]
+  }
+}

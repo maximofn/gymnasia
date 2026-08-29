@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v6
-effective_date: 2026-08-24
+version: 2026-08-v7
+effective_date: 2026-08-29
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -281,9 +281,10 @@ desde tu cuenta con él. Gymnasia no puede borrarlos por ti.
 
 ## Menores {#menores}
 
-Gymnasia no está dirigida a menores de 14 años y no verifica la edad de quien la usa.
-Si eres menor de edad, usa la aplicación con el consentimiento y la supervisión de una
-persona responsable de ti, especialmente en lo relativo a entrenamiento y alimentación.
+Gymnasia está dirigida a personas de **16 años o más** y no está diseñada para menores
+de 16 años. La aplicación no verifica la edad de quien la usa. Si tienes 16 o 17 años,
+úsala con el consentimiento y la supervisión de una persona responsable de ti,
+especialmente en lo relativo a entrenamiento y alimentación.
 
 ## Tus derechos {#derechos}
 

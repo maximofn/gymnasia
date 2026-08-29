@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v6
-effective_date: 2026-08-24
+version: 2026-08-v7
+effective_date: 2026-08-29
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -270,9 +270,10 @@ account with them. Gymnasia cannot delete it on your behalf.
 
 ## Minors {#menores}
 
-Gymnasia is not aimed at children under 14 and does not verify the age of its users. If
-you are a minor, use the app with the consent and supervision of someone responsible for
-you, particularly regarding training and nutrition.
+Gymnasia is intended for people aged **16 or older** and is not designed for children
+under 16. The app does not verify the age of its users. If you are 16 or 17, use it with
+the consent and supervision of someone responsible for you, particularly regarding
+training and nutrition.
 
 ## Your rights {#derechos}
 

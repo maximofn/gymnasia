@@ -12847,7 +12847,7 @@ export default function App() {
                 {showByokExplain ? (
                   <View style={{ backgroundColor: "rgba(255,255,255,0.04)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
                     <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
-                      BYOK significa "Bring Your Own Key" (Trae Tu Propia Clave). Gymnasia no incluye acceso a ningún proveedor de IA. Tú proporcionas tu propia API key de OpenAI, Anthropic o Google, y las conversaciones se envían directamente desde tu dispositivo al proveedor. Tu clave nunca sale de tu teléfono.
+                      BYOK significa "Bring Your Own Key" (Trae Tu Propia Clave). Gymnasia no incluye acceso a ningún proveedor de IA. Tú proporcionas tu propia API key de OpenAI, Anthropic o Google, y las conversaciones se envían directamente desde tu dispositivo al proveedor. Gymnasia no envía tu clave a servidores propios; la usa únicamente para autenticar las peticiones ante el proveedor que eliges.
                     </Text>
                   </View>
                 ) : null}

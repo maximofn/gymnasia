@@ -1,12 +1,14 @@
-# Declaraciones de Google Play — respuestas preparadas (GYM-190)
+# Declaraciones de Google Play — respuestas preparadas
 
-Respuestas listas para copiar en Play Console cuando la cuenta exista (GYM-194 y
-GYM-195). **Este documento no se rellena en la consola dentro de GYM-190**: su alcance
-es dejarlas escritas, verificadas contra el código y coherentes con la política.
+Respuestas listas para copiar en Play Console después de GYM-194 (ticket para crear y
+verificar la cuenta de Google Play Console) y GYM-195 (ticket para crear Gymnasia en
+Play Console e importar la clave de firma de EAS). GYM-190 (ticket para publicar la
+política de privacidad y preparar las declaraciones de salud) dejó la primera versión;
+este documento conserva las respuestas verificadas contra el código y la política.
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v6` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v7` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -21,43 +23,44 @@ es dejarlas escritas, verificadas contra el código y coherentes con la polític
 
 ### Interpretación aplicada
 
-Google define **Collected** como los datos que salen del dispositivo. Desde
-GYM-189 (ticket para añadir denuncia dentro de la app para respuestas generadas por IA),
-el backend opcional de incidencias recibe, tras vista previa y confirmación, la pregunta
-anterior, la respuesta denunciada y detalles opcionales. Ese contenido puede incluir
-mensajes y datos de salud. También trata la IP de conexión para limitar abusos: el Worker
-la convierte inmediatamente en un HMAC, conserva solo ese valor seudónimo y lo elimina
-en un máximo de 48 horas.
+Google define **Collected** como los datos que salen del dispositivo, aunque viajen
+directamente a un tercero y Gymnasia no los reciba. Cuando el usuario activa una función
+de IA, el proveedor elegido recibe la clave BYOK, los mensajes necesarios para responder,
+los resultados de herramientas que el usuario autoriza y, en el estimador, hasta seis
+fotografías. Ese contexto puede incluir datos personales, de salud, entrenamiento,
+nutrición y medidas.
 
-Sí salen datos hacia **terceros que el usuario elige** (su proveedor de IA, con su
-propia clave). Para eso Google contempla una exención expresa de *Sharing*:
-transferencias a un tercero **basadas en una acción concreta iniciada por el usuario**,
-en las que el usuario espera razonablemente que sus datos se compartan. Configurar una
-clave de API propia y escribir en un chat encaja en esa exención.
+El backend opcional de incidencias recibe, tras vista previa y confirmación, la pregunta
+anterior, la respuesta denunciada y detalles opcionales. También trata la IP de conexión
+para limitar abusos: el Worker la convierte inmediatamente en un HMAC, conserva solo ese
+valor seudónimo y lo elimina en un máximo de 48 horas.
+
+Los datos salen hacia **terceros que el usuario elige**. Para eso Google contempla una
+exención expresa de *Sharing*: transferencias basadas en una acción concreta iniciada
+por el usuario en las que espera razonablemente que sus datos lleguen al proveedor.
+Configurar una clave propia y enviar un mensaje o una fotografía encaja en esa exención.
 
 Cloudflare y GitHub actúan como proveedores de servicio del responsable para este flujo,
 por lo que no se declaran como `Shared` mientras usen los datos únicamente para prestar
 el servicio contratado. La denuncia es opcional: la app funciona completa sin usarla.
 
-**Decisión**: declarar `Collected: Yes`, `Shared: No` y `Optional: Yes` para las
-categorías que puede contener una denuncia. Para los datos que solo salen hacia un
-proveedor BYOK elegido por el usuario se mantiene la exención de *Sharing* descrita
-arriba.
-
-⚠️ **Confirmar antes de enviar la ficha.** Si en la revisión hay dudas, la alternativa
-segura es declarar `Shared: Yes` con propósito *App functionality* y marcar los datos
-como opcionales: es más conservador y nunca se considera una declaración falsa. Cambiar
-de "no" a "sí" tras un rechazo cuesta una nueva revisión; al revés, no.
+**Decisión confirmada para GYM-197 (ticket para preparar la ficha española de Google
+Play)**: declarar `Collected: Yes`, `Shared: No`, `Optional: Yes` y `Processed
+ephemerally: No` para todos los tipos siguientes. Si Play cuestiona la exención, no se
+cambiará la respuesta sin registrar la objeción y obtener una nueva decisión del
+mantenedor.
 
 ### Respuestas por categoría
 
 | Categoría de Play | Collected | Shared | Opcional | Propósito | Respaldo |
 |---|---|---|---|---|---|
-| Health and fitness › Fitness info | Sí | No | Sí | Funcionalidad de la app: revisar una respuesta denunciada que puede contener datos de fitness | Denuncia in-app; cuerpo borrado a los 30 días |
+| Personal info › User IDs | Sí | No | Sí | Funcionalidad de la app: autenticar cada petición con la clave de la cuenta BYOK elegida | La clave solo se envía al proveedor al que pertenece |
 | Personal info › Name, Email | No | No | — | No se recogen | No hay cuenta |
-| Personal info › Other info (sexo, altura, fecha de nacimiento) | No | No | — | Cálculo de calorías y macros | `dietSettings` en `local.v3` |
-| Photos and videos › Photos | No | No | — | Estimación nutricional y seguimiento de progreso | Estimador y `photo_uri` |
-| Messages › Other in-app messages | Sí | No | Sí | Funcionalidad de la app: revisar la pregunta y respuesta denunciadas | Denuncia in-app; cuerpo borrado a los 30 días |
+| Personal info › Other info | Sí | No | Sí | Funcionalidad de la app: contexto opcional como sexo, altura, fecha de nacimiento u otros datos escritos | Mensajes y resultados autorizados enviados al proveedor |
+| Health and fitness › Health info | Sí | No | Sí | Funcionalidad de la app: responder a contexto que puede mencionar síntomas, lesiones o condiciones | Proveedor BYOK o denuncia confirmada |
+| Health and fitness › Fitness info | Sí | No | Sí | Funcionalidad de la app: rutinas, actividad, peso, composición, dieta y medidas | Proveedor BYOK o denuncia confirmada |
+| Photos and videos › Photos | Sí | No | Sí | Funcionalidad de la app: estimación nutricional a partir de hasta seis fotos | Solo las imágenes elegidas en el estimador; las fotos de progreso siguen locales |
+| Messages › Other in-app messages | Sí | No | Sí | Funcionalidad de la app: generar una respuesta o revisar una denuncia | Proveedor BYOK; denuncia borrada a los 30 días |
 | Other user-generated content | Sí | No | Sí | Funcionalidad de la app: detalles opcionales escritos al denunciar | Denuncia in-app; cuerpo borrado a los 30 días |
 | Device or other IDs | Sí | No | Sí | Seguridad y prevención del fraude: rate limiting del backend opcional | HMAC de IP, máximo 48 h; nunca IP en claro en D1 |
 | App activity › App interactions | No | No | — | Funcionalidad de la app | `user_prefs.v1`, `backup_meta.v1` |
@@ -73,8 +76,13 @@ de "no" a "sí" tras un rechazo cuesta una nueva revisión; al revés, no.
 - **Do you provide a way for users to request that their data is deleted?** Sí. La
   aplicación incluye una acción de restablecimiento y la política explica el borrado
   completo desde los ajustes del sistema, en la sección `#eliminacion`.
+- **Is collection optional?** Sí. El seguimiento local funciona sin proveedor de IA y
+  las incidencias requieren una acción y confirmación expresas.
+- **Is the data processed ephemerally?** No. Gymnasia no controla la conservación de
+  los proveedores elegidos y las denuncias tienen plazos propios.
 - **Data types collected by third-party SDKs**: ninguno. La app no incorpora SDK de
-  analítica, publicidad ni crash reporting.
+  analítica, publicidad ni crash reporting; las llamadas a proveedores son transporte
+  directo implementado por la aplicación y ya están declaradas arriba.
 - **Credenciales heredadas de funciones retiradas**: pueden permanecer cifradas en el
   llavero tras actualizar, pero el build actual no las lee ni las transmite y el
   restablecimiento las elimina. Al no salir del dispositivo, no cuentan como
@@ -117,7 +125,8 @@ de "no" a "sí" tras un rechazo cuesta una nueva revisión; al revés, no.
   permanente en las tres superficies conversacionales.
 - **Salvaguardas**: instrucciones de sistema que prohíben al asistente presentarse como
   persona o profesional sanitario, más la política sanitaria canónica de
-  `policy/health-safety/` (GYM-145), que cubre ayunos prolongados, pérdida extrema de
+  `policy/health-safety/`, creada en GYM-145 (ticket para crear una suite de seguridad
+  sanitaria para cambios del agente), que cubre ayunos prolongados, pérdida extrema de
   peso, trastornos alimentarios, menores, embarazo, diabetes, medicación, lesiones,
   dolor agudo y emergencias. Sus reglas alimentan el bloque `HEALTH-SAFETY` del prompt y
   una puerta determinista en CI (`npm run check:health-safety`), documentada en
@@ -143,7 +152,7 @@ en Data safety, que el guard rail verifica en `permissionDataSafetyImpact`.
 | `WAKE_LOCK` | Ninguno | Despertar la pantalla para ese aviso |
 | `VIBRATE` | Ninguno | Vibración configurable del aviso |
 | `RECEIVE_BOOT_COMPLETED` | Ninguno | Reprogramar avisos tras reiniciar |
-| `FOREGROUND_SERVICE` | Ninguno | Declarado sin uso; retirada trazada en GYM-186 |
+| `FOREGROUND_SERVICE` | Ninguno | Declarado sin uso; retirada trazada en GYM-186 (ticket para conciliar la configuración Expo con Android) |
 
 `USE_EXACT_ALARM` y `REQUEST_INSTALL_PACKAGES` están bloqueados expresamente. El
 segundo sostiene que la aplicación no instala APK externos: la variante de producción
@@ -156,17 +165,19 @@ declaración: `CAMERA`, `READ_EXTERNAL_STORAGE` y `WRITE_EXTERNAL_STORAGE` (de
 ⚠️ **Verificar sobre el artefacto, no sobre el fuente.** El manifest de `expo prebuild`
 en local arrastra además `RECORD_AUDIO`, `MODIFY_AUDIO_SETTINGS` y `SYSTEM_ALERT_WINDOW`
 desde `expo-dev-client`. Si `RECORD_AUDIO` apareciese en el manifest fusionado del AAB
-de producción, habría que declarar micrófono. Comprobarlo en GYM-198 con
+de producción, habría que declarar micrófono. Comprobarlo en GYM-198 (ticket para
+generar y validar el Android App Bundle de producción) con
 `npm run check:android-permissions` y la inspección del artefacto.
 
 ---
 
-## 5. Campos que requieren la consola (fuera del alcance de GYM-190)
+## 5. Campos que requieren la consola
 
 - Envío efectivo del formulario de Data safety y de las declaraciones de salud e IA.
 - Clasificación de contenido (cuestionario IARC).
 - Público objetivo y edades.
 - Declaración de anuncios: la app no muestra publicidad.
-- **App access**: la revisión necesita una credencial BYOK temporal para probar el
-  asistente → GYM-196.
-- Ficha, capturas y textos → GYM-197.
+- **App access**: la revisión necesita la credencial BYOK temporal preparada en GYM-196
+  (ticket para preparar credenciales BYOK temporales para la revisión de Google Play).
+- Ficha, capturas y textos: GYM-197 (ticket para preparar la ficha española de Google
+  Play).
