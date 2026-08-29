@@ -231,6 +231,14 @@ El script verifica las firmas y evidencias y genera en el APK el paquete firmado
 además de los módulos de prompt y política sanitaria. Si falta un artefacto o no coincide,
 la build falla.
 
+Una build manual de Producción debe reproducir ese mismo orden: primero ejecutar las
+comprobaciones normales sobre las fuentes y después preparar el snapshot con el comando
+anterior, inmediatamente antes de invocar EAS. `check:chat-prompt` se ejecuta antes de
+sustituir los módulos generados. Si se lanza EAS sin esta preparación, el AAB puede ser
+válido y estar bien firmado, pero el snapshot queda vacío y una instalación sin caché
+deshabilita el chat porque no dispone de una política firmada. Tras la build se restauran
+los módulos generados para no convertir el snapshot temporal en un cambio del repositorio.
+
 En ejecución, la app selecciona en este orden:
 
 1. bundle remoto con activación y firmas válidas y secuencia admisible;
