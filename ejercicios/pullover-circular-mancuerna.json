@@ -1,0 +1,11 @@
+{
+  "id": "pullover-circular-mancuerna",
+  "name": "Pullover circular con mancuerna",
+  "image_male": "images/pullover-circular-mancuerna-male.webp",
+  "image_female": "images/pullover-circular-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["dorsales", "tríceps", "serrato anterior"],
+  "equipment": "mancuerna y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco y sujeta una mancuerna con ambas manos sobre el pecho. Mantén una ligera flexión de codos y desplaza la mancuerna hacia un lado, alrededor de la cabeza y por el lado contrario en un arco circular amplio y controlado. Mantén el core firme y alterna el sentido del recorrido."
+}

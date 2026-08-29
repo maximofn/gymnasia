@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-alterno-predicador-mancuernas",
+  "name": "Curl de bíceps alterno en banco predicador con mancuernas",
+  "image_male": "images/curl-biceps-alterno-predicador-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-alterno-predicador-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "mancuernas y banco predicador",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco predicador, apoya los brazos superiores en la almohadilla y sujeta una mancuerna en cada mano con las palmas hacia arriba. Flexiona un brazo hasta contraer el bíceps mientras el otro permanece extendido. Baja despacio y alterna sin despegar los codos del banco."
+}

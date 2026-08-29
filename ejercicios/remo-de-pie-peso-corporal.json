@@ -1,0 +1,11 @@
+{
+  "id": "remo-de-pie-peso-corporal",
+  "name": "Remo de pie con peso corporal",
+  "image_male": "images/remo-de-pie-peso-corporal-male.webp",
+  "image_female": "images/remo-de-pie-peso-corporal-female.webp",
+  "muscle_group": "espalda superior",
+  "secondary_muscles": ["bíceps", "hombros", "antebrazos"],
+  "equipment": "barra fija",
+  "difficulty": "beginner",
+  "instructions": "Sujeta una barra fija a la altura del pecho con agarre prono y adelanta los pies para inclinar el cuerpo hacia atrás. Mantén una línea firme de cabeza a talones y tira del pecho hacia la barra llevando los codos atrás. Extiende los brazos de forma controlada sin perder la tensión ni hundir las caderas."
+}

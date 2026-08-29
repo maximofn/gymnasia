@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-alterno-mancuernas",
+  "name": "Curl de bíceps alterno con mancuernas",
+  "image_male": "images/curl-biceps-alterno-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-alterno-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con una mancuerna en cada mano y los brazos junto al cuerpo. Mantén los codos pegados al torso y flexiona un brazo hasta acercar la mancuerna al hombro mientras el otro permanece extendido. Baja con control y repite con el lado contrario sin balancear el cuerpo."
+}

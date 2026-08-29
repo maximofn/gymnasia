@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inclinadas-fitball-polea",
+  "name": "Aperturas inclinadas sobre fitball con polea",
+  "image_male": "images/aperturas-inclinadas-fitball-polea-male.webp",
+  "image_female": "images/aperturas-inclinadas-fitball-polea-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["deltoides anteriores", "tríceps", "core", "glúteos"],
+  "equipment": "polea y fitball",
+  "difficulty": "advanced",
+  "instructions": "Apoya la parte alta de la espalda sobre un fitball entre dos poleas bajas, planta los pies y eleva las caderas en puente. Abre los brazos con una ligera flexión fija de los codos. Junta las agarraderas sobre la parte alta del pecho siguiendo un arco y regresa despacio sin mover el balón ni dejar caer las caderas."
+}

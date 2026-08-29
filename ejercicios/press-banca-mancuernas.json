@@ -1,0 +1,11 @@
+{
+  "id": "press-banca-mancuernas",
+  "name": "Press de banca con mancuernas",
+  "image_male": "images/press-banca-mancuernas-male.webp",
+  "image_female": "images/press-banca-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "mancuernas y banco",
+  "difficulty": "beginner",
+  "instructions": "Túmbate en un banco plano con los pies apoyados y una mancuerna a cada lado del pecho. Mantén las muñecas sobre los codos y empuja ambas mancuernas hasta extender los brazos. Bájalas de forma controlada con los codos ligeramente por debajo del banco y repite sin rebotar."
+}

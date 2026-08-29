@@ -1,0 +1,11 @@
+{
+  "id": "press-hombros-alterno-mancuernas",
+  "name": "Press de hombros alterno con mancuernas",
+  "image_male": "images/press-hombros-alterno-mancuernas-male.webp",
+  "image_female": "images/press-hombros-alterno-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["tríceps", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una mancuerna en cada mano a la altura de los hombros. Mantén el tronco firme y empuja una mancuerna sobre la cabeza mientras la otra permanece junto al hombro. Baja con control y presiona el lado contrario, alternando sin inclinar el cuerpo."
+}

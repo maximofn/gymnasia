@@ -1,0 +1,11 @@
+{
+  "id": "press-hombros-sentado-banco-mancuernas",
+  "name": "Press de hombros sentado en banco con mancuernas",
+  "image_male": "images/press-hombros-sentado-banco-mancuernas-male.webp",
+  "image_female": "images/press-hombros-sentado-banco-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["tríceps", "core"],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido en un banco plano sin respaldo, con los pies firmes y una mancuerna junto a cada hombro. Activa el core y presiona ambas mancuernas sobre la cabeza sin arquear la zona lumbar. Baja lentamente hasta la altura de los hombros manteniendo los antebrazos verticales."
+}

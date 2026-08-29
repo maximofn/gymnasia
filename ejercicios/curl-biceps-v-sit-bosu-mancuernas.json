@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-v-sit-bosu-mancuernas",
+  "name": "Curl de bíceps en V-sit sobre bosu",
+  "image_male": "images/curl-biceps-v-sit-bosu-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-v-sit-bosu-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "core", "flexores de cadera"],
+  "equipment": "mancuernas y bosu",
+  "difficulty": "advanced",
+  "instructions": "Siéntate sobre la cúpula del bosu, inclina ligeramente el torso atrás y eleva ambos pies con las rodillas flexionadas para formar una V. Mantén el abdomen firme y una mancuerna en cada mano. Flexiona las pesas hacia los hombros sin perder el equilibrio y bájalas de forma lenta manteniendo las piernas elevadas."
+}

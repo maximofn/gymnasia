@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-sobre-cabeza-barra-polea-alta",
+  "name": "Extensión de tríceps sobre la cabeza con barra en polea alta",
+  "image_male": "images/extension-triceps-sobre-cabeza-barra-polea-alta-male.webp",
+  "image_female": "images/extension-triceps-sobre-cabeza-barra-polea-alta-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["hombros", "core"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de espaldas a una polea alta, sujeta la barra corta por encima de la cabeza y adelanta un pie. Mantén los brazos superiores junto a las orejas y los codos flexionados. Extiende los codos hasta alinear los antebrazos con el tronco y vuelve lentamente sin abrirlos hacia los lados."
+}

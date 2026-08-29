@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-alterno-sentado-mancuernas",
+  "name": "Curl martillo alterno sentado con mancuernas",
+  "image_male": "images/curl-martillo-alterno-sentado-mancuernas-male.webp",
+  "image_female": "images/curl-martillo-alterno-sentado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazos"],
+  "equipment": "mancuernas y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate erguido en un banco con una mancuerna en cada mano y las palmas enfrentadas. Mantén los codos junto al torso y flexiona un brazo con agarre neutro hasta la altura del hombro. Baja lentamente y alterna el lado sin inclinar el tronco ni adelantar los codos."
+}

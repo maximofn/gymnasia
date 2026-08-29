@@ -1,0 +1,11 @@
+{
+  "id": "remo-de-pie-toalla-peso-corporal",
+  "name": "Remo de pie con toalla y peso corporal",
+  "image_male": "images/remo-de-pie-toalla-peso-corporal-male.webp",
+  "image_female": "images/remo-de-pie-toalla-peso-corporal-female.webp",
+  "muscle_group": "espalda superior",
+  "secondary_muscles": ["bíceps", "hombros", "antebrazos"],
+  "equipment": "toalla",
+  "difficulty": "beginner",
+  "instructions": "Rodea un soporte firme a la altura del pecho con una toalla y sujeta un extremo con cada mano. Adelanta los pies, inclina el cuerpo hacia atrás y mantén el tronco alineado. Tira de ambos extremos hacia las costillas juntando los omóplatos y vuelve a extender los brazos con control."
+}

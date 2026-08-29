@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-gemelos-burro",
+  "name": "Elevación de gemelos burro",
+  "image_male": "images/elevacion-gemelos-burro-male.webp",
+  "image_female": "images/elevacion-gemelos-burro-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": ["sóleo", "isquiotibiales", "glúteos"],
+  "equipment": "plataforma y banco",
+  "difficulty": "intermediate",
+  "instructions": "Apoya las puntas de los pies en el borde de una plataforma y flexiona la cadera hasta descansar los antebrazos en un soporte estable. Mantén la espalda neutra y deja los talones libres. Eleva los talones todo lo posible, contrae los gemelos y desciende lentamente por debajo del nivel de la plataforma."
+}
