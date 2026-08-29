@@ -1,0 +1,11 @@
+{
+  "id": "butt-up-plancha-antebrazos",
+  "name": "Butt-up en plancha de antebrazos",
+  "image_male": "images/butt-up-plancha-antebrazos-male.webp",
+  "image_female": "images/butt-up-plancha-antebrazos-female.webp",
+  "muscle_group": "abdominales",
+  "secondary_muscles": ["oblicuos", "flexores de cadera", "hombros"],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en plancha sobre los antebrazos con los codos bajo los hombros y las piernas extendidas. Presiona el suelo y eleva las caderas hacia el techo hasta formar una V invertida, manteniendo el abdomen activo. Baja con control hasta recuperar una línea recta sin dejar que la zona lumbar se hunda."
+}

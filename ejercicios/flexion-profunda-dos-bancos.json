@@ -1,0 +1,11 @@
+{
+  "id": "flexion-profunda-dos-bancos",
+  "name": "Flexión profunda entre dos bancos",
+  "image_male": "images/flexion-profunda-dos-bancos-male.webp",
+  "image_female": "images/flexion-profunda-dos-bancos-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "deltoides anteriores", "core"],
+  "equipment": "dos bancos",
+  "difficulty": "advanced",
+  "instructions": "Coloca dos bancos paralelos y apoya una mano en el borde de cada uno, con el cuerpo en plancha. Flexiona los codos hacia atrás y deja que el pecho descienda entre los bancos por debajo del nivel de las manos. Mantén el tronco firme y empuja los soportes hasta volver a extender los brazos sin perder la alineación."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "jalon-inclinado-banco-polea",
+  "name": "Jalón inclinado en banco con polea",
+  "image_male": "images/jalon-inclinado-banco-polea-male.webp",
+  "image_female": "images/jalon-inclinado-banco-polea-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["tríceps", "hombros"],
+  "equipment": "polea y banco inclinado",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco inclinado con la cabeza cerca de una polea alta y agarra una barra recta por encima. Mantén los codos casi extendidos y baja la barra en un arco hacia los muslos usando los dorsales. Haz una pausa abajo y vuelve por encima de la cabeza sin arquear la espalda ni convertir el movimiento en una extensión de tríceps."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "remo-amplio-sentado-suelo-polea",
+  "name": "Remo amplio sentado en el suelo con polea",
+  "image_male": "images/remo-amplio-sentado-suelo-polea-male.webp",
+  "image_female": "images/remo-amplio-sentado-suelo-polea-female.webp",
+  "muscle_group": "espalda superior",
+  "secondary_muscles": ["dorsales", "deltoides posteriores", "bíceps"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el suelo frente a una polea baja con las piernas cómodamente extendidas y sujeta una barra ancha en pronación. Mantén el torso erguido y lleva los codos hacia atrás para acercar la barra al pecho bajo. Junta los omóplatos y devuelve la barra hasta extender los brazos sin redondear la espalda."
+}

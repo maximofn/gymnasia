@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-alterno-mancuernas-arm-blaster",
+  "name": "Curl de bíceps alterno con mancuernas y arm blaster",
+  "image_male": "images/curl-biceps-alterno-mancuernas-arm-blaster-male.webp",
+  "image_female": "images/curl-biceps-alterno-mancuernas-arm-blaster-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "mancuernas y arm blaster",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el arm blaster contra el torso y apoya ambos brazos superiores sobre sus extremos. Sujeta una mancuerna en cada mano con las palmas al frente. Flexiona un codo sin separarlo del soporte, baja lentamente y alterna el lado manteniendo el tronco inmóvil."
+}

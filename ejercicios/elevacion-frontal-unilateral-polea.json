@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-frontal-unilateral-polea",
+  "name": "Elevación frontal unilateral en polea",
+  "image_male": "images/elevacion-frontal-unilateral-polea-male.webp",
+  "image_female": "images/elevacion-frontal-unilateral-polea-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["pectoral superior", "core"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Colócate frente a una polea baja y sujeta una agarradera con una mano delante del muslo. Mantén el torso inmóvil y el codo ligeramente flexionado. Eleva el brazo al frente hasta la altura del hombro sin encogerlo y baja lentamente conservando la tensión del cable."
+}
