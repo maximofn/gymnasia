@@ -471,6 +471,24 @@ Only non-obvious gotchas that could recur are kept here.
   plantilla del repositorio privado puede usar `actions/checkout` porque no
   contiene esos gitlinks.
 
+### El AAB production puede heredar micrófono y superposición aunque `app.json` no los solicite
+- Gotcha: el manifest fusionado del primer AAB production de GYM-197 (ticket para
+  preparar la ficha española de Google Play) contenía `RECORD_AUDIO` y
+  `SYSTEM_ALERT_WINDOW`, aunque ninguno figuraba en `android.permissions`.
+  `RECORD_AUDIO` lo añadía el plugin de `expo-av` por defecto y
+  `SYSTEM_ALERT_WINDOW` procedía del manifest debug de React Native. Revisar solo
+  `app.json` o los manifests fuente daba un falso negativo.
+- Fix: configurar `expo-av` con `microphonePermission: false` y mantener ambos
+  permisos en `expo.android.blockedPermissions`. El guard rail los trata como
+  prohibidos y la validación final debe hacerse con `bundletool dump manifest`
+  sobre el AAB descargado. `MODIFY_AUDIO_SETTINGS` sí se conserva: lo usa
+  `Audio.setAudioModeAsync` para los avisos sonoros y no accede al micrófono.
+- Entorno local: macOS puede mostrar `/usr/bin/java` aunque sea solo el stub que
+  responde que no hay runtime. En esta máquina bundletool funciona con
+  `/opt/homebrew/opt/openjdk/bin/java`. Además, `keytool -printcert -jarfile`
+  falla bajo el locale español con `MissingFormatArgumentException`; forzar
+  `-J-Duser.language=en -J-Duser.country=US` permite imprimir el certificado.
+
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:
 ```bash

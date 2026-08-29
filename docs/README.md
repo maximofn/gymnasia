@@ -23,6 +23,9 @@ Este directorio centraliza toda la documentacion funcional y tecnica del proyect
 - `docs/legal/privacy-policy.es.md` y `.en.md`: fuente unica de la politica de privacidad publicada. No editar el HTML generado; ejecutar `npm run sync:legal`.
 - `docs/legal/play-declarations.md`: respuestas preparadas de Data safety, salud e IA para Google Play.
 - `docs/legal/privacy-change-checklist.md`: que revisar cuando un cambio afecta a los datos tratados.
+- `docs/store/google-play/listing.es.json`: fuente canónica de los textos y assets de la ficha española de Google Play.
+- `docs/store/google-play/console-matrix.md`: respuestas verificadas para los formularios de Play Console.
+- `docs/store/google-play/capture-runbook.md`: preparación, captura y revisión de las seis pantallas obtenidas de un Android real.
 - `docs/architecture/chat-system-prompt.md`: fuente, fallback, caché, hash y verificación del prompt de Gymnasia Coach.
 - `docs/architecture/policy-environments.md`: variantes Expo, namespaces, promoción inmutable y recuperación por canal.
 - `docs/architecture/health-safety-policy.md`: reglas sanitarias canónicas, estados provisional/aprobado, CI y revisión profesional.

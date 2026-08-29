@@ -1,5 +1,5 @@
 {
-  "$comment": "Fuente única de verdad de los permisos Android publicables (GYM-191). Consumido por scripts/android-permissions/check.mjs y, mediante --json, por la validación del AAB de GYM-198.",
+  "$comment": "Fuente única de verdad de los permisos Android publicables. Se creó en GYM-191 (ticket para retirar USE_EXACT_ALARM y proteger el manifest). Consumido por scripts/android-permissions/check.mjs y, mediante --json, por la validación del AAB de GYM-198 (ticket para generar y validar el Android App Bundle de producción).",
   "configPath": "apps/mobile/app.json",
   "allowedPermissions": [
     "FOREGROUND_SERVICE",
@@ -10,7 +10,9 @@
   ],
   "blockedPermissions": [
     "USE_EXACT_ALARM",
-    "REQUEST_INSTALL_PACKAGES"
+    "REQUEST_INSTALL_PACKAGES",
+    "RECORD_AUDIO",
+    "SYSTEM_ALERT_WINDOW"
   ],
   "rationale": {
     "FOREGROUND_SERVICE": "Declarado sin uso: no hay servicio ni foregroundServiceType. Retirada trazada en GYM-186; no se toca aquí para no cambiar comportamiento.",
@@ -19,7 +21,9 @@
     "RECEIVE_BOOT_COMPLETED": "Reprogramación de avisos tras reiniciar el dispositivo.",
     "SCHEDULE_EXACT_ALARM": "Alarma exacta para el aviso de fin de descanso. No está restringido por Google Play y lo concede el usuario desde 'Alarmas y recordatorios'.",
     "USE_EXACT_ALARM": "Prohibido: Google Play lo reserva a apps cuya función principal es despertador o calendario. Gymnasia no lo es, y declararlo hace que la revisión rechace el AAB.",
-    "REQUEST_INSTALL_PACKAGES": "Prohibido: Gymnasia no instala paquetes externos. La variante de producción se actualiza exclusivamente mediante Google Play y ninguna dependencia puede reintroducir este permiso."
+    "REQUEST_INSTALL_PACKAGES": "Prohibido: Gymnasia no instala paquetes externos. La variante de producción se actualiza exclusivamente mediante Google Play y ninguna dependencia puede reintroducir este permiso.",
+    "RECORD_AUDIO": "Prohibido: Gymnasia reproduce avisos, pero no graba audio. expo-av debe configurarse con microphonePermission=false y el bloqueo impide que una dependencia vuelva a añadir el micrófono.",
+    "SYSTEM_ALERT_WINDOW": "Prohibido: Gymnasia no dibuja sobre otras aplicaciones. React Native lo declara en su manifest de debug, pero nunca debe sobrevivir al manifest fusionado de Producción."
   },
   "nodeModulesRoots": [
     "node_modules",
@@ -32,18 +36,22 @@
     "/androidTest/",
     "/build/intermediates/"
   ],
-  "acknowledgedContributors": [],
+  "acknowledgedContributors": [
+    "react-native"
+  ],
   "expectedMergedExtras": [
     "INTERNET",
     "POST_NOTIFICATIONS",
     "CAMERA",
     "READ_EXTERNAL_STORAGE",
     "WRITE_EXTERNAL_STORAGE",
-    "SYSTEM_ALERT_WINDOW"
+    "MODIFY_AUDIO_SETTINGS"
   ],
   "notes": [
     "El manifest de origen que genera 'expo prebuild' SÍ contiene una línea USE_EXACT_ALARM con tools:node=\"remove\". Eso es correcto: es la directiva que ordena al manifest merger eliminarlo. La ausencia real se verifica en el manifest FUSIONADO del artefacto, donde los atributos tools: ya no existen. Un grep ingenuo sobre el manifest de origen da un falso positivo.",
     "apps/mobile/android/ está en .gitignore y su contenido puede estar obsoleto. No es fuente de verdad para los permisos; la configuración de apps/mobile/app.json sí lo es.",
-    "expectedMergedExtras no se comprueba aquí: son los permisos que las dependencias aportan legítimamente vía manifest merger. Se declaran para que GYM-198 pueda afirmar que el manifest fusionado equivale a allowedPermissions ∪ expectedMergedExtras."
+    "expo-av añade RECORD_AUDIO por defecto aunque solo se use reproducción. La configuración explícita microphonePermission=false expresa la intención y blockedPermissions actúa como defensa adicional.",
+    "react-native declara SYSTEM_ALERT_WINDOW en src/debug/AndroidManifest.xml. acknowledgedContributors reconoce el origen, pero solo porque blockedPermissions debe neutralizarlo; su presencia en un AAB de Producción sigue siendo un fallo.",
+    "expectedMergedExtras no se comprueba aquí: son los permisos con impacto relevante que las dependencias pueden aportar legítimamente vía manifest merger. GYM-198 (ticket para generar y validar el Android App Bundle de producción) debe verificar el manifest fusionado real."
   ]
 }

@@ -1,4 +1,5 @@
-// Tests de la fuente única de la política de privacidad (GYM-190).
+// Tests de la fuente única de la política de privacidad, creada en GYM-190
+// (ticket para publicar la política y preparar las declaraciones de salud).
 //
 // Dos cosas que proteger: que el generador no deforme el texto legal al
 // convertirlo en HTML, y que la validación impida publicar un documento
@@ -217,7 +218,8 @@ test("los documentos reales solo tienen pendiente completar el responsable", () 
 });
 
 test("la política española describe el borrado parcial real, no uno ideal", () => {
-  // GYM-162 aún no ha cerrado: si alguien 'mejora' este texto antes de arreglar el
+  // GYM-162 (ticket para hacer veraz y completo el borrado local) aún no ha
+  // cerrado: si alguien 'mejora' este texto antes de arreglar el
   // borrado, la política publicada pasaría a mentir.
   const canonical = canonicalText(loadPolicy("es"));
   assert.match(canonical, /borrado \*\*parcial\*\*/);
@@ -228,6 +230,18 @@ test("ambos idiomas declaran que no es un dispositivo médico", () => {
   const [es, en] = loadPolicies();
   assert.match(canonicalText(es), /no es un dispositivo médico/i);
   assert.match(canonicalText(en), /is not a medical device/i);
+});
+
+test("ambos idiomas fijan la audiencia en 16 años o más", () => {
+  const [es, en] = loadPolicies();
+  const spanish = canonicalText(es);
+  const english = canonicalText(en);
+  assert.match(spanish, /16 años o más/i);
+  assert.match(spanish, /no está diseñada para menores de 16 años/i);
+  assert.doesNotMatch(spanish, /menores de 14 años/i);
+  assert.match(english, /16 or older/i);
+  assert.match(english, /not designed for children under 16/i);
+  assert.doesNotMatch(english, /children under 14/i);
 });
 
 test("buildArtifacts produce un HTML por idioma más el módulo de la app", () => {

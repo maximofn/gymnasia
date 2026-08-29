@@ -57,6 +57,7 @@ Thumbs.db
 
 # Local agent/tool state
 .playwright-mcp/
+.tmp-store-listing/
 
 # Dev store persistence (web dev data)
 .dev-store.json

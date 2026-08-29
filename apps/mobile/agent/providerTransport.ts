@@ -32,6 +32,51 @@ export function googleApiHeaders(
   };
 }
 
+export function normalizeAnthropicWorkspaceId(
+  workspaceId: string | null | undefined,
+): string {
+  return (workspaceId ?? "").trim();
+}
+
+export function anthropicApiHeaders(
+  apiKey: string,
+  apiVersion: string,
+  workspaceId?: string | null,
+  extraHeaders: Record<string, string> = {},
+): Record<string, string> {
+  const normalizedWorkspaceId = normalizeAnthropicWorkspaceId(workspaceId);
+  return {
+    ...extraHeaders,
+    "x-api-key": apiKey.trim(),
+    "anthropic-version": apiVersion,
+    ...(normalizedWorkspaceId
+      ? { "anthropic-workspace-id": normalizedWorkspaceId }
+      : {}),
+  };
+}
+
+export function anthropicProxyCredentials(
+  apiKey: string,
+  workspaceId?: string | null,
+): { api_key: string; workspace_id?: string } {
+  const normalizedWorkspaceId = normalizeAnthropicWorkspaceId(workspaceId);
+  return {
+    api_key: apiKey.trim(),
+    ...(normalizedWorkspaceId ? { workspace_id: normalizedWorkspaceId } : {}),
+  };
+}
+
+export function explainAnthropicError(message: string): string {
+  const trimmed = message.trim();
+  if (
+    trimmed.toLowerCase().includes("anthropic-workspace-id is required")
+    || trimmed.toLowerCase().includes("workspace id is required")
+  ) {
+    return "Anthropic exige el Workspace ID para esta clave. Copia el valor wrkspc_… desde la consola de Anthropic y añádelo en Ajustes > Proveedor IA.";
+  }
+  return trimmed;
+}
+
 const PERSONAL_FOOD_FIXTURE = {
   name: "Yogur de desarrollo",
   category: "lácteos",

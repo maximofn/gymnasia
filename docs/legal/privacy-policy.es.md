@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v6
-effective_date: 2026-08-24
+version: 2026-08-v8
+effective_date: 2026-08-29
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -76,6 +76,8 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
   transmite. «Restablecer datos locales» las elimina.
 - **Preferencias**: ajustes de la interfaz y de las notificaciones, y tu consentimiento
   por proveedor para la evaluación adicional opcional de seguridad sanitaria.
+- **Configuración de proveedores de IA**: el modelo elegido y, si Anthropic lo exige
+  para una clave vinculada a identidad, el identificador del workspace (`wrkspc_…`).
 - **Registro de depuración**: un histórico técnico de hasta 1000 entradas con los avisos
   de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de
   serie. Nunca se envía por red; puedes verlo y borrarlo desde Ajustes.
@@ -87,7 +89,9 @@ otras aplicaciones no pueden leerlo.
 
 Las **claves de API** y, si proceden de una versión anterior, las credenciales
 heredadas de funciones retiradas reciben un trato distinto: se guardan en el llavero
-seguro del sistema operativo, separadas del resto.
+seguro del sistema operativo, separadas del resto. El identificador opcional del
+workspace de Anthropic no es una clave secreta y se guarda con la configuración privada
+de la aplicación.
 
 Si tu dispositivo tiene activada la copia de seguridad de Android, el sistema operativo
 puede incluir los datos de la aplicación en la copia de tu cuenta de Google. Eso lo
@@ -103,7 +107,11 @@ la aplicación, y tú introduces la de tu cuenta con OpenAI, Anthropic o Google.
   servidor del responsable, porque no existe tal servidor.
 - La clave se envía **únicamente al proveedor al que corresponde**, en cada petición,
   como exige su API.
+- Si una clave de Anthropic vinculada a identidad requiere un identificador de
+  workspace, ese identificador se guarda localmente y se envía únicamente a Anthropic
+  para dirigir las peticiones al workspace elegido.
 - La clave **no se incluye** en el fichero de copia de seguridad que exportas.
+- El identificador de workspace tampoco se incluye en esa copia de seguridad.
 - Puedes borrarla en cualquier momento desde Ajustes.
 
 **En el navegador la protección es menor.** La versión web de Gymnasia se ejecuta en un
@@ -124,6 +132,8 @@ que hayas elegido. La petición incluye:
   o tus rutinas;
 - en el estimador de comida, **las imágenes que le proporcionas**, codificadas dentro
   de la petición.
+- para Anthropic, el identificador del workspace, únicamente si lo has configurado
+  porque el tipo de clave lo requiere.
 
 Si activas en Ajustes la **evaluación adicional de seguridad sanitaria** para un
 proveedor, el texto actual puede enviarse a ese mismo proveedor en una petición de
@@ -281,9 +291,10 @@ desde tu cuenta con él. Gymnasia no puede borrarlos por ti.
 
 ## Menores {#menores}
 
-Gymnasia no está dirigida a menores de 14 años y no verifica la edad de quien la usa.
-Si eres menor de edad, usa la aplicación con el consentimiento y la supervisión de una
-persona responsable de ti, especialmente en lo relativo a entrenamiento y alimentación.
+Gymnasia está dirigida a personas de **16 años o más** y no está diseñada para menores
+de 16 años. La aplicación no verifica la edad de quien la usa. Si tienes 16 o 17 años,
+úsala con el consentimiento y la supervisión de una persona responsable de ti,
+especialmente en lo relativo a entrenamiento y alimentación.
 
 ## Tus derechos {#derechos}
 

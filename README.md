@@ -14,6 +14,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `policy/signing/`: Raíces y certificados públicos, configuración y bundle firmado actual; nunca contiene claves privadas
 - `scripts/health-safety/`: Generador, puerta determinista, fixtures e informes sanitarios
 - `scripts/policy-promotion/`: Firma Ed25519, contratos, promoción y preparación de snapshots por canal
+- `scripts/store-listing/`: Generación y validación de la ficha y los recursos para Google Play
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
 
 ## Arranque rapido
@@ -110,5 +111,6 @@ npm run test:board:e2e   # E2E con Playwright
 - Política remota y fallback del agente: `docs/architecture/chat-system-prompt.md`
 - Entornos y promoción de políticas: `docs/architecture/policy-environments.md`
 - Política y revisión sanitaria del agente: `docs/architecture/health-safety-policy.md`
+- Ficha, declaraciones y capturas para Google Play: `docs/store/google-play/`
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`

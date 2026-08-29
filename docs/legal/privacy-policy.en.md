@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v6
-effective_date: 2026-08-24
+version: 2026-08-v8
+effective_date: 2026-08-29
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -75,6 +75,8 @@ All of the following is stored on your device only:
   local data” deletes them.
 - **Preferences**: interface and notification settings, and your per-provider consent
   for the optional additional health-safety evaluation.
+- **AI provider configuration**: the selected model and, when Anthropic requires it for
+  an identity-linked key, the workspace identifier (`wrkspc_…`).
 - **Debug log**: a technical record of up to 1000 entries covering the rest-timer alerts
   delivered, which include the exercise name and set number. It is never sent over the
   network; you can view and clear it from Settings.
@@ -85,7 +87,8 @@ In the app's private storage on your device. On Android, other apps cannot read 
 
 **API keys** and, when left by an earlier version, legacy credentials from removed
 features are treated differently: they are stored in the operating system's secure
-keystore, separate from everything else.
+keystore, separate from everything else. The optional Anthropic workspace identifier is
+not a secret key and is stored with the app's private configuration.
 
 If your device has Android backup enabled, the operating system may include the app's
 data in your Google account backup. That is governed by your device settings and
@@ -100,7 +103,11 @@ you enter the one from your own account with OpenAI, Anthropic or Google.
   developer server, because no such server exists.
 - The key is sent **only to the provider it belongs to**, with each request, as their
   API requires.
+- If an identity-linked Anthropic key requires a workspace identifier, that identifier
+  is stored locally and sent only to Anthropic to route requests to the selected
+  workspace.
 - The key is **not included** in the backup file you export.
+- The workspace identifier is not included in that backup either.
 - You can delete it at any time from Settings.
 
 **Protection is weaker in the browser.** The web version of Gymnasia runs in a browser,
@@ -119,6 +126,8 @@ The request includes:
 - the results of the tools the assistant uses at your request, which may include your
   weight, your body fat percentage, your measurements, the day's meals or your routines;
 - in the food estimator, **the images you provide**, encoded within the request.
+- for Anthropic, the workspace identifier, only when you configured one because the key
+  type requires it.
 
 If you enable **additional health-safety evaluation** for a provider in Settings, the
 current text may be sent to that same provider in a separate classification request
@@ -270,9 +279,10 @@ account with them. Gymnasia cannot delete it on your behalf.
 
 ## Minors {#menores}
 
-Gymnasia is not aimed at children under 14 and does not verify the age of its users. If
-you are a minor, use the app with the consent and supervision of someone responsible for
-you, particularly regarding training and nutrition.
+Gymnasia is intended for people aged **16 or older** and is not designed for children
+under 16. The app does not verify the age of its users. If you are 16 or 17, use it with
+the consent and supervision of someone responsible for you, particularly regarding
+training and nutrition.
 
 ## Your rights {#derechos}
 

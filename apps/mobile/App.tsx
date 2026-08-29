@@ -133,10 +133,14 @@ import {
   type AiResponseReportContext,
 } from "./AiResponseReportModal";
 import {
+  anthropicApiHeaders,
+  anthropicProxyCredentials,
   createFakeProviderResult,
   DEFAULT_GOOGLE_MODEL,
+  explainAnthropicError,
   FAKE_PROVIDER_MODELS,
   googleApiHeaders,
+  normalizeAnthropicWorkspaceId,
   normalizeGoogleModel,
   providerCredential,
 } from "./agent/providerTransport";
@@ -411,11 +415,13 @@ type AIKey = {
   is_active: boolean;
   api_key: string;
   model: string;
+  workspace_id?: string;
   reasoning_effort?: OpenAIReasoningEffort | null;
 };
 type ProviderDraft = {
   api_key: string;
   model: string;
+  workspace_id?: string;
   reasoning_effort?: OpenAIReasoningEffort | null;
 };
 type AnthropicModelOption = { id: string; display_name: string | null };
@@ -1333,7 +1339,13 @@ function createDefaultProviderKeys(): AIKey[] {
       model: DEFAULT_MODELS.openai,
       reasoning_effort: DEFAULT_OPENAI_REASONING_EFFORT,
     },
-    { provider: "anthropic", is_active: false, api_key: "", model: DEFAULT_MODELS.anthropic },
+    {
+      provider: "anthropic",
+      is_active: false,
+      api_key: "",
+      model: DEFAULT_MODELS.anthropic,
+      workspace_id: "",
+    },
     { provider: "google", is_active: false, api_key: "", model: DEFAULT_MODELS.google },
   ];
 }
@@ -1349,6 +1361,10 @@ function createProviderDraftMap(keys: AIKey[]): Record<Provider, ProviderDraft> 
     acc[provider] = {
       api_key: current?.api_key ?? "",
       model,
+      workspace_id:
+        provider === "anthropic"
+          ? normalizeAnthropicWorkspaceId(current?.workspace_id)
+          : "",
       reasoning_effort:
         provider === "openai"
           ? normalizeOpenAIReasoningEffort(current?.reasoning_effort, model)
@@ -1692,7 +1708,11 @@ function emptyProviderApiKeys(): Record<Provider, string> {
 }
 
 function stripSensitiveStoreData(store: LocalStore): LocalStore {
-  return stripProviderApiKeys(store);
+  const withoutApiKeys = stripProviderApiKeys(store);
+  return {
+    ...withoutApiKeys,
+    keys: withoutApiKeys.keys.map((item) => ({ ...item, workspace_id: "" })),
+  };
 }
 
 function serializeStoreForAsyncStorage(
@@ -1700,7 +1720,7 @@ function serializeStoreForAsyncStorage(
   secureStoreAvailable: boolean,
 ): LocalStore {
   if (!secureStoreAvailable) return store;
-  return stripSensitiveStoreData(store);
+  return stripProviderApiKeys(store);
 }
 
 function mergeStoreWithSecureApiKeys(
@@ -1936,7 +1956,10 @@ function parseGoogleModelOptions(payload: unknown): GoogleModelOption[] {
   return Array.from(dedup.values()).sort((a, b) => a.id.localeCompare(b.id));
 }
 
-async function fetchAnthropicModelsViaWebProxy(apiKey: string): Promise<AnthropicModelOption[]> {
+async function fetchAnthropicModelsViaWebProxy(
+  apiKey: string,
+  workspaceId?: string,
+): Promise<AnthropicModelOption[]> {
   if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.anthropic];
   try {
     const response = await fetch(buildWebProxyUrl("/chat/providers/anthropic/models"), {
@@ -1944,9 +1967,7 @@ async function fetchAnthropicModelsViaWebProxy(apiKey: string): Promise<Anthropi
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        api_key: apiKey,
-      }),
+      body: JSON.stringify(anthropicProxyCredentials(apiKey, workspaceId)),
     });
 
     let payload: unknown = null;
@@ -1957,7 +1978,9 @@ async function fetchAnthropicModelsViaWebProxy(apiKey: string): Promise<Anthropi
     }
 
     if (!response.ok) {
-      throw new Error(extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`));
+      throw new Error(explainAnthropicError(
+        extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`),
+      ));
     }
 
     return parseAnthropicModelOptions(payload);
@@ -1970,15 +1993,16 @@ async function fetchAnthropicModelsViaWebProxy(apiKey: string): Promise<Anthropi
   }
 }
 
-async function fetchAnthropicModelsDirect(apiKey: string): Promise<AnthropicModelOption[]> {
+async function fetchAnthropicModelsDirect(
+  apiKey: string,
+  workspaceId?: string,
+): Promise<AnthropicModelOption[]> {
   if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.anthropic];
   const response = await fetch("https://api.anthropic.com/v1/models", {
     method: "GET",
-    headers: {
-      "x-api-key": apiKey,
-      "anthropic-version": ANTHROPIC_API_VERSION,
+    headers: anthropicApiHeaders(apiKey, ANTHROPIC_API_VERSION, workspaceId, {
       "Content-Type": "application/json",
-    },
+    }),
   });
 
   let payload: unknown = null;
@@ -1989,7 +2013,9 @@ async function fetchAnthropicModelsDirect(apiKey: string): Promise<AnthropicMode
   }
 
   if (!response.ok) {
-    throw new Error(extractErrorMessage(payload, `Anthropic error (${response.status})`));
+    throw new Error(explainAnthropicError(
+      extractErrorMessage(payload, `Anthropic error (${response.status})`),
+    ));
   }
 
   return parseAnthropicModelOptions(payload);
@@ -2045,6 +2071,7 @@ async function fetchGoogleModelsDirect(apiKey: string): Promise<GoogleModelOptio
 async function verifyAnthropicViaWebProxy(
   apiKey: string,
   model: string,
+  workspaceId?: string,
 ): Promise<ProviderConnectionCheckResult> {
   const proxyUrl = buildWebProxyUrl("/chat/providers/anthropic/verify");
   try {
@@ -2054,7 +2081,7 @@ async function verifyAnthropicViaWebProxy(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        api_key: apiKey,
+        ...anthropicProxyCredentials(apiKey, workspaceId),
         model,
       }),
     });
@@ -2071,7 +2098,9 @@ async function verifyAnthropicViaWebProxy(
         ok: false,
         severity: "error",
         message: toSevereProviderDetail(
-          extractErrorMessage(payload, `Proxy API error (${response.status})`),
+          explainAnthropicError(
+            extractErrorMessage(payload, `Proxy API error (${response.status})`),
+          ),
         ),
       };
     }
@@ -2091,7 +2120,9 @@ async function verifyAnthropicViaWebProxy(
       return {
         ok: false,
         severity: "error",
-        message: toSevereProviderDetail(normalizedMessage || "No se pudo verificar la conexión."),
+        message: toSevereProviderDetail(explainAnthropicError(
+          normalizedMessage || "No se pudo verificar la conexión.",
+        )),
       };
     }
     return {
@@ -2105,7 +2136,7 @@ async function verifyAnthropicViaWebProxy(
     if (err instanceof Error && err.message.trim()) {
       const normalized = err.message.toLowerCase().includes("failed to fetch")
         ? ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE
-        : err.message;
+        : explainAnthropicError(err.message);
       return { ok: false, severity: "error", message: toSevereProviderDetail(normalized) };
     }
     return {
@@ -2129,7 +2160,7 @@ async function callAnthropicViaWebProxy(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        api_key: provider.api_key,
+        ...anthropicProxyCredentials(provider.api_key, provider.workspace_id),
         model: provider.model || DEFAULT_MODELS.anthropic,
         max_tokens: 700 + ANTHROPIC_THINKING_BUDGET,
         thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
@@ -2146,7 +2177,9 @@ async function callAnthropicViaWebProxy(
     }
 
     if (!response.ok) {
-      throw new Error(extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`));
+      throw new Error(explainAnthropicError(
+        extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`),
+      ));
     }
 
     const result = parseAnthropicContent(payload);
@@ -2182,13 +2215,16 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
       });
     } else if (provider.provider === "anthropic") {
       if (Platform.OS === "web") {
-        return verifyAnthropicViaWebProxy(apiKey, model);
+        return verifyAnthropicViaWebProxy(apiKey, model, provider.workspace_id);
       }
-      const anthropicHeaders = {
-        "x-api-key": apiKey,
-        "anthropic-version": ANTHROPIC_API_VERSION,
-        "Content-Type": "application/json",
-      };
+      const anthropicHeaders = anthropicApiHeaders(
+        apiKey,
+        ANTHROPIC_API_VERSION,
+        provider.workspace_id,
+        {
+          "Content-Type": "application/json",
+        },
+      );
       response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: anthropicHeaders,
@@ -2218,7 +2254,9 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
           ok: false,
           severity: "error",
           message: toSevereProviderDetail(
-            extractErrorMessage(verifyPayload, `Error de conexión (${response.status})`),
+            explainAnthropicError(
+              extractErrorMessage(verifyPayload, `Error de conexión (${response.status})`),
+            ),
           ),
         };
       }
@@ -2957,11 +2995,14 @@ async function callProviderChatAPI(
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": provider.api_key,
-        "anthropic-version": ANTHROPIC_API_VERSION,
-      },
+      headers: anthropicApiHeaders(
+        provider.api_key,
+        ANTHROPIC_API_VERSION,
+        provider.workspace_id,
+        {
+          "Content-Type": "application/json",
+        },
+      ),
       body: JSON.stringify({
         model: provider.model || DEFAULT_MODELS.anthropic,
         max_tokens: 700 + ANTHROPIC_THINKING_BUDGET,
@@ -2979,7 +3020,9 @@ async function callProviderChatAPI(
     }
 
     if (!response.ok) {
-      throw new Error(extractErrorMessage(payload, `Anthropic error (${response.status})`));
+      throw new Error(explainAnthropicError(
+        extractErrorMessage(payload, `Anthropic error (${response.status})`),
+      ));
     }
 
     const result = parseAnthropicContent(payload);
@@ -3258,7 +3301,7 @@ async function callProviderChatAPIWithTools(
             Accept: "text/event-stream",
           },
           {
-            api_key: provider.api_key,
+            ...anthropicProxyCredentials(provider.api_key, provider.workspace_id),
             ...body,
           },
           streamHandlers,
@@ -3269,12 +3312,15 @@ async function callProviderChatAPIWithTools(
 
       return streamAnthropicRequestViaXHR(
         "https://api.anthropic.com/v1/messages",
-        {
-          "Content-Type": "application/json",
-          Accept: "text/event-stream",
-          "x-api-key": provider.api_key,
-          "anthropic-version": ANTHROPIC_API_VERSION,
-        },
+        anthropicApiHeaders(
+          provider.api_key,
+          ANTHROPIC_API_VERSION,
+          provider.workspace_id,
+          {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+          },
+        ),
         body,
         streamHandlers,
         "No se pudo conectar con Anthropic.",
@@ -3630,7 +3676,7 @@ async function callFoodEstimatorAPI(
             Accept: "text/event-stream",
           },
           {
-            api_key: provider.api_key,
+            ...anthropicProxyCredentials(provider.api_key, provider.workspace_id),
             ...body,
           },
           streamHandlers,
@@ -3640,12 +3686,15 @@ async function callFoodEstimatorAPI(
       }
       return streamAnthropicRequestViaXHR(
         "https://api.anthropic.com/v1/messages",
-        {
-          "Content-Type": "application/json",
-          Accept: "text/event-stream",
-          "x-api-key": provider.api_key,
-          "anthropic-version": ANTHROPIC_API_VERSION,
-        },
+        anthropicApiHeaders(
+          provider.api_key,
+          ANTHROPIC_API_VERSION,
+          provider.workspace_id,
+          {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+          },
+        ),
         body,
         streamHandlers,
         "No se pudo conectar con Anthropic.",
@@ -5269,6 +5318,10 @@ function normalizeStore(raw: LocalStore): LocalStore {
       is_active: item?.is_active ?? index === 0,
       api_key: (item?.api_key ?? "").trim(),
       model,
+      workspace_id:
+        provider === "anthropic"
+          ? normalizeAnthropicWorkspaceId(item?.workspace_id)
+          : "",
       reasoning_effort:
         provider === "openai"
           ? normalizeOpenAIReasoningEffort(item?.reasoning_effort, model)
@@ -9907,16 +9960,21 @@ export default function App() {
       const baseUrl = isWeb
         ? buildWebProxyUrl("/chat/providers/anthropic/messages")
         : "https://api.anthropic.com/v1/messages";
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
-      if (!isWeb) {
-        headers["x-api-key"] = provider.api_key;
-        headers["anthropic-version"] = ANTHROPIC_API_VERSION;
-      }
+      const headers: Record<string, string> = isWeb
+        ? { "Content-Type": "application/json" }
+        : anthropicApiHeaders(
+            provider.api_key,
+            ANTHROPIC_API_VERSION,
+            provider.workspace_id,
+            { "Content-Type": "application/json" },
+          );
       const response = await fetch(baseUrl, {
         method: "POST",
         headers,
         body: JSON.stringify({
-          ...(isWeb ? { api_key: provider.api_key } : {}),
+          ...(isWeb
+            ? anthropicProxyCredentials(provider.api_key, provider.workspace_id)
+            : {}),
           model,
           max_tokens: 1024,
           messages: [{ role: "user", content: extractPrompt }],
@@ -11885,7 +11943,7 @@ export default function App() {
 
   function updateProviderConfig(
     provider: Provider,
-    updates: Partial<Pick<AIKey, "api_key" | "model" | "reasoning_effort">>,
+    updates: Partial<Pick<AIKey, "api_key" | "model" | "workspace_id" | "reasoning_effort">>,
   ) {
     setStore((prev) => ({
       ...prev,
@@ -11917,6 +11975,7 @@ export default function App() {
     const currentDraft = providerDraftByProvider[provider] ?? {
       api_key: "",
       model: DEFAULT_MODELS[provider],
+      workspace_id: "",
       reasoning_effort:
         provider === "openai" ? DEFAULT_OPENAI_REASONING_EFFORT : null,
     };
@@ -11924,6 +11983,10 @@ export default function App() {
     const nextDraft: ProviderDraft = {
       api_key: updates.api_key ?? currentDraft.api_key,
       model: nextModel,
+      workspace_id:
+        provider === "anthropic"
+          ? updates.workspace_id ?? currentDraft.workspace_id ?? ""
+          : "",
       reasoning_effort:
         provider === "openai"
           ? normalizeOpenAIReasoningEffort(
@@ -11938,7 +12001,10 @@ export default function App() {
       [provider]: nextDraft,
     }));
 
-    if (provider === "anthropic" && updates.api_key !== undefined) {
+    if (
+      provider === "anthropic"
+      && (updates.api_key !== undefined || updates.workspace_id !== undefined)
+    ) {
       setAnthropicModelDropdownOpen(false);
       setAnthropicModelOptions([]);
       setAnthropicModelOptionsMessage(null);
@@ -11975,14 +12041,14 @@ export default function App() {
     }
   }
 
-  async function loadAnthropicModelOptions(apiKey: string) {
+  async function loadAnthropicModelOptions(apiKey: string, workspaceId?: string) {
     setAnthropicModelOptionsLoading(true);
     setAnthropicModelOptionsMessage(null);
     try {
       const options =
         Platform.OS === "web"
-          ? await fetchAnthropicModelsViaWebProxy(apiKey)
-          : await fetchAnthropicModelsDirect(apiKey);
+          ? await fetchAnthropicModelsViaWebProxy(apiKey, workspaceId)
+          : await fetchAnthropicModelsDirect(apiKey, workspaceId);
 
       setAnthropicModelOptions(options);
       if (options.length === 0) {
@@ -12063,6 +12129,7 @@ export default function App() {
     const draft = providerDraftByProvider.anthropic ?? {
       api_key: "",
       model: DEFAULT_MODELS.anthropic,
+      workspace_id: "",
     };
     const apiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) {
@@ -12074,7 +12141,7 @@ export default function App() {
       return;
     }
 
-    await loadAnthropicModelOptions(apiKey);
+    await loadAnthropicModelOptions(apiKey, draft.workspace_id);
   }
 
   async function toggleOpenAIModelDropdown() {
@@ -12156,6 +12223,9 @@ export default function App() {
 
     const normalizedApiKey = draft.api_key.trim();
     const normalizedModel = normalizeProviderModel(provider, draft.model);
+    const normalizedWorkspaceId = provider === "anthropic"
+      ? normalizeAnthropicWorkspaceId(draft.workspace_id)
+      : "";
     const normalizedReasoningEffort =
       provider === "openai"
         ? normalizeOpenAIReasoningEffort(draft.reasoning_effort, normalizedModel)
@@ -12184,6 +12254,7 @@ export default function App() {
       updateProviderConfig(provider, {
         api_key: "",
         model: normalizedModel,
+        workspace_id: normalizedWorkspaceId,
         reasoning_effort: normalizedReasoningEffort,
       });
       updateProviderDraft(
@@ -12191,6 +12262,7 @@ export default function App() {
         {
           api_key: "",
           model: normalizedModel,
+          workspace_id: normalizedWorkspaceId,
           reasoning_effort: normalizedReasoningEffort,
         },
         { markPending: false },
@@ -12217,6 +12289,21 @@ export default function App() {
       return;
     }
 
+    if (
+      provider === "anthropic"
+      && normalizedWorkspaceId
+      && !normalizedWorkspaceId.startsWith("wrkspc_")
+    ) {
+      const detail = "Error grave: el Workspace ID de Anthropic debe empezar por wrkspc_.";
+      setProviderConnectionStatus((prev) => ({
+        ...prev,
+        anthropic: { state: "disconnected", detail, severity: "error" },
+      }));
+      setProviderSaveLoading((prev) => ({ ...prev, anthropic: false }));
+      setError(detail);
+      return;
+    }
+
     setProviderConnectionStatus((prev) => ({
       ...prev,
       [provider]: {
@@ -12231,12 +12318,14 @@ export default function App() {
       is_active: true,
       api_key: normalizedApiKey,
       model: normalizedModel,
+      workspace_id: normalizedWorkspaceId,
     });
 
     if (check.ok) {
       updateProviderConfig(provider, {
         api_key: normalizedApiKey,
         model: normalizedModel,
+        workspace_id: normalizedWorkspaceId,
         reasoning_effort: normalizedReasoningEffort,
       });
       updateProviderDraft(
@@ -12244,6 +12333,7 @@ export default function App() {
         {
           api_key: normalizedApiKey,
           model: normalizedModel,
+          workspace_id: normalizedWorkspaceId,
           reasoning_effort: normalizedReasoningEffort,
         },
         { markPending: false },
@@ -12254,6 +12344,7 @@ export default function App() {
         {
           api_key: draft.api_key,
           model: normalizedModel,
+          workspace_id: draft.workspace_id,
           reasoning_effort: normalizedReasoningEffort,
         },
         { markPending: false },
@@ -12287,8 +12378,18 @@ export default function App() {
     if (!modal) return;
     const provider = modal.provider;
 
-    updateProviderConfig(provider, { api_key: "" });
-    updateProviderDraft(provider, { api_key: "" }, { markPending: false });
+    updateProviderConfig(provider, {
+      api_key: "",
+      ...(provider === "anthropic" ? { workspace_id: "" } : {}),
+    });
+    updateProviderDraft(
+      provider,
+      {
+        api_key: "",
+        ...(provider === "anthropic" ? { workspace_id: "" } : {}),
+      },
+      { markPending: false },
+    );
     setProviderConnectionStatus((prev) => ({
       ...prev,
       [provider]: {
@@ -12847,7 +12948,7 @@ export default function App() {
                 {showByokExplain ? (
                   <View style={{ backgroundColor: "rgba(255,255,255,0.04)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
                     <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
-                      BYOK significa "Bring Your Own Key" (Trae Tu Propia Clave). Gymnasia no incluye acceso a ningún proveedor de IA. Tú proporcionas tu propia API key de OpenAI, Anthropic o Google, y las conversaciones se envían directamente desde tu dispositivo al proveedor. Tu clave nunca sale de tu teléfono.
+                      BYOK significa "Bring Your Own Key" (Trae Tu Propia Clave). Gymnasia no incluye acceso a ningún proveedor de IA. Tú proporcionas tu propia API key de OpenAI, Anthropic o Google, y las conversaciones se envían directamente desde tu dispositivo al proveedor. Gymnasia no envía tu clave a servidores propios; la usa únicamente para autenticar las peticiones ante el proveedor que eliges.
                     </Text>
                   </View>
                 ) : null}
@@ -18629,6 +18730,7 @@ export default function App() {
                     const draft = providerDraftByProvider[key.provider] ?? {
                       api_key: key.api_key,
                       model: key.model,
+                      workspace_id: key.workspace_id ?? "",
                     };
                     const hasDraftApiKey = !!providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
                     const hasPersistedProviderApiKey = !!providerCredential(key.api_key, IS_FAKE_PROVIDER_MODE);
@@ -18774,6 +18876,47 @@ export default function App() {
                           </Pressable>
                         </View>
 
+                        {key.provider === "anthropic" ? (
+                          <View style={{ gap: 6 }}>
+                            <View
+                              style={{
+                                minHeight: 48,
+                                borderRadius: mobileTheme.radius.md,
+                                borderWidth: 1,
+                                borderColor: "rgba(61,70,82,0.9)",
+                                backgroundColor: "#1A1E25",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                paddingHorizontal: 12,
+                                gap: 8,
+                              }}
+                            >
+                              <Feather name="briefcase" size={14} color="#778091" />
+                              <TextInput
+                                testID="provider-workspace-id-anthropic"
+                                style={{
+                                  flex: 1,
+                                  minHeight: 40,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 0,
+                                }}
+                                value={draft.workspace_id ?? ""}
+                                onChangeText={(value) => updateProviderDraft(
+                                  "anthropic",
+                                  { workspace_id: value },
+                                )}
+                                placeholder="Workspace ID (wrkspc_…) — opcional"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                              />
+                            </View>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
+                              Solo lo exigen las claves de Anthropic vinculadas a identidad. Lo encontrarás en la consola de Anthropic, dentro de Settings → Workspaces.
+                            </Text>
+                          </View>
+                        ) : null}
+
                         <View style={{ flexDirection: "row", gap: 8 }}>
                           <Pressable
                             testID={`provider-save-${key.provider}`}
@@ -18886,7 +19029,10 @@ export default function App() {
                                     });
                                     return;
                                   }
-                                  loadAnthropicModelOptions(anthropicApiKey);
+                                  loadAnthropicModelOptions(
+                                    anthropicApiKey,
+                                    draft.workspace_id,
+                                  );
                                 }}
                                 style={{
                                   minHeight: 34,
