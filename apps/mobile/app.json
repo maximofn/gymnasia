@@ -38,7 +38,9 @@
       ],
       "blockedPermissions": [
         "USE_EXACT_ALARM",
-        "REQUEST_INSTALL_PACKAGES"
+        "REQUEST_INSTALL_PACKAGES",
+        "RECORD_AUDIO",
+        "SYSTEM_ALERT_WINDOW"
       ]
     },
     "web": {
@@ -51,6 +53,12 @@
     },
     "plugins": [
       "expo-secure-store",
+      [
+        "expo-av",
+        {
+          "microphonePermission": false
+        }
+      ],
       [
         "expo-notifications",
         {

@@ -30,7 +30,7 @@
     "CAMERA": "photos-and-videos",
     "READ_EXTERNAL_STORAGE": "photos-and-videos",
     "WRITE_EXTERNAL_STORAGE": "photos-and-videos",
-    "SYSTEM_ALERT_WINDOW": "none"
+    "MODIFY_AUDIO_SETTINGS": "none"
   },
   "storageKeys": [
     {

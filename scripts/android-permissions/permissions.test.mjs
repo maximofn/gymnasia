@@ -1,4 +1,5 @@
-// Tests de la política de permisos Android publicables (GYM-191).
+// Tests de la política de permisos Android publicables, creada en GYM-191
+// (ticket para retirar USE_EXACT_ALARM y proteger el manifest).
 //
 // Cubren tres cosas distintas: que el repositorio real cumple la política
 // (contrato), que el evaluador detecta cada forma de incumplimiento (unidad),
@@ -47,17 +48,38 @@ test("REQUEST_INSTALL_PACKAGES no se declara y sí se bloquea", () => {
     "Sin blockedPermissions, una dependencia puede reintroducirlo por manifest merger.");
 });
 
+test("el AAB de Producción no puede declarar micrófono ni superposición", () => {
+  const configured = readConfiguredPermissions(policy);
+  for (const permission of ["RECORD_AUDIO", "SYSTEM_ALERT_WINDOW"]) {
+    assert.equal(configured.permissions.includes(permission), false,
+      `${permission} no corresponde a ninguna función de Gymnasia.`);
+    assert.equal(configured.blockedPermissions.includes(permission), true,
+      `${permission} debe neutralizarse aunque una dependencia lo aporte.`);
+  }
+});
+
 test("SCHEDULE_EXACT_ALARM sigue declarado", () => {
   const configured = readConfiguredPermissions(policy);
   assert.equal(configured.permissions.includes("SCHEDULE_EXACT_ALARM"), true,
     "Es el permiso concedible por el usuario que conserva la puntualidad del aviso de descanso.");
 });
 
-test("ninguna dependencia instalada declara hoy un permiso prohibido", () => {
+test("ninguna dependencia no reconocida declara hoy un permiso prohibido", () => {
   const manifests = collectManifestPermissions(policy);
   const blocked = policy.blockedPermissions.map(normalizePermission);
-  const offenders = manifests.filter((m) => m.permissions.some((p) => blocked.includes(p)));
+  const acknowledged = new Set(policy.acknowledgedContributors ?? []);
+  const offenders = manifests.filter((m) =>
+    !acknowledged.has(m.packageName) && m.permissions.some((p) => blocked.includes(p)));
   assert.deepEqual(offenders.map((m) => m.packageName), []);
+});
+
+test("react-native solo está reconocido porque SYSTEM_ALERT_WINDOW queda bloqueado", () => {
+  assert.ok(policy.acknowledgedContributors.includes("react-native"));
+  assert.ok(policy.blockedPermissions.includes("SYSTEM_ALERT_WINDOW"));
+  const reactNative = collectManifestPermissions(policy)
+    .find((manifest) => manifest.packageName === "react-native"
+      && manifest.permissions.includes("SYSTEM_ALERT_WINDOW"));
+  assert.ok(reactNative, "el contrato debe vigilar el manifest debug que origina el permiso");
 });
 
 // --- Vivacidad del escáner ---------------------------------------------------

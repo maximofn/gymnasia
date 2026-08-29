@@ -154,20 +154,26 @@ en Data safety, que el guard rail verifica en `permissionDataSafetyImpact`.
 | `RECEIVE_BOOT_COMPLETED` | Ninguno | Reprogramar avisos tras reiniciar |
 | `FOREGROUND_SERVICE` | Ninguno | Declarado sin uso; retirada trazada en GYM-186 (ticket para conciliar la configuración Expo con Android) |
 
-`USE_EXACT_ALARM` y `REQUEST_INSTALL_PACKAGES` están bloqueados expresamente. El
-segundo sostiene que la aplicación no instala APK externos: la variante de producción
-se actualiza exclusivamente mediante Google Play.
+`USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y
+`SYSTEM_ALERT_WINDOW` están bloqueados expresamente. Gymnasia no instala APK externos,
+no graba audio y no dibuja sobre otras aplicaciones. `expo-av` se configura además con
+`microphonePermission: false`; el bloqueo impide que un cambio de dependencia vuelva a
+introducir el micrófono sin romper el guard rail.
 
 Permisos que aportan las dependencias al manifest fusionado y que sí afectan a la
 declaración: `CAMERA`, `READ_EXTERNAL_STORAGE` y `WRITE_EXTERNAL_STORAGE` (de
 `expo-image-picker`) sostienen la categoría *Photos and videos*.
 
-⚠️ **Verificar sobre el artefacto, no sobre el fuente.** El manifest de `expo prebuild`
-en local arrastra además `RECORD_AUDIO`, `MODIFY_AUDIO_SETTINGS` y `SYSTEM_ALERT_WINDOW`
-desde `expo-dev-client`. Si `RECORD_AUDIO` apareciese en el manifest fusionado del AAB
-de producción, habría que declarar micrófono. Comprobarlo en GYM-198 (ticket para
-generar y validar el Android App Bundle de producción) con
-`npm run check:android-permissions` y la inspección del artefacto.
+`MODIFY_AUDIO_SETTINGS` no trata datos y se conserva: `expo-av` lo necesita para
+configurar el enrutado y las interrupciones de los avisos sonoros de descanso.
+
+⚠️ **Verificar sobre el artefacto, no sobre el fuente.** La primera build production de
+la PR de GYM-197 (ticket para preparar la ficha española de Google Play) demostró que
+`RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW` podían sobrevivir al manifest fusionado aunque no
+estuvieran en `android.permissions`. El primero procedía del plugin de `expo-av`; el
+segundo, del manifest debug de React Native. Esa build quedó invalidada. GYM-198 (ticket
+para generar y validar el Android App Bundle de producción) debe comprobar de nuevo el
+AAB final y bloquearlo si reaparece cualquiera de los dos.
 
 ---
 
