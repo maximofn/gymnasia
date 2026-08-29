@@ -485,7 +485,9 @@ Only non-obvious gotchas that could recur are kept here.
   `Audio.setAudioModeAsync` para los avisos sonoros y no accede al micrófono.
 - Entorno local: macOS puede mostrar `/usr/bin/java` aunque sea solo el stub que
   responde que no hay runtime. En esta máquina bundletool funciona con
-  `/opt/homebrew/opt/openjdk/bin/java`.
+  `/opt/homebrew/opt/openjdk/bin/java`. Además, `keytool -printcert -jarfile`
+  falla bajo el locale español con `MissingFormatArgumentException`; forzar
+  `-J-Duser.language=en -J-Duser.country=US` permite imprimir el certificado.
 
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:

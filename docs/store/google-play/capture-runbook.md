@@ -3,6 +3,7 @@
 Estas capturas corresponden a GYM-197 (ticket para preparar la ficha española
 de Google Play). Deben obtenerse del mismo commit que el AAB final y desde un
 teléfono Android real. No se admiten mockups del diseño ni la versión web.
+El AAB aprobado, su commit y su digest están fijados en `aab-validation.md`.
 
 ## Preparación segura
 
