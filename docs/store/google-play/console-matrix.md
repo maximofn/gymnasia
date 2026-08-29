@@ -129,15 +129,29 @@ registrar la objeción y obtener una nueva decisión del mantenedor.
 
 No marcar una fila como completada hasta verificarla en Play Console:
 
-- [ ] Ficha y contactos guardados.
-- [ ] Icono, feature graphic y seis capturas cargados con alt text.
-- [ ] Categoría y etiquetas guardadas.
-- [ ] Audiencia, anuncios y App access enviados.
-- [ ] Cuestionario IARC enviado y resultado registrado.
-- [ ] Data safety enviado y previsualizado.
-- [ ] Health apps declaration enviada.
-- [ ] Declaración de IA y procedencia de assets completada.
-- [ ] Previsualización es-ES revisada en móvil y web sin truncados.
+- [x] Ficha y contactos guardados.
+- [x] Icono, feature graphic y seis capturas cargados. La consola actual no
+  expone un campo de texto alternativo para estos recursos; las descripciones
+  accesibles permanecen versionadas en `listing.es.json`.
+- [x] Categoría y etiquetas guardadas.
+- [x] Audiencia, anuncios y App access enviados.
+- [x] Cuestionario IARC enviado y resultado registrado: PEGI 3 para Europa.
+- [x] Data safety enviado y previsualizado.
+- [x] Health apps declaration enviada.
+- [x] Declaración de IA y procedencia de assets completada.
+- [x] Previsualización es-ES revisada sin truncados ni incoherencias entre
+  textos y recursos.
+
+Verificación final en Play Console, 29 de agosto de 2026:
+
+- el panel ya no muestra tareas pendientes de configuración;
+- `Contenido de la aplicación` muestra diez declaraciones completadas y ninguna
+  que requiera atención;
+- la ficha española aparece como `Lista para enviar a revisión`;
+- los recursos de teléfono están ordenados como Chat, Inicio, Sesión,
+  Estimador, Medidas y Proveedor;
+- el resumen de publicación conserva los cambios para el flujo posterior de
+  revisión y prueba cerrada, sin activar Producción.
 
 ## Fuentes oficiales verificadas el 29 de agosto de 2026
 
