@@ -1,0 +1,11 @@
+{
+  "id": "extension-triceps-declinada-mancuernas",
+  "name": "Extensión de tríceps declinada con mancuernas",
+  "image_male": "images/extension-triceps-declinada-mancuernas-male.webp",
+  "image_female": "images/extension-triceps-declinada-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Asegura los pies en un banco declinado y extiende dos mancuernas sobre los hombros. Mantén los brazos superiores quietos mientras flexionas los codos para llevar las cargas a ambos lados de la cabeza. Extiende los codos hasta recuperar la posición inicial."
+}

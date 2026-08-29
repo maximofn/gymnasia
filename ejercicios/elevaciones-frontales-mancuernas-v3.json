@@ -1,0 +1,11 @@
+{
+  "id": "elevaciones-frontales-mancuernas-v3",
+  "name": "Elevaciones frontales con mancuernas (variante 3)",
+  "image_male": "images/elevaciones-frontales-mancuernas-v3-male.webp",
+  "image_female": "images/elevaciones-frontales-mancuernas-v3-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["trapecio", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Coloca las mancuernas delante de los muslos con las palmas hacia el cuerpo. Eleva ambos brazos rectos al frente hasta quedar paralelos al suelo, conservando los hombros bajos. Regresa despacio y evita usar impulso de cadera."
+}

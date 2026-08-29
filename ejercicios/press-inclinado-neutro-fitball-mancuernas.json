@@ -1,0 +1,11 @@
+{
+  "id": "press-inclinado-neutro-fitball-mancuernas",
+  "name": "Press inclinado neutro con mancuernas sobre fitball",
+  "image_male": "images/press-inclinado-neutro-fitball-mancuernas-male.webp",
+  "image_female": "images/press-inclinado-neutro-fitball-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "tríceps", "core", "glúteos"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Apoya la parte alta de la espalda en un fitball y coloca el torso en ligera inclinación con los pies firmes. Sostén dos mancuernas junto al pecho con las palmas enfrentadas y presiónalas arriba. Baja sin dejar caer la cadera ni mover el balón."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "press-cubano-mancuernas-v2",
+  "name": "Press cubano con mancuernas (variante 2)",
+  "image_male": "images/press-cubano-mancuernas-v2-male.webp",
+  "image_female": "images/press-cubano-mancuernas-v2-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["manguito rotador", "trapecio", "tríceps"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Sostén dos mancuernas ligeras con los codos abiertos a la altura de los hombros. Manteniendo los codos fijos, gira los antebrazos desde abajo hasta la posición de portería y presiona las cargas arriba. Baja al mismo ritmo sin arquear la espalda."
+}

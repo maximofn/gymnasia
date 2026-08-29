@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inclinadas-fitball-mancuernas",
+  "name": "Aperturas inclinadas con mancuernas sobre fitball",
+  "image_male": "images/aperturas-inclinadas-fitball-mancuernas-male.webp",
+  "image_female": "images/aperturas-inclinadas-fitball-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "core", "glúteos"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Camina hacia delante desde el fitball hasta apoyar cabeza y escápulas, y ajusta la cadera para crear una ligera inclinación del torso. Con dos mancuernas sobre el pecho superior, abre y cierra los brazos en arco. Mantén los pies anchos y el balón estable."
+}

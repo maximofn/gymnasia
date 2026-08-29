@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-lateral-full-can-mancuernas",
+  "name": "Elevación lateral full can con mancuernas",
+  "image_male": "images/elevacion-lateral-full-can-mancuernas-male.webp",
+  "image_female": "images/elevacion-lateral-full-can-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["manguito rotador", "trapecio"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "De pie con mancuernas ligeras, orienta los pulgares hacia arriba. Eleva los brazos en el plano de las escápulas, ligeramente por delante del cuerpo, hasta la altura de los hombros. Baja con control sin encoger los hombros ni girar los pulgares hacia abajo."
+}

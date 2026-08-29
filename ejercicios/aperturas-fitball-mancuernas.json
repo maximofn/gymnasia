@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-fitball-mancuernas",
+  "name": "Aperturas con mancuernas sobre fitball",
+  "image_male": "images/aperturas-fitball-mancuernas-male.webp",
+  "image_female": "images/aperturas-fitball-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "core", "glúteos"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la cabeza y la parte alta de la espalda sobre un fitball, con los pies separados y la cadera elevada. Sostén dos mancuernas sobre el pecho y abre los brazos con los codos suavemente flexionados. Cierra el arco manteniendo inmóviles el balón y la pelvis."
+}

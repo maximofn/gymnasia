@@ -1,0 +1,11 @@
+{
+  "id": "press-banca-agarre-cerrado-mancuernas-v2",
+  "name": "Press de banca con agarre cerrado y mancuernas (variante 2)",
+  "image_male": "images/press-banca-agarre-cerrado-mancuernas-v2-male.webp",
+  "image_female": "images/press-banca-agarre-cerrado-mancuernas-v2-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": ["pecho", "hombro"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano con los pies apoyados y una mancuerna en cada mano. Mantén las mancuernas juntas sobre el centro del pecho y los codos pegados al torso. Bájalas de forma controlada hasta el pecho y empuja hacia arriba extendiendo los brazos sin separar las cargas."
+}

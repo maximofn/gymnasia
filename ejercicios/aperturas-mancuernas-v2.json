@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-mancuernas-v2",
+  "name": "Aperturas con mancuernas (variante 2)",
+  "image_male": "images/aperturas-mancuernas-v2-male.webp",
+  "image_female": "images/aperturas-mancuernas-v2-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "bíceps"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Túmbate en un banco plano con dos mancuernas sobre el pecho y las palmas enfrentadas. Conserva una ligera flexión de codos mientras abres los brazos en un arco amplio. Detente al sentir tensión en el pecho y vuelve a juntar las cargas sin chocarlas."
+}

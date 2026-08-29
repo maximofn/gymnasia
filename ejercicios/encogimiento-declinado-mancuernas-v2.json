@@ -1,0 +1,11 @@
+{
+  "id": "encogimiento-declinado-mancuernas-v2",
+  "name": "Encogimiento declinado con mancuernas (variante 2)",
+  "image_male": "images/encogimiento-declinado-mancuernas-v2-male.webp",
+  "image_female": "images/encogimiento-declinado-mancuernas-v2-female.webp",
+  "muscle_group": "trapecio",
+  "secondary_muscles": ["romboides", "antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo sobre un banco inclinado con los pies firmes y dos mancuernas bajo los hombros. Mantén los brazos rectos y acerca los hombros hacia las orejas mientras juntas suavemente las escápulas. Desciende sin balancear las cargas."
+}

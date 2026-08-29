@@ -1,0 +1,11 @@
+{
+  "id": "curl-dedos-mancuerna",
+  "name": "Curl de dedos con mancuerna",
+  "image_male": "images/curl-dedos-mancuerna-male.webp",
+  "image_female": "images/curl-dedos-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": ["agarre"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Siéntate y apoya el antebrazo sobre el muslo con la palma hacia arriba. Deja rodar una mancuerna con cuidado hacia las yemas sin perderla. Cierra los dedos para devolverla a la palma y flexiona ligeramente la muñeca antes de bajar de forma controlada."
+}

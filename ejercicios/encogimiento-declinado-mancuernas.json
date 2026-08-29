@@ -1,0 +1,11 @@
+{
+  "id": "encogimiento-declinado-mancuernas",
+  "name": "Encogimiento declinado con mancuernas",
+  "image_male": "images/encogimiento-declinado-mancuernas-male.webp",
+  "image_female": "images/encogimiento-declinado-mancuernas-female.webp",
+  "muscle_group": "trapecio",
+  "secondary_muscles": ["romboides", "antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho boca abajo en un banco inclinado y deja colgar una mancuerna en cada mano. Sin flexionar los codos, eleva los hombros y retrae ligeramente las escápulas. Haz una pausa arriba y vuelve a dejar que los brazos cuelguen de forma controlada."
+}

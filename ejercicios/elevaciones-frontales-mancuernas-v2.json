@@ -1,0 +1,11 @@
+{
+  "id": "elevaciones-frontales-mancuernas-v2",
+  "name": "Elevaciones frontales con mancuernas (variante 2)",
+  "image_male": "images/elevaciones-frontales-mancuernas-v2-male.webp",
+  "image_female": "images/elevaciones-frontales-mancuernas-v2-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["trapecio", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "De pie con una mancuerna en cada mano frente a los muslos, activa el abdomen y mantén los codos apenas flexionados. Eleva las dos cargas hacia delante hasta la altura de los hombros. Baja lentamente sin balancear el tronco."
+}

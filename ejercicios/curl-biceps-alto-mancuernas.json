@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-alto-mancuernas",
+  "name": "Curl alto de bíceps con mancuernas",
+  "image_male": "images/curl-biceps-alto-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-alto-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["hombro", "antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Eleva los brazos a los lados hasta que los codos queden a la altura de los hombros, con una mancuerna en cada mano. Mantén los brazos superiores horizontales y flexiona los codos para acercar las cargas a la cabeza. Extiende de nuevo sin dejar caer los codos."
+}

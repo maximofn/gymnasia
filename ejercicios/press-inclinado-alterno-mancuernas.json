@@ -1,0 +1,11 @@
+{
+  "id": "press-inclinado-alterno-mancuernas",
+  "name": "Press inclinado alterno con mancuernas",
+  "image_male": "images/press-inclinado-alterno-mancuernas-male.webp",
+  "image_female": "images/press-inclinado-alterno-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "tríceps"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la espalda en un banco inclinado y sostén dos mancuernas junto al pecho. Presiona una carga hasta extender el brazo mientras la otra permanece abajo y estable. Baja la primera, alterna el lado y evita rotar el torso."
+}

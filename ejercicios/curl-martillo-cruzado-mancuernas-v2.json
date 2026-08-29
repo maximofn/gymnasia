@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-cruzado-mancuernas-v2",
+  "name": "Curl martillo cruzado con mancuernas (variante 2)",
+  "image_male": "images/curl-martillo-cruzado-mancuernas-v2-male.webp",
+  "image_female": "images/curl-martillo-cruzado-mancuernas-v2-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Mantén el torso erguido, los codos junto a las costillas y las palmas enfrentadas. Eleva una mancuerna cruzando suavemente hacia el pectoral contrario, sin girar la muñeca ni balancear el cuerpo. Desciende despacio y repite con el otro brazo."
+}
