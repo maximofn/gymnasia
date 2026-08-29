@@ -2287,6 +2287,20 @@
           ]
         },
         {
+          "id": "GYM-224",
+          "title": "Investigar Dactyl para publicar una versión iPhone de Gymnasia",
+          "state": "backlog",
+          "summary": "Comparar la ruta iOS existente de Expo/EAS con una reescritura o un prototipo SwiftUI en Dactyl, verificando paridad, exportación, costes, credenciales, privacidad, dependencia del proveedor y compatibilidad con el diseño local-first.",
+          "dependsOn": [],
+          "related": [
+            "GYM-187",
+            "GYM-190",
+            "GYM-193",
+            "GYM-202",
+            "GYM-203"
+          ]
+        },
+        {
           "id": "GYM-53",
           "title": "Eliminar documentación de la arquitectura backend/web obsoleta",
           "state": "todo",
