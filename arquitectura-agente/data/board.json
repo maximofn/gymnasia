@@ -172,7 +172,7 @@
         {
           "id": "GYM-197",
           "title": "Preparar la ficha de Google Play",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Completar textos, recursos, capturas, clasificación, acceso y declaraciones de una ficha española fiel al AAB y preparada para localizarse.",
           "dependsOn": [
             "GYM-190",
@@ -2783,7 +2783,7 @@
         {
           "id": "GYM-12",
           "title": "Importar ejercicios del dataset hasaneyldrm/exercises-dataset",
-          "state": "done",
+          "state": "in_progress",
           "summary": "Ampliar el repo local de ejercicios (~39 hoy) sin introducir backend: sigue siendo JSON estático.",
           "dependsOn": [],
           "related": []
