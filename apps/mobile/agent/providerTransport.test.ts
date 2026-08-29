@@ -2,9 +2,13 @@ import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  anthropicApiHeaders,
+  anthropicProxyCredentials,
   createFakeProviderResult,
   DEFAULT_GOOGLE_MODEL,
+  explainAnthropicError,
   googleApiHeaders,
+  normalizeAnthropicWorkspaceId,
   normalizeGoogleModel,
   providerCredential,
 } from "./providerTransport";
@@ -51,5 +55,35 @@ describe("development provider transport", () => {
       Accept: "text/event-stream",
       "x-goog-api-key": "reviewer-key",
     });
+  });
+
+  it("adds an Anthropic workspace only when the user configured one", () => {
+    expect(anthropicApiHeaders(" key ", "2023-06-01", " wrkspc_demo ", {
+      Accept: "text/event-stream",
+    })).toEqual({
+      Accept: "text/event-stream",
+      "x-api-key": "key",
+      "anthropic-version": "2023-06-01",
+      "anthropic-workspace-id": "wrkspc_demo",
+    });
+    expect(anthropicApiHeaders("key", "2023-06-01", "  ")).not.toHaveProperty(
+      "anthropic-workspace-id",
+    );
+  });
+
+  it("keeps workspace configuration out of the Anthropic message body contract", () => {
+    expect(anthropicProxyCredentials(" key ", " wrkspc_demo ")).toEqual({
+      api_key: "key",
+      workspace_id: "wrkspc_demo",
+    });
+    expect(anthropicProxyCredentials("key", "")).toEqual({ api_key: "key" });
+    expect(normalizeAnthropicWorkspaceId(" wrkspc_demo ")).toBe("wrkspc_demo");
+  });
+
+  it("turns the identity-linked Anthropic error into an actionable message", () => {
+    expect(explainAnthropicError(
+      "anthropic-workspace-id is required when authenticating with an identity-linked API key",
+    )).toContain("wrkspc_…");
+    expect(explainAnthropicError("another error")).toBe("another error");
   });
 });

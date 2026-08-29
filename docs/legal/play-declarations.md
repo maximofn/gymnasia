@@ -8,7 +8,7 @@ este documento conserva las respuestas verificadas contra el código y la polít
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v7` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v8` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -54,7 +54,7 @@ mantenedor.
 
 | Categoría de Play | Collected | Shared | Opcional | Propósito | Respaldo |
 |---|---|---|---|---|---|
-| Personal info › User IDs | Sí | No | Sí | Funcionalidad de la app: autenticar cada petición con la clave de la cuenta BYOK elegida | La clave solo se envía al proveedor al que pertenece |
+| Personal info › User IDs | Sí | No | Sí | Funcionalidad de la app: autenticar cada petición con la clave de la cuenta BYOK elegida y, cuando Anthropic lo exige, dirigirla al workspace configurado | La clave solo se envía al proveedor al que pertenece; el identificador de workspace solo a Anthropic |
 | Personal info › Name, Email | No | No | — | No se recogen | No hay cuenta |
 | Personal info › Other info | Sí | No | Sí | Funcionalidad de la app: contexto opcional como sexo, altura, fecha de nacimiento u otros datos escritos | Mensajes y resultados autorizados enviados al proveedor |
 | Health and fitness › Health info | Sí | No | Sí | Funcionalidad de la app: responder a contexto que puede mencionar síntomas, lesiones o condiciones | Proveedor BYOK o denuncia confirmada |

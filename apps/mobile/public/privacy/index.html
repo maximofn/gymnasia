@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
-<meta name="gymnasia-policy-version" content="2026-08-v7">
-<meta name="gymnasia-policy-digest" content="sha256:36b75ab1418f1d449c670a76e438f4e2e76962b5399b0adb79d571c2746e482a">
+<meta name="gymnasia-policy-version" content="2026-08-v8">
+<meta name="gymnasia-policy-digest" content="sha256:297d5c9e4d17b77c0f0521866375c10624bab1c8c18c53070cffc9e0a47033b2">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-08-v7 · in force since 2026-08-29 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-08-v8 · in force since 2026-08-29 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -97,6 +97,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Assistant memory</strong>: free-text notes that you or the assistant save in order to remember things between conversations. It may contain anything you have mentioned in the chat, including health data.</li>
       <li><strong>Legacy credentials from removed features</strong>: if an earlier version stored credentials in the secure keystore, a normal update may keep them encrypted so they can be reused if the feature returns. The current version neither reads nor transmits them. “Reset local data” deletes them.</li>
       <li><strong>Preferences</strong>: interface and notification settings, and your per-provider consent for the optional additional health-safety evaluation.</li>
+      <li><strong>AI provider configuration</strong>: the selected model and, when Anthropic requires it for an identity-linked key, the workspace identifier (<code>wrkspc_…</code>).</li>
       <li><strong>Debug log</strong>: a technical record of up to 1000 entries covering the rest-timer alerts delivered, which include the exercise name and set number. It is never sent over the network; you can view and clear it from Settings.</li>
     </ul>
   </section>
@@ -104,7 +105,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="almacenamiento-local">
     <h2><a href="#almacenamiento-local">Where it is stored</a></h2>
     <p>In the app's private storage on your device. On Android, other apps cannot read it.</p>
-    <p><strong>API keys</strong> and, when left by an earlier version, legacy credentials from removed features are treated differently: they are stored in the operating system's secure keystore, separate from everything else.</p>
+    <p><strong>API keys</strong> and, when left by an earlier version, legacy credentials from removed features are treated differently: they are stored in the operating system's secure keystore, separate from everything else. The optional Anthropic workspace identifier is not a secret key and is stored with the app's private configuration.</p>
     <p>If your device has Android backup enabled, the operating system may include the app's data in your Google account backup. That is governed by your device settings and Google's privacy policy, not by this app.</p>
   </section>
 
@@ -114,7 +115,9 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <ul>
       <li>The key is stored <strong>in your device's secure keystore</strong> and is never sent to any developer server, because no such server exists.</li>
       <li>The key is sent <strong>only to the provider it belongs to</strong>, with each request, as their API requires.</li>
+      <li>If an identity-linked Anthropic key requires a workspace identifier, that identifier is stored locally and sent only to Anthropic to route requests to the selected workspace.</li>
       <li>The key is <strong>not included</strong> in the backup file you export.</li>
+      <li>The workspace identifier is not included in that backup either.</li>
       <li>You can delete it at any time from Settings.</li>
     </ul>
     <p><strong>Protection is weaker in the browser.</strong> The web version of Gymnasia runs in a browser, where no operating system keystore exists: there, the key is stored in browser storage alongside the rest of your data, without that additional layer of protection. The app warns you about this on the provider settings screen. If this concerns you, use the mobile app.</p>
@@ -128,6 +131,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>the last 20 messages</strong> of the conversation thread;</li>
       <li>the results of the tools the assistant uses at your request, which may include your weight, your body fat percentage, your measurements, the day's meals or your routines;</li>
       <li>in the food estimator, <strong>the images you provide</strong>, encoded within the request.</li>
+      <li>for Anthropic, the workspace identifier, only when you configured one because the key type requires it.</li>
     </ul>
     <p>If you enable <strong>additional health-safety evaluation</strong> for a provider in Settings, the current text may be sent to that same provider in a separate classification request before the normal response is generated. This option is off by default, requires separate consent for each provider, and can be revoked at any time. Messages classified locally as high or critical risk are intercepted on the device and are not sent to the provider.</p>
     <p>That content is subject to the privacy policy and terms of the provider you chose, under your own account with them:</p>
@@ -245,7 +249,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-08-v7 · 2026-08-29</p>
+    <p>Gymnasia Privacy Policy · 2026-08-v8 · 2026-08-29</p>
   </footer>
 </main>
 </body>

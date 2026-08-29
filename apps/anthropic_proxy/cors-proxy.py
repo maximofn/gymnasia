@@ -34,6 +34,22 @@ ANTHROPIC_API = "https://api.anthropic.com"
 ANTHROPIC_API_VERSION = "2023-06-01"
 
 
+def anthropic_headers(api_key: str, workspace_id: str = "", *, stream: bool = False):
+    headers = {
+        "x-api-key": api_key,
+        "anthropic-version": ANTHROPIC_API_VERSION,
+        "content-type": "application/json",
+    }
+    normalized_workspace_id = (
+        workspace_id.strip() if isinstance(workspace_id, str) else ""
+    )
+    if normalized_workspace_id:
+        headers["anthropic-workspace-id"] = normalized_workspace_id
+    if stream:
+        headers["accept"] = "text/event-stream"
+    return headers
+
+
 @app.get("/health")
 def health():
     return {"ok": True}
@@ -44,12 +60,9 @@ async def anthropic_verify(req: FRequest):
     body = await req.json()
     api_key = body.get("api_key", "")
     model = body.get("model", "claude-3-5-sonnet-latest")
+    workspace_id = body.get("workspace_id", "")
 
-    headers = {
-        "x-api-key": api_key,
-        "anthropic-version": ANTHROPIC_API_VERSION,
-        "content-type": "application/json",
-    }
+    headers = anthropic_headers(api_key, workspace_id)
     payload = json.dumps({
         "model": model,
         "max_tokens": 1,
@@ -76,15 +89,10 @@ async def anthropic_verify(req: FRequest):
 async def anthropic_messages(req: FRequest):
     body = await req.json()
     api_key = body.pop("api_key", "")
+    workspace_id = body.pop("workspace_id", "")
     should_stream = bool(body.get("stream"))
 
-    headers = {
-        "x-api-key": api_key,
-        "anthropic-version": ANTHROPIC_API_VERSION,
-        "content-type": "application/json",
-    }
-    if should_stream:
-        headers["accept"] = "text/event-stream"
+    headers = anthropic_headers(api_key, workspace_id, stream=should_stream)
     payload = json.dumps(body).encode()
 
     try:
@@ -127,11 +135,9 @@ async def anthropic_messages(req: FRequest):
 async def anthropic_models(req: FRequest):
     body = await req.json()
     api_key = body.get("api_key", "")
+    workspace_id = body.get("workspace_id", "")
 
-    headers = {
-        "x-api-key": api_key,
-        "anthropic-version": ANTHROPIC_API_VERSION,
-    }
+    headers = anthropic_headers(api_key, workspace_id)
 
     try:
         r = Request(f"{ANTHROPIC_API}/v1/models", headers=headers, method="GET")

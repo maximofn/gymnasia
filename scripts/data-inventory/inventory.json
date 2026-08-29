@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia. Se creó en GYM-190 (ticket para publicar la política de privacidad y preparar las declaraciones de salud). De aquí salen la política publicada y las respuestas de Data safety en docs/legal/play-declarations.md. Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198 (ticket para generar y validar el Android App Bundle de producción). Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-08-v7",
+  "policyVersion": "2026-08-v8",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -38,7 +38,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Estado principal: rutinas, historial de entrenamiento, dieta por día, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con peso y porcentaje de grasa, e hilos y mensajes completos del chat con la IA. Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
+      "purpose": "Estado principal: rutinas, historial de entrenamiento, dieta por día, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con peso y porcentaje de grasa, hilos y mensajes completos del chat con la IA, y configuración de proveedores (incluido el identificador opcional del workspace de Anthropic, pero no las claves BYOK en móvil). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
       "clearedBy": "reset"
     },
     {
@@ -240,7 +240,7 @@
       "host": "api.anthropic.com",
       "trigger": "user-initiated",
       "requiresUserKey": true,
-      "sends": "La clave BYOK en la cabecera x-api-key y el mismo contexto, mensajes, resultados autorizados e imágenes descritos para api.openai.com.",
+      "sends": "La clave BYOK en la cabecera x-api-key, el identificador de workspace en anthropic-workspace-id cuando el usuario lo configura, y el mismo contexto, mensajes, resultados autorizados e imágenes descritos para api.openai.com.",
       "thirdParty": "Anthropic"
     },
     {
@@ -298,7 +298,7 @@
       "id": "anthropic-cors-proxy",
       "source": "env:EXPO_PUBLIC_API_BASE_URL",
       "trigger": "user-initiated",
-      "sends": "En web, y solo si el usuario configura esa variable, las peticiones a Anthropic pasan por la URL indicada e incluyen la clave de API en el cuerpo. Vacía por defecto, así que en las compilaciones publicadas no se usa.",
+      "sends": "En web, y solo si el usuario configura esa variable, las peticiones a Anthropic pasan por la URL indicada e incluyen la clave de API y, cuando se configuró, el identificador de workspace en el cuerpo. Vacía por defecto, así que en las compilaciones publicadas no se usa.",
       "thirdParty": "El que elija quien despliegue la variable"
     },
     {
