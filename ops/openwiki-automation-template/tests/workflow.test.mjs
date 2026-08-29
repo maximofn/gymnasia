@@ -77,6 +77,16 @@ test("preserves reviewed repository instructions when publishing docs", async ()
 
   assert.match(
     workflow,
+    /name: Materialize linked agent instructions for OpenWiki/u,
+  );
+  assert.match(
+    workflow,
+    /\[ ! -L AGENTS\.md \].*readlink AGENTS\.md.*CLAUDE\.md/su,
+  );
+  assert.match(workflow, /unlink AGENTS\.md/u);
+  assert.match(workflow, /cp --preserve=mode CLAUDE\.md AGENTS\.md/u);
+  assert.match(
+    workflow,
     /git restore --source=origin\/main -- AGENTS\.md CLAUDE\.md/u,
   );
   assert.match(workflow, /git add -A -- openwiki \.openwikiignore/u);

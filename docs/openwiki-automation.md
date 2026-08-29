@@ -114,18 +114,25 @@ activos. Todos los secretos y la variable de las tablas anteriores están
 configurados; `OPENWIKI_OAUTH_SEED` se eliminó después de verificar la
 restauración desde artefacto.
 
-Versión `0.3.3` verificada el 25 de agosto de 2026:
+Versión `0.4.3` verificada el 29 de agosto de 2026:
 
-- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/32868306275)
+- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/33243237559)
   terminó correctamente con Code Brain, LangSmith, Personal Brain, renovación
   cifrada y publicación documental;
-- los artefactos `openwiki-oauth-state` y `openwiki-personal-state` se crearon
-  cifrados desde esa misma ejecución;
-- la rama fija creó la [PR de documentación #75](https://github.com/maximofn/gymnasia/pull/75);
-- el control de políticas rechazó una modificación incompatible de las
-  instrucciones y, tras restaurarlas, todos los checks quedaron en verde;
-- la plantilla pública y el repositorio privado están sincronizados en los
-  workflows, scripts, tests, versión y lockfile.
+- los artefactos cifrados `openwiki-oauth-state` y
+  `openwiki-personal-state` se renovaron desde esa misma ejecución;
+- la rama fija creó la [PR de documentación #102](https://github.com/maximofn/gymnasia/pull/102)
+  con 21 archivos permitidos, 6 Claims y todos los checks en verde; no incluyó
+  `CLAUDE.md`, `AGENTS.md` ni el estado transitorio `.run.json`;
+- como OpenWiki `0.4.3` todavía no admite que `AGENTS.md` sea un enlace a
+  `CLAUDE.md`, el runner materializa temporalmente ambos archivos, ejecuta la
+  actualización y restaura las instrucciones exactas de `main` antes de publicar;
+- la exportación estática del visualizador se verificó con 29 páginas y 105
+  enlaces;
+- la plantilla pública y el repositorio privado quedaron sincronizados en el
+  commit privado `48f532b`; sus [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/33243203597)
+  y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/33244043739)
+  terminaron correctamente.
 
 ### Permiso de PR
 
