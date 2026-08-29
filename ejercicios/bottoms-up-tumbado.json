@@ -1,0 +1,11 @@
+{
+  "id": "bottoms-up-tumbado",
+  "name": "Bottoms-up tumbado",
+  "image_male": "images/bottoms-up-tumbado-male.webp",
+  "image_female": "images/bottoms-up-tumbado-female.webp",
+  "muscle_group": "abdominales",
+  "secondary_muscles": ["oblicuos", "flexores de cadera"],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con los brazos junto al cuerpo y eleva las piernas sobre las caderas, flexionando ligeramente las rodillas si lo necesitas. Contrae el abdomen y enrolla la pelvis para despegar el sacro unos centímetros sin balancear las piernas. Haz una pausa arriba y baja las caderas lentamente manteniendo la zona lumbar controlada."
+}

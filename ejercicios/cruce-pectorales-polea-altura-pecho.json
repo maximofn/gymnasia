@@ -1,0 +1,11 @@
+{
+  "id": "cruce-pectorales-polea-altura-pecho",
+  "name": "Cruce de poleas a la altura del pecho",
+  "image_male": "images/cruce-pectorales-polea-altura-pecho-male.webp",
+  "image_female": "images/cruce-pectorales-polea-altura-pecho-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["deltoides anteriores", "bíceps"],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Colócate entre dos poleas ajustadas a la altura del pecho y adopta una zancada estable. Abre los brazos con una ligera flexión fija de los codos y el pecho elevado. Junta las agarraderas delante del esternón siguiendo un arco amplio, contrae los pectorales y vuelve despacio sin adelantar los hombros."
+}

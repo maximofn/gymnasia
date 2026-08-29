@@ -1,0 +1,11 @@
+{
+  "id": "jalon-lateral-barra-polea",
+  "name": "Jalón lateral con barra en polea",
+  "image_male": "images/jalon-lateral-barra-polea-male.webp",
+  "image_female": "images/jalon-lateral-barra-polea-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": ["bíceps", "romboides", "deltoides posteriores"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Siéntate frente a una polea alta y agarra la barra algo más abierta que los hombros, con las palmas al frente. Eleva el pecho y baja primero los hombros. Lleva los codos hacia abajo para acercar la barra a la parte alta del pecho y retorna lentamente hasta extender los brazos sin balancear el torso."
+}

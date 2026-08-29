@@ -1,0 +1,11 @@
+{
+  "id": "curl-nordico-asistido-polea-banco",
+  "name": "Curl nórdico asistido con polea en banco",
+  "image_male": "images/curl-nordico-asistido-polea-banco-male.webp",
+  "image_female": "images/curl-nordico-asistido-polea-banco-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "gemelos", "core"],
+  "equipment": "polea y banco",
+  "difficulty": "advanced",
+  "instructions": "Arrodíllate sobre un banco con las espinillas sujetas y toma cerca del pecho una agarradera conectada a una polea alta. Activa glúteos y abdomen para mantener el cuerpo recto desde las rodillas. Inclínate hacia delante lentamente mientras los isquiotibiales frenan el descenso y usa solo la asistencia necesaria del cable para volver erguido."
+}

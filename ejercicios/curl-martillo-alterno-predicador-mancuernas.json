@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-alterno-predicador-mancuernas",
+  "name": "Curl martillo alterno en banco predicador con mancuernas",
+  "image_male": "images/curl-martillo-alterno-predicador-mancuernas-male.webp",
+  "image_female": "images/curl-martillo-alterno-predicador-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazos"],
+  "equipment": "mancuernas y banco predicador",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco predicador con una mancuerna en cada mano y las palmas enfrentadas. Apoya completamente los brazos superiores en la almohadilla. Flexiona un codo con agarre martillo hasta acercar la mancuerna al hombro, baja con control y alterna el lado sin levantar los brazos del apoyo."
+}

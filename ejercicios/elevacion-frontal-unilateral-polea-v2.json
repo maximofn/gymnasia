@@ -1,0 +1,11 @@
+{
+  "id": "elevacion-frontal-unilateral-polea-v2",
+  "name": "Elevación frontal de hombro unilateral en polea",
+  "image_male": "images/elevacion-frontal-unilateral-polea-v2-male.webp",
+  "image_female": "images/elevacion-frontal-unilateral-polea-v2-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": ["trapecios", "pectoral superior", "core"],
+  "equipment": "polea",
+  "difficulty": "beginner",
+  "instructions": "Sitúate un paso delante de una polea baja y toma la agarradera con una mano frente al muslo. Fija las costillas y evita inclinarte hacia atrás. Dibuja un arco al frente hasta que la mano llegue a la altura del hombro, haz una pausa breve y desciende con control antes de cambiar de lado."
+}
