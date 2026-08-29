@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-banco-mancuernas",
+  "name": "Sentadilla a banco con mancuernas",
+  "image_male": "images/sentadilla-banco-mancuernas-male.webp",
+  "image_female": "images/sentadilla-banco-mancuernas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "core"],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie delante de un banco, de espaldas a él, con una mancuerna en cada mano junto a los muslos. Lleva las caderas atrás y flexiona las rodillas hasta tocar suavemente el banco con los glúteos sin sentarte ni relajarte. Empuja el suelo con todo el pie para volver a levantarte."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-fitball-pierna-elevada",
+  "name": "Curl de bíceps en fitball con pierna elevada",
+  "image_male": "images/curl-biceps-fitball-pierna-elevada-male.webp",
+  "image_female": "images/curl-biceps-fitball-pierna-elevada-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "core", "hombros"],
+  "equipment": "mancuernas y fitball",
+  "difficulty": "advanced",
+  "instructions": "Siéntate centrado en el fitball, planta un pie y eleva la otra pierna al frente. Mantén el torso vertical y flexiona las dos mancuernas a la vez hacia los hombros con los codos fijos junto al cuerpo. Haz una pausa breve, baja con control y conserva la pierna y el balón inmóviles."
+}

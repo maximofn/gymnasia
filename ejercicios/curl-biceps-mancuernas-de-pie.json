@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-mancuernas-de-pie",
+  "name": "Curl de bíceps con mancuernas de pie",
+  "image_male": "images/curl-biceps-mancuernas-de-pie-male.webp",
+  "image_female": "images/curl-biceps-mancuernas-de-pie-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con una mancuerna en cada mano, las palmas al frente y los brazos extendidos. Mantén los codos pegados al torso y flexiona ambos antebrazos hasta acercar las mancuernas a los hombros. Aprieta los bíceps y baja de forma controlada sin balancear el cuerpo."
+}

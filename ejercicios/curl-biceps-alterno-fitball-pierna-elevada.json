@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-alterno-fitball-pierna-elevada",
+  "name": "Curl de bíceps alterno en fitball con pierna elevada",
+  "image_male": "images/curl-biceps-alterno-fitball-pierna-elevada-male.webp",
+  "image_female": "images/curl-biceps-alterno-fitball-pierna-elevada-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "core", "hombros"],
+  "equipment": "mancuernas y fitball",
+  "difficulty": "advanced",
+  "instructions": "Siéntate en el centro del fitball con un pie firme en el suelo y la otra pierna elevada al frente. Sujeta una mancuerna en cada mano y mantén el torso erguido. Flexiona un brazo hacia el hombro sin balancear el cuerpo, baja lentamente y alterna el lado manteniendo estable el balón."
+}

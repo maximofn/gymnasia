@@ -1,0 +1,11 @@
+{
+  "id": "remo-inclinado-mancuernas",
+  "name": "Remo inclinado con mancuernas",
+  "image_male": "images/remo-inclinado-mancuernas-male.webp",
+  "image_female": "images/remo-inclinado-mancuernas-female.webp",
+  "muscle_group": "espalda superior",
+  "secondary_muscles": ["bíceps", "antebrazos", "deltoides posteriores"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta una mancuerna en cada mano, flexiona ligeramente las rodillas e inclina el torso desde las caderas manteniendo la espalda neutra. Deja los brazos extendidos y tira de las mancuernas hacia las costillas llevando los codos atrás. Junta los omóplatos y baja lentamente sin elevar el torso."
+}

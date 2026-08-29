@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-mancuernas-arm-blaster",
+  "name": "Curl de bíceps con mancuernas y arm blaster",
+  "image_male": "images/curl-biceps-mancuernas-arm-blaster-male.webp",
+  "image_female": "images/curl-biceps-mancuernas-arm-blaster-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos"],
+  "equipment": "mancuernas y arm blaster",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el arm blaster contra el torso y apoya los brazos superiores en sus extremos. Sujeta una mancuerna en cada mano con las palmas al frente y flexiona ambos codos hasta acercar las pesas a los hombros. Mantén los brazos fijados al soporte y baja lentamente sin impulso."
+}

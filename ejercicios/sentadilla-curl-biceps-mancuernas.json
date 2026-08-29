@@ -1,0 +1,11 @@
+{
+  "id": "sentadilla-curl-biceps-mancuernas",
+  "name": "Sentadilla con curl de bíceps y mancuernas",
+  "image_male": "images/sentadilla-curl-biceps-mancuernas-male.webp",
+  "image_female": "images/sentadilla-curl-biceps-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["cuádriceps", "glúteos", "antebrazos", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una mancuerna en cada mano junto a los muslos. Baja a una sentadilla controlada manteniendo las pesas cerca de las piernas. Empuja con los pies para levantarte y, al terminar de extender caderas y rodillas, flexiona ambas mancuernas hacia los hombros. Bájalas antes de iniciar la siguiente sentadilla."
+}

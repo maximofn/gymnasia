@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-zancada-gesto-bolos-mancuernas",
+  "name": "Curl de bíceps en zancada con gesto de bolos",
+  "image_male": "images/curl-biceps-zancada-gesto-bolos-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-zancada-gesto-bolos-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["hombros", "core", "cuádriceps", "glúteos"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Da un paso al frente y baja a una zancada mientras flexionas ambas mancuernas hacia los hombros. En la parte baja, gira el torso hacia la pierna adelantada y extiende el brazo de ese lado al frente mientras el opuesto se desplaza atrás, imitando un gesto de bolos. Deshaz el giro, vuelve de pie y alterna el lado."
+}

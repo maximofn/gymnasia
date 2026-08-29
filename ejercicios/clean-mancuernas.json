@@ -1,0 +1,11 @@
+{
+  "id": "clean-mancuernas",
+  "name": "Clean con mancuernas",
+  "image_male": "images/clean-mancuernas-male.webp",
+  "image_female": "images/clean-mancuernas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["isquiotibiales", "cuádriceps", "gemelos", "hombros", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Sujeta una mancuerna en cada mano y baja las caderas con la espalda neutra. Extiende de forma explosiva las caderas y las rodillas, encoge los hombros y guía las pesas cerca del cuerpo. Recibe las mancuernas a la altura de los hombros con las rodillas suaves y los codos orientados al frente."
+}
