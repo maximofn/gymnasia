@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-28",
+    "updated": "2026-08-29",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -172,7 +172,7 @@
         {
           "id": "GYM-197",
           "title": "Preparar la ficha de Google Play",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Completar textos, recursos, capturas, clasificación, acceso y declaraciones de una ficha española fiel al AAB y preparada para localizarse.",
           "dependsOn": [
             "GYM-190",
@@ -2268,6 +2268,22 @@
             "GYM-183",
             "GYM-202",
             "GYM-203"
+          ]
+        },
+        {
+          "id": "GYM-223",
+          "title": "Auditar openGym y priorizar funcionalidades para Gymnasia",
+          "state": "backlog",
+          "summary": "Comparar openGym con la app y los tickets actuales, verificar procedencia y licencias y priorizar hasta cinco oportunidades implementables de forma independiente y local-first, sin copiar código, datos ni assets durante la investigación.",
+          "dependsOn": [],
+          "related": [
+            "GYM-12",
+            "GYM-20",
+            "GYM-24",
+            "GYM-171",
+            "GYM-179",
+            "GYM-211",
+            "GYM-212"
           ]
         },
         {
