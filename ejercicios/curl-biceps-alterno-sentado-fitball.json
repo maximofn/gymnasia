@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-alterno-sentado-fitball",
+  "name": "Curl de bíceps alterno sentado en fitball",
+  "image_male": "images/curl-biceps-alterno-sentado-fitball-male.webp",
+  "image_female": "images/curl-biceps-alterno-sentado-fitball-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "core"],
+  "equipment": "mancuernas y fitball",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate sobre el fitball con ambos pies apoyados y la espalda recta. Deja una mancuerna a cada lado con los codos cerca del torso. Flexiona un brazo girando la palma hacia el hombro, baja de forma controlada y repite con el otro brazo sin mover el balón."
+}

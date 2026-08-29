@@ -1,0 +1,11 @@
+{
+  "id": "burpee-mancuernas",
+  "name": "Burpee con mancuernas",
+  "image_male": "images/burpee-mancuernas-male.webp",
+  "image_female": "images/burpee-mancuernas-female.webp",
+  "muscle_group": "cuerpo completo",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "hombros", "tríceps", "pecho", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Comienza de pie con una mancuerna en cada mano. Agáchate, apoya las mancuernas en el suelo y salta con los pies atrás hasta una plancha firme. Realiza una flexión, lleva los pies de nuevo junto a las manos y levántate llevando las mancuernas a los hombros. Termina con un press sobre la cabeza y repite con control."
+}

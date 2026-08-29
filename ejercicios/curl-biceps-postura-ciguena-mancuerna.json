@@ -1,0 +1,11 @@
+{
+  "id": "curl-biceps-postura-ciguena-mancuerna",
+  "name": "Curl de bíceps en postura de cigüeña",
+  "image_male": "images/curl-biceps-postura-ciguena-mancuerna-male.webp",
+  "image_female": "images/curl-biceps-postura-ciguena-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazos", "core", "glúteos", "isquiotibiales"],
+  "equipment": "mancuerna",
+  "difficulty": "advanced",
+  "instructions": "Equilíbrate sobre una pierna con la rodilla suave, inclina el torso desde la cadera y eleva la pierna libre hacia atrás como contrapeso. Deja una mancuerna colgando bajo el hombro y flexiona el codo sin girar la pelvis ni mover el brazo superior. Baja lentamente y cambia de lado al completar la serie."
+}
