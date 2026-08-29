@@ -206,7 +206,7 @@
         {
           "id": "GYM-199",
           "title": "Publicar el AAB en pruebas internas y después en pruebas cerradas",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Validar primero el AAB en el track interno y promover exactamente el mismo artefacto al track cerrado con testers, feedback e incidencias trazables.",
           "dependsOn": [
             "GYM-197",
@@ -2783,7 +2783,7 @@
         {
           "id": "GYM-12",
           "title": "Importar ejercicios del dataset hasaneyldrm/exercises-dataset",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Ampliar el repo local de ejercicios (~39 hoy) sin introducir backend: sigue siendo JSON estático.",
           "dependsOn": [],
           "related": []
