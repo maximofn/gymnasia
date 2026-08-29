@@ -1,0 +1,7 @@
+event: response.created
+data: {"type":"response.created","response":{"id":"resp_openai_multiple"}}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"resp_openai_multiple","output":[{"type":"function_call","id":"fc_openai_first","call_id":"call_openai_first","name":"read_field_value","arguments":"{\"key\":\"Objetivo\"}","status":"completed"},{"type":"function_call","id":"fc_openai_second","call_id":"call_openai_second","name":"read_field_value","arguments":{"key":"Altura"},"status":"completed"}]}}
+
+data: [DONE]

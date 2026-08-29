@@ -498,7 +498,7 @@
         {
           "id": "GYM-36",
           "title": "2. Parsear la petición del modelo: los tres dialectos",
-          "state": "backlog",
+          "state": "in_progress",
           "baseline": "done",
           "summary": "Resuelto para los tres proveedores: tool_use (Anthropic), tool_calls (OpenAI) y functionCall (Google).",
           "dependsOn": [
