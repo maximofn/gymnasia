@@ -124,6 +124,7 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
 }
 
 export type GoogleFunctionCall = {
+  id?: string;
   name: string;
   args?: Record<string, unknown>;
 };
@@ -146,6 +147,9 @@ export function mapGoogleResponsePartToRequestPart(
   if (typeof part.text === "string") nextPart.text = part.text;
   if (part.functionCall) {
     nextPart.functionCall = {
+      ...(typeof part.functionCall.id === "string" && part.functionCall.id.trim()
+        ? { id: part.functionCall.id.trim() }
+        : {}),
       name: part.functionCall.name,
       args: part.functionCall.args ?? {},
     };
@@ -182,6 +186,9 @@ export async function runGoogleToolLoop<TTurn extends GoogleToolTurn>(input: {
       const result = await input.executeTool(functionCall.name, functionCall.args ?? {});
       responseParts.push({
         functionResponse: {
+          ...(typeof functionCall.id === "string" && functionCall.id.trim()
+            ? { id: functionCall.id.trim() }
+            : {}),
           name: functionCall.name,
           response: { result },
         },

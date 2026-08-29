@@ -415,8 +415,8 @@ export function createGoogleStreamParser(handlers?: StreamingHandlers) {
             thought?: boolean;
             thoughtSignature?: string;
             thought_signature?: string;
-            functionCall?: { name?: string; args?: unknown };
-            function_call?: { name?: string; args?: unknown };
+            functionCall?: { id?: string; name?: string; args?: unknown };
+            function_call?: { id?: string; name?: string; args?: unknown };
           }>;
         };
       }>;
@@ -445,6 +445,9 @@ export function createGoogleStreamParser(handlers?: StreamingHandlers) {
         if (functionCall && typeof functionCall.name === "string" && functionCall.name.trim()) {
           modelParts.push({
             functionCall: {
+              ...(typeof functionCall.id === "string" && functionCall.id.trim()
+                ? { id: functionCall.id.trim() }
+                : {}),
               name: functionCall.name.trim(),
               args: normalizeGoogleArgs(functionCall.args),
             },

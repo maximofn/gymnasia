@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 
+import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 
 import { sanitizePersonalDataFields } from "./personalData";
@@ -32,6 +33,26 @@ function replayInNetworkChunks<TResult>(
     offset += size;
     chunkIndex += 1;
   }
+  return parser.finish();
+}
+
+type StreamParser<TResult> = {
+  push: (chunk: string) => void;
+  finish: () => TResult;
+};
+
+function replayWithChunkSizes<TResult>(
+  raw: string,
+  parser: StreamParser<TResult>,
+  chunkSizes: number[],
+): TResult {
+  let offset = 0;
+  for (const chunkSize of chunkSizes) {
+    if (offset >= raw.length) break;
+    parser.push(raw.slice(offset, offset + chunkSize));
+    offset += chunkSize;
+  }
+  if (offset < raw.length) parser.push(raw.slice(offset));
   return parser.finish();
 }
 
@@ -225,5 +246,345 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
     });
     expect(result.content).toBe("Tu objetivo es ganar masa muscular.");
     expect(result.finishReason).toBe("STOP");
+  });
+});
+
+describe("contrato de parsing de llamadas a herramientas", () => {
+  it("una respuesta sin llamadas no ejecuta ni continúa ningún proveedor", async () => {
+    const openAIExecute = vi.fn(async () => "unused");
+    const openAIRequest = vi.fn(async () => replayInNetworkChunks(
+      readRawFixture("openai-final.sse"),
+      createOpenAIStreamParser(),
+    ));
+    const openAIResult = await runOpenAIToolLoop({
+      initialTurn: replayInNetworkChunks(
+        readRawFixture("openai-final.sse"),
+        createOpenAIStreamParser(),
+      ),
+      executeTool: openAIExecute,
+      requestNextTurn: openAIRequest,
+    });
+
+    const anthropicExecute = vi.fn(async () => "unused");
+    const anthropicRequest = vi.fn(async () => replayInNetworkChunks(
+      readRawFixture("anthropic-final.sse"),
+      createAnthropicStreamParser(),
+    ));
+    const anthropicResult = await runAnthropicToolLoop({
+      initialTurn: replayInNetworkChunks(
+        readRawFixture("anthropic-final.sse"),
+        createAnthropicStreamParser(),
+      ),
+      initialMessages: [],
+      executeTool: anthropicExecute,
+      requestNextTurn: anthropicRequest,
+    });
+
+    const googleExecute = vi.fn(async () => "unused");
+    const googleRequest = vi.fn(async () => replayInNetworkChunks(
+      readRawFixture("google-final.sse"),
+      createGoogleStreamParser(),
+    ));
+    const googleResult = await runGoogleToolLoop({
+      initialTurn: replayInNetworkChunks(
+        readRawFixture("google-final.sse"),
+        createGoogleStreamParser(),
+      ),
+      initialMessages: [],
+      executeTool: googleExecute,
+      requestNextTurn: googleRequest,
+    });
+
+    expect(openAIResult.outputItems).toEqual([
+      expect.objectContaining({ type: "message" }),
+    ]);
+    expect(anthropicResult.contentBlocks).toEqual([
+      expect.objectContaining({ type: "text" }),
+    ]);
+    expect(googleResult.modelParts).toEqual([
+      expect.objectContaining({ text: expect.any(String) }),
+      expect.objectContaining({ text: expect.any(String) }),
+    ]);
+    expect(openAIExecute).not.toHaveBeenCalled();
+    expect(anthropicExecute).not.toHaveBeenCalled();
+    expect(googleExecute).not.toHaveBeenCalled();
+    expect(openAIRequest).not.toHaveBeenCalled();
+    expect(anthropicRequest).not.toHaveBeenCalled();
+    expect(googleRequest).not.toHaveBeenCalled();
+  });
+
+  it("extrae varias llamadas de OpenAI en orden y normaliza argumentos string/objeto", async () => {
+    const initialTurn = replayInNetworkChunks(
+      readRawFixture("openai-multiple-tool-calls.sse"),
+      createOpenAIStreamParser(),
+    );
+    const executeTool = vi.fn(async (_name: string, args: Record<string, unknown>) => (
+      `valor:${String(args.key)}`
+    ));
+    const requestNextTurn = vi.fn(async () => replayInNetworkChunks(
+      readRawFixture("openai-final.sse"),
+      createOpenAIStreamParser(),
+    ));
+
+    await runOpenAIToolLoop({ initialTurn, executeTool, requestNextTurn });
+
+    expect(initialTurn.outputItems).toEqual([
+      expect.objectContaining({
+        call_id: "call_openai_first",
+        name: "read_field_value",
+        arguments: '{"key":"Objetivo"}',
+      }),
+      expect.objectContaining({
+        call_id: "call_openai_second",
+        name: "read_field_value",
+        arguments: '{"key":"Altura"}',
+      }),
+    ]);
+    expect(executeTool.mock.calls).toEqual([
+      ["read_field_value", { key: "Objetivo" }],
+      ["read_field_value", { key: "Altura" }],
+    ]);
+    expect(requestNextTurn).toHaveBeenCalledWith([
+      {
+        type: "function_call_output",
+        call_id: "call_openai_first",
+        output: "valor:Objetivo",
+      },
+      {
+        type: "function_call_output",
+        call_id: "call_openai_second",
+        output: "valor:Altura",
+      },
+    ], "resp_openai_multiple");
+  });
+
+  it("extrae varias llamadas de Anthropic en orden y conserva tool_use_id", async () => {
+    const initialTurn = replayInNetworkChunks(
+      readRawFixture("anthropic-multiple-tool-calls.sse"),
+      createAnthropicStreamParser(),
+    );
+    const executeTool = vi.fn(async (_name: string, args: Record<string, unknown>) => (
+      `valor:${String(args.key)}`
+    ));
+    const requestNextTurn = vi.fn(async (_messages: Array<Record<string, unknown>>) => replayInNetworkChunks(
+      readRawFixture("anthropic-final.sse"),
+      createAnthropicStreamParser(),
+    ));
+
+    await runAnthropicToolLoop({
+      initialTurn,
+      initialMessages: [],
+      executeTool,
+      requestNextTurn,
+    });
+
+    expect(initialTurn.contentBlocks).toEqual([
+      {
+        type: "tool_use",
+        id: "toolu_anthropic_first",
+        name: "read_field_value",
+        input: { key: "Objetivo" },
+      },
+      {
+        type: "tool_use",
+        id: "toolu_anthropic_second",
+        name: "read_field_value",
+        input: { key: "Altura" },
+      },
+    ]);
+    expect(executeTool.mock.calls).toEqual([
+      ["read_field_value", { key: "Objetivo" }],
+      ["read_field_value", { key: "Altura" }],
+    ]);
+    expect(requestNextTurn.mock.calls[0]![0].at(-1)).toEqual({
+      role: "user",
+      content: [
+        {
+          type: "tool_result",
+          tool_use_id: "toolu_anthropic_first",
+          content: "valor:Objetivo",
+        },
+        {
+          type: "tool_result",
+          tool_use_id: "toolu_anthropic_second",
+          content: "valor:Altura",
+        },
+      ],
+    });
+  });
+
+  it("correlaciona dos llamadas Google con el mismo nombre mediante ids distintos", async () => {
+    const initialTurn = replayInNetworkChunks(
+      readRawFixture("google-multiple-tool-calls.sse"),
+      createGoogleStreamParser(),
+    );
+    const executeTool = vi.fn(async (_name: string, args: Record<string, unknown>) => (
+      `valor:${String(args.key)}`
+    ));
+    const requestNextTurn = vi.fn(async (_messages: Array<Record<string, unknown>>) => replayInNetworkChunks(
+      readRawFixture("google-final.sse"),
+      createGoogleStreamParser(),
+    ));
+
+    await runGoogleToolLoop({
+      initialTurn,
+      initialMessages: [],
+      executeTool,
+      requestNextTurn,
+    });
+
+    expect(initialTurn.modelParts).toEqual([
+      expect.objectContaining({
+        functionCall: {
+          id: "google_call_first",
+          name: "read_field_value",
+          args: { key: "Objetivo" },
+        },
+      }),
+      expect.objectContaining({
+        functionCall: {
+          id: "google_call_second",
+          name: "read_field_value",
+          args: { key: "Altura" },
+        },
+      }),
+    ]);
+    expect(executeTool.mock.calls).toEqual([
+      ["read_field_value", { key: "Objetivo" }],
+      ["read_field_value", { key: "Altura" }],
+    ]);
+    expect(requestNextTurn.mock.calls[0]![0]).toEqual([
+      {
+        role: "model",
+        parts: [
+          {
+            functionCall: {
+              id: "google_call_first",
+              name: "read_field_value",
+              args: { key: "Objetivo" },
+            },
+          },
+          {
+            functionCall: {
+              id: "google_call_second",
+              name: "read_field_value",
+              args: { key: "Altura" },
+            },
+          },
+        ],
+      },
+      {
+        role: "user",
+        parts: [
+          {
+            functionResponse: {
+              id: "google_call_first",
+              name: "read_field_value",
+              response: { result: "valor:Objetivo" },
+            },
+          },
+          {
+            functionResponse: {
+              id: "google_call_second",
+              name: "read_field_value",
+              response: { result: "valor:Altura" },
+            },
+          },
+        ],
+      },
+    ]);
+  });
+
+  it("ignora streams truncados sin fabricar llamadas y expone errores del proveedor", () => {
+    const openAI = createOpenAIStreamParser();
+    const anthropic = createAnthropicStreamParser();
+    const google = createGoogleStreamParser();
+    openAI.push('data: {"type":"response.output_item.added"');
+    anthropic.push('data: {"type":"content_block_start"');
+    google.push('data: {"candidates":[');
+
+    expect(openAI.finish().outputItems).toEqual([]);
+    expect(anthropic.finish().contentBlocks).toEqual([]);
+    expect(google.finish().modelParts).toEqual([]);
+
+    expect(() => createOpenAIStreamParser().push(
+      'event: error\ndata: {"error":{"message":"openai controlled"}}\n\n',
+    )).toThrow("openai controlled");
+    expect(() => createAnthropicStreamParser().push(
+      'event: error\ndata: {"type":"error","error":{"message":"anthropic controlled"}}\n\n',
+    )).toThrow("anthropic controlled");
+    expect(() => createGoogleStreamParser().push(
+      'data: {"error":{"message":"google controlled"}}\n\n',
+    )).toThrow("google controlled");
+  });
+
+  it("degrada argumentos inválidos a objeto vacío de forma controlada", async () => {
+    const executeTool = vi.fn(async () => "ok");
+    await runOpenAIToolLoop({
+      initialTurn: {
+        responseId: "resp_malformed_args",
+        outputItems: [{
+          type: "function_call",
+          id: "fc_malformed_args",
+          call_id: "call_malformed_args",
+          name: "read_field_value",
+          arguments: "{not-json",
+        }],
+      },
+      executeTool,
+      requestNextTurn: async () => ({ responseId: "resp_done", outputItems: [] }),
+    });
+
+    const google = createGoogleStreamParser();
+    google.push(
+      'data: {"candidates":[{"content":{"parts":[{"functionCall":{"name":"read_field_value","args":"{not-json"}}]}}]}\n\n',
+    );
+    const googleTurn = google.finish();
+
+    expect(executeTool).toHaveBeenCalledWith("read_field_value", {});
+    expect(googleTurn.modelParts).toEqual([
+      expect.objectContaining({
+        functionCall: { name: "read_field_value", args: {} },
+      }),
+    ]);
+  });
+});
+
+describe("fronteras arbitrarias de red", () => {
+  const cases: Array<{
+    provider: string;
+    fixture: string;
+    createParser: () => StreamParser<unknown>;
+  }> = [
+    {
+      provider: "OpenAI",
+      fixture: "openai-multiple-tool-calls.sse",
+      createParser: () => createOpenAIStreamParser(),
+    },
+    {
+      provider: "Anthropic",
+      fixture: "anthropic-multiple-tool-calls.sse",
+      createParser: () => createAnthropicStreamParser(),
+    },
+    {
+      provider: "Google",
+      fixture: "google-multiple-tool-calls.sse",
+      createParser: () => createGoogleStreamParser(),
+    },
+  ];
+
+  it.each(cases)("$provider produce el mismo resultado para cualquier partición SSE", ({
+    fixture,
+    createParser,
+  }) => {
+    const raw = readRawFixture(fixture);
+    const baseline = replayWithChunkSizes(raw, createParser(), [raw.length]);
+
+    fc.assert(fc.property(
+      fc.array(fc.integer({ min: 1, max: Math.max(1, raw.length) }), { maxLength: 80 }),
+      (chunkSizes) => {
+        expect(replayWithChunkSizes(raw, createParser(), chunkSizes)).toEqual(baseline);
+      },
+    ), { numRuns: 100 });
   });
 });
