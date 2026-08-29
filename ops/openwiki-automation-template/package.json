@@ -12,6 +12,6 @@
   "dependencies": {
     "jsdom": "29.1.1",
     "mermaid": "11.16.1",
-    "openwiki": "0.3.3"
+    "openwiki": "0.4.3"
   }
 }
