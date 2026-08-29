@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-mancuernas-arm-blaster",
+  "name": "Curl martillo con mancuernas y arm blaster",
+  "image_male": "images/curl-martillo-mancuernas-arm-blaster-male.webp",
+  "image_female": "images/curl-martillo-mancuernas-arm-blaster-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Coloca el arm blaster bajo los tríceps y sostén dos mancuernas con agarre neutro. Apoya firmemente los brazos en la placa y flexiona los codos sin adelantar los hombros. Baja hasta casi extender los brazos manteniendo las palmas enfrentadas."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "apertura-declinada-unilateral-mancuerna",
+  "name": "Apertura declinada unilateral con mancuerna",
+  "image_male": "images/apertura-declinada-unilateral-mancuerna-male.webp",
+  "image_female": "images/apertura-declinada-unilateral-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco declinado con los pies asegurados y una sola mancuerna sobre el pecho. Mantén el otro brazo estabilizando el banco. Abre el brazo cargado en un arco con el codo ligeramente flexionado y vuelve a cerrarlo sin girar el torso."
+}

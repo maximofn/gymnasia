@@ -1,0 +1,11 @@
+{
+  "id": "apertura-inclinada-unilateral-mancuerna",
+  "name": "Apertura inclinada unilateral con mancuerna",
+  "image_male": "images/apertura-inclinada-unilateral-mancuerna-male.webp",
+  "image_female": "images/apertura-inclinada-unilateral-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Recuéstate en un banco inclinado y extiende una sola mancuerna sobre la parte alta del pecho. Usa la mano libre para estabilizarte. Abre el brazo cargado en un arco amplio con el codo suave y vuelve a cerrarlo sin rotar el torso."
+}

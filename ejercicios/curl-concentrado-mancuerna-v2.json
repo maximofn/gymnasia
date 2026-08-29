@@ -1,0 +1,11 @@
+{
+  "id": "curl-concentrado-mancuerna-v2",
+  "name": "Curl concentrado con mancuerna (variante 2)",
+  "image_male": "images/curl-concentrado-mancuerna-v2-male.webp",
+  "image_female": "images/curl-concentrado-mancuerna-v2-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Siéntate con las piernas abiertas y apoya el codo del brazo de trabajo en la cara interna del muslo. Desde el brazo extendido y la palma hacia arriba, flexiona el codo hasta acercar la mancuerna al hombro. Aprieta el bíceps y baja lentamente antes de cambiar de lado."
+}

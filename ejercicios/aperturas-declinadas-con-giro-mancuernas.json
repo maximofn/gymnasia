@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-declinadas-con-giro-mancuernas",
+  "name": "Aperturas declinadas con giro y mancuernas",
+  "image_male": "images/aperturas-declinadas-con-giro-mancuernas-male.webp",
+  "image_female": "images/aperturas-declinadas-con-giro-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "bíceps"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "En un banco declinado, parte con las mancuernas sobre el pecho y las palmas enfrentadas. Abre los brazos en arco mientras giras gradualmente las palmas hacia delante. Invierte el giro al cerrar, manteniendo una flexión suave y constante en los codos."
+}

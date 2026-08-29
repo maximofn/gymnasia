@@ -728,6 +728,53 @@
         {"source_id": "0295", "id": "clean-mancuernas", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "1731", "id": "press-banca-agarre-cerrado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 28,
+      "size": 40,
+      "status": "approved",
+      "records": [
+        {"source_id": "0296", "id": "press-banca-agarre-cerrado-mancuernas-v2", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0297", "id": "curl-concentrado-mancuerna-v2", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3635", "id": "zancada-adelante-contralateral-mancuerna", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0298", "id": "curl-martillo-cruzado-mancuernas", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1657", "id": "curl-martillo-cruzado-mancuernas-v2", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0299", "id": "press-cubano-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2136", "id": "press-cubano-mancuernas-v2", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0300", "id": "peso-muerto-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0301", "id": "press-declinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0302", "id": "aperturas-declinadas-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0303", "id": "press-declinado-neutro-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1276", "id": "apertura-declinada-unilateral-mancuerna", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1617", "id": "press-declinado-neutro-unilateral-mancuerna", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0305", "id": "encogimiento-declinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0304", "id": "encogimiento-declinado-mancuernas-v2", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0306", "id": "extension-triceps-declinada-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0307", "id": "aperturas-declinadas-con-giro-mancuernas", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1437", "id": "curl-dedos-mancuerna", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0308", "id": "aperturas-mancuernas-v2", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1277", "id": "aperturas-fitball-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1732", "id": "zancada-adelante-extension-triceps-mancuernas", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0310", "id": "elevaciones-frontales-mancuernas-v2", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0309", "id": "elevaciones-frontales-mancuernas-v3", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0311", "id": "elevacion-lateral-full-can-mancuernas", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1659", "id": "curl-martillo-fitball-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0312", "id": "curl-martillo-mancuernas-v2", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2402", "id": "curl-martillo-mancuernas-arm-blaster", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1664", "id": "curl-biceps-alto-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "3545", "id": "press-inclinado-alterno-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0316", "id": "aperturas-inclinadas-mancuernas-v2", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0318", "id": "curl-inclinado-mancuernas-v2", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0317", "id": "curl-inclinado-mancuernas-v3", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0319", "id": "aperturas-inclinadas-mancuernas-v3", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1278", "id": "aperturas-inclinadas-fitball-mancuernas", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0320", "id": "curl-martillo-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0321", "id": "press-inclinado-neutro-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1618", "id": "press-inclinado-neutro-fitball-mancuernas", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0322", "id": "curl-biceps-interno-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1279", "id": "apertura-inclinada-unilateral-mancuerna", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1280", "id": "apertura-inclinada-unilateral-fitball-mancuerna", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

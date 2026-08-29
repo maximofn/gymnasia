@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-fitball-mancuernas",
+  "name": "Curl martillo con mancuernas sobre fitball",
+  "image_male": "images/curl-martillo-fitball-mancuernas-male.webp",
+  "image_female": "images/curl-martillo-fitball-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazo", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido sobre un fitball con los pies bien apoyados y una mancuerna en cada mano. Mantén las palmas enfrentadas y flexiona ambos codos sin moverlos del costado. Baja las cargas lentamente mientras estabilizas el balón con el abdomen."
+}

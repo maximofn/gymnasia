@@ -1,0 +1,11 @@
+{
+  "id": "press-declinado-neutro-mancuernas",
+  "name": "Press declinado neutro con mancuernas",
+  "image_male": "images/press-declinado-neutro-mancuernas-male.webp",
+  "image_female": "images/press-declinado-neutro-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Asegura los pies en el banco declinado y sujeta dos mancuernas con las palmas enfrentadas. Baja las cargas a los lados del pecho manteniendo los codos cerca del cuerpo. Empuja hacia arriba sin perder el agarre neutro ni despegar los hombros del banco."
+}

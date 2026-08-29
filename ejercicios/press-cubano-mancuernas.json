@@ -1,0 +1,11 @@
+{
+  "id": "press-cubano-mancuernas",
+  "name": "Press cubano con mancuernas",
+  "image_male": "images/press-cubano-mancuernas-male.webp",
+  "image_female": "images/press-cubano-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": ["manguito rotador", "trapecio", "tríceps"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "De pie con mancuernas ligeras, eleva los codos hasta la altura de los hombros y flexiónalos a 90 grados. Rota externamente los hombros hasta colocar las mancuernas sobre los codos y termina con un press por encima de la cabeza. Invierte cada fase con control."
+}

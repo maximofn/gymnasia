@@ -1,0 +1,11 @@
+{
+  "id": "press-declinado-mancuernas",
+  "name": "Press declinado con mancuernas",
+  "image_male": "images/press-declinado-mancuernas-male.webp",
+  "image_female": "images/press-declinado-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate cabeza abajo en un banco declinado con los pies asegurados. Sostén dos mancuernas junto al pecho con los antebrazos verticales. Presiona hasta extender los brazos sobre el pecho inferior y baja de forma estable sin rebotar."
+}

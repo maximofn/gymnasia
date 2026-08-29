@@ -1,0 +1,11 @@
+{
+  "id": "zancada-adelante-extension-triceps-mancuernas",
+  "name": "Zancada hacia delante con extensión de tríceps y mancuernas",
+  "image_male": "images/zancada-adelante-extension-triceps-mancuernas-male.webp",
+  "image_female": "images/zancada-adelante-extension-triceps-mancuernas-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": ["glúteos", "tríceps", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Sostén dos mancuernas por encima de la cabeza con los codos flexionados. Da una zancada hacia delante y baja la rodilla trasera mientras extiendes los codos hasta elevar las cargas. Recupera la flexión de brazos y empuja con el pie delantero para volver."
+}

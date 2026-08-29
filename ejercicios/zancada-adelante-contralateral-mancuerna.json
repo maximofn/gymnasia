@@ -1,0 +1,11 @@
+{
+  "id": "zancada-adelante-contralateral-mancuerna",
+  "name": "Zancada hacia delante contralateral con mancuerna",
+  "image_male": "images/zancada-adelante-contralateral-mancuerna-male.webp",
+  "image_female": "images/zancada-adelante-contralateral-mancuerna-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": ["cuádriceps", "isquiotibiales", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "De pie, sostén una sola mancuerna en la mano opuesta a la pierna que avanzará. Da un paso largo al frente y baja ambas rodillas manteniendo el torso vertical y la pelvis nivelada. Empuja con todo el pie delantero para volver sin inclinarte hacia la carga."
+}

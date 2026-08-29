@@ -1,0 +1,11 @@
+{
+  "id": "peso-muerto-mancuernas",
+  "name": "Peso muerto con mancuernas",
+  "image_male": "images/peso-muerto-mancuernas-male.webp",
+  "image_female": "images/peso-muerto-mancuernas-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": ["glúteos", "espalda baja", "cuádriceps"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Coloca dos mancuernas junto a los pies y separa estos al ancho de las caderas. Lleva la cadera atrás, flexiona las rodillas y agarra las cargas con la espalda neutra. Empuja el suelo para extender cadera y rodillas; baja las mancuernas cerca de las piernas con control."
+}

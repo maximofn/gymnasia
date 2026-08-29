@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-inclinado-mancuernas",
+  "name": "Curl martillo inclinado con mancuernas",
+  "image_male": "images/curl-martillo-inclinado-mancuernas-male.webp",
+  "image_female": "images/curl-martillo-inclinado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la espalda en un banco inclinado y deja colgar dos mancuernas con las palmas enfrentadas. Flexiona los codos conservando el agarre neutro hasta acercar las cargas a los hombros. Baja por completo sin adelantar los codos ni despegar la espalda."
+}

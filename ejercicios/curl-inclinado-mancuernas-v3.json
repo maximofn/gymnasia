@@ -1,0 +1,11 @@
+{
+  "id": "curl-inclinado-mancuernas-v3",
+  "name": "Curl inclinado con mancuernas (variante 3)",
+  "image_male": "images/curl-inclinado-mancuernas-v3-male.webp",
+  "image_female": "images/curl-inclinado-mancuernas-v3-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Recuéstate en un banco inclinado con el pecho alto y los brazos extendidos detrás de la línea del torso. Flexiona simultáneamente ambos codos con agarre supino hasta acercar las mancuernas a los hombros. Baja lentamente manteniendo los brazos superiores inmóviles."
+}

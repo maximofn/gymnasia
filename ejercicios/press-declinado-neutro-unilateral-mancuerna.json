@@ -1,0 +1,11 @@
+{
+  "id": "press-declinado-neutro-unilateral-mancuerna",
+  "name": "Press declinado neutro unilateral con mancuerna",
+  "image_male": "images/press-declinado-neutro-unilateral-mancuerna-male.webp",
+  "image_female": "images/press-declinado-neutro-unilateral-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["tríceps", "hombro", "core"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "En un banco declinado, sostén una sola mancuerna con agarre neutro junto al pecho y usa la mano libre para estabilizarte. Presiona verticalmente hasta extender el brazo y vuelve despacio. Mantén ambos hombros y la pelvis apoyados durante toda la serie."
+}

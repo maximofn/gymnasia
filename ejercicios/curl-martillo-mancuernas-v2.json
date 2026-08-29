@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-mancuernas-v2",
+  "name": "Curl martillo con mancuernas (variante 2)",
+  "image_male": "images/curl-martillo-mancuernas-v2-male.webp",
+  "image_female": "images/curl-martillo-mancuernas-v2-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "De pie con las palmas enfrentadas y los brazos junto al cuerpo, fija los codos a los costados. Flexiona ambos antebrazos hasta acercar las mancuernas a los hombros sin girar las muñecas. Pausa arriba y baja con control."
+}

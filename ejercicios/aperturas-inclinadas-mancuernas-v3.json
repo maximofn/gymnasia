@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inclinadas-mancuernas-v3",
+  "name": "Aperturas inclinadas con mancuernas (variante 3)",
+  "image_male": "images/aperturas-inclinadas-mancuernas-v3-male.webp",
+  "image_female": "images/aperturas-inclinadas-mancuernas-v3-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "bíceps"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Con la espalda firme en un banco inclinado, inicia con las mancuernas enfrentadas sobre el pecho superior. Abre ambos brazos hacia los lados manteniendo el mismo ángulo de codo. Reúne las cargas por encima del pecho con una trayectoria curva y controlada."
+}

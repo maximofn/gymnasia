@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-inclinadas-mancuernas-v2",
+  "name": "Aperturas inclinadas con mancuernas (variante 2)",
+  "image_male": "images/aperturas-inclinadas-mancuernas-v2-male.webp",
+  "image_female": "images/aperturas-inclinadas-mancuernas-v2-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "bíceps"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el banco a 30-45 grados y coloca dos mancuernas sobre la parte alta del pecho. Abre los brazos en un arco amplio con una flexión fija de codos hasta notar un estiramiento cómodo. Cierra el arco sin convertir el movimiento en un press."
+}

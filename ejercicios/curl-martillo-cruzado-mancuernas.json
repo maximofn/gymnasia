@@ -1,0 +1,11 @@
+{
+  "id": "curl-martillo-cruzado-mancuernas",
+  "name": "Curl martillo cruzado con mancuernas",
+  "image_male": "images/curl-martillo-cruzado-mancuernas-male.webp",
+  "image_female": "images/curl-martillo-cruzado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": ["braquial", "antebrazo"],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "De pie con una mancuerna en cada mano y agarre neutro, deja los brazos junto al cuerpo. Flexiona un codo y lleva la mancuerna en diagonal hacia el hombro opuesto sin mover el brazo superior. Baja con control y alterna los lados."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "apertura-inclinada-unilateral-fitball-mancuerna",
+  "name": "Apertura inclinada unilateral con mancuerna sobre fitball",
+  "image_male": "images/apertura-inclinada-unilateral-fitball-mancuerna-male.webp",
+  "image_female": "images/apertura-inclinada-unilateral-fitball-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "core", "glúteos"],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Apoya cabeza y espalda alta sobre un fitball con la cadera elevada y una sola mancuerna sobre el pecho. Abre el brazo cargado hasta quedar paralelo al suelo y vuelve por el mismo arco. Resiste la rotación y mantén el balón quieto antes de cambiar de lado."
+}

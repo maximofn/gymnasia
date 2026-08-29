@@ -1,0 +1,11 @@
+{
+  "id": "aperturas-declinadas-mancuernas",
+  "name": "Aperturas declinadas con mancuernas",
+  "image_male": "images/aperturas-declinadas-mancuernas-male.webp",
+  "image_female": "images/aperturas-declinadas-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": ["hombro", "bíceps"],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco declinado con los pies fijados y las mancuernas sobre el pecho. Con una ligera flexión constante de codos, abre ambos brazos en un arco amplio hasta notar el estiramiento del pectoral. Junta de nuevo las cargas siguiendo el mismo arco."
+}
