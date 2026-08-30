@@ -123,10 +123,11 @@ describe("LOCAL_DATA_MANIFEST", () => {
       .toBeGreaterThan(0);
   });
 
-  it("el borrado de actividad renueva la recuperación y elimina cuarentena y sesión", () => {
+  it("el borrado de actividad elimina fotos y renueva recuperación, cuarentena y sesión", () => {
     expect(LOCAL_DATA_MANIFEST.filter((entry) => entry.activity !== "preserve"))
       .toEqual([
         expect.objectContaining({ key: "gymnasia.mobile.local.v3", activity: "rewrite" }),
+        expect.objectContaining({ key: "gymnasia_measurement_media_v1", activity: "delete" }),
         expect.objectContaining({
           key: "gymnasia.mobile.local.last_good.v1",
           activity: "rewrite",

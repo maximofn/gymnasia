@@ -38,9 +38,19 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Estado principal: rutinas, historial de entrenamiento, dieta por día, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con peso y porcentaje de grasa, hilos y mensajes completos del chat con la IA, y configuración de proveedores (incluido el identificador opcional del workspace de Anthropic, pero no las claves BYOK en móvil). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
+      "purpose": "Estado principal: rutinas, historial de entrenamiento, dieta por día, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y configuración de proveedores (incluido el identificador opcional del workspace de Anthropic, pero no las claves BYOK en móvil). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "rewrite",
+      "fullDeletion": "delete"
+    },
+    {
+      "key": "gymnasia_measurement_media_v1",
+      "backend": "app-filesystem",
+      "personal": true,
+      "dataCategory": "photos-and-videos, health-fitness",
+      "purpose": "Directorio privado con copias JPEG de las fotos de progreso asociadas a mediciones. La app limita el lado largo a 2048 píxeles, usa calidad 0,8, elimina EXIF, XMP, IPTC y comentarios, y nombra cada fichero con el SHA-256 de sus bytes para deduplicarlo. Las fotos pueden incluirse en una copia manual .gymnasia cuando el usuario decide compartirla.",
+      "clearedBy": "activity-and-full-deletion",
+      "activityDeletion": "delete",
       "fullDeletion": "delete"
     },
     {
@@ -381,9 +391,9 @@
     "El escaneo de claves reconoce literales que empiezan por 'gymnasia.' o 'gymnasia_'. BACKUP_APP_ID vale exactamente 'gymnasia' y no es una clave de almacenamiento, por eso no aparece.",
     "Las claves BYOK se eliminan del estado antes de escribirlo en AsyncStorage solo si SecureStore está disponible. En web no lo está, así que la clave queda en el almacenamiento del navegador; la app ya lo advierte en Ajustes.",
     "El espejo opcional de desarrollo web apps/mobile/.dev-store.json solo se activa explícitamente en loopback. Conserva una copia del estado principal con datos personales para recuperar la sesión de desarrollo, pero censura recursivamente claves BYOK, identificadores de workspace y campos de credencial antes de escribir; /dev-store valida origen, tamaño y esquema y el archivo nunca debe versionarse.",
-    "La copia de seguridad exportada NO incluye las claves BYOK, pero sí medidas, dieta, historial de entrenamiento, memoria del coach y el historial completo de chats. En móvil se crea un fichero temporal en la caché para abrir la hoja de compartir y se elimina al cerrarla; el archivo que el usuario guarde fuera de Gymnasia queda fuera del control de la app.",
+    "La copia de seguridad .gymnasia exportada NO incluye las claves BYOK, pero sí medidas, las fotos de progreso normalizadas que quepan dentro de los límites, dieta, historial de entrenamiento, memoria del coach y el historial completo de chats. Cada foto lleva su SHA-256 y no conserva EXIF/XMP/IPTC ni comentarios. En móvil se crea un fichero temporal en la caché para abrir la hoja de compartir y se elimina al cerrarla; el archivo que el usuario guarde fuera de Gymnasia queda fuera del control de la app. El paquete no está cifrado.",
     "Una versión anterior pudo guardar dos credenciales de una integración ahora retirada. La versión actual conserva esos valores cifrados dentro del mismo package name durante una actualización normal, no los lee ni los transmite y los elimina con 'Borrar todos mis datos'.",
-    "'Borrar actividad y conversaciones' reescribe el estado principal y su snapshot íntegro sin rutinas, historial, dieta, medidas ni chats; elimina la cuarentena y la sesión activa; y conserva memoria, alimentos personales, preferencias, claves, cachés y diagnósticos. 'Borrar todos mis datos' elimina y comprueba todos los destinos locales inventariados, incluidos snapshots y cuarentenas, salvo la caché firmada anti-retroceso que no contiene datos del usuario y debe conservarse para impedir cargar una política de seguridad anterior.",
+    "'Borrar actividad y conversaciones' reescribe el estado principal y su snapshot íntegro sin rutinas, historial, dieta, medidas ni chats; elimina las fotos de progreso, la cuarentena y la sesión activa; y conserva memoria, alimentos personales, preferencias, claves, cachés y diagnósticos. 'Borrar todos mis datos' elimina y comprueba todos los destinos locales inventariados, incluidas las fotos, snapshots y cuarentenas, salvo la caché firmada anti-retroceso que no contiene datos del usuario y debe conservarse para impedir cargar una política de seguridad anterior.",
     "Hasta agosto de 2026 la app inyectaba en cada instalación 92 mediciones de grasa corporal que no pertenecían al usuario. Se retiró junto con su marca de migración. Si vuelve a aparecer una siembra de datos con apariencia real, no es una semilla de demostración: es dato de salud de un tercero distribuido en el binario.",
     "Las denuncias de respuestas son el único camino que envía texto literal de chat al backend propio: exactamente la pregunta anterior y la respuesta elegida, tras vista previa y confirmación. Su cuerpo se redacta automáticamente en GitHub a los 30 días; D1 solo conserva hashes, referencia de issue, estado y marcas temporales.",
     "Los permisos no se declaran aquí: la fuente es scripts/android-permissions/policy.json. Los permisos que las dependencias aportan por manifest merger deben verificarse sobre el manifest FUSIONADO del artefacto en GYM-198 (ticket para generar y validar el Android App Bundle de producción), no sobre el manifest de origen."

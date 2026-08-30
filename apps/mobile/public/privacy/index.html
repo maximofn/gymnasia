@@ -6,7 +6,7 @@
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
 <meta name="gymnasia-policy-version" content="2026-08-v9">
-<meta name="gymnasia-policy-digest" content="sha256:8ab31542eada6a36b7fa1193bf4147c1a99074148195316a6054639f4db3585b">
+<meta name="gymnasia-policy-digest" content="sha256:2aa316979627c585f85689f9411a7d003c779f404ccfdc88bc54360b6796c72f">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -91,7 +91,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <ul>
       <li><strong>Training activity</strong>: routines, exercises, sets, repetitions, loads in kilograms, session duration, rest periods, and estimated volume and calories.</li>
       <li><strong>Nutrition</strong>: what you log each day, with grams, calories, protein, carbohydrates and fat; the foods you create yourself; and the recipes and products you save.</li>
-      <li><strong>Weight and body composition</strong>: weight, body fat percentage, and neck, chest, waist, hip, biceps, quadriceps and calf measurements, each with its date.</li>
+      <li><strong>Weight and body composition</strong>: weight, body fat percentage, neck, chest, waist, hip, biceps, quadriceps and calf measurements, and any progress photograph you attach to a measurement, each with its date.</li>
       <li><strong>Personal data used for calculations</strong>: sex, height, date of birth, goal (cutting, bulking or maintenance) and activity level. Used to estimate your calories and macronutrients.</li>
       <li><strong>Conversations with the assistant</strong>: the complete history of your chat threads, including the model's messages.</li>
       <li><strong>Assistant memory</strong>: free-text notes that you or the assistant save in order to remember things between conversations. It may contain anything you have mentioned in the chat, including health data.</li>
@@ -150,7 +150,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>Gymnasia uses the camera and the photo library in two places, and treats them differently:</p>
     <ul>
       <li><strong>Food estimator</strong>: the images you select (up to six) are sent to the AI provider to estimate nutritional values. They are not stored in the app and are not uploaded anywhere else.</li>
-      <li><strong>Progress photographs</strong> attached to a measurement: they <strong>never leave your device</strong>. The app stores only a reference to the file. That reference is included in the backup file you export, and the assistant can see it if it reads that measurement.</li>
+      <li><strong>Progress photographs</strong> attached to a measurement: the app creates a JPEG copy in its private storage, limits its longest edge to 2048 pixels and removes EXIF, XMP, IPTC and comment metadata, including any location carried by the original. It does not send them automatically to a server. They leave the device only if you export and share a manual backup; the assistant can see the local reference if it reads that measurement.</li>
     </ul>
   </section>
 
@@ -166,11 +166,12 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="copias">
     <h2><a href="#copias">Backups and export</a></h2>
-    <p>You can export all your data to a JSON file from Settings, and import it back later. It is a manual export and is not uploaded automatically to any service.</p>
+    <p>You can export all your data to a <code>.gymnasia</code> package from Settings, and import it back later. It is a manual action: there is no automatic backup. The app also keeps support for importing older JSON files, although an old photograph reference can only be recovered if that file is still accessible on the device.</p>
     <p>The local recovery copy is not a cloud backup or a second portable file: it is one prior generation inside the app's own storage. It is used only when the current state cannot be read. Gymnasia then blocks writes and lets you recover the latest copy, retry, discard the affected data, or export the damaged payload. This recovery export preserves the original without sanitising it; it is particularly sensitive and may contain AI keys in the web version. It is never sent to a Gymnasia server.</p>
-    <p>The exported file <strong>contains</strong>: your measurements and body fat percentages, the reference to your progress photographs, your complete diet log, your training history, your personal settings (sex, height, date of birth), the assistant's memory and <strong>the entire history of your conversations</strong>. It is the most sensitive file the app produces: store it carefully and think about who you send it to.</p>
-    <p>The file does <strong>not</strong> contain your API keys or legacy credentials from removed features.</p>
-    <p>When exporting, the file is written to the app's temporary storage so the share sheet can open, and that temporary copy is deleted when the sheet closes. Any file you choose to save to Drive, Dropbox, your files app or another destination is outside Gymnasia's control and must be deleted there.</p>
+    <p>The exported package <strong>contains</strong>: your measurements and body fat percentages, the normalised JPEG copies of your progress photographs that fit within the app's limits, your complete diet log, your training history, your personal settings (sex, height, date of birth), the assistant's memory and <strong>the entire history of your conversations</strong>. It is the most sensitive file the app produces: store it carefully and think about who you send it to.</p>
+    <p>Each photograph carries a SHA-256 checksum so it can be checked during restoration. The app accepts at most 500 photograph links, 5 MiB per normalised photograph and 200 MiB of images per backup. If a photograph is missing, damaged or does not fit, the backup keeps all numeric measurements and tells you which photographs were omitted.</p>
+    <p>The package does <strong>not</strong> contain your API keys or legacy credentials from removed features. <strong>It is not encrypted or password-protected.</strong></p>
+    <p>When exporting, the package is written to the app's temporary storage before you choose where to share it, and that temporary copy is deleted when the share sheet closes. Any file you choose to save to Drive, Dropbox, your files app or another destination is outside Gymnasia's control and must be deleted there.</p>
   </section>
 
   <section id="denuncia">
@@ -196,12 +197,13 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <ul>
       <li>Data is stored in <strong>browser storage</strong>, not in the private storage of an installed app. Clearing the site's data deletes it.</li>
       <li><strong>The API key is not protected by the operating system keystore</strong>, as explained above.</li>
+      <li>Progress photographs can be included when exporting, but the browser cannot guarantee that their local references remain available or keep restored photographs durably. A web import keeps the measurements and warns about photographs it could not retain.</li>
     </ul>
   </section>
 
   <section id="conservacion">
     <h2><a href="#conservacion">How long your data is kept</a></h2>
-    <p>Indefinitely, for as long as you keep it. Because the data never leaves your device, there is no server-side retention period to apply: you keep it and you delete it.</p>
+    <p>Indefinitely, for as long as you keep it. Gymnasia does not synchronise it or retain it on its own server: you keep and delete it, both on the device and anywhere you choose to send a manual backup.</p>
     <p>Data you have sent to an AI provider is governed by that provider's retention period, under your account with them.</p>
     <p>Suggestions remain in the private repository for as long as needed to manage the project. For assistant-response reports, the body containing the question and response is scheduled for automatic deletion when it reaches 30 days. Technical rate-limit records based on the IP HMAC are deleted within 48 hours.</p>
   </section>
@@ -228,7 +230,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>The General Data Protection Regulation grants you the rights of access, rectification, erasure, restriction, portability and objection.</p>
     <p>In Gymnasia those rights are exercised, in practice, <strong>without an intermediary</strong>, because the controller does not hold your data:</p>
     <ul>
-      <li><strong>Access and portability</strong>: the export feature hands you all of your data in a standard JSON file.</li>
+      <li><strong>Access and portability</strong>: the export feature gives you your data and the included progress photographs in a documented and verifiable <code>.gymnasia</code> package.</li>
       <li><strong>Rectification</strong>: you can edit any data inside the app.</li>
       <li><strong>Erasure</strong>: see the section above.</li>
       <li><strong>Objection and restriction</strong>: stop using the features that send data to third parties; with no API key configured, nothing is sent to any AI provider.</li>

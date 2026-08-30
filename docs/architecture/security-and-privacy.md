@@ -16,20 +16,20 @@
 ## Modelo real: local-first, sin backend
 
 - No hay cuentas, ni autenticación, ni servidor propio.
-- Todos los datos viven en el dispositivo: AsyncStorage para el estado y SecureStore
-  para las credenciales.
+- Todos los datos viven en el dispositivo: AsyncStorage para el estado, el sistema de
+  ficheros privado para las fotos de progreso y SecureStore para las credenciales.
 - No hay analítica, telemetría ni crash reporting. Ningún SDK de ese tipo está
   incorporado.
-- La única salida de datos personales es hacia el proveedor de IA que el usuario elige,
-  con la clave que él aporta, y ocurre directamente desde el dispositivo.
+- Las salidas de datos personales requieren una acción del usuario: hablar con el
+  proveedor de IA que elige, confirmar una incidencia o compartir manualmente un backup.
 
 ## Datos personales tratados
 
 Actividad de entrenamiento, registro nutricional, peso y composición corporal
-(incluidos perímetros y porcentaje de grasa), datos de cálculo (sexo, altura, fecha de
-nacimiento), historial de conversaciones con el asistente y la memoria del asistente en
-texto libre. El detalle por clave de almacenamiento, con su propósito y su ciclo de
-vida, está en el inventario.
+(incluidos perímetros, porcentaje de grasa y fotos de progreso), datos de cálculo (sexo,
+altura, fecha de nacimiento), historial de conversaciones con el asistente y la memoria
+del asistente en texto libre. El detalle por clave de almacenamiento, con su propósito y
+su ciclo de vida, está en el inventario.
 
 ## Secretos
 
@@ -46,11 +46,18 @@ vida, está en el inventario.
 
 ## Copias de seguridad
 
-Exportación e importación manuales a un fichero JSON. Contiene medidas, dieta, historial
-de entrenamiento, ajustes personales, memoria del asistente y el historial completo de
-conversaciones. Es el artefacto más sensible que produce la aplicación.
+Exportación e importación manuales mediante un paquete `.gymnasia`. Contiene medidas,
+las fotos de progreso normalizadas que caben dentro de los límites, dieta, historial de
+entrenamiento, ajustes personales, memoria del asistente y el historial completo de
+conversaciones. Las fotos se verifican por SHA-256 y el paquete no está cifrado. El
+importador sigue aceptando el antiguo JSON v1. El formato completo está en
+`docs/architecture/measurement-photo-backups.md`.
 En móvil, la copia temporal usada para abrir la hoja de compartir se elimina al
 cerrarla; el archivo que el usuario guarde fuera de la app deja de estar bajo su control.
+
+La copia local de recuperación es distinta del paquete portable: conserva una sola
+generación anterior dentro del almacenamiento de la app y permite recuperar, reintentar,
+descartar o exportar el payload original cuando el estado actual no puede leerse.
 
 ## Borrado
 

@@ -42,7 +42,7 @@ describe("contrato de integración del guardrail sanitario", () => {
   it("persiste consentimiento versionado fuera del backup y muestra una alerta accesible", () => {
     expect(appSource).toContain("HEALTH_SAFETY_CONSENT_KEY");
     expect(appSource).toContain("consentVersion: BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY.consentVersion");
-    const backup = sourceBetween("function buildBackupPayload", "function parseBackupPayload");
+    const backup = sourceBetween("function buildBackupData", "function backupDetailsFromOmissions");
     expect(backup).not.toContain("healthSafetyConsent");
     expect(noticeSource).toContain('accessibilityRole="alert"');
     expect(noticeSource).toContain('accessibilityLiveRegion="polite"');

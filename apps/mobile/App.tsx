@@ -178,6 +178,36 @@ import {
 import { LegalFooter } from "./LegalFooter";
 import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
 import { openExternalUrl } from "./openExternalUrl";
+import {
+  BACKUP_APP_ID,
+  BACKUP_PACKAGE_MIME,
+  BACKUP_SCHEMA_VERSION,
+  MAX_BACKUP_PACKAGE_BYTES,
+  backupFileName,
+  createBackupPackage,
+  isZipPackage,
+  parseBackupPayloadV1,
+  readAndVerifyBackupPackage,
+  readBackupManifestFromPackage,
+  selectBackupMedia,
+  withoutPortablePhotoUris,
+  type BackupManifestV2,
+  type BackupMediaCandidate,
+  type BackupMediaOmission,
+  type BackupMediaOmissionReason,
+  type BackupPayloadV1,
+} from "./backup/backupFormat";
+import {
+  clearMeasurementMedia,
+  deleteOwnedMeasurementPhotoIfUnreferenced,
+  isMeasurementMediaEmpty,
+  isOwnedMeasurementPhotoUri,
+  measurementPhotoSha256,
+  normalizeAndStoreMeasurementPhoto,
+  readMeasurementPhotoForBackup,
+  storeImportedMeasurementPhoto,
+  sweepOrphanedMeasurementPhotos,
+} from "./backup/measurementMedia";
 
 // Foreground notification presentation handler. Without this, scheduled
 // notifications delivered while the app is in the foreground are silently
@@ -747,9 +777,6 @@ const BACKUP_META_KEY = scopedStorageKey("gymnasia.mobile.backup_meta.v1");
 // Identificador y versión del formato de backup. Bump BACKUP_SCHEMA_VERSION si el
 // esquema de datos cambia de forma incompatible; el importador rechaza versiones
 // superiores a la que conoce esta build.
-const BACKUP_APP_ID = "gymnasia";
-const BACKUP_SCHEMA_VERSION = 1;
-
 function normalizeProviderModel(provider: Provider, rawModel: string | null | undefined): string {
   if (provider === "google") {
     return normalizeGoogleModel(rawModel);
@@ -1828,10 +1855,10 @@ async function clearLegacyStorageData(secureStoreAvailable: boolean): Promise<vo
 }
 
 // --- Copia de seguridad manual (GYM-5) ---
-// Formato de backup versionado. Local-first: el archivo es un JSON portable que
-// el usuario sube al proveedor de nube que quiera (o guarda donde sea). No incluye
-// API keys de proveedores IA (viven en SecureStore) ni las caches de repos remotos
-// (ejercicios/alimentos/productos/recetas), que se re-descargan solas.
+// Formato de backup versionado. Local-first: el paquete .gymnasia contiene los
+// datos y las fotos de progreso normalizadas que el usuario decide compartir. No
+// incluye API keys de proveedores IA (viven en SecureStore) ni las cachés de repos
+// remotos (ejercicios/alimentos/productos/recetas), que se vuelven a descargar.
 type BackupData = {
   store: LocalStore;
   userPrefs: UserPreferences;
@@ -1839,57 +1866,78 @@ type BackupData = {
   personalData: PersonalDataField[];
 };
 
-type BackupPayload = {
-  app: typeof BACKUP_APP_ID;
-  type: "backup";
-  schemaVersion: number;
-  appVersion: string;
-  createdAt: string;
-  data: BackupData;
+type PendingBackupImport =
+  | {
+      kind: "v1";
+      payload: BackupPayloadV1<BackupData>;
+      expectedPhotoCount: number;
+    }
+  | {
+      kind: "v2";
+      manifest: BackupManifestV2<BackupData>;
+      sourceUri: string | null;
+      webBytes: Uint8Array | null;
+    };
+
+type BackupResultDetail = {
+  measurementId: string;
+  measuredAt: string | null;
+  reason: BackupMediaOmissionReason | "web-not-persistent" | "checksum";
+};
+
+type BackupResult = {
+  status: "ok" | "error" | "warning";
+  message: string;
+  details?: BackupResultDetail[];
 };
 
 type BackupMeta = { lastBackupAt: string | null };
 
-function buildBackupPayload(data: BackupData): BackupPayload {
+function buildBackupData(data: BackupData): BackupData {
   return {
-    app: BACKUP_APP_ID,
-    type: "backup",
-    schemaVersion: BACKUP_SCHEMA_VERSION,
-    appVersion: Constants.expoConfig?.version ?? "0.0.0",
-    createdAt: new Date().toISOString(),
-    data: {
-      // Nunca escribir API keys al archivo de backup.
-      store: sanitizeDevStoreValue(data.store),
-      userPrefs: data.userPrefs,
-      personalFoods: data.personalFoods,
-      personalData: data.personalData,
-    },
+    // Nunca escribir API keys ni otros campos de credencial al paquete exportado.
+    store: sanitizeDevStoreValue(data.store),
+    userPrefs: data.userPrefs,
+    personalFoods: data.personalFoods,
+    personalData: data.personalData,
   };
 }
 
-// Valida y normaliza un objeto arbitrario como backup. Lanza Error con mensaje en
-// español para superficies de UI si el archivo no es un backup válido de Gymnasia.
-function parseBackupPayload(raw: unknown): BackupPayload {
-  if (!raw || typeof raw !== "object") {
-    throw new Error("El archivo no es un backup válido.");
+function backupDetailsFromOmissions(
+  omissions: BackupMediaOmission[],
+  measurements: Measurement[],
+): BackupResultDetail[] {
+  const datesById = new Map(measurements.map((measurement) => [measurement.id, measurement.measured_at]));
+  return omissions.map((omission) => ({
+    measurementId: omission.measurementId,
+    measuredAt: datesById.get(omission.measurementId) ?? null,
+    reason: omission.reason,
+  }));
+}
+
+function backupDetailReasonLabel(reason: BackupResultDetail["reason"]): string {
+  switch (reason) {
+    case "missing": return "archivo original ausente";
+    case "unreadable": return "no se pudo leer";
+    case "per-file-limit": return "supera 5 MiB";
+    case "photo-count-limit": return "supera el límite de 500 fotos";
+    case "total-size-limit": return "supera el límite total de 200 MiB";
+    case "invalid-media": return "imagen no válida";
+    case "web-not-persistent": return "la vista web no conserva fotos de forma duradera";
+    case "checksum": return "checksum incorrecto";
   }
-  const candidate = raw as Partial<BackupPayload>;
-  if (candidate.app !== BACKUP_APP_ID || candidate.type !== "backup") {
-    throw new Error("El archivo no es una copia de seguridad de Gymnasia.");
-  }
-  if (typeof candidate.schemaVersion !== "number") {
-    throw new Error("El backup no indica su versión de formato.");
-  }
-  if (candidate.schemaVersion > BACKUP_SCHEMA_VERSION) {
-    throw new Error(
-      "Este backup se creó con una versión más reciente de la app. Actualiza Gymnasia para restaurarlo.",
-    );
-  }
-  const data = candidate.data;
-  if (!data || typeof data !== "object" || !("store" in data)) {
-    throw new Error("El backup no contiene datos restaurables.");
-  }
-  return candidate as BackupPayload;
+}
+
+function pendingBackupCreatedAt(pending: PendingBackupImport): string {
+  return pending.kind === "v2" ? pending.manifest.createdAt : pending.payload.createdAt;
+}
+
+function pendingBackupAppVersion(pending: PendingBackupImport): string {
+  return pending.kind === "v2" ? pending.manifest.appVersion : pending.payload.appVersion;
+}
+
+function pendingBackupPhotoCount(pending: PendingBackupImport): number {
+  return pending.kind === "v2" ? pending.manifest.media.links.length : pending.expectedPhotoCount;
 }
 
 async function readBackupMeta(): Promise<BackupMeta> {
@@ -1905,12 +1953,6 @@ async function readBackupMeta(): Promise<BackupMeta> {
 
 async function writeBackupMeta(meta: BackupMeta): Promise<void> {
   await AsyncStorage.setItem(BACKUP_META_KEY, JSON.stringify(meta));
-}
-
-function backupFileName(now = new Date()): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
-  return `gymnasia_backup_${stamp}.json`;
 }
 
 function recoveryFileName(now = new Date()): string {
@@ -6744,13 +6786,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
   // Copia manual en Configuración → Datos (GYM-5, ticket para exportar e importar copias).
   const [backupBusy, setBackupBusy] = useState<null | "export" | "import">(null);
-  const [backupResult, setBackupResult] = useState<
-    | null
-    | { status: "ok"; message: string }
-    | { status: "error"; message: string }
-  >(null);
+  const [backupResult, setBackupResult] = useState<BackupResult | null>(null);
   const [lastBackupAt, setLastBackupAt] = useState<string | null>(null);
-  const [pendingImport, setPendingImport] = useState<BackupPayload | null>(null);
+  const [pendingImport, setPendingImport] = useState<PendingBackupImport | null>(null);
   const [dataDeletionScope, setDataDeletionScope] =
     useState<LocalDataDeletionScope | null>(null);
   const [dataDeletionConfirmation, setDataDeletionConfirmation] = useState("");
@@ -6881,6 +6919,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const foodEstimatorScrollRef = useRef<ScrollView>(null);
   const [weightInput, setWeightInput] = useState("");
   const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
+  const [measurementSaveBusy, setMeasurementSaveBusy] = useState(false);
+  const [measurementMediaNotice, setMeasurementMediaNotice] = useState<string | null>(null);
   const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
   const [showMeasurementDatePicker, setShowMeasurementDatePicker] = useState(false);
   const [measurementDateTextInput, setMeasurementDateTextInput] = useState("");
@@ -8643,6 +8683,63 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }, [isHydrated]);
 
   useEffect(() => {
+    if (!isHydrated) return;
+    let cancelled = false;
+
+    void (async () => {
+      const legacyPhotos = store.measurements.filter(
+        (measurement) => measurement.photo_uri && !isOwnedMeasurementPhotoUri(measurement.photo_uri),
+      );
+      if (legacyPhotos.length === 0) {
+        sweepOrphanedMeasurementPhotos(store.measurements.map((measurement) => measurement.photo_uri));
+        return;
+      }
+      if (Platform.OS === "web") {
+        setMeasurementMediaNotice(
+          "La vista web no puede garantizar que las fotos sigan disponibles después de cerrar el navegador. Exporta una copia para conservar los datos.",
+        );
+        return;
+      }
+
+      const migratedUris = new Map<string, string>();
+      let failedCount = 0;
+      for (const measurement of legacyPhotos) {
+        if (cancelled || !measurement.photo_uri) return;
+        try {
+          const photo = await normalizeAndStoreMeasurementPhoto(measurement.photo_uri);
+          if (photo.owned) migratedUris.set(measurement.id, photo.uri);
+          else failedCount += 1;
+        } catch {
+          failedCount += 1;
+        }
+      }
+      if (cancelled) return;
+      if (migratedUris.size > 0) {
+        setStore((previous) => {
+          const measurements = previous.measurements.map((measurement) => ({
+            ...measurement,
+            photo_uri: migratedUris.get(measurement.id) ?? measurement.photo_uri,
+          }));
+          setTimeout(
+            () => sweepOrphanedMeasurementPhotos(measurements.map((measurement) => measurement.photo_uri)),
+            0,
+          );
+          return { ...previous, measurements };
+        });
+      }
+      if (failedCount > 0) {
+        setMeasurementMediaNotice(
+          `No se pudieron copiar ${failedCount} foto(s) antigua(s). Las mediciones siguen intactas; revisa las fotos antes de exportar.`,
+        );
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isHydrated]);
+
+  useEffect(() => {
     if (!isHydrated || providerSettingsInitializedRef.current) return;
     setProviderDraftByProvider(createProviderDraftMap(store.keys));
     setProviderConnectionStatus(createProviderConnectionStatusMap(store.keys));
@@ -9714,25 +9811,119 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return resolveFoodEstimatorProvider(store.keys);
   }
 
+  async function readPickedBackupBytes(asset: DocumentPicker.DocumentPickerAsset): Promise<Uint8Array> {
+    if (typeof asset.size === "number" && asset.size > MAX_BACKUP_PACKAGE_BYTES) {
+      throw new Error("El archivo supera el tamaño máximo permitido de 220 MiB.");
+    }
+    const bytes = Platform.OS === "web" && asset.file
+      ? new Uint8Array(await asset.file.arrayBuffer())
+      : await new File(asset.uri).bytes();
+    if (bytes.byteLength > MAX_BACKUP_PACKAGE_BYTES) {
+      throw new Error("El archivo supera el tamaño máximo permitido de 220 MiB.");
+    }
+    return bytes;
+  }
+
   // --- Copia de seguridad manual (GYM-5) ---
-  // Exporta todos los datos de usuario a un archivo JSON versionado y abre la hoja
-  // de compartir para que el usuario lo guarde donde quiera (Drive, Dropbox, etc.).
+  // Exporta datos y fotos a un paquete versionado y abre la hoja de compartir.
   async function runBackupExport() {
     setBackupBusy("export");
     setBackupResult(null);
     try {
       const personalData = await loadPersonalData();
-      const payload = buildBackupPayload({ store, userPrefs, personalFoods, personalData });
-      const json = JSON.stringify(payload, null, 2);
+      const backupData = buildBackupData({ store, userPrefs, personalFoods, personalData });
+      const candidates: BackupMediaCandidate[] = [];
+      const migratedUris = new Map<string, string>();
+      for (const measurement of store.measurements) {
+        if (!measurement.photo_uri) continue;
+        try {
+          const photo = await readMeasurementPhotoForBackup(measurement.photo_uri);
+          candidates.push({
+            measurementId: measurement.id,
+            measuredAt: measurement.measured_at,
+            bytes: photo.bytes,
+            sha256: photo.sha256,
+          });
+          if (photo.owned && photo.uri !== measurement.photo_uri) {
+            migratedUris.set(measurement.id, photo.uri);
+          }
+        } catch {
+          candidates.push({
+            measurementId: measurement.id,
+            measuredAt: measurement.measured_at,
+            bytes: null,
+            sha256: null,
+            failureReason: "unreadable",
+          });
+        }
+      }
+
+      const selectedMedia = selectBackupMedia(candidates);
+      const manifest: BackupManifestV2<BackupData> = {
+        app: BACKUP_APP_ID,
+        type: "backup",
+        schemaVersion: BACKUP_SCHEMA_VERSION,
+        appVersion: Constants.expoConfig?.version ?? "0.0.0",
+        createdAt: new Date().toISOString(),
+        data: withoutPortablePhotoUris(backupData),
+        media: {
+          assets: selectedMedia.assets,
+          links: selectedMedia.links,
+          omissions: selectedMedia.omissions,
+        },
+      };
+      const packageBytes = createBackupPackage(manifest, selectedMedia.filesByEntry);
       const fileName = backupFileName();
-      await downloadOrShareJson(json, fileName, "Guardar copia de seguridad de Gymnasia");
+
+      if (Platform.OS === "web") {
+        const blob = new Blob([packageBytes.slice().buffer], { type: BACKUP_PACKAGE_MIME });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = fileName;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      } else {
+        const file = new File(Paths.cache, fileName);
+        try {
+          if (file.exists) file.delete();
+          file.create();
+          file.write(packageBytes);
+          const canShare = await Sharing.isAvailableAsync();
+          if (!canShare) {
+            throw new Error("El sistema no permite compartir archivos en este dispositivo.");
+          }
+          await Sharing.shareAsync(file.uri, {
+            mimeType: BACKUP_PACKAGE_MIME,
+            dialogTitle: "Guardar copia de seguridad de Gymnasia",
+            UTI: "public.zip-archive",
+          });
+        } finally {
+          if (file.exists) file.delete();
+        }
+      }
+
+      if (migratedUris.size > 0) {
+        setStore((previous) => ({
+          ...previous,
+          measurements: previous.measurements.map((measurement) => ({
+            ...measurement,
+            photo_uri: migratedUris.get(measurement.id) ?? measurement.photo_uri,
+          })),
+        }));
+      }
 
       const now = new Date().toISOString();
       await writeBackupMeta({ lastBackupAt: now });
       setLastBackupAt(now);
       setBackupResult({
-        status: "ok",
-        message: "Copia de seguridad creada. Guárdala en tu proveedor de nube o en un archivo.",
+        status: selectedMedia.omissions.length > 0 ? "warning" : "ok",
+        message: selectedMedia.omissions.length > 0
+          ? `Copia creada con ${selectedMedia.links.length} foto(s). ${selectedMedia.omissions.length} foto(s) no pudieron incluirse; las mediciones sí están guardadas.`
+          : `Copia creada con ${selectedMedia.links.length} foto(s). Guárdala en un lugar seguro.`,
+        details: backupDetailsFromOmissions(selectedMedia.omissions, store.measurements),
       });
     } catch (e) {
       setBackupResult({
@@ -9749,40 +9940,39 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   async function pickBackupForImport() {
     setBackupBusy("import");
     setBackupResult(null);
-    let importedFile: File | null = null;
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ["application/json", "text/plain", "*/*"],
+        type: [BACKUP_PACKAGE_MIME, "application/json", "text/plain", "*/*"],
         copyToCacheDirectory: true,
         multiple: false,
       });
       if (result.canceled) return;
       const asset = result.assets[0];
-      importedFile = Platform.OS === "web" ? null : new File(asset.uri);
-      const content =
-        Platform.OS === "web" && asset.file
-          ? await asset.file.text()
-          : await importedFile?.text();
-      if (typeof content !== "string") {
-        throw new Error("No se pudo leer el archivo seleccionado.");
+      const bytes = await readPickedBackupBytes(asset);
+      if (isZipPackage(bytes)) {
+        const manifest = readBackupManifestFromPackage<BackupData>(bytes);
+        setPendingImport({
+          kind: "v2",
+          manifest,
+          sourceUri: Platform.OS === "web" ? null : asset.uri,
+          webBytes: Platform.OS === "web" ? bytes : null,
+        });
+      } else {
+        const parsed = JSON.parse(new TextDecoder().decode(bytes));
+        const payload = parseBackupPayloadV1<BackupData>(parsed);
+        const expectedPhotoCount = payload.data.store.measurements.filter(
+          (measurement) => !!measurement.photo_uri,
+        ).length;
+        setPendingImport({ kind: "v1", payload, expectedPhotoCount });
       }
-      const parsed = JSON.parse(content);
-      const payload = parseBackupPayload(parsed);
-      if (importedFile?.exists) importedFile.delete();
-      importedFile = null;
-      setPendingImport(payload);
     } catch (e) {
-      const message =
-        e instanceof SyntaxError
-          ? "El archivo no es un JSON válido."
-          : e instanceof Error
-            ? e.message
-            : "No se pudo leer el archivo.";
+      const message = e instanceof SyntaxError
+        ? "El archivo no es un JSON ni un paquete Gymnasia válido."
+        : e instanceof Error
+          ? e.message
+          : "No se pudo leer el archivo.";
       setBackupResult({ status: "error", message });
     } finally {
-      try {
-        if (importedFile?.exists) importedFile.delete();
-      } catch {}
       setBackupBusy(null);
     }
   }
@@ -9790,27 +9980,116 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   // Restaura los datos del backup previamente validado, sobrescribiendo el estado
   // actual. Preserva las API keys locales (el backup nunca las contiene).
   async function applyPendingImport() {
-    const payload = pendingImport;
-    if (!payload) return;
+    const pending = pendingImport;
+    if (!pending) return;
     setPendingImport(null);
     setBackupBusy("import");
     setBackupResult(null);
     try {
+      let data: BackupData;
+      const details: BackupResultDetail[] = [];
+      if (pending.kind === "v2") {
+        const packageBytes = pending.webBytes
+          ?? (pending.sourceUri ? await new File(pending.sourceUri).bytes() : null);
+        if (!packageBytes) throw new Error("Ya no se puede leer el paquete seleccionado.");
+        const parsed = await readAndVerifyBackupPackage<BackupData>(
+          packageBytes,
+          measurementPhotoSha256,
+        );
+        const assetsById = new Map(parsed.manifest.media.assets.map((asset) => [asset.id, asset]));
+        const photoUris = new Map<string, string | null>();
+        for (const link of parsed.manifest.media.links) {
+          const asset = assetsById.get(link.assetId);
+          const bytes = asset ? parsed.filesByEntry.get(asset.entry) : null;
+          if (!asset || !bytes) {
+            photoUris.set(link.measurementId, null);
+            details.push({ measurementId: link.measurementId, measuredAt: null, reason: "checksum" });
+            continue;
+          }
+          try {
+            const uri = await storeImportedMeasurementPhoto(asset.id, bytes);
+            photoUris.set(link.measurementId, uri);
+            if (!uri) {
+              details.push({
+                measurementId: link.measurementId,
+                measuredAt: null,
+                reason: "web-not-persistent",
+              });
+            }
+          } catch {
+            photoUris.set(link.measurementId, null);
+            details.push({
+              measurementId: link.measurementId,
+              measuredAt: null,
+              reason: "invalid-media",
+            });
+          }
+        }
+        details.push(...backupDetailsFromOmissions(
+          parsed.manifest.media.omissions,
+          parsed.manifest.data.store.measurements,
+        ));
+        const importedMeasurements = parsed.manifest.data.store.measurements.map((measurement) => ({
+          ...measurement,
+          photo_uri: typeof measurement.id === "string" ? (photoUris.get(measurement.id) ?? null) : null,
+        }));
+        data = {
+          ...parsed.manifest.data,
+          store: { ...parsed.manifest.data.store, measurements: importedMeasurements },
+        };
+      } else {
+        const migratedMeasurements: Measurement[] = [];
+        for (const rawMeasurement of pending.payload.data.store.measurements) {
+          let photoUri: string | null = null;
+          if (rawMeasurement.photo_uri) {
+            try {
+              const photo = await normalizeAndStoreMeasurementPhoto(rawMeasurement.photo_uri);
+              photoUri = photo.owned ? photo.uri : null;
+              if (!photo.owned) {
+                details.push({
+                  measurementId: rawMeasurement.id,
+                  measuredAt: rawMeasurement.measured_at,
+                  reason: "web-not-persistent",
+                });
+              }
+            } catch {
+              details.push({
+                measurementId: rawMeasurement.id,
+                measuredAt: rawMeasurement.measured_at,
+                reason: "missing",
+              });
+            }
+          }
+          migratedMeasurements.push({ ...rawMeasurement, photo_uri: photoUri });
+        }
+        data = {
+          ...pending.payload.data,
+          store: { ...pending.payload.data.store, measurements: migratedMeasurements },
+        };
+      }
+
       const secureAvailable = await isSecureStoreAvailable();
-      const secureApiKeys = await readProviderApiKeysFromSecureStore(secureAvailable);
-      const importedStore = normalizeStore(payload.data.store);
+      const secureApiKeys = secureAvailable
+        ? await readProviderApiKeysFromSecureStore(true)
+        : Object.fromEntries(
+            PROVIDERS.map((provider) => [
+              provider,
+              store.keys.find((item) => item.provider === provider)?.api_key ?? "",
+            ]),
+          ) as Record<Provider, string>;
+      const importedStore = stripProviderApiKeys(normalizeStore(data.store));
       const mergedStore = mergeStoreWithSecureApiKeys(importedStore, secureApiKeys);
       setStore(mergedStore);
 
-      const importedPrefs: UserPreferences = payload.data.userPrefs
-        ? { ...DEFAULT_USER_PREFS, ...payload.data.userPrefs }
+      const importedPrefs: UserPreferences = data.userPrefs
+        ? { ...DEFAULT_USER_PREFS, ...data.userPrefs }
         : { ...DEFAULT_USER_PREFS };
       setUserPrefs(importedPrefs);
       setMeasuresDashboardPeriod(importedPrefs.chartPeriod);
       if (importedPrefs.chartMetric) setMeasuresChartMetric(importedPrefs.chartMetric);
 
-      setPersonalFoods(Array.isArray(payload.data.personalFoods) ? payload.data.personalFoods : []);
-      await savePersonalData(sanitizePersonalDataFields(payload.data.personalData));
+      setPersonalFoods(Array.isArray(data.personalFoods) ? data.personalFoods : []);
+      await savePersonalData(sanitizePersonalDataFields(data.personalData));
       // La pestaña Memoria solo lee del disco si aún no ha cargado, y persiste su
       // array entero en cada onBlur. Sin este reset, un estado cargado antes de
       // importar volcaría los campos previos encima de los restaurados.
@@ -9821,7 +10100,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       // sesión en curso para no dejar un estado inconsistente con los datos nuevos.
       setActiveWorkoutSession(null);
 
-      setBackupResult({ status: "ok", message: "Datos restaurados correctamente." });
+      sweepOrphanedMeasurementPhotos(mergedStore.measurements.map((measurement) => measurement.photo_uri));
+      setBackupResult({
+        status: details.length > 0 ? "warning" : "ok",
+        message: details.length > 0
+          ? `Datos restaurados. ${details.length} foto(s) no pudieron recuperarse; sus mediciones numéricas se conservaron.`
+          : `Datos y ${mergedStore.measurements.filter((measurement) => measurement.photo_uri).length} foto(s) restaurados correctamente.`,
+        details: details.map((detail) => ({
+          ...detail,
+          measuredAt: detail.measuredAt
+            ?? mergedStore.measurements.find((measurement) => measurement.id === detail.measurementId)?.measured_at
+            ?? null,
+        })),
+      });
     } catch (e) {
       setBackupResult({
         status: "error",
@@ -10471,6 +10762,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 0.8,
+        exif: false,
       });
       if (result.canceled) return;
 
@@ -10497,6 +10789,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 0.8,
+        exif: false,
       });
       if (result.canceled) return;
 
@@ -10557,13 +10850,21 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   function deleteMeasurement(id: string) {
-    setStore((prev) => ({
-      ...prev,
-      measurements: prev.measurements.filter((m) => m.id !== id),
-    }));
+    setStore((prev) => {
+      const removed = prev.measurements.find((measurement) => measurement.id === id);
+      const measurements = prev.measurements.filter((measurement) => measurement.id !== id);
+      setTimeout(
+        () => deleteOwnedMeasurementPhotoIfUnreferenced(
+          removed?.photo_uri,
+          measurements.map((measurement) => measurement.photo_uri),
+        ),
+        0,
+      );
+      return { ...prev, measurements };
+    });
   }
 
-  function addMeasurementFromSettings() {
+  async function addMeasurementFromSettings() {
     const weightResult = parseOptionalPositiveMetricInput(weightInput);
     if (weightResult.invalid) {
       setError("Introduce un valor válido para peso.");
@@ -10633,33 +10934,64 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       return;
     }
 
-    const measurement: Measurement = {
-      id: editingMeasurementId ?? uid("measurement"),
-      measured_at: measurementDateFromSelection(measurementDate).toISOString(),
-      weight_kg: weightResult.value,
-      body_fat_pct: bodyFatResult.value,
-      photo_uri: measurementPhotoUri,
-      neck_cm: neckResult.value,
-      chest_cm: chestResult.value,
-      waist_cm: waistResult.value,
-      hips_cm: hipsResult.value,
-      biceps_cm: bicepsResult.value,
-      quadriceps_cm: quadricepsResult.value,
-      calf_cm: calfResult.value,
-      height_cm: heightResult.value,
-    };
+    setMeasurementSaveBusy(true);
+    let portablePhotoUri = measurementPhotoUri;
+    try {
+      if (measurementPhotoUri) {
+        const currentPhotoUri = editingMeasurementId
+          ? store.measurements.find((measurement) => measurement.id === editingMeasurementId)?.photo_uri
+          : null;
+        if (measurementPhotoUri !== currentPhotoUri || !isOwnedMeasurementPhotoUri(measurementPhotoUri)) {
+          const photo = await normalizeAndStoreMeasurementPhoto(measurementPhotoUri);
+          portablePhotoUri = photo.uri;
+        }
+      }
 
-    setStore((prev) => {
-      const base = editingMeasurementId
-        ? prev.measurements.filter((m) => m.id !== editingMeasurementId)
-        : prev.measurements;
-      const nextMeasurements = sortMeasurementsDesc([measurement, ...base]).slice(0, 1826);
-      return {
-        ...prev,
-        measurements: nextMeasurements,
+      const measurement: Measurement = {
+        id: editingMeasurementId ?? uid("measurement"),
+        measured_at: measurementDateFromSelection(measurementDate).toISOString(),
+        weight_kg: weightResult.value,
+        body_fat_pct: bodyFatResult.value,
+        photo_uri: portablePhotoUri,
+        neck_cm: neckResult.value,
+        chest_cm: chestResult.value,
+        waist_cm: waistResult.value,
+        hips_cm: hipsResult.value,
+        biceps_cm: bicepsResult.value,
+        quadriceps_cm: quadricepsResult.value,
+        calf_cm: calfResult.value,
+        height_cm: heightResult.value,
       };
-    });
-    closeMeasurementEntryScreen();
+
+      setStore((prev) => {
+        const base = editingMeasurementId
+          ? prev.measurements.filter((m) => m.id !== editingMeasurementId)
+          : prev.measurements;
+        const nextMeasurements = sortMeasurementsDesc([measurement, ...base]).slice(0, 1826);
+        const referencedUris = nextMeasurements.map((item) => item.photo_uri);
+        const removedPhotoUris = prev.measurements
+          .map((item) => item.photo_uri)
+          .filter((uri) => uri && !referencedUris.includes(uri));
+        setTimeout(() => {
+          for (const uri of removedPhotoUris) {
+            deleteOwnedMeasurementPhotoIfUnreferenced(uri, referencedUris);
+          }
+        }, 0);
+        return {
+          ...prev,
+          measurements: nextMeasurements,
+        };
+      });
+      closeMeasurementEntryScreen();
+    } catch (photoError) {
+      setError(
+        photoError instanceof Error
+          ? photoError.message
+          : "No se pudo guardar una copia segura de la foto.",
+      );
+    } finally {
+      setMeasurementSaveBusy(false);
+    }
   }
 
   function updateDietSettings(updater: (settings: DietSettings) => DietSettings) {
@@ -12831,7 +13163,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         ).every((value) => value === null),
       });
       for (const key of activeKeys) {
-        if (preservedKeys.has(key) || key === traceKey || managedStoreKeys.has(key)) continue;
+        if (
+          preservedKeys.has(key)
+          || key === traceKey
+          || key === "gymnasia_measurement_media_v1"
+          || managedStoreKeys.has(key)
+        ) continue;
         tasks.push({
           id: `async-storage:${key}`,
           label: storageTargetLabel(key),
@@ -12898,6 +13235,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     if (Platform.OS !== "web") {
+      tasks.push({
+        id: "measurement-media",
+        label: "Fotos de progreso guardadas por Gymnasia",
+        delete: async () => clearMeasurementMedia(),
+        verify: async () => isMeasurementMediaEmpty(),
+      });
       tasks.push({
         id: "notifications",
         label: "Avisos de entrenamiento",
@@ -18065,6 +18408,26 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
           {tab === "measures" ? (
             <View style={{ gap: 14 }}>
+              {measurementMediaNotice ? (
+                <View
+                  accessibilityLiveRegion="polite"
+                  style={{
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: "rgba(255,190,92,0.45)",
+                    backgroundColor: "rgba(255,190,92,0.10)",
+                    padding: 12,
+                    flexDirection: "row",
+                    alignItems: "flex-start",
+                    gap: 8,
+                  }}
+                >
+                  <Feather name="alert-circle" size={17} color="#FFBE5C" style={{ marginTop: 1 }} />
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, lineHeight: 18, flex: 1 }}>
+                    {measurementMediaNotice}
+                  </Text>
+                </View>
+              ) : null}
               <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
                 <Pressable
                   onPress={openMeasurementEntryScreen}
@@ -22091,7 +22454,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     Copia de seguridad
                   </Text>
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                    Exporta todos tus datos (rutinas, historial, dieta, medidas, alimentos personales, memoria y preferencias) a un archivo. Guárdalo en tu proveedor de nube (Drive, Dropbox, OneDrive…) o donde prefieras, y restáuralo cuando quieras. La copia no incluye tus API keys de proveedores IA.
+                    Exporta tus datos y fotos de progreso a un paquete .gymnasia. Las fotos se optimizan y se eliminan sus metadatos antes de incluirlas. Guárdalo en tu proveedor de nube (Drive, Dropbox, OneDrive…) o donde prefieras. La copia no incluye tus API keys de proveedores IA.
                   </Text>
 
                   <View
@@ -22178,31 +22541,55 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                   {backupResult ? (
                     <View
+                      accessibilityLiveRegion="polite"
                       style={{
                         gap: 4,
                         backgroundColor:
-                          backupResult.status === "ok" ? "rgba(203,255,26,0.10)" : "rgba(255,138,138,0.10)",
+                          backupResult.status === "ok"
+                            ? "rgba(203,255,26,0.10)"
+                            : backupResult.status === "warning"
+                              ? "rgba(255,190,92,0.10)"
+                              : "rgba(255,138,138,0.10)",
                         borderRadius: 12,
                         padding: 14,
                         borderWidth: 1,
                         borderColor:
-                          backupResult.status === "ok" ? "rgba(203,255,26,0.5)" : "rgba(255,138,138,0.5)",
+                          backupResult.status === "ok"
+                            ? "rgba(203,255,26,0.5)"
+                            : backupResult.status === "warning"
+                              ? "rgba(255,190,92,0.5)"
+                              : "rgba(255,138,138,0.5)",
                       }}
                     >
                       <Text
                         style={{
-                          color: backupResult.status === "ok" ? mobileTheme.color.textPrimary : "#FF8A8A",
+                          color: backupResult.status === "error" ? "#FF8A8A" : mobileTheme.color.textPrimary,
                           fontSize: 13,
                           fontWeight: "600",
                         }}
                       >
                         {backupResult.message}
                       </Text>
+                      {backupResult.details?.slice(0, 5).map((detail, index) => (
+                        <Text
+                          key={`${detail.measurementId}-${detail.reason}-${index}`}
+                          style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}
+                        >
+                          • {detail.measuredAt
+                            ? new Date(detail.measuredAt).toLocaleDateString("es-ES")
+                            : `medición ${detail.measurementId.slice(0, 8)}`}: {backupDetailReasonLabel(detail.reason)}
+                        </Text>
+                      ))}
+                      {(backupResult.details?.length ?? 0) > 5 ? (
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                          Y {(backupResult.details?.length ?? 0) - 5} incidencia(s) más.
+                        </Text>
+                      ) : null}
                     </View>
                   ) : null}
 
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
-                    Restaurar sustituye por completo los datos actuales por los del archivo. Tus API keys se mantienen.
+                    Restaurar sustituye por completo los datos actuales por los del archivo. El paquete puede contener información sensible y no está cifrado. Tus API keys se mantienen.
                   </Text>
                   <Pressable
                     accessibilityRole="link"
@@ -22685,7 +23072,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 </Text>
               </Pressable>
               <Pressable
-                onPress={addMeasurementFromSettings}
+                onPress={() => { void addMeasurementFromSettings(); }}
+                disabled={measurementSaveBusy}
                 style={{
                   flex: 1,
                   minHeight: 44,
@@ -22693,9 +23081,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   backgroundColor: mobileTheme.color.brandPrimary,
                   alignItems: "center",
                   justifyContent: "center",
+                  opacity: measurementSaveBusy ? 0.6 : 1,
                 }}
               >
-                <Text style={{ color: "#06090D", fontWeight: "700" }}>{editingMeasurementId ? "Actualizar" : "Guardar medidas"}</Text>
+                {measurementSaveBusy ? (
+                  <ActivityIndicator size="small" color="#06090D" />
+                ) : (
+                  <Text style={{ color: "#06090D", fontWeight: "700" }}>{editingMeasurementId ? "Actualizar" : "Guardar medidas"}</Text>
+                )}
               </Pressable>
             </View>
           </View>
@@ -23004,7 +23397,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </Text>
                 </Pressable>
                 <Pressable
-                  onPress={addMeasurementFromSettings}
+                  onPress={() => { void addMeasurementFromSettings(); }}
+                  disabled={measurementSaveBusy}
                   style={{
                     flex: 1,
                     minHeight: 44,
@@ -23012,9 +23406,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     backgroundColor: mobileTheme.color.brandPrimary,
                     alignItems: "center",
                     justifyContent: "center",
+                    opacity: measurementSaveBusy ? 0.6 : 1,
                   }}
                 >
-                  <Text style={{ color: "#06090D", fontWeight: "700" }}>{editingMeasurementId ? "Actualizar" : "Guardar medidas"}</Text>
+                  {measurementSaveBusy ? (
+                    <ActivityIndicator size="small" color="#06090D" />
+                  ) : (
+                    <Text style={{ color: "#06090D", fontWeight: "700" }}>{editingMeasurementId ? "Actualizar" : "Guardar medidas"}</Text>
+                  )}
                 </Pressable>
               </View>
             </View>
@@ -23268,8 +23667,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             </Text>
             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>
               Se sustituirán TODOS tus datos actuales por los de la copia
-              {pendingImport.createdAt
-                ? ` del ${new Date(pendingImport.createdAt).toLocaleString("es-ES", {
+              {pendingBackupCreatedAt(pendingImport)
+                ? ` del ${new Date(pendingBackupCreatedAt(pendingImport)).toLocaleString("es-ES", {
                     day: "2-digit",
                     month: "2-digit",
                     year: "numeric",
@@ -23277,7 +23676,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     minute: "2-digit",
                   })}`
                 : ""}
-              {pendingImport.appVersion ? ` (Gymnasia v${pendingImport.appVersion})` : ""}.{"\n"}Esta acción no se puede deshacer.
+              {pendingBackupAppVersion(pendingImport) ? ` (Gymnasia v${pendingBackupAppVersion(pendingImport)})` : ""}. La copia declara {pendingBackupPhotoCount(pendingImport)} foto(s).{"\n"}Esta acción no se puede deshacer.
             </Text>
             <Pressable
               onPress={applyPendingImport}

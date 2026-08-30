@@ -15,8 +15,8 @@ export const PRIVACY_POLICY_URLS = {
 } as const;
 
 export const PRIVACY_POLICY_DIGESTS = {
-  es: "sha256:c1a82fbc59661e44f43d312b8bf48f73c0fdb72fbad9193d0320062a3c22508b",
-  en: "sha256:8ab31542eada6a36b7fa1193bf4147c1a99074148195316a6054639f4db3585b",
+  es: "sha256:d482a3e01731ab4191cee1f182a70a4dcd59374b5f6020c0fd6d02190a8e2ad0",
+  en: "sha256:2aa316979627c585f85689f9411a7d003c779f404ccfdc88bc54360b6796c72f",
 } as const;
 
 export const MEDICAL_DISCLAIMER = {

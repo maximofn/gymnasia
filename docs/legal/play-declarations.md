@@ -8,7 +8,7 @@ este documento conserva las respuestas verificadas contra el código y la polít
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v8` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-08-v9` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -39,6 +39,8 @@ Los datos salen hacia **terceros que el usuario elige**. Para eso Google contemp
 exención expresa de *Sharing*: transferencias basadas en una acción concreta iniciada
 por el usuario en las que espera razonablemente que sus datos lleguen al proveedor.
 Configurar una clave propia y enviar un mensaje o una fotografía encaja en esa exención.
+También encaja exportar un paquete `.gymnasia` y elegir personalmente su destino en la
+hoja de compartir: la app no lo sube ni decide el destinatario por su cuenta.
 
 Cloudflare y GitHub actúan como proveedores de servicio del responsable para este flujo,
 por lo que no se declaran como `Shared` mientras usen los datos únicamente para prestar
@@ -59,7 +61,7 @@ mantenedor.
 | Personal info › Other info | Sí | No | Sí | Funcionalidad de la app: contexto opcional como sexo, altura, fecha de nacimiento u otros datos escritos | Mensajes y resultados autorizados enviados al proveedor |
 | Health and fitness › Health info | Sí | No | Sí | Funcionalidad de la app: responder a contexto que puede mencionar síntomas, lesiones o condiciones | Proveedor BYOK o denuncia confirmada |
 | Health and fitness › Fitness info | Sí | No | Sí | Funcionalidad de la app: rutinas, actividad, peso, composición, dieta y medidas | Proveedor BYOK o denuncia confirmada |
-| Photos and videos › Photos | Sí | No | Sí | Funcionalidad de la app: estimación nutricional a partir de hasta seis fotos | Solo las imágenes elegidas en el estimador; las fotos de progreso siguen locales |
+| Photos and videos › Photos | Sí | No | Sí | Funcionalidad de la app: estimación nutricional a partir de hasta seis fotos y copia manual de fotos de progreso | Las imágenes del estimador solo van al proveedor elegido; las fotos de progreso solo salen cuando el usuario exporta el paquete y elige dónde compartirlo |
 | Messages › Other in-app messages | Sí | No | Sí | Funcionalidad de la app: generar una respuesta o revisar una denuncia | Proveedor BYOK; denuncia borrada a los 30 días |
 | Other user-generated content | Sí | No | Sí | Funcionalidad de la app: detalles opcionales escritos al denunciar | Denuncia in-app; cuerpo borrado a los 30 días |
 | Device or other IDs | Sí | No | Sí | Seguridad y prevención del fraude: rate limiting del backend opcional | HMAC de IP, máximo 48 h; nunca IP en claro en D1 |

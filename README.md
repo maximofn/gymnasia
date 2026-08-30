@@ -112,6 +112,20 @@ npm run test:board       # valida el JSON del tablero
 npm run test:board:e2e   # E2E con Playwright
 ```
 
+## Copias de seguridad
+
+La app exporta manualmente un único paquete `.gymnasia` con los datos locales y las
+fotos de progreso. Las imágenes se convierten a JPEG, se reducen a un máximo de 2048 px
+por el lado largo y se guardan sin EXIF/XMP/IPTC ni comentarios. El paquete usa SHA-256
+para verificar cada foto, admite como máximo 500 relaciones de foto, 5 MiB por imagen y
+200 MiB de imágenes en total. Si una foto falta o no cabe, la medición numérica sigue en
+la copia y la interfaz muestra la omisión.
+
+El importador sigue aceptando los backups JSON v1. El paquete `.gymnasia` no contiene
+claves de API, pero incluye conversaciones y otros datos sensibles y no está cifrado.
+El formato y sus invariantes están documentados en
+`docs/architecture/measurement-photo-backups.md`.
+
 ## Documentacion
 
 - Instrucciones para agentes IA: `AGENTS.md`
@@ -119,6 +133,7 @@ npm run test:board:e2e   # E2E con Playwright
 - Política remota y fallback del agente: `docs/architecture/chat-system-prompt.md`
 - Entornos y promoción de políticas: `docs/architecture/policy-environments.md`
 - Política y revisión sanitaria del agente: `docs/architecture/health-safety-policy.md`
+- Fotos de progreso y formato de backup: `docs/architecture/measurement-photo-backups.md`
 - Ficha, declaraciones y capturas para Google Play: `docs/store/google-play/`
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`
