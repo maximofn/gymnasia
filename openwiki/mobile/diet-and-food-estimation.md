@@ -217,7 +217,7 @@ El agente recibe los alimentos remotos y personales combinados como `foodsRepo`.
 
 ## Riesgos de persistencia y procedencia
 
-Los registros y los ajustes de dieta se encuentran dentro del `LocalStore` principal y se guardan después de la hidratación en la clave principal de AsyncStorage; en las compilaciones web de desarrollo, el mismo almacén completo también se replica mediante `/dev-store`. Los alimentos personales se cargan y guardan de forma independiente en `gymnasia.mobile.personal_foods.v1`. La versión 1 del esquema de copia de seguridad incluye tanto el almacén principal depurado como `personalFoods`, y los restaura por separado.
+Los registros y los ajustes de dieta se encuentran dentro del `LocalStore` principal y se guardan después de la hidratación en la clave principal de AsyncStorage; con el espejo web de desarrollo activado explícitamente, una copia saneada del agregado también se replica mediante `/dev-store` solo en loopback. Los alimentos personales se cargan y guardan de forma independiente en `gymnasia.mobile.personal_foods.v1`. La versión 1 del esquema de copia de seguridad incluye tanto el almacén principal depurado como `personalFoods`, y los restaura por separado.
 
 Modos de fallo e invariantes importantes:
 

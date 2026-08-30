@@ -59,6 +59,8 @@ npm run test:health-safety  # regresiones y propiedades sanitarias sin red
 npm run policy:bundle:check # verifica bundle, certificado y firma públicos
 npm run check:policy-trust  # verifica la raíz pública integrada en la app
 npm run test:agent:e2e  # app web + Playwright + proveedores falsos
+npm run test:dev-store  # saneado, esquema, atomicidad y guarda de Git
+npm run test:dev-store:e2e # middleware real de Metro sobre localhost
 ```
 
 Las evals con LLM están separadas de CI y reservadas para LangSmith. Consulta
@@ -90,8 +92,14 @@ Consulta las decisiones de almacenamiento y capacidades degradadas en
 
 ```bash
 npm --workspace apps/mobile run web        # preview local
+npm --workspace apps/mobile run web:mirror # preview con espejo local opt-in
 npm --workspace apps/mobile run build:web  # export estático para Vercel
 ```
+
+`web:mirror` conserva el estado no sensible en `apps/mobile/.dev-store.json`
+entre reinicios de Metro. Solo responde en loopback, no funciona desde la LAN y
+nunca escribe claves BYOK ni identificadores de workspace. El preview `web`
+normal mantiene el espejo desactivado.
 
 ## Tablero de seguimiento
 

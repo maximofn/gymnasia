@@ -150,6 +150,11 @@ import {
   stripProviderApiKeys,
   writeProviderApiKeys,
 } from "./agent/providerCredentials";
+import {
+  isDevStoreMirrorEnabled,
+  sanitizeDevStoreValue,
+  serializeDevStore,
+} from "./agent/devStore";
 import { LegalFooter } from "./LegalFooter";
 import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
 import { openExternalUrl } from "./openExternalUrl";
@@ -765,7 +770,7 @@ function normalizeOpenAIReasoningEffort(
 const DEV_STORE_ENDPOINT = "/dev-store";
 
 async function loadDevStoreFile(): Promise<string | null> {
-  if (Platform.OS !== "web" || !__DEV__) return null;
+  if (Platform.OS !== "web" || !__DEV__ || !isDevStoreMirrorEnabled()) return null;
   try {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     const res = await fetch(`${origin}${DEV_STORE_ENDPOINT}`);
@@ -777,15 +782,16 @@ async function loadDevStoreFile(): Promise<string | null> {
   return null;
 }
 
-async function saveDevStoreFile(json: string): Promise<void> {
-  if (Platform.OS !== "web" || !__DEV__) return;
+async function saveDevStoreFile(store: unknown): Promise<void> {
+  if (Platform.OS !== "web" || !__DEV__ || !isDevStoreMirrorEnabled()) return;
   try {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    await fetch(`${origin}${DEV_STORE_ENDPOINT}`, {
+    const response = await fetch(`${origin}${DEV_STORE_ENDPOINT}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: json,
+      body: serializeDevStore(store),
     });
+    if (!response.ok) throw new Error("dev store rejected");
   } catch {}
 }
 
@@ -1707,14 +1713,6 @@ function emptyProviderApiKeys(): Record<Provider, string> {
   return { openai: "", anthropic: "", google: "" };
 }
 
-function stripSensitiveStoreData(store: LocalStore): LocalStore {
-  const withoutApiKeys = stripProviderApiKeys(store);
-  return {
-    ...withoutApiKeys,
-    keys: withoutApiKeys.keys.map((item) => ({ ...item, workspace_id: "" })),
-  };
-}
-
 function serializeStoreForAsyncStorage(
   store: LocalStore,
   secureStoreAvailable: boolean,
@@ -1807,7 +1805,7 @@ function buildBackupPayload(data: BackupData): BackupPayload {
     createdAt: new Date().toISOString(),
     data: {
       // Nunca escribir API keys al archivo de backup.
-      store: stripSensitiveStoreData(data.store),
+      store: sanitizeDevStoreValue(data.store),
       userPrefs: data.userPrefs,
       personalFoods: data.personalFoods,
       personalData: data.personalData,
@@ -8391,7 +8389,7 @@ export default function App() {
     Promise.all([
       AsyncStorage.setItem(STORAGE_KEY, serialized),
       writeProviderApiKeysToSecureStore(store.keys, secureStoreAvailable),
-      saveDevStoreFile(JSON.stringify(store)),
+      saveDevStoreFile(store),
     ]).catch(() => {
       setError("No se pudo guardar en almacenamiento local/seguro.");
     });

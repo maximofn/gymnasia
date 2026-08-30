@@ -77,7 +77,7 @@ El agregado no constituye todo el modelo de persistencia. A continuación se enu
 | AsyncStorage `gymnasia_debug_traces` | Hasta 1000 objetos `TraceEntry` | No | Gestionado por `trace.ts`; se carga de forma diferida y se reescribe sin esperar el resultado. |
 | SecureStore `gymnasia.mobile.v3.provider.api_key.<provider>` | Una clave de API de proveedor sin espacios circundantes | No | Se combina con `LocalStore` en memoria; se establece/elimina cada vez que cambia `store.keys`. |
 | SecureStore `vivagym.email`, `vivagym.password` | Credenciales heredadas de una integración retirada | No | La versión actual no las lee ni escribe durante la hidratación o el uso normal; una actualización dentro del mismo package name las conserva y `resetLocalData` las elimina. |
-| Archivo de desarrollo `apps/mobile/.dev-store.json` mediante `/dev-store` | JSON de `LocalStore` en memoria sin sanear | No | Solo para desarrollo web; lectura alternativa cuando AsyncStorage no tiene un agregado y escritura espejo después de cambios del almacén. |
+| Archivo de desarrollo `apps/mobile/.dev-store.json` mediante `/dev-store` | JSON saneado de `LocalStore`, sin credenciales ni identificadores de workspace | No | Solo con `EXPO_PUBLIC_DEV_STORE_MIRROR=1`, web en desarrollo y loopback; lectura alternativa cuando AsyncStorage no tiene agregado y escritura espejo atómica después de cambios. |
 
 Las claves de agregado heredadas `gymnasia.mobile.local.v1` y `.v2`, junto con los prefijos antiguos de claves de proveedor `gymnasia.mobile.provider.api_key` y `gymnasia.mobile.v2.provider.api_key`, se **eliminan**, no se importan, durante cada hidratación. Por tanto, esa operación es una limpieza, no una migración de datos.
 
@@ -159,11 +159,11 @@ No valida en profundidad cada objeto. En particular, `threads` se acepta directa
 
 ## Límite de datos sensibles
 
-Cuando `SecureStore.isAvailableAsync()` se completa correctamente, `stripSensitiveStoreData` reemplaza cada `AIKey.api_key` por `""` antes de serializarlo para AsyncStorage o para una copia de seguridad. Durante la hidratación, `mergeStoreWithSecureApiKeys` da prioridad a un valor no vacío de SecureStore y, en caso contrario, conserva el valor del agregado. Esto permite migrar valores en texto sin formato desde el agregado y trasladarlos a SecureStore durante la reescritura inmediata.
+Cuando `SecureStore.isAvailableAsync()` se completa correctamente, `serializeStoreForAsyncStorage` reemplaza cada `AIKey.api_key` por `""` antes de serializar para AsyncStorage. Los backups y el espejo usan `sanitizeDevStoreValue`, que censura recursivamente claves API, identificadores de workspace y otros campos de credencial conocidos. Durante la hidratación, `mergeStoreWithSecureApiKeys` da prioridad a un valor no vacío de SecureStore y, en caso contrario, conserva el valor del agregado. Esto permite migrar valores en texto sin formato desde el agregado y trasladarlos a SecureStore durante la reescritura inmediata.
 
 Cuando SecureStore no está disponible, todo el almacén —incluidas las claves de API de los proveedores— se conserva deliberadamente en AsyncStorage para que la web y los entornos no compatibles sigan funcionando; la interfaz de configuración advierte sobre esta alternativa. Las dos credenciales heredadas de VivaGym no tienen alternativa en texto sin formato: la versión retirada no las lee ni las escribe en ninguna plataforma.
 
-Una excepción importante exclusiva del desarrollo es `saveDevStoreFile(JSON.stringify(store))`: a diferencia de la ruta de AsyncStorage, recibe el almacén **sin sanear**. Por ello, las claves de proveedores configuradas pueden escribirse en `apps/mobile/.dev-store.json` durante el desarrollo web. El middleware de Metro también sirve y acepta `/dev-store` con `Access-Control-Allow-Origin: *`, no realiza ninguna autenticación ni validación del cuerpo o del esquema y utiliza escrituras de archivo síncronas. Es infraestructura de desarrollo, no una API de producción, y el archivo debe tratarse como sensible.
+El espejo de desarrollo está desactivado por defecto. `web:mirror` activa el cliente y el middleware con `EXPO_PUBLIC_DEV_STORE_MIRROR=1`; aun así, `/dev-store` solo acepta loopback y mismo origen, no emite CORS permisivo y valida tipo, límite de 5 MiB y esquema raíz. Cliente y servidor censuran los campos sensibles, de modo que un cliente alterado tampoco puede escribir credenciales. El reemplazo usa un temporal en el mismo directorio, `fsync`, rename atómico, permisos `0600` y una cola que ordena escrituras concurrentes. Un archivo heredado se sanea antes de servirse. Sigue conteniendo estado personal de salud y chat, por lo que debe tratarse como sensible y nunca confirmarse en Git.
 
 Las entradas de traza pueden contener cualquier tipo de `data`. `pushTrace` las envía también a la consola y las almacena en AsyncStorage; quienes realicen llamadas no deben añadir credenciales ni datos personales. La persistencia de trazas conserva las 1000 entradas más recientes, pero sus escrituras sin espera no son transaccionales.
 
@@ -298,9 +298,10 @@ El comando de TypeScript es una comprobación específica útil del contrato, pe
 ```bash
 npm run dev:mobile
 npm --workspace apps/mobile run web
+npm --workspace apps/mobile run web:mirror
 ```
 
-Verifique por separado un ciclo nativo y uno web: cree cada partición, reinicie, inspeccione el estado normalizado, exporte, compruebe que todos los valores `data.store.keys[*].api_key` estén vacíos, importe después de cambiar las claves de API locales, confirme que las claves se conserven, confirme que la sesión activa se cierre y pruebe archivos ausentes, no válidos y con versiones futuras. Durante el desarrollo web, inspeccione y proteja también `apps/mobile/.dev-store.json`; nunca confirme en el repositorio los secretos que contenga.
+Verifique por separado un ciclo nativo y uno web: cree cada partición, reinicie, inspeccione el estado normalizado, exporte, compruebe que todos los valores `data.store.keys[*].api_key` estén vacíos, importe después de cambiar las claves de API locales, confirme que las claves se conserven, confirme que la sesión activa se cierre y pruebe archivos ausentes, no válidos y con versiones futuras. Para el espejo ejecute `npm run test:dev-store` y `npm run test:dev-store:e2e`: deben demostrar activación explícita, CORS denegado, saneado profundo, límites, atomicidad y ausencia del archivo en el índice Git sin tocar el estado real del desarrollador.
 
 ## Procedimiento seguro para realizar cambios
 
