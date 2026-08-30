@@ -217,13 +217,20 @@ test("los documentos reales solo tienen pendiente completar el responsable", () 
   assert.deepEqual(otras, []);
 });
 
-test("la política española describe el borrado parcial real, no uno ideal", () => {
-  // GYM-162 (ticket para hacer veraz y completo el borrado local) aún no ha
-  // cerrado: si alguien 'mejora' este texto antes de arreglar el
-  // borrado, la política publicada pasaría a mentir.
-  const canonical = canonicalText(loadPolicy("es"));
-  assert.match(canonical, /borrado \*\*parcial\*\*/);
-  assert.match(canonical, /\*\*No elimina\*\*/);
+test("ambos idiomas describen los dos alcances y la única excepción de seguridad", () => {
+  const spanish = canonicalText(loadPolicy("es"));
+  const english = canonicalText(loadPolicy("en"));
+
+  assert.match(spanish, /Borrar actividad y conversaciones/);
+  assert.match(spanish, /Borrar todos mis datos/);
+  assert.match(spanish, /escribir `BORRAR`/);
+  assert.match(spanish, /caché pública firmada/);
+  assert.match(english, /Delete activity and conversations/);
+  assert.match(english, /Delete all my data/);
+  assert.match(english, /type `BORRAR`/);
+  assert.match(english, /signed public cache/);
+  assert.doesNotMatch(spanish, /Estamos trabajando en que esta acción borre/);
+  assert.doesNotMatch(english, /Work is under way to make this action delete/);
 });
 
 test("ambos idiomas declaran que no es un dispositivo médico", () => {

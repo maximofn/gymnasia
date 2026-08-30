@@ -305,6 +305,25 @@ describe("LocalStore recovery repository", () => {
     expect(storage.values.has(KEYS.quarantine)).toBe(false);
   });
 
+  it("deletes the managed store family without recreating an empty snapshot", async () => {
+    const { storage, repository: repo } = repository();
+    const independentKey = "personal-data";
+    const sessionKey = "session";
+    storage.values.set(KEYS.primary, validRaw());
+    storage.values.set(KEYS.snapshot, "verified-snapshot");
+    storage.values.set(KEYS.quarantine, "quarantine");
+    storage.values.set(sessionKey, "dependent");
+    storage.values.set(independentKey, "keep-me");
+
+    await repo.deleteManaged([sessionKey]);
+
+    expect(storage.values.has(KEYS.primary)).toBe(false);
+    expect(storage.values.has(KEYS.snapshot)).toBe(false);
+    expect(storage.values.has(KEYS.quarantine)).toBe(false);
+    expect(storage.values.has(sessionKey)).toBe(false);
+    expect(storage.values.get(independentKey)).toBe("keep-me");
+  });
+
   it("classifies read failures without pretending the store is empty", async () => {
     const storage = new MemoryStorage();
     storage.failGet.add(KEYS.primary);

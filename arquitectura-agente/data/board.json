@@ -1775,7 +1775,7 @@
         {
           "id": "GYM-162",
           "title": "Hacer veraz y completo el borrado de datos locales",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Separar el restablecimiento parcial del borrado total y cubrir todas las claves, secretos, cachés y trazas.",
           "dependsOn": [],
           "related": [

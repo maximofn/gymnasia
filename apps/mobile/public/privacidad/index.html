@@ -6,7 +6,7 @@
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
 <meta name="gymnasia-policy-version" content="2026-08-v9">
-<meta name="gymnasia-policy-digest" content="sha256:c1c5c5a4959a6ff6205cc118ac24beea1eab6a00dea68e43b7608aaf71443ac9">
+<meta name="gymnasia-policy-digest" content="sha256:c1a82fbc59661e44f43d312b8bf48f73c0fdb72fbad9193d0320062a3c22508b">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -95,7 +95,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Datos personales de cálculo</strong>: sexo, altura, fecha de nacimiento, objetivo (definición, volumen o mantenimiento) y nivel de actividad. Se usan para estimar tus calorías y macronutrientes.</li>
       <li><strong>Conversaciones con el asistente</strong>: el historial completo de tus hilos de chat, incluidos los mensajes del modelo.</li>
       <li><strong>Memoria del asistente</strong>: notas en texto libre que tú o el propio asistente guardáis para recordar cosas entre conversaciones. Puede contener cualquier dato que hayas contado en el chat, incluidos datos de salud.</li>
-      <li><strong>Credenciales heredadas de funciones retiradas</strong>: si una versión anterior guardó credenciales en el llavero seguro, una actualización normal puede conservarlas cifradas para reutilizarlas si la función vuelve. La versión actual no las lee ni las transmite. «Restablecer datos locales» las elimina.</li>
+      <li><strong>Credenciales heredadas de funciones retiradas</strong>: si una versión anterior guardó credenciales en el llavero seguro, una actualización normal puede conservarlas cifradas para reutilizarlas si la función vuelve. La versión actual no las lee ni las transmite. «Borrar todos mis datos» las elimina.</li>
       <li><strong>Preferencias</strong>: ajustes de la interfaz y de las notificaciones, y tu consentimiento por proveedor para la evaluación adicional opcional de seguridad sanitaria.</li>
       <li><strong>Configuración de proveedores de IA</strong>: el modelo elegido y, si Anthropic lo exige para una clave vinculada a identidad, el identificador del workspace (<code>wrkspc_…</code>).</li>
       <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie. Nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
@@ -170,7 +170,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>La copia local de recuperación no es una copia en la nube ni un segundo fichero portable: es una única generación anterior dentro del mismo almacenamiento de la aplicación. Solo se usa si el estado actual no puede leerse. En ese caso Gymnasia bloquea las escrituras y te permite recuperar la última copia, reintentar, descartar los datos afectados o exportar el payload dañado. Esta exportación de recuperación conserva el original sin sanear; es especialmente sensible y puede contener claves de IA en la versión web. No se envía a ningún servidor de Gymnasia.</p>
     <p>El fichero exportado <strong>contiene</strong>: tus medidas y porcentajes de grasa, la referencia a tus fotografías de progreso, tu registro de dieta completo, tu historial de entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la memoria del asistente y <strong>el historial íntegro de tus conversaciones</strong>. Es el fichero más sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.</p>
     <p>El fichero <strong>no contiene</strong> tus claves de API ni las credenciales heredadas de funciones retiradas.</p>
-    <p>Al exportar, el fichero se escribe en el almacenamiento temporal de la aplicación antes de que elijas dónde compartirlo, y esa copia temporal permanece ahí. Puedes eliminarla borrando los datos de la aplicación desde los ajustes del sistema.</p>
+    <p>Al exportar, el fichero se escribe en el almacenamiento temporal de la aplicación para abrir la hoja de compartir y esa copia temporal se elimina al cerrarla. El archivo que decidas guardar en Drive, Dropbox, tu galería de archivos u otro destino queda fuera del control de Gymnasia y tendrás que borrarlo allí.</p>
   </section>
 
   <section id="denuncia">
@@ -208,11 +208,13 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="eliminacion">
     <h2><a href="#eliminacion">Cómo eliminar tus datos</a></h2>
-    <p>Con transparencia sobre lo que hace hoy cada opción:</p>
-    <p><strong>&quot;Restablecer datos locales&quot;</strong> (Ajustes) es un borrado <strong>parcial</strong>. Elimina tus rutinas, tu historial de entrenamiento, tu dieta, tus medidas, tus conversaciones, tus claves de API y las credenciales cifradas heredadas de funciones retiradas. <strong>No elimina</strong>: la memoria del asistente, los alimentos que has creado, tus preferencias, el registro de depuración, las copias de seguridad que hayas exportado ni los catálogos descargados. Estamos trabajando en que esta acción borre todo lo que promete; hasta entonces, esta política describe su comportamiento real.</p>
+    <p>En Ajustes → Datos hay dos opciones:</p>
+    <p><strong>&quot;Borrar actividad y conversaciones&quot;</strong> deja vacíos tus entrenamientos y rutinas, el historial de dieta, las medidas, las conversaciones y cualquier sesión activa. Sustituye la copia íntegra de recuperación por otra que ya no contiene esa actividad y elimina cualquier cuarentena anterior, para que esos datos no puedan reaparecer al recuperar. Conserva la memoria del asistente, los alimentos personales, tus ajustes de dieta y de interfaz, las claves de API, las credenciales heredadas, las cachés de catálogos, las trazas y los metadatos de las copias de seguridad. También cancela los avisos de entrenamiento pendientes.</p>
+    <p><strong>&quot;Borrar todos mis datos&quot;</strong> elimina y comprueba los datos personales, credenciales, preferencias, diagnósticos y cachés que Gymnasia controla en este dispositivo. Esto incluye el estado principal, las sesiones, la memoria del asistente, los alimentos personales, las claves de API actuales y antiguas, las credenciales heredadas, las trazas, los consentimientos y los metadatos de copias. Requiere escribir <code>BORRAR</code> para confirmar. Si algún destino no puede borrarse o verificarse, la aplicación no declara éxito: muestra qué ha quedado pendiente y permite reintentar.</p>
+    <p>La única entrada local que esta segunda opción conserva es la caché pública firmada que impide que el asistente cargue unas instrucciones de seguridad anteriores. No contiene datos ni respuestas tuyas y se mantiene precisamente para protegerte frente a una regresión de seguridad.</p>
     <p><strong>El registro de depuración</strong> se borra con su propio botón, en Ajustes → Trazas.</p>
     <p><strong>Recuperación de almacenamiento</strong>: al recuperar una copia válida o completar un reintento se elimina la cuarentena. Si eliges descartar los datos dañados, se eliminan el estado principal, su snapshot de recuperación y la sesión de entrenamiento dependiente; se conservan las particiones que siguen siendo legibles, como la memoria del asistente, los alimentos personales, las preferencias y las claves seguras.</p>
-    <p><strong>Borrado completo</strong>: elimina los datos de la aplicación desde los ajustes de tu dispositivo, o desinstálala. Eso elimina todo lo anterior sin excepción. Recuerda que los ficheros de copia de seguridad que hayas exportado y guardado en otro sitio sobreviven, y que las fotografías tomadas con la cámara siguen en tu galería.</p>
+    <p>Los ficheros de copia de seguridad exportados, las fotografías de la galería, los permisos y canales de notificación del sistema, los registros que mantenga el sistema operativo y las copias de Android o del navegador están fuera del control de Gymnasia. Puedes gestionar esos elementos en el destino donde se guardaron, en los ajustes del dispositivo o desinstalando la aplicación.</p>
     <p><strong>Datos en poder de un proveedor de IA</strong>: se solicitan directamente a ese proveedor, desde tu cuenta con él. Gymnasia no puede borrarlos por ti.</p>
   </section>
 

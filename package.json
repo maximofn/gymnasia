@@ -39,6 +39,7 @@
     "test:llm": "npm --workspace apps/mobile run test:llm",
     "test:agent:e2e": "node apps/mobile/scripts/agent-chat.e2e.mjs && node apps/mobile/scripts/development-provider.e2e.mjs",
     "test:update-removal:e2e": "node apps/mobile/scripts/update-removal.e2e.mjs",
+    "test:data-deletion:e2e": "node apps/mobile/scripts/local-data-deletion.e2e.mjs",
     "test:privacy:e2e": "node apps/mobile/scripts/privacy-policy.e2e.mjs",
     "generate:store-listing": "node scripts/store-listing/generate-assets.mjs",
     "check:store-listing": "node scripts/store-listing/check.mjs",

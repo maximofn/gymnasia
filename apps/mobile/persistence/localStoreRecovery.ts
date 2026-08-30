@@ -744,6 +744,17 @@ export class LocalStoreRecoveryRepository {
     });
   }
 
+  async deleteManaged(dependentKeys: string[]): Promise<void> {
+    return this.runExclusive(async () => {
+      await Promise.all([
+        this.storage.removeItem(this.keys.primary),
+        this.storage.removeItem(this.keys.snapshot),
+        this.storage.removeItem(this.keys.quarantine),
+        ...dependentKeys.map((key) => this.storage.removeItem(key)),
+      ]);
+    });
+  }
+
   async getQuarantine(): Promise<RecoveryQuarantineRecord | null> {
     return this.readQuarantine();
   }

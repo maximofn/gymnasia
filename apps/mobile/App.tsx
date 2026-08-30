@@ -54,7 +54,6 @@ import {
   type ToolStore,
 } from "./agent/toolExecutor";
 import { resolveFeedbackEndpoint } from "./environment";
-import { RETAINED_LEGACY_SECURE_STORE_KEYS } from "./legacySecureStorage";
 import { createFeedbackIssueClient } from "./agent/feedbackClient";
 import {
   describeOutcomeForUser,
@@ -167,6 +166,15 @@ import {
   sanitizeDevStoreValue,
   serializeDevStore,
 } from "./agent/devStore";
+import {
+  LOCAL_DATA_MANIFEST,
+  LOCAL_DATA_SECURITY_PRESERVED_KEYS,
+  LOCAL_SECURE_DATA_MANIFEST,
+  runLocalDataDeletion,
+  type LocalDataDeletionReport,
+  type LocalDataDeletionScope,
+  type LocalDataDeletionTask,
+} from "./storage/localDataDeletion";
 import { LegalFooter } from "./LegalFooter";
 import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
 import { openExternalUrl } from "./openExternalUrl";
@@ -216,7 +224,7 @@ Notifications.setNotificationHandler({
 });
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "backup" | "traces";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "data" | "traces";
 
 type SeriesType =
   | "normal"
@@ -1695,7 +1703,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "measures", label: "Medidas" },
   { key: "preferences", label: "Preferencias" },
   { key: "notifications", label: "Notificaciones" },
-  { key: "backup", label: "Copia de seguridad" },
+  { key: "data", label: "Datos" },
   { key: "traces", label: "Trazas" },
 ];
 
@@ -1930,17 +1938,21 @@ async function downloadOrShareJson(
   }
 
   const file = new File(Paths.cache, fileName);
-  if (file.exists) file.delete();
-  file.create();
-  file.write(json);
-  if (!await Sharing.isAvailableAsync()) {
-    throw new Error("El sistema no permite compartir archivos en este dispositivo.");
+  try {
+    if (file.exists) file.delete();
+    file.create();
+    file.write(json);
+    if (!await Sharing.isAvailableAsync()) {
+      throw new Error("El sistema no permite compartir archivos en este dispositivo.");
+    }
+    await Sharing.shareAsync(file.uri, {
+      mimeType: "application/json",
+      dialogTitle,
+      UTI: "public.json",
+    });
+  } finally {
+    if (file.exists) file.delete();
   }
-  await Sharing.shareAsync(file.uri, {
-    mimeType: "application/json",
-    dialogTitle,
-    UTI: "public.json",
-  });
 }
 
 function extractErrorMessage(payload: unknown, fallback: string): string {
@@ -5311,6 +5323,17 @@ function createInitialStore(): LocalStore {
   };
 }
 
+function createActivityResetStore(store: LocalStore): LocalStore {
+  const initial = createInitialStore();
+  return {
+    ...initial,
+    dietSettings: { ...store.dietSettings },
+    keys: store.keys.map((key) => ({ ...key })),
+    chatProvider: store.chatProvider,
+    foodAIProvider: store.foodAIProvider,
+  };
+}
+
 function normalizeChatMessage(raw: ChatMessage, index: number): ChatMessage {
   const role =
     raw?.role === "assistant" || raw?.role === "system" || raw?.role === "user"
@@ -6639,7 +6662,16 @@ function PolicyStatusCard({
   );
 }
 
-export default function App() {
+type LocalDataDeletionOutcome = {
+  report: LocalDataDeletionReport;
+};
+
+type GymnasiaAppProps = {
+  deletionOutcome: LocalDataDeletionOutcome | null;
+  onRuntimeReset: (outcome: LocalDataDeletionOutcome) => void;
+};
+
+function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   // Propuestas pendientes de alimento y ejercicio. El store vive fuera de React
   // porque lo alimentan funciones de módulo; aquí solo se observa.
   const feedbackProposals = useSyncExternalStore(
@@ -6694,7 +6726,9 @@ export default function App() {
 
   const { width: viewportWidth } = useWindowDimensions();
   const isDesktopWeb = Platform.OS === "web" && viewportWidth >= 960;
-  const [tab, setTab] = useState<TabKey>("home");
+  const [tab, setTab] = useState<TabKey>(
+    deletionOutcome?.report.status === "incomplete" ? "settings" : "home",
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -6708,7 +6742,7 @@ export default function App() {
   const [localStoreStartupError, setLocalStoreStartupError] = useState<string | null>(null);
   const localStoreHydrationAttemptRef = useRef(0);
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
-  // Copia de seguridad manual (Configuración → Copia de seguridad, GYM-5).
+  // Copia manual en Configuración → Datos (GYM-5, ticket para exportar e importar copias).
   const [backupBusy, setBackupBusy] = useState<null | "export" | "import">(null);
   const [backupResult, setBackupResult] = useState<
     | null
@@ -6717,6 +6751,16 @@ export default function App() {
   >(null);
   const [lastBackupAt, setLastBackupAt] = useState<string | null>(null);
   const [pendingImport, setPendingImport] = useState<BackupPayload | null>(null);
+  const [dataDeletionScope, setDataDeletionScope] =
+    useState<LocalDataDeletionScope | null>(null);
+  const [dataDeletionConfirmation, setDataDeletionConfirmation] = useState("");
+  const [dataDeletionBusy, setDataDeletionBusy] = useState(false);
+  const dataDeletionBusyRef = useRef(false);
+  const [dataDeletionReport, setDataDeletionReport] =
+    useState<LocalDataDeletionReport | null>(deletionOutcome?.report ?? null);
+  const [dataDeletionSuccessVisible, setDataDeletionSuccessVisible] = useState(
+    deletionOutcome?.report.status === "complete",
+  );
 
   const [store, setStore] = useState<LocalStore>(() => createInitialStore());
   const [threads, setThreads] = useState<ChatThread[]>([]);
@@ -6865,7 +6909,9 @@ export default function App() {
   const [bicepsInput, setBicepsInput] = useState("");
   const [quadricepsInput, setQuadricepsInput] = useState("");
   const [calfInput, setCalfInput] = useState("");
-  const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("diet");
+  const [settingsTab, setSettingsTab] = useState<SettingsTabKey>(
+    deletionOutcome?.report.status === "incomplete" ? "data" : "diet",
+  );
   const settingsTabsScrollRef = useRef<ScrollView>(null);
   const settingsTabsScrollXRef = useRef(0);
   const settingsTabsContainerWidthRef = useRef(0);
@@ -7845,6 +7891,8 @@ export default function App() {
       : tabLabel(tab);
 
   const showGlobalScreenLoading = ENABLE_GLOBAL_SCREEN_LOAD_DELAY && isGlobalScreenLoading;
+  const dataDeletionBlocked =
+    backupBusy !== null || sendingChat || foodEstimatorSending || dataDeletionBusy;
   const isTrainingTemplateScreenOpen =
     tab === "training" && !activeWorkoutSession && !!activeTrainingTemplateId;
   const isTrainingDetailOpen =
@@ -7865,6 +7913,10 @@ export default function App() {
     if (Platform.OS !== "android") return;
     const handler = BackHandler.addEventListener("hardwareBackPress", () => {
       // Layer 1: close any open modal / overlay
+      if (dataDeletionScope) {
+        if (!dataDeletionBusy) closeDataDeletion();
+        return true;
+      }
       if (workoutCompletionModal) { setWorkoutCompletionModal(null); return true; }
       if (confirmDiscardSession) { setConfirmDiscardSession(false); return true; }
       if (foodEstimatorModalOpen) { setFoodEstimatorModalOpen(false); return true; }
@@ -8546,7 +8598,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
     loadExercisesRepo().then((repoExercises) => {
       setExercisesRepo(repoExercises);
       // Sync template exercises with repo data (image, muscle, etc.)
@@ -8598,7 +8650,7 @@ export default function App() {
   }, [isHydrated, store.keys]);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
 
     const serialized = JSON.stringify(serializeStoreForAsyncStorage(store, secureStoreAvailable));
     void (async () => {
@@ -8641,17 +8693,17 @@ export default function App() {
   }, [isHydrated, secureStoreAvailable, store]);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
     AsyncStorage.setItem(USER_PREFS_STORAGE_KEY, JSON.stringify(userPrefs)).catch(() => {});
   }, [isHydrated, userPrefs]);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
     savePersonalFoods(personalFoods).catch(() => {});
   }, [isHydrated, personalFoods]);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
     if (!activeWorkoutSession) {
       AsyncStorage.removeItem(SESSION_STORAGE_KEY).catch(() => {
         setError("No se pudo limpiar la sesión de entrenamiento.");
@@ -9697,6 +9749,7 @@ export default function App() {
   async function pickBackupForImport() {
     setBackupBusy("import");
     setBackupResult(null);
+    let importedFile: File | null = null;
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: ["application/json", "text/plain", "*/*"],
@@ -9705,12 +9758,18 @@ export default function App() {
       });
       if (result.canceled) return;
       const asset = result.assets[0];
+      importedFile = Platform.OS === "web" ? null : new File(asset.uri);
       const content =
         Platform.OS === "web" && asset.file
           ? await asset.file.text()
-          : await new File(asset.uri).text();
+          : await importedFile?.text();
+      if (typeof content !== "string") {
+        throw new Error("No se pudo leer el archivo seleccionado.");
+      }
       const parsed = JSON.parse(content);
       const payload = parseBackupPayload(parsed);
+      if (importedFile?.exists) importedFile.delete();
+      importedFile = null;
       setPendingImport(payload);
     } catch (e) {
       const message =
@@ -9721,6 +9780,9 @@ export default function App() {
             : "No se pudo leer el archivo.";
       setBackupResult({ status: "error", message });
     } finally {
+      try {
+        if (importedFile?.exists) importedFile.delete();
+      } catch {}
       setBackupBusy(null);
     }
   }
@@ -12643,52 +12705,252 @@ export default function App() {
     setProviderDeleteModal(null);
   }
 
-  async function resetLocalData() {
-    const activeAsyncStorageKeys = (await AsyncStorage.getAllKeys())
-      .filter(belongsToActiveStorageNamespace);
-    if (activeAsyncStorageKeys.length > 0) {
-      await AsyncStorage.multiRemove(activeAsyncStorageKeys);
-    }
+  function openDataDeletion(scope: LocalDataDeletionScope) {
+    setDataDeletionScope(scope);
+    setDataDeletionConfirmation("");
+    setDataDeletionReport(null);
+  }
 
-    const secureStoreAvailableNow = await isSecureStoreAvailable();
-    if (secureStoreAvailableNow) {
-      const activeSecureStoreKeys = [
-        ...PROVIDERS.map(secureStoreKey),
-        ...LEGACY_SECURE_STORE_PREFIXES.flatMap((prefix) =>
-          PROVIDERS.map((provider) => `${prefix}.${provider}`),
+  function closeDataDeletion() {
+    if (dataDeletionBusyRef.current) return;
+    setDataDeletionScope(null);
+    setDataDeletionConfirmation("");
+  }
+
+  function storageTargetLabel(key: string): string {
+    const labels: Array<[string, string]> = [
+      ["gymnasia.mobile.local.v3", "Actividad, medidas y conversaciones"],
+      ["gymnasia.mobile.local.last_good.v1", "Copia íntegra de recuperación"],
+      ["gymnasia.mobile.local.quarantine.v1", "Datos en cuarentena"],
+      ["gymnasia.mobile.training.session.v1", "Sesión de entrenamiento activa"],
+      ["gymnasia.mobile.training.session_template_snapshot.v1", "Copia de la rutina activa"],
+      ["gymnasia.mobile.personal_data.v1", "Memoria del coach"],
+      ["gymnasia.mobile.personal_foods.v1", "Alimentos personales"],
+      ["gymnasia.mobile.user_prefs.v1", "Preferencias"],
+      ["gymnasia.mobile.health_safety.consent.v1", "Consentimiento de seguridad sanitaria"],
+      ["gymnasia.mobile.alarm_health.v1", "Diagnóstico de avisos"],
+      ["gymnasia.mobile.backup_meta.v1", "Metadatos de copias de seguridad"],
+      ["gymnasia_debug_traces", "Trazas de depuración"],
+      ["gymnasia.mobile.exercises_repo.v2", "Caché de ejercicios"],
+      ["gymnasia.mobile.foods_repo.v1", "Caché de alimentos"],
+      ["gymnasia.mobile.products_repo.v1", "Caché de productos"],
+      ["gymnasia.mobile.recipes_repo.v1", "Caché de recetas"],
+    ];
+    return labels.find(([suffix]) => key.endsWith(suffix))?.[1]
+      ?? "Datos locales no inventariados";
+  }
+
+  function dataDeletionFailureCopy(
+    failure: LocalDataDeletionReport["failures"][number],
+  ): string {
+    if (failure.id === "secure-store-unavailable") {
+      return "No se pudo acceder al llavero seguro para comprobar las credenciales.";
+    }
+    if (failure.id === "deletion-inventory") return failure.message;
+    if (failure.stage === "timeout") {
+      return "La operación tardó demasiado y no se pudo comprobar.";
+    }
+    if (failure.stage === "verify") {
+      return "El dato seguía presente al comprobar el resultado.";
+    }
+    return "No se pudo eliminar este dato del almacenamiento local.";
+  }
+
+  async function buildDataDeletionTasks(
+    scope: LocalDataDeletionScope,
+  ): Promise<LocalDataDeletionTask[]> {
+    const tasks: LocalDataDeletionTask[] = [];
+    const activityStore = createActivityResetStore(store);
+    const serializedActivityStore = JSON.stringify(
+      serializeStoreForAsyncStorage(activityStore, secureStoreAvailable),
+    );
+    const dependentSessionKeys = [
+      SESSION_STORAGE_KEY,
+      SESSION_TEMPLATE_SNAPSHOT_KEY,
+    ];
+    const managedStoreKeys = new Set([
+      STORAGE_KEY,
+      LOCAL_STORE_LAST_GOOD_KEY,
+      LOCAL_STORE_QUARANTINE_KEY,
+      ...dependentSessionKeys,
+    ]);
+
+    if (scope === "activity") {
+      tasks.push({
+        id: "activity-store-family",
+        label: "Actividad, medidas, conversaciones y copias de recuperación",
+        delete: () => localStoreRecoveryRepository.discardAffected(
+          serializedActivityStore,
+          dependentSessionKeys,
         ),
-        ...RETAINED_LEGACY_SECURE_STORE_KEYS.map(scopedSecureStoreKey),
-      ];
-      await Promise.all(
-        activeSecureStoreKeys.map((key) => SecureStore.deleteItemAsync(key)),
+        verify: async () => {
+          const [primary, snapshotRaw, quarantine, session, sessionTemplate] = await Promise.all([
+            AsyncStorage.getItem(STORAGE_KEY),
+            AsyncStorage.getItem(LOCAL_STORE_LAST_GOOD_KEY),
+            AsyncStorage.getItem(LOCAL_STORE_QUARANTINE_KEY),
+            AsyncStorage.getItem(SESSION_STORAGE_KEY),
+            AsyncStorage.getItem(SESSION_TEMPLATE_SNAPSHOT_KEY),
+          ]);
+          let snapshotPayload: unknown = null;
+          try {
+            snapshotPayload = JSON.parse(snapshotRaw ?? "null")?.payload;
+          } catch {}
+          return primary === serializedActivityStore
+            && snapshotPayload === serializedActivityStore
+            && quarantine === null
+            && session === null
+            && sessionTemplate === null;
+        },
+      });
+      if (Platform.OS === "web" && __DEV__ && isDevStoreMirrorEnabled()) {
+        const serializedDevStore = serializeDevStore(activityStore);
+        tasks.push({
+          id: "dev-store",
+          label: "Espejo local de desarrollo",
+          delete: () => saveDevStoreFile(activityStore),
+          verify: async () => (await loadDevStoreFile()) === serializedDevStore,
+        });
+      }
+    } else {
+      const preservedKeys = new Set(
+        LOCAL_DATA_SECURITY_PRESERVED_KEYS.map(scopedStorageKey),
       );
-    }
-    await clearTraces();
+      const traceKey = scopedStorageKey("gymnasia_debug_traces");
+      const activeKeys = new Set([
+        ...LOCAL_DATA_MANIFEST
+          .filter((entry) => entry.full === "delete")
+          .map((entry) => scopedStorageKey(entry.key)),
+        ...(await AsyncStorage.getAllKeys()).filter(belongsToActiveStorageNamespace),
+      ]);
+      tasks.push({
+        id: "local-store-family",
+        label: "Actividad, sesiones y copias de recuperación",
+        delete: () => localStoreRecoveryRepository.deleteManaged(dependentSessionKeys),
+        verify: async () => (
+          await Promise.all([...managedStoreKeys].map((key) => AsyncStorage.getItem(key)))
+        ).every((value) => value === null),
+      });
+      for (const key of activeKeys) {
+        if (preservedKeys.has(key) || key === traceKey || managedStoreKeys.has(key)) continue;
+        tasks.push({
+          id: `async-storage:${key}`,
+          label: storageTargetLabel(key),
+          delete: () => AsyncStorage.removeItem(key),
+          verify: async () => (await AsyncStorage.getItem(key)) === null,
+        });
+      }
+      tasks.push({
+        id: "traces",
+        label: "Trazas de depuración",
+        delete: clearTraces,
+        verify: async () => (
+          (await AsyncStorage.getItem(traceKey)) === null
+          && (await getTraces()).length === 0
+        ),
+      });
 
-    const initial = createInitialStore();
-    setStore(initial);
-    setProviderKeyVisibility(createProviderBooleanMap(false));
-    setProviderDraftByProvider(createProviderDraftMap(initial.keys));
-    setProviderConnectionStatus(createProviderConnectionStatusMap(initial.keys));
-    setProviderSaveLoading(createProviderBooleanMap(false));
-    setAnthropicModelDropdownOpen(false);
-    setAnthropicModelOptions([]);
-    setAnthropicModelOptionsMessage(null);
-    setAnthropicModelFilter("");
-    setOpenAIModelDropdownOpen(false);
-    setOpenAIModelOptions([]);
-    setOpenAIModelOptionsMessage(null);
-    setOpenAIModelFilter("");
-    setGoogleModelDropdownOpen(false);
-    setGoogleModelOptions([]);
-    setGoogleModelOptionsMessage(null);
-    setGoogleModelFilter("");
-    setProviderDeleteModal(null);
-    setTab("home");
-    setActiveThreadId(initial.threads[0]?.id ?? null);
-    setActiveWorkoutSession(null);
-    setLastWorkoutSessionSummary(null);
-    setConfirmDiscardSession(false);
+      const secureStoreAvailableNow = await isSecureStoreAvailable();
+      if (!secureStoreAvailableNow && Platform.OS !== "web") {
+        tasks.push({
+          id: "secure-store-unavailable",
+          label: "Claves y credenciales cifradas",
+          delete: async () => {
+            throw new Error("El llavero seguro no está disponible para comprobar el borrado.");
+          },
+          verify: async () => false,
+        });
+      } else if (secureStoreAvailableNow) {
+        const secureTargets: Array<[string, string]> = LOCAL_SECURE_DATA_MANIFEST
+          .flatMap((entry): Array<[string, string]> => {
+            const baseKey = scopedSecureStoreKey(entry.key);
+            if (entry.form === "prefix") {
+              const legacy = entry.key !== "gymnasia.mobile.v3.provider.api_key";
+              return PROVIDERS.map((provider) => [
+                `${baseKey}.${provider}`,
+                `${legacy ? "Clave API antigua" : "Clave API"} de ${PROVIDER_UI_META[provider].label}`,
+              ]);
+            }
+            return [[
+              baseKey,
+              entry.key === "vivagym.email"
+                ? "Correo heredado de VivaGym"
+                : "Contraseña heredada de VivaGym",
+            ]];
+          });
+        for (const [key, label] of secureTargets) {
+          tasks.push({
+            id: `secure-store:${key}`,
+            label,
+            delete: () => SecureStore.deleteItemAsync(key),
+            verify: async () => (await SecureStore.getItemAsync(key)) === null,
+          });
+        }
+      }
+
+      if (Platform.OS === "web" && __DEV__ && isDevStoreMirrorEnabled()) {
+        tasks.push({
+          id: "dev-store",
+          label: "Espejo local de desarrollo",
+          delete: () => saveDevStoreFile({}),
+          verify: async () => (await loadDevStoreFile()) === null,
+        });
+      }
+    }
+
+    if (Platform.OS !== "web") {
+      tasks.push({
+        id: "notifications",
+        label: "Avisos de entrenamiento",
+        delete: async () => {
+          await Notifications.cancelAllScheduledNotificationsAsync();
+          await Notifications.dismissAllNotificationsAsync();
+        },
+        verify: async () => {
+          const [scheduled, presented] = await Promise.all([
+            Notifications.getAllScheduledNotificationsAsync(),
+            Notifications.getPresentedNotificationsAsync(),
+          ]);
+          return scheduled.length === 0 && presented.length === 0;
+        },
+      });
+    }
+
+    return tasks;
+  }
+
+  async function performDataDeletion(scope: LocalDataDeletionScope) {
+    if (dataDeletionBusyRef.current) return;
+    dataDeletionBusyRef.current = true;
+    setDataDeletionBusy(true);
+    setDataDeletionReport(null);
+    let report: LocalDataDeletionReport;
+    try {
+      const tasks = await buildDataDeletionTasks(scope);
+      report = await runLocalDataDeletion(scope, tasks);
+    } catch (error) {
+      const now = Date.now();
+      report = {
+        scope,
+        status: "incomplete",
+        completedTargetIds: [],
+        failures: [{
+          id: "deletion-inventory",
+          label: "Inventario de datos locales",
+          stage: "delete",
+          message: error instanceof Error ? error.message : "No se pudo preparar el borrado.",
+        }],
+        startedAt: now,
+        completedAt: now,
+      };
+    }
+
+    feedbackProposalStore.clear();
+    lastInAppRestAlertAt = null;
+    dataDeletionBusyRef.current = false;
+    setDataDeletionBusy(false);
+    setDataDeletionScope(null);
+    setDataDeletionConfirmation("");
+    onRuntimeReset({ report });
   }
 
   async function runLocalStoreRecoveryExport(): Promise<void> {
@@ -12863,6 +13125,45 @@ export default function App() {
               onDismiss={handleFeedbackProposalDismiss}
             />
           ))}
+        </View>
+      ) : null}
+      {dataDeletionSuccessVisible && deletionOutcome?.report.status === "complete" ? (
+        <View
+          testID="data-deletion-success"
+          accessibilityRole="alert"
+          style={{
+            marginHorizontal: isDesktopWeb ? 32 : mobileTheme.spacing[4],
+            marginTop: mobileTheme.spacing[3],
+            borderRadius: mobileTheme.radius.lg,
+            borderWidth: 1,
+            borderColor: "rgba(203,255,26,0.48)",
+            backgroundColor: "rgba(123,170,0,0.18)",
+            paddingHorizontal: 14,
+            paddingVertical: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <Feather name="check-circle" size={18} color={mobileTheme.color.brandPrimary} />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "800" }}>
+              {deletionOutcome.report.scope === "activity"
+                ? "Actividad y conversaciones borradas"
+                : "Todos tus datos locales se han borrado"}
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 17 }}>
+              La app ha comprobado que el borrado terminó correctamente.
+            </Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cerrar confirmación de borrado"
+            hitSlop={10}
+            onPress={() => setDataDeletionSuccessVisible(false)}
+          >
+            <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
+          </Pressable>
         </View>
       ) : null}
       <View
@@ -20053,20 +20354,6 @@ export default function App() {
                     </View>
                   ) : null}
 
-                  <Pressable
-                    onPress={() => void resetLocalData()}
-                    style={{
-                      marginTop: 4,
-                      height: 44,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,100,100,0.4)",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text style={{ color: "#ffb5b5", fontWeight: "700" }}>Restablecer datos locales</Text>
-                  </Pressable>
                 </View>
               ) : null}
 
@@ -21798,7 +22085,7 @@ export default function App() {
                 </View>
               ) : null}
 
-              {settingsTab === "backup" ? (
+              {settingsTab === "data" ? (
                 <View style={{ gap: 12 }}>
                   <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
                     Copia de seguridad
@@ -21926,6 +22213,205 @@ export default function App() {
                   >
                     <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
                       Qué contiene este archivo
+                    </Text>
+                  </Pressable>
+
+                  <View
+                    style={{
+                      height: 1,
+                      backgroundColor: mobileTheme.color.borderSubtle,
+                      marginVertical: 8,
+                    }}
+                  />
+
+                  <View style={{ gap: 6 }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}>
+                      Gestionar tus datos
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>
+                      Elige el alcance antes de borrar. Gymnasia comprobará cada destino y no dirá que terminó si queda algo pendiente.
+                    </Text>
+                  </View>
+
+                  {dataDeletionReport?.status === "incomplete" ? (
+                    <View
+                      accessibilityLiveRegion="polite"
+                      testID="data-deletion-report"
+                      style={{
+                        gap: 10,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,77,79,0.55)",
+                        borderRadius: mobileTheme.radius.lg,
+                        backgroundColor: "rgba(255,77,79,0.10)",
+                        padding: 14,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <Feather name="alert-triangle" size={17} color="#FF6E6E" />
+                        <Text style={{ color: "#FF9A9A", fontSize: 14, fontWeight: "800", flex: 1 }}>
+                          El borrado quedó incompleto
+                        </Text>
+                      </View>
+                      {dataDeletionReport.failures.map((failure) => (
+                        <View key={failure.id} style={{ gap: 2 }}>
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
+                            {failure.label}
+                          </Text>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 17 }}>
+                            {dataDeletionFailureCopy(failure)}
+                          </Text>
+                        </View>
+                      ))}
+                      <Pressable
+                        testID="data-deletion-retry"
+                        accessibilityRole="button"
+                        accessibilityLabel="Reintentar borrado de datos"
+                        disabled={dataDeletionBusy}
+                        onPress={() => void performDataDeletion(dataDeletionReport.scope)}
+                        style={{
+                          minHeight: 44,
+                          borderRadius: mobileTheme.radius.md,
+                          backgroundColor: "#FF4D4F",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "row",
+                          gap: 8,
+                          opacity: dataDeletionBusy ? 0.6 : 1,
+                        }}
+                      >
+                        {dataDeletionBusy ? <ActivityIndicator size="small" color="#FFE8EB" /> : <Feather name="refresh-cw" size={15} color="#FFE8EB" />}
+                        <Text style={{ color: "#FFE8EB", fontSize: 14, fontWeight: "800" }}>
+                          Reintentar borrado
+                        </Text>
+                      </Pressable>
+                    </View>
+                  ) : null}
+
+                  <View
+                    style={{
+                      gap: 12,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.08)",
+                      borderRadius: mobileTheme.radius.lg,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      padding: 14,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
+                      <View
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 10,
+                          backgroundColor: "rgba(203,255,26,0.10)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Feather name="rotate-ccw" size={17} color={mobileTheme.color.brandPrimary} />
+                      </View>
+                      <View style={{ flex: 1, gap: 4 }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
+                          Borrar actividad y conversaciones
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
+                          Borra entrenamientos, dieta, medidas, chats y sesiones. Conserva memoria, alimentos personales, preferencias y claves API.
+                        </Text>
+                      </View>
+                    </View>
+                    <Pressable
+                      testID="data-deletion-open-activity"
+                      accessibilityRole="button"
+                      accessibilityLabel="Borrar actividad y conversaciones"
+                      disabled={dataDeletionBlocked}
+                      onPress={() => openDataDeletion("activity")}
+                      style={{
+                        minHeight: 44,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,138,138,0.55)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        opacity: dataDeletionBlocked ? 0.45 : 1,
+                      }}
+                    >
+                      <Text style={{ color: "#FFB0B0", fontSize: 14, fontWeight: "800" }}>
+                        Borrar actividad
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  <View
+                    style={{
+                      gap: 12,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,77,79,0.42)",
+                      borderRadius: mobileTheme.radius.lg,
+                      backgroundColor: "rgba(255,77,79,0.07)",
+                      padding: 14,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
+                      <View
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 10,
+                          backgroundColor: "rgba(255,77,79,0.18)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Feather name="trash-2" size={17} color="#FF6E6E" />
+                      </View>
+                      <View style={{ flex: 1, gap: 4 }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
+                          Borrar todos mis datos
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
+                          Borra también memoria, alimentos personales, preferencias, claves, cachés, trazas y metadatos locales.
+                        </Text>
+                      </View>
+                    </View>
+                    <Pressable
+                      testID="data-deletion-open-all"
+                      accessibilityRole="button"
+                      accessibilityLabel="Borrar todos mis datos"
+                      disabled={dataDeletionBlocked}
+                      onPress={() => openDataDeletion("all-personal")}
+                      style={{
+                        minHeight: 44,
+                        borderRadius: mobileTheme.radius.md,
+                        backgroundColor: "#FF4D4F",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        opacity: dataDeletionBlocked ? 0.45 : 1,
+                      }}
+                    >
+                      <Text style={{ color: "#FFE8EB", fontSize: 14, fontWeight: "800" }}>
+                        Borrar todos mis datos
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {dataDeletionBlocked && !dataDeletionBusy ? (
+                    <Text style={{ color: "#FFCD77", fontSize: 12, lineHeight: 17 }}>
+                      Termina la conversación, estimación o copia de seguridad en curso antes de borrar.
+                    </Text>
+                  ) : null}
+
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 17 }}>
+                    Los archivos exportados, las fotos de la galería, los permisos del sistema y los datos enviados a proveedores están fuera del control de Gymnasia y no se pueden borrar desde aquí.
+                  </Text>
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel="Ver cómo eliminar tus datos en la política de privacidad"
+                    testID="legal-deletion-policy-link"
+                    onPress={() => { void openExternalUrl(`${resolvePrivacyPolicyUrl()}#eliminacion`); }}
+                    hitSlop={8}
+                  >
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
+                      Qué puede borrar Gymnasia
                     </Text>
                   </Pressable>
                 </View>
@@ -23060,6 +23546,215 @@ export default function App() {
                 backgroundColor: "#1B1F27",
                 alignItems: "center",
                 justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>Cancelar</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
+      {dataDeletionScope ? (
+        <View
+          accessibilityViewIsModal
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.82)",
+            paddingHorizontal: 20,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 640,
+            elevation: 64,
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              maxWidth: 390,
+              maxHeight: "90%",
+              borderRadius: 24,
+              borderWidth: 1,
+              borderColor: "rgba(255,77,79,0.38)",
+              backgroundColor: "#12151C",
+              paddingHorizontal: 18,
+              paddingTop: 18,
+              paddingBottom: 16,
+              gap: 13,
+            }}
+          >
+            <View
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                backgroundColor: "rgba(255,77,79,0.18)",
+                alignItems: "center",
+                justifyContent: "center",
+                alignSelf: "center",
+              }}
+            >
+              <Feather
+                name={dataDeletionScope === "activity" ? "rotate-ccw" : "alert-triangle"}
+                size={22}
+                color="#FF6E6E"
+              />
+            </View>
+
+            <Text
+              style={{
+                color: mobileTheme.color.textPrimary,
+                fontSize: 22,
+                fontWeight: "800",
+                textAlign: "center",
+              }}
+            >
+              {dataDeletionScope === "activity"
+                ? "¿Borrar actividad y conversaciones?"
+                : "¿Borrar todos tus datos?"}
+            </Text>
+
+            <Text style={{ color: "#A1AAB8", fontSize: 13, lineHeight: 19, textAlign: "center" }}>
+              {dataDeletionScope === "activity"
+                ? "La app volverá a un historial vacío, pero conservará tu configuración personal."
+                : "Esta acción elimina los datos que Gymnasia controla en este dispositivo y no se puede deshacer."}
+            </Text>
+
+            <View style={{ gap: 8 }}>
+              <View
+                style={{
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: "rgba(255,77,79,0.38)",
+                  backgroundColor: "rgba(255,77,79,0.10)",
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                  gap: 8,
+                }}
+              >
+                <Feather name="trash-2" size={14} color="#FF8585" style={{ marginTop: 2 }} />
+                <Text style={{ flex: 1, color: "#FFB0B0", fontSize: 12, lineHeight: 18 }}>
+                  {dataDeletionScope === "activity"
+                    ? "Se borran rutinas, historial, dieta, medidas, conversaciones y sesiones activas."
+                    : "Se borran además memoria, alimentos personales, preferencias, claves API, credenciales antiguas, cachés y trazas."}
+                </Text>
+              </View>
+              <View
+                style={{
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: "rgba(203,255,26,0.30)",
+                  backgroundColor: "rgba(203,255,26,0.07)",
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                  gap: 8,
+                }}
+              >
+                <Feather name="shield" size={14} color={mobileTheme.color.brandPrimary} style={{ marginTop: 2 }} />
+                <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
+                  {dataDeletionScope === "activity"
+                    ? "Se conservan memoria, alimentos personales, preferencias, claves API, copias y diagnósticos."
+                    : "Se conserva únicamente el estado firmado que impide cargar una política de seguridad anterior."}
+                </Text>
+              </View>
+            </View>
+
+            {dataDeletionScope === "all-personal" ? (
+              <View style={{ gap: 6 }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                  Escribe BORRAR para confirmar
+                </Text>
+                <TextInput
+                  testID="data-deletion-confirmation-input"
+                  accessibilityLabel="Escribe BORRAR para confirmar el borrado total"
+                  value={dataDeletionConfirmation}
+                  onChangeText={setDataDeletionConfirmation}
+                  editable={!dataDeletionBusy}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  placeholder="BORRAR"
+                  placeholderTextColor="#697384"
+                  style={{
+                    minHeight: 46,
+                    borderRadius: mobileTheme.radius.md,
+                    borderWidth: 1,
+                    borderColor: dataDeletionConfirmation.trim() === "BORRAR"
+                      ? "rgba(255,77,79,0.8)"
+                      : mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgApp,
+                    color: mobileTheme.color.textPrimary,
+                    paddingHorizontal: 12,
+                    fontSize: 15,
+                    fontWeight: "700",
+                    letterSpacing: 1,
+                  }}
+                />
+              </View>
+            ) : null}
+
+            <Pressable
+              testID="data-deletion-confirm"
+              accessibilityRole="button"
+              accessibilityLabel={dataDeletionScope === "activity"
+                ? "Confirmar borrado de actividad y conversaciones"
+                : "Confirmar borrado de todos mis datos"}
+              disabled={
+                dataDeletionBusy
+                || (dataDeletionScope === "all-personal" && dataDeletionConfirmation.trim() !== "BORRAR")
+              }
+              onPress={() => void performDataDeletion(dataDeletionScope)}
+              style={{
+                width: "100%",
+                minHeight: 48,
+                borderRadius: 14,
+                backgroundColor: "#FF4D4F",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "row",
+                gap: 8,
+                opacity:
+                  dataDeletionBusy
+                  || (dataDeletionScope === "all-personal" && dataDeletionConfirmation.trim() !== "BORRAR")
+                    ? 0.45
+                    : 1,
+              }}
+            >
+              {dataDeletionBusy ? (
+                <ActivityIndicator size="small" color="#FFE8EB" />
+              ) : (
+                <Feather name="trash-2" size={15} color="#FFE8EB" />
+              )}
+              <Text style={{ color: "#FFE8EB", fontWeight: "800", fontSize: 15 }}>
+                {dataDeletionBusy
+                  ? "Borrando y comprobando…"
+                  : dataDeletionScope === "activity"
+                    ? "Borrar actividad"
+                    : "Borrar todos mis datos"}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Cancelar borrado de datos"
+              disabled={dataDeletionBusy}
+              onPress={closeDataDeletion}
+              style={{
+                width: "100%",
+                minHeight: 44,
+                borderRadius: 14,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.06)",
+                backgroundColor: "#1B1F27",
+                alignItems: "center",
+                justifyContent: "center",
+                opacity: dataDeletionBusy ? 0.45 : 1,
               }}
             >
               <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>Cancelar</Text>
@@ -24272,5 +24967,24 @@ export default function App() {
       <StatusBar style="light" />
       </View>
     </SafeAreaView>
+  );
+}
+
+export default function App() {
+  const [runtimeGeneration, setRuntimeGeneration] = useState(0);
+  const [deletionOutcome, setDeletionOutcome] =
+    useState<LocalDataDeletionOutcome | null>(null);
+
+  const handleRuntimeReset = useCallback((outcome: LocalDataDeletionOutcome) => {
+    setDeletionOutcome(outcome);
+    setRuntimeGeneration((generation) => generation + 1);
+  }, []);
+
+  return (
+    <GymnasiaApp
+      key={runtimeGeneration}
+      deletionOutcome={deletionOutcome}
+      onRuntimeReset={handleRuntimeReset}
+    />
   );
 }
