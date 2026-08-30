@@ -9,7 +9,7 @@ tags: [integrations, vivagym, releases, security]
 
 La vinculación de cuentas y el QR de acceso de VivaGym están retirados de todas las variantes por GYM-192 (ticket para retirar temporalmente VivaGym de la versión pública). `apps/mobile/App.tsx` ya no contiene pestaña, autenticación, endpoints, credenciales de aplicación, solicitudes ni representación de QR, y `react-native-qrcode-svg` no forma parte de las dependencias.
 
-La única huella de ejecución son los nombres `vivagym.email` y `vivagym.password` en `apps/mobile/legacySecureStorage.ts`. Una versión anterior pudo guardar valores bajo esas claves en Expo SecureStore. La versión retirada no los lee, escribe ni transmite durante el arranque o el uso normal; una actualización dentro del mismo package name los conserva y «Restablecer datos locales» los elimina. No existe transferencia entre las aplicaciones de development, staging y production.
+La única huella de ejecución son los nombres `vivagym.email` y `vivagym.password` en `apps/mobile/legacySecureStorage.ts`. Una versión anterior pudo guardar valores bajo esas claves en Expo SecureStore. La versión retirada no los lee, escribe ni transmite durante el arranque o el uso normal; una actualización dentro del mismo package name los conserva y «Borrar todos mis datos» los elimina y vuelve a leer para verificar el resultado. El borrado parcial de actividad los conserva. No existe transferencia entre las aplicaciones de development, staging y production.
 
 El protocolo investigado y los riesgos de la implementación anterior se conservan en `docs/research/GYM-6-vivagym-qr.md` como contexto histórico, no como autoridad de ejecución.
 

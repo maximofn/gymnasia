@@ -73,7 +73,7 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
 - **Credenciales heredadas de funciones retiradas**: si una versión anterior guardó
   credenciales en el llavero seguro, una actualización normal puede conservarlas
   cifradas para reutilizarlas si la función vuelve. La versión actual no las lee ni las
-  transmite. «Restablecer datos locales» las elimina.
+  transmite. «Borrar todos mis datos» las elimina.
 - **Preferencias**: ajustes de la interfaz y de las notificaciones, y tu consentimiento
   por proveedor para la evaluación adicional opcional de seguridad sanitaria.
 - **Configuración de proveedores de IA**: el modelo elegido y, si Anthropic lo exige
@@ -227,9 +227,10 @@ sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se 
 El fichero **no contiene** tus claves de API ni las credenciales heredadas de funciones
 retiradas.
 
-Al exportar, el fichero se escribe en el almacenamiento temporal de la aplicación antes
-de que elijas dónde compartirlo, y esa copia temporal permanece ahí. Puedes eliminarla
-borrando los datos de la aplicación desde los ajustes del sistema.
+Al exportar, el fichero se escribe en el almacenamiento temporal de la aplicación para
+abrir la hoja de compartir y esa copia temporal se elimina al cerrarla. El archivo que
+decidas guardar en Drive, Dropbox, tu galería de archivos u otro destino queda fuera del
+control de Gymnasia y tendrás que borrarlo allí.
 
 ## Denunciar una respuesta del asistente {#denuncia}
 
@@ -286,15 +287,29 @@ máximo de 48 horas.
 
 ## Cómo eliminar tus datos {#eliminacion}
 
-Con transparencia sobre lo que hace hoy cada opción:
+En Ajustes → Datos hay dos opciones:
 
-**"Restablecer datos locales"** (Ajustes) es un borrado **parcial**. Elimina tus
-rutinas, tu historial de entrenamiento, tu dieta, tus medidas, tus conversaciones, tus
-claves de API y las credenciales cifradas heredadas de funciones retiradas. **No
-elimina**: la memoria del asistente, los alimentos que has creado, tus preferencias, el
-registro de depuración, las copias de seguridad que hayas exportado ni los catálogos
-descargados. Estamos trabajando en que esta acción borre todo lo que promete; hasta
-entonces, esta política describe su comportamiento real.
+**"Borrar actividad y conversaciones"** deja vacíos tus entrenamientos y rutinas, el
+historial de dieta, las medidas, las conversaciones y cualquier sesión activa. Sustituye
+la copia íntegra de recuperación por otra que ya no contiene esa actividad y elimina
+cualquier cuarentena anterior, para que esos datos no puedan reaparecer al recuperar. Conserva
+la memoria del asistente, los alimentos personales, tus ajustes de dieta y de interfaz,
+las claves de API, las credenciales heredadas, las cachés de catálogos, las trazas y los
+metadatos de las copias de seguridad. También cancela los avisos de entrenamiento
+pendientes.
+
+**"Borrar todos mis datos"** elimina y comprueba los datos personales, credenciales,
+preferencias, diagnósticos y cachés que Gymnasia controla en este dispositivo. Esto
+incluye el estado principal, las sesiones, la memoria del asistente, los alimentos
+personales, las claves de API actuales y antiguas, las credenciales heredadas, las
+trazas, los consentimientos y los metadatos de copias. Requiere escribir `BORRAR` para
+confirmar. Si algún destino no puede borrarse o verificarse, la aplicación no declara
+éxito: muestra qué ha quedado pendiente y permite reintentar.
+
+La única entrada local que esta segunda opción conserva es la caché pública firmada que
+impide que el asistente cargue unas instrucciones de seguridad anteriores. No contiene
+datos ni respuestas tuyas y se mantiene precisamente para protegerte frente a una
+regresión de seguridad.
 
 **El registro de depuración** se borra con su propio botón, en Ajustes → Trazas.
 
@@ -304,10 +319,11 @@ estado principal, su snapshot de recuperación y la sesión de entrenamiento dep
 se conservan las particiones que siguen siendo legibles, como la memoria del asistente,
 los alimentos personales, las preferencias y las claves seguras.
 
-**Borrado completo**: elimina los datos de la aplicación desde los ajustes de tu
-dispositivo, o desinstálala. Eso elimina todo lo anterior sin excepción. Recuerda que
-los ficheros de copia de seguridad que hayas exportado y guardado en otro sitio
-sobreviven, y que las fotografías tomadas con la cámara siguen en tu galería.
+Los ficheros de copia de seguridad exportados, las fotografías de la galería, los
+permisos y canales de notificación del sistema, los registros que mantenga el sistema
+operativo y las copias de Android o del navegador están fuera del control de Gymnasia.
+Puedes gestionar esos elementos en el destino donde se guardaron, en los ajustes del
+dispositivo o desinstalando la aplicación.
 
 **Datos en poder de un proveedor de IA**: se solicitan directamente a ese proveedor,
 desde tu cuenta con él. Gymnasia no puede borrarlos por ti.

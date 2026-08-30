@@ -240,7 +240,13 @@ test("el inventario declarado describe el árbol real", () => {
 
 test("cada entrada declarada explica su propósito y su ciclo de vida", () => {
   const inventory = loadInventory();
-  const validLifecycles = ["reset", "startup-migration", "traces-button", "never"];
+  const validLifecycles = [
+    "activity-and-full-deletion",
+    "full-deletion",
+    "security-preserved",
+    "startup-migration-and-full-deletion",
+    "traces-button-and-full-deletion",
+  ];
   for (const entry of [...inventory.storageKeys, ...inventory.secureStoreKeys]) {
     assert.ok(entry.purpose?.length > 20, `${entry.key} necesita un propósito legible`);
     assert.ok(typeof entry.personal === "boolean", `${entry.key} debe decir si es personal`);
@@ -248,6 +254,18 @@ test("cada entrada declarada explica su propósito y su ciclo de vida", () => {
       validLifecycles.includes(entry.clearedBy),
       `${entry.key} tiene un clearedBy desconocido: ${entry.clearedBy}`,
     );
+    assert.ok(
+      ["rewrite", "delete", "preserve"].includes(entry.activityDeletion),
+      `${entry.key} tiene un activityDeletion desconocido: ${entry.activityDeletion}`,
+    );
+    assert.ok(
+      ["delete", "preserve-security"].includes(entry.fullDeletion),
+      `${entry.key} tiene un fullDeletion desconocido: ${entry.fullDeletion}`,
+    );
+    if (entry.fullDeletion === "preserve-security") {
+      assert.equal(entry.personal, false, `${entry.key} no puede conservar datos personales por seguridad`);
+      assert.match(entry.purpose, /impedir|seguridad|anti/i);
+    }
   }
   for (const endpoint of inventory.networkEndpoints) {
     assert.ok(endpoint.sends?.length > 20, `${endpoint.host} necesita decir qué envía`);

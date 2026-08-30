@@ -74,8 +74,9 @@ mantenedor.
 - **Is all of the user data collected by your app encrypted in transit?** Sí. Todos los
   destinos declarados usan HTTPS; el inventario no admite ningún host que no lo sea.
 - **Do you provide a way for users to request that their data is deleted?** Sí. La
-  aplicación incluye una acción de restablecimiento y la política explica el borrado
-  completo desde los ajustes del sistema, en la sección `#eliminacion`.
+  aplicación incluye en Ajustes → Datos una acción parcial y otra que borra y verifica
+  todos los datos personales que controla localmente; la sección `#eliminacion` explica
+  el alcance y los elementos externos que debe gestionar el usuario.
 - **Is collection optional?** Sí. El seguimiento local funciona sin proveedor de IA y
   las incidencias requieren una acción y confirmación expresas.
 - **Is the data processed ephemerally?** No. Gymnasia no controla la conservación de
@@ -85,7 +86,7 @@ mantenedor.
   directo implementado por la aplicación y ya están declaradas arriba.
 - **Credenciales heredadas de funciones retiradas**: pueden permanecer cifradas en el
   llavero tras actualizar, pero el build actual no las lee ni las transmite y el
-  restablecimiento las elimina. Al no salir del dispositivo, no cuentan como
+  borrado total las elimina. Al no salir del dispositivo, no cuentan como
   `Collected` ni `Shared`.
 
 ---
