@@ -8,14 +8,14 @@ Lee esta referencia al actualizar OpenWiki, revisar una PR que cambie instruccio
 
 El fragmento administrado por OpenWiki debe contener exactamente un delimitador inicial y uno final, en ese orden. No escribas los literales completos de esos delimitadores en otra parte de `CLAUDE.md`: OpenWiki los contaría como duplicados.
 
-## Incompatibilidad observada en 0.3.3
+## Incompatibilidad observada en 0.3.3 y 0.4.3
 
 OpenWiki 0.3.3 prepara dos fragmentos distintos suponiendo que `AGENTS.md` y `CLAUDE.md` son archivos independientes:
 
 - `AGENTS.md` recibe el fragmento completo de orientación hacia `openwiki/`.
 - `CLAUDE.md` recibe una referencia textual a `AGENTS.md`.
 
-Al escribir a través del enlace simbólico de Gymnasia, ambas operaciones afectan a `CLAUDE.md`. En la ejecución del 25 de agosto de 2026 quedó una referencia circular, texto cortado y dos delimitadores finales. El check `prompt-policy` bloqueó la PR antes de la fusión.
+Al escribir a través del enlace simbólico de Gymnasia, ambas operaciones afectan a `CLAUDE.md`. En la ejecución del 25 de agosto de 2026 quedó una referencia circular, texto cortado y dos delimitadores finales. El check `prompt-policy` bloqueó la PR antes de la fusión. Volvió a reproducirse con OpenWiki 0.4.3 el 30 de agosto de 2026: `openwiki code --update` insertó un segundo delimitador final y texto cortado antes de abortar afirmando que había dejado el fichero sin cambios. Si aparece ese mensaje, comprueba siempre `git diff -- CLAUDE.md`, restaura solo la edición parcial del comando y ejecuta `check-agent-instructions.mjs`; no reintentes sobre el mismo checkout.
 
 El runner privado evita recurrencias restaurando `AGENTS.md` y `CLAUDE.md` desde `origin/main` antes de preparar el commit y añade al índice solo `openwiki/` y `.openwikiignore`. Esta protección afecta exclusivamente al runner; las PR normales sí pueden actualizar aprendizajes en `CLAUDE.md`.
 

@@ -1,0 +1,46 @@
+{
+  "enabledEnvVar": "EXPO_PUBLIC_DEV_STORE_MIRROR",
+  "maxBytes": 5242880,
+  "sensitiveFieldNames": [
+    "api_key",
+    "workspace_id",
+    "access_token",
+    "refresh_token",
+    "authorization",
+    "password",
+    "secret",
+    "token"
+  ],
+  "allowedRootFields": [
+    "templates",
+    "workoutHistory",
+    "dietByDate",
+    "dietSettings",
+    "measurements",
+    "threads",
+    "messagesByThread",
+    "keys",
+    "chatProvider",
+    "foodAIProvider"
+  ],
+  "requiredRootFields": [
+    "templates",
+    "workoutHistory",
+    "dietByDate",
+    "dietSettings",
+    "measurements",
+    "threads",
+    "messagesByThread",
+    "keys"
+  ],
+  "allowedProviderFields": [
+    "provider",
+    "is_active",
+    "api_key",
+    "model",
+    "workspace_id",
+    "reasoning_effort"
+  ],
+  "providers": ["openai", "anthropic", "google"],
+  "reasoningEfforts": ["none", "minimal", "low", "medium", "high", "xhigh"]
+}
