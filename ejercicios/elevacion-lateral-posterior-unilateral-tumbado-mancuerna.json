@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-posterior-unilateral-tumbado-mancuerna",
+  "name": "Elevación lateral posterior unilateral tumbado con mancuerna",
+  "image_male": "images/elevacion-lateral-posterior-unilateral-tumbado-mancuerna-male.webp",
+  "image_female": "images/elevacion-lateral-posterior-unilateral-tumbado-mancuerna-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "romboides"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo en un banco plano con una mancuerna colgando en una mano. Eleva el brazo lateralmente hasta la altura del hombro, conduciendo el movimiento con el codo y juntando la escápula. Baja lentamente sin girar el tronco antes de cambiar de brazo."
+}

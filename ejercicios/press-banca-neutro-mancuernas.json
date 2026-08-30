@@ -1,0 +1,14 @@
+{
+  "id": "press-banca-neutro-mancuernas",
+  "name": "Press de banca neutro con mancuernas",
+  "image_male": "images/press-banca-neutro-mancuernas-male.webp",
+  "image_female": "images/press-banca-neutro-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombro"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano con una mancuerna en cada mano y las palmas enfrentadas. Baja las cargas a ambos lados del pecho manteniendo los codos cerca del torso. Presiona hasta extender los brazos sin cambiar el agarre neutro ni despegar los hombros del banco."
+}

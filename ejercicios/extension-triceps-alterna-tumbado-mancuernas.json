@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-alterna-tumbado-mancuernas",
+  "name": "Extensión de tríceps alterna tumbado con mancuernas",
+  "image_male": "images/extension-triceps-alterna-tumbado-mancuernas-male.webp",
+  "image_female": "images/extension-triceps-alterna-tumbado-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "hombro"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco con una mancuerna en cada mano y ambos brazos extendidos sobre el pecho. Flexiona un codo para acercar la carga a la sien mientras el otro brazo permanece vertical. Extiende de nuevo y alterna los lados manteniendo quietos los brazos superiores."
+}

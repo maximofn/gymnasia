@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-unilateral-banco-inclinado-mancuerna",
+  "name": "Elevación lateral unilateral en banco inclinado con mancuerna",
+  "image_male": "images/elevacion-lateral-unilateral-banco-inclinado-mancuerna-male.webp",
+  "image_female": "images/elevacion-lateral-unilateral-banco-inclinado-mancuerna-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "manguito rotador"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate de lado sobre un banco con inclinación moderada y deja colgar una mancuerna bajo el hombro. Con el codo suavemente flexionado, eleva el brazo en un arco lateral hasta la altura del hombro. Baja lentamente sin girar el torso ni encoger el hombro."
+}

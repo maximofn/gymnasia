@@ -1,0 +1,14 @@
+{
+  "id": "press-codos-tumbado-mancuernas",
+  "name": "Press de codos tumbado con mancuernas",
+  "image_male": "images/press-codos-tumbado-mancuernas-male.webp",
+  "image_female": "images/press-codos-tumbado-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombro"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano con dos mancuernas sobre la parte baja del pecho y las palmas enfrentadas. Mantén los codos ligeramente pegados y los antebrazos verticales. Presiona extendiendo sobre todo los codos y baja por una trayectoria corta y controlada."
+}

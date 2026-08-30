@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-hombro-banco-inclinado-mancuernas",
+  "name": "Elevación de hombro en banco inclinado con mancuernas",
+  "image_male": "images/elevacion-hombro-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/elevacion-hombro-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "pecho superior",
+    "trapecio"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la espalda en un banco de inclinación moderada y deja las mancuernas junto al torso. Con una flexión fija de codos, elévalas en un arco amplio hasta la altura de los hombros, manteniendo los codos por encima de las muñecas. Baja sin convertir el gesto en un press."
+}

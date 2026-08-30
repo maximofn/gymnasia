@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-inclinada-mancuernas",
+  "name": "Extensión de tríceps inclinada con mancuernas",
+  "image_male": "images/extension-triceps-inclinada-mancuernas-male.webp",
+  "image_female": "images/extension-triceps-inclinada-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombro",
+    "antebrazo"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Recuéstate en un banco inclinado con dos mancuernas por encima de la cabeza y los codos orientados al techo. Mantén quietos los brazos superiores y flexiona los codos para llevar las cargas detrás de la cabeza. Extiéndelos de nuevo sin abrir los codos ni arquear la espalda."
+}

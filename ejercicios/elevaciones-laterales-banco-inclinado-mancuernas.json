@@ -1,0 +1,14 @@
+{
+  "id": "elevaciones-laterales-banco-inclinado-mancuernas",
+  "name": "Elevaciones laterales en banco inclinado con mancuernas",
+  "image_male": "images/elevaciones-laterales-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/elevaciones-laterales-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "manguito rotador"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la espalda en un banco inclinado y deja dos mancuernas junto a los costados con agarre neutro. Eleva los brazos en arcos laterales hasta que queden cerca de la altura de los hombros. Baja lentamente sin despegar la espalda ni usar impulso."
+}

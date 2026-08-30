@@ -1,0 +1,15 @@
+{
+  "id": "zancada-curl-biceps-mancuernas",
+  "name": "Zancada con curl de bíceps y mancuernas",
+  "image_male": "images/zancada-curl-biceps-mancuernas-male.webp",
+  "image_female": "images/zancada-curl-biceps-mancuernas-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales",
+    "bíceps"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Sostén dos mancuernas a los costados y da un paso largo hacia delante. Mientras bajas ambas rodillas, flexiona los codos para llevar las cargas a los hombros con las palmas arriba. Extiende los brazos y empuja con el pie delantero para regresar antes de alternar."
+}

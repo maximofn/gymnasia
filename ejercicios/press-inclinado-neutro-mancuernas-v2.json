@@ -1,0 +1,14 @@
+{
+  "id": "press-inclinado-neutro-mancuernas-v2",
+  "name": "Press inclinado neutro con mancuernas (variante 2)",
+  "image_male": "images/press-inclinado-neutro-mancuernas-v2-male.webp",
+  "image_female": "images/press-inclinado-neutro-mancuernas-v2-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombro",
+    "tríceps"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el banco a unos 45 grados y sujeta dos mancuernas a la altura de los hombros con las palmas enfrentadas. Presiona ambas cargas sobre la parte alta del pecho hasta extender los brazos. Baja con control conservando el agarre neutro y los codos cerca del torso."
+}

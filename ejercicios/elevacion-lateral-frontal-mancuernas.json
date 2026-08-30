@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-frontal-mancuernas",
+  "name": "Elevación lateral a frontal con mancuernas",
+  "image_male": "images/elevacion-lateral-frontal-mancuernas-male.webp",
+  "image_female": "images/elevacion-lateral-frontal-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Eleva dos mancuernas hacia los lados hasta la altura de los hombros y bájalas con control. A continuación, levántalas al frente hasta quedar paralelas al suelo y vuelve a bajarlas. Mantén la misma ligera flexión de codos y evita usar impulso."
+}

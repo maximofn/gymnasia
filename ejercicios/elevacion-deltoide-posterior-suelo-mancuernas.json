@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-deltoide-posterior-suelo-mancuernas",
+  "name": "Elevación de deltoide posterior tumbado en el suelo con mancuernas",
+  "image_male": "images/elevacion-deltoide-posterior-suelo-mancuernas-male.webp",
+  "image_female": "images/elevacion-deltoide-posterior-suelo-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "romboides"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo en el suelo con una mancuerna en cada mano y los brazos extendidos en diagonal. Con una flexión suave de codos, eleva las cargas hacia fuera y atrás mientras juntas las escápulas. Baja con control manteniendo el pecho y la pelvis apoyados."
+}

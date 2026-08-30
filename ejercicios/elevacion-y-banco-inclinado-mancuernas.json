@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-y-banco-inclinado-mancuernas",
+  "name": "Elevación en Y sobre banco inclinado con mancuernas",
+  "image_male": "images/elevacion-y-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/elevacion-y-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "hombro posterior",
+    "trapecio"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho boca abajo sobre un banco inclinado y deja colgar dos mancuernas. Eleva los brazos rectos en diagonal hacia delante hasta dibujar una Y con el cuerpo, con los pulgares orientados arriba. Baja despacio sin encoger los hombros ni despegar el torso."
+}

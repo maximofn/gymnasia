@@ -1,0 +1,16 @@
+{
+  "id": "press-inclinado-fitball-mancuernas",
+  "name": "Press inclinado con mancuernas sobre fitball",
+  "image_male": "images/press-inclinado-fitball-mancuernas-male.webp",
+  "image_female": "images/press-inclinado-fitball-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombro",
+    "tríceps",
+    "core",
+    "glúteos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Rueda sobre un fitball hasta apoyar la cabeza y la parte alta de la espalda, con la cadera estable y el torso en ligera inclinación. Coloca dos mancuernas junto a los hombros con las palmas al frente y presiónalas arriba. Baja sin permitir que el balón se mueva."
+}

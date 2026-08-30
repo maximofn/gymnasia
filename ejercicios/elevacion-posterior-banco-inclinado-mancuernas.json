@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-posterior-banco-inclinado-mancuernas",
+  "name": "Elevación posterior en banco inclinado con mancuernas",
+  "image_male": "images/elevacion-posterior-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/elevacion-posterior-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "romboides"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho boca abajo sobre un banco inclinado y deja colgar una mancuerna en cada mano. Con una flexión suave de codos, abre los brazos hacia los lados hasta formar una línea con los hombros. Junta las escápulas y baja las cargas de forma controlada."
+}

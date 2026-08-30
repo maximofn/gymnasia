@@ -1,0 +1,15 @@
+{
+  "id": "press-banca-unilateral-mancuerna",
+  "name": "Press de banca unilateral con mancuerna",
+  "image_male": "images/press-banca-unilateral-mancuerna-male.webp",
+  "image_female": "images/press-banca-unilateral-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombro",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano con una sola mancuerna junto al hombro y la palma hacia delante. Usa la mano libre para estabilizarte y presiona la carga sobre el pecho hasta extender el brazo. Baja con control sin girar la pelvis ni levantar el hombro contrario."
+}
