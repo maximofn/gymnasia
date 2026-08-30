@@ -6,6 +6,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop, Text as SvgText } from "react-native-svg";
 import ConfettiCannon from "react-native-confetti-cannon";
 import * as SecureStore from "expo-secure-store";
+import * as Crypto from "expo-crypto";
 import Constants from "expo-constants";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
@@ -127,6 +128,17 @@ import {
   AiIdentityPersistentDisclosure,
 } from "./AiIdentityDisclosure";
 import { HealthSafetyNotice } from "./HealthSafetyNotice";
+import {
+  LocalStoreRecoveryScreen,
+  LocalStoreStartupFailureScreen,
+} from "./LocalStoreRecoveryScreen";
+import {
+  LocalStoreCommitAmbiguousError,
+  LocalStoreRecoveryLockedError,
+  LocalStoreRecoveryRepository,
+  LocalStoreSnapshotWriteError,
+  type LocalStoreHydrationOutcome,
+} from "./persistence/localStoreRecovery";
 import {
   AiResponseReportAction,
   AiResponseReportModal,
@@ -559,11 +571,23 @@ type LocalStore = {
 };
 
 const STORAGE_KEY = scopedStorageKey("gymnasia.mobile.local.v3");
+const LOCAL_STORE_LAST_GOOD_KEY = scopedStorageKey("gymnasia.mobile.local.last_good.v1");
+const LOCAL_STORE_QUARANTINE_KEY = scopedStorageKey("gymnasia.mobile.local.quarantine.v1");
 const SESSION_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.training.session.v1");
 const SESSION_TEMPLATE_SNAPSHOT_KEY = scopedStorageKey("gymnasia.mobile.training.session_template_snapshot.v1");
 const PERSONAL_DATA_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.personal_data.v1");
 const USER_PREFS_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.user_prefs.v1");
 const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: { enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" } };
+
+const localStoreRecoveryRepository = new LocalStoreRecoveryRepository({
+  storage: AsyncStorage,
+  keys: {
+    primary: STORAGE_KEY,
+    snapshot: LOCAL_STORE_LAST_GOOD_KEY,
+    quarantine: LOCAL_STORE_QUARANTINE_KEY,
+  },
+  sha256: (value) => Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value),
+});
 // Salud de las alarmas: observaciones del dispositivo, no preferencias del usuario,
 // por eso viven en su propia clave y no dentro de UserPreferences (cuya hidratación
 // hace un merge superficial que dejaría undefined cualquier campo anidado nuevo).
@@ -793,6 +817,29 @@ async function saveDevStoreFile(store: unknown): Promise<void> {
     });
     if (!response.ok) throw new Error("dev store rejected");
   } catch {}
+}
+
+async function readStorageWithoutThrow(key: string): Promise<{
+  raw: string | null;
+  failed: boolean;
+}> {
+  try {
+    return { raw: await AsyncStorage.getItem(key), failed: false };
+  } catch {
+    return { raw: null, failed: true };
+  }
+}
+
+function parseJsonWithoutThrow(raw: string | null): {
+  value: unknown;
+  failed: boolean;
+} {
+  if (raw === null) return { value: null, failed: false };
+  try {
+    return { value: JSON.parse(raw), failed: false };
+  } catch {
+    return { value: null, failed: true };
+  }
 }
 
 const SERIES_TYPE_META: Record<SeriesType, { label: string; short: string; color?: string }> = {
@@ -1172,25 +1219,24 @@ async function savePersonalData(fields: unknown): Promise<void> {
 
 async function loadMeasurementsFromStorage(): Promise<Measurement[]> {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed?.measurements) ? parsed.measurements : [];
+    const outcome = await localStoreRecoveryRepository.inspect();
+    if (outcome.status !== "valid") return [];
+    const measurements = outcome.candidate.value.measurements;
+    return Array.isArray(measurements) ? measurements as Measurement[] : [];
   } catch {
     return [];
   }
 }
 
 async function saveMeasurementsToStorage(measurements: Measurement[]): Promise<void> {
-  try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-    parsed.measurements = measurements;
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-  } catch {
-    /* silently fail — component useEffect will persist next cycle */
+  const outcome = await localStoreRecoveryRepository.inspect();
+  if (outcome.status !== "valid") {
+    throw new Error("Las medidas no se pueden guardar mientras haya una recuperación pendiente.");
   }
+  await localStoreRecoveryRepository.commit(JSON.stringify({
+    ...outcome.candidate.value,
+    measurements,
+  }));
 }
 
 const SCAN_BARCODE_TOOL = "scan_barcode";
@@ -1857,6 +1903,44 @@ function backupFileName(now = new Date()): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
   return `gymnasia_backup_${stamp}.json`;
+}
+
+function recoveryFileName(now = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+  return `gymnasia_recovery_${stamp}.json`;
+}
+
+async function downloadOrShareJson(
+  json: string,
+  fileName: string,
+  dialogTitle: string,
+): Promise<void> {
+  if (Platform.OS === "web") {
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    return;
+  }
+
+  const file = new File(Paths.cache, fileName);
+  if (file.exists) file.delete();
+  file.create();
+  file.write(json);
+  if (!await Sharing.isAvailableAsync()) {
+    throw new Error("El sistema no permite compartir archivos en este dispositivo.");
+  }
+  await Sharing.shareAsync(file.uri, {
+    mimeType: "application/json",
+    dialogTitle,
+    UTI: "public.json",
+  });
 }
 
 function extractErrorMessage(payload: unknown, fallback: string): string {
@@ -6614,6 +6698,15 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [localStoreRecovery, setLocalStoreRecovery] = useState<
+    Extract<LocalStoreHydrationOutcome, { status: "recoverable" | "corrupt" }> | null
+  >(null);
+  const [localStoreRecoveryBusy, setLocalStoreRecoveryBusy] = useState<
+    null | "restore" | "export" | "retry" | "discard"
+  >(null);
+  const [localStoreRecoveryError, setLocalStoreRecoveryError] = useState<string | null>(null);
+  const [localStoreStartupError, setLocalStoreStartupError] = useState<string | null>(null);
+  const localStoreHydrationAttemptRef = useRef(0);
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
   // Copia de seguridad manual (Configuración → Copia de seguridad, GYM-5).
   const [backupBusy, setBackupBusy] = useState<null | "export" | "import">(null);
@@ -8239,94 +8332,216 @@ export default function App() {
     setActiveExerciseMenuId(null);
   }, [activeExerciseMenuId, activeTrainingTemplate, expandedExerciseId]);
 
-  useEffect(() => {
-    let ignore = false;
-    async function hydrate() {
+  async function runLocalStoreHydration(options: {
+    honorExistingQuarantine?: boolean;
+  } = {}): Promise<void> {
+    const attempt = localStoreHydrationAttemptRef.current + 1;
+    localStoreHydrationAttemptRef.current = attempt;
+    const isCurrent = () => localStoreHydrationAttemptRef.current === attempt;
+    const honorExistingQuarantine = options.honorExistingQuarantine ?? true;
+
+    if (isCurrent()) {
       setLoading(true);
       setError(null);
-      try {
-        const secureAvailable = await isSecureStoreAvailable();
-        if (!ignore) {
-          setSecureStoreAvailable(secureAvailable);
-        }
+      setLocalStoreRecoveryError(null);
+    }
 
-        await clearLegacyStorageData(secureAvailable);
+    const devStoreRaw = await loadDevStoreFile();
+    let inspection = await localStoreRecoveryRepository.inspect({
+      fallbackRaw: devStoreRaw,
+      honorExistingQuarantine,
+    });
+    if (!isCurrent()) return;
+    if (inspection.status === "recoverable" || inspection.status === "corrupt") {
+      setLocalStoreStartupError(null);
+      setLocalStoreRecovery(inspection);
+      setIsHydrated(false);
+      setLoading(false);
+      return;
+    }
 
-        const [rawStore, secureApiKeys, rawSession, rawSessionTemplateSnapshot, rawPrefs, rawAlarmHealth, rawHealthSafetyConsent] = await Promise.all([
-          AsyncStorage.getItem(STORAGE_KEY),
-          readProviderApiKeysFromSecureStore(secureAvailable),
-          AsyncStorage.getItem(SESSION_STORAGE_KEY),
-          AsyncStorage.getItem(SESSION_TEMPLATE_SNAPSHOT_KEY),
-          AsyncStorage.getItem(USER_PREFS_STORAGE_KEY),
-          AsyncStorage.getItem(ALARM_HEALTH_STORAGE_KEY),
-          AsyncStorage.getItem(HEALTH_SAFETY_CONSENT_KEY),
-        ]);
-
-        // On web dev, prefer file-backed store over localStorage
-        const devStoreRaw = !rawStore ? await loadDevStoreFile() : null;
-        const effectiveRaw = rawStore || devStoreRaw;
-
-        const baseStore = effectiveRaw
-          ? normalizeStore(JSON.parse(effectiveRaw) as LocalStore)
-          : createInitialStore();
-
-        const mergedStore = mergeStoreWithSecureApiKeys(baseStore, secureApiKeys);
-        const hydratedSession = rawSession
-          ? normalizeWorkoutSession(JSON.parse(rawSession) as unknown, mergedStore.templates)
-          : null;
-
-        await Promise.all([
-          AsyncStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(serializeStoreForAsyncStorage(mergedStore, secureAvailable)),
-          ),
-          writeProviderApiKeysToSecureStore(mergedStore.keys, secureAvailable),
-        ]);
-
-        if (!ignore) {
-          setStore(mergedStore);
-          setActiveWorkoutSession(hydratedSession);
-          if (hydratedSession) {
-            const snapshotTemplate = rawSessionTemplateSnapshot
-              ? (JSON.parse(rawSessionTemplateSnapshot) as WorkoutTemplate | null)
-              : null;
-            const fallbackTemplate = mergedStore.templates.find(
-              (t) => t.id === hydratedSession.template_id,
-            ) ?? null;
-            workoutTemplateBeforeSessionRef.current = snapshotTemplate ?? (fallbackTemplate ? cloneWorkoutTemplate(fallbackTemplate) : null);
-          }
-          const parsedPrefs: UserPreferences = rawPrefs
-            ? { ...DEFAULT_USER_PREFS, ...JSON.parse(rawPrefs) }
-            : { ...DEFAULT_USER_PREFS };
-          setUserPrefs(parsedPrefs);
-          setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
-          if (parsedPrefs.chartMetric) setMeasuresChartMetric(parsedPrefs.chartMetric);
-
-          const parsedAlarmHealth: AlarmHealth = rawAlarmHealth
-            ? { ...DEFAULT_ALARM_HEALTH, ...JSON.parse(rawAlarmHealth) }
-            : { ...DEFAULT_ALARM_HEALTH };
-          alarmHealthRef.current = parsedAlarmHealth;
-          setAlarmHealth(parsedAlarmHealth);
-          const parsedHealthSafetyConsent = normalizeHealthSafetyConsentState(
-            rawHealthSafetyConsent ? JSON.parse(rawHealthSafetyConsent) as unknown : null,
-          );
-          setHealthSafetyConsent(parsedHealthSafetyConsent);
-          void refreshNotificationDiagnostics();
-        }
-      } catch (err) {
-        if (!ignore) {
-          setError(err instanceof Error ? err.message : "No se pudo cargar almacenamiento local.");
-        }
-      } finally {
-        if (!ignore) {
+    const sourceCandidate = inspection.status === "valid" ? inspection.candidate : null;
+    let baseStore: LocalStore;
+    try {
+      baseStore = sourceCandidate
+        ? normalizeStore(sourceCandidate.value as unknown as LocalStore)
+        : createInitialStore();
+    } catch {
+      if (sourceCandidate) {
+        await localStoreRecoveryRepository.quarantineUnexpectedNormalization(
+          sourceCandidate.raw,
+          sourceCandidate.source,
+        );
+        inspection = await localStoreRecoveryRepository.inspect({
+          fallbackRaw: devStoreRaw,
+          honorExistingQuarantine: true,
+        });
+        if (isCurrent() && (inspection.status === "recoverable" || inspection.status === "corrupt")) {
+          setLocalStoreStartupError(null);
+          setLocalStoreRecovery(inspection);
+          setIsHydrated(false);
           setLoading(false);
-          setIsHydrated(true);
+          return;
         }
       }
+      throw new Error("La estructura guardada no pudo normalizarse de forma segura.");
     }
-    hydrate();
+
+    const secureAvailable = await isSecureStoreAvailable();
+    let secureApiKeys = emptyProviderApiKeys();
+    let secureStorageFailure = false;
+    if (secureAvailable) {
+      try {
+        secureApiKeys = await readProviderApiKeysFromSecureStore(true);
+      } catch {
+        secureStorageFailure = true;
+      }
+    }
+    const mergedStore = mergeStoreWithSecureApiKeys(baseStore, secureApiKeys);
+
+    if (secureAvailable) {
+      try {
+        await writeProviderApiKeysToSecureStore(mergedStore.keys, true);
+      } catch {
+        secureStorageFailure = true;
+      }
+    }
+
+    const canonicalRaw = JSON.stringify(
+      serializeStoreForAsyncStorage(mergedStore, secureAvailable),
+    );
+    let nonFatalError: string | null = secureStorageFailure
+      ? "Los datos principales están a salvo, pero el almacén seguro de claves no respondió."
+      : null;
+    try {
+      if (honorExistingQuarantine) {
+        await localStoreRecoveryRepository.commit(canonicalRaw);
+      } else {
+        await localStoreRecoveryRepository.resolveCurrent(canonicalRaw);
+      }
+    } catch (commitError) {
+      if (commitError instanceof LocalStoreSnapshotWriteError) {
+        nonFatalError = commitError.message;
+      } else if (
+        commitError instanceof LocalStoreCommitAmbiguousError
+        || commitError instanceof LocalStoreRecoveryLockedError
+      ) {
+        inspection = await localStoreRecoveryRepository.inspect({
+          fallbackRaw: devStoreRaw,
+          honorExistingQuarantine: true,
+        });
+        if (isCurrent() && (inspection.status === "recoverable" || inspection.status === "corrupt")) {
+          setLocalStoreStartupError(null);
+          setLocalStoreRecovery(inspection);
+          setIsHydrated(false);
+          setLoading(false);
+          return;
+        }
+        throw commitError;
+      } else {
+        nonFatalError = commitError instanceof Error
+          ? commitError.message
+          : "No se pudo guardar el almacenamiento local.";
+      }
+    }
+
+    await saveDevStoreFile(mergedStore);
+    try {
+      await clearLegacyStorageData(secureAvailable);
+    } catch {
+      nonFatalError ??= "Los datos principales están a salvo, pero no se pudo completar una limpieza interna.";
+    }
+
+    const [sessionRead, sessionSnapshotRead, prefsRead, alarmRead, consentRead] = await Promise.all([
+      readStorageWithoutThrow(SESSION_STORAGE_KEY),
+      readStorageWithoutThrow(SESSION_TEMPLATE_SNAPSHOT_KEY),
+      readStorageWithoutThrow(USER_PREFS_STORAGE_KEY),
+      readStorageWithoutThrow(ALARM_HEALTH_STORAGE_KEY),
+      readStorageWithoutThrow(HEALTH_SAFETY_CONSENT_KEY),
+    ]);
+    const sessionParsed = parseJsonWithoutThrow(sessionRead.raw);
+    const sessionSnapshotParsed = parseJsonWithoutThrow(sessionSnapshotRead.raw);
+    const prefsParsed = parseJsonWithoutThrow(prefsRead.raw);
+    const alarmParsed = parseJsonWithoutThrow(alarmRead.raw);
+    const consentParsed = parseJsonWithoutThrow(consentRead.raw);
+    let secondaryFailure = [
+      sessionRead,
+      sessionSnapshotRead,
+      prefsRead,
+      alarmRead,
+      consentRead,
+    ].some((entry) => entry.failed) || [
+      sessionParsed,
+      sessionSnapshotParsed,
+      prefsParsed,
+      alarmParsed,
+      consentParsed,
+    ].some((entry) => entry.failed);
+    let hydratedSession: WorkoutSession | null = null;
+    if (!sessionParsed.failed) {
+      try {
+        hydratedSession = normalizeWorkoutSession(sessionParsed.value, mergedStore.templates);
+      } catch {
+        secondaryFailure = true;
+      }
+    }
+    if (secondaryFailure) {
+      nonFatalError ??= "Algunos ajustes secundarios no pudieron cargarse; los datos principales no se han sobrescrito.";
+    }
+    const rawPrefs = prefsParsed.value;
+    const parsedPrefs: UserPreferences = rawPrefs && typeof rawPrefs === "object" && !Array.isArray(rawPrefs)
+      ? { ...DEFAULT_USER_PREFS, ...rawPrefs as Partial<UserPreferences> }
+      : { ...DEFAULT_USER_PREFS };
+    const rawAlarmHealth = alarmParsed.value;
+    const parsedAlarmHealth: AlarmHealth = rawAlarmHealth && typeof rawAlarmHealth === "object" && !Array.isArray(rawAlarmHealth)
+      ? { ...DEFAULT_ALARM_HEALTH, ...rawAlarmHealth as Partial<AlarmHealth> }
+      : { ...DEFAULT_ALARM_HEALTH };
+    const parsedHealthSafetyConsent = normalizeHealthSafetyConsentState(consentParsed.value);
+
+    if (!isCurrent()) return;
+    setSecureStoreAvailable(secureAvailable);
+    setStore(mergedStore);
+    setActiveWorkoutSession(hydratedSession);
+    workoutTemplateBeforeSessionRef.current = null;
+    if (hydratedSession) {
+      const snapshotTemplate = sessionSnapshotParsed.value
+        && typeof sessionSnapshotParsed.value === "object"
+        && !Array.isArray(sessionSnapshotParsed.value)
+        ? sessionSnapshotParsed.value as WorkoutTemplate
+        : null;
+      const fallbackTemplate = mergedStore.templates.find(
+        (template) => template.id === hydratedSession.template_id,
+      ) ?? null;
+      workoutTemplateBeforeSessionRef.current = snapshotTemplate
+        ?? (fallbackTemplate ? cloneWorkoutTemplate(fallbackTemplate) : null);
+    }
+    setUserPrefs(parsedPrefs);
+    setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
+    if (parsedPrefs.chartMetric) setMeasuresChartMetric(parsedPrefs.chartMetric);
+    alarmHealthRef.current = parsedAlarmHealth;
+    setAlarmHealth(parsedAlarmHealth);
+    setHealthSafetyConsent(parsedHealthSafetyConsent);
+    setLocalStoreStartupError(null);
+    setLocalStoreRecovery(null);
+    setIsHydrated(true);
+    setLoading(false);
+    setError(nonFatalError);
+    void refreshNotificationDiagnostics();
+  }
+
+  useEffect(() => {
+    void runLocalStoreHydration().catch((hydrationError) => {
+      setLoading(false);
+      setIsHydrated(false);
+      setLocalStoreRecovery(null);
+      setLocalStoreStartupError(
+        hydrationError instanceof Error
+          ? hydrationError.message
+          : "No se pudo cargar almacenamiento local.",
+      );
+    });
     return () => {
-      ignore = true;
+      localStoreHydrationAttemptRef.current += 1;
     };
   }, []);
 
@@ -8386,13 +8601,43 @@ export default function App() {
     if (!isHydrated) return;
 
     const serialized = JSON.stringify(serializeStoreForAsyncStorage(store, secureStoreAvailable));
-    Promise.all([
-      AsyncStorage.setItem(STORAGE_KEY, serialized),
-      writeProviderApiKeysToSecureStore(store.keys, secureStoreAvailable),
-      saveDevStoreFile(store),
-    ]).catch(() => {
-      setError("No se pudo guardar en almacenamiento local/seguro.");
-    });
+    void (async () => {
+      try {
+        await localStoreRecoveryRepository.commit(serialized);
+        await Promise.all([
+          writeProviderApiKeysToSecureStore(store.keys, secureStoreAvailable),
+          saveDevStoreFile(store),
+        ]);
+      } catch (persistError) {
+        if (
+          persistError instanceof LocalStoreCommitAmbiguousError
+          || persistError instanceof LocalStoreRecoveryLockedError
+        ) {
+          setIsHydrated(false);
+          setLoading(false);
+          try {
+            const inspection = await localStoreRecoveryRepository.inspect({
+              fallbackRaw: await loadDevStoreFile(),
+              honorExistingQuarantine: true,
+            });
+            if (inspection.status === "recoverable" || inspection.status === "corrupt") {
+              setLocalStoreRecovery(inspection);
+              setLocalStoreStartupError(null);
+            } else {
+              setLocalStoreStartupError("No se pudo comprobar el almacenamiento antes de guardar.");
+            }
+          } catch {
+            setLocalStoreStartupError("No se pudo comprobar el almacenamiento antes de guardar.");
+          }
+          return;
+        }
+        setError(
+          persistError instanceof Error
+            ? persistError.message
+            : "No se pudo guardar en almacenamiento local/seguro.",
+        );
+      }
+    })();
   }, [isHydrated, secureStoreAvailable, store]);
 
   useEffect(() => {
@@ -9428,33 +9673,7 @@ export default function App() {
       const payload = buildBackupPayload({ store, userPrefs, personalFoods, personalData });
       const json = JSON.stringify(payload, null, 2);
       const fileName = backupFileName();
-
-      if (Platform.OS === "web") {
-        // No hay hoja de compartir nativa en web: forzamos una descarga.
-        const blob = new Blob([json], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = fileName;
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-        URL.revokeObjectURL(url);
-      } else {
-        const file = new File(Paths.cache, fileName);
-        if (file.exists) file.delete();
-        file.create();
-        file.write(json);
-        const canShare = await Sharing.isAvailableAsync();
-        if (!canShare) {
-          throw new Error("El sistema no permite compartir archivos en este dispositivo.");
-        }
-        await Sharing.shareAsync(file.uri, {
-          mimeType: "application/json",
-          dialogTitle: "Guardar copia de seguridad de Gymnasia",
-          UTI: "public.json",
-        });
-      }
+      await downloadOrShareJson(json, fileName, "Guardar copia de seguridad de Gymnasia");
 
       const now = new Date().toISOString();
       await writeBackupMeta({ lastBackupAt: now });
@@ -12470,6 +12689,144 @@ export default function App() {
     setActiveWorkoutSession(null);
     setLastWorkoutSessionSummary(null);
     setConfirmDiscardSession(false);
+  }
+
+  async function runLocalStoreRecoveryExport(): Promise<void> {
+    const recovery = localStoreRecovery;
+    if (!recovery || recovery.quarantine.rawPayload === null) return;
+    setLocalStoreRecoveryBusy("export");
+    setLocalStoreRecoveryError(null);
+    try {
+      const quarantine = await localStoreRecoveryRepository.getQuarantine()
+        ?? recovery.quarantine;
+      if (quarantine.rawPayload === null) {
+        throw new Error("No hay un payload disponible para exportar.");
+      }
+      const exportedAt = new Date().toISOString();
+      const payload = {
+        app: "gymnasia",
+        type: "local-store-recovery",
+        schemaVersion: 1,
+        appVersion: Constants.expoConfig?.version ?? "0.0.0",
+        exportedAt,
+        warning: "Archivo sensible: puede contener datos personales, de salud, conversaciones y claves de IA en web.",
+        recovery: quarantine,
+      };
+      await downloadOrShareJson(
+        JSON.stringify(payload, null, 2),
+        recoveryFileName(new Date(exportedAt)),
+        "Guardar datos de recuperación de Gymnasia",
+      );
+    } catch (exportError) {
+      setLocalStoreRecoveryError(
+        exportError instanceof Error
+          ? exportError.message
+          : "No se pudo exportar la copia dañada.",
+      );
+    } finally {
+      setLocalStoreRecoveryBusy(null);
+    }
+  }
+
+  async function runLocalStoreRecoveryRetry(): Promise<void> {
+    setLocalStoreRecoveryBusy("retry");
+    setLocalStoreRecoveryError(null);
+    try {
+      await runLocalStoreHydration({ honorExistingQuarantine: false });
+    } catch (retryError) {
+      setLocalStoreRecoveryError(
+        retryError instanceof Error ? retryError.message : "No se pudo volver a leer el almacenamiento.",
+      );
+    } finally {
+      setLocalStoreRecoveryBusy(null);
+    }
+  }
+
+  async function runLocalStoreSnapshotRestore(): Promise<void> {
+    setLocalStoreRecoveryBusy("restore");
+    setLocalStoreRecoveryError(null);
+    try {
+      const restored = await localStoreRecoveryRepository.restoreSnapshot();
+      await saveDevStoreFile(restored.value);
+      await runLocalStoreHydration();
+    } catch (restoreError) {
+      setLocalStoreRecoveryError(
+        restoreError instanceof Error
+          ? restoreError.message
+          : "No se pudo recuperar la última copia íntegra.",
+      );
+    } finally {
+      setLocalStoreRecoveryBusy(null);
+    }
+  }
+
+  async function runLocalStoreRecoveryDiscard(): Promise<void> {
+    setLocalStoreRecoveryBusy("discard");
+    setLocalStoreRecoveryError(null);
+    try {
+      let secureAvailable = await isSecureStoreAvailable();
+      let secureApiKeys = emptyProviderApiKeys();
+      if (secureAvailable) {
+        try {
+          secureApiKeys = await readProviderApiKeysFromSecureStore(true);
+        } catch {
+          secureAvailable = false;
+        }
+      }
+      const initialStore = mergeStoreWithSecureApiKeys(createInitialStore(), secureApiKeys);
+      const initialRaw = JSON.stringify(
+        serializeStoreForAsyncStorage(initialStore, secureAvailable),
+      );
+      await localStoreRecoveryRepository.discardAffected(initialRaw, [
+        SESSION_STORAGE_KEY,
+        SESSION_TEMPLATE_SNAPSHOT_KEY,
+      ]);
+      await saveDevStoreFile(initialStore);
+      await runLocalStoreHydration();
+    } catch (discardError) {
+      setLocalStoreRecoveryError(
+        discardError instanceof Error
+          ? discardError.message
+          : "No se pudieron descartar los datos dañados.",
+      );
+    } finally {
+      setLocalStoreRecoveryBusy(null);
+    }
+  }
+
+  if (localStoreRecovery) {
+    return (
+      <LocalStoreRecoveryScreen
+        quarantine={localStoreRecovery.quarantine}
+        hasSnapshot={localStoreRecovery.status === "recoverable" && localStoreRecovery.snapshot !== null}
+        busy={localStoreRecoveryBusy}
+        error={localStoreRecoveryError}
+        onRestore={() => void runLocalStoreSnapshotRestore()}
+        onExport={() => void runLocalStoreRecoveryExport()}
+        onRetry={() => void runLocalStoreRecoveryRetry()}
+        onDiscard={() => void runLocalStoreRecoveryDiscard()}
+      />
+    );
+  }
+
+  if (localStoreStartupError) {
+    return (
+      <LocalStoreStartupFailureScreen
+        error={localStoreStartupError}
+        busy={loading}
+        onRetry={() => {
+          void runLocalStoreHydration().catch((hydrationError) => {
+            setLoading(false);
+            setIsHydrated(false);
+            setLocalStoreStartupError(
+              hydrationError instanceof Error
+                ? hydrationError.message
+                : "No se pudo cargar almacenamiento local.",
+            );
+          });
+        }}
+      />
+    );
   }
 
   return (

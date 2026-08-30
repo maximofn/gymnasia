@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v8
-effective_date: 2026-08-29
+version: 2026-08-v9
+effective_date: 2026-08-30
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -80,6 +80,10 @@ All of the following is stored on your device only:
 - **Debug log**: a technical record of up to 1000 entries covering the rest-timer alerts
   delivered, which include the exercise name and set number. It is never sent over the
   network; you can view and clear it from Settings.
+- **Local recovery copies**: the app keeps one verified copy of its main state. If it
+  finds data that it cannot read safely, it quarantines the original payload instead of
+  overwriting it. Both copies remain on the device and are replaced or removed when the
+  recovery is completed.
 
 ## Where it is stored {#almacenamiento-local}
 
@@ -115,6 +119,11 @@ where no operating system keystore exists: there, the key is stored in browser s
 alongside the rest of your data, without that additional layer of protection. The app
 warns you about this on the provider settings screen. If this concerns you, use the
 mobile app.
+
+The API-key exclusion applies to the regular backup. If the web version finds damaged
+storage and you choose to export the original for recovery, that file preserves exactly
+what was stored in the browser and **may contain the API key**. The recovery screen warns
+you before downloading it.
 
 ## What the app sends to AI providers {#proveedores}
 
@@ -191,7 +200,14 @@ Besides the AI providers:
 ## Backups and export {#copias}
 
 You can export all your data to a JSON file from Settings, and import it back later. It
-is a manual action: there is no automatic backup.
+is a manual export and is not uploaded automatically to any service.
+
+The local recovery copy is not a cloud backup or a second portable file: it is one prior
+generation inside the app's own storage. It is used only when the current state cannot be
+read. Gymnasia then blocks writes and lets you recover the latest copy, retry, discard the
+affected data, or export the damaged payload. This recovery export preserves the original
+without sanitising it; it is particularly sensitive and may contain AI keys in the web
+version. It is never sent to a Gymnasia server.
 
 The exported file **contains**: your measurements and body fat percentages, the
 reference to your progress photographs, your complete diet log, your training history,
@@ -268,6 +284,11 @@ you exported, or the downloaded catalogues. Work is under way to make this actio
 everything it promises; until then, this policy describes its actual behaviour.
 
 **The debug log** is cleared with its own button, under Settings → Traces.
+
+**Storage recovery**: recovering a valid copy or completing a retry removes the
+quarantine. If you discard the damaged data, the main state, its recovery snapshot and
+the dependent training session are removed; partitions that remain readable, such as
+assistant memory, personal foods, preferences and secure keys, are preserved.
 
 **Complete deletion**: clear the app's data from your device settings, or uninstall the
 app. That removes everything above without exception. Remember that backup files you

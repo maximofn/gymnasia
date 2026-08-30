@@ -42,6 +42,22 @@
       "clearedBy": "reset"
     },
     {
+      "key": "gymnasia.mobile.local.last_good.v1",
+      "backend": "async-storage",
+      "personal": true,
+      "dataCategory": "health-fitness, personal-info, messages",
+      "purpose": "Última copia local verificada del estado principal, con fecha y huella SHA-256, usada exclusivamente para ofrecer recuperación cuando el LocalStore actual no puede leerse. En web puede contener claves BYOK porque el navegador no dispone de SecureStore.",
+      "clearedBy": "reset"
+    },
+    {
+      "key": "gymnasia.mobile.local.quarantine.v1",
+      "backend": "async-storage",
+      "personal": true,
+      "dataCategory": "health-fitness, personal-info, messages",
+      "purpose": "Payload original de LocalStore que no pudo leerse de forma segura, conservado sin cambios junto con incidencias estructurales saneadas hasta que el usuario recupera, reintenta o descarta esos datos. En web puede contener claves BYOK.",
+      "clearedBy": "reset"
+    },
+    {
       "key": "gymnasia.mobile.training.session.v1",
       "backend": "async-storage",
       "personal": true,

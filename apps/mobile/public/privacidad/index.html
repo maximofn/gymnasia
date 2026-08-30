@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-08-v8">
-<meta name="gymnasia-policy-digest" content="sha256:bfab752680c820859e40eb513d8813a242e3596e36c758cd0809e446e795a978">
+<meta name="gymnasia-policy-version" content="2026-08-v9">
+<meta name="gymnasia-policy-digest" content="sha256:c1c5c5a4959a6ff6205cc118ac24beea1eab6a00dea68e43b7608aaf71443ac9">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-08-v8 · en vigor desde 2026-08-29 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-08-v9 · en vigor desde 2026-08-30 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -99,6 +99,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Preferencias</strong>: ajustes de la interfaz y de las notificaciones, y tu consentimiento por proveedor para la evaluación adicional opcional de seguridad sanitaria.</li>
       <li><strong>Configuración de proveedores de IA</strong>: el modelo elegido y, si Anthropic lo exige para una clave vinculada a identidad, el identificador del workspace (<code>wrkspc_…</code>).</li>
       <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie. Nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
+      <li><strong>Copias locales de recuperación</strong>: la aplicación conserva una única copia verificada del estado principal. Si encuentra datos que no puede leer con seguridad, mantiene el payload original en cuarentena para no sobrescribirlo. Ambas copias permanecen solo en el dispositivo y se sustituyen o eliminan al completar la recuperación.</li>
     </ul>
   </section>
 
@@ -121,6 +122,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li>Puedes borrarla en cualquier momento desde Ajustes.</li>
     </ul>
     <p><strong>En el navegador la protección es menor.</strong> La versión web de Gymnasia se ejecuta en un navegador, donde no existe el llavero del sistema operativo: allí la clave se guarda en el almacenamiento del navegador junto al resto de los datos, sin esa capa adicional de protección. La aplicación te lo advierte en la pantalla de configuración del proveedor. Si esto te preocupa, usa la aplicación móvil.</p>
+    <p>La exclusión de claves se refiere a la copia de seguridad normal. Si la versión web encuentra un almacenamiento dañado y eliges exportar el original para recuperarlo, ese archivo conserva exactamente lo que había en el navegador y <strong>puede contener la clave</strong>. La pantalla de recuperación lo advierte antes de descargarlo.</p>
   </section>
 
   <section id="proveedores">
@@ -164,7 +166,8 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="copias">
     <h2><a href="#copias">Copias de seguridad y exportación</a></h2>
-    <p>Puedes exportar todos tus datos a un fichero JSON desde Ajustes, y volver a importarlo después. Es una acción manual: no hay copia automática.</p>
+    <p>Puedes exportar todos tus datos a un fichero JSON desde Ajustes, y volver a importarlo después. Esa copia exportable es manual y no se sube automáticamente a ningún servicio.</p>
+    <p>La copia local de recuperación no es una copia en la nube ni un segundo fichero portable: es una única generación anterior dentro del mismo almacenamiento de la aplicación. Solo se usa si el estado actual no puede leerse. En ese caso Gymnasia bloquea las escrituras y te permite recuperar la última copia, reintentar, descartar los datos afectados o exportar el payload dañado. Esta exportación de recuperación conserva el original sin sanear; es especialmente sensible y puede contener claves de IA en la versión web. No se envía a ningún servidor de Gymnasia.</p>
     <p>El fichero exportado <strong>contiene</strong>: tus medidas y porcentajes de grasa, la referencia a tus fotografías de progreso, tu registro de dieta completo, tu historial de entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la memoria del asistente y <strong>el historial íntegro de tus conversaciones</strong>. Es el fichero más sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.</p>
     <p>El fichero <strong>no contiene</strong> tus claves de API ni las credenciales heredadas de funciones retiradas.</p>
     <p>Al exportar, el fichero se escribe en el almacenamiento temporal de la aplicación antes de que elijas dónde compartirlo, y esa copia temporal permanece ahí. Puedes eliminarla borrando los datos de la aplicación desde los ajustes del sistema.</p>
@@ -208,6 +211,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>Con transparencia sobre lo que hace hoy cada opción:</p>
     <p><strong>&quot;Restablecer datos locales&quot;</strong> (Ajustes) es un borrado <strong>parcial</strong>. Elimina tus rutinas, tu historial de entrenamiento, tu dieta, tus medidas, tus conversaciones, tus claves de API y las credenciales cifradas heredadas de funciones retiradas. <strong>No elimina</strong>: la memoria del asistente, los alimentos que has creado, tus preferencias, el registro de depuración, las copias de seguridad que hayas exportado ni los catálogos descargados. Estamos trabajando en que esta acción borre todo lo que promete; hasta entonces, esta política describe su comportamiento real.</p>
     <p><strong>El registro de depuración</strong> se borra con su propio botón, en Ajustes → Trazas.</p>
+    <p><strong>Recuperación de almacenamiento</strong>: al recuperar una copia válida o completar un reintento se elimina la cuarentena. Si eliges descartar los datos dañados, se eliminan el estado principal, su snapshot de recuperación y la sesión de entrenamiento dependiente; se conservan las particiones que siguen siendo legibles, como la memoria del asistente, los alimentos personales, las preferencias y las claves seguras.</p>
     <p><strong>Borrado completo</strong>: elimina los datos de la aplicación desde los ajustes de tu dispositivo, o desinstálala. Eso elimina todo lo anterior sin excepción. Recuerda que los ficheros de copia de seguridad que hayas exportado y guardado en otro sitio sobreviven, y que las fotografías tomadas con la cámara siguen en tu galería.</p>
     <p><strong>Datos en poder de un proveedor de IA</strong>: se solicitan directamente a ese proveedor, desde tu cuenta con él. Gymnasia no puede borrarlos por ti.</p>
   </section>
@@ -249,7 +253,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-08-v8 · 2026-08-29</p>
+    <p>Política de privacidad de Gymnasia · 2026-08-v9 · 2026-08-30</p>
   </footer>
 </main>
 </body>

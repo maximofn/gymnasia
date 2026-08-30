@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v8
-effective_date: 2026-08-29
+version: 2026-08-v9
+effective_date: 2026-08-30
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -81,6 +81,10 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
 - **Registro de depuración**: un histórico técnico de hasta 1000 entradas con los avisos
   de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de
   serie. Nunca se envía por red; puedes verlo y borrarlo desde Ajustes.
+- **Copias locales de recuperación**: la aplicación conserva una única copia verificada
+  del estado principal. Si encuentra datos que no puede leer con seguridad, mantiene el
+  payload original en cuarentena para no sobrescribirlo. Ambas copias permanecen solo en
+  el dispositivo y se sustituyen o eliminan al completar la recuperación.
 
 ## Dónde se guarda {#almacenamiento-local}
 
@@ -119,6 +123,11 @@ navegador, donde no existe el llavero del sistema operativo: allí la clave se g
 el almacenamiento del navegador junto al resto de los datos, sin esa capa adicional de
 protección. La aplicación te lo advierte en la pantalla de configuración del proveedor.
 Si esto te preocupa, usa la aplicación móvil.
+
+La exclusión de claves se refiere a la copia de seguridad normal. Si la versión web
+encuentra un almacenamiento dañado y eliges exportar el original para recuperarlo, ese
+archivo conserva exactamente lo que había en el navegador y **puede contener la clave**.
+La pantalla de recuperación lo advierte antes de descargarlo.
 
 ## Qué envía la aplicación a los proveedores de IA {#proveedores}
 
@@ -199,7 +208,15 @@ Además de los proveedores de IA:
 ## Copias de seguridad y exportación {#copias}
 
 Puedes exportar todos tus datos a un fichero JSON desde Ajustes, y volver a importarlo
-después. Es una acción manual: no hay copia automática.
+después. Esa copia exportable es manual y no se sube automáticamente a ningún servicio.
+
+La copia local de recuperación no es una copia en la nube ni un segundo fichero portable:
+es una única generación anterior dentro del mismo almacenamiento de la aplicación. Solo
+se usa si el estado actual no puede leerse. En ese caso Gymnasia bloquea las escrituras y
+te permite recuperar la última copia, reintentar, descartar los datos afectados o exportar
+el payload dañado. Esta exportación de recuperación conserva el original sin sanear; es
+especialmente sensible y puede contener claves de IA en la versión web. No se envía a
+ningún servidor de Gymnasia.
 
 El fichero exportado **contiene**: tus medidas y porcentajes de grasa, la referencia a
 tus fotografías de progreso, tu registro de dieta completo, tu historial de
@@ -280,6 +297,12 @@ descargados. Estamos trabajando en que esta acción borre todo lo que promete; h
 entonces, esta política describe su comportamiento real.
 
 **El registro de depuración** se borra con su propio botón, en Ajustes → Trazas.
+
+**Recuperación de almacenamiento**: al recuperar una copia válida o completar un
+reintento se elimina la cuarentena. Si eliges descartar los datos dañados, se eliminan el
+estado principal, su snapshot de recuperación y la sesión de entrenamiento dependiente;
+se conservan las particiones que siguen siendo legibles, como la memoria del asistente,
+los alimentos personales, las preferencias y las claves seguras.
 
 **Borrado completo**: elimina los datos de la aplicación desde los ajustes de tu
 dispositivo, o desinstálala. Eso elimina todo lo anterior sin excepción. Recuerda que

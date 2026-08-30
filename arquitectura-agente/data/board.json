@@ -1801,7 +1801,7 @@
         {
           "id": "GYM-164",
           "title": "Preservar y recuperar LocalStore corrupto sin sobrescribirlo",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Evitar que una hidratación fallida arranque vacía y reescriba datos potencialmente recuperables.",
           "dependsOn": [],
           "related": [
