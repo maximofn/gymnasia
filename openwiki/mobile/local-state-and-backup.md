@@ -11,12 +11,15 @@ summary: Complete persistence map and lifecycle for the local-first Expo app, in
 tags: [mobile, persistence, local-storage, secure-storage, backup, hydration]
 sources:
   - apps/mobile/App.tsx
+  - apps/mobile/storage/localDataDeletion.ts
+  - apps/mobile/storage/localDataDeletion.test.ts
   - apps/mobile/metro.config.js
   - apps/mobile/trace.ts
   - apps/mobile/app.json
   - apps/mobile/package.json
   - apps/mobile/agent/toolExecutor.ts
   - apps/mobile/agent/toolExecutor.test.ts
+  - scripts/data-inventory/inventory.json
 related:
   - ./application-shell.md
   - ./training.md
@@ -31,7 +34,7 @@ related:
 
 # Estado local y copia de seguridad
 
-Gymnasia sigue un enfoque local-first: el cliente Expo es propietario del estado del producto, sin una base de datos de la aplicación ni un servicio de sincronización. `App.tsx::App` mantiene el agregado activo en el estado de React, lo hidrata desde `AsyncStorage` y `SecureStore`, y persiste las mutaciones posteriores mediante efectos. La copia de seguridad manual genera un archivo JSON portable en lugar de subirlo a un servicio de Gymnasia. Esta página define ese límite; la semántica de los dominios se aborda en [Entrenamiento](./training.md), [Mediciones](./measurements.md) y [Dieta y estimación de alimentos](./diet-and-food-estimation.md).
+Gymnasia sigue un enfoque local-first: el cliente Expo es propietario del estado del producto, sin una base de datos de la aplicación ni un servicio de sincronización. `App.tsx::GymnasiaApp` mantiene el agregado activo en el estado de React, lo hidrata desde `AsyncStorage` y `SecureStore`, y persiste las mutaciones posteriores mediante efectos; el componente `App` exterior permite desmontar y crear de nuevo todo ese runtime después de un borrado. La copia de seguridad manual genera un archivo JSON portable en lugar de subirlo a un servicio de Gymnasia. Esta página define ese límite; la semántica de los dominios se aborda en [Entrenamiento](./training.md), [Mediciones](./measurements.md) y [Dieta y estimación de alimentos](./diet-and-food-estimation.md).
 
 ## Propiedad del estado y esquemas
 
@@ -61,6 +64,8 @@ El agregado no constituye todo el modelo de persistencia. A continuación se enu
 | Backend y clave exacta | Valor almacenado | ¿Incluido en la copia de seguridad manual? | Ciclo de vida |
 |---|---|---:|---|
 | AsyncStorage `gymnasia.mobile.local.v3` | `LocalStore` saneado, o el almacén completo si SecureStore no está disponible | Sí, como `data.store` con las claves eliminadas | Se lee y normaliza durante la hidratación; se reescribe inmediatamente y después de cada cambio del almacén. |
+| AsyncStorage `gymnasia.mobile.local.last_good.v1` | Último `LocalStore` verificado, con huella SHA-256 | No | Se renueva tras cada escritura principal verificada. El borrado parcial la sustituye por el estado ya vaciado; el total la elimina. |
+| AsyncStorage `gymnasia.mobile.local.quarantine.v1` | Payload original que no pudo leerse con seguridad e incidencias saneadas | No | Bloquea nuevas escrituras hasta recuperar, reintentar o descartar. Ambos alcances de borrado la eliminan para impedir que reaparezcan datos anteriores. |
 | AsyncStorage `gymnasia.mobile.training.session.v1` | `WorkoutSession` activo | No | Se normaliza durante la hidratación; se establece mientras está activo y se elimina cuando está ausente o se restablece por una importación. |
 | AsyncStorage `gymnasia.mobile.training.session_template_snapshot.v1` | Instantánea de `WorkoutTemplate` anterior a la sesión | No | Solo se lee si se hidrata una sesión; se escribe con una sesión y se elimina cuando esta se cierra. |
 | AsyncStorage `gymnasia.mobile.chat.system_prompt.v1` | Último prompt del sistema obtenido de forma remota | No | Alternativa de caché; los errores se ignoran deliberadamente. |
@@ -72,12 +77,15 @@ El agregado no constituye todo el modelo de persistencia. A continuación se enu
 | AsyncStorage `gymnasia.mobile.products_repo.v1` | Caché remota de productos | No | Estrategia que prioriza la red y usa la caché como alternativa. |
 | AsyncStorage `gymnasia.mobile.recipes_repo.v1` | Caché remota de recetas | No | Estrategia que prioriza la red y usa la caché como alternativa. |
 | AsyncStorage `gymnasia.mobile.backup_meta.v1` | `{lastBackupAt: string | null}` | No | Se actualiza después de una ruta de exportación/uso compartido correcta; es solo informativo. |
+| AsyncStorage `gymnasia.mobile.health_safety.consent.v1` | Consentimiento por proveedor para la evaluación sanitaria opcional | No | Se conserva en el borrado parcial y se elimina en el total. |
+| AsyncStorage `gymnasia.mobile.alarm_health.v1` | Último retraso observado y racha de alarmas tardías | No | Diagnóstico local; se conserva en el borrado parcial y se elimina en el total. |
+| AsyncStorage `gymnasia.mobile.signed_policy.cache.v1` | Estado público firmado del canal de política y mayor secuencia observada | No | Se conserva en ambos alcances para impedir replays y retrocesos de seguridad; no contiene datos del usuario. |
 | AsyncStorage `gymnasia.mobile.body_fat_migration_done` | Marca heredada de una migración retirada | No | Solo se elimina durante la limpieza de arranque de instalaciones antiguas; ya no se lee ni se escribe. |
 | AsyncStorage `gymnasia.mobile.lastUpdateCheck` | Marca heredada del actualizador retirado | No | Solo se elimina durante la limpieza de arranque de instalaciones antiguas; ya no se lee ni se escribe. |
 | AsyncStorage `gymnasia_debug_traces` | Hasta 1000 objetos `TraceEntry` | No | Gestionado por `trace.ts`; se carga de forma diferida y se reescribe sin esperar el resultado. |
 | SecureStore `gymnasia.mobile.v3.provider.api_key.<provider>` | Una clave de API de proveedor sin espacios circundantes | No | Se combina con `LocalStore` en memoria; se establece/elimina cada vez que cambia `store.keys`. |
-| SecureStore `vivagym.email`, `vivagym.password` | Credenciales heredadas de una integración retirada | No | La versión actual no las lee ni escribe durante la hidratación o el uso normal; una actualización dentro del mismo package name las conserva y `resetLocalData` las elimina. |
-| Archivo de desarrollo `apps/mobile/.dev-store.json` mediante `/dev-store` | JSON de `LocalStore` en memoria sin sanear | No | Solo para desarrollo web; lectura alternativa cuando AsyncStorage no tiene un agregado y escritura espejo después de cambios del almacén. |
+| SecureStore `vivagym.email`, `vivagym.password` | Credenciales heredadas de una integración retirada | No | La versión actual no las lee ni escribe durante la hidratación o el uso normal; una actualización dentro del mismo package name las conserva y «Borrar todos mis datos» las elimina y verifica. |
+| Archivo de desarrollo `apps/mobile/.dev-store.json` mediante `/dev-store` | JSON saneado de `LocalStore`, sin credenciales ni identificadores de workspace | No | Solo con `EXPO_PUBLIC_DEV_STORE_MIRROR=1`, web en desarrollo y loopback; lectura alternativa cuando AsyncStorage no tiene agregado y escritura espejo atómica después de cambios. |
 
 Las claves de agregado heredadas `gymnasia.mobile.local.v1` y `.v2`, junto con los prefijos antiguos de claves de proveedor `gymnasia.mobile.provider.api_key` y `gymnasia.mobile.v2.provider.api_key`, se **eliminan**, no se importan, durante cada hidratación. Por tanto, esa operación es una limpieza, no una migración de datos.
 
@@ -134,7 +142,8 @@ La Memoria personal está deliberadamente fuera de `LocalStore`. La configuraci�
 | Herramientas del agente | Los controladores de lista/descripción/valor llaman a la función `loadPersonalData` inyectada para cada operación | `save_personal_data` reemplaza todo el arreglo mediante la función `savePersonalData` inyectada | Las lecturas ven las escrituras duraderas de la interfaz, pero las escrituras no actualizan una pantalla de Memoria que ya esté abierta |
 | Exportación de copia de seguridad | Llama a `loadPersonalData` inmediatamente antes de crear la carga útil | Ninguna | Exporta el valor almacenado, no una edición de texto sin guardar que solo se conserve en `memoryFields` |
 | Importación de copia de seguridad | No se combina con la Memoria actual | Guarda directamente el arreglo importado o `[]` | No actualiza `memoryFields` ni borra `memoryLoaded`; una pantalla abierta y obsoleta puede sobrescribir posteriormente la importación |
-| Restablecimiento | Sin lectura | Sin escritura | `resetLocalData` conserva la Memoria almacenada y el estado actual de la interfaz de Memoria |
+| Borrado parcial | Sin lectura | Sin escritura | Conserva la Memoria almacenada |
+| Borrado total | Sin lectura | Elimina la clave y verifica que ya no exista | El remontaje completo descarta además cualquier instantánea de Memoria que quedara en React |
 
 `loadPersonalData` devuelve `[]` cuando el JSON está ausente o no es válido y no realiza ninguna normalización del esquema a nivel de elemento. `save_personal_data` es un reemplazo, no una combinación a nivel de campo. Los cambios en esta área deben coordinar el estado de la interfaz, las dependencias del agente, la copia de seguridad y la semántica de restablecimiento; corregir un único propietario mantiene los riesgos de que prevalezca la última escritura.
 
@@ -142,7 +151,7 @@ La Memoria personal está deliberadamente fuera de `LocalStore`. La configuraci�
 
 Las opciones de notificación se encuentran en `UserPreferences.notifications`, dentro de la clave independiente `gymnasia.mobile.user_prefs.v1`, y no son campos de `LocalStore` ni de la sesión de entrenamiento activa. La forma es `{ enabled, sound, vibrate, soundKey }`, con los valores predeterminados `true`, `true`, `true` y `rest_finished`. La hidratación combina superficialmente las preferencias almacenadas sobre `DEFAULT_USER_PREFS`; como el objeto anidado no se combina en profundidad, un objeto `notifications` presente pero parcial o mal formado no se repara campo por campo.
 
-Las preferencias se persisten por separado después de la hidratación, se incluyen en la copia de seguridad como `data.userPrefs` y se reemplazan durante la importación (o se restablecen a sus valores predeterminados cuando están ausentes). `resetLocalData` las conserva sin cambios. La propiedad en tiempo de ejecución corresponde al entrenamiento: `enabled` controla la programación en segundo plano, mientras que el sonido y la vibración en primer plano siguen sus propias opciones. Los efectos exactos, las diferencias de canales de Android y los tonos disponibles se describen en [Entrenamiento](./training.md#preferencias-de-notificación-y-efectos-exactos); la ruta de configuración se encuentra en [Interfaz de la aplicación](./application-shell.md#control-de-la-configuración-de-notificaciones).
+Las preferencias se persisten por separado después de la hidratación, se incluyen en la copia de seguridad como `data.userPrefs` y se reemplazan durante la importación (o se restablecen a sus valores predeterminados cuando están ausentes). El borrado parcial las conserva y el total elimina y verifica su clave. La propiedad en tiempo de ejecución corresponde al entrenamiento: `enabled` controla la programación en segundo plano, mientras que el sonido y la vibración en primer plano siguen sus propias opciones. Los efectos exactos, las diferencias de canales de Android y los tonos disponibles se describen en [Entrenamiento](./training.md#preferencias-de-notificación-y-efectos-exactos); la ruta de configuración se encuentra en [Interfaz de la aplicación](./application-shell.md#control-de-la-configuración-de-notificaciones).
 
 ### Invariantes de normalización
 
@@ -159,11 +168,11 @@ No valida en profundidad cada objeto. En particular, `threads` se acepta directa
 
 ## Límite de datos sensibles
 
-Cuando `SecureStore.isAvailableAsync()` se completa correctamente, `stripSensitiveStoreData` reemplaza cada `AIKey.api_key` por `""` antes de serializarlo para AsyncStorage o para una copia de seguridad. Durante la hidratación, `mergeStoreWithSecureApiKeys` da prioridad a un valor no vacío de SecureStore y, en caso contrario, conserva el valor del agregado. Esto permite migrar valores en texto sin formato desde el agregado y trasladarlos a SecureStore durante la reescritura inmediata.
+Cuando `SecureStore.isAvailableAsync()` se completa correctamente, `serializeStoreForAsyncStorage` reemplaza cada `AIKey.api_key` por `""` antes de serializar para AsyncStorage. Los backups y el espejo usan `sanitizeDevStoreValue`, que censura recursivamente claves API, identificadores de workspace y otros campos de credencial conocidos. Durante la hidratación, `mergeStoreWithSecureApiKeys` da prioridad a un valor no vacío de SecureStore y, en caso contrario, conserva el valor del agregado. Esto permite migrar valores en texto sin formato desde el agregado y trasladarlos a SecureStore durante la reescritura inmediata.
 
 Cuando SecureStore no está disponible, todo el almacén —incluidas las claves de API de los proveedores— se conserva deliberadamente en AsyncStorage para que la web y los entornos no compatibles sigan funcionando; la interfaz de configuración advierte sobre esta alternativa. Las dos credenciales heredadas de VivaGym no tienen alternativa en texto sin formato: la versión retirada no las lee ni las escribe en ninguna plataforma.
 
-Una excepción importante exclusiva del desarrollo es `saveDevStoreFile(JSON.stringify(store))`: a diferencia de la ruta de AsyncStorage, recibe el almacén **sin sanear**. Por ello, las claves de proveedores configuradas pueden escribirse en `apps/mobile/.dev-store.json` durante el desarrollo web. El middleware de Metro también sirve y acepta `/dev-store` con `Access-Control-Allow-Origin: *`, no realiza ninguna autenticación ni validación del cuerpo o del esquema y utiliza escrituras de archivo síncronas. Es infraestructura de desarrollo, no una API de producción, y el archivo debe tratarse como sensible.
+El espejo de desarrollo está desactivado por defecto. `web:mirror` activa el cliente y el middleware con `EXPO_PUBLIC_DEV_STORE_MIRROR=1`; aun así, `/dev-store` solo acepta loopback y mismo origen, no emite CORS permisivo y valida tipo, límite de 5 MiB y esquema raíz. Cliente y servidor censuran los campos sensibles, de modo que un cliente alterado tampoco puede escribir credenciales. El reemplazo usa un temporal en el mismo directorio, `fsync`, rename atómico, permisos `0600` y una cola que ordena escrituras concurrentes. Un archivo heredado se sanea antes de servirse. Sigue conteniendo estado personal de salud y chat, por lo que debe tratarse como sensible y nunca confirmarse en Git.
 
 Las entradas de traza pueden contener cualquier tipo de `data`. `pushTrace` las envía también a la consola y las almacena en AsyncStorage; quienes realicen llamadas no deben añadir credenciales ni datos personales. La persistencia de trazas conserva las 1000 entradas más recientes, pero sus escrituras sin espera no son transaccionales.
 
@@ -177,7 +186,7 @@ El panel de trazas de Configuración ofrece tres operaciones distintas:
 - **Copiar:** `Clipboard.setStringAsync` recibe todo el texto sin formato. Los errores de copia se descartan. No hay censura, confirmación, uso compartido o carga automáticos ni limpieza del portapapeles; la privacidad del portapapeles después de la llamada es responsabilidad del sistema operativo.
 - **Borrar:** `clearTraces` espera la carga inicial, vacía el búfer e intenta ejecutar `AsyncStorage.removeItem`. Los errores de eliminación se descartan y, a continuación, el panel borra su lista local; por tanto, el estado vacío visible no demuestra un borrado duradero.
 
-Las trazas se excluyen de la copia de seguridad/importación y `resetLocalData` no las modifica. La importación no puede sobrescribirlas y la exportación de una copia de seguridad no las revela. Sin embargo, pueden permanecer copias en la consola de Expo o en herramientas como `adb logcat`, independientemente de que se borre AsyncStorage. Los productores actuales incluyen el montaje de la aplicación, eventos de permiso/canal/programación/cancelación/entrega/pulsación de notificaciones, errores de alertas de descanso y los títulos, cuerpos y activadores asociados; los cuerpos de las notificaciones pueden contener nombres de ejercicios. Tanto el almacenamiento de trazas como los volcados al portapapeles deben tratarse como datos de diagnóstico potencialmente personales. El flujo de la interfaz está enlazado desde [Interfaz de la aplicación](./application-shell.md#panel-de-trazas-y-límite-de-privacidad).
+Las trazas se excluyen de la copia de seguridad/importación y del borrado parcial; el borrado total vacía el búfer del módulo, elimina la clave y verifica ambos resultados. La importación no puede sobrescribirlas y la exportación de una copia de seguridad no las revela. Sin embargo, pueden permanecer copias en la consola de Expo o en herramientas como `adb logcat`, independientemente de que se borre AsyncStorage. Los productores actuales incluyen el montaje de la aplicación, eventos de permiso/canal/programación/cancelación/entrega/pulsación de notificaciones, errores de alertas de descanso y los títulos, cuerpos y activadores asociados; los cuerpos de las notificaciones pueden contener nombres de ejercicios. Tanto el almacenamiento de trazas como los volcados al portapapeles deben tratarse como datos de diagnóstico potencialmente personales. El flujo de la interfaz está enlazado desde [Interfaz de la aplicación](./application-shell.md#panel-de-trazas-y-límite-de-privacidad).
 
 ## Contrato de copia de seguridad manual
 
@@ -223,6 +232,7 @@ sequenceDiagram
         UI->>FileSys: Create Blob and trigger download
     else Native
         UI->>FileSys: Write cache file and open share sheet
+        UI->>FileSys: Delete temporary cache file in finally
     end
     UI->>Meta: Write successful export timestamp
     Meta-->>User: Show success
@@ -230,7 +240,7 @@ sequenceDiagram
 
 *Leyenda: La exportación captura cuatro particiones de datos del usuario, elimina los secretos de los proveedores y delega la ubicación duradera a una descarga del navegador o a la hoja nativa de uso compartido.*
 
-El nombre de archivo usa la hora local: `gymnasia_backup_YYYYMMDD_HHMM.json`. En el entorno nativo, el archivo de caché se reemplaza y, a continuación, se requieren `Sharing.isAvailableAsync()` y `shareAsync()`. La marca de tiempo de los metadatos significa que el flujo llegó al final de la invocación de descarga o uso compartido; no puede demostrar que el usuario conservara o subiera el archivo.
+El nombre de archivo usa la hora local: `gymnasia_backup_YYYYMMDD_HHMM.json`. En el entorno nativo, el archivo de caché se reemplaza y, a continuación, se requieren `Sharing.isAvailableAsync()` y `shareAsync()`; un bloque `finally` elimina la copia temporal tanto si compartir termina como si falla. El archivo elegido para importar también se copia a caché y se elimina después de leerlo. La marca de tiempo de los metadatos significa que el flujo llegó al final de la invocación de descarga o uso compartido; no puede demostrar que el usuario conservara o subiera el archivo.
 
 ```mermaid
 sequenceDiagram
@@ -271,26 +281,52 @@ No existe ninguna transacción que abarque AsyncStorage, SecureStore, el estado 
 - Un JSON de agregado dañado o una llamada de almacenamiento rechazada envían la hidratación a su bloque `catch`. Como la hidratación se completa de todos modos, el estado predeterminado en memoria puede sobrescribir posteriormente un estado recuperable pero mal formado.
 - Los asistentes de lectura/escritura de SecureStore suelen dejar que los fallos individuales de la API rechacen la operación de hidratación o persistencia que los contiene; solo la comprobación de disponibilidad captura los errores.
 
-`resetLocalData()` es un restablecimiento del producto en memoria, no `AsyncStorage.clear()`:
+La gestión de datos se apoya en un manifiesto explícito (`LOCAL_DATA_MANIFEST` y
+`LOCAL_SECURE_DATA_MANIFEST`) cuyo alcance debe coincidir exactamente con
+`scripts/data-inventory/inventory.json`:
 
-- reemplaza `LocalStore`, restablece el estado de la interfaz de proveedores, vuelve a Inicio y finaliza el entrenamiento activo;
-- a continuación, los efectos de persistencia ordinarios reescriben el agregado, eliminan las claves de API de proveedores ahora vacías y eliminan las claves de sesión;
-- elimina también las dos claves heredadas `vivagym.email` y `vivagym.password`, sin leer sus valores;
-- **no** restablece `userPrefs` (incluida la configuración de notificaciones), `personalFoods`, los datos `personalData`/Memoria almacenados o cargados, las cachés, las trazas ni los metadatos de copia de seguridad; las marcas heredadas del actualizador y de la migración de grasa corporal ya se eliminan al arrancar;
-- en desarrollo web, también replica el nuevo agregado en el archivo de desarrollo.
+- «Borrar actividad y conversaciones» reescribe el agregado principal con rutinas,
+  historial, dieta, medidas y chats vacíos, pero conserva `dietSettings`, la selección y
+  configuración de proveedores y sus claves; dentro de la misma cola de recuperación
+  elimina la sesión y su instantánea, descarta la cuarentena y crea un snapshot íntegro
+  del estado ya vaciado. Las particiones independientes de Memoria, alimentos personales,
+  preferencias, cachés, diagnósticos, consentimientos y metadatos se conservan.
+- «Borrar todos mis datos» elimina en exclusiva el agregado, su snapshot, la cuarentena y
+  la sesión; además recorre tanto el manifiesto como cualquier clave encontrada en el
+  namespace activo, excepto `gymnasia.mobile.signed_policy.cache.v1`. También elimina
+  trazas, claves actuales y antiguas de SecureStore, credenciales heredadas y el espejo
+  web de desarrollo cuando está habilitado.
+- Ambos alcances cancelan avisos programados y descartan notificaciones presentadas.
+  Después de cada operación se vuelve a leer el destino. Un timeout, rechazo o valor
+  todavía presente produce un informe incompleto; los otros destinos siguen
+  procesándose y la interfaz ofrece reintento.
+- El único valor conservado por seguridad es la caché pública firmada anti-retroceso:
+  no contiene datos del usuario y evita cargar instrucciones de seguridad anteriores.
+- Tras terminar, el componente `App` incrementa una generación y remonta
+  `GymnasiaApp`. Así desaparecen referencias, borradores, propuestas de feedback y
+  otras instantáneas de React que podrían volver a persistir datos borrados.
 
-Por consiguiente, no debe deducirse de esta función ningún texto de interfaz que implique un borrado completo del dispositivo.
+El borrado no puede alcanzar copias exportadas, fotos de la galería, permisos y canales
+del sistema, logs del sistema operativo ni datos ya enviados a un proveedor. La interfaz
+y la política enumeran esos límites en vez de presentar el resultado como un borrado
+global del dispositivo.
 
 ## Pruebas y comandos de validación
 
-No hay pruebas específicas para la hidratación, la normalización, la alternativa cuando SecureStore no está disponible, la cobertura del restablecimiento, la compatibilidad del sobre de copia de seguridad, la atomicidad de la exportación/importación ni la portabilidad de las fotos. Las pruebas del ejecutor del agente inyectan la persistencia de mediciones y demuestran que un JSON de mediciones mal formado no produce escrituras, pero no ejercitan el almacenamiento de Expo. Las pruebas deterministas existentes solo incluyen `agent/**/*.test.ts`.
+`storage/localDataDeletion.test.ts` cubre el orden borrar/verificar, fallos parciales,
+timeouts, reintentos y combinaciones arbitrarias con `fast-check`. También compara los
+dos manifiestos de runtime con el inventario de privacidad para que añadir una nueva
+partición sin decidir sus dos alcances rompa la suite. No hay pruebas específicas para
+la hidratación completa, la alternativa de SecureStore, la compatibilidad del sobre de
+copia de seguridad, la atomicidad de exportación/importación ni la portabilidad de las
+fotos; esas rutas siguen requiriendo validación de integración y nativa.
 
 Ejecute las comprobaciones específicas actuales desde la raíz del repositorio:
 
 ```bash
 npm test
 npm --workspace apps/mobile run test:deterministic
-npx tsc --noEmit -p apps/mobile/tsconfig.json
+npm --workspace apps/mobile exec tsc --noEmit
 ```
 
 El comando de TypeScript es una comprobación específica útil del contrato, pero no está declarado como script del paquete. Para la validación manual de la persistencia:
@@ -298,9 +334,10 @@ El comando de TypeScript es una comprobación específica útil del contrato, pe
 ```bash
 npm run dev:mobile
 npm --workspace apps/mobile run web
+npm --workspace apps/mobile run web:mirror
 ```
 
-Verifique por separado un ciclo nativo y uno web: cree cada partición, reinicie, inspeccione el estado normalizado, exporte, compruebe que todos los valores `data.store.keys[*].api_key` estén vacíos, importe después de cambiar las claves de API locales, confirme que las claves se conserven, confirme que la sesión activa se cierre y pruebe archivos ausentes, no válidos y con versiones futuras. Durante el desarrollo web, inspeccione y proteja también `apps/mobile/.dev-store.json`; nunca confirme en el repositorio los secretos que contenga.
+Verifique por separado un ciclo nativo y uno web: cree cada partición, reinicie, inspeccione el estado normalizado, exporte, compruebe que todos los valores `data.store.keys[*].api_key` estén vacíos, importe después de cambiar las claves de API locales, confirme que las claves se conserven, confirme que la sesión activa se cierre y pruebe archivos ausentes, no válidos y con versiones futuras. Para el espejo ejecute `npm run test:dev-store` y `npm run test:dev-store:e2e`: deben demostrar activación explícita, CORS denegado, saneado profundo, límites, atomicidad y ausencia del archivo en el índice Git sin tocar el estado real del desarrollador.
 
 ## Procedimiento seguro para realizar cambios
 

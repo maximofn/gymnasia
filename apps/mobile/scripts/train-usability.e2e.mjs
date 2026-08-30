@@ -198,10 +198,14 @@ async function runTrainUsabilityE2E(page, baseUrl) {
 
   logStep("Resetting local data");
   await clickNavTab(page, "Configuración");
-  await page.getByText("Proveedor IA", { exact: true }).click({ timeout: STEP_TIMEOUT_MS });
-  const resetLocalData = page.getByText("Restablecer datos locales").first();
-  await resetLocalData.scrollIntoViewIfNeeded({ timeout: STEP_TIMEOUT_MS });
-  await resetLocalData.click({ timeout: STEP_TIMEOUT_MS });
+  const dataSettingsTab = page.getByTestId("settings-tab-data");
+  await dataSettingsTab.scrollIntoViewIfNeeded({ timeout: STEP_TIMEOUT_MS });
+  await dataSettingsTab.click({ timeout: STEP_TIMEOUT_MS });
+  const deletionAction = page.getByTestId("data-deletion-open-activity");
+  await deletionAction.scrollIntoViewIfNeeded({ timeout: STEP_TIMEOUT_MS });
+  await deletionAction.click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByTestId("data-deletion-confirm").click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByTestId("data-deletion-success").waitFor({ timeout: STEP_TIMEOUT_MS });
 
   logStep("Opening Entrenamiento tab and validating empty state");
   await clickNavTab(page, "Entrenamiento");

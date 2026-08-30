@@ -6,6 +6,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop, Text as SvgText } from "react-native-svg";
 import ConfettiCannon from "react-native-confetti-cannon";
 import * as SecureStore from "expo-secure-store";
+import * as Crypto from "expo-crypto";
 import Constants from "expo-constants";
 import * as ImagePicker from "expo-image-picker";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
@@ -53,7 +54,6 @@ import {
   type ToolStore,
 } from "./agent/toolExecutor";
 import { resolveFeedbackEndpoint } from "./environment";
-import { RETAINED_LEGACY_SECURE_STORE_KEYS } from "./legacySecureStorage";
 import { createFeedbackIssueClient } from "./agent/feedbackClient";
 import {
   describeOutcomeForUser,
@@ -128,6 +128,17 @@ import {
 } from "./AiIdentityDisclosure";
 import { HealthSafetyNotice } from "./HealthSafetyNotice";
 import {
+  LocalStoreRecoveryScreen,
+  LocalStoreStartupFailureScreen,
+} from "./LocalStoreRecoveryScreen";
+import {
+  LocalStoreCommitAmbiguousError,
+  LocalStoreRecoveryLockedError,
+  LocalStoreRecoveryRepository,
+  LocalStoreSnapshotWriteError,
+  type LocalStoreHydrationOutcome,
+} from "./persistence/localStoreRecovery";
+import {
   AiResponseReportAction,
   AiResponseReportModal,
   type AiResponseReportContext,
@@ -150,6 +161,20 @@ import {
   stripProviderApiKeys,
   writeProviderApiKeys,
 } from "./agent/providerCredentials";
+import {
+  isDevStoreMirrorEnabled,
+  sanitizeDevStoreValue,
+  serializeDevStore,
+} from "./agent/devStore";
+import {
+  LOCAL_DATA_MANIFEST,
+  LOCAL_DATA_SECURITY_PRESERVED_KEYS,
+  LOCAL_SECURE_DATA_MANIFEST,
+  runLocalDataDeletion,
+  type LocalDataDeletionReport,
+  type LocalDataDeletionScope,
+  type LocalDataDeletionTask,
+} from "./storage/localDataDeletion";
 import { LegalFooter } from "./LegalFooter";
 import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
 import { openExternalUrl } from "./openExternalUrl";
@@ -175,6 +200,7 @@ import {
 import {
   clearMeasurementMedia,
   deleteOwnedMeasurementPhotoIfUnreferenced,
+  isMeasurementMediaEmpty,
   isOwnedMeasurementPhotoUri,
   measurementPhotoSha256,
   normalizeAndStoreMeasurementPhoto,
@@ -228,7 +254,7 @@ Notifications.setNotificationHandler({
 });
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "backup" | "traces";
+type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "data" | "traces";
 
 type SeriesType =
   | "normal"
@@ -583,11 +609,23 @@ type LocalStore = {
 };
 
 const STORAGE_KEY = scopedStorageKey("gymnasia.mobile.local.v3");
+const LOCAL_STORE_LAST_GOOD_KEY = scopedStorageKey("gymnasia.mobile.local.last_good.v1");
+const LOCAL_STORE_QUARANTINE_KEY = scopedStorageKey("gymnasia.mobile.local.quarantine.v1");
 const SESSION_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.training.session.v1");
 const SESSION_TEMPLATE_SNAPSHOT_KEY = scopedStorageKey("gymnasia.mobile.training.session_template_snapshot.v1");
 const PERSONAL_DATA_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.personal_data.v1");
 const USER_PREFS_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.user_prefs.v1");
 const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: { enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" } };
+
+const localStoreRecoveryRepository = new LocalStoreRecoveryRepository({
+  storage: AsyncStorage,
+  keys: {
+    primary: STORAGE_KEY,
+    snapshot: LOCAL_STORE_LAST_GOOD_KEY,
+    quarantine: LOCAL_STORE_QUARANTINE_KEY,
+  },
+  sha256: (value) => Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value),
+});
 // Salud de las alarmas: observaciones del dispositivo, no preferencias del usuario,
 // por eso viven en su propia clave y no dentro de UserPreferences (cuya hidratación
 // hace un merge superficial que dejaría undefined cualquier campo anidado nuevo).
@@ -791,7 +829,7 @@ function normalizeOpenAIReasoningEffort(
 const DEV_STORE_ENDPOINT = "/dev-store";
 
 async function loadDevStoreFile(): Promise<string | null> {
-  if (Platform.OS !== "web" || !__DEV__) return null;
+  if (Platform.OS !== "web" || !__DEV__ || !isDevStoreMirrorEnabled()) return null;
   try {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     const res = await fetch(`${origin}${DEV_STORE_ENDPOINT}`);
@@ -803,16 +841,40 @@ async function loadDevStoreFile(): Promise<string | null> {
   return null;
 }
 
-async function saveDevStoreFile(json: string): Promise<void> {
-  if (Platform.OS !== "web" || !__DEV__) return;
+async function saveDevStoreFile(store: unknown): Promise<void> {
+  if (Platform.OS !== "web" || !__DEV__ || !isDevStoreMirrorEnabled()) return;
   try {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    await fetch(`${origin}${DEV_STORE_ENDPOINT}`, {
+    const response = await fetch(`${origin}${DEV_STORE_ENDPOINT}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: json,
+      body: serializeDevStore(store),
     });
+    if (!response.ok) throw new Error("dev store rejected");
   } catch {}
+}
+
+async function readStorageWithoutThrow(key: string): Promise<{
+  raw: string | null;
+  failed: boolean;
+}> {
+  try {
+    return { raw: await AsyncStorage.getItem(key), failed: false };
+  } catch {
+    return { raw: null, failed: true };
+  }
+}
+
+function parseJsonWithoutThrow(raw: string | null): {
+  value: unknown;
+  failed: boolean;
+} {
+  if (raw === null) return { value: null, failed: false };
+  try {
+    return { value: JSON.parse(raw), failed: false };
+  } catch {
+    return { value: null, failed: true };
+  }
 }
 
 const SERIES_TYPE_META: Record<SeriesType, { label: string; short: string; color?: string }> = {
@@ -1192,25 +1254,24 @@ async function savePersonalData(fields: unknown): Promise<void> {
 
 async function loadMeasurementsFromStorage(): Promise<Measurement[]> {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed?.measurements) ? parsed.measurements : [];
+    const outcome = await localStoreRecoveryRepository.inspect();
+    if (outcome.status !== "valid") return [];
+    const measurements = outcome.candidate.value.measurements;
+    return Array.isArray(measurements) ? measurements as Measurement[] : [];
   } catch {
     return [];
   }
 }
 
 async function saveMeasurementsToStorage(measurements: Measurement[]): Promise<void> {
-  try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-    parsed.measurements = measurements;
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-  } catch {
-    /* silently fail — component useEffect will persist next cycle */
+  const outcome = await localStoreRecoveryRepository.inspect();
+  if (outcome.status !== "valid") {
+    throw new Error("Las medidas no se pueden guardar mientras haya una recuperación pendiente.");
   }
+  await localStoreRecoveryRepository.commit(JSON.stringify({
+    ...outcome.candidate.value,
+    measurements,
+  }));
 }
 
 const SCAN_BARCODE_TOOL = "scan_barcode";
@@ -1669,7 +1730,7 @@ const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "measures", label: "Medidas" },
   { key: "preferences", label: "Preferencias" },
   { key: "notifications", label: "Notificaciones" },
-  { key: "backup", label: "Copia de seguridad" },
+  { key: "data", label: "Datos" },
   { key: "traces", label: "Trazas" },
 ];
 
@@ -1731,14 +1792,6 @@ function secureStoreKey(provider: Provider): string {
 
 function emptyProviderApiKeys(): Record<Provider, string> {
   return { openai: "", anthropic: "", google: "" };
-}
-
-function stripSensitiveStoreData(store: LocalStore): LocalStore {
-  const withoutApiKeys = stripProviderApiKeys(store);
-  return {
-    ...withoutApiKeys,
-    keys: withoutApiKeys.keys.map((item) => ({ ...item, workspace_id: "" })),
-  };
 }
 
 function serializeStoreForAsyncStorage(
@@ -1842,7 +1895,8 @@ type BackupMeta = { lastBackupAt: string | null };
 
 function buildBackupData(data: BackupData): BackupData {
   return {
-    store: stripSensitiveStoreData(data.store),
+    // Nunca escribir API keys ni otros campos de credencial al paquete exportado.
+    store: sanitizeDevStoreValue(data.store),
     userPrefs: data.userPrefs,
     personalFoods: data.personalFoods,
     personalData: data.personalData,
@@ -1899,6 +1953,48 @@ async function readBackupMeta(): Promise<BackupMeta> {
 
 async function writeBackupMeta(meta: BackupMeta): Promise<void> {
   await AsyncStorage.setItem(BACKUP_META_KEY, JSON.stringify(meta));
+}
+
+function recoveryFileName(now = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+  return `gymnasia_recovery_${stamp}.json`;
+}
+
+async function downloadOrShareJson(
+  json: string,
+  fileName: string,
+  dialogTitle: string,
+): Promise<void> {
+  if (Platform.OS === "web") {
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    return;
+  }
+
+  const file = new File(Paths.cache, fileName);
+  try {
+    if (file.exists) file.delete();
+    file.create();
+    file.write(json);
+    if (!await Sharing.isAvailableAsync()) {
+      throw new Error("El sistema no permite compartir archivos en este dispositivo.");
+    }
+    await Sharing.shareAsync(file.uri, {
+      mimeType: "application/json",
+      dialogTitle,
+      UTI: "public.json",
+    });
+  } finally {
+    if (file.exists) file.delete();
+  }
 }
 
 function extractErrorMessage(payload: unknown, fallback: string): string {
@@ -5269,6 +5365,17 @@ function createInitialStore(): LocalStore {
   };
 }
 
+function createActivityResetStore(store: LocalStore): LocalStore {
+  const initial = createInitialStore();
+  return {
+    ...initial,
+    dietSettings: { ...store.dietSettings },
+    keys: store.keys.map((key) => ({ ...key })),
+    chatProvider: store.chatProvider,
+    foodAIProvider: store.foodAIProvider,
+  };
+}
+
 function normalizeChatMessage(raw: ChatMessage, index: number): ChatMessage {
   const role =
     raw?.role === "assistant" || raw?.role === "system" || raw?.role === "user"
@@ -6597,7 +6704,16 @@ function PolicyStatusCard({
   );
 }
 
-export default function App() {
+type LocalDataDeletionOutcome = {
+  report: LocalDataDeletionReport;
+};
+
+type GymnasiaAppProps = {
+  deletionOutcome: LocalDataDeletionOutcome | null;
+  onRuntimeReset: (outcome: LocalDataDeletionOutcome) => void;
+};
+
+function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   // Propuestas pendientes de alimento y ejercicio. El store vive fuera de React
   // porque lo alimentan funciones de módulo; aquí solo se observa.
   const feedbackProposals = useSyncExternalStore(
@@ -6652,16 +6768,37 @@ export default function App() {
 
   const { width: viewportWidth } = useWindowDimensions();
   const isDesktopWeb = Platform.OS === "web" && viewportWidth >= 960;
-  const [tab, setTab] = useState<TabKey>("home");
+  const [tab, setTab] = useState<TabKey>(
+    deletionOutcome?.report.status === "incomplete" ? "settings" : "home",
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [localStoreRecovery, setLocalStoreRecovery] = useState<
+    Extract<LocalStoreHydrationOutcome, { status: "recoverable" | "corrupt" }> | null
+  >(null);
+  const [localStoreRecoveryBusy, setLocalStoreRecoveryBusy] = useState<
+    null | "restore" | "export" | "retry" | "discard"
+  >(null);
+  const [localStoreRecoveryError, setLocalStoreRecoveryError] = useState<string | null>(null);
+  const [localStoreStartupError, setLocalStoreStartupError] = useState<string | null>(null);
+  const localStoreHydrationAttemptRef = useRef(0);
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
-  // Copia de seguridad manual (Configuración → Copia de seguridad, GYM-5).
+  // Copia manual en Configuración → Datos (GYM-5, ticket para exportar e importar copias).
   const [backupBusy, setBackupBusy] = useState<null | "export" | "import">(null);
   const [backupResult, setBackupResult] = useState<BackupResult | null>(null);
   const [lastBackupAt, setLastBackupAt] = useState<string | null>(null);
   const [pendingImport, setPendingImport] = useState<PendingBackupImport | null>(null);
+  const [dataDeletionScope, setDataDeletionScope] =
+    useState<LocalDataDeletionScope | null>(null);
+  const [dataDeletionConfirmation, setDataDeletionConfirmation] = useState("");
+  const [dataDeletionBusy, setDataDeletionBusy] = useState(false);
+  const dataDeletionBusyRef = useRef(false);
+  const [dataDeletionReport, setDataDeletionReport] =
+    useState<LocalDataDeletionReport | null>(deletionOutcome?.report ?? null);
+  const [dataDeletionSuccessVisible, setDataDeletionSuccessVisible] = useState(
+    deletionOutcome?.report.status === "complete",
+  );
 
   const [store, setStore] = useState<LocalStore>(() => createInitialStore());
   const [threads, setThreads] = useState<ChatThread[]>([]);
@@ -6812,7 +6949,9 @@ export default function App() {
   const [bicepsInput, setBicepsInput] = useState("");
   const [quadricepsInput, setQuadricepsInput] = useState("");
   const [calfInput, setCalfInput] = useState("");
-  const [settingsTab, setSettingsTab] = useState<SettingsTabKey>("diet");
+  const [settingsTab, setSettingsTab] = useState<SettingsTabKey>(
+    deletionOutcome?.report.status === "incomplete" ? "data" : "diet",
+  );
   const settingsTabsScrollRef = useRef<ScrollView>(null);
   const settingsTabsScrollXRef = useRef(0);
   const settingsTabsContainerWidthRef = useRef(0);
@@ -7792,6 +7931,8 @@ export default function App() {
       : tabLabel(tab);
 
   const showGlobalScreenLoading = ENABLE_GLOBAL_SCREEN_LOAD_DELAY && isGlobalScreenLoading;
+  const dataDeletionBlocked =
+    backupBusy !== null || sendingChat || foodEstimatorSending || dataDeletionBusy;
   const isTrainingTemplateScreenOpen =
     tab === "training" && !activeWorkoutSession && !!activeTrainingTemplateId;
   const isTrainingDetailOpen =
@@ -7812,6 +7953,10 @@ export default function App() {
     if (Platform.OS !== "android") return;
     const handler = BackHandler.addEventListener("hardwareBackPress", () => {
       // Layer 1: close any open modal / overlay
+      if (dataDeletionScope) {
+        if (!dataDeletionBusy) closeDataDeletion();
+        return true;
+      }
       if (workoutCompletionModal) { setWorkoutCompletionModal(null); return true; }
       if (confirmDiscardSession) { setConfirmDiscardSession(false); return true; }
       if (foodEstimatorModalOpen) { setFoodEstimatorModalOpen(false); return true; }
@@ -8279,99 +8424,221 @@ export default function App() {
     setActiveExerciseMenuId(null);
   }, [activeExerciseMenuId, activeTrainingTemplate, expandedExerciseId]);
 
-  useEffect(() => {
-    let ignore = false;
-    async function hydrate() {
+  async function runLocalStoreHydration(options: {
+    honorExistingQuarantine?: boolean;
+  } = {}): Promise<void> {
+    const attempt = localStoreHydrationAttemptRef.current + 1;
+    localStoreHydrationAttemptRef.current = attempt;
+    const isCurrent = () => localStoreHydrationAttemptRef.current === attempt;
+    const honorExistingQuarantine = options.honorExistingQuarantine ?? true;
+
+    if (isCurrent()) {
       setLoading(true);
       setError(null);
-      try {
-        const secureAvailable = await isSecureStoreAvailable();
-        if (!ignore) {
-          setSecureStoreAvailable(secureAvailable);
-        }
+      setLocalStoreRecoveryError(null);
+    }
 
-        await clearLegacyStorageData(secureAvailable);
+    const devStoreRaw = await loadDevStoreFile();
+    let inspection = await localStoreRecoveryRepository.inspect({
+      fallbackRaw: devStoreRaw,
+      honorExistingQuarantine,
+    });
+    if (!isCurrent()) return;
+    if (inspection.status === "recoverable" || inspection.status === "corrupt") {
+      setLocalStoreStartupError(null);
+      setLocalStoreRecovery(inspection);
+      setIsHydrated(false);
+      setLoading(false);
+      return;
+    }
 
-        const [rawStore, secureApiKeys, rawSession, rawSessionTemplateSnapshot, rawPrefs, rawAlarmHealth, rawHealthSafetyConsent] = await Promise.all([
-          AsyncStorage.getItem(STORAGE_KEY),
-          readProviderApiKeysFromSecureStore(secureAvailable),
-          AsyncStorage.getItem(SESSION_STORAGE_KEY),
-          AsyncStorage.getItem(SESSION_TEMPLATE_SNAPSHOT_KEY),
-          AsyncStorage.getItem(USER_PREFS_STORAGE_KEY),
-          AsyncStorage.getItem(ALARM_HEALTH_STORAGE_KEY),
-          AsyncStorage.getItem(HEALTH_SAFETY_CONSENT_KEY),
-        ]);
-
-        // On web dev, prefer file-backed store over localStorage
-        const devStoreRaw = !rawStore ? await loadDevStoreFile() : null;
-        const effectiveRaw = rawStore || devStoreRaw;
-
-        const baseStore = effectiveRaw
-          ? normalizeStore(JSON.parse(effectiveRaw) as LocalStore)
-          : createInitialStore();
-
-        const mergedStore = mergeStoreWithSecureApiKeys(baseStore, secureApiKeys);
-        const hydratedSession = rawSession
-          ? normalizeWorkoutSession(JSON.parse(rawSession) as unknown, mergedStore.templates)
-          : null;
-
-        await Promise.all([
-          AsyncStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(serializeStoreForAsyncStorage(mergedStore, secureAvailable)),
-          ),
-          writeProviderApiKeysToSecureStore(mergedStore.keys, secureAvailable),
-        ]);
-
-        if (!ignore) {
-          setStore(mergedStore);
-          setActiveWorkoutSession(hydratedSession);
-          if (hydratedSession) {
-            const snapshotTemplate = rawSessionTemplateSnapshot
-              ? (JSON.parse(rawSessionTemplateSnapshot) as WorkoutTemplate | null)
-              : null;
-            const fallbackTemplate = mergedStore.templates.find(
-              (t) => t.id === hydratedSession.template_id,
-            ) ?? null;
-            workoutTemplateBeforeSessionRef.current = snapshotTemplate ?? (fallbackTemplate ? cloneWorkoutTemplate(fallbackTemplate) : null);
-          }
-          const parsedPrefs: UserPreferences = rawPrefs
-            ? { ...DEFAULT_USER_PREFS, ...JSON.parse(rawPrefs) }
-            : { ...DEFAULT_USER_PREFS };
-          setUserPrefs(parsedPrefs);
-          setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
-          if (parsedPrefs.chartMetric) setMeasuresChartMetric(parsedPrefs.chartMetric);
-
-          const parsedAlarmHealth: AlarmHealth = rawAlarmHealth
-            ? { ...DEFAULT_ALARM_HEALTH, ...JSON.parse(rawAlarmHealth) }
-            : { ...DEFAULT_ALARM_HEALTH };
-          alarmHealthRef.current = parsedAlarmHealth;
-          setAlarmHealth(parsedAlarmHealth);
-          const parsedHealthSafetyConsent = normalizeHealthSafetyConsentState(
-            rawHealthSafetyConsent ? JSON.parse(rawHealthSafetyConsent) as unknown : null,
-          );
-          setHealthSafetyConsent(parsedHealthSafetyConsent);
-          void refreshNotificationDiagnostics();
-        }
-      } catch (err) {
-        if (!ignore) {
-          setError(err instanceof Error ? err.message : "No se pudo cargar almacenamiento local.");
-        }
-      } finally {
-        if (!ignore) {
+    const sourceCandidate = inspection.status === "valid" ? inspection.candidate : null;
+    let baseStore: LocalStore;
+    try {
+      baseStore = sourceCandidate
+        ? normalizeStore(sourceCandidate.value as unknown as LocalStore)
+        : createInitialStore();
+    } catch {
+      if (sourceCandidate) {
+        await localStoreRecoveryRepository.quarantineUnexpectedNormalization(
+          sourceCandidate.raw,
+          sourceCandidate.source,
+        );
+        inspection = await localStoreRecoveryRepository.inspect({
+          fallbackRaw: devStoreRaw,
+          honorExistingQuarantine: true,
+        });
+        if (isCurrent() && (inspection.status === "recoverable" || inspection.status === "corrupt")) {
+          setLocalStoreStartupError(null);
+          setLocalStoreRecovery(inspection);
+          setIsHydrated(false);
           setLoading(false);
-          setIsHydrated(true);
+          return;
         }
       }
+      throw new Error("La estructura guardada no pudo normalizarse de forma segura.");
     }
-    hydrate();
+
+    const secureAvailable = await isSecureStoreAvailable();
+    let secureApiKeys = emptyProviderApiKeys();
+    let secureStorageFailure = false;
+    if (secureAvailable) {
+      try {
+        secureApiKeys = await readProviderApiKeysFromSecureStore(true);
+      } catch {
+        secureStorageFailure = true;
+      }
+    }
+    const mergedStore = mergeStoreWithSecureApiKeys(baseStore, secureApiKeys);
+
+    if (secureAvailable) {
+      try {
+        await writeProviderApiKeysToSecureStore(mergedStore.keys, true);
+      } catch {
+        secureStorageFailure = true;
+      }
+    }
+
+    const canonicalRaw = JSON.stringify(
+      serializeStoreForAsyncStorage(mergedStore, secureAvailable),
+    );
+    let nonFatalError: string | null = secureStorageFailure
+      ? "Los datos principales están a salvo, pero el almacén seguro de claves no respondió."
+      : null;
+    try {
+      if (honorExistingQuarantine) {
+        await localStoreRecoveryRepository.commit(canonicalRaw);
+      } else {
+        await localStoreRecoveryRepository.resolveCurrent(canonicalRaw);
+      }
+    } catch (commitError) {
+      if (commitError instanceof LocalStoreSnapshotWriteError) {
+        nonFatalError = commitError.message;
+      } else if (
+        commitError instanceof LocalStoreCommitAmbiguousError
+        || commitError instanceof LocalStoreRecoveryLockedError
+      ) {
+        inspection = await localStoreRecoveryRepository.inspect({
+          fallbackRaw: devStoreRaw,
+          honorExistingQuarantine: true,
+        });
+        if (isCurrent() && (inspection.status === "recoverable" || inspection.status === "corrupt")) {
+          setLocalStoreStartupError(null);
+          setLocalStoreRecovery(inspection);
+          setIsHydrated(false);
+          setLoading(false);
+          return;
+        }
+        throw commitError;
+      } else {
+        nonFatalError = commitError instanceof Error
+          ? commitError.message
+          : "No se pudo guardar el almacenamiento local.";
+      }
+    }
+
+    await saveDevStoreFile(mergedStore);
+    try {
+      await clearLegacyStorageData(secureAvailable);
+    } catch {
+      nonFatalError ??= "Los datos principales están a salvo, pero no se pudo completar una limpieza interna.";
+    }
+
+    const [sessionRead, sessionSnapshotRead, prefsRead, alarmRead, consentRead] = await Promise.all([
+      readStorageWithoutThrow(SESSION_STORAGE_KEY),
+      readStorageWithoutThrow(SESSION_TEMPLATE_SNAPSHOT_KEY),
+      readStorageWithoutThrow(USER_PREFS_STORAGE_KEY),
+      readStorageWithoutThrow(ALARM_HEALTH_STORAGE_KEY),
+      readStorageWithoutThrow(HEALTH_SAFETY_CONSENT_KEY),
+    ]);
+    const sessionParsed = parseJsonWithoutThrow(sessionRead.raw);
+    const sessionSnapshotParsed = parseJsonWithoutThrow(sessionSnapshotRead.raw);
+    const prefsParsed = parseJsonWithoutThrow(prefsRead.raw);
+    const alarmParsed = parseJsonWithoutThrow(alarmRead.raw);
+    const consentParsed = parseJsonWithoutThrow(consentRead.raw);
+    let secondaryFailure = [
+      sessionRead,
+      sessionSnapshotRead,
+      prefsRead,
+      alarmRead,
+      consentRead,
+    ].some((entry) => entry.failed) || [
+      sessionParsed,
+      sessionSnapshotParsed,
+      prefsParsed,
+      alarmParsed,
+      consentParsed,
+    ].some((entry) => entry.failed);
+    let hydratedSession: WorkoutSession | null = null;
+    if (!sessionParsed.failed) {
+      try {
+        hydratedSession = normalizeWorkoutSession(sessionParsed.value, mergedStore.templates);
+      } catch {
+        secondaryFailure = true;
+      }
+    }
+    if (secondaryFailure) {
+      nonFatalError ??= "Algunos ajustes secundarios no pudieron cargarse; los datos principales no se han sobrescrito.";
+    }
+    const rawPrefs = prefsParsed.value;
+    const parsedPrefs: UserPreferences = rawPrefs && typeof rawPrefs === "object" && !Array.isArray(rawPrefs)
+      ? { ...DEFAULT_USER_PREFS, ...rawPrefs as Partial<UserPreferences> }
+      : { ...DEFAULT_USER_PREFS };
+    const rawAlarmHealth = alarmParsed.value;
+    const parsedAlarmHealth: AlarmHealth = rawAlarmHealth && typeof rawAlarmHealth === "object" && !Array.isArray(rawAlarmHealth)
+      ? { ...DEFAULT_ALARM_HEALTH, ...rawAlarmHealth as Partial<AlarmHealth> }
+      : { ...DEFAULT_ALARM_HEALTH };
+    const parsedHealthSafetyConsent = normalizeHealthSafetyConsentState(consentParsed.value);
+
+    if (!isCurrent()) return;
+    setSecureStoreAvailable(secureAvailable);
+    setStore(mergedStore);
+    setActiveWorkoutSession(hydratedSession);
+    workoutTemplateBeforeSessionRef.current = null;
+    if (hydratedSession) {
+      const snapshotTemplate = sessionSnapshotParsed.value
+        && typeof sessionSnapshotParsed.value === "object"
+        && !Array.isArray(sessionSnapshotParsed.value)
+        ? sessionSnapshotParsed.value as WorkoutTemplate
+        : null;
+      const fallbackTemplate = mergedStore.templates.find(
+        (template) => template.id === hydratedSession.template_id,
+      ) ?? null;
+      workoutTemplateBeforeSessionRef.current = snapshotTemplate
+        ?? (fallbackTemplate ? cloneWorkoutTemplate(fallbackTemplate) : null);
+    }
+    setUserPrefs(parsedPrefs);
+    setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
+    if (parsedPrefs.chartMetric) setMeasuresChartMetric(parsedPrefs.chartMetric);
+    alarmHealthRef.current = parsedAlarmHealth;
+    setAlarmHealth(parsedAlarmHealth);
+    setHealthSafetyConsent(parsedHealthSafetyConsent);
+    setLocalStoreStartupError(null);
+    setLocalStoreRecovery(null);
+    setIsHydrated(true);
+    setLoading(false);
+    setError(nonFatalError);
+    void refreshNotificationDiagnostics();
+  }
+
+  useEffect(() => {
+    void runLocalStoreHydration().catch((hydrationError) => {
+      setLoading(false);
+      setIsHydrated(false);
+      setLocalStoreRecovery(null);
+      setLocalStoreStartupError(
+        hydrationError instanceof Error
+          ? hydrationError.message
+          : "No se pudo cargar almacenamiento local.",
+      );
+    });
     return () => {
-      ignore = true;
+      localStoreHydrationAttemptRef.current += 1;
     };
   }, []);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
     loadExercisesRepo().then((repoExercises) => {
       setExercisesRepo(repoExercises);
       // Sync template exercises with repo data (image, muscle, etc.)
@@ -8480,30 +8747,60 @@ export default function App() {
   }, [isHydrated, store.keys]);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
 
     const serialized = JSON.stringify(serializeStoreForAsyncStorage(store, secureStoreAvailable));
-    Promise.all([
-      AsyncStorage.setItem(STORAGE_KEY, serialized),
-      writeProviderApiKeysToSecureStore(store.keys, secureStoreAvailable),
-      saveDevStoreFile(JSON.stringify(store)),
-    ]).catch(() => {
-      setError("No se pudo guardar en almacenamiento local/seguro.");
-    });
+    void (async () => {
+      try {
+        await localStoreRecoveryRepository.commit(serialized);
+        await Promise.all([
+          writeProviderApiKeysToSecureStore(store.keys, secureStoreAvailable),
+          saveDevStoreFile(store),
+        ]);
+      } catch (persistError) {
+        if (
+          persistError instanceof LocalStoreCommitAmbiguousError
+          || persistError instanceof LocalStoreRecoveryLockedError
+        ) {
+          setIsHydrated(false);
+          setLoading(false);
+          try {
+            const inspection = await localStoreRecoveryRepository.inspect({
+              fallbackRaw: await loadDevStoreFile(),
+              honorExistingQuarantine: true,
+            });
+            if (inspection.status === "recoverable" || inspection.status === "corrupt") {
+              setLocalStoreRecovery(inspection);
+              setLocalStoreStartupError(null);
+            } else {
+              setLocalStoreStartupError("No se pudo comprobar el almacenamiento antes de guardar.");
+            }
+          } catch {
+            setLocalStoreStartupError("No se pudo comprobar el almacenamiento antes de guardar.");
+          }
+          return;
+        }
+        setError(
+          persistError instanceof Error
+            ? persistError.message
+            : "No se pudo guardar en almacenamiento local/seguro.",
+        );
+      }
+    })();
   }, [isHydrated, secureStoreAvailable, store]);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
     AsyncStorage.setItem(USER_PREFS_STORAGE_KEY, JSON.stringify(userPrefs)).catch(() => {});
   }, [isHydrated, userPrefs]);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
     savePersonalFoods(personalFoods).catch(() => {});
   }, [isHydrated, personalFoods]);
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isHydrated || dataDeletionBusyRef.current) return;
     if (!activeWorkoutSession) {
       AsyncStorage.removeItem(SESSION_STORAGE_KEY).catch(() => {
         setError("No se pudo limpiar la sesión de entrenamiento.");
@@ -9590,18 +9887,22 @@ export default function App() {
         URL.revokeObjectURL(url);
       } else {
         const file = new File(Paths.cache, fileName);
-        if (file.exists) file.delete();
-        file.create();
-        file.write(packageBytes);
-        const canShare = await Sharing.isAvailableAsync();
-        if (!canShare) {
-          throw new Error("El sistema no permite compartir archivos en este dispositivo.");
+        try {
+          if (file.exists) file.delete();
+          file.create();
+          file.write(packageBytes);
+          const canShare = await Sharing.isAvailableAsync();
+          if (!canShare) {
+            throw new Error("El sistema no permite compartir archivos en este dispositivo.");
+          }
+          await Sharing.shareAsync(file.uri, {
+            mimeType: BACKUP_PACKAGE_MIME,
+            dialogTitle: "Guardar copia de seguridad de Gymnasia",
+            UTI: "public.zip-archive",
+          });
+        } finally {
+          if (file.exists) file.delete();
         }
-        await Sharing.shareAsync(file.uri, {
-          mimeType: BACKUP_PACKAGE_MIME,
-          dialogTitle: "Guardar copia de seguridad de Gymnasia",
-          UTI: "public.zip-archive",
-        });
       }
 
       if (migratedUris.size > 0) {
@@ -12736,58 +13037,401 @@ export default function App() {
     setProviderDeleteModal(null);
   }
 
-  async function resetLocalData() {
-    try {
-      clearMeasurementMedia();
-    } catch {
-      setError("No se pudieron eliminar las fotos guardadas. El restablecimiento se ha detenido.");
-      return;
-    }
-    const activeAsyncStorageKeys = (await AsyncStorage.getAllKeys())
-      .filter(belongsToActiveStorageNamespace);
-    if (activeAsyncStorageKeys.length > 0) {
-      await AsyncStorage.multiRemove(activeAsyncStorageKeys);
-    }
+  function openDataDeletion(scope: LocalDataDeletionScope) {
+    setDataDeletionScope(scope);
+    setDataDeletionConfirmation("");
+    setDataDeletionReport(null);
+  }
 
-    const secureStoreAvailableNow = await isSecureStoreAvailable();
-    if (secureStoreAvailableNow) {
-      const activeSecureStoreKeys = [
-        ...PROVIDERS.map(secureStoreKey),
-        ...LEGACY_SECURE_STORE_PREFIXES.flatMap((prefix) =>
-          PROVIDERS.map((provider) => `${prefix}.${provider}`),
+  function closeDataDeletion() {
+    if (dataDeletionBusyRef.current) return;
+    setDataDeletionScope(null);
+    setDataDeletionConfirmation("");
+  }
+
+  function storageTargetLabel(key: string): string {
+    const labels: Array<[string, string]> = [
+      ["gymnasia.mobile.local.v3", "Actividad, medidas y conversaciones"],
+      ["gymnasia.mobile.local.last_good.v1", "Copia íntegra de recuperación"],
+      ["gymnasia.mobile.local.quarantine.v1", "Datos en cuarentena"],
+      ["gymnasia.mobile.training.session.v1", "Sesión de entrenamiento activa"],
+      ["gymnasia.mobile.training.session_template_snapshot.v1", "Copia de la rutina activa"],
+      ["gymnasia.mobile.personal_data.v1", "Memoria del coach"],
+      ["gymnasia.mobile.personal_foods.v1", "Alimentos personales"],
+      ["gymnasia.mobile.user_prefs.v1", "Preferencias"],
+      ["gymnasia.mobile.health_safety.consent.v1", "Consentimiento de seguridad sanitaria"],
+      ["gymnasia.mobile.alarm_health.v1", "Diagnóstico de avisos"],
+      ["gymnasia.mobile.backup_meta.v1", "Metadatos de copias de seguridad"],
+      ["gymnasia_debug_traces", "Trazas de depuración"],
+      ["gymnasia.mobile.exercises_repo.v2", "Caché de ejercicios"],
+      ["gymnasia.mobile.foods_repo.v1", "Caché de alimentos"],
+      ["gymnasia.mobile.products_repo.v1", "Caché de productos"],
+      ["gymnasia.mobile.recipes_repo.v1", "Caché de recetas"],
+    ];
+    return labels.find(([suffix]) => key.endsWith(suffix))?.[1]
+      ?? "Datos locales no inventariados";
+  }
+
+  function dataDeletionFailureCopy(
+    failure: LocalDataDeletionReport["failures"][number],
+  ): string {
+    if (failure.id === "secure-store-unavailable") {
+      return "No se pudo acceder al llavero seguro para comprobar las credenciales.";
+    }
+    if (failure.id === "deletion-inventory") return failure.message;
+    if (failure.stage === "timeout") {
+      return "La operación tardó demasiado y no se pudo comprobar.";
+    }
+    if (failure.stage === "verify") {
+      return "El dato seguía presente al comprobar el resultado.";
+    }
+    return "No se pudo eliminar este dato del almacenamiento local.";
+  }
+
+  async function buildDataDeletionTasks(
+    scope: LocalDataDeletionScope,
+  ): Promise<LocalDataDeletionTask[]> {
+    const tasks: LocalDataDeletionTask[] = [];
+    const activityStore = createActivityResetStore(store);
+    const serializedActivityStore = JSON.stringify(
+      serializeStoreForAsyncStorage(activityStore, secureStoreAvailable),
+    );
+    const dependentSessionKeys = [
+      SESSION_STORAGE_KEY,
+      SESSION_TEMPLATE_SNAPSHOT_KEY,
+    ];
+    const managedStoreKeys = new Set([
+      STORAGE_KEY,
+      LOCAL_STORE_LAST_GOOD_KEY,
+      LOCAL_STORE_QUARANTINE_KEY,
+      ...dependentSessionKeys,
+    ]);
+
+    if (scope === "activity") {
+      tasks.push({
+        id: "activity-store-family",
+        label: "Actividad, medidas, conversaciones y copias de recuperación",
+        delete: () => localStoreRecoveryRepository.discardAffected(
+          serializedActivityStore,
+          dependentSessionKeys,
         ),
-        ...RETAINED_LEGACY_SECURE_STORE_KEYS.map(scopedSecureStoreKey),
-      ];
-      await Promise.all(
-        activeSecureStoreKeys.map((key) => SecureStore.deleteItemAsync(key)),
+        verify: async () => {
+          const [primary, snapshotRaw, quarantine, session, sessionTemplate] = await Promise.all([
+            AsyncStorage.getItem(STORAGE_KEY),
+            AsyncStorage.getItem(LOCAL_STORE_LAST_GOOD_KEY),
+            AsyncStorage.getItem(LOCAL_STORE_QUARANTINE_KEY),
+            AsyncStorage.getItem(SESSION_STORAGE_KEY),
+            AsyncStorage.getItem(SESSION_TEMPLATE_SNAPSHOT_KEY),
+          ]);
+          let snapshotPayload: unknown = null;
+          try {
+            snapshotPayload = JSON.parse(snapshotRaw ?? "null")?.payload;
+          } catch {}
+          return primary === serializedActivityStore
+            && snapshotPayload === serializedActivityStore
+            && quarantine === null
+            && session === null
+            && sessionTemplate === null;
+        },
+      });
+      if (Platform.OS === "web" && __DEV__ && isDevStoreMirrorEnabled()) {
+        const serializedDevStore = serializeDevStore(activityStore);
+        tasks.push({
+          id: "dev-store",
+          label: "Espejo local de desarrollo",
+          delete: () => saveDevStoreFile(activityStore),
+          verify: async () => (await loadDevStoreFile()) === serializedDevStore,
+        });
+      }
+    } else {
+      const preservedKeys = new Set(
+        LOCAL_DATA_SECURITY_PRESERVED_KEYS.map(scopedStorageKey),
       );
-    }
-    await clearTraces();
+      const traceKey = scopedStorageKey("gymnasia_debug_traces");
+      const activeKeys = new Set([
+        ...LOCAL_DATA_MANIFEST
+          .filter((entry) => entry.full === "delete")
+          .map((entry) => scopedStorageKey(entry.key)),
+        ...(await AsyncStorage.getAllKeys()).filter(belongsToActiveStorageNamespace),
+      ]);
+      tasks.push({
+        id: "local-store-family",
+        label: "Actividad, sesiones y copias de recuperación",
+        delete: () => localStoreRecoveryRepository.deleteManaged(dependentSessionKeys),
+        verify: async () => (
+          await Promise.all([...managedStoreKeys].map((key) => AsyncStorage.getItem(key)))
+        ).every((value) => value === null),
+      });
+      for (const key of activeKeys) {
+        if (
+          preservedKeys.has(key)
+          || key === traceKey
+          || key === "gymnasia_measurement_media_v1"
+          || managedStoreKeys.has(key)
+        ) continue;
+        tasks.push({
+          id: `async-storage:${key}`,
+          label: storageTargetLabel(key),
+          delete: () => AsyncStorage.removeItem(key),
+          verify: async () => (await AsyncStorage.getItem(key)) === null,
+        });
+      }
+      tasks.push({
+        id: "traces",
+        label: "Trazas de depuración",
+        delete: clearTraces,
+        verify: async () => (
+          (await AsyncStorage.getItem(traceKey)) === null
+          && (await getTraces()).length === 0
+        ),
+      });
 
-    const initial = createInitialStore();
-    setStore(initial);
-    setProviderKeyVisibility(createProviderBooleanMap(false));
-    setProviderDraftByProvider(createProviderDraftMap(initial.keys));
-    setProviderConnectionStatus(createProviderConnectionStatusMap(initial.keys));
-    setProviderSaveLoading(createProviderBooleanMap(false));
-    setAnthropicModelDropdownOpen(false);
-    setAnthropicModelOptions([]);
-    setAnthropicModelOptionsMessage(null);
-    setAnthropicModelFilter("");
-    setOpenAIModelDropdownOpen(false);
-    setOpenAIModelOptions([]);
-    setOpenAIModelOptionsMessage(null);
-    setOpenAIModelFilter("");
-    setGoogleModelDropdownOpen(false);
-    setGoogleModelOptions([]);
-    setGoogleModelOptionsMessage(null);
-    setGoogleModelFilter("");
-    setProviderDeleteModal(null);
-    setTab("home");
-    setActiveThreadId(initial.threads[0]?.id ?? null);
-    setActiveWorkoutSession(null);
-    setLastWorkoutSessionSummary(null);
-    setConfirmDiscardSession(false);
+      const secureStoreAvailableNow = await isSecureStoreAvailable();
+      if (!secureStoreAvailableNow && Platform.OS !== "web") {
+        tasks.push({
+          id: "secure-store-unavailable",
+          label: "Claves y credenciales cifradas",
+          delete: async () => {
+            throw new Error("El llavero seguro no está disponible para comprobar el borrado.");
+          },
+          verify: async () => false,
+        });
+      } else if (secureStoreAvailableNow) {
+        const secureTargets: Array<[string, string]> = LOCAL_SECURE_DATA_MANIFEST
+          .flatMap((entry): Array<[string, string]> => {
+            const baseKey = scopedSecureStoreKey(entry.key);
+            if (entry.form === "prefix") {
+              const legacy = entry.key !== "gymnasia.mobile.v3.provider.api_key";
+              return PROVIDERS.map((provider) => [
+                `${baseKey}.${provider}`,
+                `${legacy ? "Clave API antigua" : "Clave API"} de ${PROVIDER_UI_META[provider].label}`,
+              ]);
+            }
+            return [[
+              baseKey,
+              entry.key === "vivagym.email"
+                ? "Correo heredado de VivaGym"
+                : "Contraseña heredada de VivaGym",
+            ]];
+          });
+        for (const [key, label] of secureTargets) {
+          tasks.push({
+            id: `secure-store:${key}`,
+            label,
+            delete: () => SecureStore.deleteItemAsync(key),
+            verify: async () => (await SecureStore.getItemAsync(key)) === null,
+          });
+        }
+      }
+
+      if (Platform.OS === "web" && __DEV__ && isDevStoreMirrorEnabled()) {
+        tasks.push({
+          id: "dev-store",
+          label: "Espejo local de desarrollo",
+          delete: () => saveDevStoreFile({}),
+          verify: async () => (await loadDevStoreFile()) === null,
+        });
+      }
+    }
+
+    if (Platform.OS !== "web") {
+      tasks.push({
+        id: "measurement-media",
+        label: "Fotos de progreso guardadas por Gymnasia",
+        delete: async () => clearMeasurementMedia(),
+        verify: async () => isMeasurementMediaEmpty(),
+      });
+      tasks.push({
+        id: "notifications",
+        label: "Avisos de entrenamiento",
+        delete: async () => {
+          await Notifications.cancelAllScheduledNotificationsAsync();
+          await Notifications.dismissAllNotificationsAsync();
+        },
+        verify: async () => {
+          const [scheduled, presented] = await Promise.all([
+            Notifications.getAllScheduledNotificationsAsync(),
+            Notifications.getPresentedNotificationsAsync(),
+          ]);
+          return scheduled.length === 0 && presented.length === 0;
+        },
+      });
+    }
+
+    return tasks;
+  }
+
+  async function performDataDeletion(scope: LocalDataDeletionScope) {
+    if (dataDeletionBusyRef.current) return;
+    dataDeletionBusyRef.current = true;
+    setDataDeletionBusy(true);
+    setDataDeletionReport(null);
+    let report: LocalDataDeletionReport;
+    try {
+      const tasks = await buildDataDeletionTasks(scope);
+      report = await runLocalDataDeletion(scope, tasks);
+    } catch (error) {
+      const now = Date.now();
+      report = {
+        scope,
+        status: "incomplete",
+        completedTargetIds: [],
+        failures: [{
+          id: "deletion-inventory",
+          label: "Inventario de datos locales",
+          stage: "delete",
+          message: error instanceof Error ? error.message : "No se pudo preparar el borrado.",
+        }],
+        startedAt: now,
+        completedAt: now,
+      };
+    }
+
+    feedbackProposalStore.clear();
+    lastInAppRestAlertAt = null;
+    dataDeletionBusyRef.current = false;
+    setDataDeletionBusy(false);
+    setDataDeletionScope(null);
+    setDataDeletionConfirmation("");
+    onRuntimeReset({ report });
+  }
+
+  async function runLocalStoreRecoveryExport(): Promise<void> {
+    const recovery = localStoreRecovery;
+    if (!recovery || recovery.quarantine.rawPayload === null) return;
+    setLocalStoreRecoveryBusy("export");
+    setLocalStoreRecoveryError(null);
+    try {
+      const quarantine = await localStoreRecoveryRepository.getQuarantine()
+        ?? recovery.quarantine;
+      if (quarantine.rawPayload === null) {
+        throw new Error("No hay un payload disponible para exportar.");
+      }
+      const exportedAt = new Date().toISOString();
+      const payload = {
+        app: "gymnasia",
+        type: "local-store-recovery",
+        schemaVersion: 1,
+        appVersion: Constants.expoConfig?.version ?? "0.0.0",
+        exportedAt,
+        warning: "Archivo sensible: puede contener datos personales, de salud, conversaciones y claves de IA en web.",
+        recovery: quarantine,
+      };
+      await downloadOrShareJson(
+        JSON.stringify(payload, null, 2),
+        recoveryFileName(new Date(exportedAt)),
+        "Guardar datos de recuperación de Gymnasia",
+      );
+    } catch (exportError) {
+      setLocalStoreRecoveryError(
+        exportError instanceof Error
+          ? exportError.message
+          : "No se pudo exportar la copia dañada.",
+      );
+    } finally {
+      setLocalStoreRecoveryBusy(null);
+    }
+  }
+
+  async function runLocalStoreRecoveryRetry(): Promise<void> {
+    setLocalStoreRecoveryBusy("retry");
+    setLocalStoreRecoveryError(null);
+    try {
+      await runLocalStoreHydration({ honorExistingQuarantine: false });
+    } catch (retryError) {
+      setLocalStoreRecoveryError(
+        retryError instanceof Error ? retryError.message : "No se pudo volver a leer el almacenamiento.",
+      );
+    } finally {
+      setLocalStoreRecoveryBusy(null);
+    }
+  }
+
+  async function runLocalStoreSnapshotRestore(): Promise<void> {
+    setLocalStoreRecoveryBusy("restore");
+    setLocalStoreRecoveryError(null);
+    try {
+      const restored = await localStoreRecoveryRepository.restoreSnapshot();
+      await saveDevStoreFile(restored.value);
+      await runLocalStoreHydration();
+    } catch (restoreError) {
+      setLocalStoreRecoveryError(
+        restoreError instanceof Error
+          ? restoreError.message
+          : "No se pudo recuperar la última copia íntegra.",
+      );
+    } finally {
+      setLocalStoreRecoveryBusy(null);
+    }
+  }
+
+  async function runLocalStoreRecoveryDiscard(): Promise<void> {
+    setLocalStoreRecoveryBusy("discard");
+    setLocalStoreRecoveryError(null);
+    try {
+      let secureAvailable = await isSecureStoreAvailable();
+      let secureApiKeys = emptyProviderApiKeys();
+      if (secureAvailable) {
+        try {
+          secureApiKeys = await readProviderApiKeysFromSecureStore(true);
+        } catch {
+          secureAvailable = false;
+        }
+      }
+      const initialStore = mergeStoreWithSecureApiKeys(createInitialStore(), secureApiKeys);
+      const initialRaw = JSON.stringify(
+        serializeStoreForAsyncStorage(initialStore, secureAvailable),
+      );
+      await localStoreRecoveryRepository.discardAffected(initialRaw, [
+        SESSION_STORAGE_KEY,
+        SESSION_TEMPLATE_SNAPSHOT_KEY,
+      ]);
+      await saveDevStoreFile(initialStore);
+      await runLocalStoreHydration();
+    } catch (discardError) {
+      setLocalStoreRecoveryError(
+        discardError instanceof Error
+          ? discardError.message
+          : "No se pudieron descartar los datos dañados.",
+      );
+    } finally {
+      setLocalStoreRecoveryBusy(null);
+    }
+  }
+
+  if (localStoreRecovery) {
+    return (
+      <LocalStoreRecoveryScreen
+        quarantine={localStoreRecovery.quarantine}
+        hasSnapshot={localStoreRecovery.status === "recoverable" && localStoreRecovery.snapshot !== null}
+        busy={localStoreRecoveryBusy}
+        error={localStoreRecoveryError}
+        onRestore={() => void runLocalStoreSnapshotRestore()}
+        onExport={() => void runLocalStoreRecoveryExport()}
+        onRetry={() => void runLocalStoreRecoveryRetry()}
+        onDiscard={() => void runLocalStoreRecoveryDiscard()}
+      />
+    );
+  }
+
+  if (localStoreStartupError) {
+    return (
+      <LocalStoreStartupFailureScreen
+        error={localStoreStartupError}
+        busy={loading}
+        onRetry={() => {
+          void runLocalStoreHydration().catch((hydrationError) => {
+            setLoading(false);
+            setIsHydrated(false);
+            setLocalStoreStartupError(
+              hydrationError instanceof Error
+                ? hydrationError.message
+                : "No se pudo cargar almacenamiento local.",
+            );
+          });
+        }}
+      />
+    );
   }
 
   return (
@@ -12824,6 +13468,45 @@ export default function App() {
               onDismiss={handleFeedbackProposalDismiss}
             />
           ))}
+        </View>
+      ) : null}
+      {dataDeletionSuccessVisible && deletionOutcome?.report.status === "complete" ? (
+        <View
+          testID="data-deletion-success"
+          accessibilityRole="alert"
+          style={{
+            marginHorizontal: isDesktopWeb ? 32 : mobileTheme.spacing[4],
+            marginTop: mobileTheme.spacing[3],
+            borderRadius: mobileTheme.radius.lg,
+            borderWidth: 1,
+            borderColor: "rgba(203,255,26,0.48)",
+            backgroundColor: "rgba(123,170,0,0.18)",
+            paddingHorizontal: 14,
+            paddingVertical: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <Feather name="check-circle" size={18} color={mobileTheme.color.brandPrimary} />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "800" }}>
+              {deletionOutcome.report.scope === "activity"
+                ? "Actividad y conversaciones borradas"
+                : "Todos tus datos locales se han borrado"}
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 17 }}>
+              La app ha comprobado que el borrado terminó correctamente.
+            </Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cerrar confirmación de borrado"
+            hitSlop={10}
+            onPress={() => setDataDeletionSuccessVisible(false)}
+          >
+            <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
+          </Pressable>
         </View>
       ) : null}
       <View
@@ -20034,20 +20717,6 @@ export default function App() {
                     </View>
                   ) : null}
 
-                  <Pressable
-                    onPress={() => void resetLocalData()}
-                    style={{
-                      marginTop: 4,
-                      height: 44,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,100,100,0.4)",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text style={{ color: "#ffb5b5", fontWeight: "700" }}>Restablecer datos locales</Text>
-                  </Pressable>
                 </View>
               ) : null}
 
@@ -21779,7 +22448,7 @@ export default function App() {
                 </View>
               ) : null}
 
-              {settingsTab === "backup" ? (
+              {settingsTab === "data" ? (
                 <View style={{ gap: 12 }}>
                   <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
                     Copia de seguridad
@@ -21931,6 +22600,205 @@ export default function App() {
                   >
                     <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
                       Qué contiene este archivo
+                    </Text>
+                  </Pressable>
+
+                  <View
+                    style={{
+                      height: 1,
+                      backgroundColor: mobileTheme.color.borderSubtle,
+                      marginVertical: 8,
+                    }}
+                  />
+
+                  <View style={{ gap: 6 }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}>
+                      Gestionar tus datos
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>
+                      Elige el alcance antes de borrar. Gymnasia comprobará cada destino y no dirá que terminó si queda algo pendiente.
+                    </Text>
+                  </View>
+
+                  {dataDeletionReport?.status === "incomplete" ? (
+                    <View
+                      accessibilityLiveRegion="polite"
+                      testID="data-deletion-report"
+                      style={{
+                        gap: 10,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,77,79,0.55)",
+                        borderRadius: mobileTheme.radius.lg,
+                        backgroundColor: "rgba(255,77,79,0.10)",
+                        padding: 14,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <Feather name="alert-triangle" size={17} color="#FF6E6E" />
+                        <Text style={{ color: "#FF9A9A", fontSize: 14, fontWeight: "800", flex: 1 }}>
+                          El borrado quedó incompleto
+                        </Text>
+                      </View>
+                      {dataDeletionReport.failures.map((failure) => (
+                        <View key={failure.id} style={{ gap: 2 }}>
+                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
+                            {failure.label}
+                          </Text>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 17 }}>
+                            {dataDeletionFailureCopy(failure)}
+                          </Text>
+                        </View>
+                      ))}
+                      <Pressable
+                        testID="data-deletion-retry"
+                        accessibilityRole="button"
+                        accessibilityLabel="Reintentar borrado de datos"
+                        disabled={dataDeletionBusy}
+                        onPress={() => void performDataDeletion(dataDeletionReport.scope)}
+                        style={{
+                          minHeight: 44,
+                          borderRadius: mobileTheme.radius.md,
+                          backgroundColor: "#FF4D4F",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "row",
+                          gap: 8,
+                          opacity: dataDeletionBusy ? 0.6 : 1,
+                        }}
+                      >
+                        {dataDeletionBusy ? <ActivityIndicator size="small" color="#FFE8EB" /> : <Feather name="refresh-cw" size={15} color="#FFE8EB" />}
+                        <Text style={{ color: "#FFE8EB", fontSize: 14, fontWeight: "800" }}>
+                          Reintentar borrado
+                        </Text>
+                      </Pressable>
+                    </View>
+                  ) : null}
+
+                  <View
+                    style={{
+                      gap: 12,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.08)",
+                      borderRadius: mobileTheme.radius.lg,
+                      backgroundColor: mobileTheme.color.bgSurface,
+                      padding: 14,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
+                      <View
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 10,
+                          backgroundColor: "rgba(203,255,26,0.10)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Feather name="rotate-ccw" size={17} color={mobileTheme.color.brandPrimary} />
+                      </View>
+                      <View style={{ flex: 1, gap: 4 }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
+                          Borrar actividad y conversaciones
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
+                          Borra entrenamientos, dieta, medidas, chats y sesiones. Conserva memoria, alimentos personales, preferencias y claves API.
+                        </Text>
+                      </View>
+                    </View>
+                    <Pressable
+                      testID="data-deletion-open-activity"
+                      accessibilityRole="button"
+                      accessibilityLabel="Borrar actividad y conversaciones"
+                      disabled={dataDeletionBlocked}
+                      onPress={() => openDataDeletion("activity")}
+                      style={{
+                        minHeight: 44,
+                        borderRadius: mobileTheme.radius.md,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,138,138,0.55)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        opacity: dataDeletionBlocked ? 0.45 : 1,
+                      }}
+                    >
+                      <Text style={{ color: "#FFB0B0", fontSize: 14, fontWeight: "800" }}>
+                        Borrar actividad
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  <View
+                    style={{
+                      gap: 12,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,77,79,0.42)",
+                      borderRadius: mobileTheme.radius.lg,
+                      backgroundColor: "rgba(255,77,79,0.07)",
+                      padding: 14,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
+                      <View
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 10,
+                          backgroundColor: "rgba(255,77,79,0.18)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Feather name="trash-2" size={17} color="#FF6E6E" />
+                      </View>
+                      <View style={{ flex: 1, gap: 4 }}>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
+                          Borrar todos mis datos
+                        </Text>
+                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
+                          Borra también memoria, alimentos personales, preferencias, claves, cachés, trazas y metadatos locales.
+                        </Text>
+                      </View>
+                    </View>
+                    <Pressable
+                      testID="data-deletion-open-all"
+                      accessibilityRole="button"
+                      accessibilityLabel="Borrar todos mis datos"
+                      disabled={dataDeletionBlocked}
+                      onPress={() => openDataDeletion("all-personal")}
+                      style={{
+                        minHeight: 44,
+                        borderRadius: mobileTheme.radius.md,
+                        backgroundColor: "#FF4D4F",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        opacity: dataDeletionBlocked ? 0.45 : 1,
+                      }}
+                    >
+                      <Text style={{ color: "#FFE8EB", fontSize: 14, fontWeight: "800" }}>
+                        Borrar todos mis datos
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {dataDeletionBlocked && !dataDeletionBusy ? (
+                    <Text style={{ color: "#FFCD77", fontSize: 12, lineHeight: 17 }}>
+                      Termina la conversación, estimación o copia de seguridad en curso antes de borrar.
+                    </Text>
+                  ) : null}
+
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 17 }}>
+                    Los archivos exportados, las fotos de la galería, los permisos del sistema y los datos enviados a proveedores están fuera del control de Gymnasia y no se pueden borrar desde aquí.
+                  </Text>
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel="Ver cómo eliminar tus datos en la política de privacidad"
+                    testID="legal-deletion-policy-link"
+                    onPress={() => { void openExternalUrl(`${resolvePrivacyPolicyUrl()}#eliminacion`); }}
+                    hitSlop={8}
+                  >
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
+                      Qué puede borrar Gymnasia
                     </Text>
                   </Pressable>
                 </View>
@@ -23077,6 +23945,215 @@ export default function App() {
                 backgroundColor: "#1B1F27",
                 alignItems: "center",
                 justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>Cancelar</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
+      {dataDeletionScope ? (
+        <View
+          accessibilityViewIsModal
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.82)",
+            paddingHorizontal: 20,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 640,
+            elevation: 64,
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              maxWidth: 390,
+              maxHeight: "90%",
+              borderRadius: 24,
+              borderWidth: 1,
+              borderColor: "rgba(255,77,79,0.38)",
+              backgroundColor: "#12151C",
+              paddingHorizontal: 18,
+              paddingTop: 18,
+              paddingBottom: 16,
+              gap: 13,
+            }}
+          >
+            <View
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                backgroundColor: "rgba(255,77,79,0.18)",
+                alignItems: "center",
+                justifyContent: "center",
+                alignSelf: "center",
+              }}
+            >
+              <Feather
+                name={dataDeletionScope === "activity" ? "rotate-ccw" : "alert-triangle"}
+                size={22}
+                color="#FF6E6E"
+              />
+            </View>
+
+            <Text
+              style={{
+                color: mobileTheme.color.textPrimary,
+                fontSize: 22,
+                fontWeight: "800",
+                textAlign: "center",
+              }}
+            >
+              {dataDeletionScope === "activity"
+                ? "¿Borrar actividad y conversaciones?"
+                : "¿Borrar todos tus datos?"}
+            </Text>
+
+            <Text style={{ color: "#A1AAB8", fontSize: 13, lineHeight: 19, textAlign: "center" }}>
+              {dataDeletionScope === "activity"
+                ? "La app volverá a un historial vacío, pero conservará tu configuración personal."
+                : "Esta acción elimina los datos que Gymnasia controla en este dispositivo y no se puede deshacer."}
+            </Text>
+
+            <View style={{ gap: 8 }}>
+              <View
+                style={{
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: "rgba(255,77,79,0.38)",
+                  backgroundColor: "rgba(255,77,79,0.10)",
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                  gap: 8,
+                }}
+              >
+                <Feather name="trash-2" size={14} color="#FF8585" style={{ marginTop: 2 }} />
+                <Text style={{ flex: 1, color: "#FFB0B0", fontSize: 12, lineHeight: 18 }}>
+                  {dataDeletionScope === "activity"
+                    ? "Se borran rutinas, historial, dieta, medidas, conversaciones y sesiones activas."
+                    : "Se borran además memoria, alimentos personales, preferencias, claves API, credenciales antiguas, cachés y trazas."}
+                </Text>
+              </View>
+              <View
+                style={{
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: "rgba(203,255,26,0.30)",
+                  backgroundColor: "rgba(203,255,26,0.07)",
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                  gap: 8,
+                }}
+              >
+                <Feather name="shield" size={14} color={mobileTheme.color.brandPrimary} style={{ marginTop: 2 }} />
+                <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
+                  {dataDeletionScope === "activity"
+                    ? "Se conservan memoria, alimentos personales, preferencias, claves API, copias y diagnósticos."
+                    : "Se conserva únicamente el estado firmado que impide cargar una política de seguridad anterior."}
+                </Text>
+              </View>
+            </View>
+
+            {dataDeletionScope === "all-personal" ? (
+              <View style={{ gap: 6 }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                  Escribe BORRAR para confirmar
+                </Text>
+                <TextInput
+                  testID="data-deletion-confirmation-input"
+                  accessibilityLabel="Escribe BORRAR para confirmar el borrado total"
+                  value={dataDeletionConfirmation}
+                  onChangeText={setDataDeletionConfirmation}
+                  editable={!dataDeletionBusy}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  placeholder="BORRAR"
+                  placeholderTextColor="#697384"
+                  style={{
+                    minHeight: 46,
+                    borderRadius: mobileTheme.radius.md,
+                    borderWidth: 1,
+                    borderColor: dataDeletionConfirmation.trim() === "BORRAR"
+                      ? "rgba(255,77,79,0.8)"
+                      : mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgApp,
+                    color: mobileTheme.color.textPrimary,
+                    paddingHorizontal: 12,
+                    fontSize: 15,
+                    fontWeight: "700",
+                    letterSpacing: 1,
+                  }}
+                />
+              </View>
+            ) : null}
+
+            <Pressable
+              testID="data-deletion-confirm"
+              accessibilityRole="button"
+              accessibilityLabel={dataDeletionScope === "activity"
+                ? "Confirmar borrado de actividad y conversaciones"
+                : "Confirmar borrado de todos mis datos"}
+              disabled={
+                dataDeletionBusy
+                || (dataDeletionScope === "all-personal" && dataDeletionConfirmation.trim() !== "BORRAR")
+              }
+              onPress={() => void performDataDeletion(dataDeletionScope)}
+              style={{
+                width: "100%",
+                minHeight: 48,
+                borderRadius: 14,
+                backgroundColor: "#FF4D4F",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "row",
+                gap: 8,
+                opacity:
+                  dataDeletionBusy
+                  || (dataDeletionScope === "all-personal" && dataDeletionConfirmation.trim() !== "BORRAR")
+                    ? 0.45
+                    : 1,
+              }}
+            >
+              {dataDeletionBusy ? (
+                <ActivityIndicator size="small" color="#FFE8EB" />
+              ) : (
+                <Feather name="trash-2" size={15} color="#FFE8EB" />
+              )}
+              <Text style={{ color: "#FFE8EB", fontWeight: "800", fontSize: 15 }}>
+                {dataDeletionBusy
+                  ? "Borrando y comprobando…"
+                  : dataDeletionScope === "activity"
+                    ? "Borrar actividad"
+                    : "Borrar todos mis datos"}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Cancelar borrado de datos"
+              disabled={dataDeletionBusy}
+              onPress={closeDataDeletion}
+              style={{
+                width: "100%",
+                minHeight: 44,
+                borderRadius: 14,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.06)",
+                backgroundColor: "#1B1F27",
+                alignItems: "center",
+                justifyContent: "center",
+                opacity: dataDeletionBusy ? 0.45 : 1,
               }}
             >
               <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>Cancelar</Text>
@@ -24289,5 +25366,24 @@ export default function App() {
       <StatusBar style="light" />
       </View>
     </SafeAreaView>
+  );
+}
+
+export default function App() {
+  const [runtimeGeneration, setRuntimeGeneration] = useState(0);
+  const [deletionOutcome, setDeletionOutcome] =
+    useState<LocalDataDeletionOutcome | null>(null);
+
+  const handleRuntimeReset = useCallback((outcome: LocalDataDeletionOutcome) => {
+    setDeletionOutcome(outcome);
+    setRuntimeGeneration((generation) => generation + 1);
+  }, []);
+
+  return (
+    <GymnasiaApp
+      key={runtimeGeneration}
+      deletionOutcome={deletionOutcome}
+      onRuntimeReset={handleRuntimeReset}
+    />
   );
 }

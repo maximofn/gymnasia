@@ -106,7 +106,7 @@ Dado que las claves de fecha se basan en la conversión local de `Date`, las rac
 8. `measures` — Medidas
 9. `preferences` — Preferencias
 10. `notifications` — Notificaciones
-11. `backup` — Copia de seguridad
+11. `data` — Datos (copia de seguridad y borrado local)
 12. `traces` — Trazas
 
 La barra mide los anchos del viewport y del contenido, y mantiene `settingsTabsCanScrollLeft` y `settingsTabsCanScrollRight`; al pulsar las flechas, se desplaza 160 píxeles. Seleccionar una sección también borra los detalles seleccionados de ejercicio/alimento/alimento personal y cierra el formulario de alimentos personales y el chat de IA. Entrar en `memory` llama de forma diferida a `loadMemoryFields`.
@@ -117,13 +117,24 @@ Configuración es una superficie de integración, no un límite de servicio inde
 
 La pantalla de configuración de Memoria y las herramientas del agente controlan conjuntamente el mismo registro `gymnasia.mobile.personal_data.v1` de `{ key, description, value }[]`. Al entrar en la sección Memoria, se llama de forma diferida a `loadMemoryFields` una vez por cada `App` montada; las ediciones de campos modifican primero el valor `memoryFields` de la pantalla, mientras que desenfocar/confirmar, añadir y eliminar llaman a `savePersonalData`. La función `save_personal_data` del agente sustituye ese mismo array almacenado, y sus lectores de lista/descripción/valor cargan la clave directamente. No existe ninguna suscripción que propague las escrituras del agente a un valor `memoryFields` ya cargado, por lo que la vista de configuración abierta puede quedar obsoleta y una confirmación posterior en la interfaz puede sobrescribir una actualización del agente. A la inversa, las escrituras de la interfaz son visibles de inmediato para la siguiente lectura del agente porque esos lectores cargan el almacenamiento en lugar del estado de la pantalla.
 
-La exportación de la copia de seguridad también carga este registro directamente. Una importación confirmada escribe el valor `personalData` importado de forma directa y usa `[]` de manera predeterminada si el valor no existe o no es un array, pero no actualiza ni invalida `memoryFields`/`memoryLoaded`. Si Memoria ya se había cargado, su copia visible en memoria puede conservar el estado anterior a la importación y posteriormente sobrescribir el registro importado. `resetLocalData` no borra ninguna de las dos copias. El contrato completo de almacenamiento e importación se encuentra en [Estado local y copia de seguridad](local-state-and-backup.md#copropiedad-en-memoria).
+La exportación de la copia de seguridad también carga este registro directamente. Una importación confirmada escribe el valor `personalData` importado de forma directa y usa `[]` de manera predeterminada si el valor no existe o no es un array, pero no actualiza ni invalida `memoryFields`/`memoryLoaded`. Si Memoria ya se había cargado, su copia visible en memoria puede conservar el estado anterior a la importación y posteriormente sobrescribir el registro importado. El borrado parcial conserva ambas copias; el total elimina el registro duradero y remonta toda la aplicación para invalidar la instantánea de React. El contrato completo de almacenamiento e importación se encuentra en [Estado local y copia de seguridad](local-state-and-backup.md#copropiedad-en-memoria).
 
-### Semántica del restablecimiento
+### Semántica del borrado local
 
-`resetLocalData` sustituye `store` por `createInitialStore()`, reconstruye el estado de borrador/estado/visibilidad del proveedor, cierra los desplegables del proveedor, vuelve a Inicio, selecciona el hilo inicial si existe y borra la interfaz de la sesión de entrenamiento activa/anterior. A continuación, los efectos normales de persistencia guardan el almacén sustituto y eliminan cualquier sesión activa ausente.
+Configuración → Datos reúne copia de seguridad y dos acciones destructivas. El alcance
+parcial presenta una confirmación que enumera lo que borra y conserva. El alcance total
+añade una segunda barrera: el botón permanece inactivo hasta que el usuario escribe
+exactamente `BORRAR`. Mientras hay una conversación, estimación de comida, copia de
+seguridad o borrado en curso, las acciones destructivas se deshabilitan.
 
-La etiqueta `Restablecer datos locales` es más amplia que el alcance directo de la función. `resetLocalData` elimina las claves de API y las dos credenciales seguras heredadas, pero **no** restablece por sí misma `userPrefs` (incluidas las opciones de notificación), `personalFoods`, los campos de Memoria almacenados o cargados, los metadatos de copia de seguridad, las trazas, las cachés ni todas las superposiciones abiertas. El código que necesite borrar por completo el dispositivo no debe llamar a esta función y asumir que todos los artefactos locales han desaparecido; utiliza el inventario de almacenamiento de [Estado local y copia de seguridad](local-state-and-backup.md) para definir y probar un comportamiento más amplio.
+`buildDataDeletionTasks` convierte el manifiesto del alcance en operaciones de borrado y
+lectura posterior; `runLocalDataDeletion` ejecuta todos los destinos con timeout y
+devuelve un informe completo o incompleto. El éxito remonta `GymnasiaApp` y vuelve a
+Inicio con una confirmación. Un fallo remonta la app directamente en Configuración →
+Datos, muestra cada destino pendiente y ofrece reintentar el mismo alcance. El botón
+Atrás de Android cierra la confirmación si no se está borrando y queda consumido durante
+el borrado para impedir abandonar una operación activa. Consulta la matriz exacta y los
+límites externos en [Estado local y copia de seguridad](local-state-and-backup.md#atomicidad-restablecimiento-y-comportamiento-ante-fallos).
 
 ### Control de la configuración de notificaciones
 
@@ -133,7 +144,7 @@ Configuración → Notificaciones edita `userPrefs.notifications`, no el estado 
 
 `TracePanel` solo se monta para la sección Trazas y llama a `getTraces`, que carga de forma diferida el búfer a nivel de módulo desde `gymnasia_debug_traces`. Actualizar repite esa API de lectura, pero, una vez cargada, devuelve el búfer actual en memoria en lugar de volver a leer AsyncStorage. El panel da formato a todas las entradas con plataforma, hora de generación, marcas de tiempo ISO, etiquetas, mensajes y `data` serializado como JSON. **Copiar trazas** escribe ese volcado completo en texto sin formato en el portapapeles del sistema e ignora los errores de copia; no censura, comparte, sube ni crea un archivo. Después de la copia, la conservación y el acceso al portapapeles quedan bajo el control del sistema operativo y de otras aplicaciones.
 
-**Borrar** espera a `clearTraces`, vacía el búfer del módulo, elimina la clave de AsyncStorage y después borra el estado del panel; los errores de eliminación del almacenamiento se silencian dentro de `clearTraces`, por lo que la interfaz puede aparecer vacía sin confirmación duradera. El restablecimiento y la copia de seguridad no borran, exportan ni importan trazas. Los productores de trazas incluyen el ciclo de vida de la aplicación, la programación/cancelación de descansos, la entrega/pulsación de notificaciones, las acciones de permisos/configuración y los errores; se permite cualquier `data`, por lo que quienes realizan las llamadas no deben introducir allí credenciales ni contenido personal. Consulta [Estado local y copia de seguridad](local-state-and-backup.md#carga-copia-borrado-y-privacidad-de-las-trazas).
+**Borrar** espera a `clearTraces`, vacía el búfer del módulo, elimina la clave de AsyncStorage y después borra el estado del panel; los errores de eliminación del almacenamiento se silencian dentro de `clearTraces`, por lo que la interfaz puede aparecer vacía sin confirmación duradera. El borrado parcial y la copia de seguridad no borran, exportan ni importan trazas; el borrado total añade una lectura de verificación tanto de la clave como del búfer y declara el alcance incompleto si persisten. Los productores de trazas incluyen el ciclo de vida de la aplicación, la programación/cancelación de descansos, la entrega/pulsación de notificaciones, las acciones de permisos/configuración y los errores; se permite cualquier `data`, por lo que quienes realizan las llamadas no deben introducir allí credenciales ni contenido personal. Consulta [Estado local y copia de seguridad](local-state-and-backup.md#carga-copia-borrado-y-privacidad-de-las-trazas).
 
 ## Ciclo de vida del botón Atrás de Android
 
@@ -190,7 +201,7 @@ El shell no dispone de un conjunto específico de pruebas unitarias/de component
 
 La cobertura ejecutable existente es indirecta:
 
-- `apps/mobile/scripts/train-usability.e2e.mjs` navega mediante `nav-tab-*` o `desktop-nav-*`, abre `Configuración`, invoca `Restablecer datos locales`, verifica el estado de entrenamiento vacío y cubre los flujos anidados de navegación/sesión de entrenamiento.
+- `apps/mobile/scripts/train-usability.e2e.mjs` navega mediante `nav-tab-*` o `desktop-nav-*`, abre `Configuración` → `Datos`, confirma «Borrar actividad y conversaciones», espera la verificación de éxito, comprueba el estado de entrenamiento vacío y cubre los flujos anidados de navegación/sesión de entrenamiento.
 - `apps/mobile/scripts/agent-chat.e2e.mjs` inicializa `gymnasia.mobile.local.v3`, abre `nav-tab-chat` en un viewport de 390 por 844 y valida la renderización del chat, además de un recorrido de ida y vuelta simulado entre proveedor y herramienta.
 - `.github/workflows/agent-tests.yml` comprueba los tipos de `apps/mobile` y ejecuta pruebas deterministas del agente, pero no invoca ninguno de los scripts de Playwright.
 

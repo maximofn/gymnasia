@@ -112,4 +112,12 @@ describe("createFeedbackProposalStore", () => {
     expect(remaining.some((item) => item.id === stale!.id)).toBe(false);
     expect(remaining.some((item) => item.id === settled!.id)).toBe(true);
   });
+
+  it("vacía todas las propuestas al borrar los datos locales", () => {
+    const store = createFeedbackProposalStore();
+    proposeFood(store, "Yogur");
+    proposeFood(store, "Avena");
+    store.clear();
+    expect(store.getSnapshot()).toEqual([]);
+  });
 });

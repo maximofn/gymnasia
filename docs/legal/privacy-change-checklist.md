@@ -1,4 +1,4 @@
-# Checklist de cambios que afectan a la privacidad (GYM-190)
+# Checklist de cambios que afectan a la privacidad
 
 La política publicada envejece en silencio. Nadie la lee al añadir una clave de
 almacenamiento o al llamar a un host nuevo, y el desajuste no da error: simplemente
@@ -17,15 +17,15 @@ Si un cambio toca cualquiera de estas cosas, recórrela entera:
 - un permiso de Android;
 - lo que se envía a un proveedor de IA;
 - el contenido del fichero de copia de seguridad;
-- lo que borra "Restablecer datos locales";
+- lo que borra cualquiera de las acciones de gestión de datos;
 - una función que use cámara, galería o notificaciones;
 - añadir o quitar un proveedor de IA.
 
 ## Pasos
 
 1. **Actualiza el inventario.** `scripts/data-inventory/inventory.json`: la entrada
-   nueva necesita `purpose`, `personal`, `dataCategory` y `clearedBy`; un destino
-   necesita `trigger` y `sends`.
+   nueva necesita `purpose`, `personal`, `dataCategory`, `clearedBy`,
+   `activityDeletion` y `fullDeletion`; un destino necesita `trigger` y `sends`.
 2. **Comprueba que el guard rail vuelve a estar verde.**
    ```bash
    npm run check:data-inventory
@@ -51,8 +51,8 @@ Si un cambio toca cualquiera de estas cosas, recórrela entera:
    despliega: hay que lanzar la CLI a mano, enlazando antes porque `apps/mobile/.vercel/`
    está git-ignored.
    ```bash
-   npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd apps/mobile
-   npm exec --yes -- vercel@latest deploy --prod --yes --cwd apps/mobile
+   npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd .
+   npm exec --yes -- vercel@latest deploy --prod --yes --cwd .
    ```
    La salida debe decir `Deploying gymnasia-web`. Si dice `Created`, detente.
 
@@ -73,8 +73,5 @@ hay en producción no es lo que se revisó en el PR.
 Cosas que hay que rehacer cuando cierren otros tickets. No son opcionales: la política
 publicada afirma hoy cosas que dejarán de ser ciertas.
 
-- **GYM-162 (borrado completo)**: la sección `#eliminacion` describe hoy un borrado
-  parcial y enumera lo que *no* se borra. Al arreglar `resetLocalData`, reescribir esa
-  sección, subir versión y republicar.
-- **GYM-147 (idioma de la app)**: cuando exista `appLanguage`, el enlace de la app debe
+- **GYM-147 (ticket para elegir el idioma de la app)**: cuando exista `appLanguage`, el enlace de la app debe
   elegir entre las dos URLs de la política en vez de apuntar siempre a la española.

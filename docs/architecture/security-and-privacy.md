@@ -9,7 +9,7 @@
 > **Aviso**: hasta agosto de 2026 este fichero describía un backend con cuentas de
 > usuario, claves BYOK cifradas en servidor y fotos alojadas en la UE. Nada de eso
 > existe ni ha existido en el producto. Se corrigió al redactar la política de
-> privacidad (GYM-190), porque publicar aquellas afirmaciones ante Google Play habría
+> privacidad (GYM-190, ticket para publicar una política veraz y preparar las declaraciones de salud), porque publicar aquellas afirmaciones ante Google Play habría
 > sido declarar en falso. Los documentos de `docs/backend/` y `docs/specs/` describen
 > esa misma arquitectura no implementada: no son fuente de verdad sobre privacidad.
 
@@ -42,7 +42,7 @@ su ciclo de vida, está en el inventario.
 - La copia de seguridad exportada nunca incluye claves de API.
 - Dos nombres de clave heredados de una integración retirada permanecen en SecureStore
   para conservar sus valores durante una actualización normal. El build actual no los
-  lee ni transmite y el restablecimiento explícito los elimina.
+  lee ni transmite y «Borrar todos mis datos» los elimina.
 
 ## Copias de seguridad
 
@@ -52,14 +52,21 @@ entrenamiento, ajustes personales, memoria del asistente y el historial completo
 conversaciones. Las fotos se verifican por SHA-256 y el paquete no está cifrado. El
 importador sigue aceptando el antiguo JSON v1. El formato completo está en
 `docs/architecture/measurement-photo-backups.md`.
+En móvil, la copia temporal usada para abrir la hoja de compartir se elimina al
+cerrarla; el archivo que el usuario guarde fuera de la app deja de estar bajo su control.
+
+La copia local de recuperación es distinta del paquete portable: conserva una sola
+generación anterior dentro del almacenamiento de la app y permite recuperar, reintentar,
+descartar o exportar el payload original cuando el estado actual no puede leerse.
 
 ## Borrado
 
-`resetLocalData` es hoy un borrado **parcial**. No alcanza a la memoria del asistente,
-los alimentos personales, las preferencias, las trazas ni las cachés. Sí elimina las
-claves de API y las credenciales cifradas heredadas. GYM-162 (ticket para completar el
-borrado local) corrige el resto. La política publicada describe este comportamiento tal
-como es, no como debería ser.
+La sección Ajustes → Datos ofrece dos alcances. «Borrar actividad y conversaciones»
+vacía el historial funcional y las sesiones, pero conserva configuración, memoria,
+alimentos personales, credenciales y diagnósticos. «Borrar todos mis datos» recorre el
+inventario local, elimina y vuelve a leer cada destino para comprobarlo, informa de los
+fallos sin ocultarlos y permite reintentar. Solo conserva la caché pública firmada que
+impide retroceder a instrucciones de seguridad antiguas; no contiene datos del usuario.
 
 ## Trazas
 

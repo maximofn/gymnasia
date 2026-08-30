@@ -6,7 +6,7 @@
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
 <meta name="gymnasia-policy-version" content="2026-08-v9">
-<meta name="gymnasia-policy-digest" content="sha256:58cd20bd32d6077cb17f05a696daa2f48577dfc30b5ba572657d132d03ac92d1">
+<meta name="gymnasia-policy-digest" content="sha256:2aa316979627c585f85689f9411a7d003c779f404ccfdc88bc54360b6796c72f">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -95,10 +95,11 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Personal data used for calculations</strong>: sex, height, date of birth, goal (cutting, bulking or maintenance) and activity level. Used to estimate your calories and macronutrients.</li>
       <li><strong>Conversations with the assistant</strong>: the complete history of your chat threads, including the model's messages.</li>
       <li><strong>Assistant memory</strong>: free-text notes that you or the assistant save in order to remember things between conversations. It may contain anything you have mentioned in the chat, including health data.</li>
-      <li><strong>Legacy credentials from removed features</strong>: if an earlier version stored credentials in the secure keystore, a normal update may keep them encrypted so they can be reused if the feature returns. The current version neither reads nor transmits them. “Reset local data” deletes them.</li>
+      <li><strong>Legacy credentials from removed features</strong>: if an earlier version stored credentials in the secure keystore, a normal update may keep them encrypted so they can be reused if the feature returns. The current version neither reads nor transmits them. “Delete all my data” deletes them.</li>
       <li><strong>Preferences</strong>: interface and notification settings, and your per-provider consent for the optional additional health-safety evaluation.</li>
       <li><strong>AI provider configuration</strong>: the selected model and, when Anthropic requires it for an identity-linked key, the workspace identifier (<code>wrkspc_…</code>).</li>
       <li><strong>Debug log</strong>: a technical record of up to 1000 entries covering the rest-timer alerts delivered, which include the exercise name and set number. It is never sent over the network; you can view and clear it from Settings.</li>
+      <li><strong>Local recovery copies</strong>: the app keeps one verified copy of its main state. If it finds data that it cannot read safely, it quarantines the original payload instead of overwriting it. Both copies remain on the device and are replaced or removed when the recovery is completed.</li>
     </ul>
   </section>
 
@@ -121,6 +122,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li>You can delete it at any time from Settings.</li>
     </ul>
     <p><strong>Protection is weaker in the browser.</strong> The web version of Gymnasia runs in a browser, where no operating system keystore exists: there, the key is stored in browser storage alongside the rest of your data, without that additional layer of protection. The app warns you about this on the provider settings screen. If this concerns you, use the mobile app.</p>
+    <p>The API-key exclusion applies to the regular backup. If the web version finds damaged storage and you choose to export the original for recovery, that file preserves exactly what was stored in the browser and <strong>may contain the API key</strong>. The recovery screen warns you before downloading it.</p>
   </section>
 
   <section id="proveedores">
@@ -165,10 +167,11 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="copias">
     <h2><a href="#copias">Backups and export</a></h2>
     <p>You can export all your data to a <code>.gymnasia</code> package from Settings, and import it back later. It is a manual action: there is no automatic backup. The app also keeps support for importing older JSON files, although an old photograph reference can only be recovered if that file is still accessible on the device.</p>
+    <p>The local recovery copy is not a cloud backup or a second portable file: it is one prior generation inside the app's own storage. It is used only when the current state cannot be read. Gymnasia then blocks writes and lets you recover the latest copy, retry, discard the affected data, or export the damaged payload. This recovery export preserves the original without sanitising it; it is particularly sensitive and may contain AI keys in the web version. It is never sent to a Gymnasia server.</p>
     <p>The exported package <strong>contains</strong>: your measurements and body fat percentages, the normalised JPEG copies of your progress photographs that fit within the app's limits, your complete diet log, your training history, your personal settings (sex, height, date of birth), the assistant's memory and <strong>the entire history of your conversations</strong>. It is the most sensitive file the app produces: store it carefully and think about who you send it to.</p>
     <p>Each photograph carries a SHA-256 checksum so it can be checked during restoration. The app accepts at most 500 photograph links, 5 MiB per normalised photograph and 200 MiB of images per backup. If a photograph is missing, damaged or does not fit, the backup keeps all numeric measurements and tells you which photographs were omitted.</p>
     <p>The package does <strong>not</strong> contain your API keys or legacy credentials from removed features. <strong>It is not encrypted or password-protected.</strong></p>
-    <p>When exporting, the package is written to the app's temporary storage before you choose where to share it, and that temporary copy stays there. You can remove it by clearing the app's data from your system settings.</p>
+    <p>When exporting, the package is written to the app's temporary storage before you choose where to share it, and that temporary copy is deleted when the share sheet closes. Any file you choose to save to Drive, Dropbox, your files app or another destination is outside Gymnasia's control and must be deleted there.</p>
   </section>
 
   <section id="denuncia">
@@ -207,10 +210,13 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="eliminacion">
     <h2><a href="#eliminacion">How to delete your data</a></h2>
-    <p>Being explicit about what each option does today:</p>
-    <p><strong>&quot;Reset local data&quot;</strong> (Settings) is a <strong>partial</strong> deletion. It removes your routines, your training history, your diet, your measurements, your conversations, your API keys and encrypted credentials left by removed features. It does <strong>not</strong> remove: the assistant's memory, the foods you created, your preferences, the debug log, any backups you exported, or the downloaded catalogues. Work is under way to make this action delete everything it promises; until then, this policy describes its actual behaviour.</p>
+    <p>Settings → Data provides two options:</p>
+    <p><strong>&quot;Delete activity and conversations&quot;</strong> empties your workouts and routines, diet history, measurements, conversations and any active session. It replaces the verified recovery snapshot with one that no longer contains that activity and removes any prior quarantine, so those data cannot return during recovery. It keeps the assistant's memory, personal foods, diet and interface settings, API keys, legacy credentials, catalogue caches, debug traces and backup metadata. It also cancels pending workout alerts.</p>
+    <p><strong>&quot;Delete all my data&quot;</strong> deletes and verifies the personal data, credentials, preferences, diagnostics and caches that Gymnasia controls on this device. This includes the main state, sessions, assistant memory, personal foods, current and old API keys, legacy credentials, traces, consents and backup metadata. You must type <code>BORRAR</code> to confirm. If any target cannot be deleted or verified, the app does not report success: it shows what remains and lets you retry.</p>
+    <p>The only local entry preserved by the second option is the signed public cache that prevents the assistant from loading older safety instructions. It contains none of your data or responses and is retained specifically to protect you from a security rollback.</p>
     <p><strong>The debug log</strong> is cleared with its own button, under Settings → Traces.</p>
-    <p><strong>Complete deletion</strong>: clear the app's data from your device settings, or uninstall the app. That removes everything above without exception. Remember that backup files you exported and saved elsewhere will survive, and that photographs taken with the camera remain in your gallery.</p>
+    <p><strong>Storage recovery</strong>: recovering a valid copy or completing a retry removes the quarantine. If you discard the damaged data, the main state, its recovery snapshot and the dependent training session are removed; partitions that remain readable, such as assistant memory, personal foods, preferences and secure keys, are preserved.</p>
+    <p>Exported backup files, photographs in your library, operating-system permissions and notification channels, logs kept by the operating system, and Android or browser backups are outside Gymnasia's control. Manage those items where they were stored, in your device settings, or by uninstalling the app.</p>
     <p><strong>Data held by an AI provider</strong>: request it directly from that provider, through your account with them. Gymnasia cannot delete it on your behalf.</p>
   </section>
 

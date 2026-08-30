@@ -207,3 +207,9 @@ export function clearMeasurementMedia(): void {
   const directory = measurementMediaDirectory();
   if (directory.exists) directory.delete();
 }
+
+export function isMeasurementMediaEmpty(): boolean {
+  if (Platform.OS === "web") return true;
+  const directory = measurementMediaDirectory();
+  return !directory.exists || directory.list().length === 0;
+}

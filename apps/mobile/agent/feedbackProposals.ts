@@ -48,6 +48,7 @@ export type FeedbackProposalStore = {
   markSubmitting: (id: string) => void;
   settle: (id: string, outcome: FeedbackIssueOutcome) => void;
   expire: (now?: number) => void;
+  clear: () => void;
 };
 
 export function createFeedbackProposalStore(options: {
@@ -130,6 +131,11 @@ export function createFeedbackProposalStore(options: {
           proposal.status !== "pending" || now - proposal.createdAt < PROPOSAL_TTL_MS,
       );
       if (proposals.length !== before) emit();
+    },
+    clear() {
+      if (proposals.length === 0) return;
+      proposals = [];
+      emit();
     },
   };
 

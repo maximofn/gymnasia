@@ -9,6 +9,7 @@ import { RETAINED_LEGACY_SECURE_STORE_KEYS } from "../legacySecureStorage";
 const mobileRoot = fileURLToPath(new URL("../", import.meta.url));
 const appPath = join(mobileRoot, "App.tsx");
 const legacyStoragePath = join(mobileRoot, "legacySecureStorage.ts");
+const localDataDeletionPath = join(mobileRoot, "storage", "localDataDeletion.ts");
 
 function readRuntimeSources(directory: string): Array<{ path: string; source: string }> {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -68,22 +69,16 @@ describe("retirada temporal de VivaGym", () => {
         .filter(({ source }) => source.includes("RETAINED_LEGACY_SECURE_STORE_KEYS"))
         .map(({ path }) => relative(mobileRoot, path))
         .sort(),
-    ).toEqual(["App.tsx", "legacySecureStorage.ts"]);
+    ).toEqual(["legacySecureStorage.ts", "storage/localDataDeletion.ts"]);
   });
 
-  it("solo consume las claves heredadas desde el restablecimiento explícito", () => {
-    const resetStart = appSource.indexOf("async function resetLocalData()");
-    const resetEnd = appSource.indexOf("\n  return (", resetStart);
-    expect(resetStart).toBeGreaterThan(-1);
-    expect(resetEnd).toBeGreaterThan(resetStart);
-
-    const resetSource = appSource.slice(resetStart, resetEnd);
-    expect(resetSource).toContain(
-      "...RETAINED_LEGACY_SECURE_STORE_KEYS.map(scopedSecureStoreKey)",
-    );
-    expect(
-      appSource.match(/RETAINED_LEGACY_SECURE_STORE_KEYS/g),
-    ).toHaveLength(2);
+  it("solo consume las claves heredadas desde el borrado total explícito", () => {
+    const deletionSource = readFileSync(localDataDeletionPath, "utf8");
+    expect(deletionSource).toContain("...RETAINED_LEGACY_SECURE_STORE_KEYS.map");
+    expect(deletionSource).toContain('activity: "preserve"');
+    expect(deletionSource).toContain('full: "delete"');
+    expect(appSource).toContain("LOCAL_SECURE_DATA_MANIFEST");
+    expect(appSource).toContain("SecureStore.deleteItemAsync(key)");
   });
 
   it("no anuncia la integración retirada en la política ni en las declaraciones", () => {
