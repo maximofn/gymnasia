@@ -47,9 +47,9 @@ describe("GYM-139: ningún dato local llega al system prompt", () => {
     expect(appSource).toContain("return sanitizePersonalDataFields(JSON.parse(raw));");
     expect(appSource).toContain("JSON.stringify(sanitizePersonalDataFields(fields)),");
     expect(appSource).toContain(
-      "await savePersonalData(sanitizePersonalDataFields(payload.data.personalData));",
+      "await savePersonalData(sanitizePersonalDataFields(data.personalData));",
     );
-    expect(appSource).not.toContain("Array.isArray(payload.data.personalData)");
+    expect(appSource).not.toContain("Array.isArray(data.personalData)");
   });
 
   it("App.tsx no redeclara el tipo ni serializa datos personales por su cuenta", () => {
