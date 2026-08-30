@@ -1,0 +1,14 @@
+{
+  "id": "curl-prono-unilateral-banco-inclinado-mancuerna",
+  "name": "Curl prono unilateral en banco inclinado con mancuerna",
+  "image_male": "images/curl-prono-unilateral-banco-inclinado-mancuerna-male.webp",
+  "image_female": "images/curl-prono-unilateral-banco-inclinado-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo sobre un banco inclinado y deja colgar un brazo con una mancuerna. Mantén el pecho apoyado y flexiona el codo hasta llevar la carga hacia el hombro. Baja lentamente sin balancear el brazo superior ni despegar el torso."
+}

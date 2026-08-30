@@ -1,0 +1,14 @@
+{
+  "id": "patada-triceps-unilateral-mancuerna",
+  "name": "Patada de tríceps unilateral con mancuerna",
+  "image_male": "images/patada-triceps-unilateral-mancuerna-male.webp",
+  "image_female": "images/patada-triceps-unilateral-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombro",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Adopta una bisagra de cadera con las rodillas flexionadas y una mancuerna en una mano. Lleva el codo junto a las costillas y mantenlo fijo. Extiende el antebrazo hacia atrás hasta alinear el brazo y vuelve despacio antes de cambiar de lado."
+}

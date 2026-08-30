@@ -1,0 +1,14 @@
+{
+  "id": "curl-muneca-neutro-unilateral-sentado-mancuerna",
+  "name": "Curl de muñeca neutro unilateral sentado con mancuerna",
+  "image_male": "images/curl-muneca-neutro-unilateral-sentado-mancuerna-male.webp",
+  "image_female": "images/curl-muneca-neutro-unilateral-sentado-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "agarre",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el borde de un banco y apoya el antebrazo sobre el muslo con la muñeca fuera de la rodilla. Mantén la mancuerna vertical con el pulgar hacia arriba. Flexiona solo la muñeca, pausa arriba y baja sin girar el antebrazo."
+}

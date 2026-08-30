@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-unilateral-sentado-banco-mancuerna",
+  "name": "Extensión de tríceps unilateral sentado en banco con mancuerna",
+  "image_male": "images/extension-triceps-unilateral-sentado-banco-mancuerna-male.webp",
+  "image_female": "images/extension-triceps-unilateral-sentado-banco-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombro",
+    "antebrazo"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido en un banco y extiende una mancuerna por encima de la cabeza. Mantén el brazo superior junto a la oreja y flexiona el codo para llevar la carga detrás de la cabeza. Extiende de nuevo sin arquear la espalda y cambia de lado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-tumbado-mancuernas-v2",
+  "name": "Extensión de tríceps tumbado con mancuernas v2",
+  "image_male": "images/extension-triceps-tumbado-mancuernas-v2-male.webp",
+  "image_female": "images/extension-triceps-tumbado-mancuernas-v2-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "hombro"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano con dos mancuernas sobre el pecho y las palmas enfrentadas. Mantén los brazos superiores verticales y flexiona ambos codos para llevar las cargas hacia la frente. Extiende los codos sin abrirlos ni mover los hombros."
+}

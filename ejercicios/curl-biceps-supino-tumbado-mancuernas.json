@@ -1,0 +1,13 @@
+{
+  "id": "curl-biceps-supino-tumbado-mancuernas",
+  "name": "Curl de bíceps supino tumbado con mancuernas",
+  "image_male": "images/curl-biceps-supino-tumbado-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-supino-tumbado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco plano con una mancuerna en cada mano y los brazos colgando a ambos lados. Mantén las palmas hacia arriba y los brazos superiores quietos mientras flexionas los codos. Acerca las cargas a los hombros y desciende hasta recuperar el estiramiento."
+}

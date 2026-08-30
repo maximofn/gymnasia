@@ -1,0 +1,14 @@
+{
+  "id": "curl-concentrado-unilateral-fitball-mancuerna",
+  "name": "Curl concentrado unilateral sentado en fitball con mancuerna",
+  "image_male": "images/curl-concentrado-unilateral-fitball-mancuerna-male.webp",
+  "image_female": "images/curl-concentrado-unilateral-fitball-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate estable sobre un fitball con los pies separados. Apoya el codo de trabajo en la cara interna del muslo y deja colgar una mancuerna con la palma hacia arriba. Flexiona el codo hasta acercar la carga al hombro y baja sin separar el brazo del muslo."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "press-banca-inverso-unilateral-mancuerna",
+  "name": "Press de banca inverso unilateral con mancuerna",
+  "image_male": "images/press-banca-inverso-unilateral-mancuerna-male.webp",
+  "image_female": "images/press-banca-inverso-unilateral-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombro",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano con una mancuerna sobre la parte baja del pecho y la palma orientada hacia la cara. Mantén el codo cerca del torso y la muñeca alineada. Presiona la carga sin rotar el cuerpo y baja conservando el agarre supino."
+}

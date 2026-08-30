@@ -1,0 +1,14 @@
+{
+  "id": "supinacion-antebrazo-tumbado-banco-mancuerna",
+  "name": "Supinación de antebrazo tumbado en banco con mancuerna",
+  "image_male": "images/supinacion-antebrazo-tumbado-banco-mancuerna-male.webp",
+  "image_female": "images/supinacion-antebrazo-tumbado-banco-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "bíceps",
+    "agarre"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Túmbate de lado sobre un banco con el brazo de trabajo apoyado y el codo doblado fuera del borde. Sostén una mancuerna muy ligera y gira el antebrazo hasta orientar la palma hacia arriba. Invierte la rotación sin doblar la muñeca ni mover el hombro."
+}

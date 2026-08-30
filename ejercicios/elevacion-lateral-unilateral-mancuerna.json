@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-unilateral-mancuerna",
+  "name": "Elevación lateral unilateral con mancuerna",
+  "image_male": "images/elevacion-lateral-unilateral-mancuerna-male.webp",
+  "image_female": "images/elevacion-lateral-unilateral-mancuerna-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Permanece de pie con una mancuerna junto al muslo y el abdomen activo. Eleva el brazo hacia el lado con el codo ligeramente flexionado hasta la altura del hombro. Baja sin inclinar el tronco y completa la serie antes de cambiar de brazo."
+}

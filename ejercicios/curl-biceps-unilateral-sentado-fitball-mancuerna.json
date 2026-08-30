@@ -1,0 +1,14 @@
+{
+  "id": "curl-biceps-unilateral-sentado-fitball-mancuerna",
+  "name": "Curl de bíceps unilateral sentado en fitball con mancuerna",
+  "image_male": "images/curl-biceps-unilateral-sentado-fitball-mancuerna-male.webp",
+  "image_female": "images/curl-biceps-unilateral-sentado-fitball-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate erguido sobre un fitball con los pies bien apoyados y una mancuerna junto al cuerpo. Mantén el codo pegado al costado y flexiónalo con la palma hacia arriba. Desciende lentamente sin inclinar el torso y cambia de brazo."
+}

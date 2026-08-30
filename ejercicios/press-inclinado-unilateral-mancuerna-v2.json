@@ -1,0 +1,15 @@
+{
+  "id": "press-inclinado-unilateral-mancuerna-v2",
+  "name": "Press inclinado unilateral con mancuerna v2",
+  "image_male": "images/press-inclinado-unilateral-mancuerna-v2-male.webp",
+  "image_female": "images/press-inclinado-unilateral-mancuerna-v2-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombro",
+    "tríceps",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Recuéstate en un banco inclinado a unos 45 grados y coloca una mancuerna junto al hombro con la palma al frente. Presiona en diagonal sobre la parte alta del pecho sin dejar que el torso rote. Baja con control y cambia de brazo al terminar."
+}

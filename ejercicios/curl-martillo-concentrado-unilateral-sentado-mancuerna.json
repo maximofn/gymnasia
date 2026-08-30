@@ -1,0 +1,14 @@
+{
+  "id": "curl-martillo-concentrado-unilateral-sentado-mancuerna",
+  "name": "Curl martillo concentrado unilateral sentado con mancuerna",
+  "image_male": "images/curl-martillo-concentrado-unilateral-sentado-mancuerna-male.webp",
+  "image_female": "images/curl-martillo-concentrado-unilateral-sentado-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con las piernas separadas y apoya el codo de trabajo en la cara interna del muslo. Sujeta una mancuerna con el pulgar hacia arriba. Flexiona el codo hasta acercar la carga al hombro y baja sin mover el brazo superior."
+}

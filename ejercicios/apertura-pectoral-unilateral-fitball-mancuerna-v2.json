@@ -1,0 +1,15 @@
+{
+  "id": "apertura-pectoral-unilateral-fitball-mancuerna-v2",
+  "name": "Apertura pectoral unilateral sobre fitball con mancuerna v2",
+  "image_male": "images/apertura-pectoral-unilateral-fitball-mancuerna-v2-male.webp",
+  "image_female": "images/apertura-pectoral-unilateral-fitball-mancuerna-v2-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombro",
+    "core",
+    "glúteos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Rueda sobre un fitball hasta apoyar la parte alta de la espalda y mantener la cadera elevada. Sujeta una sola mancuerna sobre el pecho y ábrela lateralmente con el codo suave. Detén el descenso cuando el brazo quede alineado con el torso y vuelve sin rotar."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "curl-predicador-inverso-unilateral-mancuerna",
+  "name": "Curl predicador inverso unilateral con mancuerna",
+  "image_male": "images/curl-predicador-inverso-unilateral-mancuerna-male.webp",
+  "image_female": "images/curl-predicador-inverso-unilateral-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "bíceps",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco predicador con el brazo de trabajo totalmente apoyado. Sujeta una mancuerna con la palma hacia abajo y flexiona el codo sin doblar la muñeca. Pausa arriba y baja hasta casi extender el brazo, manteniendo el apoyo."
+}

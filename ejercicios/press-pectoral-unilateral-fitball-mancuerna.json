@@ -1,0 +1,16 @@
+{
+  "id": "press-pectoral-unilateral-fitball-mancuerna",
+  "name": "Press pectoral unilateral sobre fitball con mancuerna",
+  "image_male": "images/press-pectoral-unilateral-fitball-mancuerna-male.webp",
+  "image_female": "images/press-pectoral-unilateral-fitball-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombro",
+    "tríceps",
+    "core",
+    "glúteos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Rueda sobre un fitball hasta apoyar la parte alta de la espalda y eleva la cadera. Coloca una sola mancuerna junto al pecho con la palma al frente. Presiona sobre el hombro sin girar el torso y baja mientras mantienes el balón quieto."
+}

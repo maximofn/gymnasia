@@ -1,0 +1,13 @@
+{
+  "id": "curl-biceps-unilateral-pie-mancuerna",
+  "name": "Curl de bíceps unilateral de pie con mancuerna",
+  "image_male": "images/curl-biceps-unilateral-pie-mancuerna-male.webp",
+  "image_female": "images/curl-biceps-unilateral-pie-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Permanece de pie con una mancuerna junto al muslo y la palma al frente. Mantén el codo pegado al costado y flexiónalo hasta acercar la carga al hombro. Aprieta el bíceps y baja sin balancear el cuerpo."
+}

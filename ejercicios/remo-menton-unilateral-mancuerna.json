@@ -1,0 +1,14 @@
+{
+  "id": "remo-menton-unilateral-mancuerna",
+  "name": "Remo al mentón unilateral con mancuerna",
+  "image_male": "images/remo-menton-unilateral-mancuerna-male.webp",
+  "image_female": "images/remo-menton-unilateral-mancuerna-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "bíceps"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una mancuerna delante del muslo y la palma hacia el cuerpo. Eleva la carga cerca del torso guiando el movimiento con el codo hasta la altura del pecho. Baja despacio sin girar ni inclinar el tronco."
+}

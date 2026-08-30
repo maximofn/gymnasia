@@ -1,0 +1,14 @@
+{
+  "id": "press-hombro-unilateral-mancuerna-v2",
+  "name": "Press de hombro unilateral con mancuerna v2",
+  "image_male": "images/press-hombro-unilateral-mancuerna-v2-male.webp",
+  "image_female": "images/press-hombro-unilateral-mancuerna-v2-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de pie con una sola mancuerna junto al hombro, el codo bajo la muñeca y el core firme. Empuja verticalmente sin arquear la espalda ni girar el tronco. Detén el brazo antes de encoger el hombro y baja con control."
+}

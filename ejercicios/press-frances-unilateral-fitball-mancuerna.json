@@ -1,0 +1,15 @@
+{
+  "id": "press-frances-unilateral-fitball-mancuerna",
+  "name": "Press francés unilateral sobre fitball con mancuerna",
+  "image_male": "images/press-frances-unilateral-fitball-mancuerna-male.webp",
+  "image_female": "images/press-frances-unilateral-fitball-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombro",
+    "antebrazo",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Apoya la parte alta de la espalda sobre un fitball, eleva la cadera y extiende una mancuerna sobre el hombro. Sin mover el brazo superior, flexiona el codo para llevar la carga detrás de la cabeza. Extiende de nuevo mientras el torso y el balón permanecen estables."
+}

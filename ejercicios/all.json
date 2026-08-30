@@ -85,6 +85,64 @@
     "instructions": "Recuéstate en un banco inclinado y extiende una sola mancuerna sobre la parte alta del pecho. Usa la mano libre para estabilizarte. Abre el brazo cargado en un arco amplio con el codo suave y vuelve a cerrarlo sin rotar el torso."
   },
   {
+    "id": "apertura-inversa-unilateral-con-apoyo-mancuerna",
+    "name": "Apertura inversa unilateral con apoyo y mancuerna",
+    "image_male": "images/apertura-inversa-unilateral-con-apoyo-mancuerna-male.webp",
+    "image_female": "images/apertura-inversa-unilateral-con-apoyo-mancuerna-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "espalda",
+      "trapecio"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Apoya una mano en un banco y realiza una bisagra de cadera con la espalda recta. Deja colgar una mancuerna en el brazo opuesto y elévala hacia el lado con el codo suave. Mantén el torso inmóvil, junta la escápula y baja por el mismo arco."
+  },
+  {
+    "id": "apertura-pectoral-unilateral-fitball-mancuerna-v2",
+    "name": "Apertura pectoral unilateral sobre fitball con mancuerna v2",
+    "image_male": "images/apertura-pectoral-unilateral-fitball-mancuerna-v2-male.webp",
+    "image_female": "images/apertura-pectoral-unilateral-fitball-mancuerna-v2-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombro",
+      "core",
+      "glúteos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Rueda sobre un fitball hasta apoyar la parte alta de la espalda y mantener la cadera elevada. Sujeta una sola mancuerna sobre el pecho y ábrela lateralmente con el codo suave. Detén el descenso cuando el brazo quede alineado con el torso y vuelve sin rotar."
+  },
+  {
+    "id": "apertura-pectoral-unilateral-fitball-mancuerna",
+    "name": "Apertura pectoral unilateral sobre fitball con mancuerna",
+    "image_male": "images/apertura-pectoral-unilateral-fitball-mancuerna-male.webp",
+    "image_female": "images/apertura-pectoral-unilateral-fitball-mancuerna-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombro",
+      "core",
+      "glúteos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Apoya la cabeza y la parte alta de la espalda sobre un fitball, eleva la cadera y sujeta una mancuerna sobre el pecho. Abre el brazo hacia un lado con el codo ligeramente flexionado. Regresa por el mismo arco manteniendo el balón y la pelvis inmóviles."
+  },
+  {
+    "id": "apertura-unilateral-banco-plano-mancuerna",
+    "name": "Apertura unilateral en banco plano con mancuerna",
+    "image_male": "images/apertura-unilateral-banco-plano-mancuerna-male.webp",
+    "image_female": "images/apertura-unilateral-banco-plano-mancuerna-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombro",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Túmbate en un banco plano con una sola mancuerna sobre el hombro y la palma hacia dentro. Mantén una ligera flexión de codo y abre el brazo por un arco amplio hasta quedar cerca de la línea del pecho. Contrae el pectoral para regresar sin girar el torso."
+  },
+  {
     "id": "aperturas-bajas-polea",
     "name": "Aperturas bajas en polea",
     "image_male": "images/aperturas-bajas-polea-male.webp",
@@ -447,6 +505,22 @@
     "equipment": "barra",
     "difficulty": "advanced",
     "instructions": "Coloca la barra en el suelo y agárrala por el centro con una sola mano. Extiende piernas y caderas de forma explosiva, guía la barra cerca del cuerpo y entra debajo de ella mientras el brazo sube. Recíbela estable sobre la cabeza con el codo extendido y bájala de forma controlada antes de cambiar de lado."
+  },
+  {
+    "id": "arrancada-unilateral-mancuerna",
+    "name": "Arrancada unilateral con mancuerna",
+    "image_male": "images/arrancada-unilateral-mancuerna-male.webp",
+    "image_female": "images/arrancada-unilateral-mancuerna-female.webp",
+    "muscle_group": "pierna",
+    "secondary_muscles": [
+      "glúteo",
+      "isquiotibiales",
+      "hombro",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Coloca una mancuerna entre los pies y agáchate con la espalda neutra. Extiende con potencia cadera, rodillas y tobillos para guiar la carga cerca del cuerpo. Recíbela sobre la cabeza con el brazo extendido y las rodillas ligeramente flexionadas antes de bajar."
   },
   {
     "id": "back-lever",
@@ -1053,6 +1127,20 @@
     "instructions": "Ponte de pie frente a una polea baja y toma una barra recta con agarre supino. Lleva los codos hacia atrás mientras deslizas la barra cerca del torso hasta la parte alta del abdomen. Contrae los bíceps y baja la barra siguiendo la misma trayectoria sin balancear el cuerpo."
   },
   {
+    "id": "curl-biceps-abierto-tumbado-mancuernas",
+    "name": "Curl de bíceps abierto tumbado con mancuernas",
+    "image_male": "images/curl-biceps-abierto-tumbado-mancuernas-male.webp",
+    "image_female": "images/curl-biceps-abierto-tumbado-mancuernas-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "hombro"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Túmbate en un banco plano con dos mancuernas sobre el pecho y abre los brazos en diagonal, manteniendo los codos fijos. Flexiona los codos por una trayectoria amplia hasta acercar las cargas a los hombros. Desciende por el mismo arco sin convertir el movimiento en una apertura de pecho."
+  },
+  {
     "id": "curl-biceps-agarre-amplio-barra",
     "name": "Curl de bíceps con agarre amplio y barra",
     "image_male": "images/curl-biceps-agarre-amplio-barra-male.webp",
@@ -1433,6 +1521,19 @@
     "instructions": "Ponte de pie frente a una polea alta y toma una barra recta con agarre supino. Mantén los brazos elevados y los codos orientados al frente. Flexiona los codos para acercar la barra a la frente sin mover los brazos superiores, contrae los bíceps y vuelve lentamente hasta extender los codos sin perder tensión."
   },
   {
+    "id": "curl-biceps-supino-tumbado-mancuernas",
+    "name": "Curl de bíceps supino tumbado con mancuernas",
+    "image_male": "images/curl-biceps-supino-tumbado-mancuernas-male.webp",
+    "image_female": "images/curl-biceps-supino-tumbado-mancuernas-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba en un banco plano con una mancuerna en cada mano y los brazos colgando a ambos lados. Mantén las palmas hacia arriba y los brazos superiores quietos mientras flexionas los codos. Acerca las cargas a los hombros y desciende hasta recuperar el estiramiento."
+  },
+  {
     "id": "curl-biceps-tumbado-lateral-peso-corporal",
     "name": "Curl de bíceps tumbado de lado con peso corporal",
     "image_male": "images/curl-biceps-tumbado-lateral-peso-corporal-male.webp",
@@ -1460,6 +1561,19 @@
     "instructions": "Túmbate boca arriba en un banco con la cabeza alejada de una polea baja y sujeta una barra recta en supinación. Mantén los brazos superiores junto al torso y los codos quietos. Flexiona los codos para acercar la barra a los hombros, contrae los bíceps y vuelve hasta casi extenderlos por completo."
   },
   {
+    "id": "curl-biceps-unilateral-pie-mancuerna",
+    "name": "Curl de bíceps unilateral de pie con mancuerna",
+    "image_male": "images/curl-biceps-unilateral-pie-mancuerna-male.webp",
+    "image_female": "images/curl-biceps-unilateral-pie-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Permanece de pie con una mancuerna junto al muslo y la palma al frente. Mantén el codo pegado al costado y flexiónalo hasta acercar la carga al hombro. Aprieta el bíceps y baja sin balancear el cuerpo."
+  },
+  {
     "id": "curl-biceps-unilateral-polea",
     "name": "Curl de bíceps unilateral en polea",
     "image_male": "images/curl-biceps-unilateral-polea-male.webp",
@@ -1471,6 +1585,20 @@
     "equipment": "polea",
     "difficulty": "beginner",
     "instructions": "Ponte de pie frente a una polea baja y sujeta una agarradera con una mano en supinación. Mantén el torso estable y el codo pegado al costado. Flexiona el brazo hasta acercar la mano al hombro, aprieta el bíceps y baja lentamente hasta casi extender el codo antes de cambiar de lado."
+  },
+  {
+    "id": "curl-biceps-unilateral-sentado-fitball-mancuerna",
+    "name": "Curl de bíceps unilateral sentado en fitball con mancuerna",
+    "image_male": "images/curl-biceps-unilateral-sentado-fitball-mancuerna-male.webp",
+    "image_female": "images/curl-biceps-unilateral-sentado-fitball-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate erguido sobre un fitball con los pies bien apoyados y una mancuerna junto al cuerpo. Mantén el codo pegado al costado y flexiónalo con la palma hacia arriba. Desciende lentamente sin inclinar el torso y cambia de brazo."
   },
   {
     "id": "curl-biceps-unilateral-sobre-cabeza-banda",
@@ -1609,6 +1737,20 @@
     "equipment": "barra",
     "difficulty": "advanced",
     "instructions": "De pie, estabiliza con una mano el centro de una barra muy ligera y apoya la otra mano sobre el muslo. Mantén el brazo de trabajo cerca del torso y flexiona el codo sin inclinar la barra ni balancearte. Baja lentamente y cambia de brazo tras completar las repeticiones."
+  },
+  {
+    "id": "curl-concentrado-unilateral-fitball-mancuerna",
+    "name": "Curl concentrado unilateral sentado en fitball con mancuerna",
+    "image_male": "images/curl-concentrado-unilateral-fitball-mancuerna-male.webp",
+    "image_female": "images/curl-concentrado-unilateral-fitball-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate estable sobre un fitball con los pies separados. Apoya el codo de trabajo en la cara interna del muslo y deja colgar una mancuerna con la palma hacia arriba. Flexiona el codo hasta acercar la carga al hombro y baja sin separar el brazo del muslo."
   },
   {
     "id": "curl-concentrado",
@@ -1841,6 +1983,20 @@
     "instructions": "Siéntate erguido en un banco con una mancuerna en cada mano y las palmas enfrentadas. Mantén los codos junto al torso y flexiona un brazo con agarre neutro hasta la altura del hombro. Baja lentamente y alterna el lado sin inclinar el tronco ni adelantar los codos."
   },
   {
+    "id": "curl-martillo-concentrado-unilateral-sentado-mancuerna",
+    "name": "Curl martillo concentrado unilateral sentado con mancuerna",
+    "image_male": "images/curl-martillo-concentrado-unilateral-sentado-mancuerna-male.webp",
+    "image_female": "images/curl-martillo-concentrado-unilateral-sentado-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "braquiorradial"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en un banco con las piernas separadas y apoya el codo de trabajo en la cara interna del muslo. Sujeta una mancuerna con el pulgar hacia arriba. Flexiona el codo hasta acercar la carga al hombro y baja sin mover el brazo superior."
+  },
+  {
     "id": "curl-martillo-cruzado-mancuernas-v2",
     "name": "Curl martillo cruzado con mancuernas (variante 2)",
     "image_male": "images/curl-martillo-cruzado-mancuernas-v2-male.webp",
@@ -1978,6 +2134,34 @@
     "instructions": "Siéntate en un banco predicador frente a una polea baja, apoya un brazo en la almohadilla y sujeta un extremo de la cuerda con agarre neutro. Flexiona el codo sin despegar el brazo del soporte, aprieta el bíceps arriba y desciende lentamente. Completa la serie y cambia de lado."
   },
   {
+    "id": "curl-martillo-prono-unilateral-banco-inclinado-mancuerna",
+    "name": "Curl martillo prono unilateral en banco inclinado con mancuerna",
+    "image_male": "images/curl-martillo-prono-unilateral-banco-inclinado-mancuerna-male.webp",
+    "image_female": "images/curl-martillo-prono-unilateral-banco-inclinado-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "braquiorradial"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Apoya el pecho boca abajo en un banco inclinado y deja el brazo de trabajo colgando. Sujeta una mancuerna con el pulgar hacia arriba y flexiona el codo sin mover el hombro. Pausa cerca del pecho y extiende de nuevo con control."
+  },
+  {
+    "id": "curl-martillo-unilateral-pie-mancuerna",
+    "name": "Curl martillo unilateral de pie con mancuerna",
+    "image_male": "images/curl-martillo-unilateral-pie-mancuerna-male.webp",
+    "image_female": "images/curl-martillo-unilateral-pie-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "braquiorradial"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con una sola mancuerna y el pulgar orientado hacia delante. Sin separar el codo del torso, flexiona el brazo manteniendo el agarre neutro. Pausa cerca del hombro y desciende lentamente antes de cambiar de lado."
+  },
+  {
     "id": "curl-muneca-banda",
     "name": "Curl de muñeca con banda",
     "image_male": "images/curl-muneca-banda-male.webp",
@@ -2079,6 +2263,34 @@
     "equipment": "barra y banco",
     "difficulty": "beginner",
     "instructions": "Siéntate con los antebrazos apoyados en los muslos y sostén la barra con agarre prono. Permite que las muñecas cuelguen más allá de las rodillas y eleva el dorso de las manos sin despegar los antebrazos. Baja lentamente hasta recuperar la posición neutra."
+  },
+  {
+    "id": "curl-muneca-inverso-unilateral-mancuerna",
+    "name": "Curl de muñeca inverso unilateral con mancuerna",
+    "image_male": "images/curl-muneca-inverso-unilateral-mancuerna-male.webp",
+    "image_female": "images/curl-muneca-inverso-unilateral-mancuerna-female.webp",
+    "muscle_group": "antebrazo",
+    "secondary_muscles": [
+      "agarre",
+      "braquiorradial"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Siéntate y apoya el antebrazo sobre el muslo con la muñeca fuera de la rodilla. Sujeta una mancuerna ligera con la palma hacia abajo. Eleva el dorso de la mano moviendo solo la muñeca y desciende lentamente sin despegar el antebrazo."
+  },
+  {
+    "id": "curl-muneca-neutro-unilateral-sentado-mancuerna",
+    "name": "Curl de muñeca neutro unilateral sentado con mancuerna",
+    "image_male": "images/curl-muneca-neutro-unilateral-sentado-mancuerna-male.webp",
+    "image_female": "images/curl-muneca-neutro-unilateral-sentado-mancuerna-female.webp",
+    "muscle_group": "antebrazo",
+    "secondary_muscles": [
+      "agarre",
+      "braquiorradial"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en el borde de un banco y apoya el antebrazo sobre el muslo con la muñeca fuera de la rodilla. Mantén la mancuerna vertical con el pulgar hacia arriba. Flexiona solo la muñeca, pausa arriba y baja sin girar el antebrazo."
   },
   {
     "id": "curl-muneca-polea",
@@ -2190,6 +2402,34 @@
     "instructions": "Siéntate en un banco predicador frente a una polea baja y apoya por completo ambos brazos superiores en la almohadilla. Toma una barra con agarre prono y muñecas neutras. Flexiona los codos sin despegar los brazos del soporte, haz una pausa arriba y baja lentamente hasta casi extenderlos."
   },
   {
+    "id": "curl-predicador-inverso-unilateral-mancuerna",
+    "name": "Curl predicador inverso unilateral con mancuerna",
+    "image_male": "images/curl-predicador-inverso-unilateral-mancuerna-male.webp",
+    "image_female": "images/curl-predicador-inverso-unilateral-mancuerna-female.webp",
+    "muscle_group": "antebrazo",
+    "secondary_muscles": [
+      "bíceps",
+      "braquiorradial"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate en un banco predicador con el brazo de trabajo totalmente apoyado. Sujeta una mancuerna con la palma hacia abajo y flexiona el codo sin doblar la muñeca. Pausa arriba y baja hasta casi extender el brazo, manteniendo el apoyo."
+  },
+  {
+    "id": "curl-predicador-martillo-unilateral-mancuerna",
+    "name": "Curl predicador martillo unilateral con mancuerna",
+    "image_male": "images/curl-predicador-martillo-unilateral-mancuerna-male.webp",
+    "image_female": "images/curl-predicador-martillo-unilateral-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "braquiorradial"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate en un banco predicador y apoya por completo el brazo de trabajo sobre el cojín. Sujeta una mancuerna con agarre neutro y flexiona el codo sin levantar el brazo del apoyo. Pausa arriba y desciende hasta casi extenderlo."
+  },
+  {
     "id": "curl-predicador-polea",
     "name": "Curl predicador en polea",
     "image_male": "images/curl-predicador-polea-male.webp",
@@ -2230,6 +2470,20 @@
     "instructions": "Sitúate detrás de un banco predicador frente a una polea baja. Apoya por completo la parte posterior del brazo en la almohadilla y sujeta un asa con agarre supino. Flexiona el codo para acercar la mano al hombro sin despegar el brazo del soporte; contrae arriba y baja lentamente hasta casi extenderlo. Cambia de brazo al terminar."
   },
   {
+    "id": "curl-prono-unilateral-banco-inclinado-mancuerna",
+    "name": "Curl prono unilateral en banco inclinado con mancuerna",
+    "image_male": "images/curl-prono-unilateral-banco-inclinado-mancuerna-male.webp",
+    "image_female": "images/curl-prono-unilateral-banco-inclinado-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "braquiorradial"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca abajo sobre un banco inclinado y deja colgar un brazo con una mancuerna. Mantén el pecho apoyado y flexiona el codo hasta llevar la carga hacia el hombro. Baja lentamente sin balancear el brazo superior ni despegar el torso."
+  },
+  {
     "id": "curl-scott",
     "name": "Curl Scott",
     "image_male": "images/curl-scott-male.webp",
@@ -2256,6 +2510,33 @@
     "equipment": "polea y banco",
     "difficulty": "advanced",
     "instructions": "Siéntate centrado entre dos poleas altas y sujeta una agarradera en cada mano con las palmas hacia arriba. Eleva los brazos hacia los lados y fija los codos a la altura de los hombros. Flexiona ambos codos llevando las manos hacia la cabeza, contrae los bíceps y extiende de nuevo sin bajar los brazos."
+  },
+  {
+    "id": "curl-spider-inverso-unilateral-mancuerna",
+    "name": "Curl spider inverso unilateral con mancuerna",
+    "image_male": "images/curl-spider-inverso-unilateral-mancuerna-male.webp",
+    "image_female": "images/curl-spider-inverso-unilateral-mancuerna-female.webp",
+    "muscle_group": "antebrazo",
+    "secondary_muscles": [
+      "bíceps",
+      "braquiorradial"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca abajo sobre un banco inclinado y deja colgar un brazo con una mancuerna en agarre prono. Mantén el pecho pegado al cojín y flexiona solo el codo. Acerca la carga al hombro con la muñeca recta y baja sin balanceo."
+  },
+  {
+    "id": "curl-supino-tumbado-mancuernas-v2",
+    "name": "Curl supino tumbado con mancuernas v2",
+    "image_male": "images/curl-supino-tumbado-mancuernas-v2-male.webp",
+    "image_female": "images/curl-supino-tumbado-mancuernas-v2-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazo"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Colócate boca arriba en un banco plano con los hombros cerca del extremo y una mancuerna en cada mano. Deja los brazos ligeramente por detrás del torso para iniciar con tensión y flexiona los codos sin adelantarlos. Sube con las palmas hacia arriba y baja lentamente."
   },
   {
     "id": "curl-tumbado-agarre-cerrado-polea",
@@ -2931,6 +3212,20 @@
     "instructions": "Siéntate en un banco frente a dos poleas bajas, inclina el torso sobre los muslos y cruza las agarraderas delante de las piernas. Con los codos ligeramente flexionados, abre los brazos hacia los lados hasta alinearlos con los hombros. Junta los omóplatos y vuelve lentamente sin balancear el torso."
   },
   {
+    "id": "elevacion-lateral-posterior-tumbado-mancuernas",
+    "name": "Elevación lateral posterior tumbado con mancuernas",
+    "image_male": "images/elevacion-lateral-posterior-tumbado-mancuernas-male.webp",
+    "image_female": "images/elevacion-lateral-posterior-tumbado-mancuernas-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "espalda",
+      "trapecio"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca abajo sobre un banco con una mancuerna en cada mano y los brazos colgando. Mantén una ligera flexión de codos y abre los brazos hacia los lados hasta alinearlos con el torso. Junta las escápulas sin encoger los hombros y baja despacio."
+  },
+  {
     "id": "elevacion-lateral-posterior-unilateral-tumbado-mancuerna",
     "name": "Elevación lateral posterior unilateral tumbado con mancuerna",
     "image_male": "images/elevacion-lateral-posterior-unilateral-tumbado-mancuerna-male.webp",
@@ -2957,6 +3252,34 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Túmbate de lado sobre un banco con inclinación moderada y deja colgar una mancuerna bajo el hombro. Con el codo suavemente flexionado, eleva el brazo en un arco lateral hasta la altura del hombro. Baja lentamente sin girar el torso ni encoger el hombro."
+  },
+  {
+    "id": "elevacion-lateral-unilateral-con-apoyo-mancuerna",
+    "name": "Elevación lateral unilateral con apoyo y mancuerna",
+    "image_male": "images/elevacion-lateral-unilateral-con-apoyo-mancuerna-male.webp",
+    "image_female": "images/elevacion-lateral-unilateral-con-apoyo-mancuerna-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "trapecio",
+      "manguito rotador"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Sujétate con una mano a un banco estable y sostén una mancuerna en la otra. Mantén el cuerpo erguido y eleva el brazo lateralmente hasta la altura del hombro. Desciende con control sin tirar del apoyo ni encoger el hombro."
+  },
+  {
+    "id": "elevacion-lateral-unilateral-mancuerna",
+    "name": "Elevación lateral unilateral con mancuerna",
+    "image_male": "images/elevacion-lateral-unilateral-mancuerna-male.webp",
+    "image_female": "images/elevacion-lateral-unilateral-mancuerna-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "trapecio",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Permanece de pie con una mancuerna junto al muslo y el abdomen activo. Eleva el brazo hacia el lado con el codo ligeramente flexionado hasta la altura del hombro. Baja sin inclinar el tronco y completa la serie antes de cambiar de brazo."
   },
   {
     "id": "elevacion-lateral-unilateral-polea",
@@ -4238,6 +4561,20 @@
     "instructions": "Túmbate en un banco plano con dos mancuernas sobre el pecho y las palmas enfrentadas. Mantén los brazos superiores apuntando al techo y flexiona los codos para bajar las cargas hacia las sienes, una a cada lado de la cara. Extiende los codos sin desplazar los hombros."
   },
   {
+    "id": "extension-triceps-tumbado-mancuernas-v2",
+    "name": "Extensión de tríceps tumbado con mancuernas v2",
+    "image_male": "images/extension-triceps-tumbado-mancuernas-v2-male.webp",
+    "image_female": "images/extension-triceps-tumbado-mancuernas-v2-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "hombro"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate en un banco plano con dos mancuernas sobre el pecho y las palmas enfrentadas. Mantén los brazos superiores verticales y flexiona ambos codos para llevar las cargas hacia la frente. Extiende los codos sin abrirlos ni mover los hombros."
+  },
+  {
     "id": "extension-triceps-unilateral-de-pie-polea",
     "name": "Extensión de tríceps unilateral de pie en polea",
     "image_male": "images/extension-triceps-unilateral-de-pie-polea-male.webp",
@@ -4264,6 +4601,20 @@
     "instructions": "Ponte de pie frente a una polea alta y sujeta un asa con una mano en pronación. Fija el codo junto al costado y mantén el torso estable. Extiende el codo hasta llevar la mano hacia el muslo, contrae el tríceps y deja que el antebrazo suba de forma controlada sin mover el brazo superior. Completa la serie y cambia de lado."
   },
   {
+    "id": "extension-triceps-unilateral-sentado-banco-mancuerna",
+    "name": "Extensión de tríceps unilateral sentado en banco con mancuerna",
+    "image_male": "images/extension-triceps-unilateral-sentado-banco-mancuerna-male.webp",
+    "image_female": "images/extension-triceps-unilateral-sentado-banco-mancuerna-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombro",
+      "antebrazo"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate erguido en un banco y extiende una mancuerna por encima de la cabeza. Mantén el brazo superior junto a la oreja y flexiona el codo para llevar la carga detrás de la cabeza. Extiende de nuevo sin arquear la espalda y cambia de lado."
+  },
+  {
     "id": "extension-triceps-unilateral-supina-sobre-cabeza-polea",
     "name": "Extensión de tríceps unilateral supina sobre la cabeza en polea",
     "image_male": "images/extension-triceps-unilateral-supina-sobre-cabeza-polea-male.webp",
@@ -4276,6 +4627,20 @@
     "equipment": "polea y agarradera",
     "difficulty": "advanced",
     "instructions": "Colócate de espaldas a una polea baja y lleva una agarradera sobre la cabeza con agarre supino. Mantén el brazo superior vertical y el codo cerca de la cabeza. Extiende el codo hasta elevar por completo la mano, aprieta el tríceps y baja la agarradera detrás de la cabeza con control antes de cambiar de brazo."
+  },
+  {
+    "id": "extension-triceps-unilateral-tumbado-mancuerna-v2",
+    "name": "Extensión de tríceps unilateral tumbado con mancuerna v2",
+    "image_male": "images/extension-triceps-unilateral-tumbado-mancuerna-v2-male.webp",
+    "image_female": "images/extension-triceps-unilateral-tumbado-mancuerna-v2-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "antebrazo",
+      "hombro"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate en un banco plano y sostén una mancuerna sobre el pecho con un solo brazo extendido. Mantén vertical el brazo superior y flexiona el codo para acercar la carga a la frente. Extiende de nuevo sin mover el hombro y cambia de lado al completar la serie."
   },
   {
     "id": "extensiones-triceps-barra",
@@ -5415,6 +5780,20 @@
     "instructions": "Ponte frente a una polea baja, toma una agarradera con una mano e inclina el torso desde las caderas. Mantén el brazo superior pegado al costado y el codo flexionado. Extiende el antebrazo hacia atrás hasta bloquear suavemente el codo y vuelve con control antes de cambiar de lado."
   },
   {
+    "id": "patada-triceps-unilateral-mancuerna",
+    "name": "Patada de tríceps unilateral con mancuerna",
+    "image_male": "images/patada-triceps-unilateral-mancuerna-male.webp",
+    "image_female": "images/patada-triceps-unilateral-mancuerna-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombro",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Adopta una bisagra de cadera con las rodillas flexionadas y una mancuerna en una mano. Lleva el codo junto a las costillas y mantenlo fijo. Extiende el antebrazo hacia atrás hasta alinear el brazo y vuelve despacio antes de cambiar de lado."
+  },
+  {
     "id": "peso-muerto-barra",
     "name": "Peso muerto con barra",
     "image_male": "images/peso-muerto-barra-male.webp",
@@ -5844,6 +6223,21 @@
     "instructions": "Túmbate en un banco plano con los pies firmes en el suelo y agarra la barra algo más abierta que los hombros. Sácala del soporte, baja de forma controlada hasta el pecho manteniendo las muñecas alineadas y empuja hasta extender los brazos. Conserva los glúteos y la parte alta de la espalda apoyados."
   },
   {
+    "id": "press-banca-inverso-unilateral-mancuerna",
+    "name": "Press de banca inverso unilateral con mancuerna",
+    "image_male": "images/press-banca-inverso-unilateral-mancuerna-male.webp",
+    "image_female": "images/press-banca-inverso-unilateral-mancuerna-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombro",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Túmbate en un banco plano con una mancuerna sobre la parte baja del pecho y la palma orientada hacia la cara. Mantén el codo cerca del torso y la muñeca alineada. Presiona la carga sin rotar el cuerpo y baja conservando el agarre supino."
+  },
+  {
     "id": "press-banca-mancuernas",
     "name": "Press de banca con mancuernas",
     "image_male": "images/press-banca-mancuernas-male.webp",
@@ -5856,6 +6250,20 @@
     "equipment": "mancuernas y banco",
     "difficulty": "beginner",
     "instructions": "Túmbate en un banco plano con los pies apoyados y una mancuerna a cada lado del pecho. Mantén las muñecas sobre los codos y empuja ambas mancuernas hasta extender los brazos. Bájalas de forma controlada con los codos ligeramente por debajo del banco y repite sin rebotar."
+  },
+  {
+    "id": "press-banca-neutro-mancuernas-v2",
+    "name": "Press de banca neutro con mancuernas v2",
+    "image_male": "images/press-banca-neutro-mancuernas-v2-male.webp",
+    "image_female": "images/press-banca-neutro-mancuernas-v2-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombro"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate en un banco plano con dos mancuernas junto al pecho y las palmas enfrentadas. Mantén los codos cerca del torso y presiona las cargas hasta extender los brazos. Baja de forma controlada conservando el agarre neutro."
   },
   {
     "id": "press-banca-neutro-mancuernas",
@@ -6102,6 +6510,21 @@
     "instructions": "Túmbate en un banco declinado entre dos poleas y coloca las agarraderas junto al pecho. Apoya bien la espalda y los pies. Empuja ambas manos al frente hasta extender los brazos, junta ligeramente las agarraderas y vuelve despacio manteniendo los cables tensos."
   },
   {
+    "id": "press-declinado-unilateral-mancuerna",
+    "name": "Press declinado unilateral con mancuerna",
+    "image_male": "images/press-declinado-unilateral-mancuerna-male.webp",
+    "image_female": "images/press-declinado-unilateral-mancuerna-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "tríceps",
+      "hombro",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Túmbate en un banco declinado y fija bien las piernas. Coloca una sola mancuerna junto al pecho con la palma al frente y mantén el torso cuadrado. Presiona la carga sobre el pecho y bájala con control antes de cambiar de lado."
+  },
+  {
     "id": "press-declinado-unilateral-polea",
     "name": "Press declinado unilateral en polea",
     "image_male": "images/press-declinado-unilateral-polea-male.webp",
@@ -6114,6 +6537,21 @@
     "equipment": "polea",
     "difficulty": "advanced",
     "instructions": "Túmbate en un banco declinado entre las poleas y toma una agarradera con una mano a la altura del pecho. Mantén la espalda apoyada y el hombro estable. Empuja la agarradera hasta extender el brazo sin girar el torso y vuelve con control antes de cambiar de lado."
+  },
+  {
+    "id": "press-frances-unilateral-fitball-mancuerna",
+    "name": "Press francés unilateral sobre fitball con mancuerna",
+    "image_male": "images/press-frances-unilateral-fitball-mancuerna-male.webp",
+    "image_female": "images/press-frances-unilateral-fitball-mancuerna-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombro",
+      "antebrazo",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Apoya la parte alta de la espalda sobre un fitball, eleva la cadera y extiende una mancuerna sobre el hombro. Sin mover el brazo superior, flexiona el codo para llevar la carga detrás de la cabeza. Extiende de nuevo mientras el torso y el balón permanecen estables."
   },
   {
     "id": "press-guillotina-barra",
@@ -6156,6 +6594,34 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Siéntate en un banco con respaldo vertical. Sujeta una mancuerna en cada mano a la altura de los hombros con las palmas mirando hacia delante. Empuja las mancuernas hacia arriba hasta extender los brazos por encima de la cabeza. Baja de forma controlada hasta la posición inicial."
+  },
+  {
+    "id": "press-hombro-unilateral-mancuerna-v2",
+    "name": "Press de hombro unilateral con mancuerna v2",
+    "image_male": "images/press-hombro-unilateral-mancuerna-v2-male.webp",
+    "image_female": "images/press-hombro-unilateral-mancuerna-v2-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "tríceps",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Colócate de pie con una sola mancuerna junto al hombro, el codo bajo la muñeca y el core firme. Empuja verticalmente sin arquear la espalda ni girar el tronco. Detén el brazo antes de encoger el hombro y baja con control."
+  },
+  {
+    "id": "press-hombro-unilateral-mancuerna",
+    "name": "Press de hombro unilateral con mancuerna",
+    "image_male": "images/press-hombro-unilateral-mancuerna-male.webp",
+    "image_female": "images/press-hombro-unilateral-mancuerna-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "tríceps",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Permanece de pie con una mancuerna a la altura del hombro y la palma hacia delante. Activa el abdomen y presiona la carga por encima de la cabeza hasta extender el brazo. Baja sin inclinarte y cambia de lado al terminar."
   },
   {
     "id": "press-hombro-unilateral-maquina",
@@ -6448,6 +6914,21 @@
     "instructions": "Apoya la espalda alta en diagonal sobre un fitball y planta bien los pies. Sujeta una agarradera de polea baja junto al hombro con el codo flexionado. Presiona hacia arriba y al frente hasta extender el brazo, mantén las caderas elevadas y evita rotar el tronco antes de cambiar de lado."
   },
   {
+    "id": "press-inclinado-unilateral-mancuerna-v2",
+    "name": "Press inclinado unilateral con mancuerna v2",
+    "image_male": "images/press-inclinado-unilateral-mancuerna-v2-male.webp",
+    "image_female": "images/press-inclinado-unilateral-mancuerna-v2-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombro",
+      "tríceps",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Recuéstate en un banco inclinado a unos 45 grados y coloca una mancuerna junto al hombro con la palma al frente. Presiona en diagonal sobre la parte alta del pecho sin dejar que el torso rote. Baja con control y cambia de brazo al terminar."
+  },
+  {
     "id": "press-inclinado-unilateral-mancuerna",
     "name": "Press inclinado unilateral con mancuerna",
     "image_male": "images/press-inclinado-unilateral-mancuerna-male.webp",
@@ -6518,6 +6999,22 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Acuéstate en un banco plano con una mancuerna en cada mano a la altura del pecho. Empuja las mancuernas hacia arriba hasta extender los brazos y bájalas de forma controlada."
+  },
+  {
+    "id": "press-martillo-unilateral-fitball-mancuerna",
+    "name": "Press martillo unilateral sobre fitball con mancuerna",
+    "image_male": "images/press-martillo-unilateral-fitball-mancuerna-male.webp",
+    "image_female": "images/press-martillo-unilateral-fitball-mancuerna-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombro",
+      "core",
+      "glúteos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Apoya la parte alta de la espalda sobre un fitball y mantén la cadera elevada. Coloca una mancuerna junto al pecho con la palma hacia dentro y el codo próximo al torso. Presiona verticalmente sin girar el tronco y baja conservando el agarre neutro."
   },
   {
     "id": "press-militar-agarre-amplio-barra",
@@ -6662,6 +7159,22 @@
     "equipment": "banda",
     "difficulty": "intermediate",
     "instructions": "Ancla la banda a la altura del pecho y colócate de espaldas y ligeramente de lado al punto de fijación. Sujeta la banda con una mano junto al pecho. Empuja el brazo hacia delante mientras giras suavemente el torso y la cadera hacia el lado contrario, sin perder el equilibrio. Regresa con control, completa la serie y cambia de lado."
+  },
+  {
+    "id": "press-pectoral-unilateral-fitball-mancuerna",
+    "name": "Press pectoral unilateral sobre fitball con mancuerna",
+    "image_male": "images/press-pectoral-unilateral-fitball-mancuerna-male.webp",
+    "image_female": "images/press-pectoral-unilateral-fitball-mancuerna-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombro",
+      "tríceps",
+      "core",
+      "glúteos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Rueda sobre un fitball hasta apoyar la parte alta de la espalda y eleva la cadera. Coloca una sola mancuerna junto al pecho con la palma al frente. Presiona sobre el hombro sin girar el torso y baja mientras mantienes el balón quieto."
   },
   {
     "id": "press-pines-barra",
@@ -6979,6 +7492,22 @@
     "equipment": "polea",
     "difficulty": "intermediate",
     "instructions": "Túmbate boca arriba en un banco con la cabeza próxima a una polea alta y sujeta los extremos de una cuerda. Mantén los brazos casi rectos y comienza con las manos detrás de la cabeza. Traza un arco hasta llevarlas sobre el pecho contrayendo los dorsales y vuelve lentamente sin flexionar más los codos."
+  },
+  {
+    "id": "pullover-unilateral-fitball-mancuerna",
+    "name": "Pullover unilateral sobre fitball con mancuerna",
+    "image_male": "images/pullover-unilateral-fitball-mancuerna-male.webp",
+    "image_female": "images/pullover-unilateral-fitball-mancuerna-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "espalda",
+      "tríceps",
+      "core",
+      "glúteos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Apoya la parte alta de la espalda sobre un fitball, eleva la cadera y extiende una mancuerna sobre el pecho. Mantén el codo ligeramente flexionado y lleva el brazo en arco detrás de la cabeza. Regresa sin arquear la zona lumbar ni girar el torso."
   },
   {
     "id": "rack-pull-barra",
@@ -7517,6 +8046,20 @@
     "equipment": "polea y barra recta",
     "difficulty": "intermediate",
     "instructions": "Ponte de pie sobre una polea baja y toma la barra con agarre prono delante de los muslos. Eleva la barra cerca del cuerpo guiando el movimiento con los codos hasta la altura del pecho. Baja despacio y detén el recorrido si notas molestias en los hombros."
+  },
+  {
+    "id": "remo-menton-unilateral-mancuerna",
+    "name": "Remo al mentón unilateral con mancuerna",
+    "image_male": "images/remo-menton-unilateral-mancuerna-male.webp",
+    "image_female": "images/remo-menton-unilateral-mancuerna-female.webp",
+    "muscle_group": "hombro",
+    "secondary_muscles": [
+      "trapecio",
+      "bíceps"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con una mancuerna delante del muslo y la palma hacia el cuerpo. Eleva la carga cerca del torso guiando el movimiento con el codo hasta la altura del pecho. Baja despacio sin girar ni inclinar el tronco."
   },
   {
     "id": "remo-pendlay-barra",
@@ -8855,6 +9398,34 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Ponte frente a un banco o cajón estable con una mancuerna en cada mano. Apoya por completo un pie sobre la superficie y empuja con su talón para elevar el cuerpo, evitando impulsarte con la pierna que queda abajo. Termina erguido sobre el banco, baja con control y repite. Alterna la pierna que inicia o completa primero todas las repeticiones de un lado."
+  },
+  {
+    "id": "supinacion-antebrazo-tumbado-banco-mancuerna",
+    "name": "Supinación de antebrazo tumbado en banco con mancuerna",
+    "image_male": "images/supinacion-antebrazo-tumbado-banco-mancuerna-male.webp",
+    "image_female": "images/supinacion-antebrazo-tumbado-banco-mancuerna-female.webp",
+    "muscle_group": "antebrazo",
+    "secondary_muscles": [
+      "bíceps",
+      "agarre"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Túmbate de lado sobre un banco con el brazo de trabajo apoyado y el codo doblado fuera del borde. Sostén una mancuerna muy ligera y gira el antebrazo hasta orientar la palma hacia arriba. Invierte la rotación sin doblar la muñeca ni mover el hombro."
+  },
+  {
+    "id": "supinacion-antebrazo-tumbado-suelo-mancuerna",
+    "name": "Supinación de antebrazo tumbado en el suelo con mancuerna",
+    "image_male": "images/supinacion-antebrazo-tumbado-suelo-mancuerna-male.webp",
+    "image_female": "images/supinacion-antebrazo-tumbado-suelo-mancuerna-female.webp",
+    "muscle_group": "antebrazo",
+    "secondary_muscles": [
+      "bíceps",
+      "agarre"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Túmbate de lado sobre una esterilla con el codo de trabajo flexionado y pegado a las costillas. Sujeta una mancuerna ligera y gira lentamente el antebrazo desde una posición neutra hasta dejar la palma hacia arriba. Vuelve con control sin desplazar el brazo superior."
   },
   {
     "id": "swing-pesa-rusa",

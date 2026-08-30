@@ -1,0 +1,14 @@
+{
+  "id": "curl-biceps-abierto-tumbado-mancuernas",
+  "name": "Curl de bíceps abierto tumbado con mancuernas",
+  "image_male": "images/curl-biceps-abierto-tumbado-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-abierto-tumbado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "hombro"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano con dos mancuernas sobre el pecho y abre los brazos en diagonal, manteniendo los codos fijos. Flexiona los codos por una trayectoria amplia hasta acercar las cargas a los hombros. Desciende por el mismo arco sin convertir el movimiento en una apertura de pecho."
+}

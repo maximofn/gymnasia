@@ -1,0 +1,14 @@
+{
+  "id": "curl-martillo-unilateral-pie-mancuerna",
+  "name": "Curl martillo unilateral de pie con mancuerna",
+  "image_male": "images/curl-martillo-unilateral-pie-mancuerna-male.webp",
+  "image_female": "images/curl-martillo-unilateral-pie-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con una sola mancuerna y el pulgar orientado hacia delante. Sin separar el codo del torso, flexiona el brazo manteniendo el agarre neutro. Pausa cerca del hombro y desciende lentamente antes de cambiar de lado."
+}

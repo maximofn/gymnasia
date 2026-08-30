@@ -1,0 +1,14 @@
+{
+  "id": "curl-predicador-martillo-unilateral-mancuerna",
+  "name": "Curl predicador martillo unilateral con mancuerna",
+  "image_male": "images/curl-predicador-martillo-unilateral-mancuerna-male.webp",
+  "image_female": "images/curl-predicador-martillo-unilateral-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco predicador y apoya por completo el brazo de trabajo sobre el cojín. Sujeta una mancuerna con agarre neutro y flexiona el codo sin levantar el brazo del apoyo. Pausa arriba y desciende hasta casi extenderlo."
+}

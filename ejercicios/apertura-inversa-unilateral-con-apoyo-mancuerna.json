@@ -1,0 +1,14 @@
+{
+  "id": "apertura-inversa-unilateral-con-apoyo-mancuerna",
+  "name": "Apertura inversa unilateral con apoyo y mancuerna",
+  "image_male": "images/apertura-inversa-unilateral-con-apoyo-mancuerna-male.webp",
+  "image_female": "images/apertura-inversa-unilateral-con-apoyo-mancuerna-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "espalda",
+    "trapecio"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya una mano en un banco y realiza una bisagra de cadera con la espalda recta. Deja colgar una mancuerna en el brazo opuesto y elévala hacia el lado con el codo suave. Mantén el torso inmóvil, junta la escápula y baja por el mismo arco."
+}
