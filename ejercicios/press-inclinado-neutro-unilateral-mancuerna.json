@@ -1,0 +1,15 @@
+{
+  "id": "press-inclinado-neutro-unilateral-mancuerna",
+  "name": "Press inclinado neutro unilateral con mancuerna",
+  "image_male": "images/press-inclinado-neutro-unilateral-mancuerna-male.webp",
+  "image_female": "images/press-inclinado-neutro-unilateral-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombro",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Recuéstate en un banco inclinado con una sola mancuerna a la altura del hombro y la palma hacia dentro. Estabiliza el banco con la mano libre y presiona la carga sobre la parte alta del pecho. Baja despacio sin rotar el torso y completa la serie antes de cambiar de lado."
+}

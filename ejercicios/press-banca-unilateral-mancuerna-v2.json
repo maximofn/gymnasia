@@ -1,0 +1,15 @@
+{
+  "id": "press-banca-unilateral-mancuerna-v2",
+  "name": "Press de banca unilateral con mancuerna (variante 2)",
+  "image_male": "images/press-banca-unilateral-mancuerna-v2-male.webp",
+  "image_female": "images/press-banca-unilateral-mancuerna-v2-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombro",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya cabeza, espalda y cadera en un banco plano y sostén una sola mancuerna con el codo pegado al torso. Presiona verticalmente desde el pecho hasta alinear la carga sobre el hombro. Regresa despacio manteniendo los pies firmes y el tronco sin rotación."
+}

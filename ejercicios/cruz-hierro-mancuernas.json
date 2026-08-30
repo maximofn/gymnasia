@@ -1,0 +1,15 @@
+{
+  "id": "cruz-hierro-mancuernas",
+  "name": "Cruz de hierro con mancuernas",
+  "image_male": "images/cruz-hierro-mancuernas-male.webp",
+  "image_female": "images/cruz-hierro-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "pecho",
+    "tríceps"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "De pie con una mancuerna en cada mano, eleva los brazos hacia los lados hasta quedar paralelos al suelo y formar una cruz con el cuerpo. Mantén los codos ligeramente flexionados, el abdomen firme y los hombros bajos. Sostén brevemente y baja de forma controlada."
+}

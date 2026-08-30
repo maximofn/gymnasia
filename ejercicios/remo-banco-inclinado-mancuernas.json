@@ -1,0 +1,14 @@
+{
+  "id": "remo-banco-inclinado-mancuernas",
+  "name": "Remo en banco inclinado con mancuernas",
+  "image_male": "images/remo-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/remo-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "bíceps",
+    "hombro posterior"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo con el pecho apoyado en un banco inclinado y los brazos colgando. Tira de las dos mancuernas hacia las costillas, llevando los codos atrás y juntando las escápulas. Haz una pausa arriba y extiende los brazos sin perder el apoyo del torso."
+}

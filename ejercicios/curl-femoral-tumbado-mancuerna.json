@@ -1,0 +1,15 @@
+{
+  "id": "curl-femoral-tumbado-mancuerna",
+  "name": "Curl femoral tumbado con mancuerna",
+  "image_male": "images/curl-femoral-tumbado-mancuerna-male.webp",
+  "image_female": "images/curl-femoral-tumbado-mancuerna-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "gemelos",
+    "glúteos",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Túmbate boca abajo en un banco con las rodillas cerca del borde y sujeta una sola mancuerna firmemente entre los pies. Flexiona las rodillas para acercar la carga a los glúteos sin levantar la pelvis. Baja despacio hasta casi extender las piernas y detente si la mancuerna pierde estabilidad."
+}

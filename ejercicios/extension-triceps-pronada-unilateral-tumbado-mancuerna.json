@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-pronada-unilateral-tumbado-mancuerna",
+  "name": "Extensión de tríceps pronada unilateral tumbado con mancuerna",
+  "image_male": "images/extension-triceps-pronada-unilateral-tumbado-mancuerna-male.webp",
+  "image_female": "images/extension-triceps-pronada-unilateral-tumbado-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "hombro"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco y extiende una sola mancuerna sobre el hombro con la palma orientada hacia los pies. Mantén quieto el brazo superior y flexiona el codo para llevar la carga detrás de la cabeza. Extiende de nuevo sin girar la muñeca y cambia de lado al terminar."
+}

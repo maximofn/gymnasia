@@ -1,0 +1,14 @@
+{
+  "id": "aperturas-inclinadas-con-giro-mancuernas",
+  "name": "Aperturas inclinadas con giro y mancuernas",
+  "image_male": "images/aperturas-inclinadas-con-giro-mancuernas-male.webp",
+  "image_female": "images/aperturas-inclinadas-con-giro-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombro",
+    "bíceps"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Recuéstate en un banco inclinado con las mancuernas sobre el pecho y las palmas enfrentadas. Abre los brazos en un arco amplio mientras giras gradualmente las palmas hacia delante. Invierte el giro al cerrar, manteniendo una ligera flexión de codos y el control escapular."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rotacion-externa-hombro-tumbado-mancuerna",
+  "name": "Rotación externa de hombro tumbado con mancuerna",
+  "image_male": "images/rotacion-externa-hombro-tumbado-mancuerna-male.webp",
+  "image_female": "images/rotacion-externa-hombro-tumbado-mancuerna-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "manguito rotador",
+    "antebrazo"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Túmbate de lado en un banco y pega el brazo superior al torso con el codo flexionado a 90 grados. Sostén una mancuerna ligera y gira el antebrazo hacia arriba sin separar el codo del costado. Regresa lentamente dentro de un rango cómodo y cambia de lado."
+}

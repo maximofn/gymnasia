@@ -1,0 +1,14 @@
+{
+  "id": "curl-biceps-arrodillado-fitball-mancuernas",
+  "name": "Curl de bíceps arrodillado sobre fitball con mancuernas",
+  "image_male": "images/curl-biceps-arrodillado-fitball-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-arrodillado-fitball-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Arrodíllate frente a un fitball y apoya ambos codos sobre su parte superior con una mancuerna en cada mano. Mantén los brazos superiores quietos y flexiona los codos hasta acercar las cargas a los hombros. Baja lentamente sin dejar que el balón ruede."
+}

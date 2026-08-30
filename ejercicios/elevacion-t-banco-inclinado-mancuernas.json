@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-t-banco-inclinado-mancuernas",
+  "name": "Elevación en T sobre banco inclinado con mancuernas",
+  "image_male": "images/elevacion-t-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/elevacion-t-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "romboides"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho en un banco inclinado y deja colgar dos mancuernas con las palmas enfrentadas. Eleva los brazos rectos hacia los lados hasta formar una T con el torso. Mantén el cuello neutro, junta suavemente las escápulas y baja con control."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-deltoide-posterior-unilateral-tumbado-mancuerna",
+  "name": "Elevación unilateral de deltoide posterior tumbado con mancuerna",
+  "image_male": "images/elevacion-deltoide-posterior-unilateral-tumbado-mancuerna-male.webp",
+  "image_female": "images/elevacion-deltoide-posterior-unilateral-tumbado-mancuerna-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "romboides"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo en un banco plano y deja colgar una sola mancuerna bajo el hombro. Eleva el brazo hacia fuera y ligeramente atrás, manteniendo el codo suave y el torso inmóvil. Aprieta la escápula y baja lentamente antes de cambiar de lado."
+}

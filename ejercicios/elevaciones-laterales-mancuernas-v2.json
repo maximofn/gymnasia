@@ -1,0 +1,14 @@
+{
+  "id": "elevaciones-laterales-mancuernas-v2",
+  "name": "Elevaciones laterales con mancuernas (variante 2)",
+  "image_male": "images/elevaciones-laterales-mancuernas-v2-male.webp",
+  "image_female": "images/elevaciones-laterales-mancuernas-v2-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "manguito rotador"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "De pie con una mancuerna a cada lado y los codos suavemente flexionados, eleva los brazos en arcos laterales hasta la altura de los hombros. Mantén el torso quieto y los hombros alejados de las orejas. Baja despacio sin balancear las cargas."
+}

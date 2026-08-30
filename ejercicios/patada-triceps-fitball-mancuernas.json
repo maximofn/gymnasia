@@ -1,0 +1,15 @@
+{
+  "id": "patada-triceps-fitball-mancuernas",
+  "name": "Patada de tríceps con mancuernas sobre fitball",
+  "image_male": "images/patada-triceps-fitball-mancuernas-male.webp",
+  "image_female": "images/patada-triceps-fitball-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombro",
+    "espalda",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate estable sobre un fitball, inclina el torso hacia delante y lleva los codos flexionados junto a las costillas. Extiende ambos antebrazos hacia atrás hasta alinear los brazos, apretando los tríceps. Regresa a 90 grados sin mover los brazos superiores ni el balón."
+}

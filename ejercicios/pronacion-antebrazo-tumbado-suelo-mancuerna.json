@@ -1,0 +1,14 @@
+{
+  "id": "pronacion-antebrazo-tumbado-suelo-mancuerna",
+  "name": "Pronación de antebrazo tumbado en el suelo con mancuerna",
+  "image_male": "images/pronacion-antebrazo-tumbado-suelo-mancuerna-male.webp",
+  "image_female": "images/pronacion-antebrazo-tumbado-suelo-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "agarre",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Túmbate de lado sobre una esterilla y apoya el brazo superior con el codo flexionado a 90 grados. Con una mancuerna ligera en una mano, gira el antebrazo de forma controlada hasta que la palma mire al suelo. Vuelve al inicio sin separar el codo ni flexionar la muñeca."
+}

@@ -1,0 +1,16 @@
+{
+  "id": "press-inclinado-unilateral-fitball-mancuerna",
+  "name": "Press inclinado unilateral con mancuerna sobre fitball",
+  "image_male": "images/press-inclinado-unilateral-fitball-mancuerna-male.webp",
+  "image_female": "images/press-inclinado-unilateral-fitball-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombro",
+    "tríceps",
+    "core",
+    "glúteos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Apoya la cabeza y las escápulas sobre un fitball con la cadera elevada y el torso ligeramente inclinado. Sostén una sola mancuerna junto al hombro con la palma hacia delante y presiónala sobre el pecho. Baja despacio manteniendo el balón y la pelvis inmóviles."
+}

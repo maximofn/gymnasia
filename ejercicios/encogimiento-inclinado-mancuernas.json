@@ -1,0 +1,14 @@
+{
+  "id": "encogimiento-inclinado-mancuernas",
+  "name": "Encogimiento inclinado con mancuernas",
+  "image_male": "images/encogimiento-inclinado-mancuernas-male.webp",
+  "image_female": "images/encogimiento-inclinado-mancuernas-female.webp",
+  "muscle_group": "trapecio",
+  "secondary_muscles": [
+    "romboides",
+    "antebrazo"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate con la espalda apoyada en un banco inclinado y deja colgar una mancuerna en cada mano. Manteniendo los brazos rectos, eleva los hombros hacia las orejas y retrae ligeramente las escápulas. Pausa arriba y baja sin girar ni balancear las cargas."
+}
