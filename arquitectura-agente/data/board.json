@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-29",
+    "updated": "2026-08-30",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -1723,7 +1723,7 @@
         {
           "id": "GYM-159",
           "title": "Separar compilación rutinaria de publicación y añadir gates de pruebas",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Publicar Android solo mediante un disparador explícito y después de superar pruebas deterministas y nativas.",
           "dependsOn": [],
           "related": [
@@ -1748,7 +1748,7 @@
         {
           "id": "GYM-161",
           "title": "Evitar fugas de claves en .dev-store.json y proteger /dev-store",
-          "state": "todo",
+          "state": "done",
           "summary": "Sanear el espejo de desarrollo y restringir el endpoint Metro que hoy puede exponer o sobrescribir secretos.",
           "dependsOn": [],
           "related": [
@@ -1760,7 +1760,7 @@
         {
           "id": "GYM-162",
           "title": "Hacer veraz y completo el borrado de datos locales",
-          "state": "todo",
+          "state": "done",
           "summary": "Separar el restablecimiento parcial del borrado total y cubrir todas las claves, secretos, cachés y trazas.",
           "dependsOn": [],
           "related": [
@@ -1773,7 +1773,7 @@
         {
           "id": "GYM-163",
           "title": "Hacer portables las fotos de mediciones en las copias de seguridad",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Exportar y restaurar los bytes de las fotos en lugar de conservar URIs locales inservibles.",
           "dependsOn": [],
           "related": [
@@ -1786,7 +1786,7 @@
         {
           "id": "GYM-164",
           "title": "Preservar y recuperar LocalStore corrupto sin sobrescribirlo",
-          "state": "todo",
+          "state": "done",
           "summary": "Evitar que una hidratación fallida arranque vacía y reescriba datos potencialmente recuperables.",
           "dependsOn": [],
           "related": [
@@ -2298,6 +2298,18 @@
             "GYM-193",
             "GYM-202",
             "GYM-203"
+          ]
+        },
+        {
+          "id": "GYM-225",
+          "title": "Verificar que la promoción a Production no puede saltarse los gates de pruebas",
+          "state": "todo",
+          "summary": "Auditar todos los caminos de publicación de Production y cerrar cualquier ruta que permita promover un commit, workflow o artefacto local sin autorización y pruebas verificables.",
+          "dependsOn": [],
+          "related": [
+            "GYM-159",
+            "GYM-199",
+            "GYM-201"
           ]
         },
         {
@@ -2915,6 +2927,7 @@
         "GYM-195",
         "GYM-196",
         "GYM-197",
+        "GYM-225",
         "GYM-198",
         "GYM-199",
         "GYM-200",
