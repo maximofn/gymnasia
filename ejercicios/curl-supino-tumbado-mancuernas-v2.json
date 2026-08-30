@@ -1,0 +1,13 @@
+{
+  "id": "curl-supino-tumbado-mancuernas-v2",
+  "name": "Curl supino tumbado con mancuernas v2",
+  "image_male": "images/curl-supino-tumbado-mancuernas-v2-male.webp",
+  "image_female": "images/curl-supino-tumbado-mancuernas-v2-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Colócate boca arriba en un banco plano con los hombros cerca del extremo y una mancuerna en cada mano. Deja los brazos ligeramente por detrás del torso para iniciar con tensión y flexiona los codos sin adelantarlos. Sube con las palmas hacia arriba y baja lentamente."
+}

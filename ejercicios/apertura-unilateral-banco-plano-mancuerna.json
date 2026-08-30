@@ -1,0 +1,14 @@
+{
+  "id": "apertura-unilateral-banco-plano-mancuerna",
+  "name": "Apertura unilateral en banco plano con mancuerna",
+  "image_male": "images/apertura-unilateral-banco-plano-mancuerna-male.webp",
+  "image_female": "images/apertura-unilateral-banco-plano-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombro",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco plano con una sola mancuerna sobre el hombro y la palma hacia dentro. Mantén una ligera flexión de codo y abre el brazo por un arco amplio hasta quedar cerca de la línea del pecho. Contrae el pectoral para regresar sin girar el torso."
+}

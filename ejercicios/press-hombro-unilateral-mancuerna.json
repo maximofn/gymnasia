@@ -1,0 +1,14 @@
+{
+  "id": "press-hombro-unilateral-mancuerna",
+  "name": "Press de hombro unilateral con mancuerna",
+  "image_male": "images/press-hombro-unilateral-mancuerna-male.webp",
+  "image_female": "images/press-hombro-unilateral-mancuerna-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Permanece de pie con una mancuerna a la altura del hombro y la palma hacia delante. Activa el abdomen y presiona la carga por encima de la cabeza hasta extender el brazo. Baja sin inclinarte y cambia de lado al terminar."
+}

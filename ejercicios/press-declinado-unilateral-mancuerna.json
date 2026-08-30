@@ -1,0 +1,15 @@
+{
+  "id": "press-declinado-unilateral-mancuerna",
+  "name": "Press declinado unilateral con mancuerna",
+  "image_male": "images/press-declinado-unilateral-mancuerna-male.webp",
+  "image_female": "images/press-declinado-unilateral-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombro",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco declinado y fija bien las piernas. Coloca una sola mancuerna junto al pecho con la palma al frente y mantén el torso cuadrado. Presiona la carga sobre el pecho y bájala con control antes de cambiar de lado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-unilateral-tumbado-mancuerna-v2",
+  "name": "Extensión de tríceps unilateral tumbado con mancuerna v2",
+  "image_male": "images/extension-triceps-unilateral-tumbado-mancuerna-v2-male.webp",
+  "image_female": "images/extension-triceps-unilateral-tumbado-mancuerna-v2-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "hombro"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco plano y sostén una mancuerna sobre el pecho con un solo brazo extendido. Mantén vertical el brazo superior y flexiona el codo para acercar la carga a la frente. Extiende de nuevo sin mover el hombro y cambia de lado al completar la serie."
+}

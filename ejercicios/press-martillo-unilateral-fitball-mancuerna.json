@@ -1,0 +1,16 @@
+{
+  "id": "press-martillo-unilateral-fitball-mancuerna",
+  "name": "Press martillo unilateral sobre fitball con mancuerna",
+  "image_male": "images/press-martillo-unilateral-fitball-mancuerna-male.webp",
+  "image_female": "images/press-martillo-unilateral-fitball-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombro",
+    "core",
+    "glúteos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Apoya la parte alta de la espalda sobre un fitball y mantén la cadera elevada. Coloca una mancuerna junto al pecho con la palma hacia dentro y el codo próximo al torso. Presiona verticalmente sin girar el tronco y baja conservando el agarre neutro."
+}

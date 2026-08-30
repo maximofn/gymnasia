@@ -1,0 +1,14 @@
+{
+  "id": "supinacion-antebrazo-tumbado-suelo-mancuerna",
+  "name": "Supinación de antebrazo tumbado en el suelo con mancuerna",
+  "image_male": "images/supinacion-antebrazo-tumbado-suelo-mancuerna-male.webp",
+  "image_female": "images/supinacion-antebrazo-tumbado-suelo-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "bíceps",
+    "agarre"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Túmbate de lado sobre una esterilla con el codo de trabajo flexionado y pegado a las costillas. Sujeta una mancuerna ligera y gira lentamente el antebrazo desde una posición neutra hasta dejar la palma hacia arriba. Vuelve con control sin desplazar el brazo superior."
+}

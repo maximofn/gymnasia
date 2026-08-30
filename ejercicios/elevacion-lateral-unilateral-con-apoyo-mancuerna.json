@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-unilateral-con-apoyo-mancuerna",
+  "name": "Elevación lateral unilateral con apoyo y mancuerna",
+  "image_male": "images/elevacion-lateral-unilateral-con-apoyo-mancuerna-male.webp",
+  "image_female": "images/elevacion-lateral-unilateral-con-apoyo-mancuerna-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio",
+    "manguito rotador"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Sujétate con una mano a un banco estable y sostén una mancuerna en la otra. Mantén el cuerpo erguido y eleva el brazo lateralmente hasta la altura del hombro. Desciende con control sin tirar del apoyo ni encoger el hombro."
+}

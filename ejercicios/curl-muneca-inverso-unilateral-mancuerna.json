@@ -1,0 +1,14 @@
+{
+  "id": "curl-muneca-inverso-unilateral-mancuerna",
+  "name": "Curl de muñeca inverso unilateral con mancuerna",
+  "image_male": "images/curl-muneca-inverso-unilateral-mancuerna-male.webp",
+  "image_female": "images/curl-muneca-inverso-unilateral-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "agarre",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Siéntate y apoya el antebrazo sobre el muslo con la muñeca fuera de la rodilla. Sujeta una mancuerna ligera con la palma hacia abajo. Eleva el dorso de la mano moviendo solo la muñeca y desciende lentamente sin despegar el antebrazo."
+}

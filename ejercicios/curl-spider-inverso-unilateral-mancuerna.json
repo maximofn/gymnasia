@@ -1,0 +1,14 @@
+{
+  "id": "curl-spider-inverso-unilateral-mancuerna",
+  "name": "Curl spider inverso unilateral con mancuerna",
+  "image_male": "images/curl-spider-inverso-unilateral-mancuerna-male.webp",
+  "image_female": "images/curl-spider-inverso-unilateral-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "bíceps",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo sobre un banco inclinado y deja colgar un brazo con una mancuerna en agarre prono. Mantén el pecho pegado al cojín y flexiona solo el codo. Acerca la carga al hombro con la muñeca recta y baja sin balanceo."
+}

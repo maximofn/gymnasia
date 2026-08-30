@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-posterior-tumbado-mancuernas",
+  "name": "Elevación lateral posterior tumbado con mancuernas",
+  "image_male": "images/elevacion-lateral-posterior-tumbado-mancuernas-male.webp",
+  "image_female": "images/elevacion-lateral-posterior-tumbado-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "espalda",
+    "trapecio"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo sobre un banco con una mancuerna en cada mano y los brazos colgando. Mantén una ligera flexión de codos y abre los brazos hacia los lados hasta alinearlos con el torso. Junta las escápulas sin encoger los hombros y baja despacio."
+}

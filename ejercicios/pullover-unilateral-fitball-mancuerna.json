@@ -1,0 +1,16 @@
+{
+  "id": "pullover-unilateral-fitball-mancuerna",
+  "name": "Pullover unilateral sobre fitball con mancuerna",
+  "image_male": "images/pullover-unilateral-fitball-mancuerna-male.webp",
+  "image_female": "images/pullover-unilateral-fitball-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "espalda",
+    "tríceps",
+    "core",
+    "glúteos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Apoya la parte alta de la espalda sobre un fitball, eleva la cadera y extiende una mancuerna sobre el pecho. Mantén el codo ligeramente flexionado y lleva el brazo en arco detrás de la cabeza. Regresa sin arquear la zona lumbar ni girar el torso."
+}

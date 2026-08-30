@@ -1,0 +1,16 @@
+{
+  "id": "arrancada-unilateral-mancuerna",
+  "name": "Arrancada unilateral con mancuerna",
+  "image_male": "images/arrancada-unilateral-mancuerna-male.webp",
+  "image_female": "images/arrancada-unilateral-mancuerna-female.webp",
+  "muscle_group": "pierna",
+  "secondary_muscles": [
+    "glúteo",
+    "isquiotibiales",
+    "hombro",
+    "core"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Coloca una mancuerna entre los pies y agáchate con la espalda neutra. Extiende con potencia cadera, rodillas y tobillos para guiar la carga cerca del cuerpo. Recíbela sobre la cabeza con el brazo extendido y las rodillas ligeramente flexionadas antes de bajar."
+}

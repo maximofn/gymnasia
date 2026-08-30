@@ -1,0 +1,14 @@
+{
+  "id": "curl-martillo-prono-unilateral-banco-inclinado-mancuerna",
+  "name": "Curl martillo prono unilateral en banco inclinado con mancuerna",
+  "image_male": "images/curl-martillo-prono-unilateral-banco-inclinado-mancuerna-male.webp",
+  "image_female": "images/curl-martillo-prono-unilateral-banco-inclinado-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquiorradial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho boca abajo en un banco inclinado y deja el brazo de trabajo colgando. Sujeta una mancuerna con el pulgar hacia arriba y flexiona el codo sin mover el hombro. Pausa cerca del pecho y extiende de nuevo con control."
+}
