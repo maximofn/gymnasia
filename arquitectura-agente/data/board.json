@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-29",
+    "updated": "2026-08-30",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -214,7 +214,8 @@
           ],
           "related": [
             "GYM-158",
-            "GYM-200"
+            "GYM-200",
+            "GYM-225"
           ]
         },
         {
@@ -238,7 +239,20 @@
             "GYM-200"
           ],
           "related": [
-            "GYM-199"
+            "GYM-199",
+            "GYM-225"
+          ]
+        },
+        {
+          "id": "GYM-225",
+          "title": "Verificar que la promoción a Production no puede saltarse los gates de pruebas",
+          "state": "todo",
+          "summary": "Auditar ramas, workflows, builds locales y promociones de Play para asegurar que Production solo recibe commits autorizados con gates y artefactos verificables.",
+          "dependsOn": [],
+          "related": [
+            "GYM-159",
+            "GYM-199",
+            "GYM-201"
           ]
         }
       ]
@@ -1723,13 +1737,14 @@
         {
           "id": "GYM-159",
           "title": "Separar compilación rutinaria de publicación y añadir gates de pruebas",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Publicar Android solo mediante un disparador explícito y después de superar pruebas deterministas y nativas.",
           "dependsOn": [],
           "related": [
             "GYM-122",
             "GYM-123",
-            "GYM-158"
+            "GYM-158",
+            "GYM-225"
           ]
         },
         {
@@ -2917,6 +2932,7 @@
         "GYM-197",
         "GYM-198",
         "GYM-199",
+        "GYM-225",
         "GYM-200",
         "GYM-201"
       ]
@@ -2940,7 +2956,6 @@
         "GYM-156",
         "GYM-158",
         "GYM-157",
-        "GYM-159",
         "GYM-161",
         "GYM-164",
         "GYM-162",
