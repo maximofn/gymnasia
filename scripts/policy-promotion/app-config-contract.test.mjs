@@ -24,6 +24,7 @@ function expoConfig(environment, developmentProviderMode) {
 }
 
 test("Expo publica las tres variantes exactas y aisladas", () => {
+  const currentAppVersion = "1.31.1";
   const expected = [
     ["development", "Gymnasia Dev", "com.maximofn.gymnasia.dev", "Local", "gymnasia.development", "fake"],
     ["staging", "Gymnasia Staging", "com.maximofn.gymnasia.staging", "Staging", "gymnasia.staging", "byok"],
@@ -35,6 +36,7 @@ test("Expo publica las tres variantes exactas y aisladas", () => {
     assert.equal(result.status, 0, result.stderr);
     const config = JSON.parse(result.stdout);
     assert.equal(config.name, name);
+    assert.equal(config.version, currentAppVersion);
     assert.equal(config.android.package, applicationId);
     assert.equal(config.ios.bundleIdentifier, applicationId);
     assert.deepEqual(
