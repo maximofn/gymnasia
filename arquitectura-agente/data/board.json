@@ -1763,7 +1763,7 @@
         {
           "id": "GYM-161",
           "title": "Evitar fugas de claves en .dev-store.json y proteger /dev-store",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Sanear el espejo de desarrollo y restringir el endpoint Metro que hoy puede exponer o sobrescribir secretos.",
           "dependsOn": [],
           "related": [
