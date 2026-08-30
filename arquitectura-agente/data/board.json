@@ -214,7 +214,8 @@
           ],
           "related": [
             "GYM-158",
-            "GYM-200"
+            "GYM-200",
+            "GYM-225"
           ]
         },
         {
@@ -238,7 +239,20 @@
             "GYM-200"
           ],
           "related": [
-            "GYM-199"
+            "GYM-199",
+            "GYM-225"
+          ]
+        },
+        {
+          "id": "GYM-225",
+          "title": "Verificar que la promoción a Production no puede saltarse los gates de pruebas",
+          "state": "todo",
+          "summary": "Auditar ramas, workflows, builds locales y promociones de Play para asegurar que Production solo recibe commits autorizados con gates y artefactos verificables.",
+          "dependsOn": [],
+          "related": [
+            "GYM-159",
+            "GYM-199",
+            "GYM-201"
           ]
         }
       ]
@@ -1729,19 +1743,8 @@
           "related": [
             "GYM-122",
             "GYM-123",
-            "GYM-158"
-          ]
-        },
-        {
-          "id": "GYM-225",
-          "title": "Verificar que la promoción a Production no puede saltarse los gates de pruebas",
-          "state": "todo",
-          "summary": "Auditar todos los caminos de publicación a Production y cerrar cualquier vía que permita promover un commit, build o artefacto sin autorización y pruebas verificables.",
-          "dependsOn": [],
-          "related": [
-            "GYM-159",
-            "GYM-199",
-            "GYM-201"
+            "GYM-158",
+            "GYM-225"
           ]
         },
         {
@@ -2929,6 +2932,7 @@
         "GYM-197",
         "GYM-198",
         "GYM-199",
+        "GYM-225",
         "GYM-200",
         "GYM-201"
       ]
@@ -2952,7 +2956,6 @@
         "GYM-156",
         "GYM-158",
         "GYM-157",
-        "GYM-225",
         "GYM-161",
         "GYM-164",
         "GYM-162",
