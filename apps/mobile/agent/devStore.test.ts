@@ -72,8 +72,10 @@ describe("contrato del espejo en App.tsx", () => {
     expect(appSource).not.toContain("saveDevStoreFile(JSON.stringify(store))");
   });
 
-  it("mantiene las claves del navegador fuera de este cambio", () => {
-    expect(appSource).toContain("if (!secureStoreAvailable) return store;");
+  it("mantiene las claves fuera del agregado en todas las plataformas", () => {
+    expect(appSource).not.toContain("if (!secureStoreAvailable) return store;");
+    expect(appSource).toContain("function serializeStoreForAsyncStorage(store: LocalStore)");
     expect(appSource).toContain("return stripProviderApiKeys(store);");
+    expect(appSource).toContain('"gymnasia.mobile.provider_configuration.v1"');
   });
 });

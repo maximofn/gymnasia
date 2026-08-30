@@ -19,6 +19,7 @@ const marker = "gymnasia-deletion-e2e-marker";
 
 const keys = {
   store: scopedKey("gymnasia.mobile.local.v3"),
+  providerConfiguration: scopedKey("gymnasia.mobile.provider_configuration.v1"),
   lastGood: scopedKey("gymnasia.mobile.local.last_good.v1"),
   quarantine: scopedKey("gymnasia.mobile.local.quarantine.v1"),
   session: scopedKey("gymnasia.mobile.training.session.v1"),
@@ -251,7 +252,12 @@ async function run() {
     assert.match(partial[keys.personalData] ?? "", new RegExp(`memory-${marker}`));
     assert.match(partial[keys.personalFoods] ?? "", new RegExp(`food-${marker}`));
     assert.ok(partial[keys.signedPolicy], "el borrado parcial no debe eliminar la caché firmada");
-    assert.match(partial[keys.store] ?? "", new RegExp(`secret-${marker}`));
+    assert.doesNotMatch(partial[keys.store] ?? "", new RegExp(`secret-${marker}`));
+    assert.match(
+      partial[keys.providerConfiguration] ?? "",
+      new RegExp(`secret-${marker}`),
+      "el borrado parcial debe conservar el diario web de proveedores",
+    );
     assert.doesNotMatch(partial[keys.store] ?? "", new RegExp(`actividad-${marker}`));
     assert.doesNotMatch(
       partial[keys.lastGood] ?? "",
