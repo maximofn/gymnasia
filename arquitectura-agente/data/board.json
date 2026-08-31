@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-30",
+    "updated": "2026-08-31",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -246,7 +246,7 @@
         {
           "id": "GYM-225",
           "title": "Verificar que la promoción a Production no puede saltarse los gates de pruebas",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Auditar ramas, workflows, builds locales y promociones de Play para asegurar que Production solo recibe commits autorizados con gates y artefactos verificables.",
           "dependsOn": [],
           "related": [
@@ -1712,7 +1712,7 @@
         {
           "id": "GYM-157",
           "title": "Verificar integridad y procedencia del APK antes de actualizar",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Validar firma, checksum, paquete y perfil EAS del APK publicado antes de ofrecérselo al usuario.",
           "dependsOn": [
             "GYM-158"
@@ -1815,7 +1815,7 @@
         {
           "id": "GYM-165",
           "title": "Serializar y probar los guardados de configuración de proveedores",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Evitar que verificaciones tardías y persistencia parcial dejen la configuración de proveedores incoherente.",
           "dependsOn": [],
           "related": [
