@@ -1,0 +1,151 @@
+# Gates y evidencia de publicación Android
+
+## Contrato de Production
+
+Una publicación de Gymnasia solo es válida si conserva dos evidencias JSON:
+
+- `ProductionSourceEvidenceV1`: identifica el commit de `main`, los controles
+  remotos y todos los gates ejecutados sobre ese checkout exacto.
+- `ProductionArtifactEvidenceV1`: enlaza la evidencia anterior con el APK/AAB,
+  su versión, firma, manifest fusionado, snapshot de política y SHA-256.
+
+La política ejecutable vive en `scripts/production-release/policy.json`. Los
+workflows, scripts y runbooks no deben duplicar sus valores. Las evidencias solo
+contienen metadatos operativos; nunca claves, prompts, conversaciones o datos de
+usuarios.
+
+## Matriz auditada
+
+| Entrada | Ref admitido | Gate | Environment / perfil | Salida | Destino |
+| --- | --- | --- | --- | --- | --- |
+| Push que afecta a la app | `refs/heads/main` | `validate-production` completo | `Production` / `production-apk` | APK + dos evidencias | GitHub Release |
+| `workflow_dispatch` | Solo `refs/heads/main` | Idéntico al push | `Production` / `production-apk` | APK + dos evidencias | GitHub Release |
+| Build local para Play | HEAD limpio y alcanzable desde `origin/main` | `verify:production-source` completo | `production` | AAB + dos evidencias | Prueba interna |
+| Promoción en Play | La release ya validada | Comparar `versionCode`, SHA-256 y certificado | Sin nueva build | El mismo AAB | Interna → cerrada |
+| Rollout público | La release cerrada ya validada | Evidencia de pruebas y autorización | Sin nueva build | El mismo AAB | España → más territorios |
+
+El último paso pertenece a GYM-201 (ticket para publicar primero en España y
+ampliar después los territorios). Esta auditoría no autoriza a ejecutarlo.
+
+## Controles remotos verificados
+
+Consulta pública realizada el 31 de agosto de 2026:
+
+- el ruleset `Protect main and sensitive policy` está activo sobre la rama por
+  defecto, no declara actores de bypass, exige PR y requiere `prompt-policy`,
+  `gymnasia/owner-authorization` y `gymnasia/policy-promotion`;
+- el environment `Production` admite únicamente ramas protegidas y requiere a
+  `maximofn` como aprobador;
+- `prevent_self_review` está desactivado de forma deliberada porque el proyecto
+  tiene un único responsable de publicación.
+
+El verificador consulta de nuevo estos valores en cada candidata. Un error de
+red, permisos o formato no se interpreta como éxito.
+
+## Evidencia no destructiva de la auditoría
+
+El 31 de agosto de 2026 se ejecutaron estas comprobaciones sin crear una build ni
+promover una release:
+
+- el verificador real rechazó un checkout con cambios locales mediante la
+  violación `dirty`, antes de ejecutar gates o acceder a EAS;
+- las 13 pruebas del contrato cubrieron la ruta válida y rechazaron ref
+  arbitrario, fork, commit no alcanzable, PR o checks ausentes, ruleset o
+  environment degradados, perfil cruzado, evidencia incompleta, tipo de archivo,
+  permisos, snapshot y certificado incorrectos; la propiedad generativa confirmó
+  que ningún nombre de rama distinto de `main` resulta publicable;
+- el export Android con `APP_ENV=production`, el E2E del agente con proveedores
+  falsos y el E2E completo de entrenamiento terminaron correctamente;
+- como contraste con un binario real, la release pública preexistente `v1.31.2`
+  apuntaba al commit `4a21e91c7d977f818f6f9e3939fa62eec0c61387`, declaraba el
+  perfil `production-apk` y servía un APK de 102.377.197 bytes cuyo SHA-256
+  (`bc49c29d3ad2848235bcc13e733c701210134d6e416aefc7bee4912d69dcdac7`)
+  coincidía entre GitHub y la descarga. El ZIP contenía `AndroidManifest.xml` y
+  `assets/app.config`; este último declaraba paquete, entorno, canal, proveedor,
+  candidato y versión de Production.
+
+Esa release es una línea base anterior al nuevo gate y no se considera evidencia
+de que la ruta endurecida haya pasado. La prueba positiva real requiere fusionar
+el cambio y aprobar una ejecución de `Production`; se hace por separado porque
+consume cuota de EAS.
+
+## Gates reejecutados antes de EAS
+
+`npm run verify:production-source` ejecuta la lista canónica definida en
+`PRODUCTION_GATES`. Incluye:
+
+1. política de prompt, promoción firmada y sus pruebas;
+2. política sanitaria y pruebas;
+3. permisos Android, inventario de datos y política legal;
+4. paridad del prompt, suite determinista, OpenWiki y TypeScript;
+5. E2E del agente con proveedor falso y E2E de entrenamiento.
+
+La validación sucede en un job sin secrets ni environment. Solo después puede
+comenzar el job `build-and-release`, solicitar aprobación de `Production` y leer
+`EXPO_TOKEN`.
+
+## Build local reproducible para Google Play
+
+Requisitos: checkout limpio, Node 22, dependencias instaladas, Android SDK/JDK,
+EAS autenticado y `bundletool-all-1.18.3.jar` fuera del repositorio.
+
+Desde la raíz:
+
+```bash
+npm ci
+npm run verify:production-source -- \
+  --profile production \
+  --artifact-type aab \
+  --output /tmp/gymnasia-production-source.json
+
+npm run prepare:policy-snapshot -- --environment production
+
+cd apps/mobile
+npm exec --yes --package eas-cli@latest -- eas build \
+  --platform android \
+  --profile production \
+  --local \
+  --output /tmp/gymnasia-production.aab
+cd ../..
+
+npm run verify:production-artifact -- \
+  --artifact /tmp/gymnasia-production.aab \
+  --kind aab \
+  --source-evidence /tmp/gymnasia-production-source.json \
+  --snapshot apps/mobile/agent/generated/policySnapshot.generated.json \
+  --bundletool /ruta/privada/bundletool-all-1.18.3.jar \
+  --output /tmp/gymnasia-production-artifact.json
+```
+
+Aunque la build falle, restaura los cuatro módulos temporales del snapshot antes
+de continuar. La validación inicial garantiza que estaban limpios:
+
+```bash
+git restore -- \
+  apps/mobile/agent/generated/chatSystemPrompt.generated.ts \
+  apps/mobile/agent/generated/healthSafetyPolicy.generated.ts \
+  apps/mobile/agent/generated/policySnapshot.generated.json \
+  apps/mobile/agent/generated/signedPolicySnapshot.generated.ts
+```
+
+No subas el AAB si falta cualquiera de las dos evidencias o si alguna declara
+`result: failed`.
+
+## Promoción y registro en Play Console
+
+El operador crea la release solo en Prueba interna. Para pasar a Prueba cerrada
+usa la acción de promoción de esa misma release; nunca vuelve a invocar EAS.
+Registra en la evidencia del ticket o PR:
+
+- aplicación, track, release ID y fecha;
+- `versionName`, `versionCode`, SHA-256 y certificado de subida;
+- actor que promovió y aprobador;
+- enlace o captura sin datos privados;
+- resultado del smoke y del informe de pre-lanzamiento.
+
+Antes de reutilizar la evidencia histórica debe resolverse una discrepancia: la
+descripción de GYM-198 (ticket para generar y validar el AAB de producción)
+menciona versión 1.28.0 / `versionCode` 12, mientras `aab-validation.md` fija
+1.20.0 / `versionCode` 16. La fuente autoritativa será el artefacto que figure
+actualmente en Play Console, contrastado con su página EAS y SHA-256; no se dará
+por correcto ninguno de los dos valores por memoria.

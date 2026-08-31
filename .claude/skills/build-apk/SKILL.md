@@ -145,6 +145,29 @@ Requisitos adicionales para build local:
 - **Android SDK** con Build Tools y platform API level adecuados
 - **ANDROID_HOME** configurado en el entorno
 
+## Production: flujo obligatorio y fail-closed
+
+Una build `production` o `production-apk` no puede usar el flujo abreviado de
+preview. Antes de consumir EAS debe ejecutar el verificador canónico del SHA y,
+después de compilar, el verificador del artefacto. Ambos generan evidencia JSON.
+
+Para un AAB de Google Play, sigue exactamente
+`docs/store/google-play/production-promotion-gates.md`:
+
+1. `npm run verify:production-source -- --profile production --artifact-type aab
+   --output /tmp/gymnasia-production-source.json`;
+2. `npm run prepare:policy-snapshot -- --environment production`;
+3. compilar desde `apps/mobile` con `--profile production`;
+4. ejecutar `npm run verify:production-artifact` con el AAB, la evidencia fuente,
+   el snapshot generado y `bundletool` 1.18.3;
+5. restaurar siempre los módulos generados temporales;
+6. subir a Play únicamente si ambas evidencias declaran `result: passed`.
+
+El verificador rechaza ramas distintas de `main`, checkouts sucios o no
+alcanzables, controles remotos degradados, perfiles cruzados, firma distinta,
+permisos prohibidos, versión incoherente y snapshot ausente. No llames a EAS
+directamente para Production saltándote este contrato.
+
 ## Problemas frecuentes
 
 | Problema | Causa | Solucion |
@@ -170,6 +193,10 @@ npm --workspace apps/mobile exec tsc --noEmit
 # Verificar que el bundle compila
 cd apps/mobile && npx expo export --platform android --dev
 ```
+
+Esas dos comprobaciones son suficientes para `development`, `staging` y
+`preview`. Production usa la sección fail-closed anterior, que incluye ambas y
+amplía la cobertura a política, salud, permisos, suite determinista y E2E.
 
 ## Notas
 

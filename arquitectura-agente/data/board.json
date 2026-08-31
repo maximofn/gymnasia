@@ -246,7 +246,7 @@
         {
           "id": "GYM-225",
           "title": "Verificar que la promoción a Production no puede saltarse los gates de pruebas",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Auditar ramas, workflows, builds locales y promociones de Play para asegurar que Production solo recibe commits autorizados con gates y artefactos verificables.",
           "dependsOn": [],
           "related": [
