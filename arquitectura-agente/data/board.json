@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-30",
+    "updated": "2026-08-31",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -1815,7 +1815,7 @@
         {
           "id": "GYM-165",
           "title": "Serializar y probar los guardados de configuración de proveedores",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Evitar que verificaciones tardías y persistencia parcial dejen la configuración de proveedores incoherente.",
           "dependsOn": [],
           "related": [
