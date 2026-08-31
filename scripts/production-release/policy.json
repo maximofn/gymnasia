@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "repository": "maximofn/gymnasia",
+  "productionBranch": "main",
+  "rulesetName": "Protect main and sensitive policy",
+  "environment": "Production",
+  "owner": "maximofn",
+  "requiredStatusChecks": [
+    "prompt-policy",
+    "gymnasia/owner-authorization",
+    "gymnasia/policy-promotion"
+  ],
+  "profiles": {
+    "production": "aab",
+    "production-apk": "apk"
+  },
+  "android": {
+    "packageName": "com.maximofn.gymnasia",
+    "minSdk": 24,
+    "targetSdk": 36,
+    "environment": "production",
+    "channel": "Production",
+    "providerMode": "byok",
+    "uploadCertificateSha256": "31:0B:38:39:E4:05:F1:FA:9F:92:09:25:76:7E:6E:E8:42:47:AA:A1:B8:A7:22:59:47:9E:91:9A:48:59:AB:31"
+  },
+  "bundletoolVersion": "1.18.3"
+}

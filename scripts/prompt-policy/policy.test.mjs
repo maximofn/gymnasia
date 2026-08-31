@@ -24,6 +24,7 @@ test("clasifica todas las fronteras privilegiadas", () => {
     "ops/openwiki-automation-template/.github/workflows/tests.yml",
     "policy/releases/v1.json",
     "scripts/prompt-policy/policy.mjs",
+    "scripts/production-release/verify-source.mjs",
     "scripts/health-safety/check.mjs",
     "AGENTS.md",
     "CLAUDE.md",

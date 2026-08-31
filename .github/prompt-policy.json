@@ -107,6 +107,11 @@
       "path": "scripts/prompt-policy/",
       "kind": "directory",
       "reason": "Policy generator, authorization reconciler and tests"
+    },
+    {
+      "path": "scripts/production-release/",
+      "kind": "directory",
+      "reason": "Production source, artifact and release evidence validation"
     }
   ]
 }

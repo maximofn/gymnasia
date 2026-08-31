@@ -114,8 +114,22 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
   assert.match(buildWorkflow, /--environment production/);
   assert.doesNotMatch(buildWorkflow, /--environment staging/);
   assert.doesNotMatch(buildWorkflow, /inputs\.profile/);
+  assert.match(buildWorkflow, /^  validate-production:$/m);
+  assert.match(buildWorkflow, /^  build-and-release:\n    needs: validate-production$/m);
+  const validationJob = buildWorkflow.slice(
+    buildWorkflow.indexOf("  validate-production:"),
+    buildWorkflow.indexOf("  build-and-release:"),
+  );
+  assert.doesNotMatch(validationJob, /^    environment:/m);
+  assert.doesNotMatch(validationJob, /EXPO_TOKEN/);
+  assert.match(validationJob, /verify:production-source/);
+  assert.match(validationJob, /--profile production-apk/);
+  assert.match(validationJob, /--artifact-type apk/);
+  assert.match(buildWorkflow, /verify:production-artifact/);
+  assert.match(buildWorkflow, /production-source-evidence\.json/);
+  assert.match(buildWorkflow, /production-artifact-evidence\.json/);
   assert.match(buildWorkflow, /Create draft APK release/);
-  assert.match(buildWorkflow, /Attach APK before publishing release/);
+  assert.match(buildWorkflow, /Attach APK and evidence before publishing release/);
   const snapshotScript = readFileSync(
     new URL("./prepare-policy-snapshot.mjs", import.meta.url),
     "utf8",

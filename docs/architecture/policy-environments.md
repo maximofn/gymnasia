@@ -239,6 +239,13 @@ válido y estar bien firmado, pero el snapshot queda vacío y una instalación s
 deshabilita el chat porque no dispone de una política firmada. Tras la build se restauran
 los módulos generados para no convertir el snapshot temporal en un cambio del repositorio.
 
+El procedimiento canónico ya no es una lista informal: `npm run
+verify:production-source` reejecuta los gates sobre un checkout limpio de `main`, y
+`npm run verify:production-artifact` valida el manifest fusionado, la firma, la versión,
+el snapshot y el hash del binario. Los comandos completos y la matriz de promoción están
+en `docs/store/google-play/production-promotion-gates.md`. Un AAB sin ambas evidencias no
+se sube a Play Console.
+
 En ejecución, la app selecciona en este orden:
 
 1. bundle remoto con activación y firmas válidas y secuencia admisible;

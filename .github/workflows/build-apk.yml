@@ -21,7 +21,54 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      source_commit: ${{ steps.source.outputs.commit }}
+
+    steps:
+      - name: Checkout exact Production candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate exact source and re-run every Production gate
+        id: source
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run verify:production-source -- \
+            --profile production-apk \
+            --artifact-type apk \
+            --output /tmp/production-source-evidence.json
+          echo "commit=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Preserve source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: production-source-${{ github.sha }}
+          path: /tmp/production-source-evidence.json
+          if-no-files-found: warn
+          retention-days: 30
+
   build-and-release:
+    needs: validate-production
     runs-on: ubuntu-latest
     # `eas build` waits for the EAS build to finish; on the free tier the queue
     # alone can exceed 60 min, which cancelled the job mid-wait (build kept
@@ -35,7 +82,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ needs.validate-production.outputs.source_commit }}
           fetch-depth: 0
+          persist-credentials: false
+
+      - name: Restore verified source evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: production-source-${{ needs.validate-production.outputs.source_commit }}
+          path: /tmp
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -120,19 +175,22 @@ jobs:
           echo "Version: $CURRENT -> $NEXT ($BUMP)"
 
       - name: Update version in app.json
+        env:
+          NEXT_VERSION: ${{ steps.version.outputs.next }}
         run: |
-          NEXT="${{ steps.version.outputs.next }}"
-          jq --arg v "$NEXT" '.expo.version = $v' apps/mobile/app.json > /tmp/app.json
+          jq --arg v "$NEXT_VERSION" '.expo.version = $v' apps/mobile/app.json > /tmp/app.json
           mv /tmp/app.json apps/mobile/app.json
-          echo "Updated app.json to $NEXT"
+          echo "Updated app.json to $NEXT_VERSION"
 
       - name: Build APK on EAS (waits for completion)
         id: build
+        env:
+          BUILD_PROFILE: ${{ steps.profile.outputs.profile }}
         run: |
           cd apps/mobile
           eas build \
             --platform android \
-            --profile ${{ steps.profile.outputs.profile }} \
+            --profile "$BUILD_PROFILE" \
             --non-interactive \
             --json > /tmp/eas-build.json
           cat /tmp/eas-build.json | jq .
@@ -147,29 +205,45 @@ jobs:
           echo "APK URL: $APK_URL"
 
       - name: Download APK
-        run: |
-          curl -L "${{ steps.build.outputs.apk_url }}" -o gymnasia.apk
-          ls -lh gymnasia.apk
-
-      - name: Verify the artifact really is an installable APK
+        env:
+          APK_URL: ${{ steps.build.outputs.apk_url }}
         shell: bash
         run: |
           set -euo pipefail
-          # El perfil `production` de EAS produce un AAB, que es lo que exige
-          # Google Play pero NO se puede instalar en un móvil: Android responde
-          # "No se ha podido analizar el paquete". El workflow renombraba a .apk
-          # lo que bajara, sin mirarlo, así que las releases v1.22.0 y v1.23.0
-          # se publicaron con un bundle dentro. Esta comprobación lo impide.
-          if unzip -l gymnasia.apk | grep -qE "BUNDLE-METADATA/|^ *[0-9]+ .* base/manifest/"; then
-            echo "::error::El artefacto es un AAB, no un APK instalable."
-            echo "Usa el perfil production-apk (buildType: apk) para releases descargables."
-            exit 1
-          fi
-          if ! unzip -l gymnasia.apk | grep -q "AndroidManifest.xml"; then
-            echo "::error::El artefacto no contiene AndroidManifest.xml; no es un APK válido."
-            exit 1
-          fi
-          echo "Artefacto verificado como APK instalable."
+          test -n "$APK_URL" || { echo "::error::EAS no devolvió una URL de artefacto."; exit 1; }
+          curl --fail --location "$APK_URL" --output gymnasia.apk
+          test -s gymnasia.apk || { echo "::error::El artefacto descargado está vacío."; exit 1; }
+          ls -lh gymnasia.apk
+
+      - name: Expose Android artifact tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          ANDROID_BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          test -n "$ANDROID_BUILD_TOOLS"
+          echo "$ANDROID_BUILD_TOOLS" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+
+      - name: Verify Production APK and generate immutable evidence
+        run: |
+          npm run verify:production-artifact -- \
+            --artifact gymnasia.apk \
+            --kind apk \
+            --source-evidence /tmp/production-source-evidence.json \
+            --snapshot apps/mobile/agent/generated/policySnapshot.generated.json \
+            --build-metadata /tmp/eas-build.json \
+            --output /tmp/production-artifact-evidence.json
+
+      - name: Preserve verified APK and evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: production-apk-${{ needs.validate-production.outputs.source_commit }}
+          path: |
+            gymnasia.apk
+            /tmp/production-source-evidence.json
+            /tmp/production-artifact-evidence.json
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Generate changelog
         id: changelog
@@ -220,12 +294,19 @@ jobs:
             --notes-file "$BODY_FILE" \
             --draft
 
-      - name: Attach APK before publishing release
+      - name: Attach APK and evidence before publishing release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ steps.version.outputs.tag }}" gymnasia.apk --repo "$GITHUB_REPOSITORY"
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          gh release upload "$RELEASE_TAG" \
+            gymnasia.apk \
+            /tmp/production-source-evidence.json \
+            /tmp/production-artifact-evidence.json \
+            --repo "$GITHUB_REPOSITORY"
 
       - name: Publish immutable APK release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release edit "${{ steps.version.outputs.tag }}" --repo "$GITHUB_REPOSITORY" --draft=false --latest
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
