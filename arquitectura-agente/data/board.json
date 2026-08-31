@@ -1815,7 +1815,7 @@
         {
           "id": "GYM-165",
           "title": "Serializar y probar los guardados de configuración de proveedores",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Evitar que verificaciones tardías y persistencia parcial dejen la configuración de proveedores incoherente.",
           "dependsOn": [],
           "related": [
@@ -2313,18 +2313,6 @@
             "GYM-193",
             "GYM-202",
             "GYM-203"
-          ]
-        },
-        {
-          "id": "GYM-225",
-          "title": "Verificar que la promoción a Production no puede saltarse los gates de pruebas",
-          "state": "todo",
-          "summary": "Auditar todos los caminos de publicación de Production y cerrar cualquier ruta que permita promover un commit, workflow o artefacto local sin autorización y pruebas verificables.",
-          "dependsOn": [],
-          "related": [
-            "GYM-159",
-            "GYM-199",
-            "GYM-201"
           ]
         },
         {
@@ -2945,7 +2933,6 @@
         "GYM-225",
         "GYM-198",
         "GYM-199",
-        "GYM-225",
         "GYM-200",
         "GYM-201"
       ]

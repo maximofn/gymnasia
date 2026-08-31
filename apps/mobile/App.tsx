@@ -147,19 +147,47 @@ import {
   anthropicApiHeaders,
   anthropicProxyCredentials,
   createFakeProviderResult,
-  DEFAULT_GOOGLE_MODEL,
   explainAnthropicError,
   FAKE_PROVIDER_MODELS,
+  fetchProviderConfiguration,
   googleApiHeaders,
-  normalizeAnthropicWorkspaceId,
-  normalizeGoogleModel,
   providerCredential,
 } from "./agent/providerTransport";
+import { verifyProviderConfiguration } from "./agent/providerVerification";
+import {
+  DEFAULT_MODELS,
+  DEFAULT_OPENAI_REASONING_EFFORT,
+  OPENAI_REASONING_EFFORT_OPTIONS,
+  PROVIDERS,
+  applyProviderCandidate,
+  beginProviderDiscovery,
+  beginProviderSave,
+  createDefaultProviderConfigurations as createDefaultProviderKeys,
+  createProviderDrafts as createProviderDraftMap,
+  createProviderOperationMap,
+  editProviderOperation,
+  getSupportedOpenAIReasoningEfforts,
+  isProviderDiscoveryCurrent,
+  isProviderSaveCurrent,
+  normalizeOpenAIReasoningEffort,
+  normalizeProviderConfigurations,
+  normalizeProviderConfiguration,
+  normalizeProviderModel,
+  setProviderSavePhase,
+  type OpenAIReasoningEffort,
+  type Provider,
+  type ProviderConfiguration as AIKey,
+  type ProviderDraft,
+  type ProviderOperationMap,
+  type ProviderSaveToken,
+} from "./agent/providerConfiguration";
+import {
+  ProviderConfigurationRepository,
+} from "./agent/providerConfigurationPersistence";
 import {
   maskApiKey,
   readProviderApiKeys,
   stripProviderApiKeys,
-  writeProviderApiKeys,
 } from "./agent/providerCredentials";
 import {
   isDevStoreMirrorEnabled,
@@ -431,7 +459,6 @@ type ChatMessage = {
   created_at: string;
 };
 type AnthropicChatResult = { content: string; thinking: string | null };
-type OpenAIReasoningEffort = "none" | "minimal" | "low" | "medium" | "high" | "xhigh";
 type OpenAIReasoningSummaryPart = { type: "summary_text"; text: string };
 type OpenAIReasoningOutputItem = {
   type: "reasoning";
@@ -459,25 +486,10 @@ type OpenAIStreamTurnResult = AnthropicChatResult & {
   responseId: string | null;
   outputItems: OpenAIResponseOutputItem[];
 };
-type Provider = "anthropic" | "openai" | "google";
 type HealthSafetyConsentState = {
   consentVersion: string;
   providers: Record<Provider, boolean>;
   noticeSeen: Record<Provider, boolean>;
-};
-type AIKey = {
-  provider: Provider;
-  is_active: boolean;
-  api_key: string;
-  model: string;
-  workspace_id?: string;
-  reasoning_effort?: OpenAIReasoningEffort | null;
-};
-type ProviderDraft = {
-  api_key: string;
-  model: string;
-  workspace_id?: string;
-  reasoning_effort?: OpenAIReasoningEffort | null;
 };
 type AnthropicModelOption = { id: string; display_name: string | null };
 type StreamingHandlers = {
@@ -674,6 +686,12 @@ function isNotificationPermissionGranted(response: unknown): boolean {
   return outcome?.granted === true || outcome?.status === "granted";
 }
 const SECURE_STORE_API_KEY_PREFIX = scopedSecureStoreKey("gymnasia.mobile.v3.provider.api_key");
+const PROVIDER_CONFIGURATION_STORAGE_KEY = scopedStorageKey(
+  "gymnasia.mobile.provider_configuration.v1",
+);
+const PROVIDER_CONFIGURATION_SECURE_KEY = scopedSecureStoreKey(
+  "gymnasia.mobile.v4.provider_configuration",
+);
 const LEGACY_STORAGE_KEYS = [
   scopedStorageKey("gymnasia.mobile.local.v1"),
   scopedStorageKey("gymnasia.mobile.local.v2"),
@@ -689,24 +707,9 @@ const LEGACY_SECURE_STORE_PREFIXES = [
   scopedSecureStoreKey("gymnasia.mobile.provider.api_key"),
   scopedSecureStoreKey("gymnasia.mobile.v2.provider.api_key"),
 ];
-const DEFAULT_MODELS: Record<Provider, string> = {
-  openai: "gpt-5-mini",
-  anthropic: "claude-3-5-sonnet-latest",
-  google: DEFAULT_GOOGLE_MODEL,
-};
-const LEGACY_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
-const DEFAULT_OPENAI_REASONING_EFFORT: OpenAIReasoningEffort = "medium";
 const OPENAI_REASONING_SUMMARY = "detailed";
-const OPENAI_REASONING_EFFORT_OPTIONS: OpenAIReasoningEffort[] = [
-  "none",
-  "minimal",
-  "low",
-  "medium",
-  "high",
-  "xhigh",
-];
 const OPENAI_REASONING_EFFORT_LABELS: Record<OpenAIReasoningEffort, string> = {
   none: "Ninguno",
   minimal: "Minimo",
@@ -715,7 +718,6 @@ const OPENAI_REASONING_EFFORT_LABELS: Record<OpenAIReasoningEffort, string> = {
   high: "Alto",
   xhigh: "Muy alto",
 };
-const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
 
@@ -777,52 +779,6 @@ const BACKUP_META_KEY = scopedStorageKey("gymnasia.mobile.backup_meta.v1");
 // Identificador y versión del formato de backup. Bump BACKUP_SCHEMA_VERSION si el
 // esquema de datos cambia de forma incompatible; el importador rechaza versiones
 // superiores a la que conoce esta build.
-function normalizeProviderModel(provider: Provider, rawModel: string | null | undefined): string {
-  if (provider === "google") {
-    return normalizeGoogleModel(rawModel);
-  }
-  const trimmed = (rawModel ?? "").trim();
-  const model = trimmed || DEFAULT_MODELS[provider];
-  if (provider === "openai" && model === LEGACY_OPENAI_DEFAULT_MODEL) {
-    return DEFAULT_MODELS.openai;
-  }
-  return model;
-}
-
-function getSupportedOpenAIReasoningEfforts(rawModel: string | null | undefined): OpenAIReasoningEffort[] {
-  const model = normalizeProviderModel("openai", rawModel).trim().toLowerCase();
-  if (!model) return ["minimal", "low", "medium", "high"];
-  if (model.startsWith("gpt-5.4-pro")) return ["medium", "high", "xhigh"];
-  if (model.startsWith("gpt-5-pro")) return ["high"];
-  if (
-    model.startsWith("gpt-5.4")
-    || model.startsWith("gpt-5.3")
-    || model.startsWith("gpt-5.2")
-  ) {
-    return ["none", "low", "medium", "high", "xhigh"];
-  }
-  if (model.startsWith("gpt-5.1")) return ["none", "low", "medium", "high"];
-  if (model.startsWith("gpt-5")) return ["minimal", "low", "medium", "high"];
-  if (model.startsWith("o")) return ["low", "medium", "high"];
-  return [];
-}
-
-function normalizeOpenAIReasoningEffort(
-  rawEffort: string | null | undefined,
-  rawModel: string | null | undefined,
-): OpenAIReasoningEffort | null {
-  const supported = getSupportedOpenAIReasoningEfforts(rawModel);
-  if (supported.length === 0) return null;
-  const normalized = (rawEffort ?? "").trim().toLowerCase();
-  const candidate = OPENAI_REASONING_EFFORT_OPTIONS.find((effort) => effort === normalized);
-  if (candidate && supported.includes(candidate)) {
-    return candidate;
-  }
-  if (supported.includes(DEFAULT_OPENAI_REASONING_EFFORT)) {
-    return DEFAULT_OPENAI_REASONING_EFFORT;
-  }
-  return supported[0] ?? null;
-}
 
 // --- Dev-store file persistence (web only) ---
 // Reads/writes store JSON via Metro middleware so data survives server restarts.
@@ -960,12 +916,13 @@ const PROVIDER_UI_META: Record<
 // the deployed app never tries to call a developer's localhost by accident.
 const DEFAULT_WEB_API_BASE_URL = "";
 const PROVIDER_STATUS_COPY = {
-  success: "Conexión verificada.",
   warningNoKey: "Atención: guarda una API key para conectar el proveedor.",
-  warningPending: "Atención: pendiente de verificación. Pulsa Guardar.",
+  warningPending: "Configurada, pendiente de comprobar en esta sesión.",
+  warningDirty: "Atención: hay cambios sin guardar.",
   warningChecking: "Atención: comprobando conexión...",
-  warningModelUnavailablePrefix: "Atención: API key verificada. Modelo no disponible: ",
+  warningSaving: "Atención: guardando de forma segura...",
   warningModelsUnavailable: "Atención: no se pudieron cargar los modelos de Anthropic.",
+  errorSaving: "No se pudo guardar. La configuración anterior sigue activa; puedes reintentarlo.",
   errorFallback: "Error: no se pudo comprobar la conexión.",
 };
 
@@ -1417,50 +1374,6 @@ function withEffectiveProviderCredential(provider: AIKey | undefined): AIKey | n
   };
 }
 
-function createDefaultProviderKeys(): AIKey[] {
-  return [
-    {
-      provider: "openai",
-      is_active: true,
-      api_key: "",
-      model: DEFAULT_MODELS.openai,
-      reasoning_effort: DEFAULT_OPENAI_REASONING_EFFORT,
-    },
-    {
-      provider: "anthropic",
-      is_active: false,
-      api_key: "",
-      model: DEFAULT_MODELS.anthropic,
-      workspace_id: "",
-    },
-    { provider: "google", is_active: false, api_key: "", model: DEFAULT_MODELS.google },
-  ];
-}
-
-function createProviderDraftMap(keys: AIKey[]): Record<Provider, ProviderDraft> {
-  const byProvider = new Map<Provider, AIKey>();
-  keys.forEach((item) => {
-    byProvider.set(item.provider, item);
-  });
-  return PROVIDERS.reduce((acc, provider) => {
-    const current = byProvider.get(provider);
-    const model = normalizeProviderModel(provider, current?.model);
-    acc[provider] = {
-      api_key: current?.api_key ?? "",
-      model,
-      workspace_id:
-        provider === "anthropic"
-          ? normalizeAnthropicWorkspaceId(current?.workspace_id)
-          : "",
-      reasoning_effort:
-        provider === "openai"
-          ? normalizeOpenAIReasoningEffort(current?.reasoning_effort, model)
-          : null,
-    };
-    return acc;
-  }, {} as Record<Provider, ProviderDraft>);
-}
-
 function createProviderConnectionStatusMap(
   keys: AIKey[],
 ): Record<Provider, ProviderConnectionStatus> {
@@ -1794,11 +1707,9 @@ function emptyProviderApiKeys(): Record<Provider, string> {
   return { openai: "", anthropic: "", google: "" };
 }
 
-function serializeStoreForAsyncStorage(
-  store: LocalStore,
-  secureStoreAvailable: boolean,
-): LocalStore {
-  if (!secureStoreAvailable) return store;
+function serializeStoreForAsyncStorage(store: LocalStore): LocalStore {
+  // Las credenciales tienen su propio repositorio versionado. El estado general
+  // nunca vuelve a ser una segunda fuente de secretos, tampoco en web.
   return stripProviderApiKeys(store);
 }
 
@@ -1834,15 +1745,6 @@ async function readProviderApiKeysFromSecureStore(
   return readProviderApiKeys(SecureStore, PROVIDERS, secureStoreKey);
 }
 
-async function writeProviderApiKeysToSecureStore(
-  keys: AIKey[],
-  secureStoreAvailable: boolean,
-): Promise<void> {
-  if (!secureStoreAvailable) return;
-
-  await writeProviderApiKeys(SecureStore, keys, secureStoreKey);
-}
-
 async function clearLegacyStorageData(secureStoreAvailable: boolean): Promise<void> {
   await AsyncStorage.multiRemove(LEGACY_STORAGE_KEYS);
   if (!secureStoreAvailable) return;
@@ -1852,6 +1754,11 @@ async function clearLegacyStorageData(secureStoreAvailable: boolean): Promise<vo
       PROVIDERS.map((provider) => SecureStore.deleteItemAsync(`${prefix}.${provider}`)),
     ),
   );
+}
+
+async function clearMigratedProviderApiKeys(secureStoreAvailable: boolean): Promise<void> {
+  if (!secureStoreAvailable) return;
+  await Promise.all(PROVIDERS.map((provider) => SecureStore.deleteItemAsync(secureStoreKey(provider))));
 }
 
 // --- Copia de seguridad manual (GYM-5) ---
@@ -2098,7 +2005,7 @@ async function fetchAnthropicModelsViaWebProxy(
 ): Promise<AnthropicModelOption[]> {
   if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.anthropic];
   try {
-    const response = await fetch(buildWebProxyUrl("/chat/providers/anthropic/models"), {
+    const response = await fetchProviderConfiguration(buildWebProxyUrl("/chat/providers/anthropic/models"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -2134,7 +2041,7 @@ async function fetchAnthropicModelsDirect(
   workspaceId?: string,
 ): Promise<AnthropicModelOption[]> {
   if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.anthropic];
-  const response = await fetch("https://api.anthropic.com/v1/models", {
+  const response = await fetchProviderConfiguration("https://api.anthropic.com/v1/models", {
     method: "GET",
     headers: anthropicApiHeaders(apiKey, ANTHROPIC_API_VERSION, workspaceId, {
       "Content-Type": "application/json",
@@ -2159,7 +2066,7 @@ async function fetchAnthropicModelsDirect(
 
 async function fetchOpenAIModelsDirect(apiKey: string): Promise<OpenAIModelOption[]> {
   if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.openai];
-  const response = await fetch("https://api.openai.com/v1/models", {
+  const response = await fetchProviderConfiguration("https://api.openai.com/v1/models", {
     method: "GET",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -2182,7 +2089,7 @@ async function fetchOpenAIModelsDirect(apiKey: string): Promise<OpenAIModelOptio
 
 async function fetchGoogleModelsDirect(apiKey: string): Promise<GoogleModelOption[]> {
   if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.google];
-  const response = await fetch(
+  const response = await fetchProviderConfiguration(
     "https://generativelanguage.googleapis.com/v1beta/models",
     {
       method: "GET",
@@ -2202,85 +2109,6 @@ async function fetchGoogleModelsDirect(apiKey: string): Promise<GoogleModelOptio
   }
 
   return parseGoogleModelOptions(payload);
-}
-
-async function verifyAnthropicViaWebProxy(
-  apiKey: string,
-  model: string,
-  workspaceId?: string,
-): Promise<ProviderConnectionCheckResult> {
-  const proxyUrl = buildWebProxyUrl("/chat/providers/anthropic/verify");
-  try {
-    const response = await fetch(proxyUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...anthropicProxyCredentials(apiKey, workspaceId),
-        model,
-      }),
-    });
-
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        severity: "error",
-        message: toSevereProviderDetail(
-          explainAnthropicError(
-            extractErrorMessage(payload, `Proxy API error (${response.status})`),
-          ),
-        ),
-      };
-    }
-
-    if (!payload || typeof payload !== "object") {
-      return {
-        ok: false,
-        severity: "error",
-        message: toSevereProviderDetail("Respuesta inválida del proxy API."),
-      };
-    }
-
-    const candidate = payload as { ok?: boolean; message?: string };
-    const normalizedMessage = (candidate.message ?? "").trim();
-    const isModelWarning = normalizedMessage.toLowerCase().includes("modelo no disponible");
-    if (candidate.ok === false) {
-      return {
-        ok: false,
-        severity: "error",
-        message: toSevereProviderDetail(explainAnthropicError(
-          normalizedMessage || "No se pudo verificar la conexión.",
-        )),
-      };
-    }
-    return {
-      ok: true,
-      severity: isModelWarning ? "warning" : "success",
-      message: isModelWarning
-        ? toMediumProviderDetail(normalizedMessage)
-        : PROVIDER_STATUS_COPY.success,
-    };
-  } catch (err) {
-    if (err instanceof Error && err.message.trim()) {
-      const normalized = err.message.toLowerCase().includes("failed to fetch")
-        ? ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE
-        : explainAnthropicError(err.message);
-      return { ok: false, severity: "error", message: toSevereProviderDetail(normalized) };
-    }
-    return {
-      ok: false,
-      severity: "error",
-      message: toSevereProviderDetail(ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE),
-    };
-  }
 }
 
 async function callAnthropicViaWebProxy(
@@ -2331,107 +2159,11 @@ async function callAnthropicViaWebProxy(
 }
 
 async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnectionCheckResult> {
-  if (IS_FAKE_PROVIDER_MODE) {
-    return { ok: true, severity: "success", message: "Fixture local activo; no se ha realizado ninguna llamada externa." };
-  }
-  const apiKey = provider.api_key.trim();
-  if (!apiKey) {
-    return { ok: false, severity: "warning", message: PROVIDER_STATUS_COPY.warningNoKey };
-  }
-
-  const model = normalizeProviderModel(provider.provider, provider.model);
-  try {
-    let response: Response;
-    if (provider.provider === "openai") {
-      response = await fetch("https://api.openai.com/v1/models", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-        },
-      });
-    } else if (provider.provider === "anthropic") {
-      if (Platform.OS === "web") {
-        return verifyAnthropicViaWebProxy(apiKey, model, provider.workspace_id);
-      }
-      const anthropicHeaders = anthropicApiHeaders(
-        apiKey,
-        ANTHROPIC_API_VERSION,
-        provider.workspace_id,
-        {
-          "Content-Type": "application/json",
-        },
-      );
-      response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: anthropicHeaders,
-        body: JSON.stringify({
-          model,
-          max_tokens: 1,
-          messages: [{ role: "user", content: "Ping de verificación." }],
-        }),
-      });
-
-      let verifyPayload: unknown = null;
-      try {
-        verifyPayload = await response.json();
-      } catch {
-        // ignore json parse errors
-      }
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          return {
-            ok: true,
-            severity: "warning",
-            message: `${PROVIDER_STATUS_COPY.warningModelUnavailablePrefix}${model}.`,
-          };
-        }
-        return {
-          ok: false,
-          severity: "error",
-          message: toSevereProviderDetail(
-            explainAnthropicError(
-              extractErrorMessage(verifyPayload, `Error de conexión (${response.status})`),
-            ),
-          ),
-        };
-      }
-
-      return { ok: true, severity: "success", message: PROVIDER_STATUS_COPY.success };
-    } else {
-      response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}`,
-        { method: "GET", headers: googleApiHeaders(apiKey) },
-      );
-    }
-
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        severity: "error",
-        message: toSevereProviderDetail(
-          extractErrorMessage(payload, `Error de conexión (${response.status})`),
-        ),
-      };
-    }
-
-    return { ok: true, severity: "success", message: PROVIDER_STATUS_COPY.success };
-  } catch (err) {
-    return {
-      ok: false,
-      severity: "error",
-      message: toSevereProviderDetail(
-        err instanceof Error ? err.message : "No se pudo comprobar la conexión.",
-      ),
-    };
-  }
+  return verifyProviderConfiguration(provider, {
+    platform: Platform.OS === "web" ? "web" : "native",
+    fakeMode: IS_FAKE_PROVIDER_MODE,
+    anthropicProxyUrl: buildWebProxyUrl("/chat/providers/anthropic/verify"),
+  });
 }
 
 function parseOpenAIContent(payload: unknown): string | null {
@@ -5450,40 +5182,7 @@ function normalizeMessagesByThread(
 
 function normalizeStore(raw: LocalStore): LocalStore {
   const normalizedDietSettings = normalizeDietSettings(raw.dietSettings);
-  const rawByProvider = new Map<Provider, Partial<AIKey>>();
-  (raw.keys ?? []).forEach((item) => {
-    if (item?.provider === "openai" || item?.provider === "anthropic" || item?.provider === "google") {
-      rawByProvider.set(item.provider, item);
-    }
-  });
-
-  const keys: AIKey[] = (["openai", "anthropic", "google"] as Provider[]).map((provider, index) => {
-    const item = rawByProvider.get(provider);
-    const model = normalizeProviderModel(provider, item?.model ?? DEFAULT_MODELS[provider]);
-    return {
-      provider,
-      is_active: item?.is_active ?? index === 0,
-      api_key: (item?.api_key ?? "").trim(),
-      model,
-      workspace_id:
-        provider === "anthropic"
-          ? normalizeAnthropicWorkspaceId(item?.workspace_id)
-          : "",
-      reasoning_effort:
-        provider === "openai"
-          ? normalizeOpenAIReasoningEffort(item?.reasoning_effort, model)
-          : null,
-    };
-  });
-
-  if (!keys.some((item) => item.is_active)) {
-    keys[0].is_active = true;
-  } else {
-    const firstActiveIndex = keys.findIndex((item) => item.is_active);
-    keys.forEach((item, index) => {
-      item.is_active = index === firstActiveIndex;
-    });
-  }
+  const keys = normalizeProviderConfigurations(raw.keys);
 
   // Migrate chatProvider / foodAIProvider
   const chatProvider: Provider = (raw as Record<string, unknown>).chatProvider as Provider
@@ -6801,6 +6500,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   );
 
   const [store, setStore] = useState<LocalStore>(() => createInitialStore());
+  const storeRef = useRef(store);
+  storeRef.current = store;
+  const providerConfigurationRepositoryRef = useRef<ProviderConfigurationRepository | null>(null);
+  const providerConfigurationRevisionRef = useRef(0);
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -7009,6 +6712,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [providerSaveLoading, setProviderSaveLoading] = useState<Record<Provider, boolean>>(() =>
     createProviderBooleanMap(false),
   );
+  const providerOperationsRef = useRef<ProviderOperationMap>(createProviderOperationMap());
   const [healthSafetyConsent, setHealthSafetyConsent] = useState<HealthSafetyConsentState>(
     createHealthSafetyConsentState,
   );
@@ -8489,18 +8193,60 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         secureStorageFailure = true;
       }
     }
-    const mergedStore = mergeStoreWithSecureApiKeys(baseStore, secureApiKeys);
-
-    if (secureAvailable) {
+    const legacyStoreWithKeys = mergeStoreWithSecureApiKeys(baseStore, secureApiKeys);
+    const legacyChatProvider = legacyStoreWithKeys.chatProvider
+      ?? legacyStoreWithKeys.keys.find((item) => item.is_active)?.provider
+      ?? "openai";
+    const legacyStore: LocalStore = {
+      ...legacyStoreWithKeys,
+      keys: legacyStoreWithKeys.keys.map((item) => ({
+        ...item,
+        is_active: item.provider === legacyChatProvider,
+      })),
+    };
+    const providerRepository = Platform.OS === "web"
+      ? new ProviderConfigurationRepository({
+          asyncStorage: AsyncStorage,
+          asyncStorageKey: PROVIDER_CONFIGURATION_STORAGE_KEY,
+        })
+      : secureAvailable
+        ? new ProviderConfigurationRepository({
+            asyncStorage: AsyncStorage,
+            asyncStorageKey: PROVIDER_CONFIGURATION_STORAGE_KEY,
+            secureStorage: SecureStore,
+            secureStorageKey: PROVIDER_CONFIGURATION_SECURE_KEY,
+          })
+        : null;
+    let providerKeys = legacyStore.keys;
+    if (providerRepository) {
       try {
-        await writeProviderApiKeysToSecureStore(mergedStore.keys, true);
+        const providerHydration = await providerRepository.hydrate(legacyStore.keys);
+        providerKeys = providerHydration.snapshot.keys;
+        providerConfigurationRepositoryRef.current = providerRepository;
+        if (Platform.OS !== "web") {
+          try {
+            await clearMigratedProviderApiKeys(secureAvailable);
+          } catch {
+            secureStorageFailure = true;
+          }
+        }
       } catch {
         secureStorageFailure = true;
+        providerConfigurationRepositoryRef.current = null;
       }
+    } else {
+      providerConfigurationRepositoryRef.current = null;
     }
+    const mergedStore: LocalStore = {
+      ...legacyStore,
+      keys: providerKeys,
+      chatProvider:
+        providerKeys.find((item) => item.is_active)?.provider
+        ?? legacyChatProvider,
+    };
 
     const canonicalRaw = JSON.stringify(
-      serializeStoreForAsyncStorage(mergedStore, secureAvailable),
+      serializeStoreForAsyncStorage(mergedStore),
     );
     let nonFatalError: string | null = secureStorageFailure
       ? "Los datos principales están a salvo, pero el almacén seguro de claves no respondió."
@@ -8749,14 +8495,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;
 
-    const serialized = JSON.stringify(serializeStoreForAsyncStorage(store, secureStoreAvailable));
+    const serialized = JSON.stringify(serializeStoreForAsyncStorage(store));
     void (async () => {
       try {
         await localStoreRecoveryRepository.commit(serialized);
-        await Promise.all([
-          writeProviderApiKeysToSecureStore(store.keys, secureStoreAvailable),
-          saveDevStoreFile(store),
-        ]);
+        await saveDevStoreFile(store);
       } catch (persistError) {
         if (
           persistError instanceof LocalStoreCommitAmbiguousError
@@ -8783,11 +8526,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         setError(
           persistError instanceof Error
             ? persistError.message
-            : "No se pudo guardar en almacenamiento local/seguro.",
+            : "No se pudo guardar en almacenamiento local.",
         );
       }
     })();
-  }, [isHydrated, secureStoreAvailable, store]);
+  }, [isHydrated, store]);
 
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;
@@ -9985,6 +9728,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setPendingImport(null);
     setBackupBusy("import");
     setBackupResult(null);
+    beginProviderConfigurationMutation();
     try {
       let data: BackupData;
       const details: BackupResultDetail[] = [];
@@ -10068,18 +9812,40 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         };
       }
 
-      const secureAvailable = await isSecureStoreAvailable();
-      const secureApiKeys = secureAvailable
-        ? await readProviderApiKeysFromSecureStore(true)
-        : Object.fromEntries(
-            PROVIDERS.map((provider) => [
-              provider,
-              store.keys.find((item) => item.provider === provider)?.api_key ?? "",
-            ]),
-          ) as Record<Provider, string>;
+      const repository = providerConfigurationRepositoryRef.current;
+      if (!repository) {
+        throw new Error("No se pudo acceder al almacenamiento seguro de proveedores.");
+      }
       const importedStore = stripProviderApiKeys(normalizeStore(data.store));
-      const mergedStore = mergeStoreWithSecureApiKeys(importedStore, secureApiKeys);
+      const currentKeys = repository.getCurrent()?.keys ?? storeRef.current.keys;
+      const mergedKeys = importedStore.keys.map((imported) => {
+        const current = currentKeys.find((item) => item.provider === imported.provider);
+        return {
+          ...imported,
+          is_active: imported.provider === importedStore.chatProvider,
+          api_key: current?.api_key ?? "",
+          workspace_id:
+            imported.provider === "anthropic"
+              ? current?.workspace_id ?? ""
+              : "",
+        };
+      });
+      const providerCommit = await repository.commit(mergedKeys);
+      if (providerCommit.status !== "committed") {
+        throw new Error("La configuración de proveedores cambió durante la importación.");
+      }
+      const mergedStore: LocalStore = {
+        ...importedStore,
+        keys: providerCommit.snapshot.keys,
+        chatProvider:
+          providerCommit.snapshot.keys.find((item) => item.is_active)?.provider
+          ?? importedStore.chatProvider,
+      };
       setStore(mergedStore);
+      setProviderDraftByProvider(createProviderDraftMap(mergedStore.keys));
+      setProviderConnectionStatus(createProviderConnectionStatusMap(mergedStore.keys));
+      const importedProviderOperations = createProviderOperationMap();
+      providerOperationsRef.current = importedProviderOperations;
 
       const importedPrefs: UserPreferences = data.userPrefs
         ? { ...DEFAULT_USER_PREFS, ...data.userPrefs }
@@ -12504,17 +12270,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       .catch(() => {});
   }
 
-  function setActiveProvider(provider: Provider) {
-    setStore((prev) => ({
-      ...prev,
-      chatProvider: provider,
-      keys: prev.keys.map((item) =>
-        item.provider === provider ? { ...item, is_active: true } : { ...item, is_active: false },
-      ),
-    }));
-    setError(null);
-  }
-
   function updateHealthSafetyConsent(
     provider: Provider,
     updates: { enabled?: boolean; noticeSeen?: boolean },
@@ -12552,16 +12307,34 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     );
   }
 
-  function updateProviderConfig(
-    provider: Provider,
-    updates: Partial<Pick<AIKey, "api_key" | "model" | "workspace_id" | "reasoning_effort">>,
-  ) {
-    setStore((prev) => ({
-      ...prev,
-      keys: prev.keys.map((item) =>
-        item.provider === provider ? { ...item, ...updates } : item,
-      ),
-    }));
+  function updateProviderOperations(
+    update: (current: ProviderOperationMap) => ProviderOperationMap,
+  ): ProviderOperationMap {
+    const next = update(providerOperationsRef.current);
+    providerOperationsRef.current = next;
+    return next;
+  }
+
+  function beginProviderConfigurationMutation(): number {
+    providerConfigurationRevisionRef.current += 1;
+    setProviderSaveLoading(createProviderBooleanMap(false));
+    setProviderConnectionStatus((current) => Object.fromEntries(PROVIDERS.map((provider) => {
+      const status = current[provider];
+      if (status.state !== "checking") return [provider, status];
+      const hasDraftKey = !!providerDraftByProvider[provider]?.api_key.trim();
+      return [provider, hasDraftKey
+        ? {
+            state: "unknown" as const,
+            detail: PROVIDER_STATUS_COPY.warningDirty,
+            severity: "warning" as const,
+          }
+        : {
+            state: "disconnected" as const,
+            detail: PROVIDER_STATUS_COPY.warningNoKey,
+            severity: "warning" as const,
+          }];
+    })) as Record<Provider, ProviderConnectionStatus>);
+    return providerConfigurationRevisionRef.current;
   }
 
   function setProviderKeyVisible(provider: Provider, visible: boolean) {
@@ -12576,6 +12349,31 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ...prev,
       [provider]: !prev[provider],
     }));
+  }
+
+  async function selectChatProvider(provider: Provider) {
+    setChatProviderDropdownOpen(false);
+    beginProviderConfigurationMutation();
+    const repository = providerConfigurationRepositoryRef.current;
+    if (!repository) {
+      setError("No se pudo guardar la selección porque el almacenamiento seguro no está disponible.");
+      return;
+    }
+    try {
+      const result = await repository.commit((current) => current.map((item) => ({
+        ...item,
+        is_active: item.provider === provider,
+      })));
+      if (result.status !== "committed") return;
+      setStore((prev) => ({
+        ...prev,
+        chatProvider: provider,
+        keys: result.snapshot.keys,
+      }));
+      setError(null);
+    } catch {
+      setError("No se pudo guardar la selección. El proveedor anterior sigue activo.");
+    }
   }
 
   function updateProviderDraft(
@@ -12616,18 +12414,21 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       provider === "anthropic"
       && (updates.api_key !== undefined || updates.workspace_id !== undefined)
     ) {
+      setAnthropicModelOptionsLoading(false);
       setAnthropicModelDropdownOpen(false);
       setAnthropicModelOptions([]);
       setAnthropicModelOptionsMessage(null);
       setAnthropicModelFilter("");
     }
     if (provider === "openai" && updates.api_key !== undefined) {
+      setOpenAIModelOptionsLoading(false);
       setOpenAIModelDropdownOpen(false);
       setOpenAIModelOptions([]);
       setOpenAIModelOptionsMessage(null);
       setOpenAIModelFilter("");
     }
     if (provider === "google" && updates.api_key !== undefined) {
+      setGoogleModelOptionsLoading(false);
       setGoogleModelDropdownOpen(false);
       setGoogleModelOptions([]);
       setGoogleModelOptionsMessage(null);
@@ -12635,12 +12436,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     if (options.markPending) {
+      updateProviderOperations((current) => editProviderOperation(current, provider));
+      setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
+      if (provider === "anthropic") setAnthropicModelOptionsLoading(false);
+      if (provider === "openai") setOpenAIModelOptionsLoading(false);
+      if (provider === "google") setGoogleModelOptionsLoading(false);
       setProviderConnectionStatus((prev) => ({
         ...prev,
         [provider]: nextDraft.api_key.trim()
           ? {
               state: "unknown",
-              detail: PROVIDER_STATUS_COPY.warningPending,
+              detail: PROVIDER_STATUS_COPY.warningDirty,
               severity: "warning",
             }
           : {
@@ -12653,6 +12459,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   async function loadAnthropicModelOptions(apiKey: string, workspaceId?: string) {
+    const begun = beginProviderDiscovery(providerOperationsRef.current, "anthropic");
+    updateProviderOperations(() => begun.state);
+    const token = begun.token;
     setAnthropicModelOptionsLoading(true);
     setAnthropicModelOptionsMessage(null);
     try {
@@ -12661,6 +12470,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           ? await fetchAnthropicModelsViaWebProxy(apiKey, workspaceId)
           : await fetchAnthropicModelsDirect(apiKey, workspaceId);
 
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       setAnthropicModelOptions(options);
       if (options.length === 0) {
         setAnthropicModelOptionsMessage({
@@ -12669,6 +12479,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
       }
     } catch (err) {
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       const rawMessage =
         err instanceof Error ? err.message : PROVIDER_STATUS_COPY.warningModelsUnavailable;
       setAnthropicModelOptions([]);
@@ -12677,16 +12488,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         severity: "error",
       });
     } finally {
-      setAnthropicModelOptionsLoading(false);
+      if (isProviderDiscoveryCurrent(providerOperationsRef.current, token)) {
+        setAnthropicModelOptionsLoading(false);
+      }
     }
   }
 
   async function loadOpenAIModelOptions(apiKey: string) {
+    const begun = beginProviderDiscovery(providerOperationsRef.current, "openai");
+    updateProviderOperations(() => begun.state);
+    const token = begun.token;
     setOpenAIModelOptionsLoading(true);
     setOpenAIModelOptionsMessage(null);
     try {
       const options = await fetchOpenAIModelsDirect(apiKey);
 
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       setOpenAIModelOptions(options);
       if (options.length === 0) {
         setOpenAIModelOptionsMessage({
@@ -12695,6 +12512,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
       }
     } catch (err) {
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       const rawMessage = err instanceof Error ? err.message : "No se pudieron cargar los modelos de OpenAI.";
       setOpenAIModelOptions([]);
       setOpenAIModelOptionsMessage({
@@ -12702,16 +12520,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         severity: "error",
       });
     } finally {
-      setOpenAIModelOptionsLoading(false);
+      if (isProviderDiscoveryCurrent(providerOperationsRef.current, token)) {
+        setOpenAIModelOptionsLoading(false);
+      }
     }
   }
 
   async function loadGoogleModelOptions(apiKey: string) {
+    const begun = beginProviderDiscovery(providerOperationsRef.current, "google");
+    updateProviderOperations(() => begun.state);
+    const token = begun.token;
     setGoogleModelOptionsLoading(true);
     setGoogleModelOptionsMessage(null);
     try {
       const options = await fetchGoogleModelsDirect(apiKey);
 
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       setGoogleModelOptions(options);
       if (options.length === 0) {
         setGoogleModelOptionsMessage({
@@ -12720,6 +12544,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
       }
     } catch (err) {
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       const rawMessage = err instanceof Error ? err.message : "No se pudieron cargar los modelos de Google.";
       setGoogleModelOptions([]);
       setGoogleModelOptionsMessage({
@@ -12727,7 +12552,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         severity: "error",
       });
     } finally {
-      setGoogleModelOptionsLoading(false);
+      if (isProviderDiscoveryCurrent(providerOperationsRef.current, token)) {
+        setGoogleModelOptionsLoading(false);
+      }
     }
   }
 
@@ -12828,82 +12655,147 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setGoogleModelFilter("");
   }
 
-  async function saveProviderApiKey(provider: Provider) {
-    const draft = providerDraftByProvider[provider];
-    if (!draft) return;
-
-    const normalizedApiKey = draft.api_key.trim();
-    const normalizedModel = normalizeProviderModel(provider, draft.model);
-    const normalizedWorkspaceId = provider === "anthropic"
-      ? normalizeAnthropicWorkspaceId(draft.workspace_id)
-      : "";
-    const normalizedReasoningEffort =
-      provider === "openai"
-        ? normalizeOpenAIReasoningEffort(draft.reasoning_effort, normalizedModel)
-        : null;
-
-    setActiveProvider(provider);
-    setError(null);
-    setProviderSaveLoading((prev) => ({ ...prev, [provider]: true }));
+  function clearProviderModelDiscovery(provider: Provider, clearOptions: boolean) {
     if (provider === "anthropic") {
       setAnthropicModelDropdownOpen(false);
+      if (clearOptions) setAnthropicModelOptions([]);
       setAnthropicModelOptionsMessage(null);
       setAnthropicModelFilter("");
+      setAnthropicModelOptionsLoading(false);
     }
     if (provider === "openai") {
       setOpenAIModelDropdownOpen(false);
+      if (clearOptions) setOpenAIModelOptions([]);
       setOpenAIModelOptionsMessage(null);
       setOpenAIModelFilter("");
+      setOpenAIModelOptionsLoading(false);
     }
     if (provider === "google") {
       setGoogleModelDropdownOpen(false);
+      if (clearOptions) setGoogleModelOptions([]);
       setGoogleModelOptionsMessage(null);
       setGoogleModelFilter("");
+      setGoogleModelOptionsLoading(false);
+    }
+  }
+
+  async function persistProviderCandidate(
+    candidate: AIKey,
+    token: ProviderSaveToken,
+    verifiedStatus: ProviderConnectionCheckResult | null,
+  ): Promise<boolean> {
+    const provider = candidate.provider;
+    if (!isProviderSaveCurrent(
+      providerOperationsRef.current,
+      token,
+      providerConfigurationRevisionRef.current,
+    )) return false;
+
+    updateProviderOperations((current) => setProviderSavePhase(current, token, "persisting"));
+    setProviderConnectionStatus((prev) => ({
+      ...prev,
+      [provider]: {
+        state: "checking",
+        detail: PROVIDER_STATUS_COPY.warningSaving,
+        severity: "warning",
+      },
+    }));
+
+    const repository = providerConfigurationRepositoryRef.current;
+    if (!repository) {
+      const detail = Platform.OS === "web"
+        ? PROVIDER_STATUS_COPY.errorSaving
+        : "No se pudo acceder al almacenamiento seguro. La configuración anterior sigue activa.";
+      updateProviderOperations((current) => setProviderSavePhase(current, token, "save_failed"));
+      setProviderConnectionStatus((prev) => ({
+        ...prev,
+        [provider]: { state: "disconnected", detail, severity: "error" },
+      }));
+      setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
+      setError(detail);
+      return false;
     }
 
-    if (!normalizedApiKey) {
-      updateProviderConfig(provider, {
-        api_key: "",
-        model: normalizedModel,
-        workspace_id: normalizedWorkspaceId,
-        reasoning_effort: normalizedReasoningEffort,
-      });
-      updateProviderDraft(
-        provider,
-        {
-          api_key: "",
-          model: normalizedModel,
-          workspace_id: normalizedWorkspaceId,
-          reasoning_effort: normalizedReasoningEffort,
-        },
-        { markPending: false },
+    const activate = !!candidate.api_key;
+    try {
+      const result = await repository.commit(
+        (current) => applyProviderCandidate(current, candidate, activate),
+        () => isProviderSaveCurrent(
+          providerOperationsRef.current,
+          token,
+          providerConfigurationRevisionRef.current,
+        ),
       );
+      if (
+        result.status !== "committed"
+        || !isProviderSaveCurrent(
+          providerOperationsRef.current,
+          token,
+          providerConfigurationRevisionRef.current,
+        )
+      ) {
+        return false;
+      }
+
+      const committedDraft = createProviderDraftMap(result.snapshot.keys)[provider];
+      const committedProvider = result.snapshot.keys.find((item) => item.is_active)?.provider;
+      setStore((prev) => ({
+        ...prev,
+        ...(committedProvider ? { chatProvider: committedProvider } : {}),
+        keys: result.snapshot.keys,
+      }));
+      setProviderDraftByProvider((prev) => ({ ...prev, [provider]: committedDraft }));
+      updateProviderOperations((current) => setProviderSavePhase(current, token, "connected"));
+      setProviderConnectionStatus((prev) => ({
+        ...prev,
+        [provider]: verifiedStatus
+          ? {
+              state: "connected",
+              detail: verifiedStatus.message,
+              severity: verifiedStatus.severity,
+            }
+          : {
+              state: "disconnected",
+              detail: PROVIDER_STATUS_COPY.warningNoKey,
+              severity: "warning",
+            },
+      }));
+      setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
+      setProviderKeyVisible(provider, false);
+      clearProviderModelDiscovery(provider, !candidate.api_key);
+      setError(null);
+      return true;
+    } catch {
+      if (!isProviderSaveCurrent(
+        providerOperationsRef.current,
+        token,
+        providerConfigurationRevisionRef.current,
+      )) return false;
+      updateProviderOperations((current) => setProviderSavePhase(current, token, "save_failed"));
       setProviderConnectionStatus((prev) => ({
         ...prev,
         [provider]: {
           state: "disconnected",
-          detail: PROVIDER_STATUS_COPY.warningNoKey,
-          severity: "warning",
+          detail: PROVIDER_STATUS_COPY.errorSaving,
+          severity: "error",
         },
       }));
       setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
-      setProviderKeyVisible(provider, false);
-      if (provider === "anthropic") {
-        setAnthropicModelOptions([]);
-      }
-      if (provider === "openai") {
-        setOpenAIModelOptions([]);
-      }
-      if (provider === "google") {
-        setGoogleModelOptions([]);
-      }
-      return;
+      setError(PROVIDER_STATUS_COPY.errorSaving);
+      return false;
     }
+  }
+
+  async function saveProviderApiKey(provider: Provider) {
+    const draft = providerDraftByProvider[provider];
+    if (!draft) return;
+
+    const candidate = normalizeProviderConfiguration(provider, draft, true);
 
     if (
       provider === "anthropic"
-      && normalizedWorkspaceId
-      && !normalizedWorkspaceId.startsWith("wrkspc_")
+      && candidate.workspace_id
+      && !candidate.workspace_id.startsWith("wrkspc_")
     ) {
       const detail = "Error grave: el Workspace ID de Anthropic debe empezar por wrkspc_.";
       setProviderConnectionStatus((prev) => ({
@@ -12912,6 +12804,24 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }));
       setProviderSaveLoading((prev) => ({ ...prev, anthropic: false }));
       setError(detail);
+      return;
+    }
+
+    const configurationRevision = beginProviderConfigurationMutation();
+    const begun = beginProviderSave(
+      providerOperationsRef.current,
+      provider,
+      !!candidate.api_key,
+      configurationRevision,
+    );
+    updateProviderOperations(() => begun.state);
+    const token = begun.token;
+    setError(null);
+    setProviderSaveLoading((prev) => ({ ...prev, [provider]: true }));
+    clearProviderModelDiscovery(provider, false);
+
+    if (!candidate.api_key) {
+      await persistProviderCandidate(candidate, token, null);
       return;
     }
 
@@ -12924,56 +12834,23 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       },
     }));
 
-    const check = await verifyProviderConnection({
-      provider,
-      is_active: true,
-      api_key: normalizedApiKey,
-      model: normalizedModel,
-      workspace_id: normalizedWorkspaceId,
-    });
-
-    if (check.ok) {
-      updateProviderConfig(provider, {
-        api_key: normalizedApiKey,
-        model: normalizedModel,
-        workspace_id: normalizedWorkspaceId,
-        reasoning_effort: normalizedReasoningEffort,
-      });
-      updateProviderDraft(
-        provider,
-        {
-          api_key: normalizedApiKey,
-          model: normalizedModel,
-          workspace_id: normalizedWorkspaceId,
-          reasoning_effort: normalizedReasoningEffort,
-        },
-        { markPending: false },
-      );
-    } else {
-      updateProviderDraft(
-        provider,
-        {
-          api_key: draft.api_key,
-          model: normalizedModel,
-          workspace_id: draft.workspace_id,
-          reasoning_effort: normalizedReasoningEffort,
-        },
-        { markPending: false },
-      );
-    }
-    setProviderConnectionStatus((prev) => ({
-      ...prev,
-      [provider]: check.ok
-        ? { state: "connected", detail: check.message, severity: check.severity }
-        : { state: "disconnected", detail: check.message, severity: check.severity },
-    }));
-    setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
-    setProviderKeyVisible(provider, false);
+    const check = await verifyProviderConnection(candidate);
+    if (!isProviderSaveCurrent(
+      providerOperationsRef.current,
+      token,
+      providerConfigurationRevisionRef.current,
+    )) return;
     if (!check.ok) {
+      updateProviderOperations((current) => setProviderSavePhase(current, token, "rejected"));
+      setProviderConnectionStatus((prev) => ({
+        ...prev,
+        [provider]: { state: "disconnected", detail: check.message, severity: check.severity },
+      }));
+      setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
       setError(`No se pudo conectar con ${PROVIDER_UI_META[provider].label}: ${check.message}`);
       return;
     }
-    setError(null);
+    await persistProviderCandidate(candidate, token, check);
   }
 
   function openDeleteProviderApiKeyModal(provider: Provider) {
@@ -12984,53 +12861,35 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setProviderDeleteModal({ provider, maskedApiKey });
   }
 
-  function confirmDeleteProviderApiKey() {
+  async function confirmDeleteProviderApiKey() {
     const modal = providerDeleteModal;
     if (!modal) return;
     const provider = modal.provider;
-
-    updateProviderConfig(provider, {
+    const currentDraft = providerDraftByProvider[provider]
+      ?? createProviderDraftMap(storeRef.current.keys)[provider];
+    const candidate = normalizeProviderConfiguration(provider, {
+      ...currentDraft,
       api_key: "",
       ...(provider === "anthropic" ? { workspace_id: "" } : {}),
     });
-    updateProviderDraft(
+    const configurationRevision = beginProviderConfigurationMutation();
+    const begun = beginProviderSave(
+      providerOperationsRef.current,
       provider,
-      {
-        api_key: "",
-        ...(provider === "anthropic" ? { workspace_id: "" } : {}),
-      },
-      { markPending: false },
+      false,
+      configurationRevision,
     );
-    setProviderConnectionStatus((prev) => ({
+    updateProviderOperations(() => begun.state);
+    setProviderDraftByProvider((prev) => ({
       ...prev,
-      [provider]: {
-        state: "disconnected",
-        detail: PROVIDER_STATUS_COPY.warningNoKey,
-        severity: "warning",
-      },
+      [provider]: createProviderDraftMap(
+        applyProviderCandidate(storeRef.current.keys, candidate, false),
+      )[provider],
     }));
-    setProviderSaveLoading((prev) => ({ ...prev, [provider]: false }));
-    setProviderKeyVisible(provider, false);
-    if (provider === "anthropic") {
-      setAnthropicModelDropdownOpen(false);
-      setAnthropicModelOptions([]);
-      setAnthropicModelOptionsMessage(null);
-      setAnthropicModelFilter("");
-    }
-    if (provider === "openai") {
-      setOpenAIModelDropdownOpen(false);
-      setOpenAIModelOptions([]);
-      setOpenAIModelOptionsMessage(null);
-      setOpenAIModelFilter("");
-    }
-    if (provider === "google") {
-      setGoogleModelDropdownOpen(false);
-      setGoogleModelOptions([]);
-      setGoogleModelOptionsMessage(null);
-      setGoogleModelFilter("");
-    }
+    setProviderSaveLoading((prev) => ({ ...prev, [provider]: true }));
+    clearProviderModelDiscovery(provider, true);
     setProviderDeleteModal(null);
-    setError(null);
+    await persistProviderCandidate(candidate, begun.token, null);
   }
 
   function closeProviderDeleteModal() {
@@ -13094,7 +12953,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const tasks: LocalDataDeletionTask[] = [];
     const activityStore = createActivityResetStore(store);
     const serializedActivityStore = JSON.stringify(
-      serializeStoreForAsyncStorage(activityStore, secureStoreAvailable),
+      serializeStoreForAsyncStorage(activityStore),
     );
     const dependentSessionKeys = [
       SESSION_STORAGE_KEY,
@@ -13144,6 +13003,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
       }
     } else {
+      const secureStoreAvailableNow = await isSecureStoreAvailable();
       const preservedKeys = new Set(
         LOCAL_DATA_SECURITY_PRESERVED_KEYS.map(scopedStorageKey),
       );
@@ -13162,11 +13022,33 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           await Promise.all([...managedStoreKeys].map((key) => AsyncStorage.getItem(key)))
         ).every((value) => value === null),
       });
+      tasks.push({
+        id: "provider-configuration",
+        label: "Configuración y credenciales de proveedores IA",
+        delete: async () => {
+          const repository = providerConfigurationRepositoryRef.current;
+          if (repository) {
+            await repository.clear();
+            return;
+          }
+          await AsyncStorage.removeItem(PROVIDER_CONFIGURATION_STORAGE_KEY);
+          if (secureStoreAvailableNow) {
+            await SecureStore.deleteItemAsync(PROVIDER_CONFIGURATION_SECURE_KEY);
+          }
+        },
+        verify: async () => {
+          const asyncValue = await AsyncStorage.getItem(PROVIDER_CONFIGURATION_STORAGE_KEY);
+          if (!secureStoreAvailableNow) return asyncValue === null;
+          const secureValue = await SecureStore.getItemAsync(PROVIDER_CONFIGURATION_SECURE_KEY);
+          return asyncValue === null && secureValue === null;
+        },
+      });
       for (const key of activeKeys) {
         if (
           preservedKeys.has(key)
           || key === traceKey
           || key === "gymnasia_measurement_media_v1"
+          || key === PROVIDER_CONFIGURATION_STORAGE_KEY
           || managedStoreKeys.has(key)
         ) continue;
         tasks.push({
@@ -13186,7 +13068,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         ),
       });
 
-      const secureStoreAvailableNow = await isSecureStoreAvailable();
       if (!secureStoreAvailableNow && Platform.OS !== "web") {
         tasks.push({
           id: "secure-store-unavailable",
@@ -13198,6 +13079,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
       } else if (secureStoreAvailableNow) {
         const secureTargets: Array<[string, string]> = LOCAL_SECURE_DATA_MANIFEST
+          .filter((entry) => entry.key !== "gymnasia.mobile.v4.provider_configuration")
           .flatMap((entry): Array<[string, string]> => {
             const baseKey = scopedSecureStoreKey(entry.key);
             if (entry.form === "prefix") {
@@ -13263,6 +13145,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   async function performDataDeletion(scope: LocalDataDeletionScope) {
     if (dataDeletionBusyRef.current) return;
+    if (scope === "all-personal") beginProviderConfigurationMutation();
     dataDeletionBusyRef.current = true;
     setDataDeletionBusy(true);
     setDataDeletionReport(null);
@@ -13369,19 +13252,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setLocalStoreRecoveryBusy("discard");
     setLocalStoreRecoveryError(null);
     try {
-      let secureAvailable = await isSecureStoreAvailable();
-      let secureApiKeys = emptyProviderApiKeys();
-      if (secureAvailable) {
-        try {
-          secureApiKeys = await readProviderApiKeysFromSecureStore(true);
-        } catch {
-          secureAvailable = false;
-        }
-      }
-      const initialStore = mergeStoreWithSecureApiKeys(createInitialStore(), secureApiKeys);
-      const initialRaw = JSON.stringify(
-        serializeStoreForAsyncStorage(initialStore, secureAvailable),
-      );
+      const currentProviderKeys = providerConfigurationRepositoryRef.current?.getCurrent()?.keys
+        ?? createDefaultProviderKeys();
+      const initialStore: LocalStore = {
+        ...createInitialStore(),
+        keys: currentProviderKeys,
+        chatProvider: currentProviderKeys.find((item) => item.is_active)?.provider ?? "openai",
+      };
+      const initialRaw = JSON.stringify(serializeStoreForAsyncStorage(initialStore));
       await localStoreRecoveryRepository.discardAffected(initialRaw, [
         SESSION_STORAGE_KEY,
         SESSION_TEMPLATE_SNAPSHOT_KEY,
@@ -19633,7 +19511,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     {
                       label: "Gymnasia Coach",
                       value: store.chatProvider,
-                      onChange: (p: Provider) => { setStore((prev) => ({ ...prev, chatProvider: p })); setChatProviderDropdownOpen(false); },
+                      onChange: (p: Provider) => { void selectChatProvider(p); },
                       open: chatProviderDropdownOpen,
                       setOpen: setChatProviderDropdownOpen,
                       otherClose: () => setFoodAIProviderDropdownOpen(false),
@@ -20482,6 +20360,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                           ) : key.provider === "google" ? (
                             <View style={{ gap: 8 }}>
                               <Pressable
+                                testID="provider-model-dropdown-google"
                                 onPress={() => {
     
                                   toggleGoogleModelDropdown();
@@ -20520,6 +20399,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               </Pressable>
 
                               <Pressable
+                                testID="provider-model-refresh-google"
                                 onPress={() => {
     
                                   const googleApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
@@ -20633,6 +20513,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                         return (
                                           <Pressable
                                             key={modelOption.id}
+                                            testID={`provider-model-option-google-${modelOption.id}`}
                                             onPress={() => {
                 
                                               selectGoogleModel(modelOption.id);
@@ -20711,8 +20592,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       }}
                     >
                       <Text style={{ color: "#ffd7a8", fontSize: 12 }}>
-                        SecureStore no disponible en este entorno. La API key se guardará en almacenamiento local
-                        (AsyncStorage), sin cifrado seguro.
+                        {Platform.OS === "web"
+                          ? "El navegador no dispone de llavero seguro. Las claves se guardan en el almacenamiento local del navegador, sin cifrado del sistema."
+                          : "El llavero seguro no está disponible. No se guardarán cambios de proveedor hasta que vuelva a estar accesible."}
                       </Text>
                     </View>
                   ) : null}

@@ -9,6 +9,7 @@ export type FakeProviderResult = {
 };
 
 export const DEFAULT_GOOGLE_MODEL = "gemini-3.6-flash";
+export const PROVIDER_CONFIGURATION_REQUEST_TIMEOUT_MS = 15_000;
 const LEGACY_GOOGLE_DEFAULT_MODELS = new Set([
   "gemini-1.5-flash",
   "gemini-3-flash-preview",
@@ -126,4 +127,24 @@ export function providerCredential(
 ): string {
   const value = (configuredValue ?? "").trim();
   return value || (fakeMode ? "development-fixture" : "");
+}
+
+export async function fetchProviderConfiguration(
+  input: string,
+  init: RequestInit,
+  fetchImpl: typeof fetch = fetch,
+  timeoutMs: number = PROVIDER_CONFIGURATION_REQUEST_TIMEOUT_MS,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetchImpl(input, { ...init, signal: controller.signal });
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error("Tiempo de espera agotado al contactar con el proveedor.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
 }

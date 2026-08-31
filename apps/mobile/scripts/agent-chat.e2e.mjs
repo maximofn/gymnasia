@@ -16,6 +16,7 @@ const STEP_TIMEOUT_MS = 30000;
 const DEVELOPMENT_NAMESPACE = "gymnasia.development";
 const scopedKey = (key) => `${DEVELOPMENT_NAMESPACE}:${key}`;
 const STORE_KEY = scopedKey("gymnasia.mobile.local.v3");
+const PROVIDER_CONFIGURATION_KEY = scopedKey("gymnasia.mobile.provider_configuration.v1");
 const PERSONAL_DATA_KEY = scopedKey("gymnasia.mobile.personal_data.v1");
 const TRACE_KEY = scopedKey("gymnasia_debug_traces");
 const LEGACY_RELEASES_API = "https://api.github.com/repos/maximofn/gymnasia/releases/latest";
@@ -326,14 +327,18 @@ async function runNoKeyDisclosureE2E(page, baseUrl) {
 async function runByokLifecycleE2E(page, baseUrl) {
   const invalidKey = "invalid-review-key";
   const firstKey = "review-key-one";
+  const staleKey = "review-key-stale";
   const rotatedKey = "review-key-two";
   const verificationKeys = [];
   const chatRequests = [];
+  let releaseStaleVerification = null;
 
   await page.addInitScript(({ storeKey, traceKey, store }) => {
+    if (window.sessionStorage.getItem("gymnasia-byok-e2e-seeded") === "1") return;
     window.localStorage.clear();
     window.localStorage.setItem(storeKey, JSON.stringify(store));
     window.localStorage.setItem(traceKey, "[]");
+    window.sessionStorage.setItem("gymnasia-byok-e2e-seeded", "1");
   }, {
     storeKey: STORE_KEY,
     traceKey: TRACE_KEY,
@@ -373,12 +378,41 @@ async function runByokLifecycleE2E(page, baseUrl) {
       return;
     }
 
+    if (url.endsWith("/v1beta/models")) {
+      verificationKeys.push(apiKey);
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          models: [{
+            name: "models/gemini-3.6-flash",
+            displayName: "Gemini 3.6 Flash",
+            supportedGenerationMethods: ["generateContent"],
+          }],
+        }),
+      });
+      return;
+    }
+
     verificationKeys.push(apiKey);
     if (apiKey === invalidKey) {
       await route.fulfill({
         status: 401,
         contentType: "application/json",
         body: JSON.stringify({ error: { message: "Credencial inválida" } }),
+      });
+      return;
+    }
+    if (apiKey === staleKey) {
+      await new Promise((resolve) => {
+        releaseStaleVerification = async () => {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({ name: "models/gemini-3.6-flash" }),
+          });
+          resolve();
+        };
       });
       return;
     }
@@ -411,10 +445,27 @@ async function runByokLifecycleE2E(page, baseUrl) {
   );
 
   await keyInput.fill(firstKey);
+  await page.locator('[data-testid="provider-model-dropdown-google"]')
+    .click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="provider-model-option-google-gemini-3.6-flash"]')
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await saveButton.click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="provider-status-detail-google"]')
     .filter({ hasText: "Conexión verificada" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await page.waitForFunction(
+    ({ providerConfigurationKey, expectedKey }) => {
+      const journal = JSON.parse(window.localStorage.getItem(providerConfigurationKey) ?? "{}");
+      return journal.committed?.keys?.find((item) => item.provider === "google")?.api_key === expectedKey;
+    },
+    { providerConfigurationKey: PROVIDER_CONFIGURATION_KEY, expectedKey: firstKey },
+    { timeout: STEP_TIMEOUT_MS },
+  );
+  const genericStoreAfterSave = await page.evaluate(
+    (storeKey) => window.localStorage.getItem(storeKey) ?? "",
+    STORE_KEY,
+  );
+  assert(!genericStoreAfterSave.includes(firstKey), "el estado general no debe duplicar credenciales");
 
   await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="chat-input"]').fill("¿Cuál es mi objetivo?");
@@ -426,10 +477,36 @@ async function runByokLifecycleE2E(page, baseUrl) {
 
   await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="settings-tab-provider"]').click({ timeout: STEP_TIMEOUT_MS });
+  await keyInput.fill(staleKey);
+  await saveButton.click({ timeout: STEP_TIMEOUT_MS });
+  for (let attempt = 0; attempt < 100 && !verificationKeys.includes(staleKey); attempt += 1) {
+    await page.waitForTimeout(10);
+  }
+  assert(verificationKeys.includes(staleKey), "la primera rotación debe empezar a verificarse");
   await keyInput.fill(rotatedKey);
   await saveButton.click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="provider-status-detail-google"]')
     .filter({ hasText: "Conexión verificada" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  assert(releaseStaleVerification, "la verificación antigua debe seguir pendiente");
+  await releaseStaleVerification();
+  await page.waitForTimeout(50);
+  await page.waitForFunction(
+    ({ providerConfigurationKey, expectedKey }) => {
+      const journal = JSON.parse(window.localStorage.getItem(providerConfigurationKey) ?? "{}");
+      return journal.committed?.keys?.find((item) => item.provider === "google")?.api_key === expectedKey
+        && journal.pending === null;
+    },
+    { providerConfigurationKey: PROVIDER_CONFIGURATION_KEY, expectedKey: rotatedKey },
+    { timeout: STEP_TIMEOUT_MS },
+  );
+
+  logStep("Comprobando que el reinicio conserva la clave sin fingir que sigue verificada");
+  await page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="settings-tab-provider"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="provider-status-detail-google"]')
+    .filter({ hasText: "pendiente de comprobar en esta sesión" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
 
   await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
@@ -447,16 +524,16 @@ async function runByokLifecycleE2E(page, baseUrl) {
   await deleteButton.click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="provider-delete-confirm"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.waitForFunction(
-    ({ storeKey }) => {
-      const store = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
-      return store.keys?.find((item) => item.provider === "google")?.api_key === "";
+    ({ providerConfigurationKey }) => {
+      const journal = JSON.parse(window.localStorage.getItem(providerConfigurationKey) ?? "{}");
+      return journal.committed?.keys?.find((item) => item.provider === "google")?.api_key === "";
     },
-    { storeKey: STORE_KEY },
+    { providerConfigurationKey: PROVIDER_CONFIGURATION_KEY },
     { timeout: STEP_TIMEOUT_MS },
   );
 
-  assert.deepEqual(verificationKeys, [invalidKey, firstKey, rotatedKey]);
-  for (const secret of [invalidKey, firstKey, rotatedKey]) {
+  assert.deepEqual(verificationKeys, [invalidKey, firstKey, firstKey, staleKey, rotatedKey]);
+  for (const secret of [invalidKey, firstKey, staleKey, rotatedKey]) {
     assert(
       chatRequests.every((request) => !request.url.includes(secret) && !request.body.includes(secret)),
       "ninguna credencial puede aparecer en URL o body",

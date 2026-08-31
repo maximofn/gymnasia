@@ -206,7 +206,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Catorce cosas que cuestan tiempo si no se saben:
+Quince cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -330,6 +330,15 @@ Catorce cosas que cuestan tiempo si no se saben:
     correcta exista: el valor enviado es literalmente `"lin_api_..."`. En un
     worktree usa `LINEAR_ENV_FILE=/ruta/checkout/.env`; `linear.py` elimina las
     comillas de forma segura sin copiar el secreto al worktree ni imprimirlo.
+
+15. **`board --apply` sincroniza estados, pero no deduplica el tablero.** El
+    síntoma es que el comando termina correctamente y `board` afirma después
+    que no hay deriva, pero `npm run test:board` falla con `identifier duplicado`
+    o con el mismo ticket repetido en el orden recomendado. La comparación con
+    Linear no valida la estructura manual completa de `board.json`: conserva
+    grupos, tarjetas y orden tal como están. Elimina la copia sobrante conservando
+    la tarjeta de la épica correcta, quita también la repetición del orden y
+    ejecuta `npm run test:board` y `npm run test:board:e2e` antes de desplegar.
 
 ## Notas
 

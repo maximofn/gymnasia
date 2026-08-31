@@ -31,6 +31,7 @@ export const LOCAL_DATA_DELETION_TIMEOUT_MS = 5_000;
 
 export const LOCAL_DATA_MANIFEST = [
   { key: "gymnasia.mobile.local.v3", activity: "rewrite", full: "delete" },
+  { key: "gymnasia.mobile.provider_configuration.v1", activity: "preserve", full: "delete" },
   { key: "gymnasia_measurement_media_v1", activity: "delete", full: "delete" },
   { key: "gymnasia.mobile.local.last_good.v1", activity: "rewrite", full: "delete" },
   { key: "gymnasia.mobile.local.quarantine.v1", activity: "delete", full: "delete" },
@@ -59,6 +60,7 @@ export const LOCAL_DATA_SECURITY_PRESERVED_KEYS = LOCAL_DATA_MANIFEST
   .map((entry) => entry.key);
 
 export const LOCAL_SECURE_DATA_MANIFEST = [
+  { key: "gymnasia.mobile.v4.provider_configuration", form: "literal", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.v3.provider.api_key", form: "prefix", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.v2.provider.api_key", form: "prefix", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.provider.api_key", form: "prefix", activity: "preserve", full: "delete" },
