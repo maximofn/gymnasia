@@ -13,6 +13,14 @@ test("instala Chromium antes de ejecutar los E2E de la puerta de Production", ()
   assert.ok(install < validate, "Chromium debe instalarse antes de lanzar los E2E");
 });
 
+test("el selector puede descubrir releases borrador", () => {
+  assert.match(
+    workflow,
+    /select-transaction:[\s\S]*?permissions:\n(?:\s+#.*\n)*\s+contents: write[\s\S]*?validate-production:/,
+    "GitHub oculta los drafts a tokens sin acceso de escritura",
+  );
+});
+
 test("consulta EAS con filtros estables y valida la identidad localmente", () => {
   assert.match(
     workflow,

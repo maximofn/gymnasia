@@ -36,7 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      contents: read
+      # GitHub only includes draft releases for tokens with push access.
+      contents: write
     outputs:
       action: ${{ steps.select.outputs.action }}
       mode: ${{ steps.select.outputs.mode }}
