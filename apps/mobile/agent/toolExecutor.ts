@@ -3,6 +3,12 @@ import {
   sanitizePersonalDataFields,
   type PersonalDataField,
 } from "./personalData";
+import {
+  DIET_MEAL_CATEGORIES,
+  formatNutritionValidationIssues,
+  resolveDietMealCategory,
+  validateNutritionItem,
+} from "../diet/nutritionContract";
 
 export type { PersonalDataField };
 
@@ -268,9 +274,10 @@ const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
 
 const readMealFoods: ToolHandler = async (args, context) => {
   const date = (args.date as string) ?? "";
-  const meal = (args.meal as string) ?? "";
   if (!date) return "No se proporcionó una fecha.";
-  if (!meal) return "No se proporcionó una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).";
+  const mealResult = resolveDietMealCategory(args.meal);
+  if (!mealResult.ok) return formatNutritionValidationIssues(mealResult.issues);
+  const meal = mealResult.value;
   if (!context.store) return "No se pudo acceder a los datos de dieta.";
   const day = context.store.dietByDate[date];
   if (!day) return `No hay datos de dieta para la fecha "${date}".`;
@@ -289,9 +296,10 @@ const readMealFoods: ToolHandler = async (args, context) => {
 
 const addMealFood: ToolHandler = async (args, context, dependencies) => {
   const date = (args.date as string) ?? "";
-  const meal = (args.meal as string) ?? "";
   if (!date) return "No se proporcionó una fecha.";
-  if (!meal) return "No se proporcionó una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).";
+  const mealResult = resolveDietMealCategory(args.meal);
+  if (!mealResult.ok) return formatNutritionValidationIssues(mealResult.issues);
+  const meal = mealResult.value;
   if (!context.setStore) return "No se pudo acceder al almacenamiento.";
   const parsed = parseObjectArgument(
     args.data,
@@ -300,22 +308,30 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
   );
   if (parsed.error || !parsed.value) return parsed.error ?? "No se proporcionaron datos del alimento.";
   const data = parsed.value;
-  const foodName = (data.name as string) ?? "Alimento";
-  const grams = Number(data.grams) || 0;
-  const caloriesKcal = Number(data.calories_kcal) || 0;
+  const validation = validateNutritionItem(data);
+  if (!validation.ok) {
+    return `No se añadió el alimento. ${formatNutritionValidationIssues(validation.issues)}`;
+  }
+  const {
+    name: foodName,
+    grams,
+    calories_kcal: caloriesKcal,
+    protein_g: proteinG,
+    carbs_g: carbsG,
+    fat_g: fatG,
+  } = validation.value;
   const newItem: ToolDietItem = {
     id: dependencies.createId("food"),
     title: foodName,
     grams,
     calories_kcal: caloriesKcal,
-    protein_g: Number(data.protein_g) || 0,
-    carbs_g: Number(data.carbs_g) || 0,
-    fat_g: Number(data.fat_g) || 0,
+    protein_g: proteinG,
+    carbs_g: carbsG,
+    fat_g: fatG,
   };
   context.setStore((previous) => {
     const currentDay = previous.dietByDate[date] ?? { day_date: date, meals: [] };
     const existingMeal = currentDay.meals.find((item) => item.title.toLowerCase() === meal.toLowerCase());
-    const mealCategories = ["Desayuno", "Almuerzo", "Comida", "Merienda", "Cena"];
     const updatedMeals = existingMeal
       ? currentDay.meals.map((item) => item.title.toLowerCase() === meal.toLowerCase()
         ? { ...item, items: [...item.items, newItem] }
@@ -324,7 +340,10 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
           id: dependencies.createId("meal"),
           title: meal,
           items: [newItem],
-        }].sort((left, right) => mealCategories.indexOf(left.title) - mealCategories.indexOf(right.title));
+        }].sort((left, right) => (
+          DIET_MEAL_CATEGORIES.indexOf(left.title as (typeof DIET_MEAL_CATEGORIES)[number])
+          - DIET_MEAL_CATEGORIES.indexOf(right.title as (typeof DIET_MEAL_CATEGORIES)[number])
+        ));
     return {
       ...previous,
       dietByDate: {

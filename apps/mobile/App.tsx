@@ -153,6 +153,18 @@ import {
   googleApiHeaders,
   providerCredential,
 } from "./agent/providerTransport";
+import {
+  DIET_MEAL_CATEGORIES,
+  NUTRITION_FOOD_TYPES,
+  evaluateDietPlan,
+  formatNutritionValidationIssues,
+  validateNutritionFormInput,
+  validateNutritionItem,
+  validateStructuredNutrition,
+  type DietMacroMode,
+  type DietMealCategory,
+  type NutritionValidationIssue,
+} from "./diet/nutritionContract";
 import { verifyProviderConfiguration } from "./agent/providerVerification";
 import {
   DEFAULT_MODELS,
@@ -427,9 +439,7 @@ type Measurement = {
   calf_cm: number | null;
   height_cm: number | null;
 };
-type DietMacroMode = "manual_calories" | "protein_by_weight";
 type GkgMacroKey = "protein" | "carbs" | "fat";
-type DietMealCategory = "Desayuno" | "Almuerzo" | "Comida" | "Merienda" | "Cena";
 type DietGoal = "bulk" | "cut" | "maintain";
 type ActivityLevel = "moderate" | "intermediate" | "high";
 type UserSex = "male" | "female";
@@ -1582,13 +1592,6 @@ const MAX_WORKOUT_HISTORY_ITEMS = 180;
 const DIET_MACRO_MODE_OPTIONS: Array<{ key: DietMacroMode; label: string }> = [
   { key: "manual_calories", label: "kcal" },
   { key: "protein_by_weight", label: "g/kg" },
-];
-const DIET_MEAL_CATEGORIES: DietMealCategory[] = [
-  "Desayuno",
-  "Almuerzo",
-  "Comida",
-  "Merienda",
-  "Cena",
 ];
 const DIET_MEAL_META: Record<
   DietMealCategory,
@@ -6495,6 +6498,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [store, setStore] = useState<LocalStore>(() => createInitialStore());
   const storeRef = useRef(store);
   storeRef.current = store;
+  const [dietSettingsDraft, setDietSettingsDraft] = useState<DietSettings>(
+    () => createDefaultDietSettings(),
+  );
+  const [dietSettingsDraftDirty, setDietSettingsDraftDirty] = useState(false);
+  const [dietPlanSaveResult, setDietPlanSaveResult] = useState<string | null>(null);
+  useEffect(() => {
+    if (dietSettingsDraftDirty) return;
+    setDietSettingsDraft({
+      ...store.dietSettings,
+      manual_macro_calories: { ...store.dietSettings.manual_macro_calories },
+    });
+  }, [dietSettingsDraftDirty, store.dietSettings]);
   const providerConfigurationRepositoryRef = useRef<ProviderConfigurationRepository | null>(null);
   const providerConfigurationRevisionRef = useRef(0);
   const [threads, setThreads] = useState<ChatThread[]>([]);
@@ -6575,6 +6590,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [mealCarbsInput, setMealCarbsInput] = useState("");
   const [mealFatInput, setMealFatInput] = useState("");
   const [mealGramsInput, setMealGramsInput] = useState("");
+  const [mealNutritionIssues, setMealNutritionIssues] = useState<NutritionValidationIssue[]>([]);
   const mealPerGramRef = useRef<{ cal: number; prot: number; carbs: number; fat: number } | null>(null);
   const [selectedDietDate, setSelectedDietDate] = useState<string>(() => todayISO());
   const [showDietDatePicker, setShowDietDatePicker] = useState(false);
@@ -7073,25 +7089,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       })),
     [showAllMeasurementsHistory, store.measurements],
   );
-  const dietDailyCaloriesTarget = parseNonNegativeNumberInput(dietSettings.daily_calories) ?? 0;
-  const manualCarbsCalories =
-    parseNonNegativeNumberInput(dietSettings.manual_macro_calories.carbs) ?? 0;
-  const manualProteinCalories =
-    parseNonNegativeNumberInput(dietSettings.manual_macro_calories.protein) ?? 0;
-  const manualFatCalories =
-    parseNonNegativeNumberInput(dietSettings.manual_macro_calories.fat) ?? 0;
-  const manualAssignedCalories =
-    manualCarbsCalories + manualProteinCalories + manualFatCalories;
-  const manualRemainingCalories = dietDailyCaloriesTarget - manualAssignedCalories;
-  const manualCarbsGrams = manualCarbsCalories / 4;
-  const manualProteinGrams = manualProteinCalories / 4;
-  const manualFatGrams = manualFatCalories / 9;
+  const savedDietPlanEvaluation = evaluateDietPlan(dietSettings, latestBodyWeightKg);
+  const draftDietPlanEvaluation = evaluateDietPlan(dietSettingsDraft, latestBodyWeightKg);
+  const dietDailyCaloriesTarget = savedDietPlanEvaluation.dailyCaloriesTarget ?? 0;
+  const draftDietDailyCaloriesTarget = draftDietPlanEvaluation.dailyCaloriesTarget ?? 0;
   const proteinGramsPerKgTarget =
-    parseNonNegativeNumberInput(dietSettings.protein_grams_per_kg) ?? 0;
+    parseNonNegativeNumberInput(dietSettingsDraft.protein_grams_per_kg) ?? 0;
   const carbsGramsPerKgTarget =
-    parseNonNegativeNumberInput(dietSettings.carbs_grams_per_kg) ?? 0;
+    parseNonNegativeNumberInput(dietSettingsDraft.carbs_grams_per_kg) ?? 0;
   const fatGramsPerKgTarget =
-    parseNonNegativeNumberInput(dietSettings.fat_grams_per_kg) ?? 0;
+    parseNonNegativeNumberInput(dietSettingsDraft.fat_grams_per_kg) ?? 0;
   const gkgMacroTargets: Record<GkgMacroKey, number> = {
     protein: proteinGramsPerKgTarget,
     carbs: carbsGramsPerKgTarget,
@@ -7106,9 +7113,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const proteinCaloriesFromWeightPlan = proteinGramsFromWeightPlan * 4;
   const carbsCaloriesFromWeightPlan = carbsGramsFromWeightPlan * 4;
   const fatCaloriesFromWeightPlan = fatGramsFromWeightPlan * 9;
-  const caloriesRemainingAfterWeightPlan =
-    dietDailyCaloriesTarget -
-    (proteinCaloriesFromWeightPlan + carbsCaloriesFromWeightPlan + fatCaloriesFromWeightPlan);
   const hasWeightForGkgPlanning =
     latestBodyWeightKg !== null && Number.isFinite(latestBodyWeightKg) && latestBodyWeightKg > 0;
   const gkgConfiguredMacroCount = GKG_MACRO_KEYS.filter(
@@ -7119,12 +7123,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ? GKG_MACRO_KEYS.find((macro) => gkgMacroTargets[macro] <= 0) ?? null
       : null;
   const canAutocompleteGkgMacro =
-    autocompleteGkgMacroKey !== null && hasWeightForGkgPlanning && dietDailyCaloriesTarget > 0;
+    autocompleteGkgMacroKey !== null && hasWeightForGkgPlanning && draftDietDailyCaloriesTarget > 0;
   const autocompleteGkgMacroPerKgValue =
     canAutocompleteGkgMacro && autocompleteGkgMacroKey
       ? Math.max(
           0,
-          (dietDailyCaloriesTarget -
+          (draftDietDailyCaloriesTarget -
             GKG_MACRO_KEYS.reduce((acc, macro) => {
               if (macro === autocompleteGkgMacroKey) return acc;
               return (
@@ -7144,17 +7148,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const hasAnyGkgMacroConfigured =
     proteinGramsPerKgTarget > 0 || carbsGramsPerKgTarget > 0 || fatGramsPerKgTarget > 0;
   const shouldShowGkgMaxHints =
-    hasWeightForGkgPlanning && dietDailyCaloriesTarget > 0 && hasAnyGkgMacroConfigured;
+    hasWeightForGkgPlanning && draftDietDailyCaloriesTarget > 0 && hasAnyGkgMacroConfigured;
   const proteinMaxGramsPerKgHint = shouldShowGkgMaxHints
-    ? Math.max(0, (dietDailyCaloriesTarget - (carbsCaloriesFromWeightPlan + fatCaloriesFromWeightPlan)) / 4)
+    ? Math.max(0, (draftDietDailyCaloriesTarget - (carbsCaloriesFromWeightPlan + fatCaloriesFromWeightPlan)) / 4)
         / (latestBodyWeightKg ?? 1)
     : null;
   const carbsMaxGramsPerKgHint = shouldShowGkgMaxHints
-    ? Math.max(0, (dietDailyCaloriesTarget - (proteinCaloriesFromWeightPlan + fatCaloriesFromWeightPlan)) / 4)
+    ? Math.max(0, (draftDietDailyCaloriesTarget - (proteinCaloriesFromWeightPlan + fatCaloriesFromWeightPlan)) / 4)
         / (latestBodyWeightKg ?? 1)
     : null;
   const fatMaxGramsPerKgHint = shouldShowGkgMaxHints
-    ? Math.max(0, (dietDailyCaloriesTarget - (proteinCaloriesFromWeightPlan + carbsCaloriesFromWeightPlan)) / 9)
+    ? Math.max(0, (draftDietDailyCaloriesTarget - (proteinCaloriesFromWeightPlan + carbsCaloriesFromWeightPlan)) / 9)
         / (latestBodyWeightKg ?? 1)
     : null;
   const proteinGkgPlaceholder =
@@ -7169,21 +7173,25 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     fatMaxGramsPerKgHint !== null
       ? `Grasas (g por kg corporal) (${fatMaxGramsPerKgHint.toFixed(2)} g/kg max)`
       : "Grasas (g por kg corporal)";
-  const configuredMacroCaloriesTotal =
-    dietSettings.macro_mode === "manual_calories"
-      ? manualAssignedCalories
-      : proteinCaloriesFromWeightPlan + carbsCaloriesFromWeightPlan + fatCaloriesFromWeightPlan;
-  const configuredMacroCaloriesRemaining = dietDailyCaloriesTarget - configuredMacroCaloriesTotal;
+  const configuredMacroCaloriesTotal = draftDietPlanEvaluation.assignedCalories;
+  const configuredMacroCaloriesRemaining = draftDietPlanEvaluation.remainingCalories;
+  const configuredMacroCaloriesExcess = draftDietPlanEvaluation.excessCalories;
+  const dietPlanDraftIssueByField = new Map(
+    draftDietPlanEvaluation.issues.map((issue) => [issue.field, issue] as const),
+  );
+  const mealNutritionIssueByField = new Map(
+    mealNutritionIssues.map((issue) => [issue.field, issue] as const),
+  );
+  const draftProteinTargetGrams = draftDietPlanEvaluation.macroGrams.protein;
+  const draftCarbsTargetGrams = draftDietPlanEvaluation.macroGrams.carbs;
+  const draftFatTargetGrams = draftDietPlanEvaluation.macroGrams.fat;
   const dayCaloriesConsumed = sumDayCalories(dietDay);
   const dayProteinConsumed = sumDayMacroGrams(dietDay, "protein_g");
   const dayCarbsConsumed = sumDayMacroGrams(dietDay, "carbs_g");
   const dayFatConsumed = sumDayMacroGrams(dietDay, "fat_g");
-  const proteinDailyTargetGrams =
-    dietSettings.macro_mode === "manual_calories" ? manualProteinGrams : proteinGramsFromWeightPlan;
-  const carbsDailyTargetGrams =
-    dietSettings.macro_mode === "manual_calories" ? manualCarbsGrams : carbsGramsFromWeightPlan;
-  const fatDailyTargetGrams =
-    dietSettings.macro_mode === "manual_calories" ? manualFatGrams : fatGramsFromWeightPlan;
+  const proteinDailyTargetGrams = savedDietPlanEvaluation.macroGrams.protein;
+  const carbsDailyTargetGrams = savedDietPlanEvaluation.macroGrams.carbs;
+  const fatDailyTargetGrams = savedDietPlanEvaluation.macroGrams.fat;
   const dayCaloriesProgress =
     dietDailyCaloriesTarget > 0 ? dayCaloriesConsumed / dietDailyCaloriesTarget : 0;
   const dayCaloriesPercent =
@@ -9284,33 +9292,37 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setError("Selecciona una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).");
       return;
     }
-    const title = mealTitleInput.trim() || "Alimento";
-    const calories = parsePositiveNumberInput(mealCaloriesInput);
-    const hasProteinInput = mealProteinInput.trim().length > 0;
-    const hasCarbsInput = mealCarbsInput.trim().length > 0;
-    const hasFatInput = mealFatInput.trim().length > 0;
-    const protein = parseNonNegativeNumberInput(mealProteinInput);
-    const carbs = parseNonNegativeNumberInput(mealCarbsInput);
-    const fat = parseNonNegativeNumberInput(mealFatInput);
-
-    if (calories === null) {
-      setError("Introduce calorías válidas para guardar la comida.");
+    const formResult = validateNutritionFormInput({
+      name: mealTitleInput,
+      grams: mealGramsInput,
+      calories_kcal: mealCaloriesInput,
+      protein_g: mealProteinInput,
+      carbs_g: mealCarbsInput,
+      fat_g: mealFatInput,
+    });
+    if (!formResult.ok) {
+      setMealNutritionIssues(formResult.issues);
+      setError(formatNutritionValidationIssues(formResult.issues));
       return;
     }
-    if ((hasProteinInput && protein === null) || (hasCarbsInput && carbs === null) || (hasFatInput && fat === null)) {
-      setError("Introduce macros válidos (0 o mayor) para guardar la comida.");
-      return;
-    }
+    setMealNutritionIssues([]);
+    const {
+      name: title,
+      grams,
+      calories_kcal: calories,
+      protein_g: protein,
+      carbs_g: carbs,
+      fat_g: fat,
+    } = formResult.value;
 
-    const grams = parseNonNegativeNumberInput(mealGramsInput);
     const repoMatch = findFoodInRepo(title, foodsRepo, personalFoods);
     let newItem: DietItem;
-    if (repoMatch && (grams ?? 0) > 0) {
-      const ratio = (grams ?? 0) / 100;
+    if (repoMatch && grams > 0) {
+      const ratio = grams / 100;
       newItem = {
         id: uid("food"),
         title: repoMatch.name,
-        grams: grams ?? 0,
+        grams,
         calories_kcal: Math.round(repoMatch.calories_per_100g * ratio),
         protein_g: Math.round(repoMatch.protein_per_100g * ratio * 10) / 10,
         carbs_g: Math.round(repoMatch.carbs_per_100g * ratio * 10) / 10,
@@ -9321,26 +9333,40 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       newItem = {
         id: uid("food"),
         title,
-        grams: grams ?? 0,
+        grams,
         calories_kcal: calories,
-        protein_g: protein ?? 0,
-        carbs_g: carbs ?? 0,
-        fat_g: fat ?? 0,
+        protein_g: protein,
+        carbs_g: carbs,
+        fat_g: fat,
       };
-      if (!repoMatch) {
-        feedbackProposalStore.propose({
-          kind: "food",
-          title: title,
-          summary: formatFoodSummary({
-            name: title,
-            grams: grams ?? 0,
-            calories_kcal: calories,
-            protein_g: protein ?? 0,
-            carbs_g: carbs ?? 0,
-            fat_g: fat ?? 0,
-          }),
-        });
-      }
+    }
+
+    const finalValidation = validateNutritionItem({
+      name: newItem.title,
+      grams: newItem.grams,
+      calories_kcal: newItem.calories_kcal,
+      protein_g: newItem.protein_g,
+      carbs_g: newItem.carbs_g,
+      fat_g: newItem.fat_g,
+    });
+    if (!finalValidation.ok) {
+      setMealNutritionIssues(finalValidation.issues);
+      setError(formatNutritionValidationIssues(finalValidation.issues));
+      return;
+    }
+    if (!repoMatch) {
+      feedbackProposalStore.propose({
+        kind: "food",
+        title,
+        summary: formatFoodSummary({
+          name: title,
+          grams,
+          calories_kcal: calories,
+          protein_g: protein,
+          carbs_g: carbs,
+          fat_g: fat,
+        }),
+      });
     }
 
     const activeDietDate = selectedDietDate;
@@ -9423,6 +9449,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setDietItemMenu(null);
     setDietMealEditorCategory(null);
     setDietAddMode(null);
+    setMealNutritionIssues([]);
     setError(null);
   }
 
@@ -9448,6 +9475,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setMealFatInput("");
     setMealGramsInput("");
     mealPerGramRef.current = null;
+    setMealNutritionIssues([]);
     setError(null);
   }
 
@@ -9470,6 +9498,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     mealPerGramRef.current = item.grams > 0
       ? { cal: item.calories_kcal / item.grams, prot: item.protein_g / item.grams, carbs: item.carbs_g / item.grams, fat: item.fat_g / item.grams }
       : null;
+    setMealNutritionIssues([]);
     setError(null);
   }
 
@@ -10268,17 +10297,36 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number;
     food_type: "producto_comercial" | "receta" | "alimento";
   }> {
+    const requireValidStructuredNutrition = (rawValue: unknown) => {
+      const validation = validateStructuredNutrition(rawValue);
+      if (!validation.ok) {
+        throw new Error(formatNutritionValidationIssues(validation.issues));
+      }
+      return {
+        dish_name: validation.value.name,
+        grams: validation.value.grams,
+        calories_kcal: validation.value.calories_kcal,
+        protein_g: validation.value.protein_g,
+        carbs_g: validation.value.carbs_g,
+        fat_g: validation.value.fat_g,
+        food_type: validation.value.food_type,
+      };
+    };
     const model = normalizeProviderModel(provider.provider, provider.model);
     const jsonSchema = {
       type: "object" as const,
       properties: {
         dish_name: { type: "string" as const, description: "Nombre del plato o alimento" },
-        grams: { type: "number" as const, description: "Peso total estimado en gramos" },
-        calories_kcal: { type: "number" as const, description: "Calorías totales en kcal" },
-        protein_g: { type: "number" as const, description: "Proteínas en gramos" },
-        carbs_g: { type: "number" as const, description: "Carbohidratos en gramos" },
-        fat_g: { type: "number" as const, description: "Grasas en gramos" },
-        food_type: { type: "string" as const, description: "Tipo de alimento. DEBE ser exactamente uno de estos tres valores: 'producto_comercial' (producto de supermercado/tienda o si se usó código de barras), 'receta' (plato elaborado o combinación de ingredientes), 'alimento' (alimento genérico simple)" },
+        grams: { type: "number" as const, minimum: 0, description: "Peso total estimado en gramos" },
+        calories_kcal: { type: "number" as const, minimum: 0, description: "Calorías totales en kcal" },
+        protein_g: { type: "number" as const, minimum: 0, description: "Proteínas totales en gramos" },
+        carbs_g: { type: "number" as const, minimum: 0, description: "Carbohidratos totales en gramos" },
+        fat_g: { type: "number" as const, minimum: 0, description: "Grasas totales en gramos" },
+        food_type: {
+          type: "string" as const,
+          enum: [...NUTRITION_FOOD_TYPES],
+          description: "Tipo de alimento: producto_comercial, receta o alimento",
+        },
       },
       required: ["dish_name", "grams", "calories_kcal", "protein_g", "carbs_g", "fat_g", "food_type"] as string[],
       additionalProperties: false,
@@ -10300,7 +10348,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       const outputText = data.output?.find((o: Record<string, unknown>) => o.type === "message")
         ?.content?.find((c: Record<string, unknown>) => c.type === "output_text")?.text;
       if (!outputText) throw new Error("No se recibió respuesta de OpenAI");
-      return JSON.parse(outputText);
+      return requireValidStructuredNutrition(JSON.parse(outputText));
     }
 
     if (provider.provider === "anthropic") {
@@ -10338,7 +10386,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       const data = await response.json();
       const toolBlock = data.content?.find((b: Record<string, unknown>) => b.type === "tool_use");
       if (!toolBlock?.input) throw new Error("No se recibió respuesta estructurada de Anthropic");
-      return toolBlock.input as { dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number; food_type: "producto_comercial" | "receta" | "alimento" };
+      return requireValidStructuredNutrition(toolBlock.input);
     }
 
     // Google — responseSchema does not support additionalProperties
@@ -10364,27 +10412,20 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const data = await response.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) throw new Error("No se recibió respuesta de Google");
-    return JSON.parse(text);
+    return requireValidStructuredNutrition(JSON.parse(text));
   }
 
   async function addFoodFromEstimatorJSON() {
-    const debugMsg = (text: string) => {
-      setFoodEstimatorMessages((prev) => [
-        ...prev,
-        { id: uid("food_est_msg"), role: "assistant" as const, content: text, created_at: new Date().toISOString() },
-      ]);
-    };
-    if (foodEstimatorSending) { debugMsg("[DEBUG] Bloqueado: foodEstimatorSending=true"); return; }
+    if (foodEstimatorSending) return;
     if (!dietMealEditorCategory) {
-      debugMsg("[DEBUG] Bloqueado: dietMealEditorCategory es null");
+      setError("Selecciona una comida antes de guardar la estimación.");
       return;
     }
     const resolvedProvider = resolveFoodEstimatorProviderFromState();
     if (!resolvedProvider) {
-      debugMsg("[DEBUG] Bloqueado: no hay proveedor IA configurado");
+      setError("Configura un proveedor de IA antes de guardar la estimación.");
       return;
     }
-    debugMsg(`[DEBUG] Iniciando extracción con ${resolvedProvider.provider} / ${resolvedProvider.model}`);
 
     setError(null);
     setFoodEstimatorSending(true);
@@ -10398,18 +10439,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         .join("\n");
 
       const parsed = await requestStructuredNutritionJSON(resolvedProvider, conversationSummary);
-      debugMsg(`[DEBUG] Parsed JSON: ${JSON.stringify(parsed)}`);
-
-      if (!parsed.dish_name || parsed.calories_kcal == null) {
-        debugMsg("[DEBUG] Validación fallida: dish_name o calories_kcal vacíos");
-        return;
-      }
 
       // Search food in repository before adding
       const cat = dietMealEditorCategory;
       const aiName = parsed.dish_name || "Alimento estimado IA";
       const aiGrams = parsed.grams ?? 0;
       const repoMatch = findFoodInRepo(aiName, foodsRepo, personalFoods);
+      const effectiveFoodType = foodEstimatorUsedBarcodeRef.current
+        ? "producto_comercial"
+        : parsed.food_type;
       let updatedFields: { title: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number; image_uri?: string | null };
       if (repoMatch && aiGrams > 0) {
         const ratio = aiGrams / 100;
@@ -10431,25 +10469,24 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           carbs_g: parsed.carbs_g ?? 0,
           fat_g: parsed.fat_g ?? 0,
         };
-        // A scanned barcode is always a commercial product; trust the latch over
-        // the structured-extraction LLM, which may mislabel it as "alimento".
-        const effectiveFoodType = foodEstimatorUsedBarcodeRef.current
-          ? "producto_comercial"
-          : parsed.food_type;
-        if (!repoMatch && effectiveFoodType !== "alimento") {
-          feedbackProposalStore.propose({
-            kind: "food",
-            title: aiName,
-            summary: formatFoodSummary({
-              name: aiName,
-              grams: aiGrams,
-              calories_kcal: parsed.calories_kcal,
-              protein_g: parsed.protein_g ?? 0,
-              carbs_g: parsed.carbs_g ?? 0,
-              fat_g: parsed.fat_g ?? 0,
-            }),
-          });
-        }
+      }
+      const finalValidation = validateNutritionItem({
+        name: updatedFields.title,
+        grams: updatedFields.grams,
+        calories_kcal: updatedFields.calories_kcal,
+        protein_g: updatedFields.protein_g,
+        carbs_g: updatedFields.carbs_g,
+        fat_g: updatedFields.fat_g,
+      });
+      if (!finalValidation.ok) {
+        throw new Error(formatNutritionValidationIssues(finalValidation.issues));
+      }
+      if (!repoMatch && effectiveFoodType !== "alimento") {
+        feedbackProposalStore.propose({
+          kind: "food",
+          title: finalValidation.value.name,
+          summary: formatFoodSummary(finalValidation.value),
+        });
       }
       const activeDietDate = selectedDietDate;
       setStore((prev) => {
@@ -10473,6 +10510,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setDietMealEditorCategory(null);
       setDietEditingItem(null);
       setDietAddMode(null);
+      setMealNutritionIssues([]);
       closeFoodEstimatorModal();
     } catch (err) {
       const message =
@@ -10480,12 +10518,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           ? err.message
           : "No se pudo añadir el alimento.";
       console.error("[FoodEstimator] addFoodFromEstimatorJSON error:", err);
+      setError(`No se ha guardado el alimento. ${message}`);
       setFoodEstimatorMessages((prev) => [
         ...prev,
         {
           id: uid("food_est_msg"),
           role: "assistant" as const,
-          content: `[DEBUG ERROR] ${message}`,
+          kind: "technical_error" as const,
+          content: `No se ha guardado el alimento. ${message} Corrige la estimación y vuelve a intentarlo.`,
           created_at: new Date().toISOString(),
         },
       ]);
@@ -10773,10 +10813,27 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   function updateDietSettings(updater: (settings: DietSettings) => DietSettings) {
-    setStore((prev) => ({
-      ...prev,
-      dietSettings: updater(prev.dietSettings),
-    }));
+    setDietSettingsDraft((prev) => updater(prev));
+    setDietSettingsDraftDirty(true);
+    setDietPlanSaveResult(null);
+  }
+
+  function saveDietPlan() {
+    if (draftDietPlanEvaluation.issues.length > 0) {
+      setDietPlanSaveResult("Revisa los campos marcados antes de guardar el plan.");
+      return;
+    }
+    const nextSettings: DietSettings = {
+      ...dietSettingsDraft,
+      manual_macro_calories: { ...dietSettingsDraft.manual_macro_calories },
+    };
+    setStore((prev) => ({ ...prev, dietSettings: nextSettings }));
+    setDietSettingsDraftDirty(false);
+    setDietPlanSaveResult(
+      draftDietPlanEvaluation.budgetStatus === "exceeded"
+        ? `Plan guardado con un exceso de ${draftDietPlanEvaluation.excessCalories.toFixed(0)} kcal.`
+        : "Plan guardado.",
+    );
   }
 
   function setDietMacroMode(mode: DietMacroMode) {
@@ -10853,7 +10910,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const calPerGram = macro === "fat" ? 9 : 4;
     const gkgKey = macro === "protein" ? "protein_grams_per_kg" : macro === "carbs" ? "carbs_grams_per_kg" : "fat_grams_per_kg";
     updateDietSettings((prev) => {
-      const kcal = parseFloat(value) || 0;
+      const kcal = parseNonNegativeNumberInput(value) ?? 0;
       const grams = kcal / calPerGram;
       const gkg = weight ? (grams / weight).toFixed(2) : "";
       return {
@@ -10867,7 +10924,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   function updateProteinGramsPerKg(value: string) {
     const weight = latestBodyWeightKg;
     updateDietSettings((prev) => {
-      const gkg = parseFloat(value) || 0;
+      const gkg = parseNonNegativeNumberInput(value) ?? 0;
       const kcal = weight ? Math.round(gkg * weight * 4) : 0;
       return {
         ...prev,
@@ -10880,7 +10937,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   function updateCarbsGramsPerKg(value: string) {
     const weight = latestBodyWeightKg;
     updateDietSettings((prev) => {
-      const gkg = parseFloat(value) || 0;
+      const gkg = parseNonNegativeNumberInput(value) ?? 0;
       const kcal = weight ? Math.round(gkg * weight * 4) : 0;
       return {
         ...prev,
@@ -10893,7 +10950,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   function updateFatGramsPerKg(value: string) {
     const weight = latestBodyWeightKg;
     updateDietSettings((prev) => {
-      const gkg = parseFloat(value) || 0;
+      const gkg = parseNonNegativeNumberInput(value) ?? 0;
       const kcal = weight ? Math.round(gkg * weight * 9) : 0;
       return {
         ...prev,
@@ -13998,6 +14055,27 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   );
                 })}
               </View>
+              {savedDietPlanEvaluation.budgetStatus === "exceeded" ? (
+                <Animated.View
+                  testID="diet-saved-plan-budget-warning"
+                  accessibilityLiveRegion="polite"
+                  style={{
+                    opacity: dietScrollY.interpolate({ inputRange: [40, 100], outputRange: [1, 0], extrapolate: "clamp" }),
+                    maxHeight: dietScrollY.interpolate({ inputRange: [40, 120], outputRange: [48, 0], extrapolate: "clamp" }),
+                    overflow: "hidden",
+                    borderWidth: 1,
+                    borderColor: "rgba(255,90,95,0.55)",
+                    backgroundColor: "rgba(255,90,95,0.08)",
+                    borderRadius: mobileTheme.radius.md,
+                    paddingHorizontal: 10,
+                    paddingVertical: 7,
+                  }}
+                >
+                  <Text style={{ color: "#FF8D8D", fontSize: 11, lineHeight: 16 }}>
+                    El plan de macros supera el objetivo diario en {savedDietPlanEvaluation.excessCalories.toFixed(0)} kcal.
+                  </Text>
+                </Animated.View>
+              ) : null}
             </Animated.View>
           </View>
         ) : null}
@@ -17717,6 +17795,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     }}
                   >
                     <Pressable
+                      testID={`diet-meal-category-${category.toLowerCase()}`}
                       onPress={() => toggleDietMealCategory(category)}
                       style={{
                         paddingHorizontal: 14,
@@ -17954,7 +18033,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         </View>
 
                         {isEditing && dietAddMode === "selected" && dietSelectedFood ? (() => {
-                          const grams = parseFloat(dietSelectedGrams) || 0;
+                          const selectedGramsValidation = validateNutritionFormInput({
+                            name: dietSelectedFood.name,
+                            grams: dietSelectedGrams,
+                            calories_kcal: 0,
+                            protein_g: 0,
+                            carbs_g: 0,
+                            fat_g: 0,
+                          });
+                          const grams = selectedGramsValidation.ok
+                            ? selectedGramsValidation.value.grams
+                            : 0;
                           const ratio = grams / 100;
                           const cal = Math.round(dietSelectedFood.calories_per_100g * ratio);
                           const prot = Math.round(dietSelectedFood.protein_per_100g * ratio * 10) / 10;
@@ -17968,15 +18057,20 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                                 <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>Cantidad (g):</Text>
                                 <TextInput
+                                  testID="selected-food-grams-input"
                                   value={dietSelectedGrams}
-                                  onChangeText={setDietSelectedGrams}
+                                  onChangeText={(text) => {
+                                    setDietSelectedGrams(text);
+                                    setMealNutritionIssues((previous) => previous.filter((issue) => issue.field !== "grams"));
+                                    setError(null);
+                                  }}
                                   keyboardType="decimal-pad"
                                   autoFocus
                                   style={{
                                     flex: 1,
                                     minHeight: 42,
                                     borderWidth: 1,
-                                    borderColor: mobileTheme.color.brandPrimary,
+                                    borderColor: mealNutritionIssueByField.has("grams") ? "#FF5A5F" : mobileTheme.color.brandPrimary,
                                     borderRadius: mobileTheme.radius.md,
                                     backgroundColor: mobileTheme.color.bgApp,
                                     color: mobileTheme.color.textPrimary,
@@ -17986,6 +18080,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   }}
                                 />
                               </View>
+                              {mealNutritionIssueByField.get("grams") ? (
+                                <Text style={{ color: "#FF7B7B", fontSize: 12 }}>
+                                  {mealNutritionIssueByField.get("grams")?.message}
+                                </Text>
+                              ) : null}
                               <View style={{ flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
                                 {[
                                   { label: "Calorías", value: `${cal} kcal`, color: "#F7A547" },
@@ -18002,7 +18101,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               <View style={{ flexDirection: "row", gap: 8 }}>
                                 <Pressable
                                   onPress={() => {
-                                    if (grams <= 0 || !dietMealEditorCategory) return;
+                                    if (!dietMealEditorCategory) return;
+                                    if (!selectedGramsValidation.ok) {
+                                      setMealNutritionIssues(selectedGramsValidation.issues);
+                                      setError(formatNutritionValidationIssues(selectedGramsValidation.issues));
+                                      return;
+                                    }
                                     const newItem: DietItem = {
                                       id: uid("food"),
                                       title: dietSelectedFood.name,
@@ -18013,6 +18117,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                       fat_g: fat,
                                       image_uri: foodRepoImageUri(dietSelectedFood),
                                     };
+                                    const finalValidation = validateNutritionItem({
+                                      name: newItem.title,
+                                      grams: newItem.grams,
+                                      calories_kcal: newItem.calories_kcal,
+                                      protein_g: newItem.protein_g,
+                                      carbs_g: newItem.carbs_g,
+                                      fat_g: newItem.fat_g,
+                                    });
+                                    if (!finalValidation.ok) {
+                                      setMealNutritionIssues(finalValidation.issues);
+                                      setError(formatNutritionValidationIssues(finalValidation.issues));
+                                      return;
+                                    }
                                     const activeDietDate = selectedDietDate;
                                     const cat = dietMealEditorCategory;
                                     setStore((prev) => {
@@ -18026,6 +18143,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                     setDietAddMode(null);
                                     setDietSelectedFood(null);
                                     setDietMealEditorCategory(null);
+                                    setMealNutritionIssues([]);
+                                    setError(null);
                                   }}
                                   style={{
                                     flex: 1,
@@ -18061,29 +18180,40 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         {isEditing && (dietAddMode === "form" || dietAddMode === null) ? (
                           <View style={{ gap: 8 }}>
                             <TextInput
+                              testID="manual-food-name-input"
                               style={{
                                 minHeight: 42,
                                 borderRadius: mobileTheme.radius.md,
                                 borderWidth: 1,
-                                borderColor: mobileTheme.color.borderSubtle,
+                                borderColor: mealNutritionIssueByField.has("name") ? "#FF5A5F" : mobileTheme.color.borderSubtle,
                                 backgroundColor: mobileTheme.color.bgApp,
                                 color: mobileTheme.color.textPrimary,
                                 paddingHorizontal: 12,
                               }}
                               value={mealTitleInput}
-                              onChangeText={setMealTitleInput}
+                              onChangeText={(text) => {
+                                setMealTitleInput(text);
+                                setMealNutritionIssues((previous) => previous.filter((issue) => issue.field !== "name"));
+                                setError(null);
+                              }}
                               placeholder="Nombre del alimento"
                               placeholderTextColor={mobileTheme.color.textSecondary}
                             />
+                            {mealNutritionIssueByField.get("name") ? (
+                              <Text testID="manual-food-name-error" style={{ color: "#FF7B7B", fontSize: 12 }}>
+                                {mealNutritionIssueByField.get("name")?.message}
+                              </Text>
+                            ) : null}
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, width: 110 }}>Gramos (g)</Text>
                               <TextInput
+                                testID="manual-food-grams-input"
                                 style={{
                                   flex: 1,
                                   minHeight: 42,
                                   borderRadius: mobileTheme.radius.md,
                                   borderWidth: 1,
-                                  borderColor: mobileTheme.color.borderSubtle,
+                                  borderColor: mealNutritionIssueByField.has("grams") ? "#FF5A5F" : mobileTheme.color.borderSubtle,
                                   backgroundColor: mobileTheme.color.bgApp,
                                   color: mobileTheme.color.textPrimary,
                                   paddingHorizontal: 12,
@@ -18091,6 +18221,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                 value={mealGramsInput}
                                 onChangeText={(text) => {
                                   setMealGramsInput(text);
+                                  setMealNutritionIssues((previous) => previous.filter((issue) => issue.field !== "grams"));
+                                  setError(null);
                                   const pg = mealPerGramRef.current;
                                   if (pg) {
                                     const g = parseFloat(text) || 0;
@@ -18107,56 +18239,84 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                 keyboardType="decimal-pad"
                               />
                             </View>
+                            {mealNutritionIssueByField.get("grams") ? (
+                              <Text testID="manual-food-grams-error" style={{ color: "#FF7B7B", fontSize: 12, marginLeft: 118 }}>
+                                {mealNutritionIssueByField.get("grams")?.message}
+                              </Text>
+                            ) : null}
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, width: 110 }}>Calorías (kcal)</Text>
                               <TextInput
+                                testID="manual-food-calories-input"
                                 style={{
                                   flex: 1,
                                   minHeight: 42,
                                   borderRadius: mobileTheme.radius.md,
                                   borderWidth: 1,
-                                  borderColor: mobileTheme.color.borderSubtle,
+                                  borderColor: mealNutritionIssueByField.has("calories_kcal") ? "#FF5A5F" : mobileTheme.color.borderSubtle,
                                   backgroundColor: mobileTheme.color.bgApp,
                                   color: mobileTheme.color.textPrimary,
                                   paddingHorizontal: 12,
                                 }}
                                 value={mealCaloriesInput}
-                                onChangeText={setMealCaloriesInput}
+                                onChangeText={(text) => {
+                                  setMealCaloriesInput(text);
+                                  setMealNutritionIssues((previous) => previous.filter((issue) => issue.field !== "calories_kcal"));
+                                  setError(null);
+                                }}
                                 placeholder="Calorías (kcal)"
                                 placeholderTextColor={mobileTheme.color.textSecondary}
                                 keyboardType="decimal-pad"
                               />
                             </View>
+                            {mealNutritionIssueByField.get("calories_kcal") ? (
+                              <Text testID="manual-food-calories-error" style={{ color: "#FF7B7B", fontSize: 12, marginLeft: 118 }}>
+                                {mealNutritionIssueByField.get("calories_kcal")?.message}
+                              </Text>
+                            ) : null}
                             <View style={{ gap: 8 }}>
                               {[
-                                { label: "Proteínas (g)", value: mealProteinInput, setter: setMealProteinInput },
-                                { label: "Carbohidratos (g)", value: mealCarbsInput, setter: setMealCarbsInput },
-                                { label: "Grasas (g)", value: mealFatInput, setter: setMealFatInput },
+                                { field: "protein_g", label: "Proteínas (g)", value: mealProteinInput, setter: setMealProteinInput },
+                                { field: "carbs_g", label: "Carbohidratos (g)", value: mealCarbsInput, setter: setMealCarbsInput },
+                                { field: "fat_g", label: "Grasas (g)", value: mealFatInput, setter: setMealFatInput },
                               ].map((field) => (
-                                <View key={field.label} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, width: 110 }}>{field.label}</Text>
-                                  <TextInput
-                                    style={{
-                                      flex: 1,
-                                      minHeight: 42,
-                                      borderRadius: mobileTheme.radius.md,
-                                      borderWidth: 1,
-                                      borderColor: mobileTheme.color.borderSubtle,
-                                      backgroundColor: mobileTheme.color.bgApp,
-                                      color: mobileTheme.color.textPrimary,
-                                      paddingHorizontal: 12,
-                                    }}
-                                    value={field.value}
-                                    onChangeText={field.setter}
-                                    placeholder={field.label}
-                                    placeholderTextColor={mobileTheme.color.textSecondary}
-                                    keyboardType="decimal-pad"
-                                  />
+                                <View key={field.label} style={{ gap: 4 }}>
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, width: 110 }}>{field.label}</Text>
+                                    <TextInput
+                                      testID={`manual-food-${field.field}-input`}
+                                      style={{
+                                        flex: 1,
+                                        minHeight: 42,
+                                        borderRadius: mobileTheme.radius.md,
+                                        borderWidth: 1,
+                                        borderColor: mealNutritionIssueByField.has(field.field) ? "#FF5A5F" : mobileTheme.color.borderSubtle,
+                                        backgroundColor: mobileTheme.color.bgApp,
+                                        color: mobileTheme.color.textPrimary,
+                                        paddingHorizontal: 12,
+                                      }}
+                                      value={field.value}
+                                      onChangeText={(text) => {
+                                        field.setter(text);
+                                        setMealNutritionIssues((previous) => previous.filter((issue) => issue.field !== field.field));
+                                        setError(null);
+                                      }}
+                                      placeholder={field.label}
+                                      placeholderTextColor={mobileTheme.color.textSecondary}
+                                      keyboardType="decimal-pad"
+                                    />
+                                  </View>
+                                  {mealNutritionIssueByField.get(field.field) ? (
+                                    <Text testID={`manual-food-${field.field}-error`} style={{ color: "#FF7B7B", fontSize: 12, marginLeft: 118 }}>
+                                      {mealNutritionIssueByField.get(field.field)?.message}
+                                    </Text>
+                                  ) : null}
                                 </View>
                               ))}
                             </View>
                             <View style={{ flexDirection: "row", gap: 8 }}>
                               <Pressable
+                                testID="save-manual-food"
                                 onPress={addMeal}
                                 style={{
                                   flex: 1,
@@ -18184,7 +18344,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   setMealCarbsInput("");
                                   setMealFatInput("");
                                   setMealGramsInput("");
-    mealPerGramRef.current = null;
+                                  mealPerGramRef.current = null;
+                                  setMealNutritionIssues([]);
                                   setError(null);
                                 }}
                                 style={{
@@ -18207,6 +18368,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         {!isEditing ? (
                         <View style={{ flexDirection: "row", gap: 6 }}>
                           <Pressable
+                            testID={`open-manual-food-${category.toLowerCase()}`}
                             onPress={() => { setDietAddMode("form"); openDietMealEditor(category); }}
                             style={{
                               flex: 1,
@@ -19098,13 +19260,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                           minHeight: 36,
                           borderRadius: mobileTheme.radius.md,
                           borderWidth: 1,
-                          borderColor: (dietSettings.sex ?? "male") === s ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-                          backgroundColor: (dietSettings.sex ?? "male") === s ? "rgba(203,255,26,0.12)" : mobileTheme.color.bgApp,
+                          borderColor: (dietSettingsDraft.sex ?? "male") === s ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                          backgroundColor: (dietSettingsDraft.sex ?? "male") === s ? "rgba(203,255,26,0.12)" : mobileTheme.color.bgApp,
                           alignItems: "center",
                           justifyContent: "center",
                         }}
                       >
-                        <Text style={{ color: (dietSettings.sex ?? "male") === s ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontWeight: "700", fontSize: 13 }}>
+                        <Text style={{ color: (dietSettingsDraft.sex ?? "male") === s ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontWeight: "700", fontSize: 13 }}>
                           {s === "male" ? "Hombre" : "Mujer"}
                         </Text>
                       </Pressable>
@@ -19115,7 +19277,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     <View style={{ flex: 0.7, gap: 2 }}>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Altura</Text>
                       <TextInput
-                        value={dietSettings.height_cm ?? (latestBodyHeightCm ? String(latestBodyHeightCm) : "")}
+                        value={dietSettingsDraft.height_cm ?? (latestBodyHeightCm ? String(latestBodyHeightCm) : "")}
                         onChangeText={(v) => updateDietSettings((prev) => ({ ...prev, height_cm: v }))}
                         placeholder="cm"
                         placeholderTextColor={mobileTheme.color.textSecondary}
@@ -19159,8 +19321,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         justifyContent: "center",
                         paddingHorizontal: 10,
                       }}>
-                        <Text style={{ color: dietSettings.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
-                          {dietSettings.birth_date ? `${Math.floor((Date.now() - new Date(dietSettings.birth_date).getTime()) / 31557600000)}` : "—"}
+                        <Text style={{ color: dietSettingsDraft.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
+                          {dietSettingsDraft.birth_date ? `${Math.floor((Date.now() - new Date(dietSettingsDraft.birth_date).getTime()) / 31557600000)}` : "—"}
                         </Text>
                       </View>
                     </View>
@@ -19168,7 +19330,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>F. Nacimiento</Text>
                       {Platform.OS === "web" ? (
                         <TextInput
-                          value={dietSettings.birth_date ?? ""}
+                          value={dietSettingsDraft.birth_date ?? ""}
                           onChangeText={(v) => {
                             updateDietSettings((prev) => ({ ...prev, birth_date: v }));
                           }}
@@ -19201,15 +19363,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               paddingHorizontal: 10,
                             }}
                           >
-                            <Text style={{ color: dietSettings.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
-                              {dietSettings.birth_date || "Seleccionar"}
+                            <Text style={{ color: dietSettingsDraft.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
+                              {dietSettingsDraft.birth_date || "Seleccionar"}
                             </Text>
                             <Feather name="calendar" size={14} color={mobileTheme.color.textSecondary} />
                           </Pressable>
                           {showBirthDatePicker ? (
                             (Platform.OS as string) === "web" ? (
                               <TextInput
-                                value={dietSettings.birth_date || ""}
+                                value={dietSettingsDraft.birth_date || ""}
                                 onChangeText={(text) => {
                                   updateDietSettings((prev) => ({ ...prev, birth_date: text }));
                                 }}
@@ -19223,7 +19385,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               />
                             ) : (
                               <DateTimePicker
-                                value={dietSettings.birth_date ? new Date(dietSettings.birth_date) : new Date(1990, 0, 1)}
+                                value={dietSettingsDraft.birth_date ? new Date(dietSettingsDraft.birth_date) : new Date(1990, 0, 1)}
                                 mode="date"
                                 display={Platform.OS === "ios" ? "spinner" : "default"}
                                 maximumDate={new Date()}
@@ -19246,7 +19408,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Objetivo</Text>
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                     {DIET_GOAL_OPTIONS.map((option) => {
-                      const isActive = dietSettings.goal === option.key;
+                      const isActive = dietSettingsDraft.goal === option.key;
                       return (
                         <Pressable
                           key={option.key}
@@ -19273,7 +19435,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Nivel de actividad</Text>
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                     {ACTIVITY_LEVEL_OPTIONS.map((option) => {
-                      const isActive = dietSettings.activity_level === option.key;
+                      const isActive = dietSettingsDraft.activity_level === option.key;
                       return (
                         <Pressable
                           key={option.key}
@@ -19303,17 +19465,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </Text>
                   <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
                     <TextInput
+                      testID="diet-plan-daily-calories-input"
                       style={{
                         flex: 1,
                         minHeight: 42,
                         borderRadius: mobileTheme.radius.md,
                         borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
+                        borderColor: dietPlanDraftIssueByField.has("daily_calories") ? "#FF5A5F" : mobileTheme.color.borderSubtle,
                         backgroundColor: mobileTheme.color.bgApp,
                         color: mobileTheme.color.textPrimary,
                         paddingHorizontal: 12,
                       }}
-                      value={dietSettings.daily_calories}
+                      value={dietSettingsDraft.daily_calories}
                       onChangeText={updateDietDailyCalories}
                       placeholder="Calorías objetivo (kcal)"
                       placeholderTextColor={mobileTheme.color.textSecondary}
@@ -19321,25 +19484,25 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     />
                     <Pressable
                       onPress={() => {
-                        const heightCm = parseFloat(dietSettings.height_cm ?? "") || (latestBodyHeightCm ?? 0);
+                        const heightCm = parseFloat(dietSettingsDraft.height_cm ?? "") || (latestBodyHeightCm ?? 0);
                         const weightKg = latestBodyWeightKg ?? 0;
-                        const birthDate = dietSettings.birth_date;
+                        const birthDate = dietSettingsDraft.birth_date;
                         if (!weightKg || !heightCm || !birthDate) {
                           setError("Introduce altura, peso y fecha de nacimiento para calcular.");
                           return;
                         }
                         const ageYears = Math.floor((Date.now() - new Date(birthDate).getTime()) / 31557600000);
                         // Mifflin-St Jeor BMR
-                        const sexOffset = (dietSettings.sex ?? "male") === "female" ? -161 : 5;
+                        const sexOffset = (dietSettingsDraft.sex ?? "male") === "female" ? -161 : 5;
                         const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + sexOffset;
                         const activityMultipliers: Record<string, number> = {
                           moderate: 1.55,
                           intermediate: 1.725,
                           high: 1.9,
                         };
-                        const multiplier = activityMultipliers[dietSettings.activity_level ?? "moderate"] ?? 1.55;
+                        const multiplier = activityMultipliers[dietSettingsDraft.activity_level ?? "moderate"] ?? 1.55;
                         const tdee = bmr * multiplier;
-                        const goalMultiplier = dietSettings.goal === "cut" ? 0.8 : dietSettings.goal === "bulk" ? 1.2 : 1;
+                        const goalMultiplier = dietSettingsDraft.goal === "cut" ? 0.8 : dietSettingsDraft.goal === "bulk" ? 1.2 : 1;
                         updateDietDailyCalories(String(Math.round(tdee * goalMultiplier)));
                         setError(null);
                       }}
@@ -19356,12 +19519,45 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     </Pressable>
                   </View>
 
+                  {dietPlanDraftIssueByField.get("daily_calories") ? (
+                    <Text testID="diet-plan-error-daily-calories" style={{ color: "#FF8D8D", fontSize: 11 }}>
+                      {dietPlanDraftIssueByField.get("daily_calories")?.message}
+                    </Text>
+                  ) : null}
+
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    {DIET_MACRO_MODE_OPTIONS.map((option) => {
+                      const isActive = dietSettingsDraft.macro_mode === option.key;
+                      return (
+                        <Pressable
+                          key={option.key}
+                          testID={`diet-macro-mode-${option.key}`}
+                          onPress={() => setDietMacroMode(option.key)}
+                          style={{
+                            flex: 1,
+                            minHeight: 38,
+                            borderRadius: mobileTheme.radius.md,
+                            borderWidth: 1,
+                            borderColor: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                            backgroundColor: isActive ? "rgba(203,255,26,0.10)" : mobileTheme.color.bgApp,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontWeight: "800", fontSize: 12 }}>
+                            {option.key === "manual_calories" ? "Planificar por kcal" : "Planificar por g/kg"}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
 
 
                   {([
-                    { macro: "protein" as const, kcalLabel: "Proteínas", gkgLabel: "Proteína", gkgHint: proteinMaxGramsPerKgHint, gkgValue: dietSettings.protein_grams_per_kg, gkgOnChange: updateProteinGramsPerKg },
-                    { macro: "carbs" as const, kcalLabel: "Carbohidratos", gkgLabel: "Carbohidratos", gkgHint: carbsMaxGramsPerKgHint, gkgValue: dietSettings.carbs_grams_per_kg, gkgOnChange: updateCarbsGramsPerKg },
-                    { macro: "fat" as const, kcalLabel: "Grasas", gkgLabel: "Grasas", gkgHint: fatMaxGramsPerKgHint, gkgValue: dietSettings.fat_grams_per_kg, gkgOnChange: updateFatGramsPerKg },
+                    { macro: "protein" as const, kcalLabel: "Proteínas", gkgLabel: "Proteína", gkgHint: proteinMaxGramsPerKgHint, gkgValue: dietSettingsDraft.protein_grams_per_kg, gkgOnChange: updateProteinGramsPerKg },
+                    { macro: "carbs" as const, kcalLabel: "Carbohidratos", gkgLabel: "Carbohidratos", gkgHint: carbsMaxGramsPerKgHint, gkgValue: dietSettingsDraft.carbs_grams_per_kg, gkgOnChange: updateCarbsGramsPerKg },
+                    { macro: "fat" as const, kcalLabel: "Grasas", gkgLabel: "Grasas", gkgHint: fatMaxGramsPerKgHint, gkgValue: dietSettingsDraft.fat_grams_per_kg, gkgOnChange: updateFatGramsPerKg },
                   ]).map((row, idx) => (
                     <View key={row.macro}>
                       {idx === 0 ? (
@@ -19377,26 +19573,28 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         </Text>
                       </View>
                       <View style={{ flexDirection: "row", gap: 10 }}>
-                        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
+                        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: dietPlanDraftIssueByField.has(`manual_macro_calories.${row.macro}`) ? "#FF5A5F" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
                           <TextInput
+                            testID={`diet-plan-${row.macro}-calories-input`}
                             style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
-                            value={dietSettings.manual_macro_calories[row.macro]}
+                            value={dietSettingsDraft.manual_macro_calories[row.macro]}
                             onChangeText={(value) => updateManualMacroCalories(row.macro, value)}
                             placeholder="kcal"
                             placeholderTextColor={mobileTheme.color.textSecondary}
                             keyboardType="decimal-pad"
                           />
                           <View style={{ justifyContent: "center", paddingRight: 6 }}>
-                            <Pressable onPress={() => updateManualMacroCalories(row.macro, String((parseInt(dietSettings.manual_macro_calories[row.macro]) || 0) + 1))} style={{ padding: 4 }}>
+                            <Pressable onPress={() => updateManualMacroCalories(row.macro, String((parseInt(dietSettingsDraft.manual_macro_calories[row.macro]) || 0) + 1))} style={{ padding: 4 }}>
                               <Feather name="chevron-up" size={16} color={mobileTheme.color.textSecondary} />
                             </Pressable>
-                            <Pressable onPress={() => updateManualMacroCalories(row.macro, String(Math.max(0, (parseInt(dietSettings.manual_macro_calories[row.macro]) || 0) - 1)))} style={{ padding: 4 }}>
+                            <Pressable onPress={() => updateManualMacroCalories(row.macro, String(Math.max(0, (parseInt(dietSettingsDraft.manual_macro_calories[row.macro]) || 0) - 1)))} style={{ padding: 4 }}>
                               <Feather name="chevron-down" size={16} color={mobileTheme.color.textSecondary} />
                             </Pressable>
                           </View>
                         </View>
-                        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
+                        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: dietPlanDraftIssueByField.has(`${row.macro}_grams_per_kg`) ? "#FF5A5F" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
                           <TextInput
+                            testID={`diet-plan-${row.macro}-gkg-input`}
                             style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
                             value={row.gkgValue}
                             onChangeText={row.gkgOnChange}
@@ -19414,13 +19612,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                           </View>
                         </View>
                       </View>
+                      {dietPlanDraftIssueByField.get(`manual_macro_calories.${row.macro}`) || dietPlanDraftIssueByField.get(`${row.macro}_grams_per_kg`) ? (
+                        <Text style={{ color: "#FF8D8D", fontSize: 11, marginTop: 3 }}>
+                          {(dietPlanDraftIssueByField.get(`manual_macro_calories.${row.macro}`) ?? dietPlanDraftIssueByField.get(`${row.macro}_grams_per_kg`))?.message}
+                        </Text>
+                      ) : null}
                     </View>
                   ))}
 
                   <View
                     style={{
                       borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
+                      borderColor: configuredMacroCaloriesExcess > 0 ? "rgba(255,90,95,0.65)" : mobileTheme.color.borderSubtle,
                       borderRadius: mobileTheme.radius.md,
                       backgroundColor: mobileTheme.color.bgApp,
                       padding: 10,
@@ -19432,18 +19635,51 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     </Text>
                     <Text
                       style={{
-                        color: configuredMacroCaloriesRemaining < 0 ? "#FF8D8D" : mobileTheme.color.brandPrimary,
+                        color: configuredMacroCaloriesExcess > 0 ? "#FF8D8D" : mobileTheme.color.brandPrimary,
                         fontWeight: "700",
                       }}
                     >
-                      {configuredMacroCaloriesRemaining >= 0
-                        ? `Restantes: ${configuredMacroCaloriesRemaining.toFixed(0)} kcal`
-                        : `Excedente: ${Math.abs(configuredMacroCaloriesRemaining).toFixed(0)} kcal`}
+                      {configuredMacroCaloriesExcess > 0
+                        ? `Excedente: ${configuredMacroCaloriesExcess.toFixed(0)} kcal · Restantes: 0 kcal`
+                        : `Restantes: ${configuredMacroCaloriesRemaining.toFixed(0)} kcal`}
                     </Text>
                     <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                      P: {proteinDailyTargetGrams.toFixed(1)}g ({(proteinDailyTargetGrams * 4).toFixed(0)} kcal) • C: {carbsDailyTargetGrams.toFixed(1)}g ({(carbsDailyTargetGrams * 4).toFixed(0)} kcal) • G: {fatDailyTargetGrams.toFixed(1)}g ({(fatDailyTargetGrams * 9).toFixed(0)} kcal)
+                      P: {draftProteinTargetGrams.toFixed(1)}g ({(draftProteinTargetGrams * 4).toFixed(0)} kcal) • C: {draftCarbsTargetGrams.toFixed(1)}g ({(draftCarbsTargetGrams * 4).toFixed(0)} kcal) • G: {draftFatTargetGrams.toFixed(1)}g ({(draftFatTargetGrams * 9).toFixed(0)} kcal)
                     </Text>
+                    {configuredMacroCaloriesExcess > 0 ? (
+                      <Text testID="diet-plan-budget-warning" accessibilityLiveRegion="polite" style={{ color: "#FF8D8D", fontSize: 12, lineHeight: 17 }}>
+                        Los macros superan el objetivo diario en {configuredMacroCaloriesExcess.toFixed(0)} kcal. Puedes guardar el plan, pero el reparto no es coherente.
+                      </Text>
+                    ) : null}
                   </View>
+
+                  <Pressable
+                    testID="save-diet-plan"
+                    accessibilityRole="button"
+                    accessibilityLabel="Guardar plan de dieta"
+                    disabled={!dietSettingsDraftDirty}
+                    onPress={saveDietPlan}
+                    style={{
+                      minHeight: 44,
+                      borderRadius: mobileTheme.radius.md,
+                      backgroundColor: mobileTheme.color.brandPrimary,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      opacity: dietSettingsDraftDirty ? 1 : 0.45,
+                    }}
+                  >
+                    <Text style={{ color: "#06090D", fontWeight: "800" }}>Guardar plan</Text>
+                  </Pressable>
+                  {dietSettingsDraftDirty ? (
+                    <Text testID="diet-plan-unsaved" style={{ color: "#F3B95F", fontSize: 11 }}>
+                      Tienes cambios sin guardar.
+                    </Text>
+                  ) : null}
+                  {dietPlanSaveResult ? (
+                    <Text testID="diet-plan-save-result" accessibilityLiveRegion="polite" style={{ color: dietPlanSaveResult.startsWith("Plan guardado") ? mobileTheme.color.brandPrimary : "#FF8D8D", fontSize: 12 }}>
+                      {dietPlanSaveResult}
+                    </Text>
+                  ) : null}
 
                 </View>
               ) : null}

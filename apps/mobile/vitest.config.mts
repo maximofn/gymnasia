@@ -6,6 +6,7 @@ export default defineConfig({
     include: [
       "agent/**/*.test.ts",
       "backup/**/*.test.ts",
+      "diet/**/*.test.ts",
       "persistence/**/*.test.ts",
       "storage/**/*.test.ts",
     ],
