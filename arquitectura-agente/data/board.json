@@ -1712,7 +1712,7 @@
         {
           "id": "GYM-157",
           "title": "Verificar integridad y procedencia del APK antes de actualizar",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Validar firma, checksum, paquete y perfil EAS del APK publicado antes de ofrecérselo al usuario.",
           "dependsOn": [
             "GYM-158"
