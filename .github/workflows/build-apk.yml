@@ -44,6 +44,7 @@ jobs:
       version: ${{ steps.select.outputs.version }}
       tag: ${{ steps.select.outputs.tag }}
       source_commit: ${{ steps.select.outputs.source_commit }}
+      release_id: ${{ steps.select.outputs.release_id }}
 
     steps:
       - name: Require protected main
@@ -462,6 +463,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.select-transaction.outputs.tag }}
+          RELEASE_ID: ${{ needs.select-transaction.outputs.release_id }}
         run: |
           gh release upload "$TAG" \
             /tmp/android-release-transaction.json \
@@ -470,8 +472,7 @@ jobs:
             /tmp/production-policy-snapshot.json \
             /tmp/production-policy-bundle.tar.gz \
             --repo "$GITHUB_REPOSITORY" --clobber
-          gh api "/repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" > /tmp/github-release.json
-          RELEASE_ID="$(jq -r '.id' /tmp/github-release.json)"
+          gh api "/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > /tmp/github-release.json
           EXISTING_APK_ID="$(jq -r '.assets[] | select(.name == "gymnasia.apk") | .id' /tmp/github-release.json)"
           if [ -n "$EXISTING_APK_ID" ]; then
             gh api --method DELETE "/repos/${GITHUB_REPOSITORY}/releases/assets/${EXISTING_APK_ID}"
@@ -489,12 +490,12 @@ jobs:
         if: needs.select-transaction.outputs.action == 'build'
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ needs.select-transaction.outputs.tag }}
+          RELEASE_ID: ${{ needs.select-transaction.outputs.release_id }}
           SOURCE_COMMIT: ${{ needs.select-transaction.outputs.source_commit }}
         shell: bash
         run: |
           set -euo pipefail
-          gh api "/repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" > /tmp/github-release.json
+          gh api "/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > /tmp/github-release.json
           test "$(jq -r '.draft' /tmp/github-release.json)" = "true"
           test "$(jq -r '.target_commitish' /tmp/github-release.json)" = "$SOURCE_COMMIT"
           APK_POLICY="$(jq -c '.artifacts.apk' scripts/production-release/policy.json)"
