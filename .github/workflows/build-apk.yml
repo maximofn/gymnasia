@@ -314,15 +314,27 @@ jobs:
           set -euo pipefail
           BUILD_ID="$(jq -r '.attempts[-1].buildId // empty' /tmp/android-release-transaction.json)"
           if [ -z "$BUILD_ID" ] || [ "$(jq -r '.state' /tmp/android-release-transaction.json)" = "prepared" ]; then
-            cd apps/mobile
-            eas build:list --platform android --build-profile production-apk \
-              --app-version "$VERSION" --git-commit-hash "$SOURCE_COMMIT" \
-              --limit 50 --json > /tmp/eas-candidates.json
-            cd - >/dev/null
-            mapfile -t ADOPTABLE < <(jq -r \
+            printf '[]' > /tmp/eas-candidates.json
+            EAS_OFFSET=0
+            while true; do
+              (cd apps/mobile && eas build:list --platform android \
+                --limit 50 --offset "$EAS_OFFSET" --json) > /tmp/eas-page.json
+              jq -e 'type == "array"' /tmp/eas-page.json >/dev/null
+              PAGE_SIZE="$(jq 'length' /tmp/eas-page.json)"
+              jq -s 'add' /tmp/eas-candidates.json /tmp/eas-page.json \
+                > /tmp/eas-candidates.next.json
+              mv /tmp/eas-candidates.next.json /tmp/eas-candidates.json
+              [ "$PAGE_SIZE" -lt 50 ] && break
+              EAS_OFFSET=$((EAS_OFFSET + 50))
+            done
+            jq -r \
+              --arg profile "production-apk" \
+              --arg version "$VERSION" \
+              --arg sourceCommit "$SOURCE_COMMIT" \
               --arg message "android-v${VERSION}" \
-              '.[] | select(.message == $message and (.status != "ERRORED" and .status != "CANCELED")) | .id' \
-              /tmp/eas-candidates.json)
+              '.[] | select(.buildProfile == $profile and .appVersion == $version and .gitCommitHash == $sourceCommit and .message == $message and ((.status | ascii_upcase) != "ERRORED" and (.status | ascii_upcase) != "CANCELED")) | .id' \
+              /tmp/eas-candidates.json > /tmp/eas-adoptable-ids.txt
+            mapfile -t ADOPTABLE < /tmp/eas-adoptable-ids.txt
             if [ "${#ADOPTABLE[@]}" -gt 1 ]; then
               echo "::error::Hay varios builds EAS adoptables para la misma transacción."
               exit 1

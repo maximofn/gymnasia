@@ -12,3 +12,17 @@ test("instala Chromium antes de ejecutar los E2E de la puerta de Production", ()
   assert.ok(validate >= 0, "falta la verificación de la fuente de Production");
   assert.ok(install < validate, "Chromium debe instalarse antes de lanzar los E2E");
 });
+
+test("consulta EAS con filtros estables y valida la identidad localmente", () => {
+  assert.match(
+    workflow,
+    /eas build:list --platform android[\s\\]*--limit 50 --offset "\$EAS_OFFSET" --json/,
+    "la consulta preventiva debe evitar los filtros remotos que fallan en EAS",
+  );
+  assert.match(workflow, /EAS_OFFSET=\$\(\(EAS_OFFSET \+ 50\)\)/, "la consulta debe paginar todo el historial");
+  assert.match(
+    workflow,
+    /--arg profile "production-apk"[\s\S]*--arg version "\$VERSION"[\s\S]*--arg sourceCommit "\$SOURCE_COMMIT"[\s\S]*--arg message "android-v\$\{VERSION\}"/,
+    "la adopción debe comprobar perfil, versión, commit y mensaje",
+  );
+});
