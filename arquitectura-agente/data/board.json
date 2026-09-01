@@ -1701,7 +1701,7 @@
         {
           "id": "GYM-156",
           "title": "Corregir la detección de actualizaciones APK y limitarla a Android",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Hacer fiable el control de versiones, errores, reintentos y plataforma del actualizador integrado.",
           "dependsOn": [],
           "related": [
@@ -1712,7 +1712,7 @@
         {
           "id": "GYM-157",
           "title": "Verificar integridad y procedencia del APK antes de actualizar",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Validar firma, checksum, paquete y perfil EAS del APK publicado antes de ofrecérselo al usuario.",
           "dependsOn": [
             "GYM-158"
