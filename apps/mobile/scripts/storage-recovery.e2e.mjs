@@ -269,7 +269,17 @@ async function run() {
       assert.equal(await readLocalStorage(page, SESSION_KEY), null);
       assert.equal(await readLocalStorage(page, SESSION_SNAPSHOT_KEY), null);
       assert.equal(await readLocalStorage(page, PERSONAL_DATA_KEY), personalData);
-      assert.equal(await readLocalStorage(page, USER_PREFS_KEY), preferences);
+      assert.deepEqual(JSON.parse(await readLocalStorage(page, USER_PREFS_KEY)), {
+        schemaVersion: 1,
+        chartPeriod: "3m",
+        chartMetric: "weight",
+        notifications: {
+          enabled: false,
+          sound: true,
+          vibrate: true,
+          soundKey: "rest_finished",
+        },
+      });
       assert.equal(await readLocalStorage(page, QUARANTINE_KEY), null);
       await context.close();
     }

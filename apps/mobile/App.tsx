@@ -203,6 +203,16 @@ import {
   type LocalDataDeletionScope,
   type LocalDataDeletionTask,
 } from "./storage/localDataDeletion";
+import {
+  createDefaultUserPreferences,
+  normalizeStoredUserPreferences,
+  normalizeUserPreferences,
+  type MeasuresChartMetricKey,
+  type MeasuresDashboardPeriodKey,
+  type NotificationSettings,
+  type NotificationSoundKey,
+  type UserPreferences,
+} from "./storage/userPreferences";
 import { LegalFooter } from "./LegalFooter";
 import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
 import { openExternalUrl } from "./openExternalUrl";
@@ -558,8 +568,6 @@ type TrainingCategory = Exclude<TrainingFilter, "all">;
 type TrainingTemplateScreenMode = "detail" | "edit";
 type TrainingStatsPeriodKey = "3m" | "6m" | "12m" | "all";
 type TrainingStatsMetricKey = "volume" | "reps" | "duration";
-type MeasuresDashboardPeriodKey = "1m" | "3m" | "6m" | "all";
-type NotificationSoundKey = "rest_finished" | "beep" | "bell" | "ascending" | "buzzer";
 
 const NOTIFICATION_SOUND_OPTIONS: Array<{ key: NotificationSoundKey; label: string; file: string; asset: ReturnType<typeof require> }> = [
   { key: "rest_finished", label: "Descanso terminado (default)", file: "rest_finished.wav", asset: require("./assets/rest_finished.wav") },
@@ -568,19 +576,6 @@ const NOTIFICATION_SOUND_OPTIONS: Array<{ key: NotificationSoundKey; label: stri
   { key: "ascending", label: "Ascendente (do-mi-sol)", file: "ascending.wav", asset: require("./assets/ascending.wav") },
   { key: "buzzer", label: "Buzzer grave", file: "buzzer.wav", asset: require("./assets/buzzer.wav") },
 ];
-
-type NotificationSettings = {
-  enabled: boolean;
-  sound: boolean;
-  vibrate: boolean;
-  soundKey: NotificationSoundKey;
-};
-
-type UserPreferences = {
-  chartPeriod: MeasuresDashboardPeriodKey;
-  chartMetric?: MeasuresChartMetricKey;
-  notifications: NotificationSettings;
-};
 
 // Android no deja consultar desde JS si la app puede programar alarmas exactas
 // (expo-notifications no expone canScheduleExactAlarms), así que el veredicto se
@@ -627,7 +622,6 @@ const SESSION_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.training.session.v
 const SESSION_TEMPLATE_SNAPSHOT_KEY = scopedStorageKey("gymnasia.mobile.training.session_template_snapshot.v1");
 const PERSONAL_DATA_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.personal_data.v1");
 const USER_PREFS_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.user_prefs.v1");
-const DEFAULT_USER_PREFS: UserPreferences = { chartPeriod: "3m", notifications: { enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" } };
 
 const localStoreRecoveryRepository = new LocalStoreRecoveryRepository({
   storage: AsyncStorage,
@@ -639,8 +633,7 @@ const localStoreRecoveryRepository = new LocalStoreRecoveryRepository({
   sha256: (value) => Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value),
 });
 // Salud de las alarmas: observaciones del dispositivo, no preferencias del usuario,
-// por eso viven en su propia clave y no dentro de UserPreferences (cuya hidratación
-// hace un merge superficial que dejaría undefined cualquier campo anidado nuevo).
+// por eso viven en su propia clave y no dentro de UserPreferences.
 const ALARM_HEALTH_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.alarm_health.v1");
 // Lo que importa no es cómo agrupa Android las alarmas, sino a partir de cuándo
 // el aviso deja de servir: con descansos de 60-120 s, un retraso de unos segundos
@@ -1518,7 +1511,6 @@ const MEASURES_DASHBOARD_PERIOD_OPTIONS: Array<{
   { key: "6m", label: "6 meses", days: 180 },
   { key: "all", label: "Todo", days: null },
 ];
-type MeasuresChartMetricKey = "weight" | "bodyFat" | "chest" | "waist" | "hips" | "biceps" | "neck" | "quadriceps" | "calf";
 const MEASURES_CHART_METRIC_OPTIONS: Array<{
   key: MeasuresChartMetricKey;
   label: string;
@@ -1768,10 +1760,11 @@ async function clearMigratedProviderApiKeys(secureStoreAvailable: boolean): Prom
 // remotos (ejercicios/alimentos/productos/recetas), que se vuelven a descargar.
 type BackupData = {
   store: LocalStore;
-  userPrefs: UserPreferences;
+  userPrefs?: unknown;
   personalFoods: FoodRepoEntry[];
   personalData: PersonalDataField[];
 };
+type BackupExportData = BackupData & { userPrefs: UserPreferences };
 
 type PendingBackupImport =
   | {
@@ -1800,11 +1793,11 @@ type BackupResult = {
 
 type BackupMeta = { lastBackupAt: string | null };
 
-function buildBackupData(data: BackupData): BackupData {
+function buildBackupData(data: BackupExportData): BackupExportData {
   return {
     // Nunca escribir API keys ni otros campos de credencial al paquete exportado.
     store: sanitizeDevStoreValue(data.store),
-    userPrefs: data.userPrefs,
+    userPrefs: normalizeUserPreferences(data.userPrefs).preferences,
     personalFoods: data.personalFoods,
     personalData: data.personalData,
   };
@@ -6629,7 +6622,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [measurementDateTextInput, setMeasurementDateTextInput] = useState("");
   const [measurementEntryScreenOpen, setMeasurementEntryScreenOpen] = useState(false);
   const [editingMeasurementId, setEditingMeasurementId] = useState<string | null>(null);
-  const [userPrefs, setUserPrefs] = useState<UserPreferences>({ ...DEFAULT_USER_PREFS });
+  const [userPrefs, setUserPrefs] = useState<UserPreferences>(() => createDefaultUserPreferences());
   const [alarmHealth, setAlarmHealth] = useState<AlarmHealth>({ ...DEFAULT_ALARM_HEALTH });
   // null = aún no comprobado. Diferenciarlo de false evita alarmar al usuario
   // antes de saber nada.
@@ -8299,7 +8292,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     ]);
     const sessionParsed = parseJsonWithoutThrow(sessionRead.raw);
     const sessionSnapshotParsed = parseJsonWithoutThrow(sessionSnapshotRead.raw);
-    const prefsParsed = parseJsonWithoutThrow(prefsRead.raw);
     const alarmParsed = parseJsonWithoutThrow(alarmRead.raw);
     const consentParsed = parseJsonWithoutThrow(consentRead.raw);
     let secondaryFailure = [
@@ -8311,7 +8303,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     ].some((entry) => entry.failed) || [
       sessionParsed,
       sessionSnapshotParsed,
-      prefsParsed,
       alarmParsed,
       consentParsed,
     ].some((entry) => entry.failed);
@@ -8326,10 +8317,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (secondaryFailure) {
       nonFatalError ??= "Algunos ajustes secundarios no pudieron cargarse; los datos principales no se han sobrescrito.";
     }
-    const rawPrefs = prefsParsed.value;
-    const parsedPrefs: UserPreferences = rawPrefs && typeof rawPrefs === "object" && !Array.isArray(rawPrefs)
-      ? { ...DEFAULT_USER_PREFS, ...rawPrefs as Partial<UserPreferences> }
-      : { ...DEFAULT_USER_PREFS };
+    const normalizedPrefs = normalizeStoredUserPreferences(prefsRead.raw);
+    const parsedPrefs = normalizedPrefs.preferences;
     const rawAlarmHealth = alarmParsed.value;
     const parsedAlarmHealth: AlarmHealth = rawAlarmHealth && typeof rawAlarmHealth === "object" && !Array.isArray(rawAlarmHealth)
       ? { ...DEFAULT_ALARM_HEALTH, ...rawAlarmHealth as Partial<AlarmHealth> }
@@ -8337,6 +8326,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const parsedHealthSafetyConsent = normalizeHealthSafetyConsentState(consentParsed.value);
 
     if (!isCurrent()) return;
+    if (normalizedPrefs.repairs.length > 0) {
+      void pushTrace("user-preferences", "Preferences normalized", {
+        source: "startup",
+        schemaVersion: parsedPrefs.schemaVersion,
+        repairCodes: normalizedPrefs.repairs,
+      });
+    }
     setSecureStoreAvailable(secureAvailable);
     setStore(mergedStore);
     setActiveWorkoutSession(hydratedSession);
@@ -8355,7 +8351,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
     setUserPrefs(parsedPrefs);
     setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
-    if (parsedPrefs.chartMetric) setMeasuresChartMetric(parsedPrefs.chartMetric);
+    setMeasuresChartMetric(parsedPrefs.chartMetric);
     alarmHealthRef.current = parsedAlarmHealth;
     setAlarmHealth(parsedAlarmHealth);
     setHealthSafetyConsent(parsedHealthSafetyConsent);
@@ -8534,7 +8530,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;
-    AsyncStorage.setItem(USER_PREFS_STORAGE_KEY, JSON.stringify(userPrefs)).catch(() => {});
+    const canonicalPrefs = normalizeUserPreferences(userPrefs).preferences;
+    AsyncStorage.setItem(USER_PREFS_STORAGE_KEY, JSON.stringify(canonicalPrefs)).catch(() => {});
   }, [isHydrated, userPrefs]);
 
   useEffect(() => {
@@ -9847,12 +9844,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       const importedProviderOperations = createProviderOperationMap();
       providerOperationsRef.current = importedProviderOperations;
 
-      const importedPrefs: UserPreferences = data.userPrefs
-        ? { ...DEFAULT_USER_PREFS, ...data.userPrefs }
-        : { ...DEFAULT_USER_PREFS };
+      const normalizedPrefs = normalizeUserPreferences(data.userPrefs);
+      const importedPrefs = normalizedPrefs.preferences;
+      if (normalizedPrefs.repairs.length > 0) {
+        void pushTrace("user-preferences", "Preferences normalized", {
+          source: "backup",
+          schemaVersion: importedPrefs.schemaVersion,
+          repairCodes: normalizedPrefs.repairs,
+        });
+      }
       setUserPrefs(importedPrefs);
       setMeasuresDashboardPeriod(importedPrefs.chartPeriod);
-      if (importedPrefs.chartMetric) setMeasuresChartMetric(importedPrefs.chartMetric);
+      setMeasuresChartMetric(importedPrefs.chartMetric);
 
       setPersonalFoods(Array.isArray(data.personalFoods) ? data.personalFoods : []);
       await savePersonalData(sanitizePersonalDataFields(data.personalData));
@@ -9867,10 +9870,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setActiveWorkoutSession(null);
 
       sweepOrphanedMeasurementPhotos(mergedStore.measurements.map((measurement) => measurement.photo_uri));
+      const warnings: string[] = [];
+      if (details.length > 0) {
+        warnings.push(`${details.length} foto(s) no pudieron recuperarse; sus mediciones numéricas se conservaron.`);
+      }
+      if (normalizedPrefs.repairs.length > 0) {
+        warnings.push(normalizedPrefs.repairs.every((code) => code === "legacy_unversioned")
+          ? "Las preferencias se actualizaron al formato actual."
+          : "Se repararon ajustes de preferencias incompletos o incompatibles.");
+      }
       setBackupResult({
-        status: details.length > 0 ? "warning" : "ok",
-        message: details.length > 0
-          ? `Datos restaurados. ${details.length} foto(s) no pudieron recuperarse; sus mediciones numéricas se conservaron.`
+        status: warnings.length > 0 ? "warning" : "ok",
+        message: warnings.length > 0
+          ? `Datos restaurados. ${warnings.join(" ")}`
           : `Datos y ${mergedStore.measurements.filter((measurement) => measurement.photo_uri).length} foto(s) restaurados correctamente.`,
         details: details.map((detail) => ({
           ...detail,
@@ -18346,6 +18358,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 zIndex={measuresChartMetricDropdownOpen || measuresDashboardPeriodDropdownOpen ? 10 : 1}
                 title={
                   <Pressable
+                    testID="measures-chart-metric-current"
+                    accessibilityRole="button"
+                    accessibilityLabel="Métrica de la gráfica"
+                    accessibilityValue={{ text: measuresChartMetricMeta.label }}
                     onPress={toggleMeasuresChartMetricDropdown}
                     style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
                   >
@@ -18361,6 +18377,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 }
                 periodSelector={
                   <Pressable
+                    testID="measures-chart-period-current"
+                    accessibilityRole="button"
+                    accessibilityLabel="Periodo de la gráfica"
+                    accessibilityValue={{ text: measuresDashboardPeriodMeta.label }}
                     onPress={toggleMeasuresDashboardPeriodDropdown}
                     style={{
                       minHeight: 34,
@@ -18417,6 +18437,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         return (
                           <Pressable
                             key={option.key}
+                            testID={`measures-chart-period-option-${option.key}`}
+                            accessibilityRole="button"
+                            accessibilityState={{ selected: isActive }}
                             onPress={() => selectMeasuresDashboardPeriod(option.key)}
                             style={{
                               minHeight: 34,
@@ -18477,6 +18500,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         return (
                           <Pressable
                             key={option.key}
+                            testID={`measures-chart-metric-option-${option.key}`}
+                            accessibilityRole="button"
+                            accessibilityState={{ selected: isActive }}
                             onPress={() => selectMeasuresChartMetric(option.key)}
                             style={{
                               minHeight: 34,
@@ -22131,6 +22157,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       </Text>
                     </View>
                     <Pressable
+                      testID="notification-enabled-toggle"
+                      accessibilityRole="switch"
+                      accessibilityLabel={`Activar notificaciones: ${userPrefs.notifications.enabled ? "sí" : "no"}`}
+                      accessibilityState={{ checked: userPrefs.notifications.enabled }}
                       onPress={() => setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, enabled: !prev.notifications.enabled } }))}
                       style={{
                         width: 52,
@@ -22175,6 +22205,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       </Text>
                     </View>
                     <Pressable
+                      testID="notification-sound-toggle"
+                      accessibilityRole="switch"
+                      accessibilityLabel={`Sonido: ${userPrefs.notifications.sound ? "sí" : "no"}`}
+                      accessibilityState={{
+                        checked: userPrefs.notifications.sound,
+                        disabled: !userPrefs.notifications.enabled,
+                      }}
                       onPress={() => userPrefs.notifications.enabled && setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, sound: !prev.notifications.sound } }))}
                       style={{
                         width: 52,
@@ -22219,6 +22256,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       </Text>
                     </View>
                     <Pressable
+                      testID="notification-vibrate-toggle"
+                      accessibilityRole="switch"
+                      accessibilityLabel={`Vibración: ${userPrefs.notifications.vibrate ? "sí" : "no"}`}
+                      accessibilityState={{
+                        checked: userPrefs.notifications.vibrate,
+                        disabled: !userPrefs.notifications.enabled,
+                      }}
                       onPress={() => userPrefs.notifications.enabled && setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, vibrate: !prev.notifications.vibrate } }))}
                       style={{
                         width: 52,
@@ -22269,6 +22313,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         </Text>
                       </View>
                       <Pressable
+                        testID="notification-sound-selector-toggle"
+                        accessibilityRole="switch"
+                        accessibilityLabel={`Sonido de notificación: ${userPrefs.notifications.sound ? "sí" : "no"}`}
+                        accessibilityState={{
+                          checked: userPrefs.notifications.sound,
+                          disabled: !userPrefs.notifications.enabled,
+                        }}
                         onPress={() => setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, sound: !prev.notifications.sound } }))}
                         disabled={!userPrefs.notifications.enabled}
                         style={{
@@ -22298,6 +22349,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                           return (
                             <Pressable
                               key={option.key}
+                              testID={`notification-sound-option-${option.key}`}
+                              accessibilityRole="radio"
+                              accessibilityLabel={`${option.label}${isSelected ? ", seleccionado" : ""}`}
+                              accessibilityState={{
+                                selected: isSelected,
+                                disabled: !userPrefs.notifications.enabled,
+                              }}
                               onPress={() => {
                                 setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, soundKey: option.key } }));
                                 void previewSound(option.key);
@@ -22394,6 +22452,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </Pressable>
 
                   <Pressable
+                    testID="backup-import-picker"
                     onPress={pickBackupForImport}
                     disabled={backupBusy !== null}
                     style={{
@@ -22423,6 +22482,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                   {backupResult ? (
                     <View
+                      testID="backup-result"
                       accessibilityLiveRegion="polite"
                       style={{
                         gap: 4,
@@ -23561,6 +23621,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               {pendingBackupAppVersion(pendingImport) ? ` (Gymnasia v${pendingBackupAppVersion(pendingImport)})` : ""}. La copia declara {pendingBackupPhotoCount(pendingImport)} foto(s).{"\n"}Esta acción no se puede deshacer.
             </Text>
             <Pressable
+              testID="backup-import-confirm"
               onPress={applyPendingImport}
               style={{
                 width: "100%",

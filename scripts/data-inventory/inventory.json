@@ -128,7 +128,7 @@
       "backend": "async-storage",
       "personal": false,
       "dataCategory": "app-preferences",
-      "purpose": "Preferencias de interfaz: periodo y métrica de gráficas, y ajustes de notificación (activada, sonido, vibración, tono).",
+      "purpose": "Documento local versionado de preferencias de interfaz: periodo y métrica de gráficas, y ajustes de notificación (activada, sonido, vibración, tono).",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
