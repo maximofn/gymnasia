@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v9
-effective_date: 2026-08-30
+version: 2026-09-v1
+effective_date: 2026-09-01
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -85,6 +85,12 @@ All of the following is stored on your device only:
   finds data that it cannot read safely, it quarantines the original payload instead of
   overwriting it. Both copies remain on the device and are replaced or removed when the
   recovery is completed.
+- **Assistant operation control**: a local technical record prevents a provider retry
+  from adding a meal, measurement or routine twice, or submitting a suggestion twice.
+  It keeps up to 256 operations for seven days: technical fingerprints, the action name,
+  the result returned to the model and timestamps. It stores no arguments, messages,
+  instructions or API keys, never leaves the device and is excluded from exported
+  backups.
 
 ## Where it is stored {#almacenamiento-local}
 
@@ -279,9 +285,10 @@ should know about:
 
 ## How long your data is kept {#conservacion}
 
-Indefinitely, for as long as you keep it. Gymnasia does not synchronise it or retain it
-on its own server: you keep and delete it, both on the device and anywhere you choose to
-send a manual backup.
+Except for the technical operation-control record described above, which expires after
+seven days, local data is kept indefinitely for as long as you keep it. Gymnasia does
+not synchronise it or retain it on its own server: you keep and delete it, both on the
+device and anywhere you choose to send a manual backup.
 
 Data you have sent to an AI provider is governed by that provider's retention period,
 under your account with them.
@@ -301,14 +308,15 @@ recovery snapshot with one that no longer contains that activity and removes any
 quarantine, so those data cannot return during recovery. It keeps the assistant's
 memory, personal foods, diet and interface settings, API keys, legacy credentials,
 catalogue caches, debug traces and backup metadata. It also cancels pending workout
-alerts.
+alerts and deletes the assistant's technical operation-control record.
 
 **"Delete all my data"** deletes and verifies the personal data, credentials,
 preferences, diagnostics and caches that Gymnasia controls on this device. This includes
 the main state, sessions, assistant memory, personal foods, current and old API keys,
 legacy credentials, traces, consents and backup metadata. You must type `BORRAR` to
-confirm. If any target cannot be deleted or verified, the app does not report success:
-it shows what remains and lets you retry.
+confirm. This also includes the assistant's technical operation-control record. If any
+target cannot be deleted or verified, the app does not report success: it shows what
+remains and lets you retry.
 
 The only local entry preserved by the second option is the signed public cache that
 prevents the assistant from loading older safety instructions. It contains none of your

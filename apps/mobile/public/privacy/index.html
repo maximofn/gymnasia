@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
-<meta name="gymnasia-policy-version" content="2026-08-v9">
-<meta name="gymnasia-policy-digest" content="sha256:2aa316979627c585f85689f9411a7d003c779f404ccfdc88bc54360b6796c72f">
+<meta name="gymnasia-policy-version" content="2026-09-v1">
+<meta name="gymnasia-policy-digest" content="sha256:1f43a4369d813bbdc363f066443cc65b30271306e058be840b2765997f549eb1">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-08-v9 · in force since 2026-08-30 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-09-v1 · in force since 2026-09-01 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -100,6 +100,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>AI provider configuration</strong>: the selected model and, when Anthropic requires it for an identity-linked key, the workspace identifier (<code>wrkspc_…</code>).</li>
       <li><strong>Debug log</strong>: a technical record of up to 1000 entries covering the rest-timer alerts delivered, which include the exercise name and set number. It is never sent over the network; you can view and clear it from Settings.</li>
       <li><strong>Local recovery copies</strong>: the app keeps one verified copy of its main state. If it finds data that it cannot read safely, it quarantines the original payload instead of overwriting it. Both copies remain on the device and are replaced or removed when the recovery is completed.</li>
+      <li><strong>Assistant operation control</strong>: a local technical record prevents a provider retry from adding a meal, measurement or routine twice, or submitting a suggestion twice. It keeps up to 256 operations for seven days: technical fingerprints, the action name, the result returned to the model and timestamps. It stores no arguments, messages, instructions or API keys, never leaves the device and is excluded from exported backups.</li>
     </ul>
   </section>
 
@@ -203,7 +204,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="conservacion">
     <h2><a href="#conservacion">How long your data is kept</a></h2>
-    <p>Indefinitely, for as long as you keep it. Gymnasia does not synchronise it or retain it on its own server: you keep and delete it, both on the device and anywhere you choose to send a manual backup.</p>
+    <p>Except for the technical operation-control record described above, which expires after seven days, local data is kept indefinitely for as long as you keep it. Gymnasia does not synchronise it or retain it on its own server: you keep and delete it, both on the device and anywhere you choose to send a manual backup.</p>
     <p>Data you have sent to an AI provider is governed by that provider's retention period, under your account with them.</p>
     <p>Suggestions remain in the private repository for as long as needed to manage the project. For assistant-response reports, the body containing the question and response is scheduled for automatic deletion when it reaches 30 days. Technical rate-limit records based on the IP HMAC are deleted within 48 hours.</p>
   </section>
@@ -211,8 +212,8 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="eliminacion">
     <h2><a href="#eliminacion">How to delete your data</a></h2>
     <p>Settings → Data provides two options:</p>
-    <p><strong>&quot;Delete activity and conversations&quot;</strong> empties your workouts and routines, diet history, measurements, conversations and any active session. It replaces the verified recovery snapshot with one that no longer contains that activity and removes any prior quarantine, so those data cannot return during recovery. It keeps the assistant's memory, personal foods, diet and interface settings, API keys, legacy credentials, catalogue caches, debug traces and backup metadata. It also cancels pending workout alerts.</p>
-    <p><strong>&quot;Delete all my data&quot;</strong> deletes and verifies the personal data, credentials, preferences, diagnostics and caches that Gymnasia controls on this device. This includes the main state, sessions, assistant memory, personal foods, current and old API keys, legacy credentials, traces, consents and backup metadata. You must type <code>BORRAR</code> to confirm. If any target cannot be deleted or verified, the app does not report success: it shows what remains and lets you retry.</p>
+    <p><strong>&quot;Delete activity and conversations&quot;</strong> empties your workouts and routines, diet history, measurements, conversations and any active session. It replaces the verified recovery snapshot with one that no longer contains that activity and removes any prior quarantine, so those data cannot return during recovery. It keeps the assistant's memory, personal foods, diet and interface settings, API keys, legacy credentials, catalogue caches, debug traces and backup metadata. It also cancels pending workout alerts and deletes the assistant's technical operation-control record.</p>
+    <p><strong>&quot;Delete all my data&quot;</strong> deletes and verifies the personal data, credentials, preferences, diagnostics and caches that Gymnasia controls on this device. This includes the main state, sessions, assistant memory, personal foods, current and old API keys, legacy credentials, traces, consents and backup metadata. You must type <code>BORRAR</code> to confirm. This also includes the assistant's technical operation-control record. If any target cannot be deleted or verified, the app does not report success: it shows what remains and lets you retry.</p>
     <p>The only local entry preserved by the second option is the signed public cache that prevents the assistant from loading older safety instructions. It contains none of your data or responses and is retained specifically to protect you from a security rollback.</p>
     <p><strong>The debug log</strong> is cleared with its own button, under Settings → Traces.</p>
     <p><strong>Storage recovery</strong>: recovering a valid copy or completing a retry removes the quarantine. If you discard the damaged data, the main state, its recovery snapshot and the dependent training session are removed; partitions that remain readable, such as assistant memory, personal foods, preferences and secure keys, are preserved.</p>
@@ -257,7 +258,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-08-v9 · 2026-08-30</p>
+    <p>Gymnasia Privacy Policy · 2026-09-v1 · 2026-09-01</p>
   </footer>
 </main>
 </body>

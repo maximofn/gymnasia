@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   createAgentToolExecutor,
+  createDetailedAgentToolExecutor,
   type ToolExecutorDependencies,
   type ToolFoodRepoEntry,
   type ToolStore,
@@ -188,5 +189,88 @@ describe("ejecutor de tools", () => {
     }, { store });
 
     expect(JSON.parse(result)).toEqual([expect.objectContaining({ nombre: "Agua" })]);
+  });
+
+  it("confirma el efecto solo después de persistir y usa ids estables", async () => {
+    const execute = createDetailedAgentToolExecutor(createDependencies());
+    let store: ToolStore = {
+      templates: [],
+      dietByDate: {},
+      measurements: [],
+    };
+    const context = {
+      operationId: "a".repeat(64),
+      store,
+      commitStore: async (updater: (previous: ToolStore) => ToolStore) => {
+        store = updater(store);
+      },
+    };
+    const args = {
+      date: "2026-09-01",
+      meal: "Comida",
+      data: JSON.stringify({
+        name: "Arroz blanco",
+        grams: 150,
+        calories_kcal: 195,
+        protein_g: 4.1,
+        carbs_g: 43.4,
+        fat_g: 0.4,
+      }),
+    };
+
+    await expect(execute("add_meal_food", args, context)).resolves.toMatchObject({
+      status: "committed",
+    });
+    await expect(execute("add_meal_food", args, context)).resolves.toMatchObject({
+      status: "committed",
+    });
+
+    expect(store.dietByDate["2026-09-01"].meals[0].items).toHaveLength(1);
+    expect(store.dietByDate["2026-09-01"].meals[0].items[0].id).toBe(
+      `food_op_${"a".repeat(24)}`,
+    );
+  });
+
+  it("no confirma una escritura si la persistencia falla", async () => {
+    const execute = createDetailedAgentToolExecutor(createDependencies());
+    const result = await execute("create_routine", {
+      data: JSON.stringify({
+        name: "Pierna",
+        exercises: [{
+          name: "Sentadilla",
+          series: [{ reps: "10", weight_kg: "60", rest_seconds: "90" }],
+        }],
+      }),
+    }, {
+      operationId: "b".repeat(64),
+      commitStore: async () => {
+        throw new Error("storage unavailable");
+      },
+    });
+
+    expect(result.status).toBe("failed_before_commit");
+    expect(result.output).toContain("no se ha completado");
+  });
+
+  it("solo confirma la incidencia cuando el backend devuelve una issue verificada", async () => {
+    const unavailable = createDetailedAgentToolExecutor(createDependencies({
+      submitFeedbackIssue: async () => ({ status: "unavailable", reason: "disabled" }),
+    }));
+    const created = createDetailedAgentToolExecutor(createDependencies({
+      submitFeedbackIssue: async () => ({
+        status: "created",
+        issueNumber: 42,
+        issueUrl: "https://example.test/42",
+        deduplicated: false,
+      }),
+    }));
+    const args = { title: "Mejora", summary: "Añadir una mejora solicitada." };
+
+    await expect(unavailable("create_feature_issue", args)).resolves.toMatchObject({
+      status: "no_effect",
+    });
+    await expect(created("create_feature_issue", args)).resolves.toMatchObject({
+      status: "committed",
+    });
   });
 });

@@ -9,6 +9,7 @@ import {
   resolveDietMealCategory,
   validateNutritionItem,
 } from "../diet/nutritionContract";
+import type { ToolOperationExecutionOutcome } from "./toolOperationLedger";
 
 export type { PersonalDataField };
 
@@ -109,9 +110,12 @@ export type ToolExerciseRepoEntry = {
 
 export type ToolExecutionContext = {
   setStore?: (updater: (previous: ToolStore) => ToolStore) => void;
+  commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>;
   store?: ToolStore;
   foodsRepo?: ToolFoodRepoEntry[];
   exercisesRepo?: ToolExerciseRepoEntry[];
+  operationId?: string;
+  markEffectCommitted?: () => void;
 };
 
 import {
@@ -190,6 +194,7 @@ const savePersonalData: ToolHandler = async (args, _context, dependencies) => {
   const fields = sanitizePersonalDataFields(parsed);
   const discarded = countDiscardedPersonalDataFields(parsed);
   await dependencies.savePersonalData(fields);
+  _context.markEffectCommitted?.();
   // La tool reescribe el array entero: un descarte silencioso le haría creer al
   // modelo que guardó un campo que luego list_personal_data_keys no devuelve.
   if (discarded > 0) {
@@ -249,7 +254,11 @@ const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
     return Number.isFinite(number) && number > 0 ? number : null;
   };
   const measurement: ToolMeasurement = {
-    id: existing?.id ?? dependencies.createId("measurement"),
+    id:
+      existing?.id ??
+      (context.operationId
+        ? `measurement_op_${context.operationId.slice(0, 24)}`
+        : dependencies.createId("measurement")),
     measured_at: existing?.measured_at ?? new Date(`${date}T12:00:00`).toISOString(),
     weight_kg: data.weight_kg !== undefined ? toNumber(data.weight_kg) : (existing?.weight_kg ?? null),
     body_fat_pct: data.body_fat_pct !== undefined ? toNumber(data.body_fat_pct) : (existing?.body_fat_pct ?? null),
@@ -267,8 +276,13 @@ const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
     ? measurements.filter((_measurement, index) => index !== existingIndex)
     : measurements;
   const sorted = dependencies.sortMeasurements([measurement, ...base]).slice(0, 1826);
-  await dependencies.saveMeasurements(sorted);
-  context.setStore?.((previous) => ({ ...previous, measurements: sorted }));
+  if (context.commitStore) {
+    await context.commitStore((previous) => ({ ...previous, measurements: sorted }));
+  } else {
+    await dependencies.saveMeasurements(sorted);
+    context.setStore?.((previous) => ({ ...previous, measurements: sorted }));
+  }
+  context.markEffectCommitted?.();
   return `Medidas guardadas correctamente para ${date}.`;
 };
 
@@ -300,7 +314,9 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
   const mealResult = resolveDietMealCategory(args.meal);
   if (!mealResult.ok) return formatNutritionValidationIssues(mealResult.issues);
   const meal = mealResult.value;
-  if (!context.setStore) return "No se pudo acceder al almacenamiento.";
+  if (!context.commitStore && !context.setStore) {
+    return "No se pudo acceder al almacenamiento.";
+  }
   const parsed = parseObjectArgument(
     args.data,
     "El JSON del alimento no es válido.",
@@ -320,8 +336,11 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
     carbs_g: carbsG,
     fat_g: fatG,
   } = validation.value;
+  const operationSuffix = context.operationId?.slice(0, 24);
   const newItem: ToolDietItem = {
-    id: dependencies.createId("food"),
+    id: operationSuffix
+      ? `food_op_${operationSuffix}`
+      : dependencies.createId("food"),
     title: foodName,
     grams,
     calories_kcal: caloriesKcal,
@@ -329,15 +348,24 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
     carbs_g: carbsG,
     fat_g: fatG,
   };
-  context.setStore((previous) => {
+  const updateStore = (previous: ToolStore): ToolStore => {
     const currentDay = previous.dietByDate[date] ?? { day_date: date, meals: [] };
+    if (
+      currentDay.meals.some((currentMeal) =>
+        currentMeal.items.some((item) => item.id === newItem.id),
+      )
+    ) {
+      return previous;
+    }
     const existingMeal = currentDay.meals.find((item) => item.title.toLowerCase() === meal.toLowerCase());
     const updatedMeals = existingMeal
       ? currentDay.meals.map((item) => item.title.toLowerCase() === meal.toLowerCase()
         ? { ...item, items: [...item.items, newItem] }
         : item)
       : [...currentDay.meals, {
-          id: dependencies.createId("meal"),
+          id: operationSuffix
+            ? `meal_op_${operationSuffix}`
+            : dependencies.createId("meal"),
           title: meal,
           items: [newItem],
         }].sort((left, right) => (
@@ -351,7 +379,13 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
         [date]: { ...currentDay, meals: updatedMeals },
       },
     };
-  });
+  };
+  if (context.commitStore) {
+    await context.commitStore(updateStore);
+  } else {
+    context.setStore?.(updateStore);
+  }
+  context.markEffectCommitted?.();
   return `Alimento "${foodName}" (${grams}g, ${caloriesKcal} kcal) añadido a ${meal} del ${date}.`;
 };
 
@@ -504,7 +538,9 @@ const readRoutines: ToolHandler = async (_args, context) => {
 };
 
 const createRoutine: ToolHandler = async (args, context, dependencies) => {
-  if (!context.setStore) return "No se pudo acceder al almacenamiento.";
+  if (!context.commitStore && !context.setStore) {
+    return "No se pudo acceder al almacenamiento.";
+  }
   const parsed = parseObjectArgument(
     args.data,
     "El JSON de la rutina no es válido.",
@@ -518,22 +554,27 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
   const exercisesData = (data.exercises as Array<Record<string, unknown>>) ?? [];
   if (exercisesData.length === 0) return "La rutina debe tener al menos un ejercicio.";
   const repository = context.exercisesRepo ?? [];
-  const templateExercises = exercisesData.map((exercise) => {
+  const operationSuffix = context.operationId?.slice(0, 24);
+  const templateExercises = exercisesData.map((exercise, exerciseIndex) => {
     const exerciseName = (exercise.name as string) ?? "Ejercicio";
     const exerciseMuscle = (exercise.muscle as string) ?? "";
     const seriesData = (exercise.series as Array<Record<string, unknown>>) ?? [];
     const repositoryMatch = repository.find(
       (item) => item.name.toLowerCase() === exerciseName.toLowerCase(),
     );
-    const series: ToolExerciseSeries[] = seriesData.map((item) => ({
-      id: dependencies.createId("series"),
+    const series: ToolExerciseSeries[] = seriesData.map((item, seriesIndex) => ({
+      id: operationSuffix
+        ? `series_op_${operationSuffix}_${exerciseIndex}_${seriesIndex}`
+        : dependencies.createId("series"),
       type: (item.type as string) ?? "normal",
       reps: String(item.reps ?? "10"),
       weight_kg: String(item.weight_kg ?? "0"),
       rest_seconds: String(item.rest_seconds ?? "60"),
     }));
     return {
-      id: dependencies.createId("exercise"),
+      id: operationSuffix
+        ? `exercise_op_${operationSuffix}_${exerciseIndex}`
+        : dependencies.createId("exercise"),
       name: exerciseName,
       muscle: exerciseMuscle || (repositoryMatch?.muscle_group ?? ""),
       image_uri: repositoryMatch ? dependencies.getExerciseImageUrl(repositoryMatch, "male") : null,
@@ -542,16 +583,29 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
     };
   });
   const newTemplate: ToolWorkoutTemplate = {
-    id: dependencies.createId("template"),
+    id: operationSuffix
+      ? `template_op_${operationSuffix}`
+      : dependencies.createId("template"),
     name: routineName,
     category,
     icon,
     exercises: templateExercises,
   };
-  context.setStore((previous) => ({
-    ...previous,
-    templates: [...previous.templates, newTemplate],
-  }));
+  const updateStore = (previous: ToolStore): ToolStore => {
+    if (previous.templates.some((template) => template.id === newTemplate.id)) {
+      return previous;
+    }
+    return {
+      ...previous,
+      templates: [...previous.templates, newTemplate],
+    };
+  };
+  if (context.commitStore) {
+    await context.commitStore(updateStore);
+  } else {
+    context.setStore?.(updateStore);
+  }
+  context.markEffectCommitted?.();
   const exerciseSummary = templateExercises
     .map((exercise) => `${exercise.name} (${exercise.series.length} series)`)
     .join(", ");
@@ -566,6 +620,7 @@ const createFeatureIssue: ToolHandler = async (args, _context, dependencies) => 
   });
   if (!draft) return "Falta el título o el resumen de la mejora.";
   const outcome = await dependencies.submitFeedbackIssue(draft);
+  if (outcome.status === "created") _context.markEffectCommitted?.();
   return describeOutcomeForModel(outcome);
 };
 
@@ -587,21 +642,52 @@ export const AGENT_TOOL_HANDLERS: Record<string, ToolHandler> = {
 
 export const AGENT_TOOL_HANDLER_NAMES = Object.keys(AGENT_TOOL_HANDLERS);
 
+export function createDetailedAgentToolExecutor(dependencies: ToolExecutorDependencies) {
+  return async function executeDetailedAgentTool(
+    name: string,
+    args: Record<string, unknown>,
+    context: ToolExecutionContext = {},
+  ): Promise<ToolOperationExecutionOutcome> {
+    const handler = AGENT_TOOL_HANDLERS[name];
+    if (!handler) {
+      return { output: "Herramienta no reconocida.", status: "no_effect" };
+    }
+    let effectCommitted = false;
+    try {
+      const output = await handler(
+        args,
+        {
+          ...context,
+          markEffectCommitted: () => {
+            effectCommitted = true;
+            context.markEffectCommitted?.();
+          },
+        },
+        dependencies,
+      );
+      return {
+        output,
+        status: effectCommitted ? "committed" : "no_effect",
+      };
+    } catch {
+      // Sin este catch, una excepción de cualquier handler sube por
+      // providerToolLoop y aborta el turno entero del chat. Con una tool que
+      // hace red eso pasa de teórico a probable.
+      return {
+        output: "La herramienta ha fallado. Informa al usuario de que no se ha completado.",
+        status: effectCommitted ? "committed" : "failed_before_commit",
+      };
+    }
+  };
+}
+
 export function createAgentToolExecutor(dependencies: ToolExecutorDependencies) {
+  const detailedExecutor = createDetailedAgentToolExecutor(dependencies);
   return async function executeAgentTool(
     name: string,
     args: Record<string, unknown>,
     context: ToolExecutionContext = {},
   ): Promise<string> {
-    const handler = AGENT_TOOL_HANDLERS[name];
-    if (!handler) return "Herramienta no reconocida.";
-    try {
-      return await handler(args, context, dependencies);
-    } catch {
-      // Sin este catch, una excepción de cualquier handler sube por
-      // providerToolLoop y aborta el turno entero del chat. Con una tool que
-      // hace red eso pasa de teórico a probable.
-      return "La herramienta ha fallado. Informa al usuario de que no se ha completado.";
-    }
+    return (await detailedExecutor(name, args, context)).output;
   };
 }
