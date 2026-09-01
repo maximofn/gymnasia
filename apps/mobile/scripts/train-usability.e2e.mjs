@@ -1,9 +1,8 @@
 import assert from "node:assert/strict";
-import { once } from "node:events";
 import process from "node:process";
 import { setTimeout as sleep } from "node:timers/promises";
-import { spawn } from "node:child_process";
 import { chromium } from "playwright";
+import { spawnProcessTree, stopProcessTree } from "./process-tree.mjs";
 
 const DEFAULT_PORT = 8090;
 const SERVER_BOOT_TIMEOUT_MS = 120000;
@@ -58,7 +57,7 @@ async function ensureWebServer() {
   const baseUrl = `http://localhost:${port}`;
   logStep(`Starting Expo web server on ${baseUrl}`);
 
-  const child = spawn(
+  const child = spawnProcessTree(
     "npm",
     [
       "--workspace",
@@ -106,16 +105,7 @@ async function ensureWebServer() {
   return {
     baseUrl,
     stop: async () => {
-      if (child.killed) return;
-      child.kill("SIGINT");
-      try {
-        await Promise.race([once(child, "exit"), sleep(5000)]);
-      } catch {
-        // ignore
-      }
-      if (!child.killed) {
-        child.kill("SIGKILL");
-      }
+      await stopProcessTree(child);
     },
   };
 }
