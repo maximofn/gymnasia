@@ -828,6 +828,8 @@ async function runAgentChatE2E(
  *  - "down": 503, el interruptor apagado.
  *  - "malformed": 201 pero sin número utilizable. Es el caso que el código
  *    anterior trataba como éxito.
+ *  - "retry": la incidencia se crea, falla la ronda siguiente del proveedor y
+ *    la petición completa se repite con otro call_id; el efecto no se duplica.
  */
 async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
   const providerRounds = [];
@@ -869,7 +871,7 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
       down: { status: 503, body: JSON.stringify({ status: "unavailable" }) },
       malformed: { status: 201, body: JSON.stringify({ ok: true }) },
     };
-    const response = responses[backendScenario];
+    const response = responses[backendScenario === "retry" ? "created" : backendScenario];
     await route.fulfill({
       status: response.status,
       contentType: "application/json",
@@ -880,8 +882,22 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
   await page.route("**/v1/responses*", async (route) => {
     providerRounds.push(route.request().postDataJSON());
     logStep(`feature-issue/${backendScenario}: ronda ${providerRounds.length}`);
-    const responseFixture = providerRounds.length === 1
-      ? fixture("openai-feature-issue.sse")
+    if (backendScenario === "retry" && providerRounds.length === 2) {
+      await route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({ error: { message: "temporarily overloaded" } }),
+      });
+      return;
+    }
+    const isToolRound = backendScenario === "retry"
+      ? providerRounds.length === 1 || providerRounds.length === 3
+      : providerRounds.length === 1;
+    const responseFixture = isToolRound
+      ? fixture("openai-feature-issue.sse").replaceAll(
+          "call_openai_feature",
+          `call_openai_feature_attempt_${providerRounds.length}`,
+        )
       : fixture("openai-final.sse");
     await route.fulfill({
       status: 200,
@@ -908,14 +924,17 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
 
   assert.equal(
     providerRounds.length,
-    2,
-    "El bucle de tools debe completar dos rondas: la herramienta y la respuesta final.",
+    backendScenario === "retry" ? 4 : 2,
+    backendScenario === "retry"
+      ? "El reintento debe repetir las dos rondas completas sin repetir el efecto."
+      : "El bucle de tools debe completar dos rondas: la herramienta y la respuesta final.",
   );
 
-  const toolOutput = providerRounds[1]?.input
-    ?.find((item) => item?.type === "function_call_output")?.output ?? "";
+  const toolOutput = providerRounds
+    .flatMap((round) => Array.isArray(round?.input) ? round.input : [])
+    .find((item) => item?.type === "function_call_output")?.output ?? "";
 
-  if (backendScenario === "created") {
+  if (backendScenario === "created" || backendScenario === "retry") {
     assert.equal(feedbackRequests.length, 1, "Debe enviarse exactamente una incidencia.");
     const body = feedbackRequests[0];
     assert.deepEqual(
@@ -932,7 +951,19 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
       toolOutput.includes("41"),
       `El modelo debe recibir el número real. Recibió: ${toolOutput}`,
     );
-    logStep("feature-issue/created: número real devuelto al modelo");
+    if (backendScenario === "retry") {
+      const continuationOutputs = providerRounds
+        .flatMap((round) => Array.isArray(round?.input) ? round.input : [])
+        .filter((item) => item?.type === "function_call_output");
+      assert.equal(continuationOutputs.length, 2);
+      assert.equal(continuationOutputs[0].output, continuationOutputs[1].output);
+      assert.notEqual(
+        continuationOutputs[0].call_id,
+        continuationOutputs[1].call_id,
+        "el replay debe funcionar aunque el proveedor cambie su call_id",
+      );
+    }
+    logStep(`feature-issue/${backendScenario}: número real devuelto al modelo`);
   } else {
     // Ningún camino de fallo puede devolver una confirmación de creación.
     assert.ok(
@@ -977,7 +1008,7 @@ async function main() {
         await context.close().catch(() => {});
       }
     }
-    for (const backendScenario of ["created", "down", "malformed"]) {
+    for (const backendScenario of ["created", "down", "malformed", "retry"]) {
       const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
       const page = await context.newPage();
       page.on("pageerror", (error) => {

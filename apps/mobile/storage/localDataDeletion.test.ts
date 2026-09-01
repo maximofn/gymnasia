@@ -141,6 +141,10 @@ describe("LOCAL_DATA_MANIFEST", () => {
           key: "gymnasia.mobile.training.session_template_snapshot.v1",
           activity: "delete",
         }),
+        expect.objectContaining({
+          key: "gymnasia.mobile.agent.tool_operations.v1",
+          activity: "delete",
+        }),
       ]);
   });
 

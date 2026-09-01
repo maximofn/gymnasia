@@ -1,9 +1,26 @@
+import {
+  toolCallOccurrenceKey,
+  type ToolCallEnvelope,
+} from "./toolOperationLedger";
+
 export const MAX_TOOL_ROUNDS = 10;
 
 export type ExecuteTool = (
   name: string,
   args: Record<string, unknown>,
+  call: ToolCallEnvelope,
 ) => Promise<string>;
+
+function nextOccurrence(
+  occurrences: Map<string, number>,
+  name: string,
+  args: Record<string, unknown>,
+): number {
+  const key = toolCallOccurrenceKey(name, args);
+  const occurrence = occurrences.get(key) ?? 0;
+  occurrences.set(key, occurrence + 1);
+  return occurrence;
+}
 
 export type OpenAIFunctionCall = {
   type: "function_call";
@@ -38,9 +55,11 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
     previousResponseId: string,
   ) => Promise<TTurn>;
   executeTool: ExecuteTool;
+  executionId?: string;
   maxRounds?: number;
 }): Promise<TTurn> {
   let turn = input.initialTurn;
+  const occurrences = new Map<string, number>();
   const maxRounds = input.maxRounds ?? MAX_TOOL_ROUNDS;
   for (let round = 0; round < maxRounds; round += 1) {
     const toolCalls = turn.outputItems.filter(
@@ -52,9 +71,18 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
     }
     const outputs: Array<Record<string, unknown>> = [];
     for (const toolCall of toolCalls) {
+      const args = parseOpenAIFunctionArguments(toolCall.arguments);
       const result = await input.executeTool(
         toolCall.name,
-        parseOpenAIFunctionArguments(toolCall.arguments),
+        args,
+        {
+          executionId: input.executionId ?? "legacy-execution",
+          provider: "openai",
+          providerCallId: toolCall.call_id,
+          name: toolCall.name,
+          args,
+          occurrence: nextOccurrence(occurrences, toolCall.name, args),
+        },
       );
       outputs.push({
         type: "function_call_output",
@@ -94,10 +122,12 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
   initialMessages: Array<Record<string, unknown>>;
   requestNextTurn: (messages: Array<Record<string, unknown>>) => Promise<TTurn>;
   executeTool: ExecuteTool;
+  executionId?: string;
   maxRounds?: number;
 }): Promise<TTurn> {
   let turn = input.initialTurn;
   let messages = [...input.initialMessages];
+  const occurrences = new Map<string, number>();
   const maxRounds = input.maxRounds ?? MAX_TOOL_ROUNDS;
   for (let round = 0; round < maxRounds; round += 1) {
     const toolCalls = turn.contentBlocks.filter(
@@ -106,7 +136,15 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
     if (toolCalls.length === 0) break;
     const toolResults: Array<Record<string, unknown>> = [];
     for (const toolCall of toolCalls) {
-      const result = await input.executeTool(toolCall.name, toolCall.input ?? {});
+      const args = toolCall.input ?? {};
+      const result = await input.executeTool(toolCall.name, args, {
+        executionId: input.executionId ?? "legacy-execution",
+        provider: "anthropic",
+        providerCallId: toolCall.id,
+        name: toolCall.name,
+        args,
+        occurrence: nextOccurrence(occurrences, toolCall.name, args),
+      });
       toolResults.push({
         type: "tool_result",
         tool_use_id: toolCall.id,
@@ -166,10 +204,12 @@ export async function runGoogleToolLoop<TTurn extends GoogleToolTurn>(input: {
   initialMessages: Array<Record<string, unknown>>;
   requestNextTurn: (messages: Array<Record<string, unknown>>) => Promise<TTurn>;
   executeTool: ExecuteTool;
+  executionId?: string;
   maxRounds?: number;
 }): Promise<TTurn> {
   let turn = input.initialTurn;
   const messages = [...input.initialMessages];
+  const occurrences = new Map<string, number>();
   const maxRounds = input.maxRounds ?? MAX_TOOL_ROUNDS;
   for (let round = 0; round < maxRounds; round += 1) {
     const toolCalls = turn.modelParts.filter(
@@ -183,7 +223,15 @@ export async function runGoogleToolLoop<TTurn extends GoogleToolTurn>(input: {
     const responseParts: Array<Record<string, unknown>> = [];
     for (const part of toolCalls) {
       const functionCall = part.functionCall;
-      const result = await input.executeTool(functionCall.name, functionCall.args ?? {});
+      const args = functionCall.args ?? {};
+      const result = await input.executeTool(functionCall.name, args, {
+        executionId: input.executionId ?? "legacy-execution",
+        provider: "google",
+        providerCallId: functionCall.id,
+        name: functionCall.name,
+        args,
+        occurrence: nextOccurrence(occurrences, functionCall.name, args),
+      });
       responseParts.push({
         functionResponse: {
           ...(typeof functionCall.id === "string" && functionCall.id.trim()

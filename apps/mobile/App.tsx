@@ -48,11 +48,16 @@ import {
   type PersonalDataField,
 } from "./agent/personalData";
 import {
-  createAgentToolExecutor,
+  createDetailedAgentToolExecutor,
   type ToolExecutionContext,
   type ToolMeasurement,
   type ToolStore,
 } from "./agent/toolExecutor";
+import {
+  ToolOperationCoordinator,
+  ToolOperationLedgerRepository,
+  type ToolCallEnvelope,
+} from "./agent/toolOperationLedger";
 import { resolveFeedbackEndpoint } from "./environment";
 import { createFeedbackIssueClient } from "./agent/feedbackClient";
 import {
@@ -518,9 +523,11 @@ type StreamingHandlers = {
 };
 type ChatProviderCallOptions = StreamingHandlers & {
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>;
+  commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>;
   store?: LocalStore;
   foodsRepo?: FoodRepoEntry[];
   exercisesRepo?: ExerciseRepoEntry[];
+  executionId?: string;
   healthDecision?: HealthSafetyDecision;
   healthPolicy?: HealthSafetyRuntimePolicy;
 };
@@ -632,6 +639,9 @@ const SESSION_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.training.session.v
 const SESSION_TEMPLATE_SNAPSHOT_KEY = scopedStorageKey("gymnasia.mobile.training.session_template_snapshot.v1");
 const PERSONAL_DATA_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.personal_data.v1");
 const USER_PREFS_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.user_prefs.v1");
+const TOOL_OPERATION_LEDGER_STORAGE_KEY = scopedStorageKey(
+  "gymnasia.mobile.agent.tool_operations.v1",
+);
 
 const localStoreRecoveryRepository = new LocalStoreRecoveryRepository({
   storage: AsyncStorage,
@@ -642,6 +652,22 @@ const localStoreRecoveryRepository = new LocalStoreRecoveryRepository({
   },
   sha256: (value) => Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value),
 });
+const traceToolOperation = (
+  message: string,
+  data?: Record<string, unknown>,
+) => {
+  void pushTrace("toolIdempotency", message, data);
+};
+const toolOperationLedgerRepository = new ToolOperationLedgerRepository(
+  AsyncStorage,
+  TOOL_OPERATION_LEDGER_STORAGE_KEY,
+  Date.now,
+  traceToolOperation,
+);
+const toolOperationCoordinator = new ToolOperationCoordinator(
+  toolOperationLedgerRepository,
+  traceToolOperation,
+);
 // Salud de las alarmas: observaciones del dispositivo, no preferencias del usuario,
 // por eso viven en su propia clave y no dentro de UserPreferences.
 const ALARM_HEALTH_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.alarm_health.v1");
@@ -1287,7 +1313,7 @@ async function handleFoodEstimatorToolCall(name: string, args: Record<string, un
   return "Herramienta no reconocida.";
 }
 
-const executeAgentTool = createAgentToolExecutor({
+const executeAgentTool = createDetailedAgentToolExecutor({
   loadPersonalData,
   savePersonalData,
   loadMeasurements: async () => loadMeasurementsFromStorage(),
@@ -1306,9 +1332,11 @@ const executeAgentTool = createAgentToolExecutor({
 
 function createToolExecutionContext(
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
+  commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>,
   store?: LocalStore,
   foodsRepo?: FoodRepoEntry[],
   exercisesRepo?: ExerciseRepoEntry[],
+  operationId?: string,
 ): ToolExecutionContext {
   return {
     setStore: setStore
@@ -1316,9 +1344,11 @@ function createToolExecutionContext(
           updater(previous as unknown as ToolStore) as unknown as LocalStore
         ))
       : undefined,
+    commitStore,
     store: store as unknown as ToolStore | undefined,
     foodsRepo,
     exercisesRepo,
+    operationId,
   };
 }
 
@@ -1326,14 +1356,23 @@ async function executeChatTool(
   name: string,
   args: Record<string, unknown>,
   setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
+  commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>,
   store?: LocalStore,
   foodsRepo?: FoodRepoEntry[],
   exercisesRepo?: ExerciseRepoEntry[],
-): Promise<string> {
+  operationId?: string,
+) {
   return executeAgentTool(
     name,
     args,
-    createToolExecutionContext(setStore, store, foodsRepo, exercisesRepo),
+    createToolExecutionContext(
+      setStore,
+      commitStore,
+      store,
+      foodsRepo,
+      exercisesRepo,
+      operationId,
+    ),
   );
 }
 function resolveProviderByPriority(keys: AIKey[], priority: Provider[]): AIKey | null {
@@ -3023,10 +3062,15 @@ async function callProviderChatAPIWithTools(
     }));
 
   const toolStoreSetter = options?.setStore;
+  const toolStoreCommitter = options?.commitStore;
   const toolStore = options?.store;
   const toolFoodsRepo = options?.foodsRepo;
   const toolExercisesRepo = options?.exercisesRepo;
-  const executeGuardedTool = async (name: string, args: Record<string, unknown>) => {
+  const executeGuardedTool = async (
+    name: string,
+    args: Record<string, unknown>,
+    call: ToolCallEnvelope,
+  ) => {
     const effect = agentToolEffect(name);
     const argumentDecision = classifyHealthSafetyText(
       `${name} ${JSON.stringify(args)}`,
@@ -3046,13 +3090,19 @@ async function callProviderChatAPIWithTools(
         message: "La herramienta no está permitida para esta consulta.",
       });
     }
-    return executeChatTool(
-      name,
-      args,
-      toolStoreSetter,
-      toolStore,
-      toolFoodsRepo,
-      toolExercisesRepo,
+    return toolOperationCoordinator.execute(
+      call,
+      effect !== "read",
+      (operationId) => executeChatTool(
+        name,
+        args,
+        toolStoreSetter,
+        toolStoreCommitter,
+        toolStore,
+        toolFoodsRepo,
+        toolExercisesRepo,
+        operationId,
+      ),
     );
   };
   // --- OPENAI ---
@@ -3125,6 +3175,7 @@ async function callProviderChatAPIWithTools(
         makeOpenAIRequest(outputs, previousResponseId, true)
       ),
       executeTool: executeGuardedTool,
+      executionId: options?.executionId,
     });
 
     const content = streamedContent.trim() || payload.content;
@@ -3197,6 +3248,7 @@ async function callProviderChatAPIWithTools(
       initialMessages: nonSystemMessages,
       requestNextTurn: (currentMessages) => makeAnthropicRequest(currentMessages, true),
       executeTool: executeGuardedTool,
+      executionId: options?.executionId,
     });
 
     const content = streamedContent.trim() || payload.content;
@@ -3267,6 +3319,7 @@ async function callProviderChatAPIWithTools(
     initialMessages: googleMessages,
     requestNextTurn: (currentMessages) => makeGoogleRequest(currentMessages, true),
     executeTool: executeGuardedTool,
+    executionId: options?.executionId,
   });
 
   const content = streamedContent.trim() || payload.content;
@@ -6510,6 +6563,29 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       manual_macro_calories: { ...store.dietSettings.manual_macro_calories },
     });
   }, [dietSettingsDraftDirty, store.dietSettings]);
+  const toolStoreCommitQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const commitToolStoreMutation = useCallback(
+    async (updater: (previous: ToolStore) => ToolStore): Promise<void> => {
+      const run = toolStoreCommitQueueRef.current.then(async () => {
+        const previous = storeRef.current;
+        const next = updater(
+          previous as unknown as ToolStore,
+        ) as unknown as LocalStore;
+        if (next === previous) return;
+        await localStoreRecoveryRepository.commit(
+          JSON.stringify(serializeStoreForAsyncStorage(next)),
+        );
+        storeRef.current = next;
+        setStore((current) => {
+          if (current === previous) return next;
+          return updater(current as unknown as ToolStore) as unknown as LocalStore;
+        });
+      });
+      toolStoreCommitQueueRef.current = run.catch(() => undefined);
+      await run;
+    },
+    [],
+  );
   const providerConfigurationRepositoryRef = useRef<ProviderConfigurationRepository | null>(null);
   const providerConfigurationRevisionRef = useRef(0);
   const [threads, setThreads] = useState<ChatThread[]>([]);
@@ -8500,7 +8576,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (!isHydrated || dataDeletionBusyRef.current) return;
 
     const serialized = JSON.stringify(serializeStoreForAsyncStorage(store));
-    void (async () => {
+    const persist = toolStoreCommitQueueRef.current.then(async () => {
+      if (storeRef.current !== store || dataDeletionBusyRef.current) return;
       try {
         await localStoreRecoveryRepository.commit(serialized);
         await saveDevStoreFile(store);
@@ -8531,9 +8608,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           persistError instanceof Error
             ? persistError.message
             : "No se pudo guardar en almacenamiento local.",
-        );
+          );
       }
-    })();
+    });
+    toolStoreCommitQueueRef.current = persist.catch(() => undefined);
   }, [isHydrated, store]);
 
   useEffect(() => {
@@ -9101,9 +9179,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           }
           assistantResult = await callProviderChatAPIWithTools(activeProvider, chatMessages, {
             setStore,
+            commitStore: commitToolStoreMutation,
             store,
             foodsRepo: [...foodsRepo, ...personalFoods],
             exercisesRepo,
+            executionId: userMessage.id,
             healthDecision,
             healthPolicy: healthSelection.policy,
             onContentDelta: (_delta, aggregate) => {
@@ -12990,6 +13070,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ["gymnasia.mobile.health_safety.consent.v1", "Consentimiento de seguridad sanitaria"],
       ["gymnasia.mobile.alarm_health.v1", "Diagnóstico de avisos"],
       ["gymnasia.mobile.backup_meta.v1", "Metadatos de copias de seguridad"],
+      ["gymnasia.mobile.agent.tool_operations.v1", "Control de operaciones del agente"],
       ["gymnasia_debug_traces", "Trazas de depuración"],
       ["gymnasia.mobile.exercises_repo.v2", "Caché de ejercicios"],
       ["gymnasia.mobile.foods_repo.v1", "Caché de alimentos"],
@@ -13118,6 +13199,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           || key === traceKey
           || key === "gymnasia_measurement_media_v1"
           || key === PROVIDER_CONFIGURATION_STORAGE_KEY
+          || key === TOOL_OPERATION_LEDGER_STORAGE_KEY
           || managedStoreKeys.has(key)
         ) continue;
         tasks.push({
@@ -13184,6 +13266,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
       }
     }
+
+    tasks.push({
+      id: "tool-operation-ledger",
+      label: "Control de operaciones del agente",
+      delete: () => toolOperationCoordinator.clear(),
+      verify: async () => (
+        await AsyncStorage.getItem(TOOL_OPERATION_LEDGER_STORAGE_KEY)
+      ) === null,
+    });
 
     if (Platform.OS !== "web") {
       tasks.push({

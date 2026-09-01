@@ -98,7 +98,7 @@ describe("GYM-139: el ejecutor real sobre memoria con campos de inyección", () 
     const outputs: Array<Record<string, unknown>> = [];
     const result = await runOpenAIToolLoop({
       initialTurn,
-      executeTool,
+      executeTool: (name, args) => executeTool(name, args),
       requestNextTurn: async (turnOutputs) => {
         outputs.push(...turnOutputs);
         return replayInNetworkChunks(
@@ -156,7 +156,11 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       name: "read_field_value",
       arguments: '{"key":"Objetivo"}',
     })]);
-    expect(executeTool).toHaveBeenCalledWith("read_field_value", { key: "Objetivo" });
+    expect(executeTool).toHaveBeenCalledWith(
+      "read_field_value",
+      { key: "Objetivo" },
+      expect.any(Object),
+    );
     expect(requests).toEqual([{
       responseId: "resp_openai_tool",
       outputs: [{
@@ -196,7 +200,11 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       input: { key: "Objetivo" },
     }]);
     expect(initialTurn.stopReason).toBe("tool_use");
-    expect(executeTool).toHaveBeenCalledWith("read_field_value", { key: "Objetivo" });
+    expect(executeTool).toHaveBeenCalledWith(
+      "read_field_value",
+      { key: "Objetivo" },
+      expect.any(Object),
+    );
     expect(continuedMessages.at(-1)).toEqual({
       role: "user",
       content: [{
@@ -234,7 +242,11 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       thought: false,
       thoughtSignature: undefined,
     }]);
-    expect(executeTool).toHaveBeenCalledWith("read_field_value", { key: "Objetivo" });
+    expect(executeTool).toHaveBeenCalledWith(
+      "read_field_value",
+      { key: "Objetivo" },
+      expect.any(Object),
+    );
     expect(continuedMessages.at(-1)).toEqual({
       role: "user",
       parts: [{
@@ -341,8 +353,14 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       }),
     ]);
     expect(executeTool.mock.calls).toEqual([
-      ["read_field_value", { key: "Objetivo" }],
-      ["read_field_value", { key: "Altura" }],
+      ["read_field_value", { key: "Objetivo" }, expect.objectContaining({
+        provider: "openai",
+        providerCallId: "call_openai_first",
+      })],
+      ["read_field_value", { key: "Altura" }, expect.objectContaining({
+        provider: "openai",
+        providerCallId: "call_openai_second",
+      })],
     ]);
     expect(requestNextTurn).toHaveBeenCalledWith([
       {
@@ -393,8 +411,14 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       },
     ]);
     expect(executeTool.mock.calls).toEqual([
-      ["read_field_value", { key: "Objetivo" }],
-      ["read_field_value", { key: "Altura" }],
+      ["read_field_value", { key: "Objetivo" }, expect.objectContaining({
+        provider: "anthropic",
+        providerCallId: "toolu_anthropic_first",
+      })],
+      ["read_field_value", { key: "Altura" }, expect.objectContaining({
+        provider: "anthropic",
+        providerCallId: "toolu_anthropic_second",
+      })],
     ]);
     expect(requestNextTurn.mock.calls[0]![0].at(-1)).toEqual({
       role: "user",
@@ -450,8 +474,14 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       }),
     ]);
     expect(executeTool.mock.calls).toEqual([
-      ["read_field_value", { key: "Objetivo" }],
-      ["read_field_value", { key: "Altura" }],
+      ["read_field_value", { key: "Objetivo" }, expect.objectContaining({
+        provider: "google",
+        providerCallId: "google_call_first",
+      })],
+      ["read_field_value", { key: "Altura" }, expect.objectContaining({
+        provider: "google",
+        providerCallId: "google_call_second",
+      })],
     ]);
     expect(requestNextTurn.mock.calls[0]![0]).toEqual([
       {
@@ -541,7 +571,11 @@ describe("contrato de parsing de llamadas a herramientas", () => {
     );
     const googleTurn = google.finish();
 
-    expect(executeTool).toHaveBeenCalledWith("read_field_value", {});
+    expect(executeTool).toHaveBeenCalledWith(
+      "read_field_value",
+      {},
+      expect.any(Object),
+    );
     expect(googleTurn.modelParts).toEqual([
       expect.objectContaining({
         functionCall: { name: "read_field_value", args: {} },

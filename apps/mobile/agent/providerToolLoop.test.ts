@@ -22,7 +22,16 @@ describe("integración del bucle con proveedor falso", () => {
     const result = await runOpenAIToolLoop({ initialTurn, requestNextTurn, executeTool });
 
     expect(result.content).toBe("Tu objetivo es ganar masa muscular.");
-    expect(executeTool).toHaveBeenCalledWith("read_field_value", { key: "Objetivo" });
+    expect(executeTool).toHaveBeenCalledWith(
+      "read_field_value",
+      { key: "Objetivo" },
+      expect.objectContaining({
+        executionId: "legacy-execution",
+        provider: "openai",
+        providerCallId: "call_1",
+        occurrence: 0,
+      }),
+    );
     expect(requestNextTurn).toHaveBeenCalledWith([
       { type: "function_call_output", call_id: "call_1", output: "Ganar masa muscular" },
     ], "resp_openai_1");
@@ -41,7 +50,16 @@ describe("integración del bucle con proveedor falso", () => {
     });
 
     expect(result.content).toBe("Tu objetivo es ganar masa muscular.");
-    expect(executeTool).toHaveBeenCalledWith("read_field_value", { key: "Objetivo" });
+    expect(executeTool).toHaveBeenCalledWith(
+      "read_field_value",
+      { key: "Objetivo" },
+      expect.objectContaining({
+        executionId: "legacy-execution",
+        provider: "anthropic",
+        providerCallId: "toolu_1",
+        occurrence: 0,
+      }),
+    );
     const nextMessages = requestNextTurn.mock.calls[0][0];
     expect(nextMessages.at(-1)).toEqual({
       role: "user",
@@ -65,7 +83,15 @@ describe("integración del bucle con proveedor falso", () => {
     });
 
     expect(result.content).toBe("Tu objetivo es ganar masa muscular.");
-    expect(executeTool).toHaveBeenCalledWith("read_field_value", { key: "Objetivo" });
+    expect(executeTool).toHaveBeenCalledWith(
+      "read_field_value",
+      { key: "Objetivo" },
+      expect.objectContaining({
+        executionId: "legacy-execution",
+        provider: "google",
+        occurrence: 0,
+      }),
+    );
     const nextMessages = requestNextTurn.mock.calls[0][0];
     expect(nextMessages.at(-1)).toEqual({
       role: "user",

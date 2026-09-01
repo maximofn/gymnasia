@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia. Se creó en GYM-190 (ticket para publicar la política de privacidad y preparar las declaraciones de salud). De aquí salen la política publicada y las respuestas de Data safety en docs/legal/play-declarations.md. Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198 (ticket para generar y validar el Android App Bundle de producción). Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-08-v9",
+  "policyVersion": "2026-09-v1",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -161,6 +161,16 @@
       "purpose": "Fecha de la última copia de seguridad manual.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
+      "fullDeletion": "delete"
+    },
+    {
+      "key": "gymnasia.mobile.agent.tool_operations.v1",
+      "backend": "async-storage",
+      "personal": true,
+      "dataCategory": "health-fitness, app-activity",
+      "purpose": "Registro técnico local para impedir que los reintentos del proveedor ejecuten dos veces una escritura del agente. Conserva como máximo 256 operaciones durante siete días: identificador y huella SHA-256 derivados de la ejecución, nombre de la herramienta, resultado exacto devuelto al modelo y marcas de tiempo. No guarda argumentos, mensajes, prompts ni claves de API, no sale del dispositivo y no se incluye en las copias .gymnasia.",
+      "clearedBy": "activity-and-full-deletion",
+      "activityDeletion": "delete",
       "fullDeletion": "delete"
     },
     {

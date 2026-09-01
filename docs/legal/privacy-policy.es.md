@@ -1,6 +1,6 @@
 ---
-version: 2026-08-v9
-effective_date: 2026-08-30
+version: 2026-09-v1
+effective_date: 2026-09-01
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -86,6 +86,12 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
   del estado principal. Si encuentra datos que no puede leer con seguridad, mantiene el
   payload original en cuarentena para no sobrescribirlo. Ambas copias permanecen solo en
   el dispositivo y se sustituyen o eliminan al completar la recuperación.
+- **Control de operaciones del asistente**: un registro técnico local impide que un
+  reintento del proveedor añada dos veces una comida, una medida o una rutina, o envíe
+  dos veces una propuesta. Conserva hasta 256 operaciones durante siete días: huellas
+  técnicas, el nombre de la acción, el resultado que recibió el modelo y las fechas. No
+  guarda los argumentos, mensajes, instrucciones ni claves de API, no sale del dispositivo
+  y no se incluye en las copias exportadas.
 
 ## Dónde se guarda {#almacenamiento-local}
 
@@ -288,9 +294,10 @@ diferencias que debes conocer:
 
 ## Cuánto tiempo se conservan tus datos {#conservacion}
 
-Indefinidamente, mientras tú los mantengas. Gymnasia no los sincroniza ni conserva en
-un servidor propio: los conservas y borras tú, tanto en el dispositivo como en los
-lugares a los que decidas enviar una copia manual.
+Salvo el control técnico de operaciones descrito arriba, que caduca a los siete días,
+los datos locales se conservan indefinidamente mientras tú los mantengas. Gymnasia no
+los sincroniza ni conserva en un servidor propio: los conservas y borras tú, tanto en
+el dispositivo como en los lugares a los que decidas enviar una copia manual.
 
 Los datos que hayas enviado a un proveedor de IA se rigen por el plazo de conservación
 de ese proveedor, según tu cuenta con él.
@@ -311,16 +318,17 @@ la copia íntegra de recuperación por otra que ya no contiene esa actividad y e
 cualquier cuarentena anterior, para que esos datos no puedan reaparecer al recuperar. Conserva
 la memoria del asistente, los alimentos personales, tus ajustes de dieta y de interfaz,
 las claves de API, las credenciales heredadas, las cachés de catálogos, las trazas y los
-metadatos de las copias de seguridad. También cancela los avisos de entrenamiento
-pendientes.
+metadatos de las copias de seguridad. También elimina el control técnico de operaciones
+del asistente y cancela los avisos de entrenamiento pendientes.
 
 **"Borrar todos mis datos"** elimina y comprueba los datos personales, credenciales,
 preferencias, diagnósticos y cachés que Gymnasia controla en este dispositivo. Esto
 incluye el estado principal, las sesiones, la memoria del asistente, los alimentos
 personales, las claves de API actuales y antiguas, las credenciales heredadas, las
-trazas, los consentimientos y los metadatos de copias. Requiere escribir `BORRAR` para
-confirmar. Si algún destino no puede borrarse o verificarse, la aplicación no declara
-éxito: muestra qué ha quedado pendiente y permite reintentar.
+trazas, los consentimientos, los metadatos de copias y el control técnico de operaciones
+del asistente. Requiere escribir `BORRAR` para confirmar. Si algún destino no puede
+borrarse o verificarse, la aplicación no declara éxito: muestra qué ha quedado pendiente
+y permite reintentar.
 
 La única entrada local que esta segunda opción conserva es la caché pública firmada que
 impide que el asistente cargue unas instrucciones de seguridad anteriores. No contiene

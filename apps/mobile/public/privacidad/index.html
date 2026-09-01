@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-08-v9">
-<meta name="gymnasia-policy-digest" content="sha256:d482a3e01731ab4191cee1f182a70a4dcd59374b5f6020c0fd6d02190a8e2ad0">
+<meta name="gymnasia-policy-version" content="2026-09-v1">
+<meta name="gymnasia-policy-digest" content="sha256:c7b8d792fdc5fc26e03342de37b3123d648026c9afb3e05cfa0d3c673ce419a4">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-08-v9 · en vigor desde 2026-08-30 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-09-v1 · en vigor desde 2026-09-01 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -100,6 +100,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Configuración de proveedores de IA</strong>: el modelo elegido y, si Anthropic lo exige para una clave vinculada a identidad, el identificador del workspace (<code>wrkspc_…</code>).</li>
       <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie. Nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
       <li><strong>Copias locales de recuperación</strong>: la aplicación conserva una única copia verificada del estado principal. Si encuentra datos que no puede leer con seguridad, mantiene el payload original en cuarentena para no sobrescribirlo. Ambas copias permanecen solo en el dispositivo y se sustituyen o eliminan al completar la recuperación.</li>
+      <li><strong>Control de operaciones del asistente</strong>: un registro técnico local impide que un reintento del proveedor añada dos veces una comida, una medida o una rutina, o envíe dos veces una propuesta. Conserva hasta 256 operaciones durante siete días: huellas técnicas, el nombre de la acción, el resultado que recibió el modelo y las fechas. No guarda los argumentos, mensajes, instrucciones ni claves de API, no sale del dispositivo y no se incluye en las copias exportadas.</li>
     </ul>
   </section>
 
@@ -203,7 +204,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="conservacion">
     <h2><a href="#conservacion">Cuánto tiempo se conservan tus datos</a></h2>
-    <p>Indefinidamente, mientras tú los mantengas. Gymnasia no los sincroniza ni conserva en un servidor propio: los conservas y borras tú, tanto en el dispositivo como en los lugares a los que decidas enviar una copia manual.</p>
+    <p>Salvo el control técnico de operaciones descrito arriba, que caduca a los siete días, los datos locales se conservan indefinidamente mientras tú los mantengas. Gymnasia no los sincroniza ni conserva en un servidor propio: los conservas y borras tú, tanto en el dispositivo como en los lugares a los que decidas enviar una copia manual.</p>
     <p>Los datos que hayas enviado a un proveedor de IA se rigen por el plazo de conservación de ese proveedor, según tu cuenta con él.</p>
     <p>Las propuestas permanecen en el repositorio privado mientras sean necesarias para gestionar el proyecto. En las denuncias de respuestas, el cuerpo que contiene la pregunta y la respuesta se programa para borrarse automáticamente al cumplir 30 días. Los registros técnicos de limitación de uso basados en el HMAC de la IP se eliminan en un máximo de 48 horas.</p>
   </section>
@@ -211,8 +212,8 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="eliminacion">
     <h2><a href="#eliminacion">Cómo eliminar tus datos</a></h2>
     <p>En Ajustes → Datos hay dos opciones:</p>
-    <p><strong>&quot;Borrar actividad y conversaciones&quot;</strong> deja vacíos tus entrenamientos y rutinas, el historial de dieta, las medidas, las conversaciones y cualquier sesión activa. Sustituye la copia íntegra de recuperación por otra que ya no contiene esa actividad y elimina cualquier cuarentena anterior, para que esos datos no puedan reaparecer al recuperar. Conserva la memoria del asistente, los alimentos personales, tus ajustes de dieta y de interfaz, las claves de API, las credenciales heredadas, las cachés de catálogos, las trazas y los metadatos de las copias de seguridad. También cancela los avisos de entrenamiento pendientes.</p>
-    <p><strong>&quot;Borrar todos mis datos&quot;</strong> elimina y comprueba los datos personales, credenciales, preferencias, diagnósticos y cachés que Gymnasia controla en este dispositivo. Esto incluye el estado principal, las sesiones, la memoria del asistente, los alimentos personales, las claves de API actuales y antiguas, las credenciales heredadas, las trazas, los consentimientos y los metadatos de copias. Requiere escribir <code>BORRAR</code> para confirmar. Si algún destino no puede borrarse o verificarse, la aplicación no declara éxito: muestra qué ha quedado pendiente y permite reintentar.</p>
+    <p><strong>&quot;Borrar actividad y conversaciones&quot;</strong> deja vacíos tus entrenamientos y rutinas, el historial de dieta, las medidas, las conversaciones y cualquier sesión activa. Sustituye la copia íntegra de recuperación por otra que ya no contiene esa actividad y elimina cualquier cuarentena anterior, para que esos datos no puedan reaparecer al recuperar. Conserva la memoria del asistente, los alimentos personales, tus ajustes de dieta y de interfaz, las claves de API, las credenciales heredadas, las cachés de catálogos, las trazas y los metadatos de las copias de seguridad. También elimina el control técnico de operaciones del asistente y cancela los avisos de entrenamiento pendientes.</p>
+    <p><strong>&quot;Borrar todos mis datos&quot;</strong> elimina y comprueba los datos personales, credenciales, preferencias, diagnósticos y cachés que Gymnasia controla en este dispositivo. Esto incluye el estado principal, las sesiones, la memoria del asistente, los alimentos personales, las claves de API actuales y antiguas, las credenciales heredadas, las trazas, los consentimientos, los metadatos de copias y el control técnico de operaciones del asistente. Requiere escribir <code>BORRAR</code> para confirmar. Si algún destino no puede borrarse o verificarse, la aplicación no declara éxito: muestra qué ha quedado pendiente y permite reintentar.</p>
     <p>La única entrada local que esta segunda opción conserva es la caché pública firmada que impide que el asistente cargue unas instrucciones de seguridad anteriores. No contiene datos ni respuestas tuyas y se mantiene precisamente para protegerte frente a una regresión de seguridad.</p>
     <p><strong>El registro de depuración</strong> se borra con su propio botón, en Ajustes → Trazas.</p>
     <p><strong>Recuperación de almacenamiento</strong>: al recuperar una copia válida o completar un reintento se elimina la cuarentena. Si eliges descartar los datos dañados, se eliminan el estado principal, su snapshot de recuperación y la sesión de entrenamiento dependiente; se conservan las particiones que siguen siendo legibles, como la memoria del asistente, los alimentos personales, las preferencias y las claves seguras.</p>
@@ -257,7 +258,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-08-v9 · 2026-08-30</p>
+    <p>Política de privacidad de Gymnasia · 2026-09-v1 · 2026-09-01</p>
   </footer>
 </main>
 </body>
