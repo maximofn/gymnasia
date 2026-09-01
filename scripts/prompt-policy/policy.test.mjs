@@ -180,5 +180,9 @@ test("CODEOWNERS y ruleset son deterministas y protegen sus propios controles", 
 test("los workflows cumplen permisos, eventos e inmutabilidad", () => {
   assert.doesNotThrow(() => assertWorkflowPolicy());
   const ownerWorkflow = readFileSync(new URL("../../.github/workflows/owner-authorization.yml", import.meta.url), "utf8");
+  const promptWorkflow = readFileSync(new URL("../../.github/workflows/prompt-policy.yml", import.meta.url), "utf8");
   assert.doesNotMatch(ownerWorkflow, /github\.event\.pull_request\.head/);
+  assert.match(promptWorkflow, /Verify committed Production version/);
+  assert.match(promptWorkflow, /check:production-version/);
+  assert.match(promptWorkflow, /published-versions/);
 });

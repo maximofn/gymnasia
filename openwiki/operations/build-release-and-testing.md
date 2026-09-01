@@ -32,7 +32,7 @@ El repositorio es un espacio de trabajo npm, a pesar de que los metadatos `packa
 | `/package-lock.json` | Grafo reproducible de dependencias npm utilizado por `npm ci` | Los cambios de dependencias deben actualizarlo |
 | `/apps/mobile/package.json` | Punto de entrada de Expo, scripts de la aplicación, dependencias de ejecución y versión de TypeScript | Su `version: 1.0.0` no es la versión de publicación de Expo que muestra la aplicación |
 | `/image-generation/pyproject.toml` | Gestiona el entorno independiente de generación de imágenes con Python 3.12 y sus dependencias `gradio-client`, `httpx`, `python-dotenv` y `websockets` | No es un manifiesto de un espacio de trabajo npm; administre esta utilidad con `uv` desde `image-generation` |
-| `/apps/mobile/app.json` | Metadatos canónicos de la aplicación Expo: versión, identificadores, recursos, permisos, complementos e ID del proyecto EAS | Este es el archivo de versión de ejecución/publicación que modifica el flujo de trabajo de publicación |
+| `/apps/mobile/app.json` | Metadatos canónicos de la aplicación Expo: versión, identificadores, recursos, permisos, complementos e ID del proyecto EAS | La versión debe quedar confirmada en el PR; el workflow de publicación nunca modifica Git |
 | `/apps/mobile/eas.json` | Perfiles EAS efectivos cuando los comandos se ejecutan desde `apps/mobile` | La vista previa genera explícitamente un APK de Android; producción no declara `buildType: apk` |
 | `/eas.json` | Política EAS similar en la raíz | No es el archivo de perfiles utilizado por el flujo de trabajo incluido, que cambia a `apps/mobile` |
 | `/app.json` | Objeto Expo vacío en la raíz | No es la configuración Expo efectiva de la aplicación móvil |
@@ -43,7 +43,7 @@ El repositorio es un espacio de trabajo npm, a pesar de que los metadatos `packa
 | `/.github/prompt-policy.json` y `/scripts/prompt-policy/` | Fuente declarativa y generador del gobierno de cambios sensibles | Generan `CODEOWNERS` y el ruleset; consulte [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md) antes de editar salidas derivadas. |
 | `/scripts/android-permissions/` | Política y comprobador de permisos Android publicables | Contrasta `apps/mobile/app.json` y manifests de dependencias; consulte [Validación de permisos Android publicables](android-permissions.md) al cambiar permisos o dependencias móviles. |
 | `/.github/workflows/prompt-policy.yml` y `owner-authorization.yml` | Check obligatorio de política y reconciliación segura de autorización de PR | El primero también verifica la política de permisos Android; el segundo solo procesa metadatos desde el SHA base de confianza y no ejecuta código del head de una PR. |
-| `/.github/workflows/build-apk.yml` | Compilación EAS, publicación de GitHub y confirmación de versión | Los detalles del disparador/perfil crean los riesgos de artefactos descritos a continuación |
+| `/.github/workflows/build-apk.yml` | Reconciliación transaccional de EAS y publicación de GitHub | Serializa versiones, persiste el build ID y solo publica un APK validado |
 
 Cuando los archivos Expo/EAS duplicados de la raíz y de la aplicación móvil no coincidan, utilice la configuración de `apps/mobile` para los comandos móviles. El flujo de trabajo de publicación lo hace explícito con `cd apps/mobile` antes de `eas build`.
 
@@ -198,77 +198,93 @@ npm --workspace apps/mobile exec tsc --noEmit
 
 **No** ejecuta ninguna de las baterías de Playwright, una exportación web, la validación del tablero, la evaluación de LLM, una compilación EAS ni pruebas nativas. Los cambios fuera de sus filtros de rutas pueden no recibir ningún resultado de este flujo de trabajo.
 
-El flujo de trabajo de publicación de Android es una canalización de compilación y publicación, no un flujo de trabajo de pruebas: instala las dependencias, pero no ejecuta las pruebas deterministas, TypeScript, E2E ni la exportación web antes de publicar. La protección de ramas y la disciplina humana de publicación deben garantizar que existan resultados de pruebas antes de un envío que dispare una publicación.
+El flujo de publicación de Android vuelve a ejecutar el contrato canónico
+`verify:production-source` antes de leer `EXPO_TOKEN`. Ese contrato incluye las
+pruebas deterministas, TypeScript, exportación Android y los dos E2E. La versión
+confirmada se comprueba además en cada PR dentro del check requerido
+`prompt-policy`.
 
 `openwiki-update.yml` no está relacionado con la validación del producto. Se ejecuta diariamente o de forma manual, genera documentación con Node 22/OpenWiki y abre una solicitud de incorporación de cambios de documentación.
 
 ## Publicación Android con EAS y flujo de versiones
 
-El flujo de trabajo `Build Production APK & Publish Release` puede iniciarse manualmente, pero no ofrece perfiles seleccionables. Tanto esa ejecución como los envíos a `main` que afecten a `apps/mobile/**` —excepto scripts, tests, Markdown y `public/`— usan exclusivamente `production-apk`. Ese perfil hereda `APP_ENV=production`, el package real y el incremento nativo de `production`, y añade `android.buildType: apk` para producir un artefacto instalable. Development, staging y preview nunca se compilan desde este workflow.
+`Build Production APK & Publish Release` usa exclusivamente `production-apk`.
+Los pushes a `main` que cambian código empaquetado y las ejecuciones manuales
+entran en la misma cola global `android-production-release`; esa cola nunca
+cancela la ejecución anterior.
 
 ```mermaid
 sequenceDiagram
+    participant PR as Pull request
     participant GH as GitHub Actions
-    participant Git as Repositorio Git
+    participant Rel as Draft de release
     participant EAS as Expo EAS
-    participant Rel as Publicaciones de GitHub
 
-    GH->>Git: Obtener el historial completo
-    GH->>Git: Buscar la etiqueta v más reciente
-    GH->>Git: Clasificar los asuntos de las confirmaciones
-    GH->>GH: Calcular la siguiente versión semántica
-    GH->>GH: Reescribir apps/mobile/app.json
-    GH->>EAS: Compilar Android con production-apk
-    EAS-->>GH: JSON de compilación y URL del artefacto
-    GH->>EAS: Consultar la compilación cuando no haya URL
-    GH->>GH: Descargar como gymnasia.apk
-    GH->>Rel: Publicar la etiqueta y el recurso APK
-    GH->>Git: Confirmar el incremento de versión de app.json
-    GH->>Git: Reorganizar y enviar
+    PR->>GH: Confirmar app.json con la versión esperada
+    GH->>GH: Recalcular versión y validar SHA/gates
+    GH->>Rel: Guardar transacción, fuente y política
+    GH->>EAS: Enviar build --no-wait
+    EAS-->>GH: Build ID
+    GH->>Rel: Persistir Build ID
+    GH->>EAS: Reconciliar build:view por ID
+    EAS-->>GH: APK terminado
+    GH->>GH: Cuarentena, firma, manifest, MIME, tamaño y SHA
+    GH->>Rel: Adjuntar evidencias y publicar
 ```
 
-*La etiqueta y el artefacto de la publicación se publican antes de que el flujo de trabajo confirme el cambio de versión en la rama.*
+### Versión confirmada en el PR
 
-### Cálculo de versiones
+`npm run prepare:production-version` calcula la candidata a partir del máximo
+entre la versión de la base y las releases publicadas. `feat` incrementa minor,
+un Conventional Commit con `!` o `BREAKING CHANGE` incrementa major y el resto
+incrementa patch. `prompt-policy` repite el cálculo sobre los SHA del PR y exige
+que `apps/mobile/app.json` contenga exactamente ese valor. El workflow de release
+no escribe, confirma ni empuja nada a Git.
 
-El flujo de trabajo busca la etiqueta más alta según el orden de versiones que coincida con `v*`, utiliza `0.0.0` como valor predeterminado cuando no existe ninguna e inspecciona los asuntos de las confirmaciones desde esa etiqueta:
+`appVersionSource: remote` y `autoIncrement: true` siguen administrando el
+`versionCode` nativo en EAS; la versión visible `versionName` procede del
+`app.json` confirmado.
 
-- un asunto que contenga `BREAKING CHANGE` o `BREAKING-CHANGE`, o un asunto convencional con `!:`, provoca un incremento de la versión principal;
-- `feat:` o `feat(scope):` provoca un incremento de la versión secundaria;
-- `fix:` o `fix(scope):` provoca un incremento de la versión de parche;
-- si no existe ningún asunto convencional reconocido, el flujo de trabajo sigue utilizando un incremento de parche de forma predeterminada.
+### Transacción y reconciliación
 
-Elimina de una etiqueta un sufijo SHA hexadecimal final antes de analizarla, calcula `vMAJOR.MINOR.PATCH` y reescribe `.expo.version` en `apps/mobile/app.json` mediante `jq`. La versión del paquete en `apps/mobile/package.json` no se actualiza.
+Cada versión tiene un draft con `AndroidReleaseTransactionV1`. Conserva commit,
+perfil, intentos, build ID, estados de EAS y SHA final. La selección siempre toma
+la versión semántica pendiente más antigua. Una cancelación o timeout de GitHub
+no marca EAS como fallido: una ejecución `reconcile` retoma el mismo build ID y,
+si la cancelación ocurrió justo tras el envío, lo adopta por versión, commit y
+mensaje estable.
 
-`apps/mobile/eas.json` establece la CLI de EAS en `>= 18.4.0` y `appVersionSource: "remote"`. `production-apk` extiende el perfil `production`, por lo que conserva `APP_ENV=production` y `autoIncrement: true`, y añade `android.buildType: "apk"`. Los perfiles de desarrollo, staging y preview siguen disponibles para invocaciones locales expresas, pero no para el workflow de publicación. Coexisten dos dimensiones de versión:
-
-- la versión de Expo visible para el usuario, escrita en `app.json` y utilizada por la convención de etiquetas y notas de publicación;
-- los números de compilación nativa remotos administrados por EAS, con incremento automático explícito solo en producción.
+Solo `ERRORED` o `CANCELED` de EAS crean un fallo terminal. Un operador puede
+reintentar o sustituir esa versión mediante `workflow_dispatch`, indicando la
+versión exacta y un motivo. Una sustitución conserva el draft y su auditoría,
+pero permite procesar la siguiente versión. Tras publicar o sustituir, un job
+aislado encola la siguiente versión confirmada si existe.
 
 ### Publicación de artefactos
 
-El flujo de trabajo se ejecuta desde `apps/mobile`:
-
-```bash
-eas build --platform android --profile production-apk --non-interactive --json
-```
-
-No existe una rama de selección de perfil. El trabajo espera hasta 120 minutos, extrae `artifacts.buildUrl` o `artifacts.applicationArchiveUrl`, recurre a `eas build:view` cuando el JSON inicial no contiene una URL, descarga el resultado como `gymnasia.apk`, comprueba su estructura ZIP y exige `AndroidManifest.xml` sin metadatos de Android App Bundle antes de adjuntarlo a una publicación estable de GitHub. El cuerpo de la publicación contiene hasta 30 asuntos de confirmaciones desde la etiqueta anterior.
-
-El paso final confirma únicamente `apps/mobile/app.json` como `chore(release): bump version to … [skip ci]`, intenta ejecutar `git pull --rebase || true` y realiza el envío.
+El APK se descarga primero como `/tmp/gymnasia.apk.download`. Antes de renombrarlo
+se verifica URL HTTPS, MIME HTTP, MIME detectado, límites de 50–200 MiB, estructura
+APK (no AAB), paquete, SDK, versión, permisos, snapshot, certificado y SHA-256.
+Después se adjunta como `gymnasia.apk` junto con la transacción y ambas evidencias.
+El draft vuelve a comprobar commit objetivo, tamaño y MIME de GitHub antes de
+convertirse en release pública. Reejecutar una versión ya publicada solo valida
+la identidad existente; no sobrescribe ni recompila.
 
 ## Riesgos de publicación y de los artefactos
 
-1. **La publicación está cerrada a un APK de Production.** El workflow fija `production-apk`, prepara el snapshot del canal Production y rechaza tanto un AAB renombrado como un archivo sin `AndroidManifest.xml`. Un AAB para Google Play debe generarse mediante un flujo separado y explícito con el perfil `production`; no amplíe este workflow con perfiles seleccionables porque volvería a permitir que un push distribuyera otra variante.
-2. **La ausencia de URL no se rechaza de forma temprana.** Si ambas consultas JSON de EAS devuelven una URL vacía, el paso de descarga sigue llamando a `curl -L ""`. Añada una comprobación explícita de URL no vacía y del tipo/tamaño de archivo antes de la publicación para reforzar la seguridad de la publicación.
-3. **La publicación precede a la confirmación de la versión en el código fuente.** La publicación de GitHub se crea antes de actualizar la rama. Un fallo al reorganizar o enviar puede dejar una etiqueta y un APK publicados cuyo cambio de versión no aparezca en `main`.
-4. **La condición de carrera del envío se suprime.** `git pull --rebase || true` ignora los fallos de reorganización y continúa con `git push`; los cambios simultáneos en `main` aún pueden hacer que falle el envío final. La publicación permanece publicada porque no existe una reversión.
-5. **La cancelación puede dejar trabajo huérfano en EAS.** La concurrencia cancela un flujo de trabajo anterior para la misma referencia, pero una compilación EAS puede continuar de forma remota. El tiempo de espera de 120 minutos se eligió porque la cola del nivel gratuito puede superar los 60 minutos; un tiempo de espera agotado o una cancelación pueden producir un artefacto remoto sin referencia y ninguna publicación de GitHub.
-6. **Cada envío válido a la rama principal publica Production.** El disparador de rutas abarca la mayoría de los cambios móviles que no sean scripts, tests, Markdown o `public/`, por lo que los envíos rutinarios de código fuente/configuración pueden crear una publicación de Production y un incremento de parche nuevos. Este control de publicaciones no se activa mediante etiquetas.
-7. **No existe un control de pruebas para las publicaciones.** El trabajo de publicación no ejecuta `npm test`, TypeScript, Playwright ni pruebas rápidas nativas antes de publicar.
-8. **Divergencia entre etiqueta y versión.** El cálculo de la versión confía en las etiquetas Git, no en el archivo `app.json` confirmado actualmente. Las modificaciones manuales de la versión o los fallos de confirmaciones de versiones anteriores pueden hacer que la transición calculada no coincida con el estado del código fuente.
-9. **El análisis convencional solo considera el asunto.** No se inspecciona el texto de cambios incompatibles en el cuerpo de una confirmación, y el comportamiento de combinación o reformulación puede cambiar el incremento seleccionado. Las confirmaciones no reconocidas siempre generan un parche.
-10. **La corrección nativa prácticamente no se prueba.** Las pruebas E2E web no pueden validar los permisos de Android, los sonidos de notificaciones, las alarmas exactas, SecureStore, el comportamiento en segundo plano, la instalación manual del APK ni la configuración de iOS.
+1. **La publicación está cerrada a un APK de Production.** Un AAB para Google
+   Play sigue siendo un flujo separado con el perfil `production`.
+2. **Un fallo terminal requiere criterio humano.** La automatización no puede
+   distinguir una incidencia recuperable de EAS de un defecto de fuente; por eso
+   exige reintento o sustitución con motivo.
+3. **Los límites de tamaño son política.** Un cambio legítimo que saque el APK de
+   50–200 MiB fallará cerrado hasta revisar `scripts/production-release/policy.json`.
+4. **La corrección nativa necesita dispositivo.** Los gates verifican artefacto,
+   permisos y flujos web, pero no sustituyen instalación, notificaciones,
+   alarmas, SecureStore ni comportamiento en segundo plano reales.
+5. **Cada cambio móvil empaquetado crea una versión.** Scripts, tests, Markdown y
+   `public/` están excluidos; el resto debe llevar incremento confirmado y entra
+   en la cola Production al fusionarse.
 
 Antes de publicar una versión de Android para instalación directa, descargue la candidata, verifique que realmente sea un APK, instálela en un dispositivo representativo, confirme la versión mostrada y la conservación de los datos locales, y ejercite las notificaciones y la temporización en segundo plano. La aplicación no contiene un actualizador de GitHub: la instalación de esos APK es un flujo manual separado de Google Play.
 

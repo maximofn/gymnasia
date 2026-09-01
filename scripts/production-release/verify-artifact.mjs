@@ -130,6 +130,9 @@ function main() {
   const certificateSha256 = extractCertificateDigest(inspection.certificateOutput);
   const size = statSync(artifact).size;
   const sha256 = fileSha256(artifact);
+  const detectedMimeType = run("file", ["--brief", "--mime-type", artifact]).trim();
+  const httpMimeType = String(options["http-mime"] ?? "").split(";", 1)[0].trim().toLowerCase();
+  const publishedFilename = options["published-filename"] ?? basename(artifact);
   const evaluated = evaluateArtifactCandidate({
     policy,
     kind: options.kind,
@@ -141,6 +144,9 @@ function main() {
     archiveListing: inspection.archiveListing,
     size,
     sha256,
+    httpMimeType,
+    detectedMimeType,
+    publishedFilename,
   });
   const evidence = {
     schemaVersion: 1,
@@ -155,9 +161,12 @@ function main() {
     build: readBuildMetadata(options["build-metadata"]),
     artifact: {
       filename: basename(artifact),
+      publishedFilename,
       type: options.kind,
       size,
       sha256,
+      httpMimeType,
+      detectedMimeType,
       packageName: manifest.packageName,
       versionName: manifest.versionName,
       versionCode: manifest.versionCode,
