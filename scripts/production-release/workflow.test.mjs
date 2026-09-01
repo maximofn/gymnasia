@@ -21,6 +21,19 @@ test("el selector puede descubrir releases borrador", () => {
   );
 });
 
+test("lee el borrador duradero por ID después de adjuntar evidencias", () => {
+  assert.doesNotMatch(
+    workflow,
+    /gh api "\/repos\/\$\{GITHUB_REPOSITORY\}\/releases\/tags\/\$\{TAG\}"/,
+    "el endpoint por tag devuelve 404 mientras la release sigue en borrador",
+  );
+  assert.equal(
+    [...workflow.matchAll(/gh api "\/repos\/\$\{GITHUB_REPOSITORY\}\/releases\/\$\{RELEASE_ID\}"/g)].length,
+    2,
+    "adjuntar el APK y verificar el borrador deben reutilizar el ID duradero seleccionado",
+  );
+});
+
 test("consulta EAS con filtros estables y valida la identidad localmente", () => {
   assert.match(
     workflow,
