@@ -1857,7 +1857,7 @@
         {
           "id": "GYM-168",
           "title": "Hacer idempotentes las tool calls con efectos ante reintentos",
-          "state": "todo",
+          "state": "done",
           "summary": "Evitar escrituras duplicadas cuando el chat reintenta una solicitud completa después de ejecutar herramientas.",
           "dependsOn": [],
           "related": [
