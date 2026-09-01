@@ -1830,7 +1830,7 @@
         {
           "id": "GYM-166",
           "title": "Validar y migrar UserPreferences en profundidad",
-          "state": "todo",
+          "state": "done",
           "summary": "Reparar preferencias anidadas parciales o inválidas antes de activar notificaciones y gráficos.",
           "dependsOn": [],
           "related": [
