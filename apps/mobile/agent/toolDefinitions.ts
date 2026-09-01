@@ -1,8 +1,11 @@
 import type { ToolEffect } from "./healthSafety";
+import { DIET_MEAL_CATEGORIES } from "../diet/nutritionContract";
 
 export type JsonSchemaProperty = {
   type: "string" | "number" | "object" | "array";
   description?: string;
+  enum?: string[];
+  minimum?: number;
 };
 
 export type ToolInputSchema = {
@@ -18,9 +21,13 @@ export type AgentToolDefinition = {
   inputSchema: ToolInputSchema;
 };
 
-const stringProperty = (description?: string): JsonSchemaProperty => ({
+const stringProperty = (
+  description?: string,
+  values?: readonly string[],
+): JsonSchemaProperty => ({
   type: "string",
   ...(description ? { description } : {}),
+  ...(values ? { enum: [...values] } : {}),
 });
 
 const numberProperty = (description: string): JsonSchemaProperty => ({
@@ -131,7 +138,10 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
       type: "object",
       properties: {
         date: stringProperty("Fecha en formato YYYY-MM-DD (por ejemplo: 2026-04-11)"),
-        meal: stringProperty("Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena"),
+        meal: stringProperty(
+          "Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena",
+          DIET_MEAL_CATEGORIES,
+        ),
       },
       required: ["date", "meal"],
     },
@@ -171,9 +181,12 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
       type: "object",
       properties: {
         date: stringProperty("Fecha en formato YYYY-MM-DD (por ejemplo: 2026-04-11)"),
-        meal: stringProperty("Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena"),
+        meal: stringProperty(
+          "Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena",
+          DIET_MEAL_CATEGORIES,
+        ),
         data: stringProperty(
-          "JSON con los datos del alimento. Campos requeridos: name (string), grams (number), calories_kcal (number), protein_g (number), carbs_g (number), fat_g (number). " +
+          "JSON con los datos totales de la porción que se va a guardar. Campos requeridos: name (string no vacío), grams (number), calories_kcal (number), protein_g (number), carbs_g (number), fat_g (number). Todos los números deben ser finitos y 0 o mayores; no envíes valores por 100 g salvo que la porción sea exactamente 100 g. " +
           'Ejemplo: {"name": "Arroz blanco", "grams": 150, "calories_kcal": 195, "protein_g": 4.1, "carbs_g": 43.4, "fat_g": 0.4}',
         ),
       },
@@ -307,6 +320,15 @@ export function validateToolInput(
     const actualType = Array.isArray(value) ? "array" : typeof value;
     if (actualType !== property.type) {
       errors.push(`El campo "${field}" debe ser de tipo ${property.type}.`);
+      continue;
+    }
+    if (property.enum && !property.enum.includes(value as string)) {
+      errors.push(
+        `El campo "${field}" debe ser uno de estos valores: ${property.enum.join(", ")}.`,
+      );
+    }
+    if (property.minimum !== undefined && (value as number) < property.minimum) {
+      errors.push(`El campo "${field}" debe ser ${property.minimum} o mayor.`);
     }
   }
 

@@ -99,6 +99,19 @@ describe("contrato schema ↔ ejecutor ↔ proveedores", () => {
       })),
     }]);
   });
+
+  it("limita las comidas de lectura y escritura a las categorías de la app", () => {
+    for (const name of ["read_meal_foods", "add_meal_food"]) {
+      const tool = AGENT_TOOL_DEFINITIONS.find((definition) => definition.name === name);
+      expect(tool?.inputSchema.properties.meal.enum).toEqual([
+        "Desayuno",
+        "Almuerzo",
+        "Comida",
+        "Merienda",
+        "Cena",
+      ]);
+    }
+  });
 });
 
 describe("validateToolInput", () => {
@@ -119,6 +132,19 @@ describe("validateToolInput", () => {
     });
     expect(wrongType.valid).toBe(false);
     expect(wrongType.errors).toContain('El campo "date" debe ser de tipo string.');
+  });
+
+  it("rechaza valores fuera de un enum", () => {
+    const readMeal = AGENT_TOOL_DEFINITIONS.find(
+      (tool) => tool.name === "read_meal_foods",
+    );
+    expect(readMeal).toBeDefined();
+    const result = validateToolInput(readMeal!.inputSchema, {
+      date: "2026-04-11",
+      meal: "Picoteo",
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]).toContain('El campo "meal" debe ser uno de estos valores');
   });
 
   it("nunca lanza con schemas del catálogo y argumentos arbitrarios (property-based)", () => {
