@@ -32,6 +32,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify committed Production version
+        id: production_version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --unshallow origin "$GITHUB_REF"
+          PUBLISHED_VERSIONS="$(
+            gh api --paginate --slurp "/repos/${GITHUB_REPOSITORY}/releases?per_page=100" |
+              jq -r '(add // []) | [.[] | select(.draft == false and .prerelease == false) | .tag_name] | join(",")'
+          )"
+          npm run check:production-version -- \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --published-versions "$PUBLISHED_VERSIONS"
+
       - name: Verify generated policy artifacts and workflows
         id: policy
         run: npm run check:prompt-policy
@@ -98,6 +117,7 @@ jobs:
             echo "| Control | Result |"
             echo "| --- | --- |"
             echo "| Generated policy, CODEOWNERS and workflows | ${{ steps.policy.outcome }} |"
+            echo "| Committed Production version | ${{ steps.production_version.outcome }} |"
             echo "| Unit, contract and property tests | ${{ steps.policy_tests.outcome }} |"
             echo "| Publishable Android permissions | ${{ steps.android_permissions.outcome }} |"
             echo "| Android permission policy tests | ${{ steps.android_permissions_tests.outcome }} |"

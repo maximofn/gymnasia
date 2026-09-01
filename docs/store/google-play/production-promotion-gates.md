@@ -2,10 +2,15 @@
 
 ## Contrato de Production
 
-Una publicación de Gymnasia solo es válida si conserva dos evidencias JSON:
+Una publicación de Gymnasia solo es válida si conserva una transacción y dos
+evidencias JSON:
+
+- `AndroidReleaseTransactionV1`: fija versión, tag, commit fuente, perfil, cada
+  build ID de EAS y todas las transiciones hasta la validación o sustitución;
 
 - `ProductionSourceEvidenceV1`: identifica el commit de `main`, los controles
-  remotos y todos los gates ejecutados sobre ese checkout exacto.
+  remotos, la versión confirmada y todos los gates ejecutados sobre ese checkout
+  exacto.
 - `ProductionArtifactEvidenceV1`: enlaza la evidencia anterior con el APK/AAB,
   su versión, firma, manifest fusionado, snapshot de política y SHA-256.
 
@@ -18,8 +23,8 @@ usuarios.
 
 | Entrada | Ref admitido | Gate | Environment / perfil | Salida | Destino |
 | --- | --- | --- | --- | --- | --- |
-| Push que afecta a la app | `refs/heads/main` | `validate-production` completo | `Production` / `production-apk` | APK + dos evidencias | GitHub Release |
-| `workflow_dispatch` | Solo `refs/heads/main` | Idéntico al push | `Production` / `production-apk` | APK + dos evidencias | GitHub Release |
+| Push que afecta a la app | `refs/heads/main` | versión confirmada + `validate-production` completo | `Production` / `production-apk` | transacción + APK + evidencias | GitHub Release |
+| `workflow_dispatch` | Solo `refs/heads/main` | reconciliar la transacción más antigua | `Production` / `production-apk` | reutiliza el build ID; no recompila por cancelación | GitHub Release |
 | Build local para Play | HEAD limpio y alcanzable desde `origin/main` | `verify:production-source` completo | `production` | AAB + dos evidencias | Prueba interna |
 | Promoción en Play | La release ya validada | Comparar `versionCode`, SHA-256 y certificado | Sin nueva build | El mismo AAB | Interna → cerrada |
 | Rollout público | La release cerrada ya validada | Evidencia de pruebas y autorización | Sin nueva build | El mismo AAB | España → más territorios |
@@ -84,6 +89,27 @@ La validación sucede en un job sin secrets ni environment. Solo después puede
 comenzar el job `build-and-release`, solicitar aprobación de `Production` y leer
 `EXPO_TOKEN`.
 
+## Versiones y transacciones duraderas
+
+Todo cambio que entre en el filtro de compilación de `apps/mobile/**` debe llevar
+ya confirmada su versión en `apps/mobile/app.json`. `prompt-policy` toma el mayor
+valor entre la versión de la base y las releases publicadas, aplica el incremento
+Conventional Commits del PR y exige una coincidencia exacta. El workflow de
+release no modifica Git ni empuja commits.
+
+La cola `android-production-release` no cancela ejecuciones anteriores. Antes de
+consumir cuota, el workflow crea un draft de GitHub y guarda la transacción, la
+evidencia fuente y los cuatro módulos del snapshot de política. EAS se invoca con
+`--no-wait`; el build ID se adjunta inmediatamente al draft. Si GitHub se cancela
+o agota su espera, `operation=reconcile` recupera ese ID, consulta `build:view` y
+continúa con el mismo artefacto.
+
+Un estado terminal `ERRORED` o `CANCELED` de EAS deja la versión bloqueada. Solo
+`retry-failed` o `supersede-failed`, sobre la versión pendiente más antigua y con
+un motivo no vacío, puede avanzar. Las versiones posteriores se procesan en
+orden semántico y la siguiente se encola únicamente después de publicar o
+sustituir la anterior.
+
 ## Build local reproducible para Google Play
 
 Requisitos: checkout limpio, Node 22, dependencias instaladas, Android SDK/JDK,
@@ -105,11 +131,12 @@ npm exec --yes --package eas-cli@latest -- eas build \
   --platform android \
   --profile production \
   --local \
-  --output /tmp/gymnasia-production.aab
+  --output /tmp/gymnasia.aab
 cd ../..
 
 npm run verify:production-artifact -- \
-  --artifact /tmp/gymnasia-production.aab \
+  --artifact /tmp/gymnasia.aab \
+  --published-filename gymnasia.aab \
   --kind aab \
   --source-evidence /tmp/gymnasia-production-source.json \
   --snapshot apps/mobile/agent/generated/policySnapshot.generated.json \

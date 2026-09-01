@@ -133,6 +133,8 @@ async function main() {
   const options = parseArguments(process.argv.slice(2));
   const policy = loadReleasePolicy();
   const checkedOutSha = stdout("git", ["rev-parse", "HEAD"]);
+  const expectedCommit = options["expected-commit"] ?? process.env.GITHUB_SHA ?? "";
+  const appVersion = JSON.parse(stdout("git", ["show", `${checkedOutSha}:apps/mobile/app.json`])).expo.version;
   const originRepository = repositoryFromRemote(stdout("git", ["remote", "get-url", "origin"]));
   const status = stdout("git", ["status", "--porcelain", "--untracked-files=all"]);
   run("git", ["fetch", "--quiet", "--no-tags", "origin", policy.productionBranch]);
@@ -147,13 +149,19 @@ async function main() {
     profile: options.profile,
     artifactType: options["artifact-type"],
     ref: process.env.GITHUB_REF ?? "",
-    headSha: process.env.GITHUB_SHA ?? "",
+    headSha: expectedCommit,
     checkedOutSha,
     originRepository,
     clean: status === "",
     reachableFromProduction: reachability.status === 0,
     ...remote,
   });
+  if (options["expected-version"] && options["expected-version"] !== appVersion) {
+    evaluated.violations.push({
+      code: "source-version",
+      message: `La transacción exige ${options["expected-version"]}, pero la fuente declara ${appVersion}.`,
+    });
+  }
 
   const evidence = {
     schemaVersion: 1,
@@ -163,6 +171,7 @@ async function main() {
     ref: process.env.GITHUB_REF || `refs/remotes/origin/${policy.productionBranch}`,
     profile: options.profile,
     artifactType: options["artifact-type"],
+    appVersion,
     auditedAt: new Date().toISOString(),
     source: {
       clean: status === "",

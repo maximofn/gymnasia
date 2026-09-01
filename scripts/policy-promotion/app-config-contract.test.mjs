@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
@@ -24,7 +25,7 @@ function expoConfig(environment, developmentProviderMode) {
 }
 
 test("Expo publica las tres variantes exactas y aisladas", () => {
-  const currentAppVersion = "1.31.1";
+  const currentAppVersion = JSON.parse(readFileSync(join(mobileRoot, "app.json"), "utf8")).expo.version;
   const expected = [
     ["development", "Gymnasia Dev", "com.maximofn.gymnasia.dev", "Local", "gymnasia.development", "fake"],
     ["staging", "Gymnasia Staging", "com.maximofn.gymnasia.staging", "Staging", "gymnasia.staging", "byok"],

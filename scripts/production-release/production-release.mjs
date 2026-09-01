@@ -11,6 +11,13 @@ export const releasePolicyPath = join(here, "policy.json");
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 const GIT_COMMIT_PATTERN = /^[a-f0-9]{40}$/;
 const POLICY_CANDIDATE_PATTERN = /^policy-v\d{4}\.\d{2}\.\d+-[a-f0-9]{12}$/;
+const SEMVER_PATTERN = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
+
+export const PRODUCTION_BUILD_PATHS = Object.freeze({
+  root: "apps/mobile/",
+  excludedDirectories: ["apps/mobile/scripts/", "apps/mobile/public/"],
+  excludedPatterns: [/\.md$/i, /\.test\.tsx?$/i],
+});
 
 export const PRODUCTION_GATES = Object.freeze([
   ["npm", ["run", "check:prompt-policy"]],
@@ -59,6 +66,86 @@ export function commandLabel(command, args, environment = {}) {
 export function productionGateLabels() {
   return PRODUCTION_GATES.map(([command, args, environment = {}]) =>
     commandLabel(command, args, environment));
+}
+
+export function parseSemver(value) {
+  const match = String(value ?? "").match(SEMVER_PATTERN);
+  if (!match) throw new Error(`Versión semántica inválida: ${value || "(vacía)"}.`);
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3]),
+  };
+}
+
+export function compareSemver(left, right) {
+  const a = parseSemver(left);
+  const b = parseSemver(right);
+  return a.major - b.major || a.minor - b.minor || a.patch - b.patch;
+}
+
+export function latestSemver(values, fallback = "0.0.0") {
+  return values
+    .map((value) => String(value).replace(/^v/, ""))
+    .filter((value) => SEMVER_PATTERN.test(value))
+    .reduce((latest, value) => compareSemver(value, latest) > 0 ? value : latest, fallback);
+}
+
+export function conventionalVersionBump(subjects) {
+  let bump = "patch";
+  for (const subject of subjects) {
+    if (/BREAKING[ -]CHANGE/i.test(subject) || /^[a-z]+(?:\([^)]*\))?!:/i.test(subject)) {
+      return "major";
+    }
+    if (/^feat(?:\([^)]*\))?:/i.test(subject)) bump = "minor";
+  }
+  return bump;
+}
+
+export function incrementSemver(version, bump) {
+  const parsed = parseSemver(version);
+  if (bump === "major") return `${parsed.major + 1}.0.0`;
+  if (bump === "minor") return `${parsed.major}.${parsed.minor + 1}.0`;
+  if (bump === "patch") return `${parsed.major}.${parsed.minor}.${parsed.patch + 1}`;
+  throw new Error(`Incremento semántico inválido: ${bump}.`);
+}
+
+export function isProductionBuildPath(path) {
+  const normalized = String(path ?? "").replaceAll("\\", "/");
+  return normalized.startsWith(PRODUCTION_BUILD_PATHS.root)
+    && !PRODUCTION_BUILD_PATHS.excludedDirectories.some((directory) => normalized.startsWith(directory))
+    && !PRODUCTION_BUILD_PATHS.excludedPatterns.some((pattern) => pattern.test(normalized));
+}
+
+export function evaluateProductionVersionChange({
+  baseVersion,
+  latestPublishedVersion,
+  headVersion,
+  changedFiles,
+  subjects,
+}) {
+  const productionFiles = changedFiles.filter(isProductionBuildPath);
+  if (productionFiles.length === 0) {
+    return { applies: false, productionFiles, violations: [] };
+  }
+  const baseline = latestSemver([baseVersion, latestPublishedVersion]);
+  const bump = conventionalVersionBump(subjects);
+  const expectedVersion = incrementSemver(baseline, bump);
+  const violations = [];
+  if (headVersion !== expectedVersion) {
+    violations.push({
+      code: "production-version",
+      message: `apps/mobile/app.json debe declarar ${expectedVersion}; declara ${headVersion || "(vacío)"}.`,
+    });
+  }
+  return {
+    applies: true,
+    productionFiles,
+    baseline,
+    bump,
+    expectedVersion,
+    violations,
+  };
 }
 
 function activeRulesetDetails(rulesets, expectedName) {
@@ -110,7 +197,7 @@ export function evaluateSourceCandidate({
     violations.push({ code: "checkout-sha", message: "No se pudo resolver el SHA exacto del checkout." });
   }
   if (headSha && headSha !== checkedOutSha) {
-    violations.push({ code: "sha", message: "GITHUB_SHA no coincide con el checkout validado." });
+    violations.push({ code: "sha", message: "El SHA esperado no coincide con el checkout validado." });
   }
   if (originRepository !== policy.repository) {
     violations.push({
@@ -227,6 +314,9 @@ export function evaluateArtifactCandidate({
   archiveListing,
   size,
   sha256,
+  httpMimeType,
+  detectedMimeType,
+  publishedFilename,
 }) {
   const violations = [];
   const expectedKind = policy.profiles?.[sourceEvidence?.profile];
@@ -274,11 +364,31 @@ export function evaluateArtifactCandidate({
   if (expectedKind !== kind || sourceEvidence?.artifactType !== kind) {
     violations.push({ code: "artifact-kind", message: "El artefacto no corresponde al perfil validado." });
   }
+  const artifactPolicy = policy.artifacts?.[kind];
   if (!Number.isSafeInteger(size) || size <= 0) {
     violations.push({ code: "artifact-empty", message: "El artefacto está vacío." });
+  } else if (!artifactPolicy
+    || size < artifactPolicy.minBytes
+    || size > artifactPolicy.maxBytes) {
+    violations.push({
+      code: "artifact-size",
+      message: `El artefacto mide ${size} bytes y queda fuera de los límites aprobados.`,
+    });
   }
   if (!SHA256_PATTERN.test(String(sha256 ?? ""))) {
     violations.push({ code: "artifact-sha", message: "No se pudo calcular un SHA-256 válido." });
+  }
+  if (httpMimeType && !artifactPolicy?.allowedHttpMimeTypes?.includes(httpMimeType)) {
+    violations.push({ code: "http-mime", message: `MIME HTTP inesperado: ${httpMimeType || "(vacío)"}.` });
+  }
+  if (!artifactPolicy?.allowedDetectedMimeTypes?.includes(detectedMimeType)) {
+    violations.push({ code: "detected-mime", message: `MIME local inesperado: ${detectedMimeType || "(vacío)"}.` });
+  }
+  if (publishedFilename !== artifactPolicy?.publishedFilename) {
+    violations.push({
+      code: "published-filename",
+      message: `El nombre publicado debe ser ${artifactPolicy?.publishedFilename}.`,
+    });
   }
 
   const looksAab = /BUNDLE-METADATA\/|base\/manifest\/AndroidManifest\.xml/.test(archiveListing);
@@ -309,6 +419,12 @@ export function evaluateArtifactCandidate({
   }
   if (appConfig?.version !== manifest.versionName) {
     violations.push({ code: "version-drift", message: "app.config y AndroidManifest discrepan en la versión." });
+  }
+  if (sourceEvidence?.appVersion !== manifest.versionName) {
+    violations.push({
+      code: "source-version-drift",
+      message: "La versión confirmada en la fuente no coincide con AndroidManifest.",
+    });
   }
 
   if (snapshot?.schemaVersion !== 2

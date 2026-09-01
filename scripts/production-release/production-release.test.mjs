@@ -5,11 +5,17 @@ import fc from "fast-check";
 import {
   PRODUCTION_GATES,
   evaluateArtifactCandidate,
+  evaluateProductionVersionChange,
   evaluateSourceCandidate,
   extractCertificateDigest,
   loadReleasePolicy,
   normalizeCertificateDigest,
   parseManifestXml,
+  compareSemver,
+  conventionalVersionBump,
+  incrementSemver,
+  isProductionBuildPath,
+  latestSemver,
   productionGateLabels,
 } from "./production-release.mjs";
 
@@ -172,6 +178,49 @@ test("la política fija un certificado SHA-256 y solo los dos perfiles Productio
   assert.match(normalizeCertificateDigest(policy.android.uploadCertificateSha256), /^[A-F0-9]{64}$/);
 });
 
+test("calcula la versión desde el máximo entre app y releases publicados", () => {
+  const result = evaluateProductionVersionChange({
+    baseVersion: "1.31.1",
+    latestPublishedVersion: "1.31.2",
+    headVersion: "1.31.3",
+    changedFiles: ["apps/mobile/App.tsx"],
+    subjects: ["fix(release): persist transaction"],
+  });
+  assert.equal(result.baseline, "1.31.2");
+  assert.equal(result.expectedVersion, "1.31.3");
+  assert.deepEqual(result.violations, []);
+});
+
+test("clasifica conventional commits y excluye rutas que no generan binario", () => {
+  assert.equal(conventionalVersionBump(["docs: explain", "feat(mobile): add flow"]), "minor");
+  assert.equal(conventionalVersionBump(["feat!: replace format"]), "major");
+  assert.equal(incrementSemver("1.2.3", "patch"), "1.2.4");
+  assert.equal(compareSemver("2.0.0", "1.99.99") > 0, true);
+  assert.equal(latestSemver(["v1.2.3", "garbage", "1.4.0"]), "1.4.0");
+  assert.equal(isProductionBuildPath("apps/mobile/App.tsx"), true);
+  assert.equal(isProductionBuildPath("apps/mobile/public/privacy/index.html"), false);
+  assert.equal(isProductionBuildPath("apps/mobile/foo.test.ts"), false);
+});
+
+test("propiedad: cualquier versión distinta de la esperada se rechaza", () => {
+  fc.assert(fc.property(
+    fc.integer({ min: 0, max: 1000 }),
+    (patch) => {
+      const expected = `4.2.${patch + 1}`;
+      const wrong = `4.2.${patch + 2}`;
+      const result = evaluateProductionVersionChange({
+        baseVersion: `4.2.${patch}`,
+        latestPublishedVersion: `4.2.${patch}`,
+        headVersion: wrong,
+        changedFiles: ["apps/mobile/App.tsx"],
+        subjects: ["fix(mobile): regression"],
+      });
+      assert.equal(result.expectedVersion, expected);
+      assert.ok(result.violations.some((violation) => violation.code === "production-version"));
+    },
+  ));
+});
+
 const validManifest = {
   packageName: policy.android.packageName,
   versionCode: "17",
@@ -209,6 +258,7 @@ const validSourceEvidence = {
   ref: "refs/heads/main",
   profile: "production",
   artifactType: "aab",
+  appVersion: validManifest.versionName,
   source: {
     clean: true,
     cleanAfterGates: true,
@@ -242,8 +292,11 @@ function artifactInput(overrides = {}) {
     snapshot: validSnapshot,
     certificateSha256: policy.android.uploadCertificateSha256,
     archiveListing: "BUNDLE-METADATA/ base/manifest/AndroidManifest.xml",
-    size: 1024,
+    size: policy.artifacts.aab.minBytes,
     sha256: "e".repeat(64),
+    httpMimeType: "application/zip",
+    detectedMimeType: "application/zip",
+    publishedFilename: "gymnasia.aab",
     ...overrides,
   };
 }
@@ -260,6 +313,25 @@ test("rechaza AAB vacío, permiso prohibido, snapshot ausente y firma distinta",
     certificateSha256: "00".repeat(32),
   })).violations;
   for (const code of ["artifact-empty", "snapshot", "permission", "certificate"]) {
+    assert.ok(violations.some((violation) => violation.code === code), code);
+  }
+});
+
+test("rechaza límites, MIME, nombre publicado y versión fuente incoherentes", () => {
+  const violations = evaluateArtifactCandidate(artifactInput({
+    size: policy.artifacts.aab.minBytes - 1,
+    httpMimeType: "text/html",
+    detectedMimeType: "text/plain",
+    publishedFilename: "gymnasia.apk",
+    sourceEvidence: { ...validSourceEvidence, appVersion: "9.9.9" },
+  })).violations;
+  for (const code of [
+    "artifact-size",
+    "http-mime",
+    "detected-mime",
+    "published-filename",
+    "source-version-drift",
+  ]) {
     assert.ok(violations.some((violation) => violation.code === code), code);
   }
 });

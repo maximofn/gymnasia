@@ -108,14 +108,15 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
   assert.equal(eas.build.production.env.APP_ENV, "production");
   assert.equal(eas.build["production-apk"].extends, "production");
   assert.equal(eas.build["production-apk"].android.buildType, "apk");
-  assert.match(buildWorkflow, /PROFILE="production-apk"/);
+  assert.match(buildWorkflow, /--profile production-apk/);
   assert.match(buildWorkflow, /environment: Production/);
-  assert.match(buildWorkflow, /Prepare integrated snapshot from the Production policy channel/);
+  assert.match(buildWorkflow, /Prepare new immutable policy inputs/);
   assert.match(buildWorkflow, /--environment production/);
   assert.doesNotMatch(buildWorkflow, /--environment staging/);
   assert.doesNotMatch(buildWorkflow, /inputs\.profile/);
   assert.match(buildWorkflow, /^  validate-production:$/m);
-  assert.match(buildWorkflow, /^  build-and-release:\n    needs: validate-production$/m);
+  assert.match(buildWorkflow, /^  select-transaction:$/m);
+  assert.match(buildWorkflow, /^  build-and-release:\n    needs: \[select-transaction, validate-production\]$/m);
   const validationJob = buildWorkflow.slice(
     buildWorkflow.indexOf("  validate-production:"),
     buildWorkflow.indexOf("  build-and-release:"),
@@ -125,11 +126,21 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
   assert.match(validationJob, /verify:production-source/);
   assert.match(validationJob, /--profile production-apk/);
   assert.match(validationJob, /--artifact-type apk/);
+  assert.match(validationJob, /--expected-version/);
   assert.match(buildWorkflow, /verify:production-artifact/);
   assert.match(buildWorkflow, /production-source-evidence\.json/);
   assert.match(buildWorkflow, /production-artifact-evidence\.json/);
-  assert.match(buildWorkflow, /Create draft APK release/);
-  assert.match(buildWorkflow, /Attach APK and evidence before publishing release/);
+  assert.match(buildWorkflow, /Create durable draft before EAS/);
+  assert.match(buildWorkflow, /Attach verified APK and immutable evidence/);
+  assert.match(buildWorkflow, /android-production-release/);
+  assert.match(buildWorkflow, /cancel-in-progress: false/);
+  assert.match(buildWorkflow, /release-transaction\.mjs select-remote/);
+  assert.match(buildWorkflow, /--no-wait --json/);
+  assert.match(buildWorkflow, /eas build:view/);
+  assert.match(buildWorkflow, /Download APK to quarantine path/);
+  assert.match(buildWorkflow, /--published-filename gymnasia\.apk/);
+  assert.doesNotMatch(buildWorkflow, /Update version in app\.json/);
+  assert.doesNotMatch(buildWorkflow, /Compute next version from conventional commits/);
   const snapshotScript = readFileSync(
     new URL("./prepare-policy-snapshot.mjs", import.meta.url),
     "utf8",

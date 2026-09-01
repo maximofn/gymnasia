@@ -148,8 +148,47 @@ Requisitos adicionales para build local:
 ## Production: flujo obligatorio y fail-closed
 
 Una build `production` o `production-apk` no puede usar el flujo abreviado de
-preview. Antes de consumir EAS debe ejecutar el verificador canónico del SHA y,
-después de compilar, el verificador del artefacto. Ambos generan evidencia JSON.
+preview. La versión visible se calcula y confirma en el PR; el runner no puede
+reescribirla. Antes de abrir el PR que cambia código empaquetado ejecuta:
+
+```bash
+npm run prepare:production-version -- \
+  --base origin/main \
+  --subject "fix(mobile): descripcion del cambio"
+```
+
+`prompt-policy` vuelve a calcular el incremento desde el máximo entre la versión
+base y las releases publicadas. Si `apps/mobile/app.json` no contiene exactamente
+ese valor, el PR no puede fusionarse.
+
+La release APK descargable solo se lanza mediante
+`.github/workflows/build-apk.yml`. El workflow crea primero un draft duradero con
+`android-release-transaction.json`, la evidencia fuente y el bundle de política;
+después envía un build no bloqueante a EAS y persiste inmediatamente su build ID.
+Una cancelación o timeout de GitHub no autoriza otra compilación: la siguiente
+ejecución consulta y reutiliza ese mismo build.
+
+Operaciones manuales:
+
+```bash
+# Continuar una transacción activa sin consumir otra build
+gh workflow run build-apk.yml --ref main -f operation=reconcile
+
+# Reintentar una build que EAS marcó terminalmente como fallida
+gh workflow run build-apk.yml --ref main \
+  -f operation=retry-failed \
+  -f target_version=1.31.3 \
+  -f reason="incidencia confirmada y corregida en EAS"
+
+# Sustituir una versión fallida para desbloquear la siguiente
+gh workflow run build-apk.yml --ref main \
+  -f operation=supersede-failed \
+  -f target_version=1.31.3 \
+  -f reason="la fuente necesita una nueva version"
+```
+
+Los reintentos y sustituciones solo aceptan la transacción semánticamente más
+antigua y exigen motivo. No borres un draft para saltarte ese orden.
 
 Para un AAB de Google Play, sigue exactamente
 `docs/store/google-play/production-promotion-gates.md`:
@@ -158,15 +197,18 @@ Para un AAB de Google Play, sigue exactamente
    --output /tmp/gymnasia-production-source.json`;
 2. `npm run prepare:policy-snapshot -- --environment production`;
 3. compilar desde `apps/mobile` con `--profile production`;
-4. ejecutar `npm run verify:production-artifact` con el AAB, la evidencia fuente,
-   el snapshot generado y `bundletool` 1.18.3;
+4. ejecutar `npm run verify:production-artifact` con el AAB llamado
+   `gymnasia.aab`, la evidencia fuente, el snapshot generado y `bundletool`
+   1.18.3;
 5. restaurar siempre los módulos generados temporales;
 6. subir a Play únicamente si ambas evidencias declaran `result: passed`.
 
 El verificador rechaza ramas distintas de `main`, checkouts sucios o no
 alcanzables, controles remotos degradados, perfiles cruzados, firma distinta,
-permisos prohibidos, versión incoherente y snapshot ausente. No llames a EAS
-directamente para Production saltándote este contrato.
+permisos prohibidos, versión incoherente, tamaño o MIME inesperados y snapshot
+ausente. El APK se descarga primero a una ruta de cuarentena y solo adquiere el
+nombre `gymnasia.apk` después de validar estructura, manifest, firma y SHA-256.
+No llames a EAS directamente para Production saltándote este contrato.
 
 ## Problemas frecuentes
 

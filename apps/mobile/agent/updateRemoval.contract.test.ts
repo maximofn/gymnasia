@@ -51,9 +51,9 @@ describe("retirada completa del actualizador de APK", () => {
   });
 
   it("mantiene la publicación manual de Production separada del cliente", () => {
-    expect(buildWorkflow).toContain('PROFILE="production-apk"');
+    expect(buildWorkflow).toContain("--profile production-apk");
     expect(buildWorkflow).not.toContain("Upload internal Staging APK");
-    expect(buildWorkflow).toContain("Create draft APK release");
+    expect(buildWorkflow).toContain("Create durable draft before EAS");
     expect(buildWorkflow).toContain("Publish immutable APK release");
   });
 });
