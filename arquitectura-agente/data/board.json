@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-08-31",
+    "updated": "2026-09-01",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -1701,7 +1701,7 @@
         {
           "id": "GYM-156",
           "title": "Corregir la detección de actualizaciones APK y limitarla a Android",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Hacer fiable el control de versiones, errores, reintentos y plataforma del actualizador integrado.",
           "dependsOn": [],
           "related": [
@@ -1712,7 +1712,7 @@
         {
           "id": "GYM-157",
           "title": "Verificar integridad y procedencia del APK antes de actualizar",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Validar firma, checksum, paquete y perfil EAS del APK publicado antes de ofrecérselo al usuario.",
           "dependsOn": [
             "GYM-158"
@@ -1725,7 +1725,7 @@
         {
           "id": "GYM-158",
           "title": "Hacer transaccional el pipeline de publicación Android",
-          "state": "todo",
+          "state": "done",
           "summary": "Evitar releases huérfanas y validar URL, tipo y versión antes de publicar el artefacto Android.",
           "dependsOn": [],
           "related": [
