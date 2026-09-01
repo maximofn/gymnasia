@@ -1842,7 +1842,7 @@
         {
           "id": "GYM-167",
           "title": "Validar presupuestos de macronutrientes y calorías",
-          "state": "todo",
+          "state": "done",
           "summary": "Impedir objetivos de dieta imposibles, remanentes negativos y valores nutricionales no finitos.",
           "dependsOn": [],
           "related": [
