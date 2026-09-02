@@ -2040,7 +2040,7 @@
         {
           "id": "GYM-182",
           "title": "Validar esquemas, agregados y recursos de catálogos en CI",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Añadir un generador y validador determinista para paridad, IDs, imágenes y dimensiones de todos los catálogos.",
           "dependsOn": [],
           "related": [
