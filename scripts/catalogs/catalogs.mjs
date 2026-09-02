@@ -1,0 +1,522 @@
+import { randomUUID } from "node:crypto";
+import * as fs from "node:fs/promises";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import Ajv from "ajv";
+import sharp from "sharp";
+
+const moduleDirectory = dirname(fileURLToPath(import.meta.url));
+
+// El check puede ejecutarse varias veces sobre archivos sustituidos atómicamente
+// en el mismo proceso (tests, migraciones y modo write). La caché de libvips no
+// debe ocultar los bytes nuevos bajo una ruta ya validada.
+sharp.cache(false);
+
+export const repositoryRoot = resolve(moduleDirectory, "../..");
+
+const schemaDirectory = join(moduleDirectory, "schemas");
+const ignoredJsonFiles = new Set(["all.json", "index.json", "package.json"]);
+const nutritionDomains = new Set(["alimentos", "productos_comerciales", "recetas"]);
+
+export const CATALOG_DOMAINS = Object.freeze({
+  alimentos: {
+    directory: "alimentos",
+    schema: "alimento.schema.json",
+    kind: "nutrition",
+    index: "food",
+  },
+  productos_comerciales: {
+    directory: "productos_comerciales",
+    schema: "producto-comercial.schema.json",
+    kind: "nutrition",
+    index: null,
+  },
+  recetas: {
+    directory: "recetas",
+    schema: "receta.schema.json",
+    kind: "nutrition",
+    index: null,
+  },
+  ejercicios: {
+    directory: "ejercicios",
+    schema: "ejercicio.schema.json",
+    kind: "exercise",
+    index: "exercise",
+  },
+});
+
+function compareNames(left, right) {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+}
+
+function toPosixPath(value) {
+  return value.split(sep).join("/");
+}
+
+function describePath(root, path) {
+  return toPosixPath(relative(root, path));
+}
+
+function makeViolation(code, path, message) {
+  return { code, path, message };
+}
+
+function sortViolations(violations) {
+  return violations.sort((left, right) => (
+    compareNames(left.path, right.path)
+    || compareNames(left.code, right.code)
+    || compareNames(left.message, right.message)
+  ));
+}
+
+async function readJson(path) {
+  const source = await fs.readFile(path, "utf8");
+  return { source, value: JSON.parse(source) };
+}
+
+async function loadSchemaValidators() {
+  const schemaNames = [
+    "food-entry.schema.json",
+    "alimento.schema.json",
+    "producto-comercial.schema.json",
+    "receta.schema.json",
+    "ejercicio.schema.json",
+  ];
+  const schemas = [];
+  for (const schemaName of schemaNames) {
+    schemas.push((await readJson(join(schemaDirectory, schemaName))).value);
+  }
+  const ajv = new Ajv({ allErrors: true, strict: true, strictNumbers: true });
+  for (const schema of schemas) ajv.addSchema(schema);
+
+  return Object.fromEntries(
+    Object.entries(CATALOG_DOMAINS).map(([domain, definition]) => {
+      const schema = schemas.find((candidate) => candidate.$id.endsWith(`/${definition.schema}`));
+      const validator = schema ? ajv.getSchema(schema.$id) : null;
+      if (!validator) throw new Error(`No se pudo compilar el schema de ${domain}.`);
+      return [domain, validator];
+    }),
+  );
+}
+
+function schemaViolations(root, path, validator, value) {
+  if (validator(value)) return [];
+  const displayPath = describePath(root, path);
+  return (validator.errors ?? []).map((error) => makeViolation(
+    "SCHEMA_INVALID",
+    `${displayPath}${error.instancePath || ""}`,
+    error.message ?? "no cumple el schema",
+  ));
+}
+
+export function resolveSafeCatalogPath(catalogRoot, relativePath) {
+  if (
+    typeof relativePath !== "string"
+    || relativePath.length === 0
+    || relativePath.includes("\\")
+    || isAbsolute(relativePath)
+  ) {
+    return null;
+  }
+  const segments = relativePath.split("/");
+  if (segments.some((segment) => !segment || segment === "." || segment === "..")) return null;
+
+  const base = resolve(catalogRoot);
+  const candidate = resolve(base, ...segments);
+  if (candidate === base || !candidate.startsWith(`${base}${sep}`)) return null;
+  return candidate;
+}
+
+async function resolveExactPath(catalogRoot, relativePath) {
+  const safePath = resolveSafeCatalogPath(catalogRoot, relativePath);
+  if (!safePath) return { status: "unsafe", path: null };
+
+  let current = resolve(catalogRoot);
+  const segments = relativePath.split("/");
+  for (const [index, segment] of segments.entries()) {
+    let entries;
+    try {
+      entries = await fs.readdir(current, { withFileTypes: true });
+    } catch (error) {
+      if (error?.code === "ENOENT") return { status: "missing", path: safePath };
+      throw error;
+    }
+    const exact = entries.find((entry) => entry.name === segment);
+    if (!exact) {
+      const insensitive = entries.find((entry) => entry.name.toLowerCase() === segment.toLowerCase());
+      return { status: insensitive ? "case" : "missing", path: safePath };
+    }
+    if (index < segments.length - 1 && !exact.isDirectory()) {
+      return { status: "missing", path: safePath };
+    }
+    if (index === segments.length - 1 && !exact.isFile()) {
+      return { status: "missing", path: safePath };
+    }
+    current = join(current, exact.name);
+  }
+  return { status: "ok", path: current };
+}
+
+async function listLeafFiles(catalogRoot) {
+  const entries = await fs.readdir(catalogRoot, { withFileTypes: true });
+  return entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".json") && !ignoredJsonFiles.has(entry.name))
+    .map((entry) => entry.name)
+    .sort(compareNames);
+}
+
+function addReference(references, relativePath, sourcePath) {
+  const existing = references.get(relativePath) ?? [];
+  existing.push(sourcePath);
+  references.set(relativePath, existing);
+}
+
+async function loadDomain(root, domain, definition, validator) {
+  const catalogRoot = join(root, definition.directory);
+  const violations = [];
+  const rows = [];
+  const references = new Map();
+  let leafNames = [];
+
+  try {
+    leafNames = await listLeafFiles(catalogRoot);
+  } catch (error) {
+    violations.push(makeViolation(
+      "CATALOG_MISSING",
+      definition.directory,
+      error?.code === "ENOENT" ? "no existe el directorio del catálogo" : `${error}`,
+    ));
+    return { domain, definition, catalogRoot, rows, references, violations, artifacts: [] };
+  }
+
+  const idOwners = new Map();
+  for (const filename of leafNames) {
+    const path = join(catalogRoot, filename);
+    let value;
+    try {
+      value = (await readJson(path)).value;
+    } catch (error) {
+      violations.push(makeViolation("JSON_INVALID", describePath(root, path), `${error.message}`));
+      continue;
+    }
+
+    const row = { filename, path, stem: filename.slice(0, -".json".length), value };
+    rows.push(row);
+    violations.push(...schemaViolations(root, path, validator, value));
+
+    if (typeof value?.id === "string") {
+      if (row.stem !== value.id) {
+        violations.push(makeViolation(
+          "FILENAME_ID_MISMATCH",
+          describePath(root, path),
+          `el fichero se llama ${row.stem}, pero declara el ID ${value.id}`,
+        ));
+      }
+      const previous = idOwners.get(value.id);
+      if (previous) {
+        violations.push(makeViolation(
+          "DUPLICATE_ID",
+          describePath(root, path),
+          `el ID ${value.id} ya aparece en ${previous}`,
+        ));
+      } else {
+        idOwners.set(value.id, describePath(root, path));
+      }
+    }
+
+    if (definition.kind === "exercise" && typeof value?.id === "string") {
+      for (const [field, gender] of [["image_male", "male"], ["image_female", "female"]]) {
+        const imagePath = value[field];
+        if (typeof imagePath !== "string") continue;
+        const expected = `images/${value.id}-${gender}.webp`;
+        if (imagePath !== expected) {
+          violations.push(makeViolation(
+            "IMAGE_NAME_MISMATCH",
+            `${describePath(root, path)}/${field}`,
+            `debe apuntar exactamente a ${expected}`,
+          ));
+        }
+        addReference(references, imagePath, describePath(root, path));
+      }
+    } else if (definition.kind === "nutrition" && typeof value?.image === "string") {
+      addReference(references, `images/${value.image}`, describePath(root, path));
+    }
+  }
+
+  const artifacts = [{
+    domain,
+    path: join(catalogRoot, "all.json"),
+    contents: `${JSON.stringify(rows.map((row) => row.value), null, 2)}\n`,
+  }];
+  if (definition.index === "food") {
+    artifacts.push({
+      domain,
+      path: join(catalogRoot, "index.json"),
+      contents: `${JSON.stringify(rows.map((row) => ({ id: row.stem, name: row.value?.name })), null, 2)}\n`,
+    });
+  } else if (definition.index === "exercise") {
+    artifacts.push({
+      domain,
+      path: join(catalogRoot, "index.json"),
+      contents: `${JSON.stringify(rows.map((row) => row.stem))}\n`,
+    });
+  }
+
+  return { domain, definition, catalogRoot, rows, references, violations, artifacts };
+}
+
+async function mapWithConcurrency(items, concurrency, operation) {
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while (cursor < items.length) {
+      const index = cursor;
+      cursor += 1;
+      await operation(items[index], index);
+    }
+  });
+  await Promise.all(workers);
+}
+
+async function validateDecodedImage(root, domainResult, relativePath, path) {
+  const violations = [];
+  const displayPath = describePath(root, path);
+  let metadata;
+  try {
+    metadata = await sharp(path, { failOn: "error" }).metadata();
+    await sharp(path, { failOn: "error" }).raw().toBuffer();
+  } catch (error) {
+    return [makeViolation("IMAGE_DECODE_FAILED", displayPath, `${error.message}`)];
+  }
+
+  if (metadata.format !== "webp") {
+    violations.push(makeViolation(
+      "IMAGE_MIME_MISMATCH",
+      displayPath,
+      `la extensión exige WebP, pero los bytes son ${metadata.format ?? "desconocidos"}`,
+    ));
+  }
+  const width = metadata.width;
+  const height = metadata.height;
+  if (!Number.isInteger(width) || width <= 0 || !Number.isInteger(height) || height <= 0) {
+    violations.push(makeViolation("IMAGE_DIMENSIONS_INVALID", displayPath, "no tiene dimensiones positivas"));
+    return violations;
+  }
+
+  const validRatio = domainResult.definition.kind === "exercise"
+    ? width * 9 === height * 16
+    : width === height;
+  if (!validRatio) {
+    const expected = domainResult.definition.kind === "exercise" ? "16:9" : "1:1";
+    violations.push(makeViolation(
+      "IMAGE_ASPECT_RATIO",
+      displayPath,
+      `mide ${width}x${height}; se esperaba una proporción exacta ${expected}`,
+    ));
+  }
+
+  if (!relativePath.endsWith(".webp")) {
+    violations.push(makeViolation("IMAGE_EXTENSION_INVALID", displayPath, "la referencia debe terminar en .webp"));
+  }
+  return violations;
+}
+
+async function validateDomainImages(root, domainResult) {
+  const violations = [];
+  const referencedFiles = [];
+
+  for (const [relativePath, owners] of domainResult.references) {
+    const resolution = await resolveExactPath(domainResult.catalogRoot, relativePath);
+    if (resolution.status === "unsafe") {
+      violations.push(makeViolation(
+        "IMAGE_PATH_UNSAFE",
+        `${domainResult.definition.directory}/${relativePath}`,
+        `la referencia de ${owners.join(", ")} escapa o no usa una ruta relativa segura`,
+      ));
+    } else if (resolution.status === "case") {
+      violations.push(makeViolation(
+        "IMAGE_PATH_CASE",
+        `${domainResult.definition.directory}/${relativePath}`,
+        "las mayúsculas o minúsculas no coinciden con el recurso real",
+      ));
+    } else if (resolution.status === "missing") {
+      violations.push(makeViolation(
+        "IMAGE_MISSING",
+        `${domainResult.definition.directory}/${relativePath}`,
+        `no existe el recurso referenciado por ${owners.join(", ")}`,
+      ));
+    } else {
+      referencedFiles.push({ relativePath, path: resolution.path });
+    }
+  }
+
+  const imagesRoot = join(domainResult.catalogRoot, "images");
+  let imageEntries = [];
+  try {
+    imageEntries = await fs.readdir(imagesRoot, { withFileTypes: true });
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  for (const entry of imageEntries.sort((left, right) => compareNames(left.name, right.name))) {
+    const relativePath = `images/${entry.name}`;
+    if (!entry.isFile()) {
+      violations.push(makeViolation(
+        "IMAGE_ENTRY_INVALID",
+        `${domainResult.definition.directory}/${relativePath}`,
+        "el directorio de imágenes solo puede contener archivos",
+      ));
+    } else if (!domainResult.references.has(relativePath)) {
+      violations.push(makeViolation(
+        "IMAGE_ORPHAN",
+        `${domainResult.definition.directory}/${relativePath}`,
+        "el recurso no está referenciado por ninguna hoja",
+      ));
+    }
+  }
+
+  await mapWithConcurrency(referencedFiles, 8, async ({ relativePath, path }) => {
+    violations.push(...await validateDecodedImage(root, domainResult, relativePath, path));
+  });
+  return violations;
+}
+
+async function collectArtifactDrift(root, artifacts) {
+  const violations = [];
+  for (const artifact of artifacts) {
+    let current;
+    try {
+      current = await fs.readFile(artifact.path, "utf8");
+    } catch (error) {
+      if (error?.code === "ENOENT") {
+        violations.push(makeViolation(
+          "GENERATED_MISSING",
+          describePath(root, artifact.path),
+          "falta el artefacto generado",
+        ));
+        continue;
+      }
+      throw error;
+    }
+    if (current !== artifact.contents) {
+      violations.push(makeViolation(
+        "GENERATED_DRIFT",
+        describePath(root, artifact.path),
+        "no coincide con las hojas ordenadas; ejecuta npm run sync:catalogs",
+      ));
+    }
+  }
+  return violations;
+}
+
+export async function inspectCatalogs({ root = repositoryRoot, checkGenerated = true } = {}) {
+  const validators = await loadSchemaValidators();
+  const domains = [];
+  for (const [domain, definition] of Object.entries(CATALOG_DOMAINS)) {
+    domains.push(await loadDomain(root, domain, definition, validators[domain]));
+  }
+
+  const violations = domains.flatMap((domain) => domain.violations);
+  const nutritionOwners = new Map();
+  for (const domain of domains.filter((candidate) => nutritionDomains.has(candidate.domain))) {
+    for (const row of domain.rows) {
+      const id = row.value?.id;
+      if (typeof id !== "string") continue;
+      const owner = `${domain.definition.directory}/${row.filename}`;
+      const previous = nutritionOwners.get(id);
+      if (previous && !previous.startsWith(`${domain.definition.directory}/`)) {
+        violations.push(makeViolation(
+          "DUPLICATE_NUTRITION_ID",
+          owner,
+          `el ID ${id} ya aparece en ${previous}`,
+        ));
+      } else if (!previous) {
+        nutritionOwners.set(id, owner);
+      }
+    }
+  }
+
+  for (const domain of domains) {
+    violations.push(...await validateDomainImages(root, domain));
+  }
+  const artifacts = domains.flatMap((domain) => domain.artifacts);
+  if (checkGenerated) violations.push(...await collectArtifactDrift(root, artifacts));
+
+  return {
+    root,
+    domains,
+    artifacts,
+    violations: sortViolations(violations),
+    summary: Object.fromEntries(domains.map((domain) => [domain.domain, {
+      records: domain.rows.length,
+      images: domain.references.size,
+    }])),
+  };
+}
+
+async function readOptional(path, fileSystem) {
+  try {
+    return await fileSystem.readFile(path);
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+export async function writeCatalogArtifacts(
+  artifacts,
+  { domains = Object.keys(CATALOG_DOMAINS), fileSystem = fs } = {},
+) {
+  const selectedDomains = new Set(domains);
+  const selected = artifacts.filter((artifact) => selectedDomains.has(artifact.domain));
+  const transactionId = `${process.pid}-${randomUUID()}`;
+  const staged = [];
+  const replaced = [];
+
+  try {
+    for (const artifact of selected) {
+      await fileSystem.mkdir(dirname(artifact.path), { recursive: true });
+      const temporaryPath = `${artifact.path}.${transactionId}.tmp`;
+      const previous = await readOptional(artifact.path, fileSystem);
+      await fileSystem.writeFile(temporaryPath, artifact.contents, { encoding: "utf8", flag: "wx" });
+      staged.push({ ...artifact, temporaryPath, previous });
+    }
+    for (const artifact of staged) {
+      await fileSystem.rename(artifact.temporaryPath, artifact.path);
+      replaced.push(artifact);
+    }
+  } catch (error) {
+    const rollbackErrors = [];
+    for (const artifact of [...replaced].reverse()) {
+      try {
+        if (artifact.previous === null) {
+          await fileSystem.rm(artifact.path, { force: true });
+        } else {
+          const rollbackPath = `${artifact.path}.${transactionId}.rollback.tmp`;
+          await fileSystem.writeFile(rollbackPath, artifact.previous, { flag: "wx" });
+          await fileSystem.rename(rollbackPath, artifact.path);
+        }
+      } catch (rollbackError) {
+        rollbackErrors.push(`${artifact.path}: ${rollbackError.message}`);
+      }
+    }
+    if (rollbackErrors.length > 0) {
+      throw new AggregateError([error], `Falló la escritura y también el rollback: ${rollbackErrors.join("; ")}`);
+    }
+    throw error;
+  } finally {
+    for (const artifact of staged) {
+      await fileSystem.rm(artifact.temporaryPath, { force: true }).catch(() => {});
+      await fileSystem.rm(`${artifact.path}.${transactionId}.rollback.tmp`, { force: true }).catch(() => {});
+    }
+  }
+
+  return selected.map((artifact) => artifact.path);
+}
+
+export function formatCatalogViolations(violations) {
+  return violations.map((violation) => (
+    `[${violation.code}] ${violation.path}: ${violation.message}`
+  ));
+}

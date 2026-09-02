@@ -21,6 +21,7 @@ import os
 import sys
 import shutil
 import argparse
+import subprocess
 from pathlib import Path
 
 from gradio_client import Client
@@ -30,6 +31,7 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 ROOT_DIR = Path(__file__).parent.parent
 SCRIPT_DIR = Path(__file__).parent
+CATALOG_GENERATOR = ROOT_DIR / "scripts" / "catalogs" / "generate.mjs"
 
 MODEL = "Nano Banana 2"
 RESOLUTION = "1K"
@@ -950,6 +952,14 @@ def generate_image(client: Client, backend: str, token: str, prompt: str, output
 # Exercise generation
 # ---------------------------------------------------------------------------
 
+def sync_catalog(domain: str):
+    """Validate every catalog and rebuild one domain through the shared generator."""
+    subprocess.run(
+        ["node", str(CATALOG_GENERATOR), "--write", "--domain", domain],
+        cwd=ROOT_DIR,
+        check=True,
+    )
+
 def generate_exercises(client: Client, backend: str, token: str, exercise_id: str | None):
     EXERCISES_IMAGES_DIR.mkdir(exist_ok=True)
 
@@ -987,21 +997,7 @@ def generate_exercises(client: Client, backend: str, token: str, exercise_id: st
             output_path = EXERCISES_IMAGES_DIR / f"{eid}-{label}.webp"
             generate_image(client, backend, token, prompt, output_path, EXERCISE_ASPECT_RATIO)
 
-    # Rebuild all.json and index.json
-    all_exercises = []
-    all_ids = []
-    for jp in sorted(EXERCISES_DIR.glob("*.json")):
-        if jp.name in ("package.json", "index.json", "all.json"):
-            continue
-        with open(jp) as f:
-            all_exercises.append(json.load(f))
-        all_ids.append(jp.stem)
-
-    with open(EXERCISES_DIR / "all.json", "w") as f:
-        json.dump(all_exercises, f, indent=2, ensure_ascii=False)
-    with open(EXERCISES_DIR / "index.json", "w") as f:
-        json.dump(all_ids, f, ensure_ascii=False)
-    print(f"\nUpdated all.json ({len(all_exercises)} exercises) and index.json")
+    sync_catalog("ejercicios")
 
 
 # ---------------------------------------------------------------------------
@@ -1040,21 +1036,7 @@ def generate_foods(client: Client, backend: str, token: str, food_id: str | None
         output_path = FOODS_IMAGES_DIR / f"{fid}.webp"
         generate_image(client, backend, token, prompt, output_path, FOOD_ASPECT_RATIO)
 
-    # Rebuild all.json and index.json
-    all_foods = []
-    all_index = []
-    for jp in sorted(FOODS_DIR.glob("*.json")):
-        if jp.name in ("package.json", "index.json", "all.json"):
-            continue
-        with open(jp) as f:
-            all_foods.append(json.load(f))
-        all_index.append({"id": jp.stem, "name": all_foods[-1]["name"]})
-
-    with open(FOODS_DIR / "all.json", "w") as f:
-        json.dump(all_foods, f, indent=2, ensure_ascii=False)
-    with open(FOODS_DIR / "index.json", "w") as f:
-        json.dump(all_index, f, indent=2, ensure_ascii=False)
-    print(f"\nUpdated all.json ({len(all_foods)} foods) and index.json")
+    sync_catalog("alimentos")
 
 
 # ---------------------------------------------------------------------------

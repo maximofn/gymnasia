@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gymnasia.maximofn.com/schemas/catalogs/food-entry.schema.json",
+  "title": "Entrada nutricional de catálogo",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "category",
+    "calories_per_100g",
+    "protein_per_100g",
+    "carbs_per_100g",
+    "fat_per_100g",
+    "fiber_per_100g",
+    "serving_size_g",
+    "serving_description"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string"
+    },
+    "calories_per_100g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "protein_per_100g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "carbs_per_100g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "fat_per_100g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "fiber_per_100g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "serving_size_g": {
+      "type": "number",
+      "minimum": 0
+    },
+    "serving_description": {
+      "type": "string"
+    },
+    "image": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9&._-]*\\.webp$"
+    }
+  }
+}
