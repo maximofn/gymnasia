@@ -47,6 +47,10 @@
     "test:update-removal:e2e": "node apps/mobile/scripts/update-removal.e2e.mjs",
     "test:data-deletion:e2e": "node apps/mobile/scripts/local-data-deletion.e2e.mjs",
     "test:privacy:e2e": "node apps/mobile/scripts/privacy-policy.e2e.mjs",
+    "sync:catalogs": "node scripts/catalogs/generate.mjs --write",
+    "check:catalogs": "node scripts/catalogs/generate.mjs --check",
+    "test:catalogs": "node --test scripts/catalogs/*.test.mjs",
+    "test:catalogs:e2e": "node apps/mobile/scripts/catalogs.e2e.mjs",
     "generate:store-listing": "node scripts/store-listing/generate-assets.mjs",
     "check:store-listing": "node scripts/store-listing/check.mjs",
     "test:store-listing": "node --test scripts/store-listing/*.test.mjs",
@@ -64,6 +68,7 @@
     "ajv": "^8.17.1",
     "fast-check": "^4.9.0",
     "playwright": "^1.58.2",
+    "sharp": "^0.35.4",
     "vitest": "^4.1.10"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"

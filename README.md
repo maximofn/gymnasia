@@ -8,7 +8,10 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `apps/feedback-worker`: Worker de Cloudflare que recibe propuestas de mejora, alimentos, ejercicios y denuncias de respuestas de IA desde la app y crea issues en un repositorio privado. Opcional: si esta caido, la app avisa y sigue funcionando
 - `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa)
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
+- `productos_comerciales/`: Repositorio de productos comerciales (JSONs con datos nutricionales)
+- `recetas/`: Repositorio de recetas (JSONs con datos nutricionales)
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
+- `scripts/catalogs/`: Contratos, generador y validaciones comunes de los cuatro catálogos
 - `arquitectura-agente/`: Tablero de seguimiento de epicas y tickets (espejo manual de Linear, sitio estatico en Vercel)
 - `policy/health-safety/`: Reglas y casos sanitarios versionados que generan la protección del agente
 - `policy/signing/`: Raíces y certificados públicos, configuración y bundle firmado actual; nunca contiene claves privadas
@@ -46,6 +49,27 @@ El Worker de `apps/feedback-worker` custodia la credencial de GitHub para que la
 npm --workspace apps/feedback-worker run test     # suite, sin red ni credenciales
 npm --workspace apps/feedback-worker run deploy   # despliegue manual
 ```
+
+## Catálogos locales
+
+Cada ficha vive en su propio JSON. Los ficheros `all.json` e `index.json` son
+artefactos derivados y no se editan a mano. El generador los ordena de forma
+estable y se niega a publicarlos si encuentra un esquema inválido, identificadores
+duplicados, referencias inseguras, diferencias de mayúsculas, imágenes huérfanas,
+archivos dañados o una imagen que no sea WebP real. Las imágenes nutricionales
+deben ser exactamente 1:1 y las de ejercicios exactamente 16:9.
+
+```bash
+npm run sync:catalogs      # valida todo y regenera los agregados
+npm run check:catalogs     # comprueba contratos, imágenes y ausencia de drift
+npm run test:catalogs      # unitarios, regresión y propiedades sin red
+npm run test:catalogs:e2e  # consumo remoto, caché offline y arranque limpio
+```
+
+La generación de imágenes en `image-generation/generate_images.py` termina
+invocando este mismo generador, por lo que no existe un segundo formato de
+agregados. La CI dedicada repite estas comprobaciones sin claves ni servicios
+externos cuando cambia cualquier catálogo o su código de consumo.
 
 ## Tests del agente
 

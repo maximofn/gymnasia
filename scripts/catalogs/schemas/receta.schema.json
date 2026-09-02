@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gymnasia.maximofn.com/schemas/catalogs/receta.schema.json",
+  "title": "Receta",
+  "$ref": "https://gymnasia.maximofn.com/schemas/catalogs/food-entry.schema.json"
+}
