@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 
-import { CATALOG_DOMAINS, formatCatalogViolations, inspectCatalogs, writeCatalogArtifacts } from "./catalogs.mjs";
+import {
+  CATALOG_DOMAINS,
+  RUNTIME_SCHEMA_DOMAIN,
+  formatCatalogViolations,
+  inspectCatalogs,
+  writeCatalogArtifacts,
+} from "./catalogs.mjs";
 
 function usage() {
   console.error(
@@ -50,7 +56,9 @@ if (inspection.violations.length > 0) {
 }
 
 if (options.mode === "--write") {
-  const domains = options.domain ? [options.domain] : Object.keys(CATALOG_DOMAINS);
+  const domains = options.domain
+    ? [options.domain]
+    : [...Object.keys(CATALOG_DOMAINS), RUNTIME_SCHEMA_DOMAIN];
   const written = await writeCatalogArtifacts(inspection.artifacts, { domains });
   console.log(`Catálogos sincronizados: ${written.length} artefacto(s) generado(s).`);
 } else {

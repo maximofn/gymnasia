@@ -4,9 +4,11 @@ import {
   createAgentToolExecutor,
   createDetailedAgentToolExecutor,
   type ToolExecutorDependencies,
+  type ToolExerciseRepoEntry,
   type ToolFoodRepoEntry,
   type ToolStore,
 } from "./toolExecutor";
+import type { CatalogSearchAvailability } from "../catalogs/types";
 
 function createDependencies(
   overrides: Partial<ToolExecutorDependencies> = {},
@@ -30,6 +32,7 @@ const foods: ToolFoodRepoEntry[] = [
     name: "Arroz blanco",
     category: "cereal",
     source: "alimento",
+    sourceId: "gymnasia_foods",
     calories_per_100g: 130,
     protein_per_100g: 2.7,
     carbs_per_100g: 28,
@@ -43,6 +46,7 @@ const foods: ToolFoodRepoEntry[] = [
     name: "Pechuga de pollo",
     category: "proteína",
     source: "alimento",
+    sourceId: "gymnasia_foods",
     calories_per_100g: 165,
     protein_per_100g: 31,
     carbs_per_100g: 0,
@@ -52,6 +56,19 @@ const foods: ToolFoodRepoEntry[] = [
     serving_description: "1 filete",
   },
 ];
+
+const exercises: ToolExerciseRepoEntry[] = [{
+  id: "sentadilla",
+  sourceId: "gymnasia_exercises",
+  name: "Sentadilla",
+  image_male: "images/sentadilla-male.webp",
+  image_female: "images/sentadilla-female.webp",
+  muscle_group: "Cuádriceps",
+  secondary_muscles: ["Glúteos"],
+  equipment: "Barra",
+  difficulty: "Intermedio",
+  instructions: "Baja con control.",
+}];
 
 function createEmptyStore(): ToolStore {
   return { templates: [], dietByDate: {}, measurements: [] };
@@ -64,9 +81,57 @@ describe("ejecutor de tools", () => {
       min_protein: 2,
       sort_by: "protein_desc",
     }, { foodsRepo: foods });
-    const parsed = JSON.parse(result) as Array<{ id: string; proteina_por_100g: number }>;
-    expect(parsed.map((food) => food.id)).toEqual(["chicken", "rice"]);
-    expect(parsed[0].proteina_por_100g).toBe(31);
+    const parsed = JSON.parse(result) as { results: Array<{ item_id: string; proteina_por_100g: number }> };
+    expect(parsed.results.map((food) => food.item_id)).toEqual(["chicken", "rice"]);
+    expect(parsed.results[0].proteina_por_100g).toBe(31);
+  });
+
+  it("expone disponibilidad, fecha, fuentes y referencias en ambas búsquedas", async () => {
+    const execute = createAgentToolExecutor(createDependencies());
+    for (const availability of ["fresh", "cached", "partial", "unavailable"] as const) {
+      const sourceAvailability = availability === "partial" ? "cached" : availability;
+      const foodMetadata: CatalogSearchAvailability = {
+        availability,
+        fetchedAt: "2026-09-03T10:00:00.000Z",
+        sources: [{
+          sourceId: "gymnasia_foods",
+          label: "Alimentos",
+          availability: sourceAvailability,
+          fetchedAt: "2026-09-03T10:00:00.000Z",
+          refreshing: false,
+          cachePersisted: true,
+          warning: availability === "unavailable" ? "remote_failed" : null,
+        }],
+        warnings: availability === "unavailable" ? ["Alimentos: no disponible."] : [],
+      };
+      const exerciseMetadata: CatalogSearchAvailability = {
+        ...foodMetadata,
+        sources: foodMetadata.sources.map((source) => ({
+          ...source,
+          sourceId: "gymnasia_exercises",
+          label: "Ejercicios",
+        })),
+      };
+      const foodOutput = JSON.parse(await execute("search_foods", {}, {
+        foodsRepo: foods,
+        foodCatalogAvailability: foodMetadata,
+      }));
+      const exerciseOutput = JSON.parse(await execute("search_exercises", {}, {
+        exercisesRepo: exercises,
+        exerciseCatalogAvailability: exerciseMetadata,
+      }));
+      expect(foodOutput).toMatchObject({
+        availability,
+        fetched_at: "2026-09-03T10:00:00.000Z",
+        sources: [{ source_id: "gymnasia_foods" }],
+      });
+      expect(foodOutput.results[0]).toMatchObject({ source_id: "gymnasia_foods", item_id: "rice" });
+      expect(exerciseOutput).toMatchObject({
+        availability,
+        sources: [{ source_id: "gymnasia_exercises" }],
+        results: [{ source_id: "gymnasia_exercises", item_id: "sentadilla" }],
+      });
+    }
   });
 
   it("mantiene respuestas controladas para tools y JSON desconocidos", async () => {
@@ -119,6 +184,72 @@ describe("ejecutor de tools", () => {
       title: "Desayuno",
       items: [expect.objectContaining({ title: "Agua", calories_kcal: 0 })],
     }));
+  });
+
+  it("guarda una selección por referencia y calcula la instantánea para sus gramos", async () => {
+    let store = createEmptyStore();
+    const execute = createAgentToolExecutor(createDependencies());
+    await execute("add_meal_food", {
+      date: "2026-09-03",
+      meal: "Comida",
+      data: JSON.stringify({
+        kind: "catalog",
+        source_id: "gymnasia_foods",
+        item_id: "rice",
+        grams: 150,
+      }),
+    }, {
+      foodsRepo: foods,
+      setStore: (updater) => { store = updater(store); },
+    });
+
+    expect(store.dietByDate["2026-09-03"].meals[0].items[0]).toEqual(expect.objectContaining({
+      title: "Arroz blanco",
+      grams: 150,
+      calories_kcal: 195,
+      catalog_link: expect.objectContaining({
+        status: "linked",
+        ref: { schemaVersion: 1, sourceId: "gymnasia_foods", itemId: "rice" },
+      }),
+    }));
+  });
+
+  it("devuelve candidatos y no escribe ante un nombre de alimento ambiguo", async () => {
+    const duplicate = { ...foods[0], id: "rice-product", sourceId: "gymnasia_products" as const, source: "producto_comercial" as const };
+    const setStore = vi.fn();
+    const execute = createAgentToolExecutor(createDependencies());
+    const output = await execute("add_meal_food", {
+      date: "2026-09-03",
+      meal: "Comida",
+      data: JSON.stringify({ name: "Arroz blanco", grams: 100, calories_kcal: 130, protein_g: 2.7, carbs_g: 28, fat_g: 0.3 }),
+    }, { foodsRepo: [...foods, duplicate], setStore });
+    expect(JSON.parse(output)).toMatchObject({ status: "ambiguous", written: false });
+    expect(setStore).not.toHaveBeenCalled();
+  });
+
+  it("crea rutinas por referencia y no guarda parcialmente si una referencia falla", async () => {
+    const execute = createAgentToolExecutor(createDependencies());
+    const setStore = vi.fn();
+    const failed = await execute("create_routine", {
+      data: JSON.stringify({
+        name: "Pierna",
+        exercises: [
+          { kind: "catalog", source_id: "gymnasia_exercises", item_id: "sentadilla", series: [] },
+          { kind: "catalog", source_id: "gymnasia_exercises", item_id: "ausente", series: [] },
+        ],
+      }),
+    }, { exercisesRepo: exercises, setStore });
+    expect(JSON.parse(failed)).toMatchObject({ status: "not_found", written: false });
+    expect(setStore).not.toHaveBeenCalled();
+
+    let store = createEmptyStore();
+    await execute("create_routine", {
+      data: JSON.stringify({
+        name: "Pierna",
+        exercises: [{ kind: "catalog", source_id: "gymnasia_exercises", item_id: "sentadilla", series: [] }],
+      }),
+    }, { exercisesRepo: exercises, setStore: (updater) => { store = updater(store); } });
+    expect(store.templates[0].exercises[0].catalog_link).toEqual(expect.objectContaining({ status: "linked" }));
   });
 
   it("no escribe ni crea ids cuando un nutriente es inválido", async () => {
@@ -237,6 +368,7 @@ describe("ejecutor de tools", () => {
       data: JSON.stringify({
         name: "Pierna",
         exercises: [{
+          kind: "custom",
           name: "Sentadilla",
           series: [{ reps: "10", weight_kg: "60", rest_seconds: "90" }],
         }],
