@@ -74,6 +74,32 @@ de que la ruta endurecida haya pasado. La prueba positiva real requiere fusionar
 el cambio y aprobar una ejecución de `Production`; se hace por separado porque
 consume cuota de EAS.
 
+## Evidencia Production real y reconciliación
+
+La ejecución manual
+[`33491087365`](https://github.com/maximofn/gymnasia/actions/runs/33491087365)
+del 1 de septiembre de 2026 recorrió el camino autorizado completo para la
+versión `1.31.3`: `main`, los 18 gates, aprobación de `Production`, build EAS
+`c06852b5-1df7-491b-b57f-6d66768f36ec`, verificación del APK y publicación de
+una release inmutable. La auditoría independiente del 3 de septiembre volvió a
+descargar sus assets y confirmó:
+
+- commit fuente `e6d2a788556f19f2be1ecc782e632e99b085f045` y PR autorizada;
+- APK de 102.377.197 bytes con SHA-256
+  `226db60ebfb085791e5ef264eb1b2fc4da81572f4daefd585bc1dae7ba3d9ec5`;
+- paquete `com.maximofn.gymnasia`, versión `1.31.3` / `versionCode` 22,
+  minSdk 24, targetSdk 36 y certificado de subida aprobado;
+- evidencia fuente enlazada correctamente desde la evidencia del artefacto.
+
+La misma auditoría detectó que una reconciliación ya validada conservaba en la
+transacción el hash del JSON de artefacto de un intento anterior, mientras el
+workflow regeneraba y publicaba ese JSON con otra marca temporal. El APK no
+cambió, pero la transacción apuntaba a bytes de evidencia que ya no estaban en
+la release. El contrato se endureció para actualizar ese hash solo cuando el APK
+y su tamaño siguen siendo idénticos, y para comparar antes de publicar los
+digests de GitHub de APK, evidencia de artefacto y evidencia fuente. Una
+reconciliación no puede sustituir el APK ya validado.
+
 ## Gates reejecutados antes de EAS
 
 `npm run verify:production-source` ejecuta la lista canónica definida en

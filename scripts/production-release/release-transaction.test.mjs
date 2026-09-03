@@ -3,6 +3,7 @@ import test from "node:test";
 import fc from "fast-check";
 
 import {
+  assertPublishedRelease,
   createReleaseTransaction,
   selectReleaseAction,
   transitionReleaseTransaction,
@@ -56,6 +57,121 @@ test("la reconciliación reutiliza el mismo build y es idempotente", () => {
   });
   assert.equal(selected.mode, "resume");
   assert.equal(selected.transaction.attempts[0].buildId, "same");
+});
+
+test("una reconciliación actualiza el hash de la evidencia, pero nunca sustituye el APK", () => {
+  const finished = transitionReleaseTransaction(
+    transitionReleaseTransaction(
+      transitionReleaseTransaction(transaction(), "submit", { buildId: "same", now }),
+      "observe",
+      {
+        status: "FINISHED",
+        artifactUrl: "https://expo.dev/artifacts/same.apk",
+        now: "2026-09-01T10:01:00.000Z",
+      },
+    ),
+    "validate",
+    {
+      artifactSha256: "b".repeat(64),
+      artifactSize: 100_000_000,
+      evidenceSha256: "c".repeat(64),
+      now: "2026-09-01T10:02:00.000Z",
+    },
+  );
+  const refreshed = transitionReleaseTransaction(finished, "validate", {
+    artifactSha256: "b".repeat(64),
+    artifactSize: 100_000_000,
+    evidenceSha256: "d".repeat(64),
+    now: "2026-09-01T10:03:00.000Z",
+  });
+  assert.equal(refreshed.artifact.evidenceSha256, "d".repeat(64));
+  assert.equal(refreshed.transitions.at(-1).event, "evidence-revalidated");
+  assert.throws(() => transitionReleaseTransaction(refreshed, "validate", {
+    artifactSha256: "e".repeat(64),
+    artifactSize: 100_000_000,
+    evidenceSha256: "f".repeat(64),
+    now: "2026-09-01T10:04:00.000Z",
+  }), /no puede sustituir el APK/);
+});
+
+function publishedFixture(overrides = {}) {
+  const sourceEvidenceSha = "e".repeat(64);
+  const artifactEvidenceSha = "d".repeat(64);
+  const artifactSha = "b".repeat(64);
+  const validated = {
+    ...transaction(),
+    state: "validated",
+    artifact: {
+      filename: "gymnasia.apk",
+      sha256: artifactSha,
+      size: 100_000_000,
+      evidenceSha256: artifactEvidenceSha,
+    },
+  };
+  const release = {
+    draft: false,
+    immutable: true,
+    target_commitish: commit,
+    assets: [
+      { name: "android-release-transaction.json", digest: `sha256:${"a".repeat(64)}` },
+      {
+        name: "gymnasia.apk",
+        digest: `sha256:${artifactSha}`,
+        content_type: "application/vnd.android.package-archive",
+        size: 100_000_000,
+      },
+      { name: "production-artifact-evidence.json", digest: `sha256:${artifactEvidenceSha}` },
+      { name: "production-source-evidence.json", digest: `sha256:${sourceEvidenceSha}` },
+    ],
+  };
+  const artifactEvidence = {
+    schemaVersion: 1,
+    kind: "ProductionArtifactEvidenceV1",
+    result: "passed",
+    source: { commit, profile: "production-apk", evidenceSha256: sourceEvidenceSha },
+    build: { id: "eas-build-1" },
+    artifact: {
+      publishedFilename: "gymnasia.apk",
+      type: "apk",
+      versionName: "1.2.3",
+      sha256: artifactSha,
+      size: 100_000_000,
+    },
+  };
+  const sourceEvidence = {
+    schemaVersion: 1,
+    kind: "ProductionSourceEvidenceV1",
+    result: "passed",
+    commit,
+    appVersion: "1.2.3",
+    profile: "production-apk",
+    artifactType: "apk",
+  };
+  validated.attempts = [{ number: 1, buildId: "eas-build-1", status: "FINISHED" }];
+  return {
+    release,
+    transaction: validated,
+    artifactEvidence,
+    sourceEvidence,
+    currentCommit: commit,
+    apkPolicy: {
+      githubMimeType: "application/vnd.android.package-archive",
+      minBytes: 90_000_000,
+      maxBytes: 110_000_000,
+    },
+    ...overrides,
+  };
+}
+
+test("la release publicada conserva la cadena exacta de hashes", () => {
+  assert.equal(assertPublishedRelease(publishedFixture()), true);
+  const brokenEvidence = publishedFixture();
+  brokenEvidence.release.assets.find((asset) => asset.name === "production-artifact-evidence.json")
+    .digest = `sha256:${"f".repeat(64)}`;
+  assert.throws(
+    () => assertPublishedRelease(brokenEvidence),
+    /evidencia publicada no coincide/,
+  );
 });
 
 test("un fallo terminal exige reintento o sustitución manual con motivo", () => {

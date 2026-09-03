@@ -76,6 +76,15 @@ export function assertReleaseTransaction(transaction) {
   ].includes(transaction.state)) {
     throw new Error(`Estado de transacción inválido: ${transaction.state}.`);
   }
+  if (transaction.state === "validated") {
+    if (transaction.artifact?.filename !== "gymnasia.apk"
+      || !/^[a-f0-9]{64}$/.test(String(transaction.artifact?.sha256 ?? ""))
+      || !Number.isSafeInteger(Number(transaction.artifact?.size))
+      || Number(transaction.artifact?.size) <= 0
+      || !/^[a-f0-9]{64}$/.test(String(transaction.artifact?.evidenceSha256 ?? ""))) {
+      throw new Error("La transacción validada no conserva artefacto y evidencia íntegros.");
+    }
+  }
   return transaction;
 }
 
@@ -145,8 +154,6 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
     return next;
   }
   if (event === "validate") {
-    if (next.state === "validated" && next.artifact?.sha256 === payload.artifactSha256) return next;
-    if (next.state !== "build-finished") throw new Error("Solo un build terminado puede validarse.");
     if (!/^[a-f0-9]{64}$/.test(String(payload.artifactSha256 ?? ""))) {
       throw new Error("La validación exige el SHA-256 del APK.");
     }
@@ -156,6 +163,20 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
     if (!/^[a-f0-9]{64}$/.test(String(payload.evidenceSha256 ?? ""))) {
       throw new Error("La validación exige el SHA-256 de su evidencia.");
     }
+    if (next.state === "validated") {
+      if (next.artifact.sha256 !== payload.artifactSha256
+        || next.artifact.size !== Number(payload.artifactSize)) {
+        throw new Error("Una reconciliación no puede sustituir el APK ya validado.");
+      }
+      if (next.artifact.evidenceSha256 === payload.evidenceSha256) return next;
+      next.artifact.evidenceSha256 = payload.evidenceSha256;
+      record(next, "evidence-revalidated", now, {
+        artifactSha256: payload.artifactSha256,
+        evidenceSha256: payload.evidenceSha256,
+      });
+      return next;
+    }
+    if (next.state !== "build-finished") throw new Error("Solo un build terminado puede validarse.");
     next.state = "validated";
     next.artifact = {
       filename: "gymnasia.apk",
@@ -167,6 +188,78 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
     return next;
   }
   throw new Error(`Transición desconocida: ${event}.`);
+}
+
+function releaseAsset(release, name) {
+  const asset = release?.assets?.find((candidate) => candidate.name === name);
+  if (!asset) throw new Error(`La release publicada carece de ${name}.`);
+  return asset;
+}
+
+function expectedDigest(value) {
+  return `sha256:${value}`;
+}
+
+export function assertPublishedRelease({
+  release,
+  transaction,
+  artifactEvidence,
+  sourceEvidence,
+  currentCommit,
+  apkPolicy,
+}) {
+  assertReleaseTransaction(transaction);
+  if (release?.draft !== false || release?.immutable !== true) {
+    throw new Error("La release de Production no está publicada e inmutable.");
+  }
+  if (release.target_commitish !== currentCommit
+    || transaction.sourceCommit !== currentCommit
+    || transaction.state !== "validated") {
+    throw new Error("La release publicada no coincide exactamente con la fuente y transacción actuales.");
+  }
+
+  const apk = releaseAsset(release, "gymnasia.apk");
+  const artifactEvidenceAsset = releaseAsset(release, "production-artifact-evidence.json");
+  const sourceEvidenceAsset = releaseAsset(release, "production-source-evidence.json");
+  releaseAsset(release, TRANSACTION_ASSET);
+  if (apk.content_type !== apkPolicy.githubMimeType
+    || apk.size < apkPolicy.minBytes
+    || apk.size > apkPolicy.maxBytes) {
+    throw new Error("El APK publicado no conserva el MIME o tamaño aprobados.");
+  }
+  if (apk.digest !== expectedDigest(transaction.artifact.sha256)
+    || apk.size !== transaction.artifact.size) {
+    throw new Error("El APK publicado no coincide con la transacción validada.");
+  }
+  if (artifactEvidenceAsset.digest !== expectedDigest(transaction.artifact.evidenceSha256)) {
+    throw new Error("La evidencia publicada no coincide con la transacción validada.");
+  }
+  if (artifactEvidence?.schemaVersion !== 1
+    || artifactEvidence?.kind !== "ProductionArtifactEvidenceV1"
+    || artifactEvidence?.result !== "passed"
+    || artifactEvidence?.source?.commit !== currentCommit
+    || artifactEvidence?.source?.profile !== transaction.profile
+    || artifactEvidence?.build?.id !== transaction.attempts.at(-1)?.buildId
+    || artifactEvidence?.artifact?.publishedFilename !== transaction.artifact.filename
+    || artifactEvidence?.artifact?.type !== transaction.artifactType
+    || artifactEvidence?.artifact?.versionName !== transaction.version
+    || artifactEvidence?.artifact?.sha256 !== transaction.artifact.sha256
+    || artifactEvidence?.artifact?.size !== transaction.artifact.size) {
+    throw new Error("La evidencia de artefacto publicada no describe la transacción exacta.");
+  }
+  if (sourceEvidenceAsset.digest !== expectedDigest(artifactEvidence.source.evidenceSha256)) {
+    throw new Error("La evidencia de fuente publicada no coincide con la enlazada por el artefacto.");
+  }
+  if (sourceEvidence?.schemaVersion !== 1
+    || sourceEvidence?.kind !== "ProductionSourceEvidenceV1"
+    || sourceEvidence?.result !== "passed"
+    || sourceEvidence?.commit !== currentCommit
+    || sourceEvidence?.appVersion !== transaction.version
+    || sourceEvidence?.profile !== transaction.profile
+    || sourceEvidence?.artifactType !== transaction.artifactType) {
+    throw new Error("La evidencia de fuente publicada no describe la transacción exacta.");
+  }
+  return true;
 }
 
 export function selectReleaseAction({
@@ -329,23 +422,22 @@ async function selectRemote(options) {
 
   if (selection.action === "verify-published") {
     const release = publishedReleases.find((candidate) => releaseVersion(candidate) === options["current-version"]);
-    const assetNames = new Set(release?.assets?.map((asset) => asset.name) ?? []);
-    for (const name of [TRANSACTION_ASSET, "gymnasia.apk", "production-source-evidence.json", "production-artifact-evidence.json"]) {
-      if (!assetNames.has(name)) throw new Error(`La release publicada carece de ${name}.`);
-    }
-    const transactionAsset = release.assets.find((asset) => asset.name === TRANSACTION_ASSET);
-    const transaction = await downloadJsonAsset(policy.repository, transactionAsset);
-    assertReleaseTransaction(transaction);
-    if (transaction.sourceCommit !== options["current-commit"] || transaction.state !== "validated") {
-      throw new Error("La release publicada no coincide exactamente con la fuente y transacción actuales.");
-    }
-    const apk = release.assets.find((asset) => asset.name === "gymnasia.apk");
-    const apkPolicy = policy.artifacts.apk;
-    if (apk.content_type !== apkPolicy.githubMimeType
-      || apk.size < apkPolicy.minBytes
-      || apk.size > apkPolicy.maxBytes) {
-      throw new Error("El APK publicado no conserva el MIME o tamaño aprobados.");
-    }
+    const transactionAsset = releaseAsset(release, TRANSACTION_ASSET);
+    const artifactEvidenceAsset = releaseAsset(release, "production-artifact-evidence.json");
+    const sourceEvidenceAsset = releaseAsset(release, "production-source-evidence.json");
+    const [transaction, artifactEvidence, sourceEvidence] = await Promise.all([
+      downloadJsonAsset(policy.repository, transactionAsset),
+      downloadJsonAsset(policy.repository, artifactEvidenceAsset),
+      downloadJsonAsset(policy.repository, sourceEvidenceAsset),
+    ]);
+    assertPublishedRelease({
+      release,
+      transaction,
+      artifactEvidence,
+      sourceEvidence,
+      currentCommit: options["current-commit"],
+      apkPolicy: policy.artifacts.apk,
+    });
     selection.transaction = transaction;
   } else {
     const release = releasesByVersion.get(selection.transaction.version);

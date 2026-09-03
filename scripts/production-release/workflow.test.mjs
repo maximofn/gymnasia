@@ -47,3 +47,14 @@ test("consulta EAS con filtros estables y valida la identidad localmente", () =>
     "la adopción debe comprobar perfil, versión, commit y mensaje",
   );
 });
+
+test("verifica la cadena de hashes antes de hacer inmutable la release", () => {
+  const verify = workflow.indexOf("Verify draft identity, bounds, MIME and evidence chain");
+  const publish = workflow.indexOf("Publish immutable APK release");
+  assert.ok(verify >= 0, "falta verificar la cadena de evidencia del draft");
+  assert.ok(publish > verify, "la release solo puede publicarse después de verificar sus hashes");
+  assert.match(workflow, /ASSET_DIGEST production-artifact-evidence\.json/);
+  assert.match(workflow, /\.artifact\.evidenceSha256/);
+  assert.match(workflow, /ASSET_DIGEST production-source-evidence\.json/);
+  assert.match(workflow, /\.source\.evidenceSha256/);
+});
