@@ -1,0 +1,16 @@
+{
+  "id": "rodillas-altas-contra-pared",
+  "name": "Rodillas altas contra la pared",
+  "image_male": "images/rodillas-altas-contra-pared-male.webp",
+  "image_female": "images/rodillas-altas-contra-pared-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "glúteos",
+    "gemelos"
+  ],
+  "equipment": "pared",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a una pared con los pies separados a la altura de las caderas. Coloca las manos en la pared para mayor apoyo. Activa el core y levanta la rodilla derecha hacia el pecho, mientras mantienes el pie izquierdo en el suelo. Cambia rápidamente de pierna, llevando la rodilla izquierda hacia el pecho y bajando el pie derecho de nuevo. Continúa alternando las piernas con un movimiento de carrera, llevando las rodillas lo más alto posible. Mantén un ritmo rápido y la parte superior del cuerpo estable durante todo el ejercicio. Repite durante la duración o el número de repeticiones deseado."
+}

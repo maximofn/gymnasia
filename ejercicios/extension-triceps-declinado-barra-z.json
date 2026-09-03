@@ -1,0 +1,13 @@
+{
+  "id": "extension-triceps-declinado-barra-z",
+  "name": "Extensión de tríceps declinada con barra Z",
+  "image_male": "images/extension-triceps-declinado-barra-z-male.webp",
+  "image_female": "images/extension-triceps-declinado-barra-z-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "barra Z y banco declinado",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco declinado con la cabeza más baja que los pies y los pies asegurados. Sostén la barra EZ con agarre prono, manos separadas a la altura de los hombros. Extiende completamente los brazos, manteniendo los codos cerca de la cabeza. Baja la barra lentamente hacia la frente, doblando los codos. Haz una pausa por un momento y luego extiende los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

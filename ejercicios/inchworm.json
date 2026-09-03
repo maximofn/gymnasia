@@ -1,0 +1,14 @@
+{
+  "id": "inchworm",
+  "name": "Inchworm",
+  "image_male": "images/inchworm-male.webp",
+  "image_female": "images/inchworm-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "isquiotibiales"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Comienza de pie con los pies separados a la altura de las caderas. Inclínate hacia adelante desde la cintura y coloca las manos en el suelo frente a ti. Camina con las manos hacia adelante hasta quedar en posición de plancha alta, con el cuerpo en línea recta de la cabeza a los pies. Haz una pausa breve, luego camina con las manos de vuelta hacia los pies, manteniendo las piernas lo más rectas posible. Cuando las manos lleguen a los pies, ponte de pie de nuevo en la posición inicial. Repite el número de repeticiones deseado."
+}

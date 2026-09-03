@@ -1,0 +1,14 @@
+{
+  "id": "puente-gluteos-dos-piernas-banco",
+  "name": "Puente de glúteos con dos piernas en banco",
+  "image_male": "images/puente-gluteos-dos-piernas-banco-male.webp",
+  "image_female": "images/puente-gluteos-dos-piernas-banco-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "core"
+  ],
+  "equipment": "banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el borde de un banco con la espalda apoyada en él y los pies planos sobre el suelo. Coloca las manos en el banco junto a las caderas para mayor apoyo. Activa los glúteos y los isquiotibiales, luego levanta las caderas del banco hasta que el cuerpo forme una línea recta desde las rodillas hasta los hombros. Haz una pausa por un momento en la parte superior, luego baja lentamente las caderas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

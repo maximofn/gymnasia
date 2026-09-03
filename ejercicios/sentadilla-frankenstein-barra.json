@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-frankenstein-barra",
+  "name": "Sentadilla Frankenstein con barra",
+  "image_male": "images/sentadilla-frankenstein-barra-male.webp",
+  "image_female": "images/sentadilla-frankenstein-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén la barra frente al cuerpo con los brazos rectos. Manteniendo la espalda recta, baja el cuerpo flexionando las rodillas y las caderas, como si fueras a sentarte en una silla. Continúa bajando hasta que los muslos queden paralelos al suelo, o tan abajo como puedas hacerlo cómodamente. Haz una pausa breve y luego empuja con los talones para volver a la posición inicial. Repite el número de repeticiones deseado."
+}

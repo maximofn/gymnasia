@@ -1,0 +1,14 @@
+{
+  "id": "pino",
+  "name": "Pino",
+  "image_male": "images/pino-male.webp",
+  "image_female": "images/pino-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Busca un espacio abierto con suficiente espacio para hacer un pino. Coloca las manos en el suelo separadas a la altura de los hombros, con los dedos apuntando hacia adelante. Lanza las piernas hacia la pared, usando el core y los hombros para mantener el equilibrio. Una vez en posición de pino, activa los tríceps para sostener el peso corporal. Mantén el pino el mayor tiempo posible mientras conserves el equilibrio. Para bajar, lleva lentamente las piernas de vuelta al suelo. Repite el número de repeticiones deseado."
+}

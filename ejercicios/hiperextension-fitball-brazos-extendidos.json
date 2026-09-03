@@ -1,0 +1,14 @@
+{
+  "id": "hiperextension-fitball-brazos-extendidos",
+  "name": "Hiperextensión en fitball con brazos extendidos",
+  "image_male": "images/hiperextension-fitball-brazos-extendidos-male.webp",
+  "image_female": "images/hiperextension-fitball-brazos-extendidos-female.webp",
+  "muscle_group": "zona lumbar",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "fitball",
+  "difficulty": "intermediate",
+  "instructions": "Coloca el balón de estabilidad en el suelo y túmbate boca abajo sobre él, con las caderas apoyadas en el balón y los pies contra una pared para mayor estabilidad. Extiende los brazos rectos hacia adelante, con las palmas hacia abajo. Activa el core y levanta lentamente la parte superior del cuerpo del balón, manteniendo la espalda recta y el cuello alineado con la columna. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

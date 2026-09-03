@@ -1,0 +1,14 @@
+{
+  "id": "fondos-codos-banco",
+  "name": "Fondos de codos en banco",
+  "image_male": "images/fondos-codos-banco-male.webp",
+  "image_female": "images/fondos-codos-banco-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el borde de un banco o silla con las manos sujetando el borde junto a las caderas. Desliza las caderas hacia adelante, fuera del banco, y estira las piernas, manteniendo los talones en el suelo. Flexiona los codos y baja el cuerpo hacia el suelo, manteniendo la espalda cerca del banco. Haz una pausa por un momento en la posición más baja, luego empuja con las manos para enderezar los brazos y levantar el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

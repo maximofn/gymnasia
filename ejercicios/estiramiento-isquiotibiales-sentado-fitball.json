@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-isquiotibiales-sentado-fitball",
+  "name": "Estiramiento de isquiotibiales sentado en fitball",
+  "image_male": "images/estiramiento-isquiotibiales-sentado-fitball-male.webp",
+  "image_female": "images/estiramiento-isquiotibiales-sentado-fitball-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos",
+    "zona lumbar"
+  ],
+  "equipment": "fitball",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el balón de estabilidad con los pies planos en el suelo y las rodillas flexionadas en un ángulo de 90 grados. Haz rodar el balón lentamente hacia adelante, caminando con los pies hacia afuera hasta que la parte superior de la espalda quede apoyada sobre el balón y las piernas queden extendidas rectas frente a ti. Coloca las manos en las caderas para mayor apoyo. Activa el core y baja lentamente la parte superior del cuerpo hacia el suelo, manteniendo la espalda recta y el pecho elevado. Detente cuando sientas un estiramiento en los isquiotibiales y mantén la posición durante 20-30 segundos. Regresa lentamente a la posición inicial empujando con los talones y usando los isquiotibiales para volver a subir. Repite el número de repeticiones deseado."
+}

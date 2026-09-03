@@ -1,0 +1,14 @@
+{
+  "id": "fondos-triceps-fitball",
+  "name": "Fondos de tríceps en fitball",
+  "image_male": "images/fondos-triceps-fitball-male.webp",
+  "image_female": "images/fondos-triceps-fitball-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "fitball",
+  "difficulty": "advanced",
+  "instructions": "Siéntate en el balón de estabilidad con los pies planos en el suelo y las rodillas flexionadas en un ángulo de 90 grados. Coloca las manos sobre el balón junto a las caderas, con los dedos apuntando hacia adelante. Activa el tríceps y empuja con las manos para levantar el cuerpo del balón, enderezando los brazos. Baja el cuerpo flexionando los codos, manteniéndolos cerca de los costados. Repite el número de repeticiones deseado."
+}

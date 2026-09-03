@@ -1,0 +1,15 @@
+{
+  "id": "plancha-rana",
+  "name": "Plancha rana",
+  "image_male": "images/plancha-rana-male.webp",
+  "image_female": "images/plancha-rana-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "pecho",
+    "tríceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de flexión de brazos con las manos separadas a la altura de los hombros y los pies juntos. Dobla los codos y baja el cuerpo hacia el suelo, manteniendo la espalda recta. Mientras bajas el cuerpo, levanta los pies del suelo y lleva las rodillas hacia el pecho. Mantén esta posición durante unos segundos, luego extiende las piernas de nuevo y empújate hacia arriba a la posición inicial. Repite el número de repeticiones deseado."
+}

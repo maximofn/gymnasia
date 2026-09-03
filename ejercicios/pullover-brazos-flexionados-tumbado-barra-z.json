@@ -1,0 +1,14 @@
+{
+  "id": "pullover-brazos-flexionados-tumbado-barra-z",
+  "name": "Pullover tumbado con brazos flexionados y barra Z",
+  "image_male": "images/pullover-brazos-flexionados-tumbado-barra-z-male.webp",
+  "image_female": "images/pullover-brazos-flexionados-tumbado-barra-z-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "tríceps",
+    "pecho"
+  ],
+  "equipment": "barra Z y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco con la cabeza en un extremo y los pies en el suelo. Sostén la barra EZ con agarre prono (palmas hacia afuera) y las manos separadas a la altura de los hombros. Extiende los brazos rectos por encima del pecho, manteniendo una ligera flexión en los codos. Baja la barra describiendo un arco detrás de la cabeza, manteniendo la ligera flexión en los codos. Haz una pausa breve, luego regresa la barra a la posición inicial invirtiendo el movimiento del arco. Repite el número de repeticiones deseado."
+}

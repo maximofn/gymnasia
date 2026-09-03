@@ -1,0 +1,15 @@
+{
+  "id": "dominada-esternon-gironda",
+  "name": "Dominada al esternón Gironda",
+  "image_male": "images/dominada-esternon-gironda-male.webp",
+  "image_female": "images/dominada-esternon-gironda-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "bíceps",
+    "romboides",
+    "deltoides posteriores"
+  ],
+  "equipment": "barra de dominadas",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie frente a una barra alta con los pies separados a la altura de los hombros. Estira los brazos hacia arriba y agarra la barra con agarre prono, ligeramente más ancho que la altura de los hombros. Cuélgate de la barra con los brazos completamente extendidos y el cuerpo recto. Activa los dorsales y los bíceps para llevar el pecho hacia la barra, guiando con el esternón. Haz una pausa breve en la parte más alta, luego baja lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

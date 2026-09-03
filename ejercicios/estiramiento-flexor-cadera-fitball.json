@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-flexor-cadera-fitball",
+  "name": "Estiramiento de flexor de cadera con fitball",
+  "image_male": "images/estiramiento-flexor-cadera-fitball-male.webp",
+  "image_female": "images/estiramiento-flexor-cadera-fitball-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales"
+  ],
+  "equipment": "fitball",
+  "difficulty": "beginner",
+  "instructions": "Coloca el balón de estabilidad en el suelo y arrodíllate frente a él. Coloca el pie derecho sobre el balón de estabilidad, con la rodilla flexionada en un ángulo de 90 grados. Extiende la pierna izquierda hacia atrás, manteniéndola recta. Inclínate hacia adelante, empujando las caderas hacia el balón de estabilidad, hasta sentir un estiramiento en el flexor de la cadera derecha. Mantén el estiramiento durante 20-30 segundos, luego cambia de lado y repite."
+}

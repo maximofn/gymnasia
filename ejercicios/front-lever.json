@@ -1,0 +1,15 @@
+{
+  "id": "front-lever",
+  "name": "Front lever",
+  "image_male": "images/front-lever-male.webp",
+  "image_female": "images/front-lever-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "dorsales",
+    "hombros",
+    "antebrazos"
+  ],
+  "equipment": "barra de dominadas",
+  "difficulty": "advanced",
+  "instructions": "Comienza colgado de una barra de dominadas con agarre prono, manos separadas a la altura de los hombros. Activa el core y lleva los omóplatos hacia abajo y atrás. Flexiona las rodillas y llévalas hacia el pecho. Al mismo tiempo, levanta las piernas y extiéndelas rectas frente a ti, manteniendo el cuerpo paralelo al suelo. Mantén esta posición todo el tiempo que puedas, intentando lograr una posición completa de palanca frontal. Para soltar, baja lentamente las piernas y regresa a la posición inicial. Repite el número de repeticiones deseado."
+}

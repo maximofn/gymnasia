@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-piernas-rectas-colgado-v2",
+  "name": "Elevación de piernas rectas colgado v2",
+  "image_male": "images/elevacion-piernas-rectas-colgado-v2-male.webp",
+  "image_female": "images/elevacion-piernas-rectas-colgado-v2-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "barra de dominadas",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de una barra de dominadas con los brazos completamente extendidos y las palmas mirando hacia afuera. Activa el core y levanta las piernas frente a ti, manteniéndolas rectas. Continúa levantando hasta que las piernas estén paralelas al suelo o tan alto como puedas llegar cómodamente. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

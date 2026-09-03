@@ -1,0 +1,14 @@
+{
+  "id": "patadas-aleteo",
+  "name": "Patadas de aleteo",
+  "image_male": "images/patadas-aleteo-male.webp",
+  "image_female": "images/patadas-aleteo-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "flexores de cadera",
+    "lower abs"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las piernas extendidas y las manos a los costados. Activa el core y levanta las piernas del suelo unos 15 centímetros. Manteniendo las piernas rectas, alterna levantando una pierna ligeramente más alto que la otra. Continúa este movimiento de aleteo durante el número de repeticiones deseado."
+}

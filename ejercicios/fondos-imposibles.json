@@ -1,0 +1,14 @@
+{
+  "id": "fondos-imposibles",
+  "name": "Fondos imposibles",
+  "image_male": "images/fondos-imposibles-male.webp",
+  "image_female": "images/fondos-imposibles-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "paralelas",
+  "difficulty": "advanced",
+  "instructions": "Colócate entre dos barras paralelas con los brazos completamente extendidos y el cuerpo suspendido en el aire. Flexiona las rodillas y cruza los tobillos. Baja el cuerpo flexionando los codos hasta que los brazos queden paralelos al suelo. Haz una pausa breve, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "inclinacion-tronco-ascensor",
+  "name": "Inclinación de tronco ascensor",
+  "image_male": "images/inclinacion-tronco-ascensor-male.webp",
+  "image_female": "images/inclinacion-tronco-ascensor-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "hombros",
+    "trapezius"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Coloca las manos sobre las caderas o crúzalas frente al pecho. Manteniendo la espalda recta, inclínate lentamente hacia adelante desde la cintura, bajando la parte superior del cuerpo hacia el suelo. Haz una pausa por un momento en la posición más baja, luego sube lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

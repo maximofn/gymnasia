@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-gemelos-maquina-hack",
+  "name": "Elevación de gemelos en máquina hack",
+  "image_male": "images/elevacion-gemelos-maquina-hack-male.webp",
+  "image_female": "images/elevacion-gemelos-maquina-hack-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "máquina hack",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina de trineo a un peso adecuado. Ponte de pie sobre la máquina de trineo con la punta de los pies en la plataforma y los talones colgando. Sujétate de las asas para mantener el equilibrio. Levanta los talones lo más alto posible empujando con la punta de los pies. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

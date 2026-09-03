@@ -1,0 +1,14 @@
+{
+  "id": "press-cara-declinado-agarre-cerrado-barra-z",
+  "name": "Press hacia la cara declinado con agarre cerrado y barra Z",
+  "image_male": "images/press-cara-declinado-agarre-cerrado-barra-z-male.webp",
+  "image_female": "images/press-cara-declinado-agarre-cerrado-barra-z-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "barra Z y banco declinado",
+  "difficulty": "advanced",
+  "instructions": "Túmbate en un banco declinado con la cabeza más baja que los pies. Sujeta la barra EZ con agarre cerrado, palmas una frente a la otra. Extiende los brazos rectos por encima del pecho, manteniendo los codos cerca del cuerpo. Baja la barra hacia la frente doblando los codos. Haz una pausa breve, luego empuja la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

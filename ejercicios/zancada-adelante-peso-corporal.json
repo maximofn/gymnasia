@@ -1,0 +1,15 @@
+{
+  "id": "zancada-adelante-peso-corporal",
+  "name": "Zancada adelante con peso corporal",
+  "image_male": "images/zancada-adelante-peso-corporal-male.webp",
+  "image_female": "images/zancada-adelante-peso-corporal-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de las caderas y las manos en las caderas. Da un paso grande hacia adelante con el pie derecho, bajando el cuerpo hasta una posición de zancada. Dobla la rodilla derecha hasta unos 90 grados, manteniendo la rodilla alineada con el tobillo. Empuja con el pie derecho y vuelve a la posición inicial. Repite con la pierna izquierda, alternando los lados durante el número de repeticiones deseado."
+}

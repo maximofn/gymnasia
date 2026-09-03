@@ -1,0 +1,14 @@
+{
+  "id": "abrazo-fitball-estiramiento-espalda",
+  "name": "Abrazo de fitball para estirar la espalda",
+  "image_male": "images/abrazo-fitball-estiramiento-espalda-male.webp",
+  "image_female": "images/abrazo-fitball-estiramiento-espalda-female.webp",
+  "muscle_group": "zona lumbar",
+  "secondary_muscles": [
+    "hombros",
+    "pecho"
+  ],
+  "equipment": "fitball",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el balón de estabilidad con los pies planos en el suelo y la espalda recta. Sujeta el balón de estabilidad con ambas manos, abrazándolo cerca del pecho. Activa los músculos del core y reclínate lentamente hacia atrás, manteniendo la espalda recta y los pies apoyados en el suelo. Continúa reclinándote hacia atrás hasta sentir un estiramiento en los músculos de la espalda. Mantén la posición durante unos segundos, luego vuelve lentamente a la posición inicial. Repite el número de repeticiones deseado."
+}

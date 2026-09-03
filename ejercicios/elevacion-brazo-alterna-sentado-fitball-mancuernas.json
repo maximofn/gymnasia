@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-brazo-alterna-sentado-fitball-mancuernas",
+  "name": "Elevación alterna de brazo sentado en fitball con mancuernas",
+  "image_male": "images/elevacion-brazo-alterna-sentado-fitball-mancuernas-male.webp",
+  "image_female": "images/elevacion-brazo-alterna-sentado-fitball-mancuernas-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "mancuernas y fitball",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el balón de estabilidad con los pies planos en el suelo y la espalda recta. Sujeta una mancuerna en cada mano con las palmas hacia adentro y los brazos extendidos hacia abajo a los lados. Activa el core y levanta lentamente un brazo hacia el hombro, manteniendo el codo ligeramente flexionado. Haz una pausa breve en la parte más alta, luego baja lentamente el brazo de vuelta a la posición inicial. Repite el movimiento con el otro brazo. Continúa alternando los brazos durante el número de repeticiones deseado."
+}

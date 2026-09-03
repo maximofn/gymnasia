@@ -1,0 +1,13 @@
+{
+  "id": "aperturas-hyght-mancuernas",
+  "name": "Aperturas Hyght con mancuernas",
+  "image_male": "images/aperturas-hyght-mancuernas-male.webp",
+  "image_female": "images/aperturas-hyght-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco con una mancuerna en cada mano, con las palmas enfrentadas entre sí. Extiende los brazos rectos hacia arriba sobre el pecho, con una ligera flexión en los codos. Manteniendo una ligera flexión en los codos, baja las mancuernas hacia los lados describiendo un amplio arco hasta sentir un estiramiento en el pecho. Haz una pausa por un momento, luego invierte el movimiento y lleva las mancuernas de nuevo hacia arriba hasta la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "curl-biceps-agarre-inverso-barra-z",
+  "name": "Curl de bíceps con agarre inverso y barra Z",
+  "image_male": "images/curl-biceps-agarre-inverso-barra-z-male.webp",
+  "image_female": "images/curl-biceps-agarre-inverso-barra-z-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "barra Z",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén la barra EZ con agarre supino. Mantén los codos cerca del torso y los brazos superiores inmóviles durante todo el ejercicio. Sube la barra contrayendo los bíceps, mientras exhalas. Continúa levantando la barra hasta que los bíceps estén completamente contraídos y la barra esté a la altura de los hombros. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Comienza a regresar la barra lentamente a la posición inicial mientras inhalas. Repite el número de repeticiones deseado."
+}

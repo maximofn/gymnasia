@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-cadera-piernas-rectas-giro-colgado",
+  "name": "Elevación de cadera con giro y piernas rectas colgado",
+  "image_male": "images/elevacion-cadera-piernas-rectas-giro-colgado-male.webp",
+  "image_female": "images/elevacion-cadera-piernas-rectas-giro-colgado-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "flexores de cadera"
+  ],
+  "equipment": "barra de dominadas",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de una barra de dominadas con los brazos completamente extendidos y las piernas rectas. Activa el core y levanta las piernas hacia el pecho, manteniéndolas rectas. Cuando las piernas queden paralelas al suelo, gira las caderas hacia un lado, llevando las piernas hacia ese lado. Haz una pausa breve y luego vuelve a la posición inicial. Repite el movimiento, pero esta vez gira las caderas hacia el lado opuesto. Continúa alternando lados durante el número de repeticiones deseado."
+}

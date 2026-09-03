@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-gemelos-pared-fitball-pelota-rodillas-mancuernas",
+  "name": "Elevación de gemelos en pared con fitball y pelota entre rodillas",
+  "image_male": "images/elevacion-gemelos-pared-fitball-pelota-rodillas-mancuernas-male.webp",
+  "image_female": "images/elevacion-gemelos-pared-fitball-pelota-rodillas-mancuernas-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales"
+  ],
+  "equipment": "mancuernas, fitball y pelota",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con la espalda contra una pared y coloca un balón de ejercicio entre tu zona lumbar y la pared. Coloca los pies separados a la altura de los hombros y ligeramente por delante de ti. Sujeta una mancuerna en cada mano, con los brazos extendidos a los lados. Coloca una pelota de tenis entre las rodillas. Levanta los talones del suelo, elevando el cuerpo sobre la punta de los pies. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

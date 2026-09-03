@@ -1,0 +1,14 @@
+{
+  "id": "curl-dedos-barra",
+  "name": "Curl de dedos con barra",
+  "image_male": "images/curl-dedos-barra-male.webp",
+  "image_female": "images/curl-dedos-barra-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [
+    "flexores de muñeca",
+    "agarre"
+  ],
+  "equipment": "barra y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con los pies planos sobre el suelo y sujeta una barra con un agarre supino, con las palmas hacia arriba. Apoya los antebrazos sobre los muslos, dejando que las muñecas cuelguen del borde. Curva lentamente los dedos hacia las palmas, apretando la barra con fuerza. Mantén la contracción por un momento, luego suelta lentamente los dedos hasta la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "hiperextension-fitball-con-rotacion",
+  "name": "Hiperextensión en fitball con rotación",
+  "image_male": "images/hiperextension-fitball-con-rotacion-male.webp",
+  "image_female": "images/hiperextension-fitball-con-rotacion-female.webp",
+  "muscle_group": "zona lumbar",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "fitball",
+  "difficulty": "advanced",
+  "instructions": "Comienza tumbado boca abajo sobre el balón de estabilidad, con las caderas apoyadas en el balón y los pies firmemente apoyados en el suelo. Coloca las manos detrás de la cabeza o crúzalas sobre el pecho. Activa el core y levanta lentamente la parte superior del cuerpo del balón, extendiendo la espalda hasta que tu cuerpo forme una línea recta desde la cabeza hasta los talones. Haz una pausa por un momento en la parte superior, luego gira lentamente el torso hacia un lado, manteniendo las caderas y las piernas estables. Vuelve al centro y repite el giro hacia el otro lado. Baja la parte superior del cuerpo de vuelta a la posición inicial y repite el número de repeticiones deseado."
+}

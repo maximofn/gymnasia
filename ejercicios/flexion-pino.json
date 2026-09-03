@@ -1,0 +1,15 @@
+{
+  "id": "flexion-pino",
+  "name": "Flexión en pino",
+  "image_male": "images/flexion-pino-male.webp",
+  "image_female": "images/flexion-pino-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "pecho",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Busca una pared y colócate de espaldas a ella, de pie a unos pasos de distancia. Coloca las manos en el suelo separadas a la altura de los hombros y lanza los pies hacia la pared, llegando a una posición de pino. Dobla los codos y baja la cabeza hacia el suelo, manteniendo el cuerpo en línea recta. Empuja con las manos y extiende los brazos para volver a la posición inicial. Repite el número de repeticiones deseado."
+}

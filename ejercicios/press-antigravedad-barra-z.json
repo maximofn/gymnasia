@@ -1,0 +1,14 @@
+{
+  "id": "press-antigravedad-barra-z",
+  "name": "Press antigravedad con barra Z",
+  "image_male": "images/press-antigravedad-barra-z-male.webp",
+  "image_female": "images/press-antigravedad-barra-z-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "pecho"
+  ],
+  "equipment": "barra Z",
+  "difficulty": "intermediate",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros y sosteniendo la barra EZ con agarre prono. Eleva la barra hasta la altura de los hombros, manteniendo los codos ligeramente flexionados y las palmas hacia adelante. Empuja la barra por encima de la cabeza, extendiendo completamente los brazos. Baja la barra de vuelta a la altura de los hombros y repite el número de repeticiones deseado."
+}

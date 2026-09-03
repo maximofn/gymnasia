@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-gemelo-unilateral-maquina-hack",
+  "name": "Elevación de gemelo unilateral en máquina hack",
+  "image_male": "images/elevacion-gemelo-unilateral-maquina-hack-male.webp",
+  "image_female": "images/elevacion-gemelo-unilateral-maquina-hack-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "máquina hack",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina de trineo a un peso adecuado. Ponte de pie sobre la máquina de trineo con un pie, manteniendo el otro pie levantado del suelo. Sujétate de las asas para mantener el equilibrio. Levanta el talón lo más alto posible, elevando el cuerpo sobre la punta del pie. Haz una pausa por un momento en la parte superior, luego baja lentamente el talón de vuelta a la posición inicial. Repite el número de repeticiones deseado. Cambia de pierna y repite el ejercicio."
+}

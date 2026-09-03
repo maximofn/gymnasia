@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-triceps-sentado-fitball-mancuerna",
+  "name": "Estiramiento de tríceps sentado en fitball con mancuerna",
+  "image_male": "images/estiramiento-triceps-sentado-fitball-mancuerna-male.webp",
+  "image_female": "images/estiramiento-triceps-sentado-fitball-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "fitball y mancuerna",
+  "difficulty": "beginner",
+  "instructions": "Siéntate sobre un balón de estabilidad con los pies apoyados en el suelo y la espalda recta. Sostén una mancuerna con una mano y extiende el brazo recto por encima de la cabeza. Dobla el codo y baja la mancuerna detrás de la cabeza, manteniendo el brazo cerca de la oreja. Mantén el estiramiento durante unos segundos, luego regresa a la posición inicial. Repite con el otro brazo."
+}

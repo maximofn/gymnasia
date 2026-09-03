@@ -1,0 +1,14 @@
+{
+  "id": "maltese-completo",
+  "name": "Maltese completo",
+  "image_male": "images/maltese-completo-male.webp",
+  "image_female": "images/maltese-completo-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "pecho"
+  ],
+  "equipment": "paralelas bajas",
+  "difficulty": "advanced",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros y los brazos extendidos rectos hacia los lados. Inclínate lentamente hacia adelante, manteniendo los brazos rectos, hasta que la parte superior del cuerpo quede paralela al suelo. Activa el core y mantén esta posición durante unos segundos. Regresa a la posición inicial empujando con los pies y volviendo a ponerte de pie. Repite el número de repeticiones deseado."
+}

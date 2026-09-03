@@ -1,0 +1,15 @@
+{
+  "id": "flexion-inclinada-salto-profundidad",
+  "name": "Flexión inclinada con salto de profundidad",
+  "image_male": "images/flexion-inclinada-salto-profundidad-male.webp",
+  "image_female": "images/flexion-inclinada-salto-profundidad-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros",
+    "core"
+  ],
+  "equipment": "banco",
+  "difficulty": "advanced",
+  "instructions": "Busca una superficie elevada, como un banco o un escalón, y coloca las manos separadas a la altura de los hombros en el borde. Da un paso hacia atrás con los pies, manteniendo el cuerpo en línea recta desde la cabeza hasta los talones. Baja el pecho hacia el borde de la superficie, doblando los codos y manteniendo el cuerpo alineado. Empuja con las palmas para extender los brazos y regresar a la posición inicial. Salta desde el borde de la superficie, aterrizando suavemente con las rodillas ligeramente flexionadas. Repite la flexión de brazos y el salto en profundidad durante el número de repeticiones deseado."
+}

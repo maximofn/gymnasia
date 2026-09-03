@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-dorsal-sentado-fitball-mancuerna",
+  "name": "Estiramiento dorsal sentado en fitball con mancuerna",
+  "image_male": "images/estiramiento-dorsal-sentado-fitball-mancuerna-male.webp",
+  "image_female": "images/estiramiento-dorsal-sentado-fitball-mancuerna-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "fitball y mancuerna",
+  "difficulty": "beginner",
+  "instructions": "Siéntate sobre un balón de estabilidad con los pies apoyados en el suelo y la espalda recta. Sujeta una mancuerna con una mano y extiende el brazo recto por encima de la cabeza. Inclínate lentamente hacia el lado opuesto, sintiendo un estiramiento en el músculo dorsal. Mantén el estiramiento durante 20-30 segundos, luego vuelve a la posición inicial. Repite del otro lado."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "toque-puntas-circular-manos-entrelazadas",
+  "name": "Toque circular de puntas con manos entrelazadas",
+  "image_male": "images/toque-puntas-circular-manos-entrelazadas-male.webp",
+  "image_female": "images/toque-puntas-circular-manos-entrelazadas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las manos entrelazadas frente al pecho. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Baja las manos hacia los dedos de los pies con un movimiento circular, llegando tan lejos como puedas sin forzar. Haz una pausa por un momento en la parte inferior, luego regresa lentamente a la posición inicial. Repite el número de repeticiones deseado."
+}

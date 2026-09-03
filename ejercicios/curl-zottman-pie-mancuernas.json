@@ -1,0 +1,13 @@
+{
+  "id": "curl-zottman-pie-mancuernas",
+  "name": "Curl Zottman de pie con mancuernas",
+  "image_male": "images/curl-zottman-pie-mancuernas-male.webp",
+  "image_female": "images/curl-zottman-pie-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas hacia tu cuerpo. Mantén los codos cerca del torso y gira las palmas para que queden hacia adelante. Flexiona las mancuernas hacia los hombros mientras mantienes fija la parte superior de los brazos. En la parte superior del movimiento, gira las muñecas de modo que las palmas queden alejadas de tu cuerpo. Baja lentamente las mancuernas de vuelta a la posición inicial, girando las palmas de nuevo hacia tu cuerpo. Repite el número de repeticiones deseado."
+}

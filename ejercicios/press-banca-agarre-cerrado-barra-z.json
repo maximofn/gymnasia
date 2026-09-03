@@ -1,0 +1,14 @@
+{
+  "id": "press-banca-agarre-cerrado-barra-z",
+  "name": "Press de banca con agarre cerrado y barra Z",
+  "image_male": "images/press-banca-agarre-cerrado-barra-z-male.webp",
+  "image_female": "images/press-banca-agarre-cerrado-barra-z-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "barra Z y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre un banco con los pies apoyados en el suelo y la espalda presionada contra el banco. Sujeta la barra EZ con agarre cerrado, manos separadas a la altura de los hombros, palmas hacia adelante. Levanta la barra del soporte y sostenla directamente sobre el pecho con los brazos completamente extendidos. Baja la barra lentamente hacia el pecho, manteniendo los codos cerca del cuerpo. Haz una pausa breve cuando la barra toque el pecho. Empuja la barra de vuelta a la posición inicial, extendiendo completamente los brazos. Repite el número de repeticiones deseado."
+}

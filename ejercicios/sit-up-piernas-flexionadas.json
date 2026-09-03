@@ -1,0 +1,13 @@
+{
+  "id": "sit-up-piernas-flexionadas",
+  "name": "Sit-up con piernas flexionadas",
+  "image_male": "images/sit-up-piernas-flexionadas-male.webp",
+  "image_female": "images/sit-up-piernas-flexionadas-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Activando el abdomen, levanta lentamente la parte superior del cuerpo del suelo, curvándote hacia adelante hasta que tu torso forme un ángulo de 45 grados. Al mismo tiempo, levanta las piernas del suelo, doblando las rodillas y llevándolas hacia el pecho. Haz una pausa breve en la parte superior, luego baja lentamente la parte superior del cuerpo y las piernas a la posición inicial. Repite el número de repeticiones deseado."
+}

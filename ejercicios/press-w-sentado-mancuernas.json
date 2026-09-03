@@ -1,0 +1,14 @@
+{
+  "id": "press-w-sentado-mancuernas",
+  "name": "Press W sentado con mancuernas",
+  "image_male": "images/press-w-sentado-mancuernas-male.webp",
+  "image_female": "images/press-w-sentado-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "pecho"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con una mancuerna en cada mano, con las palmas hacia adelante. Sube las mancuernas hasta la altura de los hombros, con los codos flexionados y las palmas hacia adelante. Presiona las mancuernas hacia arriba hasta que los brazos queden completamente extendidos por encima de la cabeza. Baja las mancuernas de vuelta a la altura de los hombros. Repite el número de repeticiones deseado."
+}

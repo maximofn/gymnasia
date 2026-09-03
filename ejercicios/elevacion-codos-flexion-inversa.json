@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-codos-flexion-inversa",
+  "name": "Elevación de codos en flexión inversa",
+  "image_male": "images/elevacion-codos-flexion-inversa-male.webp",
+  "image_female": "images/elevacion-codos-flexion-inversa-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza tumbado boca abajo en el suelo con las piernas extendidas y las manos colocadas justo debajo de los hombros. Activa el core y presiona con las palmas para levantar la parte superior del cuerpo del suelo, manteniendo los codos cerca de los costados. Haz una pausa por un momento en la parte superior, apretando los músculos de la espalda alta. Baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}
