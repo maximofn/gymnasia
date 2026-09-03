@@ -1,0 +1,14 @@
+{
+  "id": "curl-spider-inverso-mancuernas",
+  "name": "Curl spider inverso con mancuernas",
+  "image_male": "images/curl-spider-inverso-mancuernas-male.webp",
+  "image_female": "images/curl-spider-inverso-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquial"
+  ],
+  "equipment": "banco inclinado y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo sobre un banco inclinado y deja colgar ambos brazos. Con una mancuerna en cada mano y las palmas hacia abajo, flexiona los codos hasta acercar las cargas al banco. Mantén los brazos superiores verticales y baja despacio."
+}

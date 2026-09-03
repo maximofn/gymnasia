@@ -1,0 +1,14 @@
+{
+  "id": "press-inclinado-agarre-neutro-mancuernas",
+  "name": "Press inclinado con agarre neutro y mancuernas",
+  "image_male": "images/press-inclinado-agarre-neutro-mancuernas-male.webp",
+  "image_female": "images/press-inclinado-agarre-neutro-mancuernas-female.webp",
+  "muscle_group": "pecho superior",
+  "secondary_muscles": [
+    "tríceps",
+    "hombro"
+  ],
+  "equipment": "banco inclinado y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Recuéstate en un banco inclinado con una mancuerna en cada mano y las palmas enfrentadas. Baja las cargas junto a la parte alta del pecho manteniendo los codos cerca del cuerpo. Presiona en vertical sin perder el agarre neutro ni despegar la espalda."
+}

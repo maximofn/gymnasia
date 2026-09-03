@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-posterior-cabeza-apoyada-mancuernas",
+  "name": "Elevación lateral posterior con cabeza apoyada y mancuernas",
+  "image_male": "images/elevacion-lateral-posterior-cabeza-apoyada-mancuernas-male.webp",
+  "image_female": "images/elevacion-lateral-posterior-cabeza-apoyada-mancuernas-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": [
+    "trapecio",
+    "espalda alta"
+  ],
+  "equipment": "banco inclinado y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte frente a un banco inclinado, apoya la frente en el extremo superior y flexiona las caderas. Con una mancuerna en cada mano, abre los brazos hasta la altura de los hombros. Mantén la cabeza apoyada y el torso inmóvil durante todo el movimiento."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "extension-triceps-pronada-banco-inclinado-mancuernas",
+  "name": "Extensión de tríceps pronada en banco inclinado con mancuernas",
+  "image_male": "images/extension-triceps-pronada-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/extension-triceps-pronada-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "antebrazo"
+  ],
+  "equipment": "banco inclinado y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Recuéstate en un banco inclinado con una mancuerna en cada mano y las palmas orientadas hacia delante. Mantén los brazos superiores quietos y flexiona los codos para bajar las cargas a ambos lados de la cabeza. Extiende los codos sin convertir el movimiento en un press."
+}

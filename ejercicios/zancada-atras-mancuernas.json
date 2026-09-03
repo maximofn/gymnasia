@@ -1,0 +1,15 @@
+{
+  "id": "zancada-atras-mancuernas",
+  "name": "Zancada atrás con mancuernas",
+  "image_male": "images/zancada-atras-mancuernas-male.webp",
+  "image_female": "images/zancada-atras-mancuernas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Sostén una mancuerna en cada mano y da un paso amplio hacia atrás. Desciende hasta acercar la rodilla posterior al suelo mientras la rodilla delantera sigue la línea del pie. Empuja con el talón delantero para volver erguido y alterna lados."
+}

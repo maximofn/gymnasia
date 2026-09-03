@@ -1,0 +1,13 @@
+{
+  "id": "curl-muneca-neutro-sobre-banco-mancuernas",
+  "name": "Curl de muñeca neutro sobre banco con mancuernas",
+  "image_male": "images/curl-muneca-neutro-sobre-banco-mancuernas-male.webp",
+  "image_female": "images/curl-muneca-neutro-sobre-banco-mancuernas-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "bíceps"
+  ],
+  "equipment": "banco y mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Arrodíllate o siéntate frente a un banco y apoya ambos antebrazos sobre él con las manos fuera del borde y los pulgares hacia arriba. Sostén una mancuerna ligera en cada mano y mueve únicamente las muñecas en un recorrido corto. Mantén los codos y antebrazos inmóviles."
+}

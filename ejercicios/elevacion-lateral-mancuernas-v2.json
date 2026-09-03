@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-lateral-mancuernas-v2",
+  "name": "Elevación lateral con mancuernas v2",
+  "image_male": "images/elevacion-lateral-mancuernas-v2-male.webp",
+  "image_female": "images/elevacion-lateral-mancuernas-v2-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "trapecio"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con una mancuerna en cada mano y los codos ligeramente flexionados. Eleva los brazos hacia los lados hasta la altura de los hombros sin encogerlos ni inclinar el tronco. Desciende lentamente manteniendo la tensión."
+}

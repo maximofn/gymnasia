@@ -1,0 +1,13 @@
+{
+  "id": "curl-predicador-mancuernas",
+  "name": "Curl predicador con mancuernas",
+  "image_male": "images/curl-predicador-mancuernas-male.webp",
+  "image_female": "images/curl-predicador-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo"
+  ],
+  "equipment": "banco predicador y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya ambos brazos sobre el cojín de un banco predicador y sujeta dos mancuernas con las palmas hacia arriba. Flexiona los codos hasta contraer los bíceps sin levantar los brazos del apoyo. Desciende con control hasta casi extenderlos."
+}

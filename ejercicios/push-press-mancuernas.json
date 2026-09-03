@@ -1,0 +1,16 @@
+{
+  "id": "push-press-mancuernas",
+  "name": "Push press con mancuernas",
+  "image_male": "images/push-press-mancuernas-male.webp",
+  "image_female": "images/push-press-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "tríceps",
+    "cuádriceps",
+    "glúteos",
+    "abdomen"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Sostén dos mancuernas a la altura de los hombros, flexiona ligeramente rodillas y caderas y empuja el suelo con fuerza. Transfiere ese impulso para presionar las cargas por encima de la cabeza. Termina erguido con los brazos extendidos y baja de forma controlada."
+}

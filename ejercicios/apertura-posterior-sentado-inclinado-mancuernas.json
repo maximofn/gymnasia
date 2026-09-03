@@ -1,0 +1,14 @@
+{
+  "id": "apertura-posterior-sentado-inclinado-mancuernas",
+  "name": "Apertura posterior sentado e inclinado con mancuernas",
+  "image_male": "images/apertura-posterior-sentado-inclinado-mancuernas-male.webp",
+  "image_female": "images/apertura-posterior-sentado-inclinado-mancuernas-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": [
+    "trapecio",
+    "espalda alta"
+  ],
+  "equipment": "banco y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el borde de un banco, junta los pies e inclina el torso sobre los muslos. Deja colgar una mancuerna a cada lado y abre los brazos hasta alinearlos con la espalda. Mantén el cuello neutro y baja con control."
+}

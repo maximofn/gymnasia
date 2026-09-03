@@ -1,0 +1,13 @@
+{
+  "id": "curl-muneca-inverso-mancuernas",
+  "name": "Curl de muñeca inverso con mancuernas",
+  "image_male": "images/curl-muneca-inverso-mancuernas-male.webp",
+  "image_female": "images/curl-muneca-inverso-mancuernas-female.webp",
+  "muscle_group": "extensores del antebrazo",
+  "secondary_muscles": [
+    "braquial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Siéntate y apoya los antebrazos sobre los muslos con las palmas hacia abajo y una mancuerna en cada mano. Eleva únicamente las muñecas manteniendo codos y hombros quietos. Baja las cargas despacio hasta recuperar la extensión."
+}

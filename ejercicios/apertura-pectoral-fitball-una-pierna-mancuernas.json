@@ -1,0 +1,16 @@
+{
+  "id": "apertura-pectoral-fitball-una-pierna-mancuernas",
+  "name": "Apertura pectoral sobre fitball a una pierna con mancuernas",
+  "image_male": "images/apertura-pectoral-fitball-una-pierna-mancuernas-male.webp",
+  "image_female": "images/apertura-pectoral-fitball-una-pierna-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombro",
+    "tríceps",
+    "glúteos",
+    "abdomen"
+  ],
+  "equipment": "fitball y mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Apoya la parte alta de la espalda sobre un fitball, eleva las caderas y mantén un solo pie firme en el suelo mientras extiendes la otra pierna. Con una mancuerna en cada mano, abre los brazos con los codos ligeramente flexionados hasta sentir tensión en el pecho. Cierra las mancuernas sobre el torso sin perder la estabilidad."
+}

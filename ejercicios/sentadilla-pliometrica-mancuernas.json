@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-pliometrica-mancuernas",
+  "name": "Sentadilla pliométrica con mancuernas",
+  "image_male": "images/sentadilla-pliometrica-mancuernas-male.webp",
+  "image_female": "images/sentadilla-pliometrica-mancuernas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Sostén una mancuerna en cada mano a los lados y baja a una sentadilla estable. Extiende caderas, rodillas y tobillos de forma explosiva para despegar ambos pies del suelo. Aterriza suavemente con las rodillas alineadas y enlaza la siguiente repetición."
+}

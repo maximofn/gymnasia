@@ -1,0 +1,13 @@
+{
+  "id": "curl-muneca-sobre-banco-mancuernas",
+  "name": "Curl de muñeca sobre banco con mancuernas",
+  "image_male": "images/curl-muneca-sobre-banco-mancuernas-male.webp",
+  "image_female": "images/curl-muneca-sobre-banco-mancuernas-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "bíceps"
+  ],
+  "equipment": "banco y mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Apoya ambos antebrazos sobre un banco con las palmas hacia arriba y las muñecas fuera del borde. Deja rodar ligeramente las mancuernas hacia los dedos y flexiona las muñecas hasta elevarlas. Baja con control sin separar los antebrazos del banco."
+}

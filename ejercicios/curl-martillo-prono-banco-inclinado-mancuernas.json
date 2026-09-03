@@ -1,0 +1,14 @@
+{
+  "id": "curl-martillo-prono-banco-inclinado-mancuernas",
+  "name": "Curl martillo prono en banco inclinado con mancuernas",
+  "image_male": "images/curl-martillo-prono-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/curl-martillo-prono-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquial"
+  ],
+  "equipment": "banco inclinado y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo en un banco inclinado con los brazos colgando y las palmas enfrentadas. Flexiona ambos codos con agarre martillo hasta acercar las mancuernas a los hombros. Mantén el pecho apoyado y baja con control."
+}
