@@ -1,0 +1,13 @@
+{
+  "id": "crunch-rana",
+  "name": "Crunch rana",
+  "image_male": "images/crunch-rana-male.webp",
+  "image_female": "images/crunch-rana-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Activando el abdomen, levanta la parte superior del cuerpo del suelo, curvándote hacia adelante hasta que el torso forme un ángulo de 45 grados. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

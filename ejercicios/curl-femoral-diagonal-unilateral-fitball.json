@@ -1,0 +1,14 @@
+{
+  "id": "curl-femoral-diagonal-unilateral-fitball",
+  "name": "Curl femoral diagonal unilateral con fitball",
+  "image_male": "images/curl-femoral-diagonal-unilateral-fitball-male.webp",
+  "image_female": "images/curl-femoral-diagonal-unilateral-fitball-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "fitball",
+  "difficulty": "advanced",
+  "instructions": "Comienza acostado sobre la espalda con las piernas extendidas y los talones apoyados sobre el balón de estabilidad. Coloca los brazos a los lados del cuerpo para mantener el equilibrio. Activa los glúteos y el abdomen para levantar las caderas del suelo, formando una línea recta desde los hombros hasta los talones. Dobla la rodilla derecha y llévala hacia el pecho, manteniendo la pierna izquierda extendida y el pie en flexión. Lleva la pierna derecha en diagonal a través del cuerpo, extendiéndola por completo y activando los isquiotibiales. Regresa lentamente la pierna derecha a la posición inicial, manteniendo el control y el equilibrio. Repite el movimiento con la pierna izquierda, alternando los lados durante el número de repeticiones deseado."
+}

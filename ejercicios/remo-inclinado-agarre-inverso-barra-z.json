@@ -1,0 +1,14 @@
+{
+  "id": "remo-inclinado-agarre-inverso-barra-z",
+  "name": "Remo inclinado con agarre inverso y barra Z",
+  "image_male": "images/remo-inclinado-agarre-inverso-barra-z-male.webp",
+  "image_female": "images/remo-inclinado-agarre-inverso-barra-z-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "barra Z",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Sostén la barra EZ con agarre supino, palmas hacia arriba, y las manos separadas a la altura de los hombros. Inclínate hacia delante desde las caderas, manteniendo la espalda recta y el pecho elevado, hasta que el torso quede casi paralelo al suelo. Tira de la barra EZ hacia la parte baja del pecho, apretando los omóplatos entre sí. Haz una pausa breve en la parte superior, luego baja lentamente la barra EZ a la posición inicial. Repite el número de repeticiones deseado."
+}

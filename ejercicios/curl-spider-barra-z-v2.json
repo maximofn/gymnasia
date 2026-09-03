@@ -1,0 +1,13 @@
+{
+  "id": "curl-spider-barra-z-v2",
+  "name": "Curl spider con barra Z v2",
+  "image_male": "images/curl-spider-barra-z-v2-male.webp",
+  "image_female": "images/curl-spider-barra-z-v2-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "barra Z y banco predicador",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén la barra EZ con agarre supino, palmas hacia arriba. Apoya los brazos superiores en un banco scott o en un balón de estabilidad, dejando que los codos cuelguen hacia abajo. Manteniendo los brazos superiores fijos, exhala y levanta la barra hacia los hombros. Haz una pausa breve en la parte alta, apretando los bíceps. Inhala y baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

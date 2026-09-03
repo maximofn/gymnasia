@@ -1,0 +1,14 @@
+{
+  "id": "hiperextension-fitball-rodillas-elevadas",
+  "name": "Hiperextensión en fitball con rodillas elevadas",
+  "image_male": "images/hiperextension-fitball-rodillas-elevadas-male.webp",
+  "image_female": "images/hiperextension-fitball-rodillas-elevadas-female.webp",
+  "muscle_group": "zona lumbar",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "fitball",
+  "difficulty": "advanced",
+  "instructions": "Coloca el balón de estabilidad en el suelo y túmbate boca abajo sobre él, con las caderas apoyadas en el balón y los pies contra una pared para mayor estabilidad. Coloca las manos detrás de la cabeza o cruzadas sobre el pecho. Activa el core y levanta lentamente la parte superior del cuerpo del balón, extendiendo la espalda hasta que tu cuerpo forme una línea recta desde la cabeza hasta los talones. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "extension-triceps-inclinado-barra-z",
+  "name": "Extensión de tríceps inclinada con barra Z",
+  "image_male": "images/extension-triceps-inclinado-barra-z-male.webp",
+  "image_female": "images/extension-triceps-inclinado-barra-z-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "barra Z y banco inclinado",
+  "difficulty": "intermediate",
+  "instructions": "Coloca un banco inclinado a un ángulo de 45 grados. Siéntate en el banco con la espalda apoyada en el respaldo y sostén la barra EZ con agarre prono. Extiende completamente los brazos por encima de la cabeza, manteniendo los codos cerca de la cabeza. Baja la barra detrás de la cabeza doblando los codos, manteniendo los brazos superiores inmóviles. Haz una pausa por un momento y luego extiende los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

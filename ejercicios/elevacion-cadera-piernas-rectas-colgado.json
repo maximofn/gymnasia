@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-cadera-piernas-rectas-colgado",
+  "name": "Elevación de cadera con piernas rectas colgado",
+  "image_male": "images/elevacion-cadera-piernas-rectas-colgado-male.webp",
+  "image_female": "images/elevacion-cadera-piernas-rectas-colgado-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "barra de dominadas",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de una barra de dominadas con los brazos completamente extendidos y las palmas mirando hacia afuera. Activa el core y levanta las piernas hacia adelante hasta que queden paralelas al suelo. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

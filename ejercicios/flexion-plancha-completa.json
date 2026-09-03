@@ -1,0 +1,15 @@
+{
+  "id": "flexion-plancha-completa",
+  "name": "Flexión en plancha completa",
+  "image_male": "images/flexion-plancha-completa-male.webp",
+  "image_female": "images/flexion-plancha-completa-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de flexión de brazos con las manos un poco más separadas que el ancho de los hombros. Activa el core y baja el cuerpo hacia el suelo, manteniendo los codos cerca de los costados. Mientras te bajas, inclina el cuerpo hacia adelante y levanta los pies del suelo, equilibrándote sobre las manos. Continúa bajando el cuerpo hasta que el pecho quede justo por encima del suelo. Empuja con las manos y extiende los brazos para volver a subir el cuerpo a la posición inicial. Mantén una línea recta desde la cabeza hasta los talones durante todo el movimiento. Repite el número de repeticiones deseado."
+}

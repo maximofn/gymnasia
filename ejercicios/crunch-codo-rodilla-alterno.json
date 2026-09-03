@@ -1,0 +1,13 @@
+{
+  "id": "crunch-codo-rodilla-alterno",
+  "name": "Crunch alterno de codo a rodilla",
+  "image_male": "images/crunch-codo-rodilla-alterno-male.webp",
+  "image_female": "images/crunch-codo-rodilla-alterno-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza tumbado boca arriba con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Activa el abdomen y levanta la parte superior del cuerpo del suelo, llevando el codo derecho hacia la rodilla izquierda. Al mismo tiempo, lleva la rodilla izquierda hacia el codo derecho, creando un movimiento de torsión. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo y extiende las piernas de vuelta a la posición inicial. Repite el movimiento, esta vez llevando el codo izquierdo hacia la rodilla derecha y la rodilla derecha hacia el codo izquierdo. Continúa alternando lados durante el número de repeticiones deseado."
+}

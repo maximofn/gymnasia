@@ -1,0 +1,14 @@
+{
+  "id": "hiperextension-en-banco",
+  "name": "Hiperextensión en banco",
+  "image_male": "images/hiperextension-en-banco-male.webp",
+  "image_female": "images/hiperextension-en-banco-female.webp",
+  "muscle_group": "zona lumbar",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "banco de hiperextensiones",
+  "difficulty": "beginner",
+  "instructions": "Ajusta el banco de hiperextensiones para que las caderas queden apoyadas cómodamente en la almohadilla y los pies queden asegurados. Cruza los brazos sobre el pecho o coloca las manos detrás de la cabeza. Baja lentamente la parte superior del cuerpo hacia el suelo manteniendo la espalda recta. Haz una pausa breve en la parte baja, luego eleva la parte superior del cuerpo hasta que quede alineada con las piernas. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-dorsal-lateral-tumbado-fitball",
+  "name": "Estiramiento dorsal lateral tumbado en fitball",
+  "image_male": "images/estiramiento-dorsal-lateral-tumbado-fitball-male.webp",
+  "image_female": "images/estiramiento-dorsal-lateral-tumbado-fitball-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "fitball",
+  "difficulty": "beginner",
+  "instructions": "Túmbate de lado con las piernas extendidas y la cabeza apoyada sobre el balón de estabilidad. Coloca el brazo de arriba sobre el balón para mantener la estabilidad. Extiende el brazo de arriba por encima de la cabeza y permite que tu torso gire ligeramente. Siente el estiramiento en los músculos dorsales del costado de tu cuerpo. Mantén el estiramiento durante 20-30 segundos, luego cambia de lado y repite."
+}

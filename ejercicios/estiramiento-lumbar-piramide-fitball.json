@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-lumbar-piramide-fitball",
+  "name": "Estiramiento lumbar pirámide en fitball",
+  "image_male": "images/estiramiento-lumbar-piramide-fitball-male.webp",
+  "image_female": "images/estiramiento-lumbar-piramide-fitball-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "fitball",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el balón de estabilidad con los pies planos en el suelo y las rodillas flexionadas en un ángulo de 90 grados. Camina lentamente hacia adelante con los pies, haciendo rodar el balón por tu espalda hasta que tu zona lumbar quede apoyada sobre el balón. Coloca las manos detrás de la cabeza o crúzalas sobre el pecho. Activa el core y baja lentamente la parte superior del cuerpo hacia el suelo, permitiendo que tu zona lumbar se estire sobre el balón. Mantén el estiramiento durante unos segundos, luego regresa lentamente a la posición inicial. Repite el número de repeticiones deseado."
+}

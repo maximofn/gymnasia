@@ -1,0 +1,13 @@
+{
+  "id": "curl-biceps-sentado-barra-z",
+  "name": "Curl de bíceps sentado con barra Z",
+  "image_male": "images/curl-biceps-sentado-barra-z-male.webp",
+  "image_female": "images/curl-biceps-sentado-barra-z-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "barra Z y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con los pies apoyados planos en el suelo y la espalda recta. Sostén la barra EZ con agarre supino, palmas hacia arriba, y las manos separadas a la altura de los hombros. Apoya los brazos superiores en los muslos, dejando que la barra EZ cuelgue frente a ti. Manteniendo los brazos superiores inmóviles, exhala y sube la barra EZ hacia los hombros. Haz una pausa breve en la parte alta, apretando los bíceps. Inhala y baja lentamente la barra EZ a la posición inicial. Repite el número de repeticiones deseado."
+}

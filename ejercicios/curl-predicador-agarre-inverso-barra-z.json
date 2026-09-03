@@ -1,0 +1,13 @@
+{
+  "id": "curl-predicador-agarre-inverso-barra-z",
+  "name": "Curl predicador con agarre inverso y barra Z",
+  "image_male": "images/curl-predicador-agarre-inverso-barra-z-male.webp",
+  "image_female": "images/curl-predicador-agarre-inverso-barra-z-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "barra Z y banco predicador",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco scott con el pecho apoyado en la almohadilla y los pies planos sobre el suelo. Sujeta la barra EZ con agarre supino, manos separadas a la altura de los hombros. Apoya los brazos superiores en la almohadilla, dejando que los antebrazos cuelguen hacia abajo. Manteniendo los brazos superiores fijos, exhala y levanta la barra hacia los hombros. Haz una pausa breve en la parte más alta, luego inhala y baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

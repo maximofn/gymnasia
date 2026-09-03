@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-piernas-prono-fitball",
+  "name": "Elevación de piernas en prono con fitball",
+  "image_male": "images/elevacion-piernas-prono-fitball-male.webp",
+  "image_female": "images/elevacion-piernas-prono-fitball-female.webp",
+  "muscle_group": "zona lumbar",
+  "secondary_muscles": [
+    "abdominals",
+    "glúteos"
+  ],
+  "equipment": "fitball",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo sobre una esterilla con las piernas extendidas y los dedos de los pies apoyados sobre el balón de estabilidad. Coloca las manos en el suelo, separadas a la altura de los hombros, y activa el abdomen. Manteniendo las piernas rectas, levántalas lentamente del suelo, usando la zona lumbar y los glúteos para elevarlas tan alto como sea posible. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

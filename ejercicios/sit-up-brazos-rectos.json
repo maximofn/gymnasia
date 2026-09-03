@@ -1,0 +1,14 @@
+{
+  "id": "sit-up-brazos-rectos",
+  "name": "Sit-up con brazos rectos",
+  "image_male": "images/sit-up-brazos-rectos-male.webp",
+  "image_female": "images/sit-up-brazos-rectos-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera",
+    "cuádriceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con las piernas extendidas y los brazos rectos por encima de la cabeza. Activando el abdomen, levanta la parte superior del cuerpo del suelo mientras al mismo tiempo levantas las piernas hacia el pecho. Extiende las manos hacia los dedos de los pies mientras levantas la parte superior del cuerpo y las piernas. Haz una pausa breve en la parte superior, luego baja lentamente la parte superior del cuerpo y las piernas a la posición inicial. Repite el número de repeticiones deseado."
+}

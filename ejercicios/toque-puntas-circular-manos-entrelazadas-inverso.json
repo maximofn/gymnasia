@@ -1,0 +1,15 @@
+{
+  "id": "toque-puntas-circular-manos-entrelazadas-inverso",
+  "name": "Toque circular inverso de puntas con manos entrelazadas",
+  "image_male": "images/toque-puntas-circular-manos-entrelazadas-inverso-male.webp",
+  "image_female": "images/toque-puntas-circular-manos-entrelazadas-inverso-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los brazos extendidos hacia los lados. Inclínate hacia adelante desde la cintura, manteniendo la espalda recta y las rodillas ligeramente flexionadas. Extiende las manos hacia abajo y entrelázalas detrás de las piernas. Sube lentamente las manos en un movimiento circular por encima de la cabeza, manteniendo las piernas rectas. Continúa el movimiento circular hasta que las manos toquen los dedos de los pies. Invierte el movimiento y regresa las manos a la posición inicial. Repite el número de repeticiones deseado."
+}

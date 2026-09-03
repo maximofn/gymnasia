@@ -1,0 +1,13 @@
+{
+  "id": "curl-predicador-agarre-cerrado-barra-z",
+  "name": "Curl predicador con agarre cerrado y barra Z",
+  "image_male": "images/curl-predicador-agarre-cerrado-barra-z-male.webp",
+  "image_female": "images/curl-predicador-agarre-cerrado-barra-z-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "barra Z y banco predicador",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco scott y coloca los brazos superiores sobre la almohadilla, sujetando la barra EZ con agarre supino. Apoya los tríceps sobre la almohadilla y extiende los brazos por completo, manteniendo la espalda recta. Sube lentamente la barra hacia los hombros, contrayendo los bíceps. Haz una pausa breve en la parte alta, apretando los bíceps. Baja la barra a la posición inicial, extendiendo los brazos por completo. Repite el número de repeticiones deseado."
+}

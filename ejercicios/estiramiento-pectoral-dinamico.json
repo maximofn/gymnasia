@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-pectoral-dinamico",
+  "name": "Estiramiento pectoral dinámico",
+  "image_male": "images/estiramiento-pectoral-dinamico-male.webp",
+  "image_female": "images/estiramiento-pectoral-dinamico-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros. Extiende los brazos hacia los lados, paralelos al suelo. Lleva lentamente los brazos hacia adelante, cruzándolos frente al cuerpo. Siente el estiramiento en los músculos del pecho. Mantén el estiramiento durante 10-30 segundos. Vuelve a la posición inicial y repite el número de repeticiones deseado."
+}

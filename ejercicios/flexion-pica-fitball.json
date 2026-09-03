@@ -1,0 +1,15 @@
+{
+  "id": "flexion-pica-fitball",
+  "name": "Flexión en pica con fitball",
+  "image_male": "images/flexion-pica-fitball-male.webp",
+  "image_female": "images/flexion-pica-fitball-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps",
+    "core"
+  ],
+  "equipment": "fitball",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de flexión de brazos con las manos en el suelo y las espinillas apoyadas sobre el balón de estabilidad. Activa el core y levanta las caderas hacia el techo, haciendo rodar el balón hacia las manos. Mantén las piernas rectas y el cuerpo en posición de pica, formando una V invertida. Dobla los codos y baja la parte superior del cuerpo hacia el suelo, manteniendo la cabeza alineada con las manos. Empuja con las manos y extiende los brazos para volver a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "flexion-inclinada-agarre-cerrado",
+  "name": "Flexión inclinada con agarre cerrado",
+  "image_male": "images/flexion-inclinada-agarre-cerrado-male.webp",
+  "image_female": "images/flexion-inclinada-agarre-cerrado-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "banco",
+  "difficulty": "beginner",
+  "instructions": "Coloca las manos sobre una superficie elevada, como un banco o un escalón, ligeramente más separadas que la altura de los hombros. Extiende las piernas detrás de ti, apoyándote en la punta de los pies, con el cuerpo formando una línea recta desde la cabeza hasta los talones. Baja el pecho hacia la superficie elevada doblando los codos, manteniéndolos cerca de los costados. Haz una pausa breve en la parte baja, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+}

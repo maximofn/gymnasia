@@ -1,0 +1,14 @@
+{
+  "id": "bicicleta-manos-ergometro",
+  "name": "Bicicleta de manos en ergómetro",
+  "image_male": "images/bicicleta-manos-ergometro-male.webp",
+  "image_female": "images/bicicleta-manos-ergometro-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "ergómetro de brazos",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y la posición del manillar a un nivel cómodo. Siéntate en el ergómetro con la espalda recta y los pies sobre los pedales. Sujeta las asas con las manos y coloca los brazos en un ángulo de 90 grados. Comienza a pedalear con las manos, empujando y tirando de las asas con un movimiento controlado. Continúa pedaleando durante el tiempo o el número de repeticiones deseado."
+}

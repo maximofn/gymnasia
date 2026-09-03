@@ -1,0 +1,14 @@
+{
+  "id": "plancha-frontal-con-giro",
+  "name": "Plancha frontal con giro",
+  "image_male": "images/plancha-frontal-con-giro-male.webp",
+  "image_female": "images/plancha-frontal-con-giro-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de plancha alta con las manos directamente debajo de los hombros y el cuerpo en línea recta de la cabeza a los pies. Activa el core y los glúteos para mantener una posición estable. Gira el torso hacia la derecha, levantando el brazo derecho y extendiéndolo hacia el techo. Mantén las caderas y las piernas estables mientras giras. Mantén la posición por un momento, luego regresa a la posición inicial. Repite el giro hacia el lado izquierdo. Continúa alternando lados durante el número de repeticiones deseado."
+}

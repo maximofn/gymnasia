@@ -1,0 +1,13 @@
+{
+  "id": "extension-triceps-supino-fitball-mancuerna",
+  "name": "Extensión de tríceps supina en fitball con mancuerna",
+  "image_male": "images/extension-triceps-supino-fitball-mancuerna-male.webp",
+  "image_female": "images/extension-triceps-supino-fitball-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "fitball y mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate sobre un balón de estabilidad con los pies apoyados en el suelo y las rodillas flexionadas en un ángulo de 90 grados. Sostén una mancuerna con ambas manos y extiende los brazos rectos hacia el techo. Baja lentamente la mancuerna detrás de la cabeza, manteniendo los codos cerca de las orejas. Haz una pausa por un momento, luego sube la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

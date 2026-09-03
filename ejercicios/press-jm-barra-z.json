@@ -1,0 +1,14 @@
+{
+  "id": "press-jm-barra-z",
+  "name": "Press JM con barra Z",
+  "image_male": "images/press-jm-barra-z-male.webp",
+  "image_female": "images/press-jm-barra-z-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "barra Z y banco",
+  "difficulty": "advanced",
+  "instructions": "Túmbate sobre un banco con los pies apoyados en el suelo y la espalda presionada contra el banco. Sujeta la barra EZ con agarre prono, ligeramente más ancho que la altura de los hombros. Baja la barra hacia el pecho, manteniendo los codos pegados cerca del cuerpo. Empuja la barra de vuelta a la posición inicial, extendiendo completamente los brazos. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "abrazo-rodillas-pecho-sentadilla",
+  "name": "Abrazo de rodillas al pecho en sentadilla",
+  "image_male": "images/abrazo-rodillas-pecho-sentadilla-male.webp",
+  "image_female": "images/abrazo-rodillas-pecho-sentadilla-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros. Flexiona las rodillas y baja el cuerpo hacia una posición de sentadilla. Al ponerte en cuclillas, lleva las rodillas hacia el pecho y abrázalas con los brazos. Mantén esta posición por un momento, luego regresa lentamente a la posición inicial. Repite el número de repeticiones deseado."
+}

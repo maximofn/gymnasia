@@ -1,0 +1,14 @@
+{
+  "id": "pica-colgado",
+  "name": "Pica colgado",
+  "image_male": "images/pica-colgado-male.webp",
+  "image_female": "images/pica-colgado-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera",
+    "hombros"
+  ],
+  "equipment": "barra de dominadas",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de una barra de dominadas con los brazos completamente extendidos y las palmas mirando hacia afuera. Activa el core y levanta las piernas hacia la barra, manteniéndolas rectas. Continúa levantando hasta que el cuerpo forme una 'V', con las piernas paralelas al suelo. Mantén la posición por un momento, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "press-frances-sentado-fitball-barra-z",
+  "name": "Press francés sentado en fitball con barra Z",
+  "image_male": "images/press-frances-sentado-fitball-barra-z-male.webp",
+  "image_female": "images/press-frances-sentado-fitball-barra-z-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "barra Z y fitball",
+  "difficulty": "advanced",
+  "instructions": "Siéntate sobre un balón de ejercicio y sostén una barra EZ con agarre prono. Extiende los brazos rectos hacia arriba, manteniendo los codos cerca de la cabeza. Baja lentamente la barra detrás de la cabeza doblando los codos. Haz una pausa breve y luego extiende los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

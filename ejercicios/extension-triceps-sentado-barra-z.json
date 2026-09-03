@@ -1,0 +1,13 @@
+{
+  "id": "extension-triceps-sentado-barra-z",
+  "name": "Extensión de tríceps sentado con barra Z",
+  "image_male": "images/extension-triceps-sentado-barra-z-male.webp",
+  "image_female": "images/extension-triceps-sentado-barra-z-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "barra Z y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con la espalda recta y los pies planos sobre el suelo. Sostén la barra EZ con agarre prono, manos separadas a la altura de los hombros. Levanta la barra por encima de la cabeza, extendiendo completamente los brazos. Manteniendo los brazos superiores inmóviles, baja la barra detrás de la cabeza doblando los codos. Haz una pausa breve, luego levanta la barra de vuelta a la posición inicial extendiendo los brazos. Repite el número de repeticiones deseado."
+}

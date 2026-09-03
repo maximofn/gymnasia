@@ -1,0 +1,13 @@
+{
+  "id": "curl-biceps-agarre-cerrado-barra-z",
+  "name": "Curl de bíceps con agarre cerrado y barra Z",
+  "image_male": "images/curl-biceps-agarre-cerrado-barra-z-male.webp",
+  "image_female": "images/curl-biceps-agarre-cerrado-barra-z-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "barra Z",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén la barra EZ con agarre supino, manos separadas a la altura de los hombros. Mantén los codos cerca del torso y los brazos superiores quietos durante todo el movimiento. Sube la barra hacia los hombros, contrayendo los bíceps. Haz una pausa breve en la parte alta y luego baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

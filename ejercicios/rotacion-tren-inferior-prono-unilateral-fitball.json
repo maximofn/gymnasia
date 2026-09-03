@@ -1,0 +1,15 @@
+{
+  "id": "rotacion-tren-inferior-prono-unilateral-fitball",
+  "name": "Rotación unilateral del tren inferior en prono sobre fitball",
+  "image_male": "images/rotacion-tren-inferior-prono-unilateral-fitball-male.webp",
+  "image_female": "images/rotacion-tren-inferior-prono-unilateral-fitball-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps",
+    "core"
+  ],
+  "equipment": "fitball",
+  "difficulty": "advanced",
+  "instructions": "Túmbate boca abajo sobre el balón de estabilidad con las caderas apoyadas en el balón y las piernas extendidas rectas detrás de ti. Coloca las manos en el suelo frente a ti para mayor apoyo. Activa los glúteos y el abdomen para estabilizar el cuerpo. Levanta lentamente una pierna del suelo, manteniéndola recta y paralela al piso. Gira la pierna hacia afuera, alejándola del cuerpo, mientras mantienes las caderas y la parte superior del cuerpo estables. Haz una pausa al final de la rotación, luego regresa lentamente la pierna a la posición inicial. Repite la rotación con la otra pierna. Continúa alternando las piernas durante el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-isquiotibiales-pie",
+  "name": "Estiramiento de isquiotibiales de pie",
+  "image_male": "images/estiramiento-isquiotibiales-pie-male.webp",
+  "image_female": "images/estiramiento-isquiotibiales-pie-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Da un paso adelante con el pie derecho y traslada el peso hacia la pierna derecha. Manteniendo la espalda recta, inclínate lentamente hacia adelante desde las caderas, alcanzando el pie derecho con ambas manos. Mantén el estiramiento durante 20-30 segundos, luego vuelve a la posición inicial. Repite del otro lado."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "plancha-completa",
+  "name": "Plancha completa",
+  "image_male": "images/plancha-completa-male.webp",
+  "image_female": "images/plancha-completa-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "pecho",
+    "tríceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de flexión de brazos con las manos separadas a la altura de los hombros y los dedos apuntando hacia adelante. Activa el core y desplaza lentamente el peso hacia adelante, levantando los pies del suelo. Continúa desplazando el peso hacia adelante hasta que el cuerpo quede paralelo al suelo, equilibrándote sobre las manos. Mantén esta posición todo el tiempo que puedas, conservando una línea corporal recta. Baja lentamente los pies de nuevo al suelo y regresa a la posición inicial. Repite el número de repeticiones deseado."
+}

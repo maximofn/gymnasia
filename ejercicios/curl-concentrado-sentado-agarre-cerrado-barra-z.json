@@ -1,0 +1,13 @@
+{
+  "id": "curl-concentrado-sentado-agarre-cerrado-barra-z",
+  "name": "Curl concentrado sentado con agarre cerrado y barra Z",
+  "image_male": "images/curl-concentrado-sentado-agarre-cerrado-barra-z-male.webp",
+  "image_female": "images/curl-concentrado-sentado-agarre-cerrado-barra-z-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "barra Z y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y sostén una barra EZ con agarre supino. Apoya el codo en la parte interna del muslo, justo por encima de la rodilla. Sube la barra curvando el brazo hacia el hombro mientras mantienes el brazo superior inmóvil. Contrae los bíceps en la parte superior del movimiento, luego baja lentamente la barra a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "hiperextension-fitball-manos-nuca",
+  "name": "Hiperextensión en fitball con manos en la nuca",
+  "image_male": "images/hiperextension-fitball-manos-nuca-male.webp",
+  "image_female": "images/hiperextension-fitball-manos-nuca-female.webp",
+  "muscle_group": "zona lumbar",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "fitball",
+  "difficulty": "intermediate",
+  "instructions": "Coloca el balón de estabilidad en el suelo y túmbate boca abajo sobre él con las caderas apoyadas en el balón. Coloca los pies contra una pared u otra superficie estable para apoyarte. Cruza los brazos detrás de la cabeza, con las manos tocando la parte de atrás de la cabeza. Activa el core y levanta lentamente la parte superior del cuerpo del balón, extendiendo la espalda hasta que tu cuerpo forme una línea recta desde la cabeza hasta las caderas. Haz una pausa breve en la parte alta del movimiento, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}
