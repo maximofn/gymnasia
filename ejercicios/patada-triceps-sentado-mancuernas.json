@@ -1,0 +1,14 @@
+{
+  "id": "patada-triceps-sentado-mancuernas",
+  "name": "Patada de tríceps sentado con mancuernas",
+  "image_male": "images/patada-triceps-sentado-mancuernas-male.webp",
+  "image_female": "images/patada-triceps-sentado-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "espalda"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y sujeta una mancuerna en cada mano. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Acerca la parte superior de los brazos a tus costados y mantén los codos flexionados en un ángulo de 90 grados. Extiende los brazos rectos hacia atrás, contrayendo los tríceps en la parte superior del movimiento. Haz una pausa por un momento, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

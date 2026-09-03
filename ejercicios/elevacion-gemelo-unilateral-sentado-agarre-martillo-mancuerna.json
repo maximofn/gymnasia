@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-gemelo-unilateral-sentado-agarre-martillo-mancuerna",
+  "name": "Elevación de gemelo unilateral sentado con agarre martillo",
+  "image_male": "images/elevacion-gemelo-unilateral-sentado-agarre-martillo-mancuerna-male.webp",
+  "image_female": "images/elevacion-gemelo-unilateral-sentado-agarre-martillo-mancuerna-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "sóleo"
+  ],
+  "equipment": "mancuerna, banco y plataforma",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco o silla con los pies apoyados en el suelo y una mancuerna apoyada sobre los muslos. Coloca un pie sobre una superficie elevada, como un escalón o un bloque, con el talón colgando del borde. Sujeta la mancuerna con agarre neutro, es decir, con las palmas mirándose entre sí y los dedos envolviendo la barra. Manteniendo el core activado y la espalda recta, eleva lentamente el talón lo más alto posible empujando con la punta del pie. Haz una pausa por un momento en la parte superior, luego baja lentamente el talón de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia a la otra pierna."
+}

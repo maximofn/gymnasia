@@ -1,0 +1,14 @@
+{
+  "id": "press-hombro-alterno-neutro-sentado-mancuernas",
+  "name": "Press de hombro alterno neutro sentado con mancuernas",
+  "image_male": "images/press-hombro-alterno-neutro-sentado-mancuernas-male.webp",
+  "image_female": "images/press-hombro-alterno-neutro-sentado-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con la espalda recta y los pies planos sobre el suelo. Sujeta una mancuerna en cada mano, con las palmas hacia adentro, y levántalas a la altura de los hombros. Presiona una mancuerna hacia arriba, por encima de la cabeza, mientras mantienes la otra mancuerna a la altura de los hombros. Baja la mancuerna levantada de vuelta a la altura de los hombros mientras presionas simultáneamente la otra mancuerna por encima de la cabeza. Continúa alternando entre los brazos durante el número de repeticiones deseado."
+}

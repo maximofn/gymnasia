@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-brazos-flexionados-sentado-mancuernas",
+  "name": "Elevación lateral sentado con brazos flexionados",
+  "image_male": "images/elevacion-lateral-brazos-flexionados-sentado-mancuernas-male.webp",
+  "image_female": "images/elevacion-lateral-brazos-flexionados-sentado-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecio",
+    "romboides"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con la espalda recta y los pies planos sobre el suelo. Sujeta una mancuerna en cada mano con las palmas hacia tu cuerpo y los brazos flexionados en un ángulo de 90 grados. Manteniendo los codos flexionados, levanta los brazos hacia los lados hasta que queden paralelos al suelo. Haz una pausa por un momento en la parte superior, luego baja lentamente los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

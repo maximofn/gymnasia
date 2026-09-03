@@ -1,0 +1,13 @@
+{
+  "id": "flexion-lateral-tronco-unilateral-mancuerna",
+  "name": "Flexión lateral de tronco con mancuerna",
+  "image_male": "images/flexion-lateral-tronco-unilateral-mancuerna-male.webp",
+  "image_female": "images/flexion-lateral-tronco-unilateral-mancuerna-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros, sujetando una mancuerna con una mano y dejando que cuelgue a tu costado. Manteniendo la espalda recta y el core activado, inclínate lentamente hacia el lado opuesto de la mancuerna, bajando el peso tanto como te sea posible con comodidad. Haz una pausa por un momento, luego regresa lentamente a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado y repite."
+}

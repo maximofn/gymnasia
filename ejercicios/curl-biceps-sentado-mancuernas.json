@@ -1,0 +1,13 @@
+{
+  "id": "curl-biceps-sentado-mancuernas",
+  "name": "Curl de bíceps sentado con mancuernas",
+  "image_male": "images/curl-biceps-sentado-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-sentado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y sostén una mancuerna en cada mano, con las palmas hacia arriba. Mantén la espalda recta y los codos cerca del torso. Exhala y flexiona las mancuernas hacia los hombros, contrayendo los bíceps. Haz una pausa por un momento en la parte superior, luego inhala y baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

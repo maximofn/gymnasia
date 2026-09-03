@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-pistol-mancuernas",
+  "name": "Sentadilla pistol con mancuernas",
+  "image_male": "images/sentadilla-pistol-mancuernas-male.webp",
+  "image_female": "images/sentadilla-pistol-mancuernas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano. Extiende una pierna hacia adelante y mantenla levantada del suelo durante todo el ejercicio. Flexiona la pierna de apoyo y baja el cuerpo como si te sentaras en una silla. Mantén el pecho arriba y la espalda recta. Haz una pausa por un momento en la posición más baja, luego empuja con el talón para volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "curl-muneca-neutro-sentado-mancuernas",
+  "name": "Curl de muñeca neutro sentado con mancuernas",
+  "image_male": "images/curl-muneca-neutro-sentado-mancuernas-male.webp",
+  "image_female": "images/curl-muneca-neutro-sentado-mancuernas-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [
+    "bíceps",
+    "hombros"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y sujeta una mancuerna en cada mano, con las palmas mirándose entre sí. Apoya los antebrazos sobre los muslos, dejando que las mancuernas cuelguen hacia abajo. Manteniendo las muñecas en posición neutra, flexiona las mancuernas hacia los hombros. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

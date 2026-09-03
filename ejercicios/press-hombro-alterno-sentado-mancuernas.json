@@ -1,0 +1,14 @@
+{
+  "id": "press-hombro-alterno-sentado-mancuernas",
+  "name": "Press de hombro alterno sentado con mancuernas",
+  "image_male": "images/press-hombro-alterno-sentado-mancuernas-male.webp",
+  "image_female": "images/press-hombro-alterno-sentado-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "pecho"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con una mancuerna en cada mano, con las palmas hacia adelante. Sube las mancuernas hasta la altura de los hombros, con los codos flexionados y las palmas hacia adelante. Presiona una mancuerna hacia arriba, por encima de la cabeza, extendiendo completamente el brazo. Baja la mancuerna de vuelta a la altura de los hombros. Repite con el otro brazo. Continúa alternando los brazos durante el número de repeticiones deseado."
+}

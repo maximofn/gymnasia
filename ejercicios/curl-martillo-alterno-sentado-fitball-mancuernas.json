@@ -1,0 +1,13 @@
+{
+  "id": "curl-martillo-alterno-sentado-fitball-mancuernas",
+  "name": "Curl martillo alterno sentado sobre fitball",
+  "image_male": "images/curl-martillo-alterno-sentado-fitball-mancuernas-male.webp",
+  "image_female": "images/curl-martillo-alterno-sentado-fitball-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "fitball y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate sobre un balón de ejercicio con los pies apoyados planos en el suelo y la espalda recta. Sostén una mancuerna en cada mano con las palmas hacia el cuerpo y los brazos completamente extendidos. Manteniendo la parte superior de los brazos fija, exhala y flexiona una mancuerna hacia el hombro mientras mantienes la palma hacia tu cuerpo. Continúa levantando la mancuerna hasta que el bíceps esté completamente contraído y la mancuerna esté a la altura del hombro. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el movimiento con el brazo contrario. Continúa alternando los brazos durante el número de repeticiones deseado."
+}

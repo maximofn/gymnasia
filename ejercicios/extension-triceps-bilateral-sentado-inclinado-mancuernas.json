@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-bilateral-sentado-inclinado-mancuernas",
+  "name": "Extensión de tríceps bilateral sentado e inclinado",
+  "image_male": "images/extension-triceps-bilateral-sentado-inclinado-mancuernas-male.webp",
+  "image_female": "images/extension-triceps-bilateral-sentado-inclinado-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "espalda"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y sujeta una mancuerna en cada mano. Inclínate hacia adelante desde la cintura, manteniendo la espalda recta y la cabeza erguida. Extiende los brazos rectos hacia atrás, manteniendo los codos cerca de la cabeza. Haz una pausa por un momento, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "press-hombro-sentado-mancuernas",
+  "name": "Press de hombro sentado con mancuernas",
+  "image_male": "images/press-hombro-sentado-mancuernas-male.webp",
+  "image_female": "images/press-hombro-sentado-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con una mancuerna en cada mano, apoyadas en los muslos. Sube las mancuernas hasta la altura de los hombros, con las palmas hacia adelante. Presiona las mancuernas hacia arriba hasta que los brazos queden completamente extendidos por encima de la cabeza. Haz una pausa por un momento en la parte superior, luego baja lentamente las mancuernas de vuelta a la altura de los hombros. Repite el número de repeticiones deseado."
+}

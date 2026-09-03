@@ -1,0 +1,14 @@
+{
+  "id": "curl-biceps-press-hombro-sentado-mancuernas",
+  "name": "Curl de bíceps con press de hombro sentado",
+  "image_male": "images/curl-biceps-press-hombro-sentado-mancuernas-male.webp",
+  "image_female": "images/curl-biceps-press-hombro-sentado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "advanced",
+  "instructions": "Siéntate en un banco con la espalda recta y los pies planos sobre el suelo. Sujeta una mancuerna en cada mano con las palmas hacia adelante y los brazos completamente extendidos. Manteniendo los codos cerca de tus costados, flexiona las mancuernas hacia los hombros. Una vez que tus antebrazos estén verticales, gira las muñecas de modo que las palmas queden hacia adelante. Presiona las mancuernas por encima de la cabeza hasta que los brazos estén completamente extendidos. Baja las mancuernas de vuelta a la posición inicial invirtiendo el movimiento. Repite el número de repeticiones deseado."
+}

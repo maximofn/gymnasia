@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-frontal-sentado-mancuernas",
+  "name": "Elevación frontal sentado con mancuernas",
+  "image_male": "images/elevacion-frontal-sentado-mancuernas-male.webp",
+  "image_female": "images/elevacion-frontal-sentado-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecio",
+    "bíceps"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y una mancuerna en cada mano, apoyadas sobre los muslos. Mantén la espalda recta y el core activado. Levanta las mancuernas frente a ti, con las palmas hacia abajo, hasta que queden a la altura de los hombros. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

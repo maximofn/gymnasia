@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-gemelo-unilateral-sentado-mancuerna",
+  "name": "Elevación de gemelo unilateral sentado con mancuerna",
+  "image_male": "images/elevacion-gemelo-unilateral-sentado-mancuerna-male.webp",
+  "image_female": "images/elevacion-gemelo-unilateral-sentado-mancuerna-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "sóleo"
+  ],
+  "equipment": "mancuerna, banco y plataforma",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco o silla con los pies apoyados en el suelo y una mancuerna apoyada sobre el muslo derecho. Extiende la pierna izquierda recta hacia adelante, manteniendo el pie flexionado. Coloca la punta del pie derecho sobre una superficie elevada, como un escalón o un disco de peso. Usando los músculos de la pantorrilla, eleva el talón derecho lo más alto posible. Haz una pausa por un momento en la parte superior, luego baja lentamente el talón de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+}

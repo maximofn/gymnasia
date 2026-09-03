@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-tumbado-lateral-mancuerna",
+  "name": "Elevación lateral tumbado de lado con mancuerna",
+  "image_male": "images/elevacion-lateral-tumbado-lateral-mancuerna-male.webp",
+  "image_female": "images/elevacion-lateral-tumbado-lateral-mancuerna-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecio",
+    "romboides"
+  ],
+  "equipment": "mancuerna y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate de lado con las piernas extendidas y la cabeza apoyada sobre el brazo. Sujeta una mancuerna con la mano de arriba, con la palma hacia abajo. Manteniendo el brazo recto, sube la mancuerna hasta la altura del hombro. Haz una pausa breve en la parte más alta, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

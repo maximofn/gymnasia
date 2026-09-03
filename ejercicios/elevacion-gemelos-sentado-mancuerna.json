@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-gemelos-sentado-mancuerna",
+  "name": "Elevación de gemelos sentado con mancuerna",
+  "image_male": "images/elevacion-gemelos-sentado-mancuerna-male.webp",
+  "image_female": "images/elevacion-gemelos-sentado-mancuerna-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "sóleo"
+  ],
+  "equipment": "mancuerna, banco y plataforma",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco o silla con los pies apoyados en el suelo y una mancuerna apoyada sobre los muslos. Coloca la punta de los pies sobre una superficie elevada, como un escalón o un bloque, con los talones colgando del borde. Sujétate de la mancuerna para mantener la estabilidad. Levanta los talones lo más alto posible, elevando el peso de tu cuerpo sobre las puntas de los pies. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

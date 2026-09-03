@@ -1,0 +1,14 @@
+{
+  "id": "paseo-mancuerna-sobre-cabeza-unilateral",
+  "name": "Paseo unilateral con mancuerna sobre la cabeza",
+  "image_male": "images/paseo-mancuerna-sobre-cabeza-unilateral-male.webp",
+  "image_female": "images/paseo-mancuerna-sobre-cabeza-unilateral-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecio",
+    "abdomen"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna con una mano. Levanta la mancuerna por encima de la cabeza, extendiendo completamente el brazo. Activa el core y mantén la espalda recta mientras caminas hacia adelante, sosteniendo la mancuerna por encima de la cabeza. Continúa caminando durante la distancia o el tiempo deseado. Cambia de mano y repite el ejercicio."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "plancha-lateral-apertura-posterior-mancuerna",
+  "name": "Plancha lateral con apertura posterior de mancuerna",
+  "image_male": "images/plancha-lateral-apertura-posterior-mancuerna-male.webp",
+  "image_female": "images/plancha-lateral-apertura-posterior-mancuerna-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "hombros",
+    "abdomen"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "advanced",
+  "instructions": "Comienza tumbado de lado con las piernas extendidas y apiladas una sobre la otra. Coloca el antebrazo en el suelo, justo debajo del hombro, manteniendo el codo flexionado en un ángulo de 90 grados. Sujeta una mancuerna con la mano de arriba, con el brazo extendido recto hacia el suelo. Activa el core y levanta las caderas del suelo, formando una línea recta desde la cabeza hasta los talones. Manteniendo la posición de plancha lateral, levanta la mancuerna hacia el techo, apretando los omóplatos entre sí. Baja la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

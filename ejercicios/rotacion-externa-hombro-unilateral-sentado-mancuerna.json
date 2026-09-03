@@ -1,0 +1,13 @@
+{
+  "id": "rotacion-externa-hombro-unilateral-sentado-mancuerna",
+  "name": "Rotación externa de hombro unilateral sentado",
+  "image_male": "images/rotacion-externa-hombro-unilateral-sentado-mancuerna-male.webp",
+  "image_female": "images/rotacion-externa-hombro-unilateral-sentado-mancuerna-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "manguito rotador"
+  ],
+  "equipment": "mancuerna y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con la espalda recta y sujeta una mancuerna con una mano, apoyándola sobre el muslo. Sube la mancuerna hasta la altura del hombro, manteniendo el codo cerca de tu cuerpo. Gira el antebrazo hacia afuera, alejándolo de tu cuerpo, mientras mantienes fija la parte superior del brazo. Haz una pausa por un momento en la parte superior, luego gira lentamente el antebrazo de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia al otro brazo."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-gemelo-unilateral-sentado-agarre-supino-mancuerna",
+  "name": "Elevación de gemelo unilateral sentado con agarre supino",
+  "image_male": "images/elevacion-gemelo-unilateral-sentado-agarre-supino-mancuerna-male.webp",
+  "image_female": "images/elevacion-gemelo-unilateral-sentado-agarre-supino-mancuerna-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "sóleo"
+  ],
+  "equipment": "mancuerna, banco y plataforma",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco o silla con la espalda recta y los pies apoyados en el suelo. Sujeta una mancuerna con una mano y colócala sobre el muslo, con la palma hacia arriba. Levanta una pierna del suelo y extiéndela frente a ti, manteniendo la rodilla ligeramente flexionada. Eleva el talón lo más alto posible empujando con la punta del pie. Haz una pausa por un momento en la parte superior, luego baja lentamente el talón de vuelta hacia abajo. Repite el número de repeticiones deseado y luego cambia de pierna y repite."
+}
