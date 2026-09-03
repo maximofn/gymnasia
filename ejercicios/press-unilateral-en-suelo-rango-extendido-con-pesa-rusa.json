@@ -1,0 +1,14 @@
+{
+  "id": "press-unilateral-en-suelo-rango-extendido-con-pesa-rusa",
+  "name": "Press unilateral en suelo con rango extendido y pesa rusa",
+  "image_male": "images/press-unilateral-en-suelo-rango-extendido-con-pesa-rusa-male.webp",
+  "image_female": "images/press-unilateral-en-suelo-rango-extendido-con-pesa-rusa-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Comienza acostado boca arriba en el suelo con las rodillas dobladas y los pies planos sobre el suelo. Sujeta una pesa rusa con una mano, con la palma hacia los pies. Extiende el brazo recto hacia el techo, manteniendo el codo bloqueado y la muñeca recta. Baja lentamente la pesa rusa de vuelta a la posición inicial, manteniendo el control durante todo el movimiento. Repite el número de repeticiones deseado, luego cambia al otro brazo."
+}

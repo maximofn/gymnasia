@@ -1,0 +1,14 @@
+{
+  "id": "flexion-escapular-inclinada",
+  "name": "Flexión escapular inclinada",
+  "image_male": "images/flexion-escapular-inclinada-male.webp",
+  "image_female": "images/flexion-escapular-inclinada-female.webp",
+  "muscle_group": "serrato anterior",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Coloca un banco inclinado a un ángulo de 45 grados. Coloca las manos en el banco, ligeramente más separadas que la altura de los hombros. Coloca los pies en el suelo, separados a la altura de las caderas. Baja el pecho hacia el banco, manteniendo los codos pegados al cuerpo. Mientras bajas, retrae los omóplatos, apretándolos entre sí. Empuja con las palmas para extender los brazos y regresar a la posición inicial. Repite el número de repeticiones deseado."
+}

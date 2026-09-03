@@ -1,0 +1,13 @@
+{
+  "id": "prensa-de-gemelos-en-maquina",
+  "name": "Prensa de gemelos en máquina",
+  "image_male": "images/prensa-de-gemelos-en-maquina-male.webp",
+  "image_female": "images/prensa-de-gemelos-en-maquina-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "isquiotibiales"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta el asiento de la máquina de palanca de modo que los hombros queden alineados con la almohadilla de la palanca. Coloca los dedos de los pies sobre la almohadilla de la palanca, con los talones colgando fuera del borde. Sujeta las asas o los soportes laterales para mayor estabilidad. Empuja la almohadilla de la palanca hacia abajo extendiendo los tobillos, contrayendo los músculos de las pantorrillas. Haz una pausa por un momento en la parte baja del movimiento. Vuelve lentamente a la posición inicial dejando que los talones se eleven de nuevo. Repite el número de repeticiones deseado."
+}

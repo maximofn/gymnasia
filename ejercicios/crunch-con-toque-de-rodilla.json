@@ -1,0 +1,13 @@
+{
+  "id": "crunch-con-toque-de-rodilla",
+  "name": "Crunch con toque de rodilla",
+  "image_male": "images/crunch-con-toque-de-rodilla-male.webp",
+  "image_female": "images/crunch-con-toque-de-rodilla-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Activando el abdomen, levanta los omóplatos del suelo y extiende la mano derecha hacia la rodilla izquierda. Vuelve a la posición inicial y repite, esta vez extendiendo la mano izquierda hacia la rodilla derecha. Continúa alternando lados durante el número de repeticiones deseado."
+}

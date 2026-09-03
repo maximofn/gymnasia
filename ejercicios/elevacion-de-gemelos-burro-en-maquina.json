@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-gemelos-burro-en-maquina",
+  "name": "Elevación de gemelos burro en máquina",
+  "image_male": "images/elevacion-de-gemelos-burro-en-maquina-male.webp",
+  "image_female": "images/elevacion-de-gemelos-burro-en-maquina-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina de palanca a la altura adecuada para tu cuerpo. Colócate de frente a la máquina, con los dedos de los pies en la plataforma y los talones colgando fuera del borde. Coloca las manos en las asas o en las barras de soporte para mayor estabilidad. Activa las pantorrillas y levanta los talones tan alto como sea posible, usando la parte delantera de los pies. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

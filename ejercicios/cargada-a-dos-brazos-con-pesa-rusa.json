@@ -1,0 +1,14 @@
+{
+  "id": "cargada-a-dos-brazos-con-pesa-rusa",
+  "name": "Cargada a dos brazos con pesa rusa",
+  "image_male": "images/cargada-a-dos-brazos-con-pesa-rusa-male.webp",
+  "image_female": "images/cargada-a-dos-brazos-con-pesa-rusa-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "antebrazos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa frente a los muslos con ambas manos, con las palmas hacia ti. Flexiona ligeramente las rodillas e inclínate desde las caderas, bajando la pesa rusa hacia el suelo. Extiende explosivamente las caderas y las rodillas, usando el impulso para tirar de la pesa rusa hacia los hombros. Cuando la pesa rusa llegue a la altura del hombro, rota las muñecas y atrápala en posición de descanso, con los codos pegados al cuerpo y la pesa rusa apoyada en la parte posterior del antebrazo. Baja la pesa rusa de vuelta a la posición inicial y repite el número de repeticiones deseado."
+}

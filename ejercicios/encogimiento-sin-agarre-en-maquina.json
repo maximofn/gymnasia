@@ -1,0 +1,14 @@
+{
+  "id": "encogimiento-sin-agarre-en-maquina",
+  "name": "Encogimiento sin agarre en máquina",
+  "image_male": "images/encogimiento-sin-agarre-en-maquina-male.webp",
+  "image_female": "images/encogimiento-sin-agarre-en-maquina-female.webp",
+  "muscle_group": "trapecios",
+  "secondary_muscles": [
+    "hombros",
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina de palanca. Sujeta las asas con las palmas hacia adentro y los brazos completamente extendidos. Manteniendo la espalda recta, exhala y eleva los hombros tan alto como sea posible. Mantén la contracción por un momento breve, luego inhala y baja lentamente los hombros de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

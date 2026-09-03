@@ -1,0 +1,16 @@
+{
+  "id": "muscle-up-con-kipping",
+  "name": "Muscle-up con kipping",
+  "image_male": "images/muscle-up-con-kipping-male.webp",
+  "image_female": "images/muscle-up-con-kipping-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "bíceps",
+    "tríceps",
+    "hombros",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza colgándote de una barra de dominadas con un agarre prono, con las manos un poco más separadas que el ancho de los hombros. Activa el core y usa un movimiento de balanceo para generar impulso. Mientras te balanceas hacia adelante, tira del pecho hacia la barra, usando los dorsales y los bíceps para iniciar el movimiento. Continúa el movimiento ascendente hasta que el pecho llegue a la barra, luego pasa a una posición de fondos empujando hacia abajo en la barra y extendiendo los brazos. Bájate de vuelta a la posición inicial flexionando los brazos y controlando el descenso. Repite el número de repeticiones deseado."
+}

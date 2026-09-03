@@ -1,0 +1,14 @@
+{
+  "id": "plancha-de-rodillas-con-toque-de-hombro",
+  "name": "Plancha de rodillas con toque de hombro",
+  "image_male": "images/plancha-de-rodillas-con-toque-de-hombro-male.webp",
+  "image_female": "images/plancha-de-rodillas-con-toque-de-hombro-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Comienza en posición de rodillas con las manos en el suelo, separadas a la altura de los hombros. Extiende las piernas hacia atrás, apoyándote en los dedos de los pies, y levanta el cuerpo a una posición de plancha. Manteniendo el core activado y las caderas estables, levanta una mano del suelo y toca el hombro opuesto. Devuelve la mano al suelo y repite con la otra mano. Continúa alternando lados durante el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "extension-lumbar-en-maquina",
+  "name": "Extensión lumbar en máquina",
+  "image_male": "images/extension-lumbar-en-maquina-male.webp",
+  "image_female": "images/extension-lumbar-en-maquina-female.webp",
+  "muscle_group": "zona lumbar",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la máquina según el tamaño de tu cuerpo y tu rango de movimiento. Siéntate en la máquina con la espalda apoyada en la almohadilla y los pies asegurados. Coloca las manos en las asas o en las barras de agarre. Activa el core e inclínate lentamente hacia adelante, permitiendo que la espalda se redondee ligeramente. Haz una pausa breve en la posición baja, sintiendo un estiramiento en la zona lumbar. Usando los músculos de la espalda, levanta lentamente el torso de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

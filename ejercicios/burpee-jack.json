@@ -1,0 +1,18 @@
+{
+  "id": "burpee-jack",
+  "name": "Burpee jack",
+  "image_male": "images/burpee-jack-male.webp",
+  "image_female": "images/burpee-jack-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos",
+    "hombros",
+    "tríceps",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros. Baja el cuerpo a una posición de sentadilla, colocando las manos en el suelo frente a ti. Lanza los pies hacia atrás, aterrizando en posición de flexión de brazos. Realiza una flexión de brazos, bajando el pecho hacia el suelo y luego empujando de nuevo hacia arriba. Salta con los pies hacia adelante, aterrizando en posición de sentadilla. Salta hacia arriba explosivamente, llevando los brazos por encima de la cabeza. Aterriza suavemente y baja de inmediato a una posición de sentadilla para comenzar la siguiente repetición."
+}

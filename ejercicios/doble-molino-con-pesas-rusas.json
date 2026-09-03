@@ -1,0 +1,14 @@
+{
+  "id": "doble-molino-con-pesas-rusas",
+  "name": "Doble molino con pesas rusas",
+  "image_male": "images/doble-molino-con-pesas-rusas-male.webp",
+  "image_female": "images/doble-molino-con-pesas-rusas-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "isquiotibiales"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo una pesa rusa en la mano derecha. Extiende el brazo derecho por encima de la cabeza, manteniendo la mirada en la pesa rusa. Rota el pie izquierdo 45 grados hacia la izquierda y el pie derecho 90 grados hacia la derecha. Flexiona la cintura hacia la izquierda, manteniendo el brazo derecho extendido por encima de la cabeza. Baja la pesa rusa hacia el suelo, extendiéndote hacia el pie izquierdo. Haz una pausa breve, luego activa el core y empuja con el pie derecho para volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

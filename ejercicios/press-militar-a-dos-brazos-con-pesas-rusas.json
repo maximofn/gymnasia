@@ -1,0 +1,14 @@
+{
+  "id": "press-militar-a-dos-brazos-con-pesas-rusas",
+  "name": "Press militar a dos brazos con pesas rusas",
+  "image_male": "images/press-militar-a-dos-brazos-con-pesas-rusas-male.webp",
+  "image_female": "images/press-militar-a-dos-brazos-con-pesas-rusas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa en cada mano a la altura del hombro con las palmas hacia adelante. Activa el core y presiona las pesas rusas por encima de la cabeza, extendiendo los brazos por completo. Haz una pausa breve en lo alto, luego baja lentamente las pesas rusas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

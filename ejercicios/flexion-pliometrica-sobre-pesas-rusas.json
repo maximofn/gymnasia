@@ -1,0 +1,15 @@
+{
+  "id": "flexion-pliometrica-sobre-pesas-rusas",
+  "name": "Flexión pliométrica sobre pesas rusas",
+  "image_male": "images/flexion-pliometrica-sobre-pesas-rusas-male.webp",
+  "image_female": "images/flexion-pliometrica-sobre-pesas-rusas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Comienza en una posición de plancha alta con las manos sobre las pesas rusas, separadas a la altura de los hombros. Baja el pecho hacia el suelo, manteniendo los codos cerca del cuerpo. Empuja con las manos de forma explosiva, levantándolas de las pesas rusas y extendiendo los brazos por completo. Aterriza suavemente sobre las pesas rusas y baja el pecho de inmediato para la siguiente repetición. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "press-militar-unilateral-lateral-con-pesa-rusa",
+  "name": "Press militar unilateral lateral con pesa rusa",
+  "image_male": "images/press-militar-unilateral-lateral-con-pesa-rusa-male.webp",
+  "image_female": "images/press-militar-unilateral-lateral-con-pesa-rusa-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano a la altura del hombro. Activa el core y mantén la espalda recta. Presiona la pesa rusa por encima de la cabeza, extendiendo el brazo por completo. Haz una pausa breve en lo alto, luego baja lentamente la pesa rusa de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

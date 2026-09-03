@@ -1,0 +1,15 @@
+{
+  "id": "prensa-horizontal-unilateral-en-maquina",
+  "name": "Prensa horizontal unilateral en máquina",
+  "image_male": "images/prensa-horizontal-unilateral-en-maquina-male.webp",
+  "image_female": "images/prensa-horizontal-unilateral-en-maquina-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el asiento de la máquina de modo que las rodillas queden en un ángulo de 90 grados cuando los pies estén sobre la placa para los pies. Siéntate en la máquina con la espalda apoyada en el respaldo y los pies separados a la altura de los hombros sobre la placa para los pies. Coloca las manos en las asas o en los lados de la máquina para mayor estabilidad. Empuja la placa para los pies alejándola del cuerpo extendiendo la pierna, manteniendo la espalda apoyada en el respaldo. Haz una pausa breve en la posición completamente extendida, luego flexiona lentamente la pierna para volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+}

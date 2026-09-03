@@ -1,0 +1,14 @@
+{
+  "id": "remo-a-dos-brazos-con-pesas-rusas",
+  "name": "Remo a dos brazos con pesas rusas",
+  "image_male": "images/remo-a-dos-brazos-con-pesas-rusas-male.webp",
+  "image_female": "images/remo-a-dos-brazos-con-pesas-rusas-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, las rodillas ligeramente flexionadas, y sostén una pesa rusa en cada mano con las palmas hacia el cuerpo. Inclínate hacia adelante desde las caderas, manteniendo la espalda recta y el core activado. Tira de las pesas rusas hacia el pecho, juntando los omóplatos. Haz una pausa breve en lo alto, luego baja lentamente las pesas rusas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

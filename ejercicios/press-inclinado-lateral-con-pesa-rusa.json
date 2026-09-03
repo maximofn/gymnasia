@@ -1,0 +1,15 @@
+{
+  "id": "press-inclinado-lateral-con-pesa-rusa",
+  "name": "Press inclinado lateral con pesa rusa",
+  "image_male": "images/press-inclinado-lateral-con-pesa-rusa-male.webp",
+  "image_female": "images/press-inclinado-lateral-con-pesa-rusa-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps",
+    "oblicuos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo una pesa rusa en la mano derecha. Dobla ligeramente las rodillas y empuja la pesa rusa por encima de la cabeza con el brazo derecho, manteniendo el codo bloqueado. Rota el torso hacia la izquierda, trasladando tu peso al pie izquierdo. Flexiona la rodilla izquierda y baja el torso hacia el suelo, manteniendo el brazo derecho extendido por encima de la cabeza. Mientras bajas, mantén la mirada en la pesa rusa y el pecho elevado. Cuando tu mano izquierda toque el suelo, empuja con el pie izquierdo y estira la pierna izquierda, llevando las caderas hacia adelante. Mientras llevas las caderas hacia adelante, usa el core y el brazo derecho para empujar la pesa rusa de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

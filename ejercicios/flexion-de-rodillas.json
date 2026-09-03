@@ -1,0 +1,14 @@
+{
+  "id": "flexion-de-rodillas",
+  "name": "Flexión de rodillas",
+  "image_male": "images/flexion-de-rodillas-male.webp",
+  "image_female": "images/flexion-de-rodillas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Comienza arrodillado en el suelo con las manos separadas a la altura de los hombros, los dedos apuntando hacia adelante. Extiende las piernas hacia atrás, apoyándote en la punta de los pies, de modo que tu cuerpo forme una línea recta desde la cabeza hasta los talones. Activa el core y baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Continúa bajando hasta que el pecho esté justo encima del suelo, luego empuja hacia arriba a la posición inicial enderezando los brazos. Repite el número de repeticiones deseado."
+}

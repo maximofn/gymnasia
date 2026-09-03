@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-pistola-con-pesa-rusa",
+  "name": "Sentadilla pistola con pesa rusa",
+  "image_male": "images/sentadilla-pistola-con-pesa-rusa-male.webp",
+  "image_female": "images/sentadilla-pistola-con-pesa-rusa-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa frente al pecho con ambas manos. Levanta el pie izquierdo del suelo y extiéndelo hacia adelante, manteniéndolo paralelo al suelo. Baja lentamente el cuerpo a una posición de sentadilla, manteniendo el pie derecho plano en el suelo y la pierna izquierda extendida. Haz una pausa breve en la parte baja de la sentadilla, luego empuja con el talón derecho para volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+}

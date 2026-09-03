@@ -1,0 +1,14 @@
+{
+  "id": "encogimiento-sin-agarre-en-maquina-v2",
+  "name": "Encogimiento sin agarre en máquina v2",
+  "image_male": "images/encogimiento-sin-agarre-en-maquina-v2-male.webp",
+  "image_female": "images/encogimiento-sin-agarre-en-maquina-v2-female.webp",
+  "muscle_group": "trapecios",
+  "secondary_muscles": [
+    "hombros",
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda apoyada en la almohadilla. Sujeta las asas o barras con un agarre prono, manteniendo los brazos rectos. Manteniendo la espalda recta, eleva los hombros hacia las orejas tan alto como sea posible. Mantén la contracción por un momento, luego baja lentamente los hombros de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

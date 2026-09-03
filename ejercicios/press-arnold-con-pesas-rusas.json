@@ -1,0 +1,14 @@
+{
+  "id": "press-arnold-con-pesas-rusas",
+  "name": "Press Arnold con pesas rusas",
+  "image_male": "images/press-arnold-con-pesas-rusas-male.webp",
+  "image_female": "images/press-arnold-con-pesas-rusas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo una pesa rusa en cada mano a la altura de los hombros con las palmas hacia ti. Activa el core y empuja las pesas rusas por encima de la cabeza, girando las palmas hacia adelante mientras extiendes los brazos. Haz una pausa en la parte superior del movimiento, luego baja lentamente las pesas rusas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

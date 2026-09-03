@@ -1,0 +1,14 @@
+{
+  "id": "push-press-unilateral-con-pesa-rusa",
+  "name": "Push press unilateral con pesa rusa",
+  "image_male": "images/push-press-unilateral-con-pesa-rusa-male.webp",
+  "image_female": "images/push-press-unilateral-con-pesa-rusa-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano a la altura del hombro. Flexiona ligeramente las rodillas y activa el core. Presiona la pesa rusa por encima de la cabeza extendiendo el brazo y estirando por completo las piernas. Baja la pesa rusa de vuelta a la posición inicial flexionando las rodillas y devolviendo la pesa rusa al hombro. Repite el número de repeticiones deseado, luego cambia de lado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-landmine",
+  "name": "Elevación lateral landmine",
+  "image_male": "images/elevacion-lateral-landmine-male.webp",
+  "image_female": "images/elevacion-lateral-landmine-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "espalda alta"
+  ],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Sujeta la barra con un agarre prono, apoyándola en la parte delantera de los hombros. Manteniendo el core activado y la espalda recta, levanta la barra alejándola del cuerpo, elevándola hasta la altura del hombro. Haz una pausa breve en la parte alta y luego baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

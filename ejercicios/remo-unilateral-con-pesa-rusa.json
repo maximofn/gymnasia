@@ -1,0 +1,14 @@
+{
+  "id": "remo-unilateral-con-pesa-rusa",
+  "name": "Remo unilateral con pesa rusa",
+  "image_male": "images/remo-unilateral-con-pesa-rusa-male.webp",
+  "image_female": "images/remo-unilateral-con-pesa-rusa-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano en agarre prono. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta y el core activado. Tira de la pesa rusa hacia el pecho, manteniendo el codo cerca del cuerpo y juntando los omóplatos. Haz una pausa breve en lo alto, luego baja lentamente la pesa rusa de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado y repite con el otro brazo."
+}

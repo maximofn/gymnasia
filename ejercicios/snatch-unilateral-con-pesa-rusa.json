@@ -1,0 +1,15 @@
+{
+  "id": "snatch-unilateral-con-pesa-rusa",
+  "name": "Snatch unilateral con pesa rusa",
+  "image_male": "images/snatch-unilateral-con-pesa-rusa-male.webp",
+  "image_female": "images/snatch-unilateral-con-pesa-rusa-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "antebrazos",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano entre las piernas. Flexiona ligeramente las rodillas e inclínate desde las caderas, bajando la pesa rusa hacia el suelo. Extiende explosivamente las caderas y las rodillas, usando el impulso para hacer que la pesa rusa suba hacia el hombro. Cuando la pesa rusa llegue a la altura del hombro, rota la mano y lánzala recta hacia arriba por encima de la cabeza, extendiendo el brazo por completo. Baja la pesa rusa de vuelta entre las piernas y repite el número de repeticiones deseado."
+}

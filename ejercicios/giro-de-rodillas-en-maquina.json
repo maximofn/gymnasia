@@ -1,0 +1,14 @@
+{
+  "id": "giro-de-rodillas-en-maquina",
+  "name": "Giro de rodillas en máquina",
+  "image_male": "images/giro-de-rodillas-en-maquina-male.webp",
+  "image_female": "images/giro-de-rodillas-en-maquina-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "zona lumbar"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con las rodillas apoyadas en las almohadillas y la parte superior del cuerpo mirando hacia adelante. Sujeta las asas o los lados de la máquina para mayor estabilidad. Manteniendo el core activado, gira el torso hacia un lado tanto como sea cómodamente posible. Haz una pausa por un momento, luego regresa lentamente a la posición inicial. Repite el giro hacia el lado opuesto. Continúa alternando lados durante el número de repeticiones deseado."
+}

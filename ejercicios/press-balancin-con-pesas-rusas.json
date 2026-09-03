@@ -1,0 +1,14 @@
+{
+  "id": "press-balancin-con-pesas-rusas",
+  "name": "Press balancín con pesas rusas",
+  "image_male": "images/press-balancin-con-pesas-rusas-male.webp",
+  "image_female": "images/press-balancin-con-pesas-rusas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo una pesa rusa en cada mano a la altura de los hombros. Presiona una pesa rusa por encima de la cabeza mientras mantienes la otra pesa rusa a la altura del hombro. Baja la pesa rusa presionada de vuelta a la altura del hombro mientras presionas simultáneamente la otra pesa rusa por encima de la cabeza. Continúa alternando el movimiento de presión, creando un movimiento similar a un balancín. Repite el número de repeticiones deseado."
+}
