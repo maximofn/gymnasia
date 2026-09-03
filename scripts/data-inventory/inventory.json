@@ -16,6 +16,12 @@
     "gymnasia.staging",
     "gymnasia.production"
   ],
+  "nonStorageLiterals": [
+    "gymnasia_foods",
+    "gymnasia_products",
+    "gymnasia_recipes",
+    "gymnasia_exercises"
+  ],
   "permissionsSource": "scripts/android-permissions/policy.json",
   "permissionDataSafetyImpact": {
     "FOREGROUND_SERVICE": "none",
@@ -38,7 +44,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Estado principal: rutinas, historial de entrenamiento, dieta por día, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
+      "purpose": "Estado principal: rutinas, historial de entrenamiento, dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "rewrite",
       "fullDeletion": "delete"
@@ -118,7 +124,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness",
-      "purpose": "Alimentos creados por el usuario con sus macronutrientes.",
+      "purpose": "Alimentos creados por el usuario con sus macronutrientes e identificador local estable de procedencia.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -194,11 +200,31 @@
       "fullDeletion": "delete"
     },
     {
+      "key": "gymnasia.mobile.exercises_repo.v3",
+      "backend": "async-storage",
+      "personal": false,
+      "dataCategory": "public-catalog-cache",
+      "purpose": "Caché validada del catálogo público de ejercicios con versión, fuente, fecha, huella SHA-256, ETag y procedencia.",
+      "clearedBy": "full-deletion",
+      "activityDeletion": "preserve",
+      "fullDeletion": "delete"
+    },
+    {
       "key": "gymnasia.mobile.foods_repo.v1",
       "backend": "async-storage",
       "personal": false,
       "dataCategory": "public-catalog-cache",
       "purpose": "Caché del catálogo público de alimentos.",
+      "clearedBy": "full-deletion",
+      "activityDeletion": "preserve",
+      "fullDeletion": "delete"
+    },
+    {
+      "key": "gymnasia.mobile.foods_repo.v2",
+      "backend": "async-storage",
+      "personal": false,
+      "dataCategory": "public-catalog-cache",
+      "purpose": "Caché validada del catálogo público de alimentos con versión, fuente, fecha, huella SHA-256, ETag y procedencia.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -214,11 +240,31 @@
       "fullDeletion": "delete"
     },
     {
+      "key": "gymnasia.mobile.products_repo.v2",
+      "backend": "async-storage",
+      "personal": false,
+      "dataCategory": "public-catalog-cache",
+      "purpose": "Caché validada del catálogo público de productos comerciales con versión, fuente, fecha, huella SHA-256, ETag y procedencia.",
+      "clearedBy": "full-deletion",
+      "activityDeletion": "preserve",
+      "fullDeletion": "delete"
+    },
+    {
       "key": "gymnasia.mobile.recipes_repo.v1",
       "backend": "async-storage",
       "personal": false,
       "dataCategory": "public-catalog-cache",
       "purpose": "Caché del catálogo público de recetas.",
+      "clearedBy": "full-deletion",
+      "activityDeletion": "preserve",
+      "fullDeletion": "delete"
+    },
+    {
+      "key": "gymnasia.mobile.recipes_repo.v2",
+      "backend": "async-storage",
+      "personal": false,
+      "dataCategory": "public-catalog-cache",
+      "purpose": "Caché validada del catálogo público de recetas con versión, fuente, fecha, huella SHA-256, ETag y procedencia.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"

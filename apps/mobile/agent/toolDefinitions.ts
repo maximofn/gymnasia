@@ -151,13 +151,14 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     effect: "read",
     description:
       "Busca alimentos en la base de datos local. Soporta búsqueda por nombre, categoría, tipo (alimento/producto_comercial/receta), " +
-      "filtros por rango de calorías/proteínas/carbohidratos/grasa por 100g, y ordenación. Todos los parámetros son opcionales, combínalos según lo que pida el usuario.",
+      "filtros por rango de calorías/proteínas/carbohidratos/grasa por 100g, y ordenación. Todos los parámetros son opcionales, combínalos según lo que pida el usuario. " +
+      "Devuelve un objeto con availability, fetched_at, sources, warnings y results; cada resultado incluye source_id e item_id.",
     inputSchema: {
       type: "object",
       properties: {
         query: stringProperty("Texto de búsqueda por nombre (opcional)"),
         category: stringProperty("Filtrar por categoría del alimento, por ejemplo: grasa, proteina, carbohidrato, fruta, verdura, lacteo, cereal (opcional)"),
-        source: stringProperty("Filtrar por tipo: 'alimento', 'producto_comercial', 'receta' o 'personal' (opcional)"),
+        source: stringProperty("Filtrar por tipo heredado o source_id: 'alimento', 'producto_comercial', 'receta', 'personal', 'gymnasia_foods', 'gymnasia_products', 'gymnasia_recipes' o 'user_personal_foods' (opcional)"),
         min_calories: numberProperty("Calorías mínimas por 100g (opcional)"),
         max_calories: numberProperty("Calorías máximas por 100g (opcional)"),
         min_protein: numberProperty("Proteínas mínimas por 100g en gramos (opcional)"),
@@ -176,7 +177,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     description:
       "Añade un alimento a una comida del usuario en una fecha específica. " +
       "IMPORTANTE: Antes de usar esta herramienta DEBES haber buscado el alimento con search_foods. " +
-      "Pasa los datos nutricionales exactos obtenidos de la búsqueda.",
+      "Para un resultado del catálogo, pasa su source_id, item_id y los gramos. Usa la variante manual solo cuando el usuario quiera conservar valores introducidos expresamente.",
     inputSchema: {
       type: "object",
       properties: {
@@ -186,8 +187,8 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
           DIET_MEAL_CATEGORIES,
         ),
         data: stringProperty(
-          "JSON con los datos totales de la porción que se va a guardar. Campos requeridos: name (string no vacío), grams (number), calories_kcal (number), protein_g (number), carbs_g (number), fat_g (number). Todos los números deben ser finitos y 0 o mayores; no envíes valores por 100 g salvo que la porción sea exactamente 100 g. " +
-          'Ejemplo: {"name": "Arroz blanco", "grams": 150, "calories_kcal": 195, "protein_g": 4.1, "carbs_g": 43.4, "fat_g": 0.4}',
+          "JSON en una de estas variantes: catálogo: kind='catalog', source_id, item_id y grams; manual: kind='manual', name, grams, calories_kcal, protein_g, carbs_g y fat_g. Durante la compatibilidad temporal también se admite el formato antiguo sin kind; si el nombre es ambiguo no se guardará nada. " +
+          'Ejemplo catálogo: {"kind":"catalog","source_id":"gymnasia_foods","item_id":"arroz-blanco","grams":150}',
         ),
       },
       required: ["date", "meal", "data"],
@@ -198,7 +199,8 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     effect: "read",
     description:
       "Busca ejercicios en la base de datos local. Soporta búsqueda por nombre, músculo principal, músculos secundarios, equipamiento y dificultad. " +
-      "Todos los parámetros son opcionales y combinables.",
+      "Todos los parámetros son opcionales y combinables. Devuelve un objeto con availability, fetched_at, sources, warnings y results; " +
+      "cada resultado incluye source_id e item_id.",
     inputSchema: {
       type: "object",
       properties: {
@@ -223,16 +225,16 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     effect: "local_write",
     description:
       "Crea una nueva rutina de entrenamiento. IMPORTANTE: Antes de usar esta herramienta DEBES haber buscado los ejercicios con search_exercises " +
-      "para obtener los nombres exactos de la base de datos. Pasa el JSON con los datos de la rutina.",
+      "para obtener source_id e item_id. Si algún ejercicio no se puede resolver, no se guardará ninguna parte de la rutina.",
     inputSchema: {
       type: "object",
       properties: {
         data: stringProperty(
           'JSON con los datos de la rutina. Campos: name (string, nombre de la rutina), category (string: "strength", "hypertrophy", "cardio" o "flexibility"), ' +
           'icon (string: "activity", "heart", "zap", "target", "wind", "shield", "compass", "crosshair", "award", "star", "sun", "moon", "sliders" o "trending-up"), ' +
-          "exercises (array de objetos con: name (string, nombre exacto del ejercicio de search_exercises), muscle (string, músculo principal), " +
+          "exercises (array de objetos de catálogo con kind='catalog', source_id e item_id; o personalizados con kind='custom', name y muscle), " +
           'series (array de objetos con: type (string: "normal", "warmup", "failure", "amrap", "partial", "negative", "forced", "tempo", "isometric", "dropset", "restpause", "myoreps", "cluster", "superset"), ' +
-          'reps (string, número de repeticiones), weight_kg (string, peso en kg), rest_seconds (string, descanso en segundos))). Ejemplo: {"name": "Push Day", "category": "hypertrophy", "icon": "zap", "exercises": [{"name": "Press banca con barra", "muscle": "pecho", "series": [{"type": "normal", "reps": "10", "weight_kg": "60", "rest_seconds": "90"}]}]}',
+          'reps (string, número de repeticiones), weight_kg (string, peso en kg), rest_seconds (string, descanso en segundos))). Ejemplo: {"name":"Push Day","category":"hypertrophy","icon":"zap","exercises":[{"kind":"catalog","source_id":"gymnasia_exercises","item_id":"press-banca","series":[{"type":"normal","reps":"10","weight_kg":"60","rest_seconds":"90"}]}]}',
         ),
       },
       required: ["data"],

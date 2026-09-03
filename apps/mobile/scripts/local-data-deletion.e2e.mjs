@@ -32,6 +32,10 @@ const keys = {
   backupMeta: scopedKey("gymnasia.mobile.backup_meta.v1"),
   traces: scopedKey("gymnasia_debug_traces"),
   foodsCache: scopedKey("gymnasia.mobile.foods_repo.v1"),
+  foodsCacheV2: scopedKey("gymnasia.mobile.foods_repo.v2"),
+  productsCacheV2: scopedKey("gymnasia.mobile.products_repo.v2"),
+  recipesCacheV2: scopedKey("gymnasia.mobile.recipes_repo.v2"),
+  exercisesCacheV3: scopedKey("gymnasia.mobile.exercises_repo.v3"),
   signedPolicy: scopedKey("gymnasia.mobile.signed_policy.cache.v1"),
 };
 
@@ -116,6 +120,10 @@ function seedEntries() {
     [keys.backupMeta]: JSON.stringify({ lastBackupAt: "2026-08-30T10:00:00.000Z" }),
     [keys.traces]: JSON.stringify([{ message: `trace-${marker}` }]),
     [keys.foodsCache]: JSON.stringify([{ id: `cache-${marker}` }]),
+    [keys.foodsCacheV2]: JSON.stringify({ marker: `foods-v2-${marker}` }),
+    [keys.productsCacheV2]: JSON.stringify({ marker: `products-v2-${marker}` }),
+    [keys.recipesCacheV2]: JSON.stringify({ marker: `recipes-v2-${marker}` }),
+    [keys.exercisesCacheV3]: JSON.stringify({ marker: `exercises-v3-${marker}` }),
     [keys.signedPolicy]: JSON.stringify({ antiRollback: `signed-${marker}` }),
   };
 }
@@ -251,6 +259,9 @@ async function run() {
     const partial = await storageSnapshot(page);
     assert.match(partial[keys.personalData] ?? "", new RegExp(`memory-${marker}`));
     assert.match(partial[keys.personalFoods] ?? "", new RegExp(`food-${marker}`));
+    for (const cacheKey of [keys.foodsCacheV2, keys.productsCacheV2, keys.recipesCacheV2, keys.exercisesCacheV3]) {
+      assert.ok(partial[cacheKey], `el borrado parcial debe conservar ${cacheKey}`);
+    }
     assert.ok(partial[keys.signedPolicy], "el borrado parcial no debe eliminar la caché firmada");
     assert.doesNotMatch(partial[keys.store] ?? "", new RegExp(`secret-${marker}`));
     assert.match(
@@ -300,6 +311,9 @@ async function run() {
     assert.equal(complete[unknownPersonalKey], undefined);
     assert.doesNotMatch(devStore, new RegExp(marker));
     assert.equal(complete[keys.preferences], undefined);
+    for (const cacheKey of [keys.foodsCacheV2, keys.productsCacheV2, keys.recipesCacheV2, keys.exercisesCacheV3]) {
+      assert.equal(complete[cacheKey], undefined, `el borrado total debe eliminar ${cacheKey}`);
+    }
     assert.deepEqual(pageErrors, [], `Errores en la página: ${pageErrors.join(" | ")}`);
     log("Los dos alcances y la excepción anti-retroceso quedaron verificados");
   } catch (error) {

@@ -128,10 +128,50 @@ import {
   scopedStorageKey,
 } from "./runtimeEnvironment";
 import {
+  aggregateCatalogAvailability,
+  catalogStatuses,
+  catalogWarnings,
+  initialCatalogSnapshot,
+  latestCatalogFetch,
+  readCatalogCache,
+  refreshCatalog,
+} from "./catalogs/runtime";
+import {
+  EXERCISE_CATALOG_DEFINITION,
+  FOOD_CATALOG_DEFINITIONS,
+  PERSONAL_FOODS_SOURCE_DEFINITION,
+  exerciseCatalogImageUri,
+  foodCatalogImageUri,
+  normalizePersonalFood,
+} from "./catalogs/sources";
+import {
+  exerciseCatalogMatchKey,
+  findByCatalogRef,
+  matchExerciseCatalog,
+  matchFoodCatalog,
+} from "./catalogs/matching";
+import {
+  linkLegacyExercisesFromFreshCatalog,
+  normalizeCatalogItemRef,
+  normalizeCatalogLink,
+  synchronizeLinkedExercises,
+} from "./catalogs/migrations";
+import {
+  catalogRef,
+  linkedCatalog,
+  unresolvedCatalog,
+  type CatalogLink,
+  type CatalogSearchAvailability,
+  type CatalogSnapshot,
+  type ExerciseCatalogEntry,
+  type FoodCatalogEntry,
+} from "./catalogs/types";
+import {
   AiIdentityDisclosure,
   AiIdentityPersistentDisclosure,
 } from "./AiIdentityDisclosure";
 import { HealthSafetyNotice } from "./HealthSafetyNotice";
+import { CatalogStatusNotice } from "./catalogs/CatalogStatusNotice";
 import {
   LocalStoreRecoveryScreen,
   LocalStoreStartupFailureScreen,
@@ -334,6 +374,7 @@ type SubSeries = {
   rest_seconds: string;
   exercise_name?: string;
   exercise_id?: string;
+  catalog_link?: CatalogLink;
 };
 
 type ExerciseSeries = {
@@ -380,6 +421,7 @@ type WorkoutTemplate = {
     muscle?: string;
     load_kg?: number | null;
     rest_seconds?: number | null;
+    catalog_link?: CatalogLink;
   }>;
 };
 type WorkoutSessionStatus = "running" | "paused";
@@ -426,6 +468,16 @@ type DietItem = {
   carbs_g: number;
   fat_g: number;
   image_uri?: string | null;
+  catalog_link?: CatalogLink;
+};
+type PendingFoodResolution = {
+  origin: "form" | "estimator";
+  candidates: FoodRepoEntry[];
+  manualItem: DietItem;
+  category: DietMealCategory;
+  date: string;
+  editing: DietItemMenuState;
+  proposeManual: boolean;
 };
 type DietMeal = { id: string; title: string; items: DietItem[] };
 type DietDay = { day_date: string; meals: DietMeal[] };
@@ -527,6 +579,8 @@ type ChatProviderCallOptions = StreamingHandlers & {
   store?: LocalStore;
   foodsRepo?: FoodRepoEntry[];
   exercisesRepo?: ExerciseRepoEntry[];
+  foodCatalogAvailability?: CatalogSearchAvailability;
+  exerciseCatalogAvailability?: CatalogSearchAvailability;
   executionId?: string;
   healthDecision?: HealthSafetyDecision;
   healthPolicy?: HealthSafetyRuntimePolicy;
@@ -752,24 +806,7 @@ const FOOD_ESTIMATOR_MAX_IMAGES = 6;
 
 const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
-const EXERCISES_ALL_URL = `${EXERCISES_REPO_BASE_URL}/all.json`;
-const EXERCISES_CACHE_KEY = scopedStorageKey("gymnasia.mobile.exercises_repo.v2");
-const FOODS_REPO_BASE_URL =
-  "https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos";
-const FOODS_ALL_URL = `${FOODS_REPO_BASE_URL}/all.json`;
-const FOODS_IMAGES_BASE_URL = `${FOODS_REPO_BASE_URL}/images`;
-const FOODS_CACHE_KEY = scopedStorageKey("gymnasia.mobile.foods_repo.v1");
-const PRODUCTS_REPO_BASE_URL =
-  "https://raw.githubusercontent.com/maximofn/gymnasia/main/productos_comerciales";
-const PRODUCTS_ALL_URL = `${PRODUCTS_REPO_BASE_URL}/all.json`;
-const PRODUCTS_IMAGES_BASE_URL = `${PRODUCTS_REPO_BASE_URL}/images`;
-const PRODUCTS_CACHE_KEY = scopedStorageKey("gymnasia.mobile.products_repo.v1");
-const RECIPES_REPO_BASE_URL =
-  "https://raw.githubusercontent.com/maximofn/gymnasia/main/recetas";
-const RECIPES_ALL_URL = `${RECIPES_REPO_BASE_URL}/all.json`;
-const RECIPES_IMAGES_BASE_URL = `${RECIPES_REPO_BASE_URL}/images`;
-const RECIPES_CACHE_KEY = scopedStorageKey("gymnasia.mobile.recipes_repo.v1");
-const PERSONAL_FOODS_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.personal_foods.v1");
+const PERSONAL_FOODS_STORAGE_KEY = PERSONAL_FOODS_SOURCE_DEFINITION.cacheKey;
 const HEALTH_SAFETY_CONSENT_KEY = scopedStorageKey("gymnasia.mobile.health_safety.consent.v1");
 
 function createHealthSafetyConsentState(): HealthSafetyConsentState {
@@ -994,101 +1031,25 @@ const EMPTY_CUSTOM_EXERCISE_DRAFT: CustomExerciseDraft = {
   name: "", muscle_group: "", secondary_muscles: [], equipment: "", difficulty: "", instructions: "",
 };
 
-type ExerciseRepoEntry = {
-  id: string;
-  name: string;
-  image_male: string;
-  image_female: string;
-  muscle_group: string;
-  secondary_muscles: string[];
-  equipment: string;
-  difficulty: string;
-  instructions: string;
-};
-
-type FoodSource = "alimento" | "producto_comercial" | "receta" | "personal";
-type FoodRepoEntry = {
-  id: string;
-  name: string;
-  category: string;
-  calories_per_100g: number;
-  protein_per_100g: number;
-  carbs_per_100g: number;
-  fat_per_100g: number;
-  fiber_per_100g: number;
-  serving_size_g: number;
-  serving_description: string;
-  image?: string;
-  source?: FoodSource;
-};
+type ExerciseRepoEntry = ExerciseCatalogEntry;
+type FoodRepoEntry = FoodCatalogEntry;
 
 function foodRepoImageUri(entry: FoodRepoEntry | null | undefined): string | null {
-  if (!entry?.image) return null;
-  const base =
-    entry.source === "producto_comercial" ? PRODUCTS_IMAGES_BASE_URL
-    : entry.source === "receta" ? RECIPES_IMAGES_BASE_URL
-    : FOODS_IMAGES_BASE_URL;
-  return `${base}/${entry.image}`;
-}
-
-async function loadFoodsRepo(): Promise<FoodRepoEntry[]> {
-  try {
-    const response = await fetch(`${FOODS_ALL_URL}?ts=${Date.now()}`);
-    if (!response.ok) throw new Error(`Foods fetch error (${response.status})`);
-    const foods: FoodRepoEntry[] = await response.json();
-    AsyncStorage.setItem(FOODS_CACHE_KEY, JSON.stringify(foods)).catch(() => {});
-    return foods;
-  } catch {
-    try {
-      const cached = await AsyncStorage.getItem(FOODS_CACHE_KEY);
-      if (cached) return JSON.parse(cached);
-      return [];
-    } catch {
-      return [];
-    }
-  }
-}
-
-async function loadProductsRepo(): Promise<FoodRepoEntry[]> {
-  try {
-    const response = await fetch(`${PRODUCTS_ALL_URL}?ts=${Date.now()}`);
-    if (!response.ok) throw new Error(`Products fetch error (${response.status})`);
-    const products: FoodRepoEntry[] = await response.json();
-    AsyncStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify(products)).catch(() => {});
-    return products;
-  } catch {
-    try {
-      const cached = await AsyncStorage.getItem(PRODUCTS_CACHE_KEY);
-      if (cached) return JSON.parse(cached);
-      return [];
-    } catch {
-      return [];
-    }
-  }
-}
-
-async function loadRecipesRepo(): Promise<FoodRepoEntry[]> {
-  try {
-    const response = await fetch(`${RECIPES_ALL_URL}?ts=${Date.now()}`);
-    if (!response.ok) throw new Error(`Recipes fetch error (${response.status})`);
-    const recipes: FoodRepoEntry[] = await response.json();
-    AsyncStorage.setItem(RECIPES_CACHE_KEY, JSON.stringify(recipes)).catch(() => {});
-    return recipes;
-  } catch {
-    try {
-      const cached = await AsyncStorage.getItem(RECIPES_CACHE_KEY);
-      if (cached) return JSON.parse(cached);
-      return [];
-    } catch {
-      return [];
-    }
-  }
+  return foodCatalogImageUri(entry);
 }
 
 async function loadPersonalFoods(): Promise<FoodRepoEntry[]> {
   try {
     const raw = await AsyncStorage.getItem(PERSONAL_FOODS_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const value: unknown = JSON.parse(raw);
+      if (!Array.isArray(value)) return [];
+      return value.flatMap((entry) => {
+        if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
+        const { sourceId: _sourceId, source: _source, ...rawEntry } = entry as Record<string, unknown>;
+        return normalizePersonalFood(rawEntry as unknown as FoodRepoEntry);
+      });
+    }
     return [];
   } catch {
     return [];
@@ -1099,31 +1060,32 @@ async function savePersonalFoods(foods: FoodRepoEntry[]): Promise<void> {
   await AsyncStorage.setItem(PERSONAL_FOODS_STORAGE_KEY, JSON.stringify(foods));
 }
 
-function normalizeForFoodMatch(s: string): string {
-  return s
-    .toLowerCase()
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
 function findFoodInRepo(
   name: string,
   repo: FoodRepoEntry[],
   personal: FoodRepoEntry[],
-): FoodRepoEntry | null {
-  const all = [...repo, ...personal];
-  const needle = normalizeForFoodMatch(name);
-  if (!needle) return null;
-  // Exact match first
-  const exact = all.find((f) => normalizeForFoodMatch(f.name) === needle);
-  if (exact) return exact;
-  // Bidirectional includes
-  const partial = all.find((f) => {
-    const hay = normalizeForFoodMatch(f.name);
-    return hay.includes(needle) || needle.includes(hay);
-  });
-  return partial ?? null;
+): ReturnType<typeof matchFoodCatalog<FoodRepoEntry>> {
+  return matchFoodCatalog([...repo, ...personal], name);
+}
+
+function dietItemFromCatalog(
+  entry: FoodRepoEntry,
+  grams: number,
+  id: string,
+  linkedBy: Extract<CatalogLink, { status: "linked" }>["linkedBy"],
+): DietItem {
+  const ratio = grams / 100;
+  return {
+    id,
+    title: entry.name,
+    grams,
+    calories_kcal: Math.round(entry.calories_per_100g * ratio * 10) / 10,
+    protein_g: Math.round(entry.protein_per_100g * ratio * 10) / 10,
+    carbs_g: Math.round(entry.carbs_per_100g * ratio * 10) / 10,
+    fat_g: Math.round(entry.fat_per_100g * ratio * 10) / 10,
+    image_uri: foodRepoImageUri(entry),
+    catalog_link: linkedCatalog(catalogRef(entry.sourceId, entry.id), linkedBy),
+  };
 }
 
 // Las incidencias se crean a través del backend de recepción (GYM-54), que es
@@ -1156,48 +1118,8 @@ async function submitFeedbackIssue(
   return feedbackIssueClient.submitIssue(draft);
 }
 
-async function loadExercisesRepo(): Promise<ExerciseRepoEntry[]> {
-  try {
-    const response = await fetch(`${EXERCISES_ALL_URL}?ts=${Date.now()}`);
-    if (!response.ok) throw new Error(`Exercises fetch error (${response.status})`);
-    const exercises: ExerciseRepoEntry[] = await response.json();
-    AsyncStorage.setItem(EXERCISES_CACHE_KEY, JSON.stringify(exercises)).catch(() => {});
-    return exercises;
-  } catch {
-    try {
-      const cached = await AsyncStorage.getItem(EXERCISES_CACHE_KEY);
-      if (cached) return JSON.parse(cached);
-      return [];
-    } catch {
-      return [];
-    }
-  }
-}
-
 function getExerciseImageUrl(entry: ExerciseRepoEntry, gender: "male" | "female"): string {
-  const imagePath = gender === "female" ? entry.image_female : entry.image_male;
-  return `${EXERCISES_REPO_BASE_URL}/${imagePath}`;
-}
-
-// Conectores que no aportan al identificar un ejercicio (para el match tolerante).
-const EXERCISE_MATCH_STOPWORDS = new Set([
-  "con", "de", "del", "en", "el", "la", "los", "las", "y", "a", "para", "sin",
-]);
-
-// Clave canónica de un nombre de ejercicio: insensible a mayúsculas, acentos,
-// puntuación/paréntesis, conectores y plurales. Así "Elevaciones laterales
-// (mancuernas)" y "Elevaciones laterales con mancuernas" comparten clave.
-function exerciseNameMatchKey(rawName: string | null | undefined): string {
-  return (rawName ?? "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter((tok) => tok && !EXERCISE_MATCH_STOPWORDS.has(tok))
-    .map((tok) => tok.replace(/s$/, ""))
-    .sort()
-    .join(" ");
+  return exerciseCatalogImageUri(entry, gender);
 }
 
 // Busca el ejercicio del repo correspondiente a un nombre dado. Primero intenta
@@ -1206,14 +1128,19 @@ function findRepoExerciseMatch(
   repo: ExerciseRepoEntry[],
   rawName: string | null | undefined,
 ): ExerciseRepoEntry | null {
-  const name = (rawName ?? "").trim();
-  if (!name) return null;
-  const lower = name.toLowerCase();
-  const exact = repo.find((r) => r.name.toLowerCase() === lower);
-  if (exact) return exact;
-  const key = exerciseNameMatchKey(name);
-  if (!key) return null;
-  return repo.find((r) => exerciseNameMatchKey(r.name) === key) ?? null;
+  const match = matchExerciseCatalog(repo, rawName);
+  return match.kind === "exact" || match.kind === "alias" ? match.candidate : null;
+}
+
+function resolveRepoExercise(
+  repo: ExerciseRepoEntry[],
+  rawName: string | null | undefined,
+  catalogLink?: CatalogLink,
+): ExerciseRepoEntry | null {
+  if (catalogLink?.status === "linked") {
+    return findByCatalogRef(repo, catalogLink.ref);
+  }
+  return findRepoExerciseMatch(repo, rawName);
 }
 
 // Sanea al leer, sin escribir: esta función corre desde tres handlers de tools
@@ -1336,6 +1263,8 @@ function createToolExecutionContext(
   store?: LocalStore,
   foodsRepo?: FoodRepoEntry[],
   exercisesRepo?: ExerciseRepoEntry[],
+  foodCatalogAvailability?: CatalogSearchAvailability,
+  exerciseCatalogAvailability?: CatalogSearchAvailability,
   operationId?: string,
 ): ToolExecutionContext {
   return {
@@ -1348,6 +1277,8 @@ function createToolExecutionContext(
     store: store as unknown as ToolStore | undefined,
     foodsRepo,
     exercisesRepo,
+    foodCatalogAvailability,
+    exerciseCatalogAvailability,
     operationId,
   };
 }
@@ -1360,6 +1291,8 @@ async function executeChatTool(
   store?: LocalStore,
   foodsRepo?: FoodRepoEntry[],
   exercisesRepo?: ExerciseRepoEntry[],
+  foodCatalogAvailability?: CatalogSearchAvailability,
+  exerciseCatalogAvailability?: CatalogSearchAvailability,
   operationId?: string,
 ) {
   return executeAgentTool(
@@ -1371,6 +1304,8 @@ async function executeChatTool(
       store,
       foodsRepo,
       exercisesRepo,
+      foodCatalogAvailability,
+      exerciseCatalogAvailability,
       operationId,
     ),
   );
@@ -3101,6 +3036,8 @@ async function callProviderChatAPIWithTools(
         toolStore,
         toolFoodsRepo,
         toolExercisesRepo,
+        options?.foodCatalogAvailability,
+        options?.exerciseCatalogAvailability,
         operationId,
       ),
     );
@@ -4239,10 +4176,22 @@ function buildSeriesFromLegacyExercise(exercise: {
 }): ExerciseSeries[] {
   if (Array.isArray(exercise.series) && exercise.series.length > 0) {
     return exercise.series.map((item, index) => ({
+      ...item,
       id: item.id || uid("set"),
       reps: item.reps?.trim() || `${index + 1}`,
       weight_kg: item.weight_kg?.trim() ?? "",
       rest_seconds: item.rest_seconds?.trim() ?? "",
+      sub_series: item.sub_series?.map((subSeries) => ({
+        ...subSeries,
+        catalog_link: normalizeCatalogLink(
+          subSeries.catalog_link,
+        ) ?? (() => {
+          const legacyRef = normalizeCatalogItemRef(
+            (subSeries as SubSeries & { exercise_ref?: unknown }).exercise_ref,
+          );
+          return legacyRef ? linkedCatalog(legacyRef, "selection") : undefined;
+        })(),
+      })),
     }));
   }
 
@@ -5105,6 +5054,8 @@ function normalizeDietByDate(rawValue: unknown): Record<string, DietDay> {
               protein_g: normalizeDietNonNegativeNumber(maybeItem.protein_g),
               carbs_g: normalizeDietNonNegativeNumber(maybeItem.carbs_g),
               fat_g: normalizeDietNonNegativeNumber(maybeItem.fat_g),
+              image_uri: normalizeExerciseImageUri(maybeItem.image_uri),
+              catalog_link: normalizeCatalogLink(maybeItem.catalog_link, "legacy_unknown"),
             };
           },
         );
@@ -5251,6 +5202,7 @@ function normalizeStore(raw: LocalStore): LocalStore {
         ...exercise,
         name: exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`,
         image_uri: normalizeExerciseImageUri(exercise.image_uri),
+        catalog_link: normalizeCatalogLink(exercise.catalog_link),
         series: normalizedSeries,
         sets: nextSets,
         load_kg:
@@ -6542,6 +6494,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [dataDeletionConfirmation, setDataDeletionConfirmation] = useState("");
   const [dataDeletionBusy, setDataDeletionBusy] = useState(false);
   const dataDeletionBusyRef = useRef(false);
+  const catalogRuntimeGenerationRef = useRef(0);
   const [dataDeletionReport, setDataDeletionReport] =
     useState<LocalDataDeletionReport | null>(deletionOutcome?.report ?? null);
   const [dataDeletionSuccessVisible, setDataDeletionSuccessVisible] = useState(
@@ -6678,6 +6631,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     sourceDate: string;
     items: DietItem[];
   } | null>(null);
+  const [pendingFoodResolution, setPendingFoodResolution] = useState<PendingFoodResolution | null>(null);
   const [dietMealEditorCategory, setDietMealEditorCategory] = useState<DietMealCategory | null>(null);
   const [dietAddMode, setDietAddMode] = useState<"search" | "form" | "ai" | "selected" | null>(null);
   const [showBirthDatePicker, setShowBirthDatePicker] = useState(false);
@@ -6757,6 +6711,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   const [selectedExerciseDetail, setSelectedExerciseDetail] = useState<ExerciseRepoEntry | null>(null);
   const [exercisesRepo, setExercisesRepo] = useState<ExerciseRepoEntry[]>([]);
+  const [exerciseCatalogSnapshot, setExerciseCatalogSnapshot] = useState<CatalogSnapshot<ExerciseRepoEntry>>(
+    () => initialCatalogSnapshot(EXERCISE_CATALOG_DEFINITION),
+  );
   const [exercisePickerOpen, setExercisePickerOpen] = useState(false);
   const [exercisePickerSearch, setExercisePickerSearch] = useState("");
   const [customExerciseFormOpen, setCustomExerciseFormOpen] = useState(false);
@@ -6768,14 +6725,41 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     subSeriesId: string;
   } | null>(null);
   const [foodsRepo, setFoodsRepo] = useState<FoodRepoEntry[]>([]);
+  const [foodCatalogSnapshots, setFoodCatalogSnapshots] = useState<Array<CatalogSnapshot<FoodRepoEntry>>>(
+    () => FOOD_CATALOG_DEFINITIONS.map((definition) => initialCatalogSnapshot(definition)),
+  );
   const [selectedFoodDetail, setSelectedFoodDetail] = useState<FoodRepoEntry | null>(null);
   const [foodSearch, setFoodSearch] = useState("");
   const [foodCategoryFilter, setFoodCategoryFilter] = useState("all");
   const [productSearch, setProductSearch] = useState("");
   const [selectedProductDetail, setSelectedProductDetail] = useState<FoodRepoEntry | null>(null);
   const [personalFoods, setPersonalFoods] = useState<FoodRepoEntry[]>([]);
+  const [personalFoodsHydrated, setPersonalFoodsHydrated] = useState(false);
   const [personalFoodSearch, setPersonalFoodSearch] = useState("");
   const [selectedPersonalFoodDetail, setSelectedPersonalFoodDetail] = useState<FoodRepoEntry | null>(null);
+  const foodCatalogAvailability = useMemo<CatalogSearchAvailability>(() => ({
+    availability: aggregateCatalogAvailability(foodCatalogSnapshots),
+    fetchedAt: latestCatalogFetch(foodCatalogSnapshots),
+    sources: [
+      ...catalogStatuses(foodCatalogSnapshots),
+      {
+        sourceId: "user_personal_foods",
+        label: "Alimentos personales",
+        availability: "cached",
+        fetchedAt: null,
+        refreshing: false,
+        cachePersisted: true,
+        warning: null,
+      },
+    ],
+    warnings: catalogWarnings(foodCatalogSnapshots),
+  }), [foodCatalogSnapshots]);
+  const exerciseCatalogAvailability = useMemo<CatalogSearchAvailability>(() => ({
+    availability: exerciseCatalogSnapshot.availability,
+    fetchedAt: exerciseCatalogSnapshot.fetchedAt,
+    sources: catalogStatuses([exerciseCatalogSnapshot]),
+    warnings: catalogWarnings([exerciseCatalogSnapshot]),
+  }), [exerciseCatalogSnapshot]);
   const [personalFoodFormVisible, setPersonalFoodFormVisible] = useState(false);
   const [personalFoodDraft, setPersonalFoodDraft] = useState<Partial<FoodRepoEntry>>({});
   const [editingPersonalFoodId, setEditingPersonalFoodId] = useState<string | null>(null);
@@ -7345,7 +7329,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (!homeFeaturedTemplate || !homeFeaturedCategory) return [];
     return homeFeaturedTemplate.exercises.slice(0, 3).map((exercise, exerciseIndex) => {
       const exerciseName = exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`;
-      const repoMatch = findRepoExerciseMatch(exercisesRepo, exerciseName);
+      const repoMatch = resolveRepoExercise(exercisesRepo, exerciseName, exercise.catalog_link);
       const muscle =
         exercise.muscle?.trim() ||
         repoMatch?.muscle_group ||
@@ -7443,7 +7427,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return activeTrainingTemplate.exercises.map((exercise, exerciseIndex) => {
       const exerciseName = exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`;
       const seriesItems = exercise.series ?? [];
-      const repoMatch = findRepoExerciseMatch(exercisesRepo, exerciseName);
+      const repoMatch = resolveRepoExercise(exercisesRepo, exerciseName, exercise.catalog_link);
       const muscle =
         exercise.muscle?.trim() ||
         repoMatch?.muscle_group ||
@@ -7509,8 +7493,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         if (!name) continue;
         // Si el ejercicio coincide (incluso con nombre distinto) con uno del repo,
         // no es "local"; se usa el mismo matcher tolerante que el sync de im\u00e1genes.
-        if (findRepoExerciseMatch(exercisesRepo, name)) continue;
-        const key = exerciseNameMatchKey(name);
+        if (resolveRepoExercise(exercisesRepo, name, exercise.catalog_link)) continue;
+        const key = exerciseCatalogMatchKey(name);
         if (seen.has(key)) continue;
         seen.add(key);
         result.push({ name, muscle: exercise.muscle?.trim() || "" });
@@ -7740,6 +7724,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }
       if (workoutCompletionModal) { setWorkoutCompletionModal(null); return true; }
       if (confirmDiscardSession) { setConfirmDiscardSession(false); return true; }
+      if (pendingFoodResolution) { setPendingFoodResolution(null); return true; }
       if (foodEstimatorModalOpen) { setFoodEstimatorModalOpen(false); return true; }
       if (bodyFatInfoModalOpen) { setBodyFatInfoModalOpen(false); return true; }
       if (customExerciseFormOpen) { setCustomExerciseFormOpen(false); return true; }
@@ -8463,49 +8448,112 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     };
   }, []);
 
+  function applyExerciseCatalogSnapshot(
+    snapshot: CatalogSnapshot<ExerciseRepoEntry>,
+    migrateLegacy: boolean,
+  ): void {
+    setExerciseCatalogSnapshot(snapshot);
+    setExercisesRepo(snapshot.data);
+    if (snapshot.data.length === 0) return;
+    setStore((previous) => {
+      const synchronized = synchronizeLinkedExercises(
+        previous.templates,
+        snapshot.data,
+        (entry) => getExerciseImageUrl(entry, "male"),
+      );
+      const migrated = migrateLegacy
+        ? linkLegacyExercisesFromFreshCatalog(synchronized.templates, snapshot.data)
+        : { templates: synchronized.templates, changed: false };
+      return synchronized.changed || migrated.changed
+        ? { ...previous, templates: migrated.templates }
+        : previous;
+    });
+  }
+
+  function catalogRuntimeDependencies(generation: number) {
+    return {
+      storage: {
+        getItem: (key: string) => AsyncStorage.getItem(key),
+        setItem: async (key: string, value: string) => {
+          if (dataDeletionBusyRef.current || catalogRuntimeGenerationRef.current !== generation) {
+            throw new Error("Catalog runtime invalidated.");
+          }
+          await AsyncStorage.setItem(key, value);
+        },
+      },
+      fetcher: (url: string) => fetch(url),
+    };
+  }
+
+  async function retryFoodCatalogs(): Promise<void> {
+    const generation = catalogRuntimeGenerationRef.current;
+    const pending = foodCatalogSnapshots.map((snapshot) => ({ ...snapshot, refreshing: true }));
+    setFoodCatalogSnapshots(pending);
+    const refreshed = await Promise.all(FOOD_CATALOG_DEFINITIONS.map((definition, index) => (
+      refreshCatalog(definition, pending[index], catalogRuntimeDependencies(generation))
+    )));
+    if (catalogRuntimeGenerationRef.current !== generation) return;
+    setFoodCatalogSnapshots(refreshed);
+    setFoodsRepo(refreshed.flatMap((snapshot) => snapshot.data));
+  }
+
+  async function retryExerciseCatalog(): Promise<void> {
+    const generation = catalogRuntimeGenerationRef.current;
+    const pending = { ...exerciseCatalogSnapshot, refreshing: true };
+    setExerciseCatalogSnapshot(pending);
+    const refreshed = await refreshCatalog(
+      EXERCISE_CATALOG_DEFINITION,
+      pending,
+      catalogRuntimeDependencies(generation),
+    );
+    if (catalogRuntimeGenerationRef.current !== generation) return;
+    applyExerciseCatalogSnapshot(refreshed, refreshed.availability === "fresh");
+  }
+
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;
-    loadExercisesRepo().then((repoExercises) => {
-      setExercisesRepo(repoExercises);
-      // Sync template exercises with repo data (image, muscle, etc.)
-      if (repoExercises.length === 0) return;
-      setStore((prev) => {
-        let changed = false;
-        const updatedTemplates = prev.templates.map((template) => {
-          const updatedExercises = template.exercises.map((exercise) => {
-            const match = findRepoExerciseMatch(repoExercises, exercise.name);
-            if (!match) return exercise;
-            const repoImageUri = getExerciseImageUrl(match, "male");
-            // Refresca la imagen si falta o si apunta a una URL del repo (posiblemente
-            // obsoleta, p.ej. sin el prefijo images/). Conserva imágenes propias del
-            // usuario (file://, data:, content://, etc.).
-            const currentImage = exercise.image_uri ?? "";
-            const isRepoImage = currentImage.startsWith(EXERCISES_REPO_BASE_URL);
-            const needsImage =
-              !!repoImageUri && currentImage !== repoImageUri && (currentImage === "" || isRepoImage);
-            const needsMuscle = !exercise.muscle && match.muscle_group;
-            if (!needsImage && !needsMuscle) return exercise;
-            changed = true;
-            return {
-              ...exercise,
-              image_uri: needsImage ? repoImageUri : exercise.image_uri,
-              muscle: needsMuscle ? match.muscle_group : exercise.muscle,
-            };
-          });
-          return updatedExercises === template.exercises ? template : { ...template, exercises: updatedExercises };
-        });
-        return changed ? { ...prev, templates: updatedTemplates } : prev;
-      });
+    let cancelled = false;
+    const generation = catalogRuntimeGenerationRef.current;
+    const dependencies = catalogRuntimeDependencies(generation);
+    void Promise.all(FOOD_CATALOG_DEFINITIONS.map((definition) => (
+      readCatalogCache(definition, dependencies)
+    ))).then(async (cached) => {
+      if (cancelled || catalogRuntimeGenerationRef.current !== generation) return;
+      const pending = cached.map((snapshot) => ({ ...snapshot, refreshing: true }));
+      setFoodCatalogSnapshots(pending);
+      setFoodsRepo(cached.flatMap((snapshot) => snapshot.data));
+      const refreshed = await Promise.all(FOOD_CATALOG_DEFINITIONS.map((definition, index) => (
+        refreshCatalog(definition, pending[index], dependencies)
+      )));
+      if (cancelled || catalogRuntimeGenerationRef.current !== generation) return;
+      setFoodCatalogSnapshots(refreshed);
+      setFoodsRepo(refreshed.flatMap((snapshot) => snapshot.data));
+    }).catch((catalogError) => {
+      console.error("[Catalogs] nutrition runtime failed:", catalogError);
     });
-    Promise.all([loadFoodsRepo(), loadProductsRepo(), loadRecipesRepo()]).then(
-      ([foods, products, recipes]) => setFoodsRepo([
-        ...foods.map((f) => ({ ...f, source: "alimento" as FoodSource })),
-        ...products.map((f) => ({ ...f, source: "producto_comercial" as FoodSource })),
-        ...recipes.map((f) => ({ ...f, source: "receta" as FoodSource })),
-      ]),
-    );
-    loadPersonalFoods().then(setPersonalFoods);
+    void readCatalogCache(
+      EXERCISE_CATALOG_DEFINITION,
+      dependencies,
+    ).then(async (cached) => {
+      if (cancelled || catalogRuntimeGenerationRef.current !== generation) return;
+      applyExerciseCatalogSnapshot({ ...cached, refreshing: true }, false);
+      const refreshed = await refreshCatalog(
+        EXERCISE_CATALOG_DEFINITION,
+        { ...cached, refreshing: true },
+        dependencies,
+      );
+      if (cancelled || catalogRuntimeGenerationRef.current !== generation) return;
+      applyExerciseCatalogSnapshot(refreshed, refreshed.availability === "fresh");
+    }).catch((catalogError) => {
+      console.error("[Catalogs] exercise runtime failed:", catalogError);
+    });
+    loadPersonalFoods().then((loadedPersonalFoods) => {
+      if (cancelled) return;
+      setPersonalFoods(loadedPersonalFoods);
+      setPersonalFoodsHydrated(true);
+    });
     readBackupMeta().then((meta) => setLastBackupAt(meta.lastBackupAt));
+    return () => { cancelled = true; };
   }, [isHydrated]);
 
   useEffect(() => {
@@ -8621,9 +8669,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }, [isHydrated, userPrefs]);
 
   useEffect(() => {
-    if (!isHydrated || dataDeletionBusyRef.current) return;
+    if (!isHydrated || !personalFoodsHydrated || dataDeletionBusyRef.current) return;
     savePersonalFoods(personalFoods).catch(() => {});
-  }, [isHydrated, personalFoods]);
+  }, [isHydrated, personalFoods, personalFoodsHydrated]);
 
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;
@@ -9183,6 +9231,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             store,
             foodsRepo: [...foodsRepo, ...personalFoods],
             exercisesRepo,
+            foodCatalogAvailability,
+            exerciseCatalogAvailability,
             executionId: userMessage.id,
             healthDecision,
             healthPolicy: healthSelection.policy,
@@ -9367,6 +9417,92 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setDietCopyModal(null);
   }
 
+  function persistDietItem(
+    item: DietItem,
+    category: DietMealCategory,
+    activeDietDate: string,
+    editing: DietItemMenuState,
+  ): void {
+    setStore((previous) => {
+      const currentDay = previous.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
+      if (editing) {
+        const meals = currentDay.meals
+          .map((meal) => meal.id !== editing.meal_id ? meal : ({
+            ...meal,
+            items: meal.items.map((current) => current.id === editing.item_id
+              ? { ...item, id: current.id }
+              : current),
+          }))
+          .filter((meal) => meal.items.length > 0);
+        return {
+          ...previous,
+          dietByDate: {
+            ...previous.dietByDate,
+            [activeDietDate]: { ...currentDay, meals: sortDietMealsByCategory(meals) },
+          },
+        };
+      }
+      const existingMealIndex = currentDay.meals.findIndex((meal) => meal.title === category);
+      const meals = existingMealIndex >= 0
+        ? currentDay.meals.map((meal, index) => index === existingMealIndex
+          ? { ...meal, items: [...meal.items, item] }
+          : meal)
+        : [...currentDay.meals, { id: uid("meal"), title: category, items: [item] }];
+      return {
+        ...previous,
+        dietByDate: {
+          ...previous.dietByDate,
+          [activeDietDate]: { ...currentDay, meals: sortDietMealsByCategory(meals) },
+        },
+      };
+    });
+  }
+
+  function finishDietItemResolution(origin: PendingFoodResolution["origin"]): void {
+    setPendingFoodResolution(null);
+    setDietEditingItem(null);
+    setDietItemMenu(null);
+    setDietMealEditorCategory(null);
+    setDietAddMode(null);
+    setMealNutritionIssues([]);
+    setError(null);
+    if (origin === "form") {
+      setMealTitleInput("");
+      setMealCaloriesInput("");
+      setMealProteinInput("");
+      setMealCarbsInput("");
+      setMealFatInput("");
+      setMealGramsInput("");
+      mealPerGramRef.current = null;
+    } else {
+      closeFoodEstimatorModal();
+    }
+  }
+
+  function commitPendingFoodResolution(candidate: FoodRepoEntry | null): void {
+    if (!pendingFoodResolution) return;
+    const pending = pendingFoodResolution;
+    const item = candidate
+      ? dietItemFromCatalog(candidate, pending.manualItem.grams, pending.manualItem.id, "selection")
+      : pending.manualItem;
+    persistDietItem(item, pending.category, pending.date, pending.editing);
+    if (!candidate && pending.proposeManual) {
+      feedbackProposalStore.propose({
+        kind: "food",
+        title: item.title,
+        summary: formatFoodSummary({
+          name: item.title,
+          grams: item.grams,
+          calories_kcal: item.calories_kcal,
+          protein_g: item.protein_g,
+          carbs_g: item.carbs_g,
+          fat_g: item.fat_g,
+        }),
+      });
+    }
+    finishDietItemResolution(pending.origin);
+  }
+
   function addMeal() {
     if (!dietMealEditorCategory) {
       setError("Selecciona una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).");
@@ -9396,30 +9532,31 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     } = formResult.value;
 
     const repoMatch = findFoodInRepo(title, foodsRepo, personalFoods);
-    let newItem: DietItem;
-    if (repoMatch && grams > 0) {
-      const ratio = grams / 100;
-      newItem = {
-        id: uid("food"),
-        title: repoMatch.name,
-        grams,
-        calories_kcal: Math.round(repoMatch.calories_per_100g * ratio),
-        protein_g: Math.round(repoMatch.protein_per_100g * ratio * 10) / 10,
-        carbs_g: Math.round(repoMatch.carbs_per_100g * ratio * 10) / 10,
-        fat_g: Math.round(repoMatch.fat_per_100g * ratio * 10) / 10,
-        image_uri: foodRepoImageUri(repoMatch),
-      };
-    } else {
-      newItem = {
-        id: uid("food"),
-        title,
-        grams,
-        calories_kcal: calories,
-        protein_g: protein,
-        carbs_g: carbs,
-        fat_g: fat,
-      };
+    const manualItem: DietItem = {
+      id: uid("food"),
+      title,
+      grams,
+      calories_kcal: calories,
+      protein_g: protein,
+      carbs_g: carbs,
+      fat_g: fat,
+      catalog_link: unresolvedCatalog("manual"),
+    };
+    if (repoMatch.kind === "alias" || repoMatch.kind === "ambiguous") {
+      setPendingFoodResolution({
+        origin: "form",
+        candidates: repoMatch.kind === "alias" ? [repoMatch.candidate] : repoMatch.candidates,
+        manualItem,
+        category: dietMealEditorCategory,
+        date: selectedDietDate,
+        editing: dietEditingItem,
+        proposeManual: true,
+      });
+      return;
     }
+    const newItem = repoMatch.kind === "exact"
+      ? dietItemFromCatalog(repoMatch.candidate, grams, manualItem.id, "selection")
+      : manualItem;
 
     const finalValidation = validateNutritionItem({
       name: newItem.title,
@@ -9434,7 +9571,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setError(formatNutritionValidationIssues(finalValidation.issues));
       return;
     }
-    if (!repoMatch) {
+    if (repoMatch.kind === "not_found") {
       feedbackProposalStore.propose({
         kind: "food",
         title,
@@ -9449,88 +9586,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       });
     }
 
-    const activeDietDate = selectedDietDate;
-    setStore((prev) => {
-      const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
-      if (dietEditingItem) {
-        const meals = currentDay.meals
-          .map((meal) => {
-            if (meal.id !== dietEditingItem.meal_id) return meal;
-            return {
-              ...meal,
-              items: meal.items.map((item) =>
-                item.id === dietEditingItem.item_id
-                  ? {
-                      ...item,
-                      title: newItem.title,
-                      grams: newItem.grams,
-                      calories_kcal: newItem.calories_kcal,
-                      protein_g: newItem.protein_g,
-                      carbs_g: newItem.carbs_g,
-                      fat_g: newItem.fat_g,
-                    }
-                  : item,
-              ),
-            };
-          })
-          .filter((meal) => meal.items.length > 0);
-        return {
-          ...prev,
-          dietByDate: {
-            ...prev.dietByDate,
-            [activeDietDate]: {
-              ...currentDay,
-              meals: sortDietMealsByCategory(meals),
-            },
-          },
-        };
-      }
-      const existingMealIndex = currentDay.meals.findIndex(
-        (meal) => meal.title === dietMealEditorCategory,
-      );
-      const meals =
-        existingMealIndex >= 0
-          ? currentDay.meals.map((meal, index) =>
-              index === existingMealIndex
-                ? {
-                    ...meal,
-                    items: [...meal.items, newItem],
-                  }
-                : meal,
-            )
-          : [
-              ...currentDay.meals,
-              {
-                id: uid("meal"),
-                title: dietMealEditorCategory,
-                items: [newItem],
-              },
-            ];
-      return {
-        ...prev,
-        dietByDate: {
-          ...prev.dietByDate,
-          [activeDietDate]: {
-            ...currentDay,
-            meals: sortDietMealsByCategory(meals),
-          },
-        },
-      };
-    });
-
-    setMealTitleInput("");
-    setMealCaloriesInput("");
-    setMealProteinInput("");
-    setMealCarbsInput("");
-    setMealFatInput("");
-    setMealGramsInput("");
-    mealPerGramRef.current = null;
-    setDietEditingItem(null);
-    setDietItemMenu(null);
-    setDietMealEditorCategory(null);
-    setDietAddMode(null);
-    setMealNutritionIssues([]);
-    setError(null);
+    persistDietItem(newItem, dietMealEditorCategory, selectedDietDate, dietEditingItem);
+    finishDietItemResolution("form");
   }
 
   function toggleDietMealCategory(category: DietMealCategory) {
@@ -9966,7 +10023,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setMeasuresDashboardPeriod(importedPrefs.chartPeriod);
       setMeasuresChartMetric(importedPrefs.chartMetric);
 
-      setPersonalFoods(Array.isArray(data.personalFoods) ? data.personalFoods : []);
+      setPersonalFoods(Array.isArray(data.personalFoods)
+        ? data.personalFoods.flatMap((entry) => {
+            if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
+            const { sourceId: _sourceId, source: _source, ...rawEntry } = entry as Record<string, unknown>;
+            return normalizePersonalFood(rawEntry as unknown as FoodRepoEntry);
+          })
+        : []);
       await savePersonalData(sanitizePersonalDataFields(data.personalData));
       // La pestaña Memoria solo lee del disco si aún no ha cargado, y persiste su
       // array entero en cada onBlur. Sin este reset, un estado cargado antes de
@@ -10528,70 +10591,51 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       const effectiveFoodType = foodEstimatorUsedBarcodeRef.current
         ? "producto_comercial"
         : parsed.food_type;
-      let updatedFields: { title: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number; image_uri?: string | null };
-      if (repoMatch && aiGrams > 0) {
-        const ratio = aiGrams / 100;
-        updatedFields = {
-          title: repoMatch.name,
-          grams: aiGrams,
-          calories_kcal: Math.round(repoMatch.calories_per_100g * ratio),
-          protein_g: Math.round(repoMatch.protein_per_100g * ratio * 10) / 10,
-          carbs_g: Math.round(repoMatch.carbs_per_100g * ratio * 10) / 10,
-          fat_g: Math.round(repoMatch.fat_per_100g * ratio * 10) / 10,
-          image_uri: foodRepoImageUri(repoMatch),
-        };
-      } else {
-        updatedFields = {
-          title: aiName,
-          grams: aiGrams,
-          calories_kcal: parsed.calories_kcal,
-          protein_g: parsed.protein_g ?? 0,
-          carbs_g: parsed.carbs_g ?? 0,
-          fat_g: parsed.fat_g ?? 0,
-        };
+      const manualItem: DietItem = {
+        id: uid("food"),
+        title: aiName,
+        grams: aiGrams,
+        calories_kcal: parsed.calories_kcal,
+        protein_g: parsed.protein_g ?? 0,
+        carbs_g: parsed.carbs_g ?? 0,
+        fat_g: parsed.fat_g ?? 0,
+        catalog_link: unresolvedCatalog("external_estimate"),
+      };
+      if (repoMatch.kind === "alias" || repoMatch.kind === "ambiguous") {
+        setPendingFoodResolution({
+          origin: "estimator",
+          candidates: repoMatch.kind === "alias" ? [repoMatch.candidate] : repoMatch.candidates,
+          manualItem,
+          category: cat,
+          date: selectedDietDate,
+          editing: dietEditingItem,
+          proposeManual: effectiveFoodType !== "alimento",
+        });
+        return;
       }
+      const updatedItem = repoMatch.kind === "exact"
+        ? dietItemFromCatalog(repoMatch.candidate, aiGrams, manualItem.id, "selection")
+        : manualItem;
       const finalValidation = validateNutritionItem({
-        name: updatedFields.title,
-        grams: updatedFields.grams,
-        calories_kcal: updatedFields.calories_kcal,
-        protein_g: updatedFields.protein_g,
-        carbs_g: updatedFields.carbs_g,
-        fat_g: updatedFields.fat_g,
+        name: updatedItem.title,
+        grams: updatedItem.grams,
+        calories_kcal: updatedItem.calories_kcal,
+        protein_g: updatedItem.protein_g,
+        carbs_g: updatedItem.carbs_g,
+        fat_g: updatedItem.fat_g,
       });
       if (!finalValidation.ok) {
         throw new Error(formatNutritionValidationIssues(finalValidation.issues));
       }
-      if (!repoMatch && effectiveFoodType !== "alimento") {
+      if (repoMatch.kind === "not_found" && effectiveFoodType !== "alimento") {
         feedbackProposalStore.propose({
           kind: "food",
           title: finalValidation.value.name,
           summary: formatFoodSummary(finalValidation.value),
         });
       }
-      const activeDietDate = selectedDietDate;
-      setStore((prev) => {
-        const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
-        if (dietEditingItem) {
-          // Update existing item
-          const meals = currentDay.meals.map((meal) => {
-            if (meal.id !== dietEditingItem.meal_id) return meal;
-            return { ...meal, items: meal.items.map((item) => item.id === dietEditingItem.item_id ? { ...item, ...updatedFields } : item) };
-          });
-          return { ...prev, dietByDate: { ...prev.dietByDate, [activeDietDate]: { ...currentDay, meals } } };
-        }
-        // Create new item
-        const newItem: DietItem = { id: uid("food"), ...updatedFields };
-        const existingMeal = currentDay.meals.find((m) => m.title === cat);
-        const updatedMeals = existingMeal
-          ? currentDay.meals.map((m) => m.title === cat ? { ...m, items: [...m.items, newItem] } : m)
-          : [...currentDay.meals, { id: uid("meal"), title: cat, items: [newItem] }].sort((a, b) => DIET_MEAL_CATEGORIES.indexOf(a.title as DietMealCategory) - DIET_MEAL_CATEGORIES.indexOf(b.title as DietMealCategory));
-        return { ...prev, dietByDate: { ...prev.dietByDate, [activeDietDate]: { ...currentDay, meals: updatedMeals } } };
-      });
-      setDietMealEditorCategory(null);
-      setDietEditingItem(null);
-      setDietAddMode(null);
-      setMealNutritionIssues([]);
-      closeFoodEstimatorModal();
+      persistDietItem(updatedItem, cat, selectedDietDate, dietEditingItem);
+      finishDietItemResolution("estimator");
     } catch (err) {
       const message =
         err instanceof Error
@@ -11181,7 +11225,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     updateActiveTrainingTemplate((template) => ({
       ...template,
       exercises: template.exercises.map((exercise) =>
-        exercise.id === exerciseId ? { ...exercise, name } : exercise,
+        exercise.id === exerciseId
+          ? { ...exercise, name, catalog_link: unresolvedCatalog("manual") }
+          : exercise,
       ),
     }));
 
@@ -11298,6 +11344,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               muscle: entry.muscle_group,
               load_kg: isLoadFocusedCategory ? 20 : null,
               rest_seconds: isLoadFocusedCategory ? 120 : 75,
+              catalog_link: linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
             },
           ],
         };
@@ -11348,6 +11395,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               muscle: inferExerciseMuscle(exerciseName, category),
               load_kg: isLoadFocusedCategory ? 20 : null,
               rest_seconds: isLoadFocusedCategory ? 120 : 75,
+              catalog_link: unresolvedCatalog("manual"),
             },
           ],
         };
@@ -11383,6 +11431,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       muscle,
       load_kg: isLoadFocused ? 20 : null,
       rest_seconds: isLoadFocused ? 120 : 75,
+      catalog_link: unresolvedCatalog("manual"),
     };
 
     if (activeWorkoutSession) {
@@ -11727,8 +11776,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     exerciseId: string,
     seriesId: string,
     subSeriesId: string,
-    field: "reps" | "weight_kg" | "rest_seconds" | "exercise_name" | "exercise_id",
-    value: string,
+    field: "reps" | "weight_kg" | "rest_seconds" | "exercise_name" | "exercise_id" | "catalog_link",
+    value: string | CatalogLink,
   ) {
     if (!activeTrainingTemplateId) return;
     setStore((prev) => ({
@@ -11743,9 +11792,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               if (s.id !== seriesId || !s.sub_series) return s;
               return {
                 ...s,
-                sub_series: s.sub_series.map((ss) =>
-                  ss.id === subSeriesId ? { ...ss, [field]: value } : ss,
-                ),
+                sub_series: s.sub_series.map((ss) => {
+                  if (ss.id !== subSeriesId) return ss;
+                  if (field === "exercise_name") {
+                    return { ...ss, exercise_name: String(value), catalog_link: unresolvedCatalog("manual") };
+                  }
+                  return { ...ss, [field]: value };
+                }),
               };
             });
             return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
@@ -12258,6 +12311,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 muscle: entry.muscle_group,
                 load_kg: isLoadFocused ? 20 : null,
                 rest_seconds: isLoadFocused ? 120 : 75,
+                catalog_link: linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
               },
             ],
           };
@@ -13073,9 +13127,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ["gymnasia.mobile.agent.tool_operations.v1", "Control de operaciones del agente"],
       ["gymnasia_debug_traces", "Trazas de depuración"],
       ["gymnasia.mobile.exercises_repo.v2", "Caché de ejercicios"],
+      ["gymnasia.mobile.exercises_repo.v3", "Caché validada de ejercicios"],
       ["gymnasia.mobile.foods_repo.v1", "Caché de alimentos"],
+      ["gymnasia.mobile.foods_repo.v2", "Caché validada de alimentos"],
       ["gymnasia.mobile.products_repo.v1", "Caché de productos"],
+      ["gymnasia.mobile.products_repo.v2", "Caché validada de productos"],
       ["gymnasia.mobile.recipes_repo.v1", "Caché de recetas"],
+      ["gymnasia.mobile.recipes_repo.v2", "Caché validada de recetas"],
     ];
     return labels.find(([suffix]) => key.endsWith(suffix))?.[1]
       ?? "Datos locales no inventariados";
@@ -13306,6 +13364,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   async function performDataDeletion(scope: LocalDataDeletionScope) {
     if (dataDeletionBusyRef.current) return;
     if (scope === "all-personal") beginProviderConfigurationMutation();
+    catalogRuntimeGenerationRef.current += 1;
     dataDeletionBusyRef.current = true;
     setDataDeletionBusy(true);
     setDataDeletionReport(null);
@@ -18062,6 +18121,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         )}
 
                         <View style={{ gap: 8 }}>
+                          <CatalogStatusNotice
+                            metadata={foodCatalogAvailability}
+                            onRetry={() => { void retryFoodCatalogs(); }}
+                            testID={`diet-food-catalog-status-${category.toLowerCase()}`}
+                          />
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, paddingHorizontal: 10 }}>
                             <Feather name="search" size={14} color={mobileTheme.color.textSecondary} />
                             <TextInput
@@ -18085,7 +18149,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                 .slice(0, 8)
                                 .map((entry) => (
                                   <Pressable
-                                    key={entry.id}
+                                    key={`${entry.sourceId}/${entry.id}`}
                                     onPress={() => {
                                       setDietSelectedFood(entry);
                                       setDietSelectedGrams(String(entry.serving_size_g));
@@ -18207,6 +18271,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                       carbs_g: carbs,
                                       fat_g: fat,
                                       image_uri: foodRepoImageUri(dietSelectedFood),
+                                      catalog_link: linkedCatalog(
+                                        catalogRef(dietSelectedFood.sourceId, dietSelectedFood.id),
+                                        "selection",
+                                      ),
                                     };
                                     const finalValidation = validateNutritionItem({
                                       name: newItem.title,
@@ -21251,6 +21319,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
                       Ejercicios de la app ({exercisesRepo.length})
                     </Text>
+                    <CatalogStatusNotice
+                      metadata={exerciseCatalogAvailability}
+                      onRetry={() => { void retryExerciseCatalog(); }}
+                      testID="settings-exercise-catalog-status"
+                    />
                     {exercisesRepo.length === 0 ? (
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
                         No se han cargado ejercicios del repositorio.
@@ -21359,6 +21432,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
               {settingsTab === "foods" ? (
                 <View style={{ gap: 12 }}>
+                  <CatalogStatusNotice
+                    metadata={foodCatalogAvailability}
+                    onRetry={() => { void retryFoodCatalogs(); }}
+                    testID="settings-food-catalog-status"
+                  />
                   {/* Search bar */}
                   <View
                     style={{
@@ -21545,6 +21623,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
               {settingsTab === "products" ? (
                 <View style={{ gap: 12 }}>
+                  <CatalogStatusNotice
+                    metadata={foodCatalogAvailability}
+                    onRetry={() => { void retryFoodCatalogs(); }}
+                    testID="settings-product-catalog-status"
+                  />
                   {/* Search bar */}
                   <View
                     style={{
@@ -21792,7 +21875,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       handleOpenAiReport("personal-food-assistant", message, conversation);
                     }}
                     onJsonResult={(json) => {
-                      const entry: FoodRepoEntry = {
+                      const entry = normalizePersonalFood({
                         id: uid("food"),
                         name: String(json.name ?? ""),
                         category: String(json.category ?? "otro"),
@@ -21803,7 +21886,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         fiber_per_100g: Number(json.fiber_per_100g) || 0,
                         serving_size_g: Number(json.serving_size_g) || 100,
                         serving_description: String(json.serving_description ?? ""),
-                      };
+                      });
                       setPersonalFoods((prev) => [...prev, entry]);
                       setPersonalFoodAIChatOpen(false);
                     }}
@@ -21867,7 +21950,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       <Pressable
                         onPress={() => {
                           if (!personalFoodDraft.name?.trim()) return;
-                          const entry: FoodRepoEntry = {
+                          const entry = normalizePersonalFood({
                             id: editingPersonalFoodId ?? uid("food"),
                             name: personalFoodDraft.name?.trim() ?? "",
                             category: personalFoodDraft.category?.trim() ?? "otro",
@@ -21878,7 +21961,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                             fiber_per_100g: Number(personalFoodDraft.fiber_per_100g) || 0,
                             serving_size_g: Number(personalFoodDraft.serving_size_g) || 100,
                             serving_description: personalFoodDraft.serving_description?.trim() ?? "",
-                          };
+                          });
                           if (editingPersonalFoodId) {
                             setPersonalFoods((prev) => prev.map((f) => (f.id === editingPersonalFoodId ? entry : f)));
                           } else {
@@ -24099,6 +24182,96 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         )
       ) : null}
 
+      {pendingFoodResolution ? (
+        <View
+          testID="food-catalog-ambiguity-modal"
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.8)",
+            paddingHorizontal: 22,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 740,
+            elevation: 74,
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              maxWidth: 390,
+              maxHeight: "80%",
+              borderRadius: 22,
+              borderWidth: 1,
+              borderColor: mobileTheme.color.borderSubtle,
+              backgroundColor: mobileTheme.color.bgSurface,
+              padding: 16,
+              gap: 12,
+            }}
+          >
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
+              Elige el alimento correcto
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>
+              Necesitamos que confirmes a qué entrada te refieres. No guardaremos nada hasta que elijas una opción.
+            </Text>
+            <ScrollView style={{ maxHeight: 320 }} contentContainerStyle={{ gap: 8 }}>
+              {pendingFoodResolution.candidates.map((candidate) => (
+                <Pressable
+                  key={`${candidate.sourceId}/${candidate.id}`}
+                  testID={`food-catalog-candidate-${candidate.sourceId}-${candidate.id}`}
+                  onPress={() => commitPendingFoodResolution(candidate)}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 10,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    borderRadius: mobileTheme.radius.md,
+                    backgroundColor: mobileTheme.color.bgApp,
+                    padding: 10,
+                  }}
+                >
+                  <FoodThumbnail food={candidate} size={42} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>
+                      {candidate.name}
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>
+                      {candidate.sourceId} · {candidate.id} · {candidate.calories_per_100g} kcal/100g
+                    </Text>
+                  </View>
+                  <Feather name="chevron-right" size={17} color={mobileTheme.color.brandPrimary} />
+                </Pressable>
+              ))}
+            </ScrollView>
+            <Pressable
+              testID="food-catalog-keep-manual"
+              onPress={() => commitPendingFoodResolution(null)}
+              style={{
+                minHeight: 44,
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+                backgroundColor: "#1B1F27",
+              }}
+            >
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>
+                Conservar como manual
+              </Text>
+            </Pressable>
+            <Pressable onPress={() => setPendingFoodResolution(null)} style={{ alignItems: "center", paddingVertical: 6 }}>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Cancelar</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
       {dietCopyModal ? (
         <View
           style={{
@@ -24946,6 +25119,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             </View>
 
             <View style={{ paddingHorizontal: 14, marginBottom: 8 }}>
+              <CatalogStatusNotice
+                metadata={exerciseCatalogAvailability}
+                onRetry={() => { void retryExerciseCatalog(); }}
+                testID="exercise-picker-catalog-status"
+              />
+            </View>
+
+            <View style={{ paddingHorizontal: 14, marginBottom: 8 }}>
               <View
                 style={{
                   flexDirection: "row",
@@ -25023,6 +25204,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     if (supersetPickerTarget) {
                       updateSubSeriesField(supersetPickerTarget.exerciseId, supersetPickerTarget.seriesId, supersetPickerTarget.subSeriesId, "exercise_name", entry.name);
                       updateSubSeriesField(supersetPickerTarget.exerciseId, supersetPickerTarget.seriesId, supersetPickerTarget.subSeriesId, "exercise_id", entry.id);
+                      updateSubSeriesField(
+                        supersetPickerTarget.exerciseId,
+                        supersetPickerTarget.seriesId,
+                        supersetPickerTarget.subSeriesId,
+                        "catalog_link",
+                        linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
+                      );
                       setSupersetPickerTarget(null);
                       setExercisePickerOpen(false);
                     } else {
@@ -25068,8 +25256,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
               {exercisesRepo.length === 0 ? (
                 <View style={{ alignItems: "center", paddingVertical: 30 }}>
-                  <ActivityIndicator color={mobileTheme.color.brandPrimary} size="small" />
-                  <Text style={{ color: "#5A6270", fontSize: 14, marginTop: 8 }}>Cargando ejercicios...</Text>
+                  {exerciseCatalogSnapshot.refreshing ? (
+                    <ActivityIndicator color={mobileTheme.color.brandPrimary} size="small" />
+                  ) : <Feather name="database" size={20} color="#5A6270" />}
+                  <Text style={{ color: "#5A6270", fontSize: 14, marginTop: 8 }}>
+                    {exerciseCatalogSnapshot.refreshing ? "Actualizando ejercicios…" : "No hay ejercicios disponibles."}
+                  </Text>
                 </View>
               ) : null}
 

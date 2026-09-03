@@ -145,6 +145,10 @@ export function evaluateDataInventory({ inventory, sources, permissions, root = 
   // Los namespaces no son claves: son el prefijo que scopedStorageKey antepone para
   // que cada entorno (development, staging, production) tenga su propio almacén.
   const declaredNamespaces = new Set(inventory.storageNamespaces ?? []);
+  // Algunos identificadores de dominio comparten el prefijo histórico
+  // `gymnasia_`, pero no son claves de almacenamiento. La allowlist es explícita
+  // para no debilitar el detector general de literales nuevos.
+  const declaredNonStorageLiterals = new Set(inventory.nonStorageLiterals ?? []);
   const declaredSecureKeys = inventory.secureStoreKeys ?? [];
   const declaredSecureLiterals = new Set(declaredSecureKeys.map((entry) => entry.key));
   const foundKeys = scanStorageKeys(sources);
@@ -152,10 +156,20 @@ export function evaluateDataInventory({ inventory, sources, permissions, root = 
   for (const [key, path] of foundKeys) {
     if (declaredAsyncKeys.has(key) || declaredSecureLiterals.has(key)) continue;
     if (declaredNamespaces.has(key)) continue;
+    if (declaredNonStorageLiterals.has(key)) continue;
     violations.push({
       code: "storage-key-undeclared",
       subject: key,
       message: `${relativeToRoot(path, root)} usa la clave de almacenamiento ${key}, que el inventario no declara. Añádela con su propósito y su categoría, y revisa si la política publicada debe mencionarla.`,
+    });
+  }
+
+  for (const literal of declaredNonStorageLiterals) {
+    if (foundKeys.has(literal)) continue;
+    violations.push({
+      code: "non-storage-literal-stale",
+      subject: literal,
+      message: `El inventario excluye ${literal} del detector de almacenamiento, pero el literal ya no aparece en el código. Retíralo de nonStorageLiterals.`,
     });
   }
 

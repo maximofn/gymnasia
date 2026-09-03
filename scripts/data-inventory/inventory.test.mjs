@@ -47,6 +47,24 @@ test("el escáner no confunde BACKUP_APP_ID con una clave de almacenamiento", ()
   assert.equal(scanStorageKeys(fixtureSources).has("gymnasia"), false);
 });
 
+test("permite excluir IDs de dominio que comparten el prefijo de las claves", () => {
+  const sources = [{ path: "/fake/catalog.ts", source: 'const sourceId = "gymnasia_foods";' }];
+  const violations = evaluateDataInventory({
+    inventory: {
+      storageKeys: [],
+      secureStoreKeys: [],
+      storageNamespaces: [],
+      nonStorageLiterals: ["gymnasia_foods"],
+      networkEndpoints: [],
+      permissionDataSafetyImpact: {},
+      mergedManifestDataSafetyImpact: {},
+    },
+    sources,
+    permissions: emptyPermissions,
+  });
+  assert.deepEqual(violations, []);
+});
+
 test("el escáner encuentra los hosts https del código", () => {
   const hosts = scanHosts(fixtureSources);
   assert.ok(hosts.has("fixture.example.com"));

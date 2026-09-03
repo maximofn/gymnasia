@@ -10,6 +10,16 @@ import {
   validateNutritionItem,
 } from "../diet/nutritionContract";
 import type { ToolOperationExecutionOutcome } from "./toolOperationLedger";
+import { findByCatalogRef, matchExerciseCatalog, matchFoodCatalog } from "../catalogs/matching";
+import {
+  catalogRef,
+  linkedCatalog,
+  unresolvedCatalog,
+  type CatalogLink,
+  type CatalogSearchAvailability,
+  type ExerciseCatalogEntry,
+  type FoodCatalogEntry,
+} from "../catalogs/types";
 
 export type { PersonalDataField };
 
@@ -37,6 +47,8 @@ export type ToolDietItem = {
   protein_g: number;
   carbs_g: number;
   fat_g: number;
+  image_uri?: string | null;
+  catalog_link?: CatalogLink;
 };
 
 export type ToolDietDay = {
@@ -73,6 +85,7 @@ export type ToolWorkoutTemplate = {
     sets: number[];
     series?: ToolExerciseSeries[];
     muscle?: string;
+    catalog_link?: CatalogLink;
   }>;
 };
 
@@ -82,31 +95,9 @@ export type ToolStore = {
   measurements: ToolMeasurement[];
 };
 
-export type ToolFoodRepoEntry = {
-  id: string;
-  name: string;
-  category: string;
-  calories_per_100g: number;
-  protein_per_100g: number;
-  carbs_per_100g: number;
-  fat_per_100g: number;
-  fiber_per_100g: number;
-  serving_size_g: number;
-  serving_description: string;
-  source?: string;
-};
+export type ToolFoodRepoEntry = FoodCatalogEntry;
 
-export type ToolExerciseRepoEntry = {
-  id: string;
-  name: string;
-  image_male: string;
-  image_female: string;
-  muscle_group: string;
-  secondary_muscles: string[];
-  equipment: string;
-  difficulty: string;
-  instructions: string;
-};
+export type ToolExerciseRepoEntry = ExerciseCatalogEntry;
 
 export type ToolExecutionContext = {
   setStore?: (updater: (previous: ToolStore) => ToolStore) => void;
@@ -114,6 +105,8 @@ export type ToolExecutionContext = {
   store?: ToolStore;
   foodsRepo?: ToolFoodRepoEntry[];
   exercisesRepo?: ToolExerciseRepoEntry[];
+  foodCatalogAvailability?: CatalogSearchAvailability;
+  exerciseCatalogAvailability?: CatalogSearchAvailability;
   operationId?: string;
   markEffectCommitted?: () => void;
 };
@@ -165,6 +158,30 @@ function normalizeSearchText(value: string): string {
     .trim()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function unavailableCatalogMetadata(): CatalogSearchAvailability {
+  return { availability: "unavailable", fetchedAt: null, sources: [], warnings: ["Catálogo no disponible."] };
+}
+
+function serializeCatalogSearch<T>(
+  metadata: CatalogSearchAvailability | undefined,
+  results: T[],
+): string {
+  const availability = metadata ?? unavailableCatalogMetadata();
+  return JSON.stringify({
+    availability: availability.availability,
+    fetched_at: availability.fetchedAt,
+    sources: availability.sources.map((source) => ({
+      source_id: source.sourceId,
+      label: source.label,
+      availability: source.availability,
+      fetched_at: source.fetchedAt,
+      warning: source.warning,
+    })),
+    warnings: availability.warnings,
+    results,
+  });
 }
 
 function parseObjectArgument(
@@ -305,6 +322,8 @@ const readMealFoods: ToolHandler = async (args, context) => {
     proteina_g: item.protein_g,
     carbohidratos_g: item.carbs_g,
     grasa_g: item.fat_g,
+    source_id: item.catalog_link?.status === "linked" ? item.catalog_link.ref.sourceId : null,
+    item_id: item.catalog_link?.status === "linked" ? item.catalog_link.ref.itemId : null,
   })));
 };
 
@@ -324,7 +343,55 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
   );
   if (parsed.error || !parsed.value) return parsed.error ?? "No se proporcionaron datos del alimento.";
   const data = parsed.value;
-  const validation = validateNutritionItem(data);
+  const repository = context.foodsRepo ?? [];
+  const kind = typeof data.kind === "string" ? data.kind : "legacy";
+  let catalogLink: CatalogLink;
+  let nutritionInput: Record<string, unknown> = data;
+
+  if (kind === "catalog") {
+    const sourceId = typeof data.source_id === "string" ? data.source_id : "";
+    const itemId = typeof data.item_id === "string" ? data.item_id : "";
+    const grams = Number(data.grams);
+    const candidate = sourceId && itemId
+      ? findByCatalogRef(repository, catalogRef(sourceId as FoodCatalogEntry["sourceId"], itemId))
+      : null;
+    if (!candidate) {
+      return JSON.stringify({ status: "not_found", source_id: sourceId, item_id: itemId, written: false });
+    }
+    const ratio = grams / 100;
+    nutritionInput = {
+      name: candidate.name,
+      grams,
+      calories_kcal: Math.round(candidate.calories_per_100g * ratio * 10) / 10,
+      protein_g: Math.round(candidate.protein_per_100g * ratio * 10) / 10,
+      carbs_g: Math.round(candidate.carbs_per_100g * ratio * 10) / 10,
+      fat_g: Math.round(candidate.fat_per_100g * ratio * 10) / 10,
+    };
+    catalogLink = linkedCatalog(catalogRef(candidate.sourceId, candidate.id), "tool");
+  } else if (kind === "manual") {
+    catalogLink = unresolvedCatalog("manual");
+  } else {
+    const foodName = typeof data.name === "string" ? data.name : "";
+    const match = matchFoodCatalog(repository, foodName);
+    if (match.kind === "ambiguous") {
+      return JSON.stringify({
+        status: "ambiguous",
+        written: false,
+        candidates: match.candidates.map((candidate) => ({
+          source_id: candidate.sourceId,
+          item_id: candidate.id,
+          name: candidate.name,
+        })),
+      });
+    }
+    if (match.kind === "exact" || match.kind === "alias") {
+      catalogLink = linkedCatalog(catalogRef(match.candidate.sourceId, match.candidate.id), "tool");
+    } else {
+      catalogLink = unresolvedCatalog("manual");
+    }
+  }
+
+  const validation = validateNutritionItem(nutritionInput);
   if (!validation.ok) {
     return `No se añadió el alimento. ${formatNutritionValidationIssues(validation.issues)}`;
   }
@@ -347,6 +414,7 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
     protein_g: proteinG,
     carbs_g: carbsG,
     fat_g: fatG,
+    catalog_link: catalogLink,
   };
   const updateStore = (previous: ToolStore): ToolStore => {
     const currentDay = previous.dietByDate[date] ?? { day_date: date, meals: [] };
@@ -391,7 +459,7 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
 
 const searchFoods: ToolHandler = async (args, context) => {
   if (!context.foodsRepo || context.foodsRepo.length === 0) {
-    return "La base de datos de alimentos no está cargada.";
+    return serializeCatalogSearch(context.foodCatalogAvailability, []);
   }
   const query = (args.query as string) ?? "";
   const category = (args.category as string) ?? "";
@@ -420,7 +488,9 @@ const searchFoods: ToolHandler = async (args, context) => {
   }
   if (source.trim()) {
     const needle = normalizeSearchText(source);
-    results = results.filter((food) => normalizeSearchText(food.source ?? "alimento") === needle);
+    results = results.filter((food) => (
+      normalizeSearchText(food.source) === needle || normalizeSearchText(food.sourceId) === needle
+    ));
   }
   if (minCalories != null) results = results.filter((food) => food.calories_per_100g >= minCalories);
   if (maxCalories != null) results = results.filter((food) => food.calories_per_100g <= maxCalories);
@@ -449,9 +519,9 @@ const searchFoods: ToolHandler = async (args, context) => {
   }
 
   results = results.slice(0, 15);
-  if (results.length === 0) return "No se encontraron alimentos con esos criterios.";
-  return JSON.stringify(results.map((food) => ({
-    id: food.id,
+  return serializeCatalogSearch(context.foodCatalogAvailability, results.map((food) => ({
+    source_id: food.sourceId,
+    item_id: food.id,
     nombre: food.name,
     categoria: food.category,
     tipo: food.source ?? "alimento",
@@ -467,7 +537,7 @@ const searchFoods: ToolHandler = async (args, context) => {
 
 const searchExercises: ToolHandler = async (args, context) => {
   if (!context.exercisesRepo || context.exercisesRepo.length === 0) {
-    return "La base de datos de ejercicios no está cargada.";
+    return serializeCatalogSearch(context.exerciseCatalogAvailability, []);
   }
   const query = (args.query as string) ?? "";
   const muscleGroup = (args.muscle_group as string) ?? "";
@@ -500,9 +570,9 @@ const searchExercises: ToolHandler = async (args, context) => {
   }
 
   results = results.slice(0, 15);
-  if (results.length === 0) return "No se encontraron ejercicios con esos criterios.";
-  return JSON.stringify(results.map((exercise) => ({
-    id: exercise.id,
+  return serializeCatalogSearch(context.exerciseCatalogAvailability, results.map((exercise) => ({
+    source_id: exercise.sourceId,
+    item_id: exercise.id,
     nombre: exercise.name,
     musculo_principal: exercise.muscle_group,
     musculos_secundarios: exercise.secondary_muscles,
@@ -523,6 +593,8 @@ const readRoutines: ToolHandler = async (_args, context) => {
     ejercicios: template.exercises.map((exercise) => ({
       nombre: exercise.name ?? "Sin nombre",
       musculo: exercise.muscle ?? "",
+      source_id: exercise.catalog_link?.status === "linked" ? exercise.catalog_link.ref.sourceId : null,
+      item_id: exercise.catalog_link?.status === "linked" ? exercise.catalog_link.ref.itemId : null,
       series: (exercise.series ?? []).map((series) => ({
         tipo: series.type ?? "normal",
         repeticiones: series.reps,
@@ -555,13 +627,76 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
   if (exercisesData.length === 0) return "La rutina debe tener al menos un ejercicio.";
   const repository = context.exercisesRepo ?? [];
   const operationSuffix = context.operationId?.slice(0, 24);
-  const templateExercises = exercisesData.map((exercise, exerciseIndex) => {
-    const exerciseName = (exercise.name as string) ?? "Ejercicio";
-    const exerciseMuscle = (exercise.muscle as string) ?? "";
+  const resolvedExercises: Array<{
+    input: Record<string, unknown>;
+    candidate: ToolExerciseRepoEntry | null;
+    catalogLink: CatalogLink;
+    name: string;
+    muscle: string;
+  }> = [];
+  for (const exercise of exercisesData) {
+    const kind = typeof exercise.kind === "string" ? exercise.kind : "legacy";
+    if (kind === "custom") {
+      resolvedExercises.push({
+        input: exercise,
+        candidate: null,
+        catalogLink: unresolvedCatalog("manual"),
+        name: typeof exercise.name === "string" && exercise.name.trim() ? exercise.name.trim() : "Ejercicio",
+        muscle: typeof exercise.muscle === "string" ? exercise.muscle : "",
+      });
+      continue;
+    }
+    if (kind === "catalog") {
+      const sourceId = typeof exercise.source_id === "string" ? exercise.source_id : "";
+      const itemId = typeof exercise.item_id === "string" ? exercise.item_id : "";
+      const candidate = sourceId && itemId
+        ? findByCatalogRef(repository, catalogRef(sourceId as ExerciseCatalogEntry["sourceId"], itemId))
+        : null;
+      if (!candidate) {
+        return JSON.stringify({ status: "not_found", written: false, source_id: sourceId, item_id: itemId });
+      }
+      resolvedExercises.push({
+        input: exercise,
+        candidate,
+        catalogLink: linkedCatalog(catalogRef(candidate.sourceId, candidate.id), "tool"),
+        name: candidate.name,
+        muscle: candidate.muscle_group,
+      });
+      continue;
+    }
+
+    const requestedName = typeof exercise.name === "string" ? exercise.name : "";
+    const match = matchExerciseCatalog(repository, requestedName);
+    if (match.kind === "ambiguous") {
+      return JSON.stringify({
+        status: "ambiguous",
+        written: false,
+        exercise_name: requestedName,
+        candidates: match.candidates.map((candidate) => ({
+          source_id: candidate.sourceId,
+          item_id: candidate.id,
+          name: candidate.name,
+        })),
+      });
+    }
+    if (match.kind === "not_found") {
+      return JSON.stringify({ status: "not_found", written: false, exercise_name: requestedName });
+    }
+    resolvedExercises.push({
+      input: exercise,
+      candidate: match.candidate,
+      catalogLink: linkedCatalog(
+        catalogRef(match.candidate.sourceId, match.candidate.id),
+        match.kind === "exact" ? "legacy_exact" : "legacy_alias",
+      ),
+      name: match.candidate.name,
+      muscle: match.candidate.muscle_group,
+    });
+  }
+
+  const templateExercises = resolvedExercises.map((resolved, exerciseIndex) => {
+    const { input: exercise, candidate: repositoryMatch } = resolved;
     const seriesData = (exercise.series as Array<Record<string, unknown>>) ?? [];
-    const repositoryMatch = repository.find(
-      (item) => item.name.toLowerCase() === exerciseName.toLowerCase(),
-    );
     const series: ToolExerciseSeries[] = seriesData.map((item, seriesIndex) => ({
       id: operationSuffix
         ? `series_op_${operationSuffix}_${exerciseIndex}_${seriesIndex}`
@@ -575,11 +710,12 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
       id: operationSuffix
         ? `exercise_op_${operationSuffix}_${exerciseIndex}`
         : dependencies.createId("exercise"),
-      name: exerciseName,
-      muscle: exerciseMuscle || (repositoryMatch?.muscle_group ?? ""),
+      name: resolved.name,
+      muscle: resolved.muscle,
       image_uri: repositoryMatch ? dependencies.getExerciseImageUrl(repositoryMatch, "male") : null,
       sets: series.map((_item, index) => index),
       series,
+      catalog_link: resolved.catalogLink,
     };
   });
   const newTemplate: ToolWorkoutTemplate = {
