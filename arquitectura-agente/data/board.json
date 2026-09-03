@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-02",
+    "updated": "2026-09-03",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -1788,7 +1788,7 @@
         {
           "id": "GYM-163",
           "title": "Hacer portables las fotos de mediciones en las copias de seguridad",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Exportar y restaurar los bytes de las fotos en lugar de conservar URIs locales inservibles.",
           "dependsOn": [],
           "related": [
