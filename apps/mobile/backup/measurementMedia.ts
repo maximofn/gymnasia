@@ -33,7 +33,7 @@ function bytesToHex(bytes: Uint8Array): string {
 export async function measurementPhotoSha256(bytes: Uint8Array): Promise<string> {
   const digestInput = new Uint8Array(bytes.byteLength);
   digestInput.set(bytes);
-  const digest = await Crypto.digest(Crypto.CryptoDigestAlgorithm.SHA256, digestInput.buffer);
+  const digest = await Crypto.digest(Crypto.CryptoDigestAlgorithm.SHA256, digestInput);
   return bytesToHex(new Uint8Array(digest));
 }
 
