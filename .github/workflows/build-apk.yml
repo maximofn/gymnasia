@@ -121,6 +121,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           SOURCE_COMMIT: ${{ needs.select-transaction.outputs.source_commit }}
+          EXPECTED_VERSION: ${{ needs.select-transaction.outputs.version }}
         shell: bash
         run: |
           set -euo pipefail
@@ -128,7 +129,7 @@ jobs:
             --profile production-apk \
             --artifact-type apk \
             --expected-commit "$SOURCE_COMMIT" \
-            --expected-version "${{ needs.select-transaction.outputs.version }}" \
+            --expected-version "$EXPECTED_VERSION" \
             --output /tmp/production-source-evidence.json
           echo "commit=$SOURCE_COMMIT" >> "$GITHUB_OUTPUT"
 
@@ -486,7 +487,7 @@ jobs:
             "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=gymnasia.apk" \
             > /tmp/github-apk-asset.json
 
-      - name: Verify draft identity, bounds and MIME
+      - name: Verify draft identity, bounds, MIME and evidence chain
         if: needs.select-transaction.outputs.action == 'build'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -507,6 +508,15 @@ jobs:
           for ASSET in android-release-transaction.json production-source-evidence.json production-artifact-evidence.json; do
             jq -e --arg name "$ASSET" '.assets[] | select(.name == $name)' /tmp/github-release.json >/dev/null
           done
+          ASSET_DIGEST() {
+            jq -r --arg name "$1" '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json
+          }
+          test "$(ASSET_DIGEST gymnasia.apk)" = "sha256:$(jq -r '.artifact.sha256' /tmp/android-release-transaction.json)"
+          test "$APK_SIZE" = "$(jq -r '.artifact.size' /tmp/android-release-transaction.json)"
+          test "$(ASSET_DIGEST production-artifact-evidence.json)" = "sha256:$(jq -r '.artifact.evidenceSha256' /tmp/android-release-transaction.json)"
+          test "$(ASSET_DIGEST production-source-evidence.json)" = "sha256:$(jq -r '.source.evidenceSha256' /tmp/production-artifact-evidence.json)"
+          test "$(jq -r '.source.commit' /tmp/production-artifact-evidence.json)" = "$SOURCE_COMMIT"
+          test "$(jq -r '.result' /tmp/production-artifact-evidence.json)" = "passed"
 
       - name: Publish immutable APK release
         if: needs.select-transaction.outputs.action == 'build'
