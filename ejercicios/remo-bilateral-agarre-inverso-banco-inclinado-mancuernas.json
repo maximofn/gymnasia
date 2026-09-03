@@ -1,0 +1,15 @@
+{
+  "id": "remo-bilateral-agarre-inverso-banco-inclinado-mancuernas",
+  "name": "Remo bilateral con agarre inverso en banco inclinado",
+  "image_male": "images/remo-bilateral-agarre-inverso-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/remo-bilateral-agarre-inverso-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazo",
+    "hombro posterior"
+  ],
+  "equipment": "banco inclinado y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho sobre un banco inclinado y deja colgar dos mancuernas con las palmas hacia delante. Tira de ambas cargas hacia las costillas manteniendo los codos cerca del cuerpo. Junta las escápulas y baja hasta extender los brazos."
+}

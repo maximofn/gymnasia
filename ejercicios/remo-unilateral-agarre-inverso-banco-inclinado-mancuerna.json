@@ -1,0 +1,14 @@
+{
+  "id": "remo-unilateral-agarre-inverso-banco-inclinado-mancuerna",
+  "name": "Remo unilateral con agarre inverso y apoyo en banco inclinado",
+  "image_male": "images/remo-unilateral-agarre-inverso-banco-inclinado-mancuerna-male.webp",
+  "image_female": "images/remo-unilateral-agarre-inverso-banco-inclinado-mancuerna-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "bíceps",
+    "hombro posterior"
+  ],
+  "equipment": "banco inclinado y mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Apoya una mano y una rodilla sobre un banco inclinado y sujeta una mancuerna con la palma hacia delante. Remala hacia la cadera manteniendo el codo cerca del torso y la espalda estable. Baja hasta extender el brazo sin girar el tronco."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "remo-inclinado-rotacion-palmas-mancuernas",
+  "name": "Remo inclinado con rotación de palmas y mancuernas",
+  "image_male": "images/remo-inclinado-rotacion-palmas-mancuernas-male.webp",
+  "image_female": "images/remo-inclinado-rotacion-palmas-mancuernas-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazo",
+    "trapecio"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Inclina el torso desde las caderas con la espalda neutra y una mancuerna en cada mano. Inicia con las palmas orientadas hacia las piernas y rema hacia las costillas mientras las giras hacia fuera. Junta las escápulas arriba y revierte la rotación al bajar."
+}

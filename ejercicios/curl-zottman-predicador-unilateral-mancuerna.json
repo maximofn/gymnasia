@@ -1,0 +1,14 @@
+{
+  "id": "curl-zottman-predicador-unilateral-mancuerna",
+  "name": "Curl Zottman predicador unilateral con mancuerna",
+  "image_male": "images/curl-zottman-predicador-unilateral-mancuerna-male.webp",
+  "image_female": "images/curl-zottman-predicador-unilateral-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquial"
+  ],
+  "equipment": "mancuerna y banco predicador",
+  "difficulty": "advanced",
+  "instructions": "Apoya el brazo en un banco predicador y eleva una mancuerna con la palma hacia arriba. En la parte alta gira el antebrazo hasta dejar la palma hacia abajo y desciende lentamente con ese agarre. Recupera la supinación abajo antes de repetir, manteniendo el brazo pegado al cojín."
+}

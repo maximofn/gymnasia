@@ -1,0 +1,13 @@
+{
+  "id": "curl-muneca-unilateral-mancuerna",
+  "name": "Curl de muñeca unilateral con mancuerna",
+  "image_male": "images/curl-muneca-unilateral-mancuerna-male.webp",
+  "image_female": "images/curl-muneca-unilateral-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "bíceps"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "beginner",
+  "instructions": "Siéntate con una mancuerna en una mano y apoya el antebrazo sobre el muslo, con la palma hacia arriba y la muñeca fuera de la rodilla. Deja descender la carga hacia los dedos y flexiona solo la muñeca hasta acercarla al antebrazo. Baja con control sin levantar el codo."
+}

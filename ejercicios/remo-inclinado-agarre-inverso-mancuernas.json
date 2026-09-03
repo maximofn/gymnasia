@@ -1,0 +1,15 @@
+{
+  "id": "remo-inclinado-agarre-inverso-mancuernas",
+  "name": "Remo inclinado con agarre inverso y mancuernas",
+  "image_male": "images/remo-inclinado-agarre-inverso-mancuernas-male.webp",
+  "image_female": "images/remo-inclinado-agarre-inverso-mancuernas-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazo",
+    "hombro posterior"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Inclina el torso desde las caderas y sostén dos mancuernas con las palmas hacia delante. Remalas hacia la cintura manteniendo los codos pegados al cuerpo y la espalda neutra. Aprieta las escápulas arriba y baja con control."
+}

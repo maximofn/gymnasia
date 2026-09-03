@@ -1,0 +1,14 @@
+{
+  "id": "apertura-inversa-prono-banco-inclinado-mancuernas",
+  "name": "Apertura inversa prona en banco inclinado con mancuernas",
+  "image_male": "images/apertura-inversa-prono-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/apertura-inversa-prono-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": [
+    "trapecio",
+    "espalda alta"
+  ],
+  "equipment": "banco inclinado y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Apoya el pecho boca abajo sobre un banco inclinado con una mancuerna en cada mano. Abre los brazos hacia los lados con los codos ligeramente flexionados hasta juntar las escápulas. Mantén el torso pegado al respaldo y baja de forma controlada."
+}

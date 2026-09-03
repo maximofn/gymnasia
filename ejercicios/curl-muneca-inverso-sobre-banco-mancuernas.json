@@ -1,0 +1,13 @@
+{
+  "id": "curl-muneca-inverso-sobre-banco-mancuernas",
+  "name": "Curl de muñeca inverso sobre banco con mancuernas",
+  "image_male": "images/curl-muneca-inverso-sobre-banco-mancuernas-male.webp",
+  "image_female": "images/curl-muneca-inverso-sobre-banco-mancuernas-female.webp",
+  "muscle_group": "extensores del antebrazo",
+  "secondary_muscles": [
+    "braquial"
+  ],
+  "equipment": "banco y mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Apoya ambos antebrazos sobre un banco con las palmas hacia abajo y las muñecas fuera del borde. Eleva los dorsos de las manos con dos mancuernas ligeras y mantén los codos quietos. Baja lentamente hasta estirar de nuevo las muñecas."
+}

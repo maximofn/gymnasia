@@ -1,0 +1,15 @@
+{
+  "id": "remo-deltoide-posterior-unilateral-con-apoyo-mancuerna",
+  "name": "Remo de deltoide posterior unilateral con apoyo y mancuerna",
+  "image_male": "images/remo-deltoide-posterior-unilateral-con-apoyo-mancuerna-male.webp",
+  "image_female": "images/remo-deltoide-posterior-unilateral-con-apoyo-mancuerna-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": [
+    "trapecio",
+    "espalda alta",
+    "bíceps"
+  ],
+  "equipment": "banco y mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Apoya una mano y la rodilla del mismo lado sobre un banco y sostén una mancuerna con el brazo libre. Remala hacia fuera llevando el codo alto, casi perpendicular al torso, para cargar el deltoide posterior. Baja sin girar la espalda."
+}

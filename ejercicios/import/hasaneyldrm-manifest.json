@@ -869,6 +869,53 @@
         {"source_id": "0362", "id": "extension-triceps-unilateral-sentado-banco-mancuerna", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "0363", "id": "remo-menton-unilateral-mancuerna", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 31,
+      "size": 40,
+      "status": "approved",
+      "records": [
+        {"source_id": "0364", "id": "curl-muneca-unilateral-mancuerna", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1672", "id": "curl-zottman-predicador-unilateral-mancuerna", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1292", "id": "apertura-pectoral-fitball-una-pierna-mancuernas", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0365", "id": "curl-muneca-neutro-sobre-banco-mancuernas", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0366", "id": "curl-muneca-neutro-unilateral-sobre-banco-mancuerna", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1441", "id": "curl-muneca-inverso-unilateral-sobre-banco-mancuerna", "action": "create", "difficulty": "beginner", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0367", "id": "curl-muneca-unilateral-sobre-banco-mancuerna", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0368", "id": "curl-muneca-inverso-sobre-banco-mancuernas", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0369", "id": "curl-muneca-sobre-banco-mancuernas", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1329", "id": "remo-inclinado-rotacion-palmas-mancuernas", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1623", "id": "press-inclinado-agarre-neutro-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0370", "id": "curl-predicador-martillo-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0371", "id": "sentadilla-pliometrica-mancuernas", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0372", "id": "curl-predicador-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1673", "id": "curl-predicador-unilateral-fitball-mancuerna", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1293", "id": "press-pectoral-fitball-mancuernas", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0373", "id": "extension-triceps-pronada-banco-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0374", "id": "curl-prono-banco-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1674", "id": "curl-martillo-prono-banco-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1294", "id": "pullover-extension-cadera-fitball-mancuerna", "action": "create", "difficulty": "advanced", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1295", "id": "pullover-fitball-mancuerna-v2", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1700", "id": "push-press-mancuernas", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0376", "id": "elevacion-lateral-mancuernas-v2", "action": "create", "difficulty": "beginner", "view": "front view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2292", "id": "elevacion-deltoide-posterior-mancuernas", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0377", "id": "remo-deltoide-posterior-unilateral-con-apoyo-mancuerna", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0378", "id": "apertura-posterior-sentado-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0380", "id": "elevacion-lateral-posterior-inclinada-mancuernas", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0379", "id": "elevacion-lateral-posterior-cabeza-apoyada-mancuernas", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0381", "id": "zancada-atras-mancuernas", "action": "create", "difficulty": "intermediate", "view": "side 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0382", "id": "curl-biceps-inverso-mancuernas-v2", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1624", "id": "press-banca-agarre-inverso-mancuernas", "action": "create", "difficulty": "advanced", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0383", "id": "apertura-inversa-prono-banco-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1330", "id": "remo-unilateral-agarre-inverso-banco-inclinado-mancuerna", "action": "create", "difficulty": "intermediate", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1331", "id": "remo-bilateral-agarre-inverso-banco-inclinado-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2327", "id": "remo-inclinado-agarre-inverso-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0384", "id": "curl-predicador-inverso-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "1675", "id": "curl-spider-inverso-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0385", "id": "curl-muneca-inverso-mancuernas", "action": "create", "difficulty": "beginner", "view": "front 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "0386", "id": "apertura-inversa-con-rotacion-mancuernas", "action": "create", "difficulty": "advanced", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
+        {"source_id": "2397", "id": "press-scott-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "codex-imagegen", "qa": "approved"}
+      ]
     }
   ]
 }

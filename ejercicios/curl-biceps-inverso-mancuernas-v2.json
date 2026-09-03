@@ -1,0 +1,14 @@
+{
+  "id": "curl-biceps-inverso-mancuernas-v2",
+  "name": "Curl de bíceps inverso con mancuernas",
+  "image_male": "images/curl-biceps-inverso-mancuernas-v2-male.webp",
+  "image_female": "images/curl-biceps-inverso-mancuernas-v2-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquial"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una mancuerna en cada mano y las palmas hacia abajo. Flexiona ambos codos sin mover los brazos superiores hasta llevar las cargas cerca de los hombros. Mantén las muñecas rectas y baja lentamente."
+}

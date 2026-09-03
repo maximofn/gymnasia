@@ -1,0 +1,13 @@
+{
+  "id": "curl-muneca-unilateral-sobre-banco-mancuerna",
+  "name": "Curl de muñeca unilateral sobre banco con mancuerna",
+  "image_male": "images/curl-muneca-unilateral-sobre-banco-mancuerna-male.webp",
+  "image_female": "images/curl-muneca-unilateral-sobre-banco-mancuerna-female.webp",
+  "muscle_group": "antebrazo",
+  "secondary_muscles": [
+    "bíceps"
+  ],
+  "equipment": "banco y mancuerna",
+  "difficulty": "beginner",
+  "instructions": "Apoya un antebrazo sobre un banco con la palma hacia arriba y deja la muñeca fuera del borde. Permite que la mancuerna baje hacia los dedos y flexiona la muñeca hasta acercarla al antebrazo. Mantén el codo inmóvil durante todo el recorrido."
+}

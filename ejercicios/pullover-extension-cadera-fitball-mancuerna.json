@@ -1,0 +1,16 @@
+{
+  "id": "pullover-extension-cadera-fitball-mancuerna",
+  "name": "Pullover con extensión de cadera sobre fitball y mancuerna",
+  "image_male": "images/pullover-extension-cadera-fitball-mancuerna-male.webp",
+  "image_female": "images/pullover-extension-cadera-fitball-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "dorsales",
+    "tríceps",
+    "glúteos",
+    "abdomen"
+  ],
+  "equipment": "fitball y mancuerna",
+  "difficulty": "advanced",
+  "instructions": "Apoya cabeza y hombros sobre un fitball, sostén una mancuerna con ambas manos y deja las caderas algo bajas. Eleva la pelvis hasta formar una línea entre rodillas y hombros mientras llevas la mancuerna en arco desde detrás de la cabeza hasta sobre el pecho. Revierte ambos movimientos con control."
+}

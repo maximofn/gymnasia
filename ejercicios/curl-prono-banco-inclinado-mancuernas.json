@@ -1,0 +1,14 @@
+{
+  "id": "curl-prono-banco-inclinado-mancuernas",
+  "name": "Curl prono en banco inclinado con mancuernas",
+  "image_male": "images/curl-prono-banco-inclinado-mancuernas-male.webp",
+  "image_female": "images/curl-prono-banco-inclinado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquial"
+  ],
+  "equipment": "banco inclinado y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo en un banco inclinado y deja colgar los brazos con una mancuerna en cada mano, palmas hacia abajo. Flexiona los codos manteniendo los brazos superiores verticales y el pecho apoyado. Baja lentamente hasta extender los brazos."
+}

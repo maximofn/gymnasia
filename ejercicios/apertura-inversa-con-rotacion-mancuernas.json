@@ -1,0 +1,15 @@
+{
+  "id": "apertura-inversa-con-rotacion-mancuernas",
+  "name": "Apertura inversa con rotación y mancuernas",
+  "image_male": "images/apertura-inversa-con-rotacion-mancuernas-male.webp",
+  "image_female": "images/apertura-inversa-con-rotacion-mancuernas-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": [
+    "trapecio",
+    "manguito rotador",
+    "espalda alta"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Inclina el torso y abre dos mancuernas hacia los lados con los codos ligeramente flexionados. Al llegar a la altura de los hombros, gira los brazos hasta orientar las palmas hacia abajo sin mover el torso. Revierte la rotación y baja de forma controlada."
+}

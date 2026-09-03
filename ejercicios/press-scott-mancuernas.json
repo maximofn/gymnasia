@@ -1,0 +1,14 @@
+{
+  "id": "press-scott-mancuernas",
+  "name": "Press Scott con mancuernas",
+  "image_male": "images/press-scott-mancuernas-male.webp",
+  "image_female": "images/press-scott-mancuernas-female.webp",
+  "muscle_group": "hombro",
+  "secondary_muscles": [
+    "tríceps",
+    "pecho superior"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una mancuerna en cada mano frente a los hombros, codos elevados y juntos. Abre ligeramente los codos mientras presionas las cargas hacia arriba hasta extender los brazos. Baja siguiendo el mismo recorrido y vuelve a juntar los codos delante del pecho."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "curl-predicador-martillo-mancuernas",
+  "name": "Curl predicador martillo con mancuernas",
+  "image_male": "images/curl-predicador-martillo-mancuernas-male.webp",
+  "image_female": "images/curl-predicador-martillo-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "braquial"
+  ],
+  "equipment": "banco y mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate al borde de un banco, inclina ligeramente el torso y apoya la parte posterior de los brazos contra la cara interna de los muslos. Con una mancuerna en cada mano y agarre neutro, flexiona los codos hasta acercar las cargas a los hombros. Baja sin despegar los brazos del apoyo."
+}

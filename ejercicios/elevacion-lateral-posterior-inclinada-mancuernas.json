@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-posterior-inclinada-mancuernas",
+  "name": "Elevación lateral posterior inclinada con mancuernas",
+  "image_male": "images/elevacion-lateral-posterior-inclinada-mancuernas-male.webp",
+  "image_female": "images/elevacion-lateral-posterior-inclinada-mancuernas-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": [
+    "trapecio",
+    "espalda alta"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Inclina profundamente el torso con las rodillas flexionadas y dos mancuernas bajo el pecho. Eleva los brazos hacia los lados hasta formar una línea con los hombros, manteniendo los codos suaves. Evita redondear la espalda o usar impulso."
+}

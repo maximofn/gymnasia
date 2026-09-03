@@ -1,0 +1,15 @@
+{
+  "id": "pullover-fitball-mancuerna-v2",
+  "name": "Pullover sobre fitball con mancuerna",
+  "image_male": "images/pullover-fitball-mancuerna-v2-male.webp",
+  "image_female": "images/pullover-fitball-mancuerna-v2-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "dorsales",
+    "tríceps",
+    "abdomen"
+  ],
+  "equipment": "fitball y mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Apoya la parte alta de la espalda sobre un fitball y mantén la pelvis estable. Sostén una sola mancuerna con ambas manos sobre el pecho y llévala en un arco controlado detrás de la cabeza. Vuelve hasta la vertical sin flexionar en exceso los codos."
+}

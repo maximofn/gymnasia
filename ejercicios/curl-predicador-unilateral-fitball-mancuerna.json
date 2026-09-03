@@ -1,0 +1,14 @@
+{
+  "id": "curl-predicador-unilateral-fitball-mancuerna",
+  "name": "Curl predicador unilateral sobre fitball con mancuerna",
+  "image_male": "images/curl-predicador-unilateral-fitball-mancuerna-male.webp",
+  "image_female": "images/curl-predicador-unilateral-fitball-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazo",
+    "abdomen"
+  ],
+  "equipment": "fitball y mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Arrodíllate o inclínate detrás de un fitball y apoya sobre él la parte posterior de un brazo. Con la palma hacia arriba, flexiona una mancuerna hacia el hombro sin que el brazo pierda contacto con el balón. Usa la mano libre para estabilizarte."
+}

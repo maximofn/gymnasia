@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-deltoide-posterior-mancuernas",
+  "name": "Elevación de deltoide posterior con mancuernas",
+  "image_male": "images/elevacion-deltoide-posterior-mancuernas-male.webp",
+  "image_female": "images/elevacion-deltoide-posterior-mancuernas-female.webp",
+  "muscle_group": "hombro posterior",
+  "secondary_muscles": [
+    "trapecio",
+    "espalda alta"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Inclina el torso desde las caderas con la espalda neutra y deja colgar dos mancuernas. Abre los brazos hacia los lados con una ligera flexión de codos hasta alinearlos con el torso. Junta las escápulas sin elevar los hombros y baja despacio."
+}
