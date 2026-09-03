@@ -2052,7 +2052,7 @@
         {
           "id": "GYM-183",
           "title": "Registrar procedencia, frescura e IDs estables en los catálogos",
-          "state": "todo",
+          "state": "done",
           "summary": "Evitar coincidencias por nombre y cachés opacas conservando identidad y estado de cada fuente.",
           "dependsOn": [
             "GYM-182"
