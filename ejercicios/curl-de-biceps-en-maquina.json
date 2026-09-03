@@ -1,0 +1,13 @@
+{
+  "id": "curl-de-biceps-en-maquina",
+  "name": "Curl de bíceps en máquina",
+  "image_male": "images/curl-de-biceps-en-maquina-male.webp",
+  "image_female": "images/curl-de-biceps-en-maquina-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda apoyada en la almohadilla. Sujeta las asas con un agarre supino, con las palmas hacia arriba, y mantén los codos cerca de los costados. Exhala y flexiona las asas hacia arriba, contrayendo los bíceps. Haz una pausa breve en la parte más alta del movimiento, contrayendo los bíceps. Inhala y baja lentamente los mangos de vuelta a la posición inicial, extendiendo completamente los brazos. Repite el número de repeticiones deseado."
+}

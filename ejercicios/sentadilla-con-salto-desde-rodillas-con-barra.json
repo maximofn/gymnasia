@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-con-salto-desde-rodillas-con-barra",
+  "name": "Sentadilla con salto desde rodillas con barra",
+  "image_male": "images/sentadilla-con-salto-desde-rodillas-con-barra-male.webp",
+  "image_female": "images/sentadilla-con-salto-desde-rodillas-con-barra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Comienza arrodillado en el suelo con los pies separados a la altura de las caderas y los dedos de los pies apuntando hacia adelante. Sujeta una barra sobre la parte superior de la espalda, apoyándola en los hombros. Activa el core y los glúteos, luego salta explosivamente hacia arriba, extendiendo las caderas y las rodillas. Mientras saltas, empuja con los dedos de los pies y extiende por completo los tobillos, las rodillas y las caderas. Aterriza suavemente de vuelta en el suelo, flexionando las rodillas para absorber el impacto. Pasa de inmediato a la siguiente repetición, repitiendo el movimiento de sentadilla con salto."
+}

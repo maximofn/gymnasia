@@ -1,0 +1,15 @@
+{
+  "id": "doble-snatch-con-pesas-rusas",
+  "name": "Doble snatch con pesas rusas",
+  "image_male": "images/doble-snatch-con-pesas-rusas-male.webp",
+  "image_female": "images/doble-snatch-con-pesas-rusas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "antebrazos",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa en cada mano con el brazo extendido frente a los muslos. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta y el pecho elevado. En un solo movimiento explosivo, extiende las caderas, las rodillas y los tobillos, y al mismo tiempo tira de las pesas rusas hacia los hombros. Cuando las pesas rusas lleguen a la altura del hombro, rota las muñecas y lanza las pesas rusas por encima de la cabeza, extendiendo los brazos por completo. Baja las pesas rusas de vuelta a la posición inicial y repite el número de repeticiones deseado."
+}

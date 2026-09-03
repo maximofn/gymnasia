@@ -1,0 +1,14 @@
+{
+  "id": "remo-inclinado-con-barra",
+  "name": "Remo inclinado con barra",
+  "image_male": "images/remo-inclinado-con-barra-male.webp",
+  "image_female": "images/remo-inclinado-con-barra-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Sujeta la barra con un agarre pronado, manos un poco más separadas que el ancho de los hombros. Inclínate hacia delante desde las caderas, manteniendo la espalda recta y el pecho elevado. Tira de la barra hacia la parte inferior del pecho, juntando los omóplatos. Haz una pausa breve en la parte alta y luego baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

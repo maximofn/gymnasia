@@ -1,0 +1,14 @@
+{
+  "id": "curl-femoral-inverso-maquina-cable-dominadas",
+  "name": "Curl femoral inverso en máquina de cable",
+  "image_male": "images/curl-femoral-inverso-maquina-cable-dominadas-male.webp",
+  "image_female": "images/curl-femoral-inverso-maquina-cable-dominadas-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Ajusta la máquina de cable para que las correas de tobillo estén en el ajuste más bajo. Túmbate boca abajo en el banco con las piernas extendidas y las correas de tobillo sujetas a los pies. Sujétate de las agarraderas del banco para mantener la estabilidad. Dobla las rodillas y curva las piernas hacia los glúteos, contrayendo los isquiotibiales. Haz una pausa breve en la parte superior del movimiento, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

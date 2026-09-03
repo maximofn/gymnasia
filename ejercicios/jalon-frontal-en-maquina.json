@@ -1,0 +1,15 @@
+{
+  "id": "jalon-frontal-en-maquina",
+  "name": "Jalón frontal en máquina",
+  "image_male": "images/jalon-frontal-en-maquina-male.webp",
+  "image_female": "images/jalon-frontal-en-maquina-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "bíceps",
+    "romboides",
+    "deltoides posteriores"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con las rodillas debajo de las almohadillas y los pies planos en el suelo. Agarra las agarraderas con un agarre prono, un poco más separadas que el ancho de los hombros. Siéntate erguido con el pecho elevado y los hombros hacia atrás, manteniendo un ligero arco en la zona lumbar. Activa los dorsales y tira de las asas hacia el pecho, juntando los omóplatos. Haz una pausa breve en la parte baja del movimiento, luego suelta lentamente las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

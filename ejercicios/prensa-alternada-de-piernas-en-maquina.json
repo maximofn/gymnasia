@@ -1,0 +1,14 @@
+{
+  "id": "prensa-alternada-de-piernas-en-maquina",
+  "name": "Prensa alternada de piernas en máquina",
+  "image_male": "images/prensa-alternada-de-piernas-en-maquina-male.webp",
+  "image_female": "images/prensa-alternada-de-piernas-en-maquina-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el asiento y la plataforma para los pies de la máquina de palanca a la posición deseada. Siéntate en la máquina con la espalda apoyada en el respaldo y los pies sobre la plataforma para los pies. Coloca las manos en las asas o en los lados de la máquina para mayor estabilidad. Empuja un pie contra la plataforma para los pies, extendiendo la pierna hasta que esté casi completamente recta. Haz una pausa breve, luego flexiona lentamente la pierna y vuelve a la posición inicial. Repite con la otra pierna. Continúa alternando las piernas durante el número de repeticiones deseado."
+}

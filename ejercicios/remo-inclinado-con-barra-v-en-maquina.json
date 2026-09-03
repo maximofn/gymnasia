@@ -1,0 +1,14 @@
+{
+  "id": "remo-inclinado-con-barra-v-en-maquina",
+  "name": "Remo inclinado con barra V en máquina",
+  "image_male": "images/remo-inclinado-con-barra-v-en-maquina-male.webp",
+  "image_female": "images/remo-inclinado-con-barra-v-en-maquina-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate frente a la máquina. Sujeta la barra en V con un agarre prono, manteniendo la espalda recta y las rodillas ligeramente flexionadas. Tira de la barra en V hacia el abdomen, juntando los omóplatos. Haz una pausa breve en la parte alta del movimiento, luego suelta lentamente el peso de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

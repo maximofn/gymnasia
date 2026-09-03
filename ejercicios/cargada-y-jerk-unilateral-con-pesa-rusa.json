@@ -1,0 +1,14 @@
+{
+  "id": "cargada-y-jerk-unilateral-con-pesa-rusa",
+  "name": "Cargada y jerk unilateral con pesa rusa",
+  "image_male": "images/cargada-y-jerk-unilateral-con-pesa-rusa-male.webp",
+  "image_female": "images/cargada-y-jerk-unilateral-con-pesa-rusa-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano en agarre prono. Flexiona ligeramente las rodillas y inclínate desde las caderas, bajando la pesa rusa entre las piernas. Extiende explosivamente las caderas, las rodillas y los tobillos, usando el impulso para hacer que la pesa rusa suba hasta la altura del hombro. Cuando la pesa rusa llegue a la altura del hombro, rota la muñeca y lanza la mano recta hacia arriba, bloqueando el brazo por encima de la cabeza. Baja la pesa rusa de vuelta a la posición inicial y repite el número de repeticiones deseado."
+}

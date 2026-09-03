@@ -1,0 +1,13 @@
+{
+  "id": "sit-up-inclinado-con-giro",
+  "name": "Sit-up inclinado con giro",
+  "image_male": "images/sit-up-inclinado-con-giro-male.webp",
+  "image_female": "images/sit-up-inclinado-con-giro-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Coloca un banco inclinado a un ángulo de 45 grados. Túmbate en el banco con los pies asegurados bajo las almohadillas para los pies. Coloca las manos detrás de la cabeza o cruzadas sobre el pecho. Activa el abdomen y levanta la parte superior del cuerpo del banco, curvándote hacia adelante. Mientras te incorporas, gira el torso hacia un lado, llevando el codo hacia la rodilla opuesta. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el movimiento, esta vez girando el torso hacia el otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+}

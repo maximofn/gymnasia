@@ -1,0 +1,14 @@
+{
+  "id": "salto-jack",
+  "name": "Salto jack",
+  "image_male": "images/salto-jack-male.webp",
+  "image_female": "images/salto-jack-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": [
+    "cuádriceps",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies juntos y los brazos a los costados. Salta, separando los pies y levantando los brazos por encima de la cabeza. Al aterrizar, salta rápidamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

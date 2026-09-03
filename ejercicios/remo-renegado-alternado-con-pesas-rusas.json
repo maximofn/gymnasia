@@ -1,0 +1,14 @@
+{
+  "id": "remo-renegado-alternado-con-pesas-rusas",
+  "name": "Remo renegado alternado con pesas rusas",
+  "image_male": "images/remo-renegado-alternado-con-pesas-rusas-male.webp",
+  "image_female": "images/remo-renegado-alternado-con-pesas-rusas-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "core",
+    "hombros"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de plancha alta con las manos sujetando las pesas rusas y los pies separados a la altura de las caderas. Activa el core y mantén el cuerpo en línea recta desde la cabeza hasta los talones. Tira de una pesa rusa hacia el pecho, manteniendo el codo cerca del cuerpo. Baja la pesa rusa de nuevo a la posición inicial y repite con el otro brazo. Continúa alternando los brazos durante el número de repeticiones deseado."
+}

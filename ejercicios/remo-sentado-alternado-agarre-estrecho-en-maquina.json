@@ -1,0 +1,14 @@
+{
+  "id": "remo-sentado-alternado-agarre-estrecho-en-maquina",
+  "name": "Remo sentado alternado con agarre estrecho en máquina",
+  "image_male": "images/remo-sentado-alternado-agarre-estrecho-en-maquina-male.webp",
+  "image_female": "images/remo-sentado-alternado-agarre-estrecho-en-maquina-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y la posición de la placa para los pies para asegurar una alineación correcta. Siéntate en la máquina con la espalda recta y los pies planos sobre la placa para los pies. Sujeta las asas con un agarre estrecho, con las palmas una frente a la otra. Mantén el pecho elevado y los hombros hacia atrás durante todo el ejercicio. Tira de una asa hacia el torso mientras mantienes la otra asa inmóvil. Aprieta los omóplatos al final del movimiento. Devuelve lentamente el asa a la posición inicial y repite con el otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-frontal-con-pesa-rusa",
+  "name": "Sentadilla frontal con pesa rusa",
+  "image_male": "images/sentadilla-frontal-con-pesa-rusa-male.webp",
+  "image_female": "images/sentadilla-frontal-con-pesa-rusa-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, con los dedos de los pies ligeramente hacia afuera. Sujeta la pesa rusa con ambas manos frente al pecho, cerca del cuerpo. Activa el core y mantén el pecho elevado mientras bajas las caderas hacia abajo y hacia atrás, como si te sentaras en una silla. Baja hasta que los muslos queden paralelos al suelo, o tan abajo como puedas hacerlo cómodamente. Empuja con los talones para volver a ponerte de pie, contrayendo los glúteos en la parte más alta. Repite el número de repeticiones deseado."
+}

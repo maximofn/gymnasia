@@ -1,0 +1,14 @@
+{
+  "id": "press-militar-sentado-dos-brazos-con-pesas-rusas",
+  "name": "Press militar sentado a dos brazos con pesas rusas",
+  "image_male": "images/press-militar-sentado-dos-brazos-con-pesas-rusas-male.webp",
+  "image_female": "images/press-militar-sentado-dos-brazos-con-pesas-rusas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con la espalda recta y los pies planos sobre el suelo. Sujeta una pesa rusa en cada mano a la altura del hombro con las palmas hacia adelante. Presiona las pesas rusas por encima de la cabeza extendiendo los brazos por completo. Haz una pausa breve en lo alto, luego baja lentamente las pesas rusas de vuelta a la altura del hombro. Repite el número de repeticiones deseado."
+}

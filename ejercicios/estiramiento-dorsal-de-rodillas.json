@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-dorsal-de-rodillas",
+  "name": "Estiramiento dorsal de rodillas",
+  "image_male": "images/estiramiento-dorsal-de-rodillas-male.webp",
+  "image_female": "images/estiramiento-dorsal-de-rodillas-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Arrodíllate en el suelo con las rodillas separadas a la altura de las caderas y los dedos de los pies apuntando hacia atrás. Extiende los brazos por encima de la cabeza y entrelaza los dedos. Manteniendo la espalda recta, inclínate lentamente hacia el lado derecho, sintiendo un estiramiento en el dorsal izquierdo. Mantén el estiramiento durante 20-30 segundos, luego vuelve a la posición inicial. Repite el estiramiento en el lado izquierdo, inclinándote hacia la izquierda y sintiendo un estiramiento en el dorsal derecho. Continúa alternando lados durante el número de repeticiones deseado."
+}

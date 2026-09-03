@@ -1,0 +1,14 @@
+{
+  "id": "remo-invertido-con-correas",
+  "name": "Remo invertido con correas",
+  "image_male": "images/remo-invertido-con-correas-male.webp",
+  "image_female": "images/remo-invertido-con-correas-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Coloca un entrenador de suspensión o correas a la altura del pecho. Ponte de pie frente al punto de anclaje y agarra las asas con agarre prono. Camina con los pies hacia adelante, inclinándote hacia atrás hasta que el cuerpo quede en ángulo. Mantén el cuerpo recto y activa el core. Tira del pecho hacia las asas, apretando los omóplatos entre sí. Haz una pausa breve en la parte más alta, luego baja lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

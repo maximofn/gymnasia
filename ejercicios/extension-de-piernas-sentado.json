@@ -1,0 +1,14 @@
+{
+  "id": "extension-de-piernas-sentado",
+  "name": "Extensión de piernas sentado",
+  "image_male": "images/extension-de-piernas-sentado-male.webp",
+  "image_female": "images/extension-de-piernas-sentado-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "cuádriceps",
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el borde de un banco o una silla con los pies planos en el suelo y las rodillas flexionadas en un ángulo de 90 grados. Inclínate ligeramente hacia atrás y coloca las manos en el borde del banco o la silla como apoyo. Activando los isquiotibiales, levanta los pies del suelo y extiende las piernas rectas hacia adelante. Haz una pausa breve en lo alto, luego flexiona lentamente las rodillas y lleva los pies de vuelta hacia el cuerpo. Repite el número de repeticiones deseado."
+}

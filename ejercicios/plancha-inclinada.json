@@ -1,0 +1,15 @@
+{
+  "id": "plancha-inclinada",
+  "name": "Plancha inclinada",
+  "image_male": "images/plancha-inclinada-male.webp",
+  "image_female": "images/plancha-inclinada-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "pecho",
+    "tríceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en una posición de flexión con las manos separadas a la altura de los hombros y el cuerpo recto. Activa el core y traslada lentamente el peso hacia adelante, llevando los hombros más allá de las manos. Mantén los codos ligeramente flexionados y el cuerpo recto mientras te inclinas hacia adelante. Mantén esta posición durante unos segundos, luego vuelve lentamente a la posición inicial. Repite el número de repeticiones deseado."
+}

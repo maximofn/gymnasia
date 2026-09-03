@@ -1,0 +1,14 @@
+{
+  "id": "doble-push-press-con-pesas-rusas",
+  "name": "Doble push press con pesas rusas",
+  "image_male": "images/doble-push-press-con-pesas-rusas-male.webp",
+  "image_female": "images/doble-push-press-con-pesas-rusas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa en cada mano a la altura del hombro. Flexiona ligeramente las rodillas y activa el core. Inicia el movimiento extendiendo explosivamente las caderas, las rodillas y los tobillos, impulsando las pesas rusas por encima de la cabeza. Cuando las pesas rusas lleguen arriba, presiónalas completamente por encima de la cabeza, bloqueando los brazos. Baja las pesas rusas a la posición inicial flexionando los codos y llevándolas de vuelta a la altura del hombro. Repite el número de repeticiones deseado."
+}

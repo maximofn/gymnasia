@@ -1,0 +1,13 @@
+{
+  "id": "l-sit-en-suelo",
+  "name": "L-sit en suelo",
+  "image_male": "images/l-sit-en-suelo-male.webp",
+  "image_female": "images/l-sit-en-suelo-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti. Coloca las manos en el suelo junto a las caderas, con los dedos apuntando hacia adelante. Activa el core y levanta las piernas del suelo, manteniéndolas rectas. Intenta llevar las piernas paralelas al suelo, formando una 'L' con el cuerpo. Mantén esta posición durante el mayor tiempo posible. Baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

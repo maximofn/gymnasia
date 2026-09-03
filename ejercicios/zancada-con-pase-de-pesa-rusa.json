@@ -1,0 +1,15 @@
+{
+  "id": "zancada-con-pase-de-pesa-rusa",
+  "name": "Zancada con pase de pesa rusa",
+  "image_male": "images/zancada-con-pase-de-pesa-rusa-male.webp",
+  "image_female": "images/zancada-con-pase-de-pesa-rusa-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa frente al pecho con ambas manos. Da un paso adelante con el pie derecho, bajando el cuerpo hasta una posición de zancada. Mientras avanzas en la zancada, pasa la pesa rusa por debajo del muslo derecho y trasládala a la mano izquierda. Empuja con el pie derecho para volver a la posición inicial, mientras pasas la pesa rusa de vuelta a la mano derecha al mismo tiempo. Repite la zancada en el lado opuesto, pasando la pesa rusa por debajo del muslo izquierdo. Continúa alternando zancadas y pasando la pesa rusa entre las manos durante el número de repeticiones deseado."
+}

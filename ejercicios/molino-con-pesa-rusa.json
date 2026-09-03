@@ -1,0 +1,14 @@
+{
+  "id": "molino-con-pesa-rusa",
+  "name": "Molino con pesa rusa",
+  "image_male": "images/molino-con-pesa-rusa-male.webp",
+  "image_female": "images/molino-con-pesa-rusa-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "hombros"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa en la mano derecha por encima de la cabeza. Rota el pie izquierdo hacia afuera unos 45 grados y mantén el pie derecho apuntando hacia adelante. Inclina el torso hacia el lado izquierdo, manteniendo el brazo derecho extendido por encima de la cabeza y la mirada en la pesa rusa. Baja el torso tanto como puedas mientras mantienes el brazo derecho recto y el brazo izquierdo extendido hacia el lado. Haz una pausa breve, luego vuelve a la posición inicial empujando con el pie derecho y activando los oblicuos. Repite el número de repeticiones deseado, luego cambia de lado."
+}

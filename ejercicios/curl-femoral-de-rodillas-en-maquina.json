@@ -1,0 +1,13 @@
+{
+  "id": "curl-femoral-de-rodillas-en-maquina",
+  "name": "Curl femoral de rodillas en máquina",
+  "image_male": "images/curl-femoral-de-rodillas-en-maquina-male.webp",
+  "image_female": "images/curl-femoral-de-rodillas-en-maquina-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina a tu cuerpo y selecciona el peso deseado. Arrodíllate en la máquina mirando hacia abajo, con las rodillas apoyadas en la almohadilla y los pies asegurados bajo las almohadillas para los pies. Sujeta las asas o los lados de la máquina para mayor estabilidad. Manteniendo quieta la parte superior del cuerpo, exhala y flexiona las piernas hacia los glúteos doblando las rodillas. Haz una pausa breve en la parte más alta del movimiento, contrayendo los isquiotibiales. Inhala y baja lentamente las piernas de vuelta a la posición inicial, extendiendo por completo las rodillas. Repite el número de repeticiones deseado."
+}

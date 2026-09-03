@@ -1,0 +1,14 @@
+{
+  "id": "peso-muerto-en-maquina",
+  "name": "Peso muerto en máquina",
+  "image_male": "images/peso-muerto-en-maquina-male.webp",
+  "image_female": "images/peso-muerto-en-maquina-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y la plataforma para los pies a la posición deseada. Siéntate en la máquina con la espalda apoyada en la almohadilla y los pies planos sobre la plataforma para los pies. Sujeta las asas o los lados del asiento para mayor estabilidad. Activa los glúteos y los isquiotibiales, y empuja con los talones para levantar el peso. Mantén la espalda recta y evita redondear los hombros. Extiende por completo las caderas en la parte alta del movimiento, apretando los glúteos. Baja el peso de manera controlada, manteniendo la tensión en los glúteos y los isquiotibiales. Repite el número de repeticiones deseado."
+}

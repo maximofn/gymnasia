@@ -1,0 +1,14 @@
+{
+  "id": "remo-invertido-sobre-banco",
+  "name": "Remo invertido sobre banco",
+  "image_male": "images/remo-invertido-sobre-banco-male.webp",
+  "image_female": "images/remo-invertido-sobre-banco-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Coloca un banco a una altura que permita que el cuerpo cuelgue libremente debajo de él. Túmbate boca arriba en el suelo con la cabeza hacia el banco. Estira los brazos hacia arriba y agarra el banco con agarre prono, ligeramente más ancho que la altura de los hombros. Coloca el cuerpo de manera que los talones queden en el suelo y los brazos completamente extendidos. Activa el core y aprieta los omóplatos entre sí mientras tiras del pecho hacia el banco. Haz una pausa breve en la parte superior del movimiento, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

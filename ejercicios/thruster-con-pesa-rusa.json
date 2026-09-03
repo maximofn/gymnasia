@@ -1,0 +1,15 @@
+{
+  "id": "thruster-con-pesa-rusa",
+  "name": "Thruster con pesa rusa",
+  "image_male": "images/thruster-con-pesa-rusa-male.webp",
+  "image_female": "images/thruster-con-pesa-rusa-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "cuádriceps",
+    "glúteos",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa frente al pecho con ambas manos, con las palmas una frente a la otra. Baja a una posición de sentadilla flexionando las rodillas y empujando las caderas hacia atrás, manteniendo el pecho elevado y la espalda recta. Al llegar a la parte baja de la sentadilla, empuja explosivamente con los talones para ponerte de pie, presionando al mismo tiempo la pesa rusa por encima de la cabeza. Bloquea los brazos en la parte alta del movimiento, extendiendo los codos por completo. Baja la pesa rusa de vuelta a la posición inicial invirtiendo el movimiento, flexionando los codos y bajando el peso de vuelta al pecho. Repite el número de repeticiones deseado."
+}

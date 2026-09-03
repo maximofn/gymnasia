@@ -1,0 +1,14 @@
+{
+  "id": "figura-ocho-con-pesa-rusa",
+  "name": "Figura ocho con pesa rusa",
+  "image_male": "images/figura-ocho-con-pesa-rusa-male.webp",
+  "image_female": "images/figura-ocho-con-pesa-rusa-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "antebrazos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Pasa la pesa rusa entre las piernas, cambiándola de mano cuando llegue detrás de las piernas. Cuando la pesa rusa vuelva hacia adelante, pásala a la otra mano entre las piernas. Continúa pasando la pesa rusa entre las piernas con un movimiento en forma de ocho. Mantén un ritmo constante y activa el core durante todo el ejercicio. Repite el número de repeticiones deseado."
+}

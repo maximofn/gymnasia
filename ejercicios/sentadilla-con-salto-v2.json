@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-con-salto-v2",
+  "name": "Sentadilla con salto v2",
+  "image_male": "images/sentadilla-con-salto-v2-male.webp",
+  "image_female": "images/sentadilla-con-salto-v2-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Baja el cuerpo hacia una posición de sentadilla flexionando las rodillas y empujando las caderas hacia atrás. Salta de forma explosiva, extendiendo por completo las caderas y las rodillas. Aterriza suavemente sobre la punta de los pies y de inmediato baja el cuerpo de nuevo a una posición de sentadilla. Repite el número de repeticiones deseado."
+}
