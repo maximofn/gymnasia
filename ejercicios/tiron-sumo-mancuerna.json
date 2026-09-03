@@ -1,0 +1,15 @@
+{
+  "id": "tiron-sumo-mancuerna",
+  "name": "Tirón sumo con mancuerna",
+  "image_male": "images/tiron-sumo-mancuerna-male.webp",
+  "image_female": "images/tiron-sumo-mancuerna-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps",
+    "core"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies más separados que la altura de los hombros, con las puntas de los pies hacia afuera. Sujeta una mancuerna con ambas manos frente a tu cuerpo, con los brazos extendidos. Flexiona las rodillas y baja las caderas hasta una posición de sentadilla, manteniendo la espalda recta. Baja la mancuerna entre las piernas, manteniendo los brazos rectos. Empuja con los talones y extiende las caderas hacia adelante, llevando la mancuerna hacia arriba y frente a tu cuerpo. Aprieta los glúteos en la parte superior del movimiento, luego baja la mancuerna de vuelta entre las piernas. Repite el número de repeticiones deseado."
+}

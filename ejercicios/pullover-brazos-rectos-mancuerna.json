@@ -1,0 +1,14 @@
+{
+  "id": "pullover-brazos-rectos-mancuerna",
+  "name": "Pullover con brazos rectos y mancuerna",
+  "image_male": "images/pullover-brazos-rectos-mancuerna-male.webp",
+  "image_female": "images/pullover-brazos-rectos-mancuerna-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "dorsales",
+    "tríceps"
+  ],
+  "equipment": "mancuerna y banco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate en un banco con la cabeza en un extremo y los pies firmemente apoyados en el suelo. Sujeta una mancuerna con ambas manos y extiende los brazos rectos por encima del pecho. Manteniendo los brazos rectos, baja lentamente la mancuerna detrás de la cabeza con un movimiento en forma de arco. Haz una pausa por un momento, luego levanta la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

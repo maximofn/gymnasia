@@ -1,0 +1,14 @@
+{
+  "id": "rotacion-externa-hombro-pie-mancuernas",
+  "name": "Rotación externa de hombro de pie con mancuernas",
+  "image_male": "images/rotacion-externa-hombro-pie-mancuernas-male.webp",
+  "image_female": "images/rotacion-externa-hombro-pie-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "manguito rotador",
+    "trapecio"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna en cada mano con las palmas hacia tu cuerpo. Levanta los brazos hacia los lados hasta que queden paralelos al suelo, manteniendo los codos ligeramente flexionados. Gira los brazos hacia afuera, llevando las mancuernas hacia la cabeza mientras mantienes los codos en la misma posición. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

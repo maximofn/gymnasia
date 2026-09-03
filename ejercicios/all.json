@@ -752,6 +752,20 @@
     "instructions": "Comienza en plancha sobre los antebrazos con los codos bajo los hombros y las piernas extendidas. Presiona el suelo y eleva las caderas hacia el techo hasta formar una V invertida, manteniendo el abdomen activo. Baja con control hasta recuperar una línea recta sin dejar que la zona lumbar se hunda."
   },
   {
+    "id": "circulos-alrededor-mundo-pie-mancuernas",
+    "name": "Círculos alrededor del mundo de pie con mancuernas",
+    "image_male": "images/circulos-alrededor-mundo-pie-mancuernas-male.webp",
+    "image_female": "images/circulos-alrededor-mundo-pie-mancuernas-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps",
+      "antebrazos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén una mancuerna en cada mano. Extiende los brazos rectos hacia los lados a la altura de los hombros, con las palmas hacia abajo. Manteniendo los brazos rectos, gira lentamente los brazos en un movimiento circular, llevando las mancuernas frente al cuerpo y luego por encima de la cabeza. Continúa el movimiento circular, bajando las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "circulos-rodillas",
     "name": "Círculos de rodillas",
     "image_male": "images/circulos-rodillas-male.webp",
@@ -1413,6 +1427,20 @@
     "instructions": "Túmbate boca abajo sobre un banco inclinado con el pecho apoyado y deja los brazos colgando. Sujeta la barra con agarre supino a la anchura de los hombros. Mantén los brazos superiores quietos y flexiona los codos para acercar la barra a los hombros. Contrae los bíceps arriba y baja lentamente hasta casi extender los brazos."
   },
   {
+    "id": "curl-biceps-camarero-mancuerna",
+    "name": "Curl de bíceps camarero con mancuerna",
+    "image_male": "images/curl-biceps-camarero-mancuerna-male.webp",
+    "image_female": "images/curl-biceps-camarero-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos",
+      "hombros"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas hacia adelante. Mantén la parte superior de los brazos cerca del cuerpo y los codos pegados. Flexiona lentamente las mancuernas hacia los hombros, manteniendo las muñecas rectas. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "curl-biceps-fitball-pierna-elevada",
     "name": "Curl de bíceps en fitball con pierna elevada",
     "image_male": "images/curl-biceps-fitball-pierna-elevada-male.webp",
@@ -1439,6 +1467,19 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Siéntate en un banco inclinado con los brazos colgando y rota las palmas hacia fuera. Flexiona ambos codos por una trayectoria abierta, llevando cada mancuerna hacia la parte exterior de su hombro. Mantén los hombros atrás y baja hasta la extensión completa."
+  },
+  {
+    "id": "curl-biceps-interno-pie-mancuernas-v2",
+    "name": "Curl de bíceps interno de pie con mancuernas (variante 2)",
+    "image_male": "images/curl-biceps-interno-pie-mancuernas-v2-male.webp",
+    "image_female": "images/curl-biceps-interno-pie-mancuernas-v2-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas mirando hacia el torso. Mantén los codos cerca del torso y gira las palmas de las manos hasta que queden mirando hacia adelante. Manteniendo fija la parte superior de los brazos, flexiona los pesos mientras contraes los bíceps. Continúa levantando las pesas hasta que los bíceps estén completamente contraídos y las mancuernas estén a la altura de los hombros. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Comienza a llevar lentamente las mancuernas de vuelta a la posición inicial mientras inhalas. Repite el número de repeticiones recomendado."
   },
   {
     "id": "curl-biceps-interno-sentado-mancuernas",
@@ -1520,6 +1561,19 @@
     "equipment": "mancuernas",
     "difficulty": "beginner",
     "instructions": "Ponte de pie con una mancuerna en cada mano, las palmas al frente y los brazos extendidos. Mantén los codos pegados al torso y flexiona ambos antebrazos hasta acercar las mancuernas a los hombros. Aprieta los bíceps y baja de forma controlada sin balancear el cuerpo."
+  },
+  {
+    "id": "curl-biceps-pie-mancuernas",
+    "name": "Curl de bíceps de pie con mancuernas",
+    "image_male": "images/curl-biceps-pie-mancuernas-male.webp",
+    "image_female": "images/curl-biceps-pie-mancuernas-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas hacia adelante y los brazos completamente extendidos. Manteniendo los brazos superiores fijos, exhala y levanta el peso mientras contraes los bíceps. Continúa levantando las mancuernas hasta que los bíceps estén completamente contraídos y las mancuernas estén a la altura de los hombros. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Inhala y comienza a bajar lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "curl-biceps-polea",
@@ -1865,6 +1919,32 @@
     "instructions": "Siéntate con las piernas abiertas y apoya el codo del brazo de trabajo en la cara interna del muslo. Desde el brazo extendido y la palma hacia arriba, flexiona el codo hasta acercar la mancuerna al hombro. Aprieta el bíceps y baja lentamente antes de cambiar de lado."
   },
   {
+    "id": "curl-concentrado-pie-mancuerna-v2",
+    "name": "Curl concentrado de pie con mancuerna (variante 2)",
+    "image_male": "images/curl-concentrado-pie-mancuerna-v2-male.webp",
+    "image_female": "images/curl-concentrado-pie-mancuerna-v2-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros, sujetando una mancuerna con una mano, con la palma hacia arriba. Coloca la mano libre sobre el muslo para apoyarte. Manteniendo fija la parte superior del brazo, exhala y flexiona la mancuerna hacia el hombro contrayendo el bíceps. Continúa levantando la mancuerna hasta que el bíceps esté completamente contraído y la mancuerna esté a la altura del hombro. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+  },
+  {
+    "id": "curl-concentrado-pie-mancuerna",
+    "name": "Curl concentrado de pie con mancuerna",
+    "image_male": "images/curl-concentrado-pie-mancuerna-male.webp",
+    "image_female": "images/curl-concentrado-pie-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna con una mano, con el brazo completamente extendido y la palma hacia adentro. Apoya la otra mano sobre el muslo para mayor estabilidad. Manteniendo fija la parte superior del brazo, exhala y flexiona la mancuerna hacia el hombro contrayendo el bíceps. Continúa levantando la mancuerna hasta que el bíceps esté completamente contraído y la mancuerna esté a la altura del hombro. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+  },
+  {
     "id": "curl-concentrado-polea",
     "name": "Curl concentrado en polea",
     "image_male": "images/curl-concentrado-polea-male.webp",
@@ -2055,6 +2135,19 @@
     "instructions": "Ponte de pie y sujeta la barra con agarre prono, palmas hacia abajo y manos al ancho de los hombros. Mantén los codos pegados al torso y flexiónalos para elevar la barra sin mover los brazos superiores. Aprieta arriba y baja lentamente hasta extender los codos sin perder la posición de las muñecas."
   },
   {
+    "id": "curl-inverso-pie-mancuernas",
+    "name": "Curl inverso de pie con mancuernas",
+    "image_male": "images/curl-inverso-pie-mancuernas-male.webp",
+    "image_female": "images/curl-inverso-pie-mancuernas-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano, con las palmas hacia tu cuerpo. Manteniendo fija la parte superior de los brazos, exhala y flexiona los pesos mientras contraes los bíceps. Continúa subiendo los pesos hasta que los bíceps estén completamente contraídos y las mancuernas estén a la altura de los hombros. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Inhala y comienza a bajar lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "curl-inverso-polea",
     "name": "Curl inverso en polea",
     "image_male": "images/curl-inverso-polea-male.webp",
@@ -2079,6 +2172,19 @@
     "equipment": "polea y banco predicador",
     "difficulty": "intermediate",
     "instructions": "Colócate detrás de un banco predicador frente a una polea baja. Apoya el brazo en la almohadilla y toma un asa con agarre prono, palma hacia abajo. Flexiona el codo sin despegar el brazo del soporte, mantén la muñeca neutra y baja lentamente hasta casi extenderlo. Completa la serie y cambia de brazo."
+  },
+  {
+    "id": "curl-inverso-unilateral-pie-mancuerna",
+    "name": "Curl inverso unilateral de pie con mancuerna",
+    "image_male": "images/curl-inverso-unilateral-pie-mancuerna-male.webp",
+    "image_female": "images/curl-inverso-unilateral-pie-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros, sujetando una mancuerna con una mano con agarre prono. Mantén el brazo completamente extendido y cerca del cuerpo, con la palma hacia abajo. Flexiona lentamente la mancuerna hacia tu hombro, manteniendo fija la parte superior del brazo. Haz una pausa breve en la parte más alta, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia al otro brazo."
   },
   {
     "id": "curl-inverso-unilateral-polea",
@@ -2133,6 +2239,20 @@
     "equipment": "mancuernas y banco predicador",
     "difficulty": "intermediate",
     "instructions": "Siéntate en un banco predicador con una mancuerna en cada mano y las palmas enfrentadas. Apoya completamente los brazos superiores en la almohadilla. Flexiona un codo con agarre martillo hasta acercar la mancuerna al hombro, baja con control y alterna el lado sin levantar los brazos del apoyo."
+  },
+  {
+    "id": "curl-martillo-alterno-press-pie-mancuernas",
+    "name": "Curl martillo alterno con press de pie",
+    "image_male": "images/curl-martillo-alterno-press-pie-mancuernas-male.webp",
+    "image_female": "images/curl-martillo-alterno-press-pie-mancuernas-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos",
+      "hombros"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas hacia tu cuerpo. Mantén los codos cerca del torso y la espalda recta. Exhala y flexiona la mancuerna de tu mano derecha hacia el hombro, manteniendo el brazo superior quieto. Continúa levantando la mancuerna hasta que el bíceps esté completamente contraído y la mancuerna esté a la altura del hombro. Inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el curl con la mano izquierda. Después de completar el curl con la mano izquierda, exhala y presiona la mancuerna de la mano derecha por encima de la cabeza. Extiende completamente el brazo y mantén la posición por un momento en la parte superior. Inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el press con la mano izquierda. Continúa alternando entre curls y press durante el número de repeticiones deseado."
   },
   {
     "id": "curl-martillo-alterno-sentado-fitball-mancuernas",
@@ -2809,6 +2929,19 @@
     "instructions": "Siéntate en un banco predicador y apoya por completo el brazo de trabajo sobre el cojín. Sujeta una mancuerna con agarre neutro y flexiona el codo sin levantar el brazo del apoyo. Pausa arriba y desciende hasta casi extenderlo."
   },
   {
+    "id": "curl-predicador-pie-mancuernas",
+    "name": "Curl predicador de pie con mancuernas",
+    "image_male": "images/curl-predicador-pie-mancuernas-male.webp",
+    "image_female": "images/curl-predicador-pie-mancuernas-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuernas y banco Scott",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna en cada mano, con las palmas hacia adelante. Apoya la parte posterior de la parte superior de los brazos contra el banco scott o un banco inclinado, con los codos ligeramente flexionados. Manteniendo los brazos superiores fijos, exhala y levanta el peso mientras contraes los bíceps. Continúa levantando las mancuernas hasta que los bíceps estén completamente contraídos y las mancuernas estén a la altura de los hombros. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Inhala y comienza a bajar lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "curl-predicador-polea",
     "name": "Curl predicador en polea",
     "image_male": "images/curl-predicador-polea-male.webp",
@@ -2986,6 +3119,32 @@
     "instructions": "Túmbate boca arriba en un banco alineado con una polea baja y sujeta una barra corta con las manos juntas en supinación. Fija los brazos superiores a los costados. Lleva la barra hacia la parte alta del pecho flexionando solo los codos y desciende lentamente hasta recuperar la extensión."
   },
   {
+    "id": "curl-unilateral-pie-apoyo-banco-inclinado-mancuerna",
+    "name": "Curl unilateral de pie con apoyo en banco inclinado",
+    "image_male": "images/curl-unilateral-pie-apoyo-banco-inclinado-mancuerna-male.webp",
+    "image_female": "images/curl-unilateral-pie-apoyo-banco-inclinado-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuerna y banco inclinado",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna con una mano, con la palma hacia adelante. Coloca la otra mano sobre un banco inclinado para apoyarte. Manteniendo fija la parte superior del brazo, exhala y flexiona la mancuerna hacia el hombro contrayendo el bíceps. Haz una pausa por un momento arriba, luego inhala y baja lentamente la mancuerna a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+  },
+  {
+    "id": "curl-unilateral-sobre-banco-inclinado-mancuerna",
+    "name": "Curl unilateral sobre banco inclinado con mancuerna",
+    "image_male": "images/curl-unilateral-sobre-banco-inclinado-mancuerna-male.webp",
+    "image_female": "images/curl-unilateral-sobre-banco-inclinado-mancuerna-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuerna y banco inclinado",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna con una mano. Coloca la otra mano sobre un banco inclinado para apoyarte. Manteniendo el brazo superior quieto, flexiona la mancuerna hacia el hombro contrayendo el bíceps. Haz una pausa breve en la parte más alta, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+  },
+  {
     "id": "curl-up-pierna-extendida",
     "name": "Curl-up con una pierna extendida",
     "image_male": "images/curl-up-pierna-extendida-male.webp",
@@ -2997,6 +3156,19 @@
     "equipment": "peso corporal",
     "difficulty": "beginner",
     "instructions": "Túmbate boca arriba con una pierna extendida y la otra rodilla flexionada con el pie apoyado. Coloca las manos detrás de la cabeza y eleva ligeramente cabeza y hombros contrayendo el abdomen, sin redondear en exceso la zona lumbar. Baja con control y cambia la posición de las piernas al terminar la serie."
+  },
+  {
+    "id": "curl-zottman-predicador-pie-mancuernas",
+    "name": "Curl Zottman predicador de pie con mancuernas",
+    "image_male": "images/curl-zottman-predicador-pie-mancuernas-male.webp",
+    "image_female": "images/curl-zottman-predicador-pie-mancuernas-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "mancuernas y banco Scott",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas hacia adelante. Apoya la parte superior de los brazos contra el banco scott y mantén los codos ligeramente flexionados. Flexiona las mancuernas hacia los hombros mientras mantienes fija la parte superior de los brazos. En la parte superior del movimiento, gira las muñecas de modo que las palmas queden hacia abajo. Baja lentamente las mancuernas de vuelta a la posición inicial, girando también las muñecas a su posición original. Repite el número de repeticiones deseado."
   },
   {
     "id": "curl-zottman-predicador-unilateral-mancuerna",
@@ -3437,6 +3609,20 @@
     "instructions": "Sujeta una barra ligera delante de los muslos con agarre pronado. Con los codos apenas flexionados y el torso inmóvil, eleva la barra por delante hasta quedar sobre la cabeza. Evita arquear la espalda y desciende lentamente por el mismo recorrido."
   },
   {
+    "id": "elevacion-frontal-sobre-cabeza-pie-mancuernas",
+    "name": "Elevación frontal sobre la cabeza de pie con mancuernas",
+    "image_male": "images/elevacion-frontal-sobre-cabeza-pie-mancuernas-male.webp",
+    "image_female": "images/elevacion-frontal-sobre-cabeza-pie-mancuernas-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "trapecio",
+      "bíceps"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano con un agarre prono. Mantén los brazos rectos y levanta las mancuernas frente a ti, elevándolas por encima de la cabeza. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "elevacion-frontal-unilateral-polea-v2",
     "name": "Elevación frontal de hombro unilateral en polea",
     "image_male": "images/elevacion-frontal-unilateral-polea-v2-male.webp",
@@ -3629,6 +3815,19 @@
     "instructions": "Coloca una barra ligera sobre la parte alta de la espalda y mantén los pies paralelos. Eleva los talones todo lo posible mientras conservas las rodillas extendidas y el torso estable. Haz una pausa arriba y baja lentamente hasta apoyar los talones."
   },
   {
+    "id": "elevacion-gemelos-pie-mancuernas",
+    "name": "Elevación de gemelos de pie con mancuernas",
+    "image_male": "images/elevacion-gemelos-pie-mancuernas-male.webp",
+    "image_female": "images/elevacion-gemelos-pie-mancuernas-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "tobillos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano. Levanta los talones del suelo lo más alto posible, usando las pantorrillas. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "elevacion-gemelos-sentado-barra-v2",
     "name": "Elevación de gemelos sentado con barra, variante 2",
     "image_male": "images/elevacion-gemelos-sentado-barra-v2-male.webp",
@@ -3695,6 +3894,20 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Apoya la espalda en un banco de inclinación moderada y deja las mancuernas junto al torso. Con una flexión fija de codos, elévalas en un arco amplio hasta la altura de los hombros, manteniendo los codos por encima de las muñecas. Baja sin convertir el gesto en un press."
+  },
+  {
+    "id": "elevacion-lateral-alterna-pie-mancuernas",
+    "name": "Elevación lateral alterna de pie con mancuernas",
+    "image_male": "images/elevacion-lateral-alterna-pie-mancuernas-male.webp",
+    "image_female": "images/elevacion-lateral-alterna-pie-mancuernas-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "trapecio",
+      "antebrazos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo una mancuerna en cada mano con las palmas hacia el cuerpo. Mantén la espalda recta y el core activado. Levanta una mancuerna hacia el lado, manteniendo el brazo recto y la palma hacia abajo. Continúa levantando hasta que el brazo quede paralelo al suelo. Haz una pausa breve en la parte más alta, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite con el otro brazo. Alterna entre los brazos el número de repeticiones deseado."
   },
   {
     "id": "elevacion-lateral-brazos-flexionados-sentado-mancuernas",
@@ -4859,6 +5072,20 @@
     "instructions": "Ponte de pie frente a una polea alta y toma una barra recta en pronación. Mantén los codos pegados a los costados, el pecho estable y las muñecas neutras. Extiende los codos hasta llevar la barra hacia los muslos, contrae los tríceps y deja subir la barra de forma controlada sin mover los brazos superiores."
   },
   {
+    "id": "extension-triceps-bilateral-inclinado-pie-mancuernas",
+    "name": "Extensión de tríceps bilateral inclinado de pie con mancuernas",
+    "image_male": "images/extension-triceps-bilateral-inclinado-pie-mancuernas-male.webp",
+    "image_female": "images/extension-triceps-bilateral-inclinado-pie-mancuernas-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "espalda"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén una mancuerna en cada mano. Inclínate hacia adelante desde la cintura, manteniendo la espalda recta y las rodillas ligeramente flexionadas. Extiende los brazos rectos hacia atrás, manteniendo los codos cerca del cuerpo. Baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "extension-triceps-bilateral-sentado-inclinado-mancuernas",
     "name": "Extensión de tríceps bilateral sentado e inclinado",
     "image_male": "images/extension-triceps-bilateral-sentado-inclinado-mancuernas-male.webp",
@@ -5101,6 +5328,19 @@
     "instructions": "Ponte de espaldas a una polea alta en posición escalonada y lleva los extremos de la cuerda detrás de la cabeza. Inclina ligeramente el torso y fija los brazos superiores junto a las orejas. Extiende los codos hacia delante y arriba, separa la cuerda al final y vuelve lentamente sin mover los hombros."
   },
   {
+    "id": "extension-triceps-sobre-cabeza-pie-mancuerna-v2",
+    "name": "Extensión de tríceps sobre la cabeza de pie (variante 2)",
+    "image_male": "images/extension-triceps-sobre-cabeza-pie-mancuerna-v2-male.webp",
+    "image_female": "images/extension-triceps-sobre-cabeza-pie-mancuerna-v2-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna con una mano. Levanta la mancuerna por encima de la cabeza, manteniendo el brazo recto. Flexiona el codo y baja la mancuerna detrás de la cabeza, manteniendo fija la parte superior del brazo. Extiende el brazo de vuelta hacia arriba, hasta la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "extension-triceps-sobre-cabeza-sentado-mancuerna",
     "name": "Extensión de tríceps sobre la cabeza sentado con mancuerna",
     "image_male": "images/extension-triceps-sobre-cabeza-sentado-mancuerna-male.webp",
@@ -5291,6 +5531,20 @@
     "instructions": "Ponte de pie junto a una polea alta y toma la agarradera con una mano. Fija el codo al costado y mantén el brazo superior inmóvil. Extiende el codo hasta llevar la mano junto al muslo, aprieta el tríceps y regresa despacio sin adelantar el hombro; completa ambos lados."
   },
   {
+    "id": "extension-triceps-unilateral-inclinado-pie-mancuerna",
+    "name": "Extensión de tríceps unilateral inclinado de pie con mancuerna",
+    "image_male": "images/extension-triceps-unilateral-inclinado-pie-mancuerna-male.webp",
+    "image_female": "images/extension-triceps-unilateral-inclinado-pie-mancuerna-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "espalda"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna con una mano. Inclínate hacia adelante desde la cintura, manteniendo la espalda recta y paralela al suelo. Extiende el brazo recto hacia atrás, manteniendo el codo cerca de tu cuerpo. Baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+  },
+  {
     "id": "extension-triceps-unilateral-polea",
     "name": "Extensión de tríceps unilateral en polea",
     "image_male": "images/extension-triceps-unilateral-polea-male.webp",
@@ -5316,6 +5570,19 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Siéntate erguido en un banco y extiende una mancuerna por encima de la cabeza. Mantén el brazo superior junto a la oreja y flexiona el codo para llevar la carga detrás de la cabeza. Extiende de nuevo sin arquear la espalda y cambia de lado."
+  },
+  {
+    "id": "extension-triceps-unilateral-sobre-cabeza-pie-mancuerna",
+    "name": "Extensión de tríceps unilateral sobre la cabeza de pie",
+    "image_male": "images/extension-triceps-unilateral-sobre-cabeza-pie-mancuerna-male.webp",
+    "image_female": "images/extension-triceps-unilateral-sobre-cabeza-pie-mancuerna-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna con una mano. Levanta la mancuerna por encima de la cabeza, extendiendo completamente el brazo. Mantén la parte superior del brazo cerca de la cabeza y perpendicular al suelo. Baja lentamente la mancuerna detrás de la cabeza, flexionando el codo. Haz una pausa por un momento, luego levanta la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "extension-triceps-unilateral-supina-sobre-cabeza-polea",
@@ -6456,6 +6723,19 @@
     "instructions": "Desde una postura erguida, da un paso al frente y baja en zancada con ambas rodillas flexionadas. Impúlsate con el pie delantero para volver al centro y lleva ese mismo pie hacia atrás en otra zancada. Alterna las piernas a un ritmo continuo, manteniendo el tronco estable."
   },
   {
+    "id": "patada-triceps-alterna-pie-mancuernas",
+    "name": "Patada de tríceps alterna de pie con mancuernas",
+    "image_male": "images/patada-triceps-alterna-pie-mancuernas-male.webp",
+    "image_female": "images/patada-triceps-alterna-pie-mancuernas-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Extiende los brazos rectos hacia atrás, manteniendo los codos cerca del cuerpo. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite con el otro brazo, alternando lados en cada repetición."
+  },
+  {
     "id": "patada-triceps-alterna-sentado-inclinado-mancuernas",
     "name": "Patada de tríceps alterna sentado e inclinado",
     "image_male": "images/patada-triceps-alterna-sentado-inclinado-mancuernas-male.webp",
@@ -6511,6 +6791,19 @@
     "instructions": "Ponte de pie con una mancuerna en cada mano, flexiona ligeramente las rodillas e inclina el torso desde las caderas con la espalda neutra. Lleva los brazos superiores junto al torso y flexiona los codos a unos 90 grados. Extiende ambos antebrazos hacia atrás hasta contraer los tríceps. Mantén los hombros quietos y vuelve despacio a la posición inicial."
   },
   {
+    "id": "patada-triceps-pie-mancuernas",
+    "name": "Patada de tríceps de pie con mancuernas",
+    "image_male": "images/patada-triceps-pie-mancuernas-male.webp",
+    "image_female": "images/patada-triceps-pie-mancuernas-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén una mancuerna en cada mano. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Extiende los brazos rectos hacia atrás, contrayendo los tríceps en la parte superior del movimiento. Haz una pausa por un momento, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "patada-triceps-polea",
     "name": "Patada de tríceps en polea",
     "image_male": "images/patada-triceps-polea-male.webp",
@@ -6522,6 +6815,20 @@
     "equipment": "polea",
     "difficulty": "intermediate",
     "instructions": "Ponte frente a una polea baja, toma una agarradera con una mano e inclina el torso desde las caderas. Mantén el brazo superior pegado al costado y el codo flexionado. Extiende el antebrazo hacia atrás hasta bloquear suavemente el codo y vuelve con control antes de cambiar de lado."
+  },
+  {
+    "id": "patada-triceps-postura-ciguenna-mancuerna",
+    "name": "Patada de tríceps en postura de cigüeña con mancuerna",
+    "image_male": "images/patada-triceps-postura-ciguenna-mancuerna-male.webp",
+    "image_female": "images/patada-triceps-postura-ciguenna-mancuerna-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "core"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén una mancuerna en la mano derecha. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Lleva el codo derecho hacia el costado, manteniéndolo flexionado en un ángulo de 90 grados. Extiende el brazo derecho recto hacia atrás, apretando el tríceps. Haz una pausa por un momento, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
   },
   {
     "id": "patada-triceps-sentado-mancuernas",
@@ -6640,6 +6947,20 @@
     "instructions": "Sujeta la barra frente a los muslos con agarre prono y las piernas casi rectas. Empuja las caderas hacia atrás y desliza la barra cerca de las piernas manteniendo la espalda neutra. Detente cuando alcances tu rango sin perder la postura y extiende las caderas para regresar."
   },
   {
+    "id": "peso-muerto-piernas-rectas-mancuernas",
+    "name": "Peso muerto con piernas rectas y mancuernas",
+    "image_male": "images/peso-muerto-piernas-rectas-mancuernas-male.webp",
+    "image_female": "images/peso-muerto-piernas-rectas-mancuernas-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "espalda baja"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano con un agarre prono. Manteniendo la espalda recta y el core activado, inclínate desde las caderas y baja las mancuernas hacia el suelo, permitiendo que el torso se incline hacia adelante. Continúa bajando las mancuernas hasta sentir un estiramiento en los isquiotibiales, manteniendo las rodillas ligeramente flexionadas. Haz una pausa breve en la posición más baja, luego activa los glúteos y los isquiotibiales para levantar el torso de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "peso-muerto-piernas-rigidas-banda",
     "name": "Peso muerto con piernas rígidas y banda",
     "image_male": "images/peso-muerto-piernas-rigidas-banda-male.webp",
@@ -6666,6 +6987,20 @@
     "equipment": "banda",
     "difficulty": "intermediate",
     "instructions": "Pisa el centro de la banda y sujeta los extremos delante de los muslos. Mantén las rodillas casi extendidas, el abdomen firme y la espalda completamente neutra. Lleva la cadera hacia atrás mientras bajas las manos cerca de las piernas hasta notar tensión en los isquiotibiales. Extiende la cadera y aprieta los glúteos para volver erguido."
+  },
+  {
+    "id": "peso-muerto-piernas-rigidas-mancuernas",
+    "name": "Peso muerto con piernas rígidas y mancuernas",
+    "image_male": "images/peso-muerto-piernas-rigidas-mancuernas-male.webp",
+    "image_female": "images/peso-muerto-piernas-rigidas-mancuernas-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "espalda baja"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano con un agarre prono. Manteniendo la espalda recta y el core activado, inclínate desde las caderas y baja las mancuernas hacia el suelo, permitiendo una ligera flexión en las rodillas. Baja las mancuernas hasta sentir un estiramiento en los isquiotibiales, luego aprieta los glúteos y empuja con los talones para volver a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "peso-muerto-polea",
@@ -7037,6 +7372,20 @@
     "instructions": "Túmbate en un banco plano con los pies firmes en el suelo y agarra la barra algo más abierta que los hombros. Sácala del soporte, baja de forma controlada hasta el pecho manteniendo las muñecas alineadas y empuja hasta extender los brazos. Conserva los glúteos y la parte alta de la espalda apoyados."
   },
   {
+    "id": "press-banca-con-giro-mancuernas",
+    "name": "Press de banca con giro de mancuernas",
+    "image_male": "images/press-banca-con-giro-mancuernas-male.webp",
+    "image_female": "images/press-banca-con-giro-mancuernas-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "pecho",
+      "hombros"
+    ],
+    "equipment": "mancuernas y banco",
+    "difficulty": "advanced",
+    "instructions": "Túmbate sobre un banco con los pies apoyados en el suelo y la espalda presionada contra el banco. Sujeta una mancuerna en cada mano con agarre prono, con las palmas alejadas de ti. Extiende los brazos rectos hacia arriba sobre el pecho, con una ligera flexión en los codos. Baja las mancuernas hacia el pecho, manteniendo los codos cerca del cuerpo. Mientras bajas las mancuernas, gira las muñecas de modo que las palmas queden hacia ti en la parte más baja del movimiento. Haz una pausa por un momento en la parte más baja, luego invierte el movimiento presionando las mancuernas de vuelta hacia arriba, hasta la posición inicial. Mientras presionas las mancuernas hacia arriba, gira las muñecas de vuelta a la posición inicial con las palmas alejadas de ti. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "press-banca-inverso-unilateral-mancuerna",
     "name": "Press de banca inverso unilateral con mancuerna",
     "image_male": "images/press-banca-inverso-unilateral-mancuerna-male.webp",
@@ -7396,6 +7745,20 @@
     "instructions": "Siéntate en un banco con la espalda recta y los pies planos sobre el suelo. Sujeta una mancuerna en cada mano, con las palmas hacia adentro, y levántalas a la altura de los hombros. Presiona una mancuerna hacia arriba, por encima de la cabeza, mientras mantienes la otra mancuerna a la altura de los hombros. Baja la mancuerna levantada de vuelta a la altura de los hombros mientras presionas simultáneamente la otra mancuerna por encima de la cabeza. Continúa alternando entre los brazos durante el número de repeticiones deseado."
   },
   {
+    "id": "press-hombro-alterno-pie-mancuernas",
+    "name": "Press de hombro alterno de pie con mancuernas",
+    "image_male": "images/press-hombro-alterno-pie-mancuernas-male.webp",
+    "image_female": "images/press-hombro-alterno-pie-mancuernas-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps",
+      "core"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano a la altura de los hombros, con las palmas hacia adelante. Presiona una mancuerna por encima de la cabeza, extendiendo completamente el brazo. Baja la mancuerna de vuelta a la altura de los hombros. Repite con el otro brazo. Continúa alternando los brazos durante el número de repeticiones deseado."
+  },
+  {
     "id": "press-hombro-alterno-polea",
     "name": "Press de hombro alterno en polea",
     "image_male": "images/press-hombro-alterno-polea-male.webp",
@@ -7438,6 +7801,20 @@
     "instructions": "Siéntate en un banco con respaldo vertical. Sujeta una mancuerna en cada mano a la altura de los hombros con las palmas mirando hacia delante. Empuja las mancuernas hacia arriba hasta extender los brazos por encima de la cabeza. Baja de forma controlada hasta la posición inicial."
   },
   {
+    "id": "press-hombro-neutro-pie-mancuernas",
+    "name": "Press de hombro neutro de pie con mancuernas",
+    "image_male": "images/press-hombro-neutro-pie-mancuernas-male.webp",
+    "image_female": "images/press-hombro-neutro-pie-mancuernas-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps",
+      "pecho"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano a la altura de los hombros, con las palmas hacia adentro. Manteniendo el core activado y la espalda recta, presiona las mancuernas hacia arriba hasta que los brazos queden completamente extendidos por encima de la cabeza. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "press-hombro-neutro-sentado-mancuernas",
     "name": "Press de hombro neutro sentado con mancuernas",
     "image_male": "images/press-hombro-neutro-sentado-mancuernas-male.webp",
@@ -7450,6 +7827,34 @@
     "equipment": "mancuernas y banco",
     "difficulty": "intermediate",
     "instructions": "Siéntate en un banco con una mancuerna en cada mano, con las palmas hacia adentro. Sube las mancuernas hasta la altura de los hombros, con los codos flexionados y las palmas hacia adelante. Presiona las mancuernas hacia arriba hasta que los brazos queden completamente extendidos por encima de la cabeza. Haz una pausa por un momento en la parte superior, luego baja lentamente las mancuernas de vuelta a la altura de los hombros. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "press-hombro-neutro-unilateral-pie-mancuerna",
+    "name": "Press de hombro neutro unilateral de pie con mancuerna",
+    "image_male": "images/press-hombro-neutro-unilateral-pie-mancuerna-male.webp",
+    "image_female": "images/press-hombro-neutro-unilateral-pie-mancuerna-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps",
+      "core"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna con una mano a la altura del hombro, con la palma hacia adentro. Activa el core y mantén la espalda recta. Empuja la mancuerna hacia arriba hasta que el brazo quede completamente extendido. Haz una pausa breve en la parte más alta, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia al otro brazo."
+  },
+  {
+    "id": "press-hombro-pie-mancuernas",
+    "name": "Press de hombro de pie con mancuernas",
+    "image_male": "images/press-hombro-pie-mancuernas-male.webp",
+    "image_female": "images/press-hombro-pie-mancuernas-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps",
+      "espalda alta"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano a la altura de los hombros, con las palmas hacia adelante. Presiona las mancuernas hacia arriba hasta que los brazos queden completamente extendidos por encima de la cabeza. Haz una pausa por un momento en la parte superior, luego baja lentamente las mancuernas de vuelta a la altura de los hombros. Repite el número de repeticiones deseado."
   },
   {
     "id": "press-hombro-sentado-mancuernas",
@@ -8134,6 +8539,20 @@
     "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies apoyados. Con ayuda de un observador, equilibra una barra ligera por el centro sobre una mano y extiende el brazo encima del pecho. Baja hasta que el tríceps toque suavemente el suelo, mantén la muñeca alineada y empuja hasta extender el codo. Completa la serie y cambia de brazo."
   },
   {
+    "id": "press-tate-mancuernas",
+    "name": "Press Tate con mancuernas",
+    "image_male": "images/press-tate-mancuernas-male.webp",
+    "image_female": "images/press-tate-mancuernas-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "pecho"
+    ],
+    "equipment": "mancuernas y banco",
+    "difficulty": "advanced",
+    "instructions": "Siéntate en un banco plano con una mancuerna en cada mano, con las palmas mirándose entre sí. Sube las mancuernas hasta la altura de los hombros, luego gira las muñecas de modo que las palmas queden mirando hacia afuera. Presiona las mancuernas hacia arriba hasta que los brazos queden completamente extendidos, luego bájalas de vuelta a la altura de los hombros. Gira las muñecas de vuelta a la posición inicial y repite el número de repeticiones deseado."
+  },
+  {
     "id": "press-unilateral-fitball-polea",
     "name": "Press unilateral sentado sobre fitball en polea",
     "image_male": "images/press-unilateral-fitball-polea-male.webp",
@@ -8303,6 +8722,20 @@
     "equipment": "barra y banco",
     "difficulty": "intermediate",
     "instructions": "Túmbate boca arriba en un banco y sostén la barra sobre el pecho con un agarre medio. Mantén una flexión fija en los codos y baja la barra en arco por detrás de la cabeza hasta notar el estiramiento de dorsales y pecho. Lleva la barra de nuevo sobre el pecho sin cambiar el ángulo de los codos ni arquear la espalda."
+  },
+  {
+    "id": "pullover-brazos-rectos-mancuerna",
+    "name": "Pullover con brazos rectos y mancuerna",
+    "image_male": "images/pullover-brazos-rectos-mancuerna-male.webp",
+    "image_female": "images/pullover-brazos-rectos-mancuerna-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "dorsales",
+      "tríceps"
+    ],
+    "equipment": "mancuerna y banco",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate en un banco con la cabeza en un extremo y los pies firmemente apoyados en el suelo. Sujeta una mancuerna con ambas manos y extiende los brazos rectos por encima del pecho. Manteniendo los brazos rectos, baja lentamente la mancuerna detrás de la cabeza con un movimiento en forma de arco. Haz una pausa por un momento, luego levanta la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "pullover-circular-mancuerna",
@@ -9430,6 +9863,34 @@
     "instructions": "Siéntate en la máquina de remo con el pecho apoyado en el soporte. Agarra el asa con una mano y tira hacia atrás llevando el codo pegado al cuerpo, apretando la escápula en la parte final del movimiento. Vuelve de forma controlada. Completa las repeticiones con un brazo antes de cambiar al otro."
   },
   {
+    "id": "remo-vertical-mancuernas",
+    "name": "Remo vertical con mancuernas",
+    "image_male": "images/remo-vertical-mancuernas-male.webp",
+    "image_female": "images/remo-vertical-mancuernas-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "trapecio",
+      "bíceps"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano con un agarre prono. Deja que las mancuernas cuelguen frente a tus muslos, con los brazos completamente extendidos. Manteniendo la espalda recta y el core activado, exhala y levanta las mancuernas rectas hacia tu barbilla, guiando el movimiento con los codos. Haz una pausa por un momento en la parte superior, luego inhala y baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "remo-vertical-vista-posterior-mancuernas",
+    "name": "Remo vertical con mancuernas, vista posterior",
+    "image_male": "images/remo-vertical-vista-posterior-mancuernas-male.webp",
+    "image_female": "images/remo-vertical-vista-posterior-mancuernas-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "trapecio",
+      "bíceps"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano con un agarre prono. Deja que las mancuernas cuelguen frente a tus muslos, con los brazos completamente extendidos y las palmas hacia tu cuerpo. Manteniendo la espalda recta y el core activado, exhala y levanta las mancuernas rectas hacia tu barbilla, guiando el movimiento con los codos. Continúa subiendo hasta que las mancuernas estén a la altura de los hombros, con los codos apuntando hacia los lados. Haz una pausa por un momento en la parte superior, luego inhala y baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "rodillo-abdominal-asistido-banda",
     "name": "Rodillo abdominal asistido con banda",
     "image_male": "images/rodillo-abdominal-asistido-banda-male.webp",
@@ -9514,6 +9975,20 @@
     "equipment": "polea y agarradera",
     "difficulty": "beginner",
     "instructions": "Colócate de lado respecto a una polea situada a la altura del codo y sujeta la agarradera con la mano más alejada. Flexiona el codo a 90 grados y mantenlo pegado al costado. Sin mover el brazo superior, rota el antebrazo hacia fuera y vuelve lentamente hasta el abdomen; repite por ambos lados."
+  },
+  {
+    "id": "rotacion-externa-hombro-pie-mancuernas",
+    "name": "Rotación externa de hombro de pie con mancuernas",
+    "image_male": "images/rotacion-externa-hombro-pie-mancuernas-male.webp",
+    "image_female": "images/rotacion-externa-hombro-pie-mancuernas-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "manguito rotador",
+      "trapecio"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna en cada mano con las palmas hacia tu cuerpo. Levanta los brazos hacia los lados hasta que queden paralelos al suelo, manteniendo los codos ligeramente flexionados. Gira los brazos hacia afuera, llevando las mancuernas hacia la cabeza mientras mantienes los codos en la misma posición. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "rotacion-externa-hombro-tumbado-mancuerna",
@@ -9717,6 +10192,21 @@
     "equipment": "barra",
     "difficulty": "intermediate",
     "instructions": "Coloca la barra sobre la parte alta de la espalda y separa los pies más que los hombros, con las puntas ligeramente hacia fuera. Lleva las caderas atrás y abajo manteniendo el pecho elevado y las rodillas alineadas con los pies. Empuja el suelo para volver a levantarte sin perder la postura."
+  },
+  {
+    "id": "sentadilla-apoyo-mancuernas",
+    "name": "Sentadilla con apoyo y mancuernas",
+    "image_male": "images/sentadilla-apoyo-mancuernas-male.webp",
+    "image_female": "images/sentadilla-apoyo-mancuernas-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "glúteos",
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo una mancuerna en cada mano a los costados. Manteniendo el pecho arriba y el core activado, baja lentamente el cuerpo flexionando las rodillas y empujando las caderas hacia atrás. Continúa bajando hasta que los muslos queden paralelos al suelo, o tan abajo como puedas hacerlo cómodamente. Haz una pausa por un momento en la parte inferior, luego empuja con los talones para regresar a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "sentadilla-banco-barra",
@@ -10477,6 +10967,21 @@
     "instructions": "Coloca una barra estable sobre la parte alta de la espalda y sitúate frente a un cajón firme. Apoya por completo un pie y empuja con su talón para subir sin impulsarte con la pierna inferior. Termina erguido, baja con control y alterna la pierna de apoyo."
   },
   {
+    "id": "step-up-equilibrio-unilateral-curl-biceps-mancuernas",
+    "name": "Step-up con equilibrio unilateral y curl de bíceps",
+    "image_male": "images/step-up-equilibrio-unilateral-curl-biceps-mancuernas-male.webp",
+    "image_female": "images/step-up-equilibrio-unilateral-curl-biceps-mancuernas-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "cuádriceps",
+      "glúteos",
+      "isquiotibiales"
+    ],
+    "equipment": "mancuernas y step",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie frente a un escalón o plataforma con una mancuerna en cada mano, con las palmas hacia tu cuerpo. Coloca el pie derecho sobre el escalón, asegurándote de que todo el pie esté en contacto con la superficie. Activa el core y empuja con el talón derecho para subir el cuerpo sobre el escalón, llevando la rodilla izquierda hacia el pecho. En la parte superior del movimiento, realiza un curl de bíceps flexionando los codos y llevando las mancuernas hacia los hombros. Baja las mancuernas y, al mismo tiempo, baja el pie izquierdo de vuelta al suelo. Repite el movimiento del lado contrario, subiendo con el pie izquierdo y flexionando las mancuernas. Continúa alternando lados durante el número de repeticiones deseado."
+  },
+  {
     "id": "step-up-mancuernas",
     "name": "Step-up con mancuernas",
     "image_male": "images/step-up-mancuernas-male.webp",
@@ -10490,6 +10995,36 @@
     "equipment": "mancuernas",
     "difficulty": "intermediate",
     "instructions": "Ponte frente a un banco o cajón estable con una mancuerna en cada mano. Apoya por completo un pie sobre la superficie y empuja con su talón para elevar el cuerpo, evitando impulsarte con la pierna que queda abajo. Termina erguido sobre el banco, baja con control y repite. Alterna la pierna que inicia o completa primero todas las repeticiones de un lado."
+  },
+  {
+    "id": "step-up-sentadilla-dividida-mancuernas",
+    "name": "Step-up con sentadilla dividida y mancuernas",
+    "image_male": "images/step-up-sentadilla-dividida-mancuernas-male.webp",
+    "image_female": "images/step-up-sentadilla-dividida-mancuernas-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "glúteos",
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "mancuernas y step",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie frente a un banco o escalón con una mancuerna en cada mano, con las palmas hacia tu cuerpo. Coloca el pie derecho sobre el banco o escalón, asegurándote de que todo el pie esté en contacto con la superficie. Sube al banco o escalón con el pie derecho, empujando con el talón para levantar el cuerpo. Mientras subes, levanta al mismo tiempo la rodilla izquierda hacia el pecho. Haz una pausa en la parte superior del movimiento, luego baja lentamente el pie izquierdo de vuelta al suelo mientras mantienes el pie derecho sobre el banco o escalón. Repite el movimiento con el pie izquierdo sobre el banco o escalón. Continúa alternando entre el pie derecho y el izquierdo durante el número de repeticiones deseado."
+  },
+  {
+    "id": "step-up-zancada-mancuernas",
+    "name": "Step-up con zancada y mancuernas",
+    "image_male": "images/step-up-zancada-mancuernas-male.webp",
+    "image_female": "images/step-up-zancada-mancuernas-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "glúteos",
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "mancuernas y step",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie frente a un escalón o plataforma con una mancuerna en cada mano, con las palmas hacia tus costados. Coloca el pie derecho sobre el escalón, asegurándote de que todo el pie esté sobre la superficie. Empuja con el talón derecho y sube el cuerpo sobre el escalón, llevando también el pie izquierdo hacia arriba. Una vez que ambos pies estén sobre el escalón, baja el pie izquierdo de vuelta a la posición inicial, manteniendo el pie derecho sobre el escalón. Repite el movimiento, alternando el pie con el que subes cada vez. Continúa durante el número de repeticiones deseado."
   },
   {
     "id": "supinacion-antebrazo-tumbado-banco-mancuerna",
@@ -10547,6 +11082,21 @@
     "equipment": "barra",
     "difficulty": "advanced",
     "instructions": "Sostén la barra sobre la parte frontal de los hombros con los codos ligeramente adelantados. Desciende en sentadilla manteniendo el pecho elevado y, al subir, extiende caderas y rodillas con potencia para impulsar la barra por encima de la cabeza. Baja la barra de nuevo a los hombros antes de iniciar la siguiente repetición."
+  },
+  {
+    "id": "tiron-sumo-mancuerna",
+    "name": "Tirón sumo con mancuerna",
+    "image_male": "images/tiron-sumo-mancuerna-male.webp",
+    "image_female": "images/tiron-sumo-mancuerna-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "cuádriceps",
+      "core"
+    ],
+    "equipment": "mancuerna",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie con los pies más separados que la altura de los hombros, con las puntas de los pies hacia afuera. Sujeta una mancuerna con ambas manos frente a tu cuerpo, con los brazos extendidos. Flexiona las rodillas y baja las caderas hasta una posición de sentadilla, manteniendo la espalda recta. Baja la mancuerna entre las piernas, manteniendo los brazos rectos. Empuja con los talones y extiende las caderas hacia adelante, llevando la mancuerna hacia arriba y frente a tu cuerpo. Aprieta los glúteos en la parte superior del movimiento, luego baja la mancuerna de vuelta entre las piernas. Repite el número de repeticiones deseado."
   },
   {
     "id": "tiron-unilateral-con-giro-polea",

@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-gemelos-pie-mancuernas",
+  "name": "Elevación de gemelos de pie con mancuernas",
+  "image_male": "images/elevacion-gemelos-pie-mancuernas-male.webp",
+  "image_female": "images/elevacion-gemelos-pie-mancuernas-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "tobillos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano. Levanta los talones del suelo lo más alto posible, usando las pantorrillas. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

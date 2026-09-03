@@ -1,0 +1,14 @@
+{
+  "id": "press-hombro-neutro-pie-mancuernas",
+  "name": "Press de hombro neutro de pie con mancuernas",
+  "image_male": "images/press-hombro-neutro-pie-mancuernas-male.webp",
+  "image_female": "images/press-hombro-neutro-pie-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "pecho"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano a la altura de los hombros, con las palmas hacia adentro. Manteniendo el core activado y la espalda recta, presiona las mancuernas hacia arriba hasta que los brazos queden completamente extendidos por encima de la cabeza. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

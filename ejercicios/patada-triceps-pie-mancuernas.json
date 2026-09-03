@@ -1,0 +1,13 @@
+{
+  "id": "patada-triceps-pie-mancuernas",
+  "name": "Patada de tríceps de pie con mancuernas",
+  "image_male": "images/patada-triceps-pie-mancuernas-male.webp",
+  "image_female": "images/patada-triceps-pie-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén una mancuerna en cada mano. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Extiende los brazos rectos hacia atrás, contrayendo los tríceps en la parte superior del movimiento. Haz una pausa por un momento, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "patada-triceps-postura-ciguenna-mancuerna",
+  "name": "Patada de tríceps en postura de cigüeña con mancuerna",
+  "image_male": "images/patada-triceps-postura-ciguenna-mancuerna-male.webp",
+  "image_female": "images/patada-triceps-postura-ciguenna-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén una mancuerna en la mano derecha. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Lleva el codo derecho hacia el costado, manteniéndolo flexionado en un ángulo de 90 grados. Extiende el brazo derecho recto hacia atrás, apretando el tríceps. Haz una pausa por un momento, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

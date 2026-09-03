@@ -1,0 +1,13 @@
+{
+  "id": "curl-inverso-unilateral-pie-mancuerna",
+  "name": "Curl inverso unilateral de pie con mancuerna",
+  "image_male": "images/curl-inverso-unilateral-pie-mancuerna-male.webp",
+  "image_female": "images/curl-inverso-unilateral-pie-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros, sujetando una mancuerna con una mano con agarre prono. Mantén el brazo completamente extendido y cerca del cuerpo, con la palma hacia abajo. Flexiona lentamente la mancuerna hacia tu hombro, manteniendo fija la parte superior del brazo. Haz una pausa breve en la parte más alta, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia al otro brazo."
+}

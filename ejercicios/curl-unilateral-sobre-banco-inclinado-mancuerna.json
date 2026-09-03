@@ -1,0 +1,13 @@
+{
+  "id": "curl-unilateral-sobre-banco-inclinado-mancuerna",
+  "name": "Curl unilateral sobre banco inclinado con mancuerna",
+  "image_male": "images/curl-unilateral-sobre-banco-inclinado-mancuerna-male.webp",
+  "image_female": "images/curl-unilateral-sobre-banco-inclinado-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuerna y banco inclinado",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna con una mano. Coloca la otra mano sobre un banco inclinado para apoyarte. Manteniendo el brazo superior quieto, flexiona la mancuerna hacia el hombro contrayendo el bíceps. Haz una pausa breve en la parte más alta, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+}

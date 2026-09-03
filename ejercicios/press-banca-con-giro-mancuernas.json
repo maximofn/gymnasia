@@ -1,0 +1,14 @@
+{
+  "id": "press-banca-con-giro-mancuernas",
+  "name": "Press de banca con giro de mancuernas",
+  "image_male": "images/press-banca-con-giro-mancuernas-male.webp",
+  "image_female": "images/press-banca-con-giro-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "advanced",
+  "instructions": "Túmbate sobre un banco con los pies apoyados en el suelo y la espalda presionada contra el banco. Sujeta una mancuerna en cada mano con agarre prono, con las palmas alejadas de ti. Extiende los brazos rectos hacia arriba sobre el pecho, con una ligera flexión en los codos. Baja las mancuernas hacia el pecho, manteniendo los codos cerca del cuerpo. Mientras bajas las mancuernas, gira las muñecas de modo que las palmas queden hacia ti en la parte más baja del movimiento. Haz una pausa por un momento en la parte más baja, luego invierte el movimiento presionando las mancuernas de vuelta hacia arriba, hasta la posición inicial. Mientras presionas las mancuernas hacia arriba, gira las muñecas de vuelta a la posición inicial con las palmas alejadas de ti. Repite el número de repeticiones deseado."
+}

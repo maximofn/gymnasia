@@ -1,0 +1,13 @@
+{
+  "id": "patada-triceps-alterna-pie-mancuernas",
+  "name": "Patada de tríceps alterna de pie con mancuernas",
+  "image_male": "images/patada-triceps-alterna-pie-mancuernas-male.webp",
+  "image_female": "images/patada-triceps-alterna-pie-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Extiende los brazos rectos hacia atrás, manteniendo los codos cerca del cuerpo. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite con el otro brazo, alternando lados en cada repetición."
+}

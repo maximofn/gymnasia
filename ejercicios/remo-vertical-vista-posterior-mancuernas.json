@@ -1,0 +1,14 @@
+{
+  "id": "remo-vertical-vista-posterior-mancuernas",
+  "name": "Remo vertical con mancuernas, vista posterior",
+  "image_male": "images/remo-vertical-vista-posterior-mancuernas-male.webp",
+  "image_female": "images/remo-vertical-vista-posterior-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecio",
+    "bíceps"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano con un agarre prono. Deja que las mancuernas cuelguen frente a tus muslos, con los brazos completamente extendidos y las palmas hacia tu cuerpo. Manteniendo la espalda recta y el core activado, exhala y levanta las mancuernas rectas hacia tu barbilla, guiando el movimiento con los codos. Continúa subiendo hasta que las mancuernas estén a la altura de los hombros, con los codos apuntando hacia los lados. Haz una pausa por un momento en la parte superior, luego inhala y baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

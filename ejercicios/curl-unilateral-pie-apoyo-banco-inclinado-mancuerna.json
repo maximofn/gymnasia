@@ -1,0 +1,13 @@
+{
+  "id": "curl-unilateral-pie-apoyo-banco-inclinado-mancuerna",
+  "name": "Curl unilateral de pie con apoyo en banco inclinado",
+  "image_male": "images/curl-unilateral-pie-apoyo-banco-inclinado-mancuerna-male.webp",
+  "image_female": "images/curl-unilateral-pie-apoyo-banco-inclinado-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuerna y banco inclinado",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna con una mano, con la palma hacia adelante. Coloca la otra mano sobre un banco inclinado para apoyarte. Manteniendo fija la parte superior del brazo, exhala y flexiona la mancuerna hacia el hombro contrayendo el bíceps. Haz una pausa por un momento arriba, luego inhala y baja lentamente la mancuerna a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+}

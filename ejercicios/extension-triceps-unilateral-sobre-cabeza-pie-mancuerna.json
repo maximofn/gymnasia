@@ -1,0 +1,13 @@
+{
+  "id": "extension-triceps-unilateral-sobre-cabeza-pie-mancuerna",
+  "name": "Extensión de tríceps unilateral sobre la cabeza de pie",
+  "image_male": "images/extension-triceps-unilateral-sobre-cabeza-pie-mancuerna-male.webp",
+  "image_female": "images/extension-triceps-unilateral-sobre-cabeza-pie-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna con una mano. Levanta la mancuerna por encima de la cabeza, extendiendo completamente el brazo. Mantén la parte superior del brazo cerca de la cabeza y perpendicular al suelo. Baja lentamente la mancuerna detrás de la cabeza, flexionando el codo. Haz una pausa por un momento, luego levanta la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

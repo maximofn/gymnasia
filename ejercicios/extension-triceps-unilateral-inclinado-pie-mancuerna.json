@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-unilateral-inclinado-pie-mancuerna",
+  "name": "Extensión de tríceps unilateral inclinado de pie con mancuerna",
+  "image_male": "images/extension-triceps-unilateral-inclinado-pie-mancuerna-male.webp",
+  "image_female": "images/extension-triceps-unilateral-inclinado-pie-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "espalda"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna con una mano. Inclínate hacia adelante desde la cintura, manteniendo la espalda recta y paralela al suelo. Extiende el brazo recto hacia atrás, manteniendo el codo cerca de tu cuerpo. Baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+}

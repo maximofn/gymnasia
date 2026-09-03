@@ -1,0 +1,14 @@
+{
+  "id": "extension-triceps-bilateral-inclinado-pie-mancuernas",
+  "name": "Extensión de tríceps bilateral inclinado de pie con mancuernas",
+  "image_male": "images/extension-triceps-bilateral-inclinado-pie-mancuernas-male.webp",
+  "image_female": "images/extension-triceps-bilateral-inclinado-pie-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "espalda"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén una mancuerna en cada mano. Inclínate hacia adelante desde la cintura, manteniendo la espalda recta y las rodillas ligeramente flexionadas. Extiende los brazos rectos hacia atrás, manteniendo los codos cerca del cuerpo. Baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

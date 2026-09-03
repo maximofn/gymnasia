@@ -1,0 +1,13 @@
+{
+  "id": "extension-triceps-sobre-cabeza-pie-mancuerna-v2",
+  "name": "Extensión de tríceps sobre la cabeza de pie (variante 2)",
+  "image_male": "images/extension-triceps-sobre-cabeza-pie-mancuerna-v2-male.webp",
+  "image_female": "images/extension-triceps-sobre-cabeza-pie-mancuerna-v2-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna con una mano. Levanta la mancuerna por encima de la cabeza, manteniendo el brazo recto. Flexiona el codo y baja la mancuerna detrás de la cabeza, manteniendo fija la parte superior del brazo. Extiende el brazo de vuelta hacia arriba, hasta la posición inicial. Repite el número de repeticiones deseado."
+}
