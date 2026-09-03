@@ -1,0 +1,14 @@
+{
+  "id": "patada-triceps-alterna-sentado-inclinado-mancuernas",
+  "name": "Patada de tríceps alterna sentado e inclinado",
+  "image_male": "images/patada-triceps-alterna-sentado-inclinado-mancuernas-male.webp",
+  "image_female": "images/patada-triceps-alterna-sentado-inclinado-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "espalda"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con una mancuerna en cada mano, con las palmas hacia adentro. Inclínate hacia adelante desde la cintura, manteniendo la espalda recta y paralela al suelo. Extiende un brazo recto hacia atrás, manteniéndolo cerca de tu cuerpo, hasta que el brazo esté completamente extendido. Haz una pausa por un momento, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite con el otro brazo. Continúa alternando los brazos durante el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "curl-martillo-sentado-mancuernas",
+  "name": "Curl martillo sentado con mancuernas",
+  "image_male": "images/curl-martillo-sentado-mancuernas-male.webp",
+  "image_female": "images/curl-martillo-sentado-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con una mancuerna en cada mano, con las palmas hacia tu torso y los brazos extendidos rectos hacia abajo. Manteniendo los brazos superiores fijos, exhala y levanta el peso mientras contraes los bíceps. Continúa levantando las mancuernas hasta que los bíceps estén completamente contraídos y las mancuernas estén a la altura de los hombros. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Inhala y comienza a bajar lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

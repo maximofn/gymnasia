@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-mancuernas-v2",
+  "name": "Sentadilla con mancuernas (variante 2)",
+  "image_male": "images/sentadilla-mancuernas-v2-male.webp",
+  "image_female": "images/sentadilla-mancuernas-v2-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo una mancuerna en cada mano a los costados. Manteniendo el pecho arriba y el core activado, baja el cuerpo flexionando las rodillas y las caderas, como si te sentaras en una silla. Continúa bajando hasta que los muslos queden paralelos al suelo, o tan abajo como puedas hacerlo cómodamente. Haz una pausa por un momento en la parte inferior, luego empuja con los talones para regresar a la posición inicial. Repite el número de repeticiones deseado."
+}

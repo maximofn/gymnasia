@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-frontal-alterna-sentado-mancuernas",
+  "name": "Elevación frontal alterna sentado con mancuernas",
+  "image_male": "images/elevacion-frontal-alterna-sentado-mancuernas-male.webp",
+  "image_female": "images/elevacion-frontal-alterna-sentado-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecio",
+    "bíceps"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con la espalda recta y los pies planos sobre el suelo. Sujeta una mancuerna en cada mano con las palmas hacia tu cuerpo y los brazos extendidos hacia abajo a los lados. Manteniendo los brazos rectos, levanta una mancuerna frente a ti hasta que quede paralela al suelo. Haz una pausa breve en la parte más alta, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite con el otro brazo. Alterna entre los brazos el número de repeticiones deseado."
+}

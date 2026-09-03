@@ -1,0 +1,13 @@
+{
+  "id": "curl-concentrado-inverso-unilateral-sentado-mancuerna",
+  "name": "Curl concentrado inverso unilateral sentado",
+  "image_male": "images/curl-concentrado-inverso-unilateral-sentado-mancuerna-male.webp",
+  "image_female": "images/curl-concentrado-inverso-unilateral-sentado-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuerna y banco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y sostén una mancuerna en una mano, con la palma hacia arriba. Apoya el codo en la parte interna del muslo, justo por encima de la rodilla. Manteniendo el brazo superior quieto, exhala y flexiona la mancuerna hacia el hombro. Haz una pausa breve en la parte alta, apretando los bíceps. Inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+}

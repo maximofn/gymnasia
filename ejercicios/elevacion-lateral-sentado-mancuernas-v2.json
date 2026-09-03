@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-lateral-sentado-mancuernas-v2",
+  "name": "Elevación lateral sentado con mancuernas (variante 2)",
+  "image_male": "images/elevacion-lateral-sentado-mancuernas-v2-male.webp",
+  "image_female": "images/elevacion-lateral-sentado-mancuernas-v2-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecio"
+  ],
+  "equipment": "mancuernas y banco con respaldo",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y una mancuerna en cada mano, apoyadas sobre los muslos. Mantén la espalda recta y el core activado. Levanta las mancuernas hacia los lados con una ligera flexión en los codos, hasta que tus brazos queden paralelos al suelo. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

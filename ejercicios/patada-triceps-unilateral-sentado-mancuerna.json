@@ -1,0 +1,14 @@
+{
+  "id": "patada-triceps-unilateral-sentado-mancuerna",
+  "name": "Patada de tríceps unilateral sentado con mancuerna",
+  "image_male": "images/patada-triceps-unilateral-sentado-mancuerna-male.webp",
+  "image_female": "images/patada-triceps-unilateral-sentado-mancuerna-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "espalda"
+  ],
+  "equipment": "mancuerna y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y sujeta una mancuerna con una mano. Inclina el torso hacia adelante desde la cintura, manteniendo la espalda recta y paralela al suelo. Extiende el brazo recto hacia atrás, manteniendo el codo cerca de tu cuerpo. Haz una pausa breve en la parte más alta, luego baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+}

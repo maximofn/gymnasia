@@ -1,0 +1,14 @@
+{
+  "id": "curl-biceps-unilateral-sentado-fitball-pierna-elevada-mancuerna",
+  "name": "Curl de bíceps unilateral sobre fitball con pierna elevada",
+  "image_male": "images/curl-biceps-unilateral-sentado-fitball-pierna-elevada-mancuerna-male.webp",
+  "image_female": "images/curl-biceps-unilateral-sentado-fitball-pierna-elevada-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos",
+    "abdomen"
+  ],
+  "equipment": "fitball y mancuerna",
+  "difficulty": "advanced",
+  "instructions": "Siéntate sobre un balón de ejercicio con los pies apoyados planos en el suelo y la espalda recta. Sostén una mancuerna en una mano con la palma hacia arriba y el brazo completamente extendido. Coloca la otra mano en la cadera para mantener el equilibrio. Flexiona lentamente la mancuerna hacia tu hombro, manteniendo fija la parte superior del brazo. Haz una pausa por un momento en la parte más alta del movimiento, apretando el bíceps. Baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado. Cambia de brazo y repite el ejercicio."
+}

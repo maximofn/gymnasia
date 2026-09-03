@@ -1,0 +1,14 @@
+{
+  "id": "peso-muerto-unilateral-apoyo-step-mancuerna",
+  "name": "Peso muerto unilateral con apoyo en step y mancuerna",
+  "image_male": "images/peso-muerto-unilateral-apoyo-step-mancuerna-male.webp",
+  "image_female": "images/peso-muerto-unilateral-apoyo-step-mancuerna-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "espalda baja"
+  ],
+  "equipment": "mancuerna y step",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de las caderas, sujetando una mancuerna con la mano derecha. Coloca el pie izquierdo sobre un cajón de step o una superficie elevada detrás de ti. Manteniendo la espalda recta y el core activado, inclínate hacia adelante desde las caderas, bajando la mancuerna hacia el suelo. Mientras bajas la mancuerna, levanta al mismo tiempo la pierna izquierda detrás de ti, manteniendo una línea recta desde la cabeza hasta el talón. Baja la mancuerna hasta sentir un estiramiento en el isquiotibial derecho, luego vuelve a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

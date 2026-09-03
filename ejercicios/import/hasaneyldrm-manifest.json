@@ -916,6 +916,53 @@
         {"source_id": "0386", "id": "apertura-inversa-con-rotacion-mancuernas", "action": "create", "difficulty": "advanced", "view": "rear 3/4 view", "provider": "codex-imagegen", "qa": "approved"},
         {"source_id": "2397", "id": "press-scott-mancuernas", "action": "create", "difficulty": "intermediate", "view": "front view", "provider": "codex-imagegen", "qa": "approved"}
       ]
+    },
+    {
+      "number": 32,
+      "size": 40,
+      "status": "approved",
+      "records": [
+        {"source_id":"0387","id":"elevacion-frontal-alterna-sentado-mancuernas","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1676","id":"curl-martillo-alterno-sentado-fitball-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0388","id":"press-hombro-alterno-sentado-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3546","id":"press-hombro-alterno-neutro-sentado-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0389","id":"extension-triceps-sobre-cabeza-sentado-mancuerna","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2317","id":"elevacion-lateral-brazos-flexionados-sentado-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1730","id":"patada-triceps-alterna-sentado-inclinado-mancuernas","action":"create","difficulty":"intermediate","view":"rear 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1737","id":"extension-triceps-bilateral-sentado-inclinado-mancuernas","action":"create","difficulty":"intermediate","view":"rear 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1677","id":"curl-biceps-sentado-mancuernas","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0390","id":"curl-biceps-sentado-fitball-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3547","id":"curl-biceps-press-hombro-sentado-mancuernas","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1379","id":"elevacion-gemelos-sentado-mancuerna","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0391","id":"curl-biceps-sentado-mancuernas-v2","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0392","id":"elevacion-frontal-sentado-mancuernas","action":"create","difficulty":"beginner","view":"front view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1678","id":"curl-martillo-sentado-mancuernas","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0393","id":"curl-biceps-interno-sentado-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0394","id":"patada-triceps-sentado-mancuernas","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0396","id":"elevacion-lateral-sentado-mancuernas","action":"create","difficulty":"beginner","view":"front view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0395","id":"elevacion-lateral-sentado-mancuernas-v2","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0397","id":"curl-muneca-neutro-sentado-mancuernas","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1679","id":"curl-biceps-unilateral-sentado-fitball-pierna-elevada-mancuerna","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0398","id":"patada-triceps-unilateral-sentado-mancuerna","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0399","id":"rotacion-externa-hombro-unilateral-sentado-mancuerna","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0400","id":"elevacion-gemelo-unilateral-sentado-mancuerna","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1380","id":"elevacion-gemelo-unilateral-sentado-agarre-martillo-mancuerna","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1381","id":"elevacion-gemelo-unilateral-sentado-agarre-supino-mancuerna","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0401","id":"curl-muneca-supino-sentado-mancuernas","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0402","id":"curl-predicador-unilateral-sentado-mancuerna","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0403","id":"curl-concentrado-inverso-unilateral-sentado-mancuerna","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1738","id":"extension-triceps-supinada-unilateral-sentado-mancuerna","action":"create","difficulty":"advanced","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0405","id":"press-hombro-sentado-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0404","id":"press-hombro-neutro-sentado-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0407","id":"flexion-lateral-tronco-unilateral-mancuerna","action":"create","difficulty":"beginner","view":"front view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0408","id":"elevacion-lateral-tumbado-lateral-mancuerna","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3664","id":"plancha-lateral-apertura-posterior-mancuerna","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3548","id":"paseo-mancuerna-sobre-cabeza-unilateral","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0409","id":"elevacion-gemelo-unilateral-pie-mancuerna","action":"create","difficulty":"intermediate","view":"rear 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2805","id":"peso-muerto-unilateral-apoyo-step-mancuerna","action":"create","difficulty":"advanced","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0411","id":"sentadilla-pistol-mancuernas","action":"create","difficulty":"advanced","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0413","id":"sentadilla-mancuernas-v2","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"}
+      ]
     }
   ]
 }

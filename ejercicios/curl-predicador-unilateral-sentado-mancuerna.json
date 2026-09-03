@@ -1,0 +1,13 @@
+{
+  "id": "curl-predicador-unilateral-sentado-mancuerna",
+  "name": "Curl predicador unilateral sentado con mancuerna",
+  "image_male": "images/curl-predicador-unilateral-sentado-mancuerna-male.webp",
+  "image_female": "images/curl-predicador-unilateral-sentado-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuerna y banco predicador",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco scott con los pies apoyados en el suelo. Sujeta una mancuerna con una mano con agarre supino, apoyando la parte superior del brazo en la almohadilla del banco scott. Manteniendo el brazo superior quieto, exhala y flexiona la mancuerna hacia el hombro. Haz una pausa por un momento en la parte superior, luego inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+}

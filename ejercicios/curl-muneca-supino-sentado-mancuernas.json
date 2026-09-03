@@ -1,0 +1,14 @@
+{
+  "id": "curl-muneca-supino-sentado-mancuernas",
+  "name": "Curl de muñeca supino sentado con mancuernas",
+  "image_male": "images/curl-muneca-supino-sentado-mancuernas-male.webp",
+  "image_female": "images/curl-muneca-supino-sentado-mancuernas-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [
+    "bíceps",
+    "hombros"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco con los pies apoyados en el suelo y sostén una mancuerna en cada mano, con las palmas hacia arriba. Apoya los antebrazos sobre los muslos, dejando que las muñecas cuelguen del borde. Flexiona lentamente las muñecas hacia arriba, apretando los antebrazos en la parte superior del movimiento. Haz una pausa por un momento y luego baja las muñecas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}
