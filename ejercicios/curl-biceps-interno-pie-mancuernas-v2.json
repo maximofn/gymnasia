@@ -1,0 +1,13 @@
+{
+  "id": "curl-biceps-interno-pie-mancuernas-v2",
+  "name": "Curl de bíceps interno de pie con mancuernas (variante 2)",
+  "image_male": "images/curl-biceps-interno-pie-mancuernas-v2-male.webp",
+  "image_female": "images/curl-biceps-interno-pie-mancuernas-v2-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas mirando hacia el torso. Mantén los codos cerca del torso y gira las palmas de las manos hasta que queden mirando hacia adelante. Manteniendo fija la parte superior de los brazos, flexiona los pesos mientras contraes los bíceps. Continúa levantando las pesas hasta que los bíceps estén completamente contraídos y las mancuernas estén a la altura de los hombros. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Comienza a llevar lentamente las mancuernas de vuelta a la posición inicial mientras inhalas. Repite el número de repeticiones recomendado."
+}

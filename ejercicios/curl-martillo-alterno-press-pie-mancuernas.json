@@ -1,0 +1,14 @@
+{
+  "id": "curl-martillo-alterno-press-pie-mancuernas",
+  "name": "Curl martillo alterno con press de pie",
+  "image_male": "images/curl-martillo-alterno-press-pie-mancuernas-male.webp",
+  "image_female": "images/curl-martillo-alterno-press-pie-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos",
+    "hombros"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas hacia tu cuerpo. Mantén los codos cerca del torso y la espalda recta. Exhala y flexiona la mancuerna de tu mano derecha hacia el hombro, manteniendo el brazo superior quieto. Continúa levantando la mancuerna hasta que el bíceps esté completamente contraído y la mancuerna esté a la altura del hombro. Inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el curl con la mano izquierda. Después de completar el curl con la mano izquierda, exhala y presiona la mancuerna de la mano derecha por encima de la cabeza. Extiende completamente el brazo y mantén la posición por un momento en la parte superior. Inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el press con la mano izquierda. Continúa alternando entre curls y press durante el número de repeticiones deseado."
+}

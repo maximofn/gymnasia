@@ -1,0 +1,14 @@
+{
+  "id": "press-hombro-pie-mancuernas",
+  "name": "Press de hombro de pie con mancuernas",
+  "image_male": "images/press-hombro-pie-mancuernas-male.webp",
+  "image_female": "images/press-hombro-pie-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano a la altura de los hombros, con las palmas hacia adelante. Presiona las mancuernas hacia arriba hasta que los brazos queden completamente extendidos por encima de la cabeza. Haz una pausa por un momento en la parte superior, luego baja lentamente las mancuernas de vuelta a la altura de los hombros. Repite el número de repeticiones deseado."
+}

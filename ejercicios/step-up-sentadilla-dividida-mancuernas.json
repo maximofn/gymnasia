@@ -1,0 +1,15 @@
+{
+  "id": "step-up-sentadilla-dividida-mancuernas",
+  "name": "Step-up con sentadilla dividida y mancuernas",
+  "image_male": "images/step-up-sentadilla-dividida-mancuernas-male.webp",
+  "image_female": "images/step-up-sentadilla-dividida-mancuernas-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "mancuernas y step",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie frente a un banco o escalón con una mancuerna en cada mano, con las palmas hacia tu cuerpo. Coloca el pie derecho sobre el banco o escalón, asegurándote de que todo el pie esté en contacto con la superficie. Sube al banco o escalón con el pie derecho, empujando con el talón para levantar el cuerpo. Mientras subes, levanta al mismo tiempo la rodilla izquierda hacia el pecho. Haz una pausa en la parte superior del movimiento, luego baja lentamente el pie izquierdo de vuelta al suelo mientras mantienes el pie derecho sobre el banco o escalón. Repite el movimiento con el pie izquierdo sobre el banco o escalón. Continúa alternando entre el pie derecho y el izquierdo durante el número de repeticiones deseado."
+}

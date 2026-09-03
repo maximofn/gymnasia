@@ -1,0 +1,15 @@
+{
+  "id": "step-up-equilibrio-unilateral-curl-biceps-mancuernas",
+  "name": "Step-up con equilibrio unilateral y curl de bíceps",
+  "image_male": "images/step-up-equilibrio-unilateral-curl-biceps-mancuernas-male.webp",
+  "image_female": "images/step-up-equilibrio-unilateral-curl-biceps-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "cuádriceps",
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "mancuernas y step",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie frente a un escalón o plataforma con una mancuerna en cada mano, con las palmas hacia tu cuerpo. Coloca el pie derecho sobre el escalón, asegurándote de que todo el pie esté en contacto con la superficie. Activa el core y empuja con el talón derecho para subir el cuerpo sobre el escalón, llevando la rodilla izquierda hacia el pecho. En la parte superior del movimiento, realiza un curl de bíceps flexionando los codos y llevando las mancuernas hacia los hombros. Baja las mancuernas y, al mismo tiempo, baja el pie izquierdo de vuelta al suelo. Repite el movimiento del lado contrario, subiendo con el pie izquierdo y flexionando las mancuernas. Continúa alternando lados durante el número de repeticiones deseado."
+}

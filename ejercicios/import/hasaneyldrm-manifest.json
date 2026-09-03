@@ -963,6 +963,53 @@
         {"source_id":"0411","id":"sentadilla-pistol-mancuernas","action":"create","difficulty":"advanced","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
         {"source_id":"0413","id":"sentadilla-mancuernas-v2","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"}
       ]
+    },
+    {
+      "number": 33,
+      "size": 40,
+      "status": "approved",
+      "records": [
+        {"source_id":"3560","id":"curl-martillo-alterno-press-pie-mancuernas","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0414","id":"press-hombro-alterno-pie-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0415","id":"elevacion-lateral-alterna-pie-mancuernas","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1739","id":"patada-triceps-alterna-pie-mancuernas","action":"create","difficulty":"intermediate","view":"rear 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2143","id":"circulos-alrededor-mundo-pie-mancuernas","action":"create","difficulty":"intermediate","view":"front view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1740","id":"extension-triceps-unilateral-inclinado-pie-mancuerna","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1741","id":"extension-triceps-bilateral-inclinado-pie-mancuernas","action":"create","difficulty":"intermediate","view":"rear 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0416","id":"curl-biceps-pie-mancuernas","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0417","id":"elevacion-gemelos-pie-mancuernas","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0418","id":"curl-concentrado-pie-mancuerna","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0419","id":"elevacion-frontal-sobre-cabeza-pie-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2321","id":"curl-biceps-interno-pie-mancuernas-v2","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0420","id":"patada-triceps-pie-mancuernas","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0421","id":"curl-concentrado-pie-mancuerna-v2","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0422","id":"curl-unilateral-pie-apoyo-banco-inclinado-mancuerna","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1680","id":"curl-unilateral-sobre-banco-inclinado-mancuerna","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0423","id":"extension-triceps-unilateral-sobre-cabeza-pie-mancuerna","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0424","id":"press-hombro-neutro-unilateral-pie-mancuerna","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0425","id":"curl-inverso-unilateral-pie-mancuerna","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0426","id":"press-hombro-pie-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0427","id":"press-hombro-neutro-pie-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0428","id":"curl-predicador-pie-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0429","id":"curl-inverso-pie-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0430","id":"extension-triceps-sobre-cabeza-pie-mancuerna-v2","action":"create","difficulty":"intermediate","view":"rear 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2293","id":"curl-zottman-predicador-pie-mancuernas","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1684","id":"step-up-equilibrio-unilateral-curl-biceps-mancuernas","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2796","id":"step-up-zancada-mancuernas","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2812","id":"step-up-sentadilla-dividida-mancuernas","action":"create","difficulty":"advanced","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0432","id":"peso-muerto-piernas-rigidas-mancuernas","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0433","id":"pullover-brazos-rectos-mancuerna","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0434","id":"peso-muerto-piernas-rectas-mancuernas","action":"create","difficulty":"intermediate","view":"side view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2808","id":"tiron-sumo-mancuerna","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2803","id":"sentadilla-apoyo-mancuernas","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0436","id":"press-tate-mancuernas","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1742","id":"patada-triceps-postura-ciguenna-mancuerna","action":"create","difficulty":"advanced","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1743","id":"press-banca-con-giro-mancuernas","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0437","id":"remo-vertical-mancuernas","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1765","id":"remo-vertical-vista-posterior-mancuernas","action":"create","difficulty":"intermediate","view":"rear 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0864","id":"rotacion-externa-hombro-pie-mancuernas","action":"create","difficulty":"intermediate","view":"front view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"5201","id":"curl-biceps-camarero-mancuerna","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"}
+      ]
     }
   ]
 }

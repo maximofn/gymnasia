@@ -1,0 +1,13 @@
+{
+  "id": "curl-concentrado-pie-mancuerna",
+  "name": "Curl concentrado de pie con mancuerna",
+  "image_male": "images/curl-concentrado-pie-mancuerna-male.webp",
+  "image_female": "images/curl-concentrado-pie-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna con una mano, con el brazo completamente extendido y la palma hacia adentro. Apoya la otra mano sobre el muslo para mayor estabilidad. Manteniendo fija la parte superior del brazo, exhala y flexiona la mancuerna hacia el hombro contrayendo el bíceps. Continúa levantando la mancuerna hasta que el bíceps esté completamente contraído y la mancuerna esté a la altura del hombro. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Inhala y baja lentamente la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+}

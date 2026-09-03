@@ -1,0 +1,14 @@
+{
+  "id": "press-tate-mancuernas",
+  "name": "Press Tate con mancuernas",
+  "image_male": "images/press-tate-mancuernas-male.webp",
+  "image_female": "images/press-tate-mancuernas-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "pecho"
+  ],
+  "equipment": "mancuernas y banco",
+  "difficulty": "advanced",
+  "instructions": "Siéntate en un banco plano con una mancuerna en cada mano, con las palmas mirándose entre sí. Sube las mancuernas hasta la altura de los hombros, luego gira las muñecas de modo que las palmas queden mirando hacia afuera. Presiona las mancuernas hacia arriba hasta que los brazos queden completamente extendidos, luego bájalas de vuelta a la altura de los hombros. Gira las muñecas de vuelta a la posición inicial y repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-frontal-sobre-cabeza-pie-mancuernas",
+  "name": "Elevación frontal sobre la cabeza de pie con mancuernas",
+  "image_male": "images/elevacion-frontal-sobre-cabeza-pie-mancuernas-male.webp",
+  "image_female": "images/elevacion-frontal-sobre-cabeza-pie-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecio",
+    "bíceps"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano con un agarre prono. Mantén los brazos rectos y levanta las mancuernas frente a ti, elevándolas por encima de la cabeza. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

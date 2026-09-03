@@ -1,0 +1,14 @@
+{
+  "id": "peso-muerto-piernas-rigidas-mancuernas",
+  "name": "Peso muerto con piernas rígidas y mancuernas",
+  "image_male": "images/peso-muerto-piernas-rigidas-mancuernas-male.webp",
+  "image_female": "images/peso-muerto-piernas-rigidas-mancuernas-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "espalda baja"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una mancuerna en cada mano con un agarre prono. Manteniendo la espalda recta y el core activado, inclínate desde las caderas y baja las mancuernas hacia el suelo, permitiendo una ligera flexión en las rodillas. Baja las mancuernas hasta sentir un estiramiento en los isquiotibiales, luego aprieta los glúteos y empuja con los talones para volver a la posición inicial. Repite el número de repeticiones deseado."
+}

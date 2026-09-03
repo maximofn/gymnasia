@@ -1,0 +1,13 @@
+{
+  "id": "curl-zottman-predicador-pie-mancuernas",
+  "name": "Curl Zottman predicador de pie con mancuernas",
+  "image_male": "images/curl-zottman-predicador-pie-mancuernas-male.webp",
+  "image_female": "images/curl-zottman-predicador-pie-mancuernas-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "mancuernas y banco Scott",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas hacia adelante. Apoya la parte superior de los brazos contra el banco scott y mantén los codos ligeramente flexionados. Flexiona las mancuernas hacia los hombros mientras mantienes fija la parte superior de los brazos. En la parte superior del movimiento, gira las muñecas de modo que las palmas queden hacia abajo. Baja lentamente las mancuernas de vuelta a la posición inicial, girando también las muñecas a su posición original. Repite el número de repeticiones deseado."
+}

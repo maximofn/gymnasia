@@ -1,0 +1,14 @@
+{
+  "id": "circulos-alrededor-mundo-pie-mancuernas",
+  "name": "Círculos alrededor del mundo de pie con mancuernas",
+  "image_male": "images/circulos-alrededor-mundo-pie-mancuernas-male.webp",
+  "image_female": "images/circulos-alrededor-mundo-pie-mancuernas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "antebrazos"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén una mancuerna en cada mano. Extiende los brazos rectos hacia los lados a la altura de los hombros, con las palmas hacia abajo. Manteniendo los brazos rectos, gira lentamente los brazos en un movimiento circular, llevando las mancuernas frente al cuerpo y luego por encima de la cabeza. Continúa el movimiento circular, bajando las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

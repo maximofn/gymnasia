@@ -1,0 +1,15 @@
+{
+  "id": "step-up-zancada-mancuernas",
+  "name": "Step-up con zancada y mancuernas",
+  "image_male": "images/step-up-zancada-mancuernas-male.webp",
+  "image_female": "images/step-up-zancada-mancuernas-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "mancuernas y step",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a un escalón o plataforma con una mancuerna en cada mano, con las palmas hacia tus costados. Coloca el pie derecho sobre el escalón, asegurándote de que todo el pie esté sobre la superficie. Empuja con el talón derecho y sube el cuerpo sobre el escalón, llevando también el pie izquierdo hacia arriba. Una vez que ambos pies estén sobre el escalón, baja el pie izquierdo de vuelta a la posición inicial, manteniendo el pie derecho sobre el escalón. Repite el movimiento, alternando el pie con el que subes cada vez. Continúa durante el número de repeticiones deseado."
+}

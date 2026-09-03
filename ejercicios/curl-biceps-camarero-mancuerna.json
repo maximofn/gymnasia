@@ -1,0 +1,14 @@
+{
+  "id": "curl-biceps-camarero-mancuerna",
+  "name": "Curl de bíceps camarero con mancuerna",
+  "image_male": "images/curl-biceps-camarero-mancuerna-male.webp",
+  "image_female": "images/curl-biceps-camarero-mancuerna-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos",
+    "hombros"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una mancuerna en cada mano, con las palmas hacia adelante. Mantén la parte superior de los brazos cerca del cuerpo y los codos pegados. Flexiona lentamente las mancuernas hacia los hombros, manteniendo las muñecas rectas. Haz una pausa breve en la parte alta, luego baja lentamente las mancuernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}
