@@ -43,8 +43,8 @@ function data(): BackupDataShape {
   return {
     store: {
       measurements: [
-        { id: "measurement_1", measured_at: "2026-08-30T12:00:00.000Z", photo_uri: "file:///private/photo.jpg", weight_kg: 80 },
-        { id: "measurement_2", measured_at: "2026-08-29T12:00:00.000Z", photo_uri: null, weight_kg: 79.5 },
+        { id: "measurement_1", measured_on: "2026-08-30", measured_at: "2026-08-30T12:00:00.000Z", photo_uri: "file:///private/photo.jpg", weight_kg: 80 },
+        { id: "measurement_2", measured_on: "2026-08-29", measured_at: "2026-08-29T12:00:00.000Z", photo_uri: null, weight_kg: 79.5 },
       ],
       keys: [{ provider: "openai", api_key: "" }],
     },
@@ -187,6 +187,7 @@ describe("backup de fotos portable", () => {
     expect(parsed.filesByEntry).toHaveLength(0);
     expect(parsed.manifest.data.store.measurements?.[0]).toMatchObject({
       id: "measurement_1",
+      measured_on: "2026-08-30",
       weight_kg: 80,
       photo_uri: null,
     });

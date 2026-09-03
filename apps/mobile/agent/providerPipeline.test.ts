@@ -62,8 +62,6 @@ function createRealExecutor(storedPersonalData: unknown) {
     loadPersonalData: async () => sanitizePersonalDataFields(storedPersonalData),
     savePersonalData: async (fields: unknown) => { saved.push(fields); },
     loadMeasurements: async () => [],
-    saveMeasurements: async () => {},
-    sortMeasurements: (measurements: unknown[]) => measurements,
     createId: (prefix: string) => `${prefix}_test`,
     getExerciseImageUrl: () => "",
     submitFeedbackIssue: async () => ({ status: "canceled" as const }),

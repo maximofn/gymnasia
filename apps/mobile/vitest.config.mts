@@ -8,6 +8,7 @@ export default defineConfig({
       "backup/**/*.test.ts",
       "catalogs/**/*.test.ts",
       "diet/**/*.test.ts",
+      "measurements/**/*.test.ts",
       "persistence/**/*.test.ts",
       "storage/**/*.test.ts",
     ],

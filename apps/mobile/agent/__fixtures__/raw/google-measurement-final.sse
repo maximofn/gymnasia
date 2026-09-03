@@ -1,0 +1,3 @@
+data: {"candidates":[{"content":{"role":"model","parts":[{"text":"He guardado 75,5 kg y 18,5 % de grasa para el 11 de abril de 2024."}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":18,"totalTokenCount":50}}
+
+data: [DONE]

@@ -50,7 +50,6 @@ import {
 import {
   createDetailedAgentToolExecutor,
   type ToolExecutionContext,
-  type ToolMeasurement,
   type ToolStore,
 } from "./agent/toolExecutor";
 import {
@@ -210,6 +209,27 @@ import {
   type DietMealCategory,
   type NutritionValidationIssue,
 } from "./diet/nutritionContract";
+import {
+  MEASUREMENT_METRIC_KEYS,
+  buildMeasurementChartPoints,
+  deleteMeasurementById,
+  estimateMeasurementBodyFatPercentage,
+  formatMeasurementIssues,
+  localDateKey,
+  measurementDateAtLocalNoon,
+  measurementDuplicateDates,
+  normalizeMeasurements as normalizeMeasurementCollection,
+  replaceMeasurementById,
+  resolveMeasurementMetricPair,
+  selectLatestMeasurementWithMetric,
+  upsertMeasurementByDate,
+  validateMeasurementDate,
+  validateMeasurementMetric,
+  type Measurement,
+  type MeasurementMetricKey,
+  type MeasurementPatch,
+  type MeasurementValues,
+} from "./measurements/measurementContract";
 import { verifyProviderConfiguration } from "./agent/providerVerification";
 import {
   DEFAULT_MODELS,
@@ -481,21 +501,6 @@ type PendingFoodResolution = {
 };
 type DietMeal = { id: string; title: string; items: DietItem[] };
 type DietDay = { day_date: string; meals: DietMeal[] };
-type Measurement = {
-  id: string;
-  measured_at: string;
-  weight_kg: number | null;
-  body_fat_pct: number | null;
-  photo_uri: string | null;
-  neck_cm: number | null;
-  chest_cm: number | null;
-  waist_cm: number | null;
-  hips_cm: number | null;
-  biceps_cm: number | null;
-  quadriceps_cm: number | null;
-  calf_cm: number | null;
-  height_cm: number | null;
-};
 type GkgMacroKey = "protein" | "carbs" | "fat";
 type DietGoal = "bulk" | "cut" | "maintain";
 type ActivityLevel = "moderate" | "intermediate" | "high";
@@ -1170,21 +1175,14 @@ async function loadMeasurementsFromStorage(): Promise<Measurement[]> {
     const outcome = await localStoreRecoveryRepository.inspect();
     if (outcome.status !== "valid") return [];
     const measurements = outcome.candidate.value.measurements;
-    return Array.isArray(measurements) ? measurements as Measurement[] : [];
+    const normalized = normalizeMeasurementCollection(
+      Array.isArray(measurements) ? measurements : [],
+      uid,
+    );
+    return normalized.ok ? normalized.value : [];
   } catch {
     return [];
   }
-}
-
-async function saveMeasurementsToStorage(measurements: Measurement[]): Promise<void> {
-  const outcome = await localStoreRecoveryRepository.inspect();
-  if (outcome.status !== "valid") {
-    throw new Error("Las medidas no se pueden guardar mientras haya una recuperación pendiente.");
-  }
-  await localStoreRecoveryRepository.commit(JSON.stringify({
-    ...outcome.candidate.value,
-    measurements,
-  }));
 }
 
 const SCAN_BARCODE_TOOL = "scan_barcode";
@@ -1244,12 +1242,6 @@ const executeAgentTool = createDetailedAgentToolExecutor({
   loadPersonalData,
   savePersonalData,
   loadMeasurements: async () => loadMeasurementsFromStorage(),
-  saveMeasurements: async (measurements) => {
-    await saveMeasurementsToStorage(measurements as Measurement[]);
-  },
-  sortMeasurements: (measurements) => (
-    sortMeasurementsDesc(measurements as Measurement[]) as ToolMeasurement[]
-  ),
   createId: uid,
   getExerciseImageUrl: (exercise, gender) => (
     getExerciseImageUrl(exercise as ExerciseRepoEntry, gender)
@@ -3913,27 +3905,20 @@ function parsePositiveNumberInput(rawValue: string): number | null {
   return Math.round(parsed * 100) / 100;
 }
 
-function parseOptionalPositiveMetricInput(rawValue: string): {
+function parseOptionalPositiveMetricInput(
+  field: MeasurementMetricKey,
+  rawValue: string,
+): {
   value: number | null;
   invalid: boolean;
 } {
   const trimmed = rawValue.trim();
   if (!trimmed) return { value: null, invalid: false };
-  const parsed = parsePositiveNumberInput(trimmed);
+  const parsed = validateMeasurementMetric(field, trimmed, { allowNumericString: true });
   return {
-    value: parsed,
-    invalid: parsed === null,
+    value: parsed.ok ? parsed.value : null,
+    invalid: !parsed.ok,
   };
-}
-
-function normalizePositiveNumber(rawValue: unknown): number | null {
-  if (typeof rawValue === "number" && Number.isFinite(rawValue) && rawValue > 0) {
-    return Math.round(rawValue * 100) / 100;
-  }
-  if (typeof rawValue === "string") {
-    return parsePositiveNumberInput(rawValue);
-  }
-  return null;
 }
 
 function normalizeMeasuredAt(rawValue: unknown): string {
@@ -3979,34 +3964,6 @@ function normalizeWorkoutSessionSummary(rawValue: unknown, index: number): Worko
   };
 }
 
-function normalizeMeasurement(rawValue: unknown, index: number): Measurement {
-  const maybe = rawValue && typeof rawValue === "object" ? (rawValue as Partial<Measurement>) : {};
-  const parsedDate = normalizeMeasuredAt(maybe.measured_at);
-  return {
-    id: typeof maybe.id === "string" && maybe.id ? maybe.id : uid(`measurement_${index}`),
-    measured_at: parsedDate,
-    weight_kg: normalizePositiveNumber(maybe.weight_kg),
-    body_fat_pct: normalizePositiveNumber(maybe.body_fat_pct),
-    photo_uri:
-      typeof maybe.photo_uri === "string" && maybe.photo_uri.trim() ? maybe.photo_uri.trim() : null,
-    neck_cm: normalizePositiveNumber(maybe.neck_cm),
-    chest_cm: normalizePositiveNumber(maybe.chest_cm),
-    waist_cm: normalizePositiveNumber(maybe.waist_cm),
-    hips_cm: normalizePositiveNumber(maybe.hips_cm),
-    biceps_cm: normalizePositiveNumber(maybe.biceps_cm),
-    quadriceps_cm: normalizePositiveNumber(maybe.quadriceps_cm),
-    calf_cm: normalizePositiveNumber(maybe.calf_cm),
-    height_cm: normalizePositiveNumber(maybe.height_cm),
-  };
-}
-
-function sortMeasurementsDesc(measurements: Measurement[]): Measurement[] {
-  return [...measurements].sort((a, b) => {
-    const aTime = new Date(a.measured_at).getTime();
-    const bTime = new Date(b.measured_at).getTime();
-    return bTime - aTime;
-  });
-}
 
 function sortWorkoutHistoryDesc(summaries: WorkoutSessionSummary[]): WorkoutSessionSummary[] {
   return [...summaries].sort((a, b) => {
@@ -4023,13 +3980,13 @@ function measurementDateFromSelection(date: Date): Date {
 }
 
 function formatMeasurementDate(rawValue: string): string {
-  const parsed = new Date(rawValue);
+  const parsed = measurementDateAtLocalNoon(rawValue) ?? new Date(rawValue);
   if (Number.isNaN(parsed.getTime())) return "Fecha inválida";
   return parsed.toLocaleDateString();
 }
 
 function formatMeasurementHistoryDate(rawValue: string): string {
-  const parsed = new Date(rawValue);
+  const parsed = measurementDateAtLocalNoon(rawValue) ?? new Date(rawValue);
   if (Number.isNaN(parsed.getTime())) return "Fecha inválida";
   return `${parsed.getDate()} ${DIET_MONTH_LABELS_SHORT[parsed.getMonth()]} ${parsed.getFullYear()}`;
 }
@@ -4039,40 +3996,6 @@ function formatMeasurementNumber(value: number): string {
   return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
 }
 
-function estimateMeasurementBodyFatPercentage(
-  measurement: Measurement,
-  fallbackHeightCm: number | null,
-  sex: UserSex = "male",
-): number | null {
-  if (measurement.body_fat_pct !== null && measurement.body_fat_pct !== undefined) {
-    return measurement.body_fat_pct;
-  }
-  const heightCm = measurement.height_cm ?? fallbackHeightCm;
-  if (heightCm === null || measurement.waist_cm === null || measurement.neck_cm === null) {
-    return null;
-  }
-
-  const heightIn = heightCm / 2.54;
-  let estimate: number;
-
-  if (sex === "female") {
-    if (measurement.hips_cm === null) return null;
-    const circumferenceCm = measurement.waist_cm + measurement.hips_cm - measurement.neck_cm;
-    if (!(circumferenceCm > 0)) return null;
-    const circumferenceIn = circumferenceCm / 2.54;
-    estimate =
-      163.205 * Math.log10(circumferenceIn) - 97.684 * Math.log10(heightIn) - 78.387;
-  } else {
-    const waistMinusNeckCm = measurement.waist_cm - measurement.neck_cm;
-    if (!(waistMinusNeckCm > 0)) return null;
-    const waistMinusNeckIn = waistMinusNeckCm / 2.54;
-    estimate =
-      86.01 * Math.log10(waistMinusNeckIn) - 70.041 * Math.log10(heightIn) + 36.76;
-  }
-
-  if (!Number.isFinite(estimate)) return null;
-  return Math.max(3, Math.min(60, Math.round(estimate * 10) / 10));
-}
 
 function buildMeasurementHistorySummary(
   measurement: Measurement,
@@ -5231,11 +5154,13 @@ function normalizeStore(raw: LocalStore): LocalStore {
     };
   });
 
-  const normalizedMeasurements = sortMeasurementsDesc(
-    (Array.isArray(raw.measurements) ? raw.measurements : []).map((measurement, index) =>
-      normalizeMeasurement(measurement, index),
-    ),
-  ).slice(0, 1826);
+  const normalizedMeasurementsResult = normalizeMeasurementCollection(
+    Array.isArray(raw.measurements) ? raw.measurements : [],
+    uid,
+  );
+  if (!normalizedMeasurementsResult.ok) {
+    throw new Error(formatMeasurementIssues(normalizedMeasurementsResult.issues));
+  }
   const normalizedWorkoutHistory = sortWorkoutHistoryDesc(
     (Array.isArray(raw.workoutHistory) ? raw.workoutHistory : []).map((summary, index) =>
       normalizeWorkoutSessionSummary(summary, index),
@@ -5247,7 +5172,7 @@ function normalizeStore(raw: LocalStore): LocalStore {
     workoutHistory: normalizedWorkoutHistory,
     dietByDate: normalizeDietByDate(raw.dietByDate),
     dietSettings: normalizedDietSettings,
-    measurements: normalizedMeasurements,
+    measurements: normalizedMeasurementsResult.value,
     threads: (raw.threads ?? []).map((thread, index) => ({
       ...thread,
       title: normalizeThreadTitle(thread.title, index),
@@ -6934,11 +6859,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     );
   }, [googleModelFilter, googleModelOptions]);
   const latestWeightMeasurement = useMemo(
-    () => store.measurements.find((measurement) => measurement.weight_kg !== null) ?? null,
+    () => selectLatestMeasurementWithMetric(store.measurements, "weight_kg"),
     [store.measurements],
   );
   const latestHeightMeasurement = useMemo(
-    () => store.measurements.find((measurement) => measurement.height_cm !== null) ?? null,
+    () => selectLatestMeasurementWithMetric(store.measurements, "height_cm"),
+    [store.measurements],
+  );
+  const measurementDateConflicts = useMemo(
+    () => measurementDuplicateDates(store.measurements),
     [store.measurements],
   );
   const latestBodyWeightKg = latestWeightMeasurement?.weight_kg ?? null;
@@ -6952,26 +6881,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   );
   const canExpandMeasurementHistory = store.measurements.length > 4;
   const dietSettings = store.dietSettings;
-
-  function resolveMeasurementMetricPair(
-    selector: (measurement: Measurement) => number | null,
-  ): { latest: number | null; previous: number | null } {
-    let latest: number | null = null;
-    let previous: number | null = null;
-
-    for (const measurement of store.measurements) {
-      const value = selector(measurement);
-      if (value === null || !Number.isFinite(value)) continue;
-      if (latest === null) {
-        latest = value;
-        continue;
-      }
-      previous = value;
-      break;
-    }
-
-    return { latest, previous };
-  }
 
   function buildMeasurementStatCard(
     label: string,
@@ -7029,18 +6938,21 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     };
   }
 
-  const weightMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.weight_kg);
+  const weightMeasurementPair = resolveMeasurementMetricPair(
+    store.measurements,
+    (measurement) => measurement.weight_kg,
+  );
   const userSex: UserSex = store.dietSettings.sex ?? "male";
-  const bodyFatMeasurementPair = resolveMeasurementMetricPair((measurement) =>
+  const bodyFatMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) =>
     estimateMeasurementBodyFatPercentage(measurement, latestBodyHeightCm, userSex),
   );
-  const neckMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.neck_cm);
-  const waistMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.waist_cm);
-  const chestMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.chest_cm);
-  const hipsMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.hips_cm);
-  const armMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.biceps_cm);
-  const quadMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.quadriceps_cm);
-  const calfMeasurementPair = resolveMeasurementMetricPair((measurement) => measurement.calf_cm);
+  const neckMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.neck_cm);
+  const waistMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.waist_cm);
+  const chestMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.chest_cm);
+  const hipsMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.hips_cm);
+  const armMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.biceps_cm);
+  const quadMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.quadriceps_cm);
+  const calfMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.calf_cm);
   const measuresAllStatCards = [
     buildMeasurementStatCard("Peso", weightMeasurementPair.latest, weightMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} kg`, "kg", true),
     buildMeasurementStatCard("% Grasa", bodyFatMeasurementPair.latest, bodyFatMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)}%`, "%", true),
@@ -7069,35 +6981,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   const measuresDashboardChartPoints = useMemo(() => {
-    const cutoffTime =
-      measuresDashboardPeriodMeta.days === null
-        ? null
-        : Date.now() - measuresDashboardPeriodMeta.days * 24 * 60 * 60 * 1000;
-
-    const filtered = [...store.measurements]
-      .filter((m) => extractMetricValue(m) !== null)
-      .filter((m) => {
-        const t = new Date(m.measured_at).getTime();
-        if (Number.isNaN(t)) return false;
-        if (cutoffTime === null) return true;
-        return t >= cutoffTime;
-      })
-      .sort((a, b) => new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime());
-
-    const points = filtered
-      .map((m) => {
-        const t = new Date(m.measured_at).getTime();
-        const v = extractMetricValue(m);
-        if (Number.isNaN(t) || v === null) return null;
-        const d = new Date(t);
-        return {
-          key: m.id,
-          label: `${d.getDate()} ${DIET_MONTH_LABELS_SHORT[d.getMonth()]}`,
-          value: v,
-          timestamp: t,
-        };
-      })
-      .filter((p): p is NonNullable<typeof p> => p !== null);
+    const points = buildMeasurementChartPoints(store.measurements, extractMetricValue, {
+      days: measuresDashboardPeriodMeta.days,
+    }).map((point) => {
+      const date = measurementDateAtLocalNoon(point.measuredOn)!;
+      return {
+        ...point,
+        label: `${date.getDate()} ${DIET_MONTH_LABELS_SHORT[date.getMonth()]}`,
+      };
+    });
 
     if (points.length === 0) return [];
 
@@ -7115,10 +7007,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }, [measuresDashboardPeriodMeta.days, store.measurements, measuresChartMetric, latestBodyHeightCm, userSex]);
 
   const allMetricValues = useMemo(() => {
-    return [...store.measurements]
-      .filter((m) => extractMetricValue(m) !== null && !Number.isNaN(new Date(m.measured_at).getTime()))
-      .sort((a, b) => new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime())
-      .map((m) => ({ timestamp: new Date(m.measured_at).getTime(), value: extractMetricValue(m) as number }));
+    return buildMeasurementChartPoints(store.measurements, extractMetricValue, { days: null })
+      .map((point) => ({ timestamp: point.timestamp, value: point.value }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store.measurements, measuresChartMetric, latestBodyHeightCm, userSex]);
 
@@ -10662,7 +10552,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setShowMeasurementDatePicker(false);
     setMeasuresDashboardPeriodDropdownOpen(false);
     setMeasurementEntryScreenOpen(true);
-    setMeasurementDateTextInput(measurementDateFromSelection(new Date()).toISOString().slice(0, 10));
+    setMeasurementDateTextInput(localDateKey(new Date()));
     setError(null);
   }
 
@@ -10783,92 +10673,75 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setQuadricepsInput(m.quadriceps_cm !== null ? String(m.quadriceps_cm) : "");
     setCalfInput(m.calf_cm !== null ? String(m.calf_cm) : "");
     setMeasurementPhotoUri(m.photo_uri ?? null);
-    const editDate = new Date(m.measured_at);
+    const editDate = measurementDateAtLocalNoon(m.measured_on) ?? new Date(m.measured_at);
     setMeasurementDate(editDate);
-    setMeasurementDateTextInput(editDate.toISOString().slice(0, 10));
+    setMeasurementDateTextInput(m.measured_on);
     setEditingMeasurementId(m.id);
     setMeasurementEntryScreenOpen(true);
     setError(null);
   }
 
-  function deleteMeasurement(id: string) {
-    setStore((prev) => {
-      const removed = prev.measurements.find((measurement) => measurement.id === id);
-      const measurements = prev.measurements.filter((measurement) => measurement.id !== id);
-      setTimeout(
-        () => deleteOwnedMeasurementPhotoIfUnreferenced(
-          removed?.photo_uri,
-          measurements.map((measurement) => measurement.photo_uri),
-        ),
-        0,
+  async function deleteMeasurement(id: string) {
+    let removedPhotoUri: string | null = null;
+    let referencedPhotoUris: Array<string | null> = [];
+    let mutationError: string | null = null;
+    try {
+      await commitToolStoreMutation((previous) => {
+        const result = deleteMeasurementById(previous.measurements, id);
+        if (!result.ok) {
+          mutationError = formatMeasurementIssues(result.issues);
+          return previous;
+        }
+        removedPhotoUri = result.removed[0]?.photo_uri ?? null;
+        referencedPhotoUris = result.measurements.map((measurement) => measurement.photo_uri);
+        return { ...previous, measurements: result.measurements };
+      });
+      if (mutationError) {
+        setError(mutationError);
+        return;
+      }
+      deleteOwnedMeasurementPhotoIfUnreferenced(removedPhotoUri, referencedPhotoUris);
+      setError(null);
+    } catch (deleteError) {
+      setError(
+        deleteError instanceof Error
+          ? `No se ha eliminado la medición. ${deleteError.message}`
+          : "No se ha eliminado la medición.",
       );
-      return { ...prev, measurements };
-    });
+    }
   }
 
   async function addMeasurementFromSettings() {
-    const weightResult = parseOptionalPositiveMetricInput(weightInput);
-    if (weightResult.invalid) {
-      setError("Introduce un valor válido para peso.");
-      return;
-    }
-    const bodyFatResult = parseOptionalPositiveMetricInput(bodyFatInput);
-    if (bodyFatResult.invalid) {
-      setError("Introduce un valor válido para % grasa corporal.");
-      return;
-    }
-    const neckResult = parseOptionalPositiveMetricInput(neckInput);
-    if (neckResult.invalid) {
-      setError("Introduce un valor válido para contorno de cuello.");
-      return;
-    }
-    const chestResult = parseOptionalPositiveMetricInput(chestInput);
-    if (chestResult.invalid) {
-      setError("Introduce un valor válido para contorno de pecho.");
-      return;
-    }
-    const waistResult = parseOptionalPositiveMetricInput(waistInput);
-    if (waistResult.invalid) {
-      setError("Introduce un valor válido para contorno de cintura.");
-      return;
-    }
-    const hipsResult = parseOptionalPositiveMetricInput(hipsInput);
-    if (hipsResult.invalid) {
-      setError("Introduce un valor válido para contorno de cadera.");
-      return;
-    }
-    const bicepsResult = parseOptionalPositiveMetricInput(bicepsInput);
-    if (bicepsResult.invalid) {
-      setError("Introduce un valor válido para bíceps.");
-      return;
-    }
-    const quadricepsResult = parseOptionalPositiveMetricInput(quadricepsInput);
-    if (quadricepsResult.invalid) {
-      setError("Introduce un valor válido para cuádriceps.");
-      return;
-    }
-    const calfResult = parseOptionalPositiveMetricInput(calfInput);
-    if (calfResult.invalid) {
-      setError("Introduce un valor válido para gemelo.");
-      return;
-    }
-    const heightResult = parseOptionalPositiveMetricInput(heightInput);
-    if (heightResult.invalid) {
-      setError("Introduce un valor válido para altura.");
-      return;
+    const metricInputs: Array<{
+      field: MeasurementMetricKey;
+      rawValue: string;
+      label: string;
+    }> = [
+      { field: "weight_kg", rawValue: weightInput, label: "peso" },
+      { field: "body_fat_pct", rawValue: bodyFatInput, label: "% grasa corporal" },
+      { field: "neck_cm", rawValue: neckInput, label: "contorno de cuello" },
+      { field: "chest_cm", rawValue: chestInput, label: "contorno de pecho" },
+      { field: "waist_cm", rawValue: waistInput, label: "contorno de cintura" },
+      { field: "hips_cm", rawValue: hipsInput, label: "contorno de cadera" },
+      { field: "biceps_cm", rawValue: bicepsInput, label: "bíceps" },
+      { field: "quadriceps_cm", rawValue: quadricepsInput, label: "cuádriceps" },
+      { field: "calf_cm", rawValue: calfInput, label: "gemelo" },
+      { field: "height_cm", rawValue: heightInput, label: "altura" },
+    ];
+    const values = {} as MeasurementValues;
+    const patch: MeasurementPatch = {};
+    for (const input of metricInputs) {
+      const result = parseOptionalPositiveMetricInput(input.field, input.rawValue);
+      if (result.invalid) {
+        setError(`Introduce un valor válido para ${input.label}.`);
+        return;
+      }
+      values[input.field] = result.value;
+      if (input.rawValue.trim()) patch[input.field] = result.value;
     }
 
     const hasAnyMetric =
-      weightResult.value !== null ||
-      bodyFatResult.value !== null ||
-      neckResult.value !== null ||
-      chestResult.value !== null ||
-      waistResult.value !== null ||
-      hipsResult.value !== null ||
-      bicepsResult.value !== null ||
-      quadricepsResult.value !== null ||
-      calfResult.value !== null ||
-      heightResult.value !== null ||
+      MEASUREMENT_METRIC_KEYS.some((field) => values[field] !== null) ||
       !!measurementPhotoUri;
 
     if (!hasAnyMetric) {
@@ -10878,6 +10751,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
     setMeasurementSaveBusy(true);
     let portablePhotoUri = measurementPhotoUri;
+    let newlyOwnedPhotoUri: string | null = null;
     try {
       if (measurementPhotoUri) {
         const currentPhotoUri = editingMeasurementId
@@ -10886,50 +10760,54 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         if (measurementPhotoUri !== currentPhotoUri || !isOwnedMeasurementPhotoUri(measurementPhotoUri)) {
           const photo = await normalizeAndStoreMeasurementPhoto(measurementPhotoUri);
           portablePhotoUri = photo.uri;
+          if (photo.owned && photo.uri !== currentPhotoUri) newlyOwnedPhotoUri = photo.uri;
         }
       }
 
-      const measurement: Measurement = {
-        id: editingMeasurementId ?? uid("measurement"),
-        measured_at: measurementDateFromSelection(measurementDate).toISOString(),
-        weight_kg: weightResult.value,
-        body_fat_pct: bodyFatResult.value,
-        photo_uri: portablePhotoUri,
-        neck_cm: neckResult.value,
-        chest_cm: chestResult.value,
-        waist_cm: waistResult.value,
-        hips_cm: hipsResult.value,
-        biceps_cm: bicepsResult.value,
-        quadriceps_cm: quadricepsResult.value,
-        calf_cm: calfResult.value,
-        height_cm: heightResult.value,
-      };
-
-      setStore((prev) => {
-        const base = editingMeasurementId
-          ? prev.measurements.filter((m) => m.id !== editingMeasurementId)
-          : prev.measurements;
-        const nextMeasurements = sortMeasurementsDesc([measurement, ...base]).slice(0, 1826);
-        const referencedUris = nextMeasurements.map((item) => item.photo_uri);
-        const removedPhotoUris = prev.measurements
-          .map((item) => item.photo_uri)
-          .filter((uri) => uri && !referencedUris.includes(uri));
-        setTimeout(() => {
-          for (const uri of removedPhotoUris) {
-            deleteOwnedMeasurementPhotoIfUnreferenced(uri, referencedUris);
-          }
-        }, 0);
-        return {
-          ...prev,
-          measurements: nextMeasurements,
-        };
+      const dateKey = Platform.OS === "web"
+        ? measurementDateTextInput.trim()
+        : localDateKey(measurementDate);
+      const createdId = uid("measurement");
+      let mutationError: string | null = null;
+      let previousPhotoUris: Array<string | null> = [];
+      let referencedPhotoUris: Array<string | null> = [];
+      await commitToolStoreMutation((previous) => {
+        const result = editingMeasurementId
+          ? replaceMeasurementById(previous.measurements, {
+              id: editingMeasurementId,
+              date: dateKey,
+              values,
+              photoUri: portablePhotoUri,
+            })
+          : upsertMeasurementByDate(previous.measurements, {
+              date: dateKey,
+              patch,
+              photoUri: portablePhotoUri ?? undefined,
+              createId: () => createdId,
+            });
+        if (!result.ok) {
+          mutationError = formatMeasurementIssues(result.issues);
+          return previous;
+        }
+        previousPhotoUris = previous.measurements.map((item) => item.photo_uri);
+        referencedPhotoUris = result.measurements.map((item) => item.photo_uri);
+        return { ...previous, measurements: result.measurements };
       });
+      if (mutationError) {
+        deleteOwnedMeasurementPhotoIfUnreferenced(newlyOwnedPhotoUri, storeRef.current.measurements.map((item) => item.photo_uri));
+        setError(mutationError);
+        return;
+      }
+      for (const uri of previousPhotoUris) {
+        deleteOwnedMeasurementPhotoIfUnreferenced(uri, referencedPhotoUris);
+      }
       closeMeasurementEntryScreen();
     } catch (photoError) {
+      deleteOwnedMeasurementPhotoIfUnreferenced(newlyOwnedPhotoUri, storeRef.current.measurements.map((item) => item.photo_uri));
       setError(
         photoError instanceof Error
-          ? photoError.message
-          : "No se pudo guardar una copia segura de la foto.",
+          ? `No se ha guardado la medición. ${photoError.message}`
+          : "No se ha guardado la medición.",
       );
     } finally {
       setMeasurementSaveBusy(false);
@@ -18619,6 +18497,27 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
           {tab === "measures" ? (
             <View style={{ gap: 14 }}>
+              {measurementDateConflicts.length > 0 ? (
+                <View
+                  testID="measurement-duplicate-warning"
+                  accessibilityLiveRegion="polite"
+                  style={{
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: "rgba(255,190,92,0.45)",
+                    backgroundColor: "rgba(255,190,92,0.10)",
+                    padding: 12,
+                    flexDirection: "row",
+                    alignItems: "flex-start",
+                    gap: 8,
+                  }}
+                >
+                  <Feather name="alert-triangle" size={17} color="#FFBE5C" style={{ marginTop: 1 }} />
+                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, lineHeight: 18, flex: 1 }}>
+                    {`Hay mediciones repetidas en ${measurementDateConflicts.length} fecha(s). Se conservan sin fusionar; edítalas o elimínalas desde el historial.`}
+                  </Text>
+                </View>
+              ) : null}
               {measurementMediaNotice ? (
                 <View
                   accessibilityLiveRegion="polite"
@@ -18641,6 +18540,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               ) : null}
               <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
                 <Pressable
+                  testID="measurement-add"
                   onPress={openMeasurementEntryScreen}
                   style={{
                     minHeight: 44,
@@ -19303,6 +19203,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                       return (
                         <Pressable
+                          testID={`measurement-history-${measurement.id}`}
                           key={measurement.id}
                           onPress={() => openMeasurementForEdit(measurement)}
                           style={{
@@ -19318,7 +19219,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         >
                           <View style={{ flex: 1, gap: 4 }}>
                             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}>
-                              {formatMeasurementHistoryDate(measurement.measured_at)}
+                              {formatMeasurementHistoryDate(measurement.measured_on)}
                             </Text>
                             <Text
                               style={{ color: "#7F8795", fontSize: 12, lineHeight: 17 }}
@@ -19377,7 +19278,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                           />
                           <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.55)", paddingHorizontal: 6, paddingVertical: 3 }}>
                             <Text style={{ color: "#fff", fontSize: 10, fontWeight: "700" }}>
-                              {formatMeasurementHistoryDate(m.measured_at)}
+                              {formatMeasurementHistoryDate(m.measured_on)}
                             </Text>
                           </View>
                         </Pressable>
@@ -22217,6 +22118,26 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
               {settingsTab === "measures" ? (
                 <View style={{ gap: 12 }}>
+                  {measurementDateConflicts.length > 0 ? (
+                    <View
+                      testID="measurement-settings-duplicate-warning"
+                      style={{
+                        borderRadius: 12,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,190,92,0.45)",
+                        backgroundColor: "rgba(255,190,92,0.10)",
+                        padding: 12,
+                        flexDirection: "row",
+                        alignItems: "flex-start",
+                        gap: 8,
+                      }}
+                    >
+                      <Feather name="alert-triangle" size={17} color="#FFBE5C" style={{ marginTop: 1 }} />
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, lineHeight: 18, flex: 1 }}>
+                        {`Hay mediciones repetidas en ${measurementDateConflicts.length} fecha(s). Se conservan para que decidas cuál editar o eliminar.`}
+                      </Text>
+                    </View>
+                  ) : null}
                   <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
                       Medidas guardadas ({store.measurements.length})
@@ -22259,8 +22180,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     </View>
                   ) : (
                     store.measurements.map((m, idx) => {
-                      const date = new Date(m.measured_at);
-                      const dateStr = date.toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+                      const dateStr = formatMeasurementHistoryDate(m.measured_on);
                       const fields: Array<{ label: string; value: string }> = [];
                       if (m.weight_kg !== null) fields.push({ label: "Peso", value: `${formatMeasurementNumber(m.weight_kg)} kg` });
                       if (m.height_cm !== null) fields.push({ label: "Altura", value: `${formatMeasurementNumber(m.height_cm)} cm` });
@@ -22335,7 +22255,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Editar</Text>
                             </Pressable>
                             <Pressable
-                              onPress={() => deleteMeasurement(m.id)}
+                              testID={`measurement-delete-${m.id}`}
+                              onPress={() => { void deleteMeasurement(m.id); }}
                               style={{
                                 flex: 1,
                                 flexDirection: "row",
@@ -23424,6 +23345,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 </Text>
               </Pressable>
               <Pressable
+                testID="measurement-save-primary"
                 onPress={() => { void addMeasurementFromSettings(); }}
                 disabled={measurementSaveBusy}
                 style={{
@@ -23478,11 +23400,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               </Text>
               {latestWeightMeasurement ? (
                 <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                  Última actualización: {formatMeasurementDate(latestWeightMeasurement.measured_at)}
+                  Última actualización: {formatMeasurementDate(latestWeightMeasurement.measured_on)}
                 </Text>
               ) : null}
 
               <Pressable
+                testID="measurement-date-trigger"
                 onPress={() => setShowMeasurementDatePicker(true)}
                 style={{
                   minHeight: 44,
@@ -23497,7 +23420,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 }}
               >
                 <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>
-                  Fecha: {formatMeasurementDate(measurementDate.toISOString())}
+                  Fecha: {formatMeasurementDate(localDateKey(measurementDate))}
                 </Text>
                 <Ionicons name="calendar-outline" size={18} color={mobileTheme.color.textSecondary} />
               </Pressable>
@@ -23505,12 +23428,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               {showMeasurementDatePicker ? (
                 Platform.OS === "web" ? (
                   <TextInput
+                    testID="measurement-date-input"
                     value={measurementDateTextInput}
                     onChangeText={(text) => {
                       setMeasurementDateTextInput(text);
-                      const parsed = new Date(text + "T12:00:00");
-                      if (!isNaN(parsed.getTime()) && parsed <= new Date() && /^\d{4}-\d{2}-\d{2}$/.test(text)) {
-                        setMeasurementDate(parsed);
+                      const validation = validateMeasurementDate(text);
+                      if (validation.ok) {
+                        setMeasurementDate(measurementDateAtLocalNoon(validation.value)!);
                       }
                     }}
                     placeholder="AAAA-MM-DD"
@@ -23572,6 +23496,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 </Text>
                 {measurementPhotoUri ? (
                   <Image
+                    testID="measurement-photo-preview"
                     source={{ uri: measurementPhotoUri }}
                     style={{
                       width: "100%",
@@ -23600,6 +23525,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 )}
                 <View style={{ flexDirection: "row", gap: 8 }}>
                   <Pressable
+                    testID="measurement-photo-upload"
                     onPress={pickMeasurementPhoto}
                     style={{
                       flex: 1,
@@ -23664,6 +23590,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               <View style={{ gap: 2 }}>
                 <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Peso (kg)</Text>
                 <TextInput
+                  testID="measurement-weight-input"
                   style={{
                     minHeight: 42,
                     borderRadius: mobileTheme.radius.md,
@@ -23683,6 +23610,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               <View style={{ gap: 2 }}>
                 <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>% Grasa corporal</Text>
                 <TextInput
+                  testID="measurement-body-fat-input"
                   style={{
                     minHeight: 42,
                     borderRadius: mobileTheme.radius.md,
@@ -23700,18 +23628,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 />
               </View>
               {[
-                { label: "Cuello (cm)", value: neckInput, setter: setNeckInput },
-                { label: "Pecho (cm)", value: chestInput, setter: setChestInput },
-                { label: "Cintura (cm)", value: waistInput, setter: setWaistInput },
-                { label: "Cadera (cm)", value: hipsInput, setter: setHipsInput },
-                { label: "Bíceps (cm)", value: bicepsInput, setter: setBicepsInput },
-                { label: "Cuádriceps (cm)", value: quadricepsInput, setter: setQuadricepsInput },
-                { label: "Gemelo (cm)", value: calfInput, setter: setCalfInput },
-                { label: "Altura (cm)", value: heightInput, setter: setHeightInput },
+                { key: "neck", label: "Cuello (cm)", value: neckInput, setter: setNeckInput },
+                { key: "chest", label: "Pecho (cm)", value: chestInput, setter: setChestInput },
+                { key: "waist", label: "Cintura (cm)", value: waistInput, setter: setWaistInput },
+                { key: "hips", label: "Cadera (cm)", value: hipsInput, setter: setHipsInput },
+                { key: "biceps", label: "Bíceps (cm)", value: bicepsInput, setter: setBicepsInput },
+                { key: "quadriceps", label: "Cuádriceps (cm)", value: quadricepsInput, setter: setQuadricepsInput },
+                { key: "calf", label: "Gemelo (cm)", value: calfInput, setter: setCalfInput },
+                { key: "height", label: "Altura (cm)", value: heightInput, setter: setHeightInput },
               ].map((field) => (
-                <View key={field.label} style={{ gap: 2 }}>
+                <View key={field.key} style={{ gap: 2 }}>
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>{field.label}</Text>
                   <TextInput
+                    testID={`measurement-${field.key}-input`}
                     style={{
                       minHeight: 42,
                       borderRadius: mobileTheme.radius.md,

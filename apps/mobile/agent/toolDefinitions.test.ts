@@ -128,10 +128,28 @@ describe("validateToolInput", () => {
 
     const wrongType = validateToolInput(writeMeasurement!.inputSchema, {
       date: 20260411,
-      data: "{}",
+      data: {},
     });
     expect(wrongType.valid).toBe(false);
     expect(wrongType.errors).toContain('El campo "date" debe ser de tipo string.');
+  });
+
+  it("valida el objeto estructurado de mediciones y sus campos anidados", () => {
+    expect(writeMeasurement).toBeDefined();
+    expect(validateToolInput(writeMeasurement!.inputSchema, {
+      date: "2026-04-11",
+      data: { weight_kg: 75.5, body_fat_pct: 18.5 },
+    })).toEqual({ valid: true, errors: [] });
+
+    const invalid = validateToolInput(writeMeasurement!.inputSchema, {
+      date: "2026-04-11",
+      data: { body_fat_pct: 101, unknown: 1 },
+      clear_fields: ["not_a_measurement"],
+    });
+    expect(invalid.valid).toBe(false);
+    expect(invalid.errors).toContain('El campo "data.body_fat_pct" debe ser 100 o menor.');
+    expect(invalid.errors).toContain('El campo "data.unknown" no está permitido.');
+    expect(invalid.errors[2]).toContain('El campo "clear_fields[0]" debe ser uno de estos valores');
   });
 
   it("rechaza valores fuera de un enum", () => {

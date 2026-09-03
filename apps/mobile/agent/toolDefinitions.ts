@@ -6,6 +6,11 @@ export type JsonSchemaProperty = {
   description?: string;
   enum?: string[];
   minimum?: number;
+  maximum?: number;
+  properties?: Record<string, JsonSchemaProperty>;
+  required?: string[];
+  items?: JsonSchemaProperty;
+  additionalProperties?: boolean;
 };
 
 export type ToolInputSchema = {
@@ -30,9 +35,13 @@ const stringProperty = (
   ...(values ? { enum: [...values] } : {}),
 });
 
-const numberProperty = (description: string): JsonSchemaProperty => ({
+const numberProperty = (
+  description: string,
+  limits: { minimum?: number; maximum?: number } = {},
+): JsonSchemaProperty => ({
   type: "number",
   description,
+  ...limits,
 });
 
 export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
@@ -115,15 +124,45 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     description:
       "Guarda o actualiza las medidas corporales del usuario para una fecha específica. " +
       "Usa esta herramienta cuando el usuario te diga sus medidas (peso, contornos, altura). " +
-      "Solo incluye en el JSON los campos que el usuario proporcione; los demás se mantendrán como null.",
+      "Incluye solo los campos proporcionados: los demás se conservan si ya existe una medición ese día. " +
+      "Usa clear_fields únicamente cuando el usuario pida borrar un dato concreto.",
     inputSchema: {
       type: "object",
       properties: {
         date: stringProperty("Fecha en formato YYYY-MM-DD (por ejemplo: 2026-03-30)"),
-        data: stringProperty(
-          "JSON con las medidas a guardar. Campos posibles: weight_kg, body_fat_pct, neck_cm, chest_cm, waist_cm, hips_cm, biceps_cm, quadriceps_cm, calf_cm, height_cm. " +
-          'Ejemplo: {"weight_kg": 75.5, "body_fat_pct": 18.5, "waist_cm": 82}',
-        ),
+        data: {
+          type: "object",
+          description: "Medidas numéricas que el usuario ha proporcionado.",
+          properties: {
+            weight_kg: numberProperty("Peso en kilogramos.", { minimum: 0.01 }),
+            body_fat_pct: numberProperty("Porcentaje de grasa corporal.", { minimum: 0.01, maximum: 100 }),
+            neck_cm: numberProperty("Contorno del cuello en centímetros.", { minimum: 0.01 }),
+            chest_cm: numberProperty("Contorno del pecho en centímetros.", { minimum: 0.01 }),
+            waist_cm: numberProperty("Contorno de la cintura en centímetros.", { minimum: 0.01 }),
+            hips_cm: numberProperty("Contorno de la cadera en centímetros.", { minimum: 0.01 }),
+            biceps_cm: numberProperty("Contorno del bíceps en centímetros.", { minimum: 0.01 }),
+            quadriceps_cm: numberProperty("Contorno del cuádriceps en centímetros.", { minimum: 0.01 }),
+            calf_cm: numberProperty("Contorno del gemelo en centímetros.", { minimum: 0.01 }),
+            height_cm: numberProperty("Altura en centímetros.", { minimum: 0.01 }),
+          },
+          additionalProperties: false,
+        },
+        clear_fields: {
+          type: "array",
+          description: "Campos que el usuario ha pedido borrar de la medición de ese día.",
+          items: stringProperty("Campo de medición", [
+            "weight_kg",
+            "body_fat_pct",
+            "neck_cm",
+            "chest_cm",
+            "waist_cm",
+            "hips_cm",
+            "biceps_cm",
+            "quadriceps_cm",
+            "calf_cm",
+            "height_cm",
+          ]),
+        },
       },
       required: ["date", "data"],
     },
@@ -319,20 +358,54 @@ export function validateToolInput(
   for (const [field, value] of Object.entries(values)) {
     const property = schema.properties[field];
     if (!property || value === null || value === undefined) continue;
-    const actualType = Array.isArray(value) ? "array" : typeof value;
-    if (actualType !== property.type) {
-      errors.push(`El campo "${field}" debe ser de tipo ${property.type}.`);
-      continue;
-    }
-    if (property.enum && !property.enum.includes(value as string)) {
-      errors.push(
-        `El campo "${field}" debe ser uno de estos valores: ${property.enum.join(", ")}.`,
-      );
-    }
-    if (property.minimum !== undefined && (value as number) < property.minimum) {
-      errors.push(`El campo "${field}" debe ser ${property.minimum} o mayor.`);
-    }
+    validateSchemaProperty(field, value, property, errors);
   }
 
   return { valid: errors.length === 0, errors };
+}
+
+function validateSchemaProperty(
+  field: string,
+  value: unknown,
+  property: JsonSchemaProperty,
+  errors: string[],
+): void {
+  const actualType = Array.isArray(value) ? "array" : typeof value;
+  if (actualType !== property.type) {
+    errors.push(`El campo "${field}" debe ser de tipo ${property.type}.`);
+    return;
+  }
+  if (property.enum && !property.enum.includes(value as string)) {
+    errors.push(`El campo "${field}" debe ser uno de estos valores: ${property.enum.join(", ")}.`);
+  }
+  if (property.minimum !== undefined && (value as number) < property.minimum) {
+    errors.push(`El campo "${field}" debe ser ${property.minimum} o mayor.`);
+  }
+  if (property.maximum !== undefined && (value as number) > property.maximum) {
+    errors.push(`El campo "${field}" debe ser ${property.maximum} o menor.`);
+  }
+  if (property.type === "array" && property.items) {
+    (value as unknown[]).forEach((item, index) => {
+      validateSchemaProperty(`${field}[${index}]`, item, property.items!, errors);
+    });
+  }
+  if (property.type !== "object" || !property.properties) return;
+  const objectValue = value as Record<string, unknown>;
+  for (const requiredField of property.required ?? []) {
+    if (!(requiredField in objectValue) || objectValue[requiredField] === null || objectValue[requiredField] === undefined) {
+      errors.push(`Falta el campo requerido "${field}.${requiredField}".`);
+    }
+  }
+  for (const [childField, childValue] of Object.entries(objectValue)) {
+    const childProperty = property.properties[childField];
+    if (!childProperty) {
+      if (property.additionalProperties === false) {
+        errors.push(`El campo "${field}.${childField}" no está permitido.`);
+      }
+      continue;
+    }
+    if (childValue !== null && childValue !== undefined) {
+      validateSchemaProperty(`${field}.${childField}`, childValue, childProperty, errors);
+    }
+  }
 }
