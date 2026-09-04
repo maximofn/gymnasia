@@ -35,6 +35,10 @@ npm run test:proxy    # atajo desde la raíz del repositorio
 No tocan la red ni necesitan una clave: el upstream de Anthropic se sustituye
 entero. Se ejecutan en CI, en un job propio de `agent-tests.yml`.
 
+`tests/test_e2e.py` va un paso mas alla y no sustituye nada: levanta el proxy en
+un proceso aparte, lo apunta a un servidor local que hace de Anthropic, y habla
+con el por HTTP. Es lo que atrapa lo que solo falla al atravesar la pila entera.
+
 ## Contrato
 
 | Ruta | Entrada | Hacia Anthropic | Tiempo de espera |
@@ -119,3 +123,6 @@ confunda con un corte.
 
 - `ANTHROPIC_PROXY_UPSTREAM_BASE_URL`: sustituye `https://api.anthropic.com`.
   Solo para pruebas contra un Anthropic falso; el arranque lo avisa por consola.
+- `ANTHROPIC_PROXY_PORT`: puerto de escucha, `8000` por defecto. Lo usan las
+  pruebas E2E para levantar el proxy en un puerto libre, y sirve tambien si
+  tienes el 8000 ocupado.

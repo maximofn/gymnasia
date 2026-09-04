@@ -528,7 +528,8 @@ def anthropic_models(body: ModelsRequest):
 if __name__ == "__main__":
     import uvicorn
 
+    port = int(os.environ.get("ANTHROPIC_PROXY_PORT", "8000"))
     if ANTHROPIC_API != "https://api.anthropic.com":
         print(f"!! Upstream sobreescrito: {ANTHROPIC_API}")
-    print("CORS proxy running on http://127.0.0.1:8000")
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    print(f"CORS proxy running on http://127.0.0.1:{port}")
+    uvicorn.run(app, host="127.0.0.1", port=port)
