@@ -22,6 +22,7 @@ import re
 import socket
 import sys
 from typing import Any, Literal
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
@@ -58,6 +59,11 @@ MAX_ERROR_MESSAGE_CHARS = 2000
 STREAM_CHUNK_BYTES = 1024
 STREAM_OVERLAP_BYTES = 32
 STREAM_TERMINAL_MARKER = b"message_stop"
+
+# Paginacion del catalogo de modelos. Anthropic admite `limit` de 1 a 1000; 100
+# es conservador y basta para el catalogo actual en una sola vuelta.
+MODELS_PAGE_LIMIT = 100
+MODELS_MAX_PAGES = 20
 
 
 # --------------------------------------------------------------------------
@@ -247,8 +253,8 @@ def anthropic_headers(api_key: str, workspace_id: str = "", *, stream: bool = Fa
     return headers
 
 
-def upstream_failure(exc: Exception, api_key: str) -> JSONResponse:
-    """Traduce un fallo de la llamada a Anthropic a una respuesta distinguible.
+def classify_failure(exc: Exception, api_key: str) -> tuple[int, dict]:
+    """Traduce un fallo de la llamada a Anthropic a estado y cuerpo.
 
     Antes todo caia en un 502 con `str(e)` en crudo, que ademas podia arrastrar
     secretos. Ahora el cliente puede diferenciar un timeout de un DNS caido.
@@ -256,39 +262,43 @@ def upstream_failure(exc: Exception, api_key: str) -> JSONResponse:
     if isinstance(exc, HTTPError):
         raw = exc.read().decode("utf-8", errors="replace")
         try:
-            return JSONResponse(json.loads(raw), status_code=exc.code)
+            return exc.code, json.loads(raw)
         except (ValueError, TypeError):
-            return JSONResponse(
-                error_payload("upstream_non_json", redact(raw, api_key)),
-                status_code=exc.code,
-            )
+            return exc.code, error_payload("upstream_non_json", redact(raw, api_key))
 
     reason = getattr(exc, "reason", None)
     if isinstance(exc, (socket.timeout, TimeoutError)) or isinstance(
         reason, (socket.timeout, TimeoutError)
     ):
-        return JSONResponse(
-            error_payload("upstream_timeout", "Anthropic no respondio a tiempo."),
-            status_code=504,
-        )
+        return 504, error_payload("upstream_timeout", "Anthropic no respondio a tiempo.")
     if isinstance(exc, URLError):
-        return JSONResponse(
-            error_payload(
-                "upstream_unreachable", "No se pudo contactar con la API de Anthropic."
-            ),
-            status_code=502,
+        return 502, error_payload(
+            "upstream_unreachable", "No se pudo contactar con la API de Anthropic."
         )
     if isinstance(exc, (ValueError, json.JSONDecodeError)):
-        return JSONResponse(
-            error_payload(
-                "upstream_invalid_json",
-                "Anthropic devolvio una respuesta que no se pudo interpretar.",
-            ),
-            status_code=502,
+        return 502, error_payload(
+            "upstream_invalid_json",
+            "Anthropic devolvio una respuesta que no se pudo interpretar.",
         )
-    return JSONResponse(
-        error_payload("upstream_error", redact(str(exc), api_key)), status_code=502
-    )
+    return 502, error_payload("upstream_error", redact(str(exc), api_key))
+
+
+def upstream_failure(exc: Exception, api_key: str) -> JSONResponse:
+    status, payload = classify_failure(exc, api_key)
+    return JSONResponse(payload, status_code=status)
+
+
+def failure_summary(exc: Exception, api_key: str) -> dict:
+    """El mismo fallo, reducido a `{type, message}` para incrustarlo en una
+    respuesta parcial de paginacion."""
+    _, payload = classify_failure(exc, api_key)
+    error = payload.get("error") if isinstance(payload, dict) else None
+    if isinstance(error, dict):
+        return {
+            "type": error.get("type") or "upstream_error",
+            "message": error.get("message") or "Fallo al pedir una pagina del catalogo.",
+        }
+    return {"type": "upstream_error", "message": "Fallo al pedir una pagina del catalogo."}
 
 
 def read_json_upstream(request: Request, timeout: int):
@@ -399,16 +409,99 @@ def anthropic_messages(body: MessagesRequest):
     return JSONResponse(data)
 
 
+def fetch_models_page(headers: dict, after_id: str | None) -> dict:
+    query = f"?limit={MODELS_PAGE_LIMIT}"
+    if after_id:
+        query += f"&after_id={quote(after_id, safe='')}"
+    request = Request(
+        f"{ANTHROPIC_API}/v1/models{query}", headers=headers, method="GET"
+    )
+    return read_json_upstream(request, MODELS_TIMEOUT_SECONDS)
+
+
 @app.post("/chat/providers/anthropic/models")
 def anthropic_models(body: ModelsRequest):
+    """Devuelve el catalogo entero, recorriendo la paginacion de Anthropic.
+
+    Antes se pedia una sola pagina y se devolvia tal cual: si el catalogo no
+    cabia, faltaban modelos en el desplegable sin ningun aviso. Ahora se
+    recorren todas, y cualquier lista incompleta viene marcada en `pagination`
+    en vez de aparentar estar completa.
+    """
     headers = anthropic_headers(body.api_key, body.workspace_id)
 
-    try:
-        request = Request(f"{ANTHROPIC_API}/v1/models", headers=headers, method="GET")
-        data = read_json_upstream(request, MODELS_TIMEOUT_SECONDS)
-        return JSONResponse(data)
-    except Exception as exc:  # noqa: BLE001 - se clasifica en upstream_failure
-        return upstream_failure(exc, body.api_key)
+    collected: list = []
+    seen: set[str] = set()
+    after_id: str | None = None
+    pages = 0
+    truncated = False
+    partial_error: dict | None = None
+
+    while pages < MODELS_MAX_PAGES:
+        try:
+            page = fetch_models_page(headers, after_id)
+        except Exception as exc:  # noqa: BLE001 - se clasifica abajo
+            if pages == 0:
+                # No hay nada que ensenar: el fallo es el resultado.
+                return upstream_failure(exc, body.api_key)
+            partial_error = failure_summary(exc, body.api_key)
+            break
+
+        pages += 1
+        items = page.get("data") if isinstance(page, dict) else None
+        if not isinstance(items, list):
+            if pages == 1:
+                return JSONResponse(
+                    error_payload(
+                        "upstream_invalid_json",
+                        "Anthropic devolvio un catalogo de modelos inesperado.",
+                    ),
+                    status_code=502,
+                )
+            partial_error = {
+                "type": "upstream_invalid_json",
+                "message": "Una pagina del catalogo llego con una forma inesperada.",
+            }
+            break
+
+        nuevos = 0
+        for item in items:
+            model_id = item.get("id") if isinstance(item, dict) else None
+            if not isinstance(model_id, str) or not model_id or model_id in seen:
+                continue
+            seen.add(model_id)
+            collected.append(item)
+            nuevos += 1
+
+        if not page.get("has_more"):
+            break
+
+        # Tres cortafuegos contra un upstream que dice "hay mas" para siempre:
+        # el tope de paginas de arriba, un cursor ausente o repetido, y una
+        # pagina que no aporta ningun modelo nuevo.
+        next_id = page.get("last_id")
+        if not isinstance(next_id, str) or not next_id or next_id == after_id or nuevos == 0:
+            truncated = True
+            break
+        after_id = next_id
+    else:
+        truncated = True
+
+    incompleto = truncated or partial_error is not None
+    return JSONResponse(
+        {
+            "data": collected,
+            "has_more": incompleto,
+            "first_id": collected[0].get("id") if collected else None,
+            "last_id": collected[-1].get("id") if collected else None,
+            "pagination": {
+                "pages_fetched": pages,
+                "truncated": truncated,
+                "partial": partial_error is not None,
+                "error": partial_error,
+            },
+        }
+    )
 
 
 if __name__ == "__main__":
