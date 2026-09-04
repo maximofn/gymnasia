@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-profunda-con-apoyo",
+  "name": "Sentadilla profunda con apoyo",
+  "image_male": "images/sentadilla-profunda-con-apoyo-male.webp",
+  "image_female": "images/sentadilla-profunda-con-apoyo-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, los dedos de los pies ligeramente hacia afuera. Sujétate de un apoyo estable, como una silla o una pared, para mantener el equilibrio. Baja el cuerpo hacia una posición de sentadilla flexionando las rodillas y empujando las caderas hacia atrás. Mantén el pecho hacia arriba y la espalda recta durante todo el movimiento. Haz una pausa por un momento en la parte inferior, luego empuja con los talones para regresar a la posición inicial. Repite el número de repeticiones deseado."
+}

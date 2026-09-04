@@ -1,0 +1,14 @@
+{
+  "id": "buenos-dias-sentado-en-maquina",
+  "name": "Buenos días sentado en máquina",
+  "image_male": "images/buenos-dias-sentado-en-maquina-male.webp",
+  "image_female": "images/buenos-dias-sentado-en-maquina-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "zona lumbar"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento de modo que tus caderas queden un poco más altas que tus rodillas. Siéntate en la máquina con la espalda apoyada en el respaldo y los pies planos sobre los apoyapiés. Sujeta las asas o los lados del asiento para mayor estabilidad. Manteniendo la espalda recta, inclínate lentamente hacia adelante desde las caderas hasta que la parte superior de tu cuerpo quede paralela al suelo. Haz una pausa por un momento y luego vuelve lentamente a la posición inicial empujando con los glúteos y los isquiotibiales. Repite el número de repeticiones deseado."
+}

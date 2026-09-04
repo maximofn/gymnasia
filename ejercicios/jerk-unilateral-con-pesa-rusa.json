@@ -1,0 +1,14 @@
+{
+  "id": "jerk-unilateral-con-pesa-rusa",
+  "name": "Jerk unilateral con pesa rusa",
+  "image_male": "images/jerk-unilateral-con-pesa-rusa-male.webp",
+  "image_female": "images/jerk-unilateral-con-pesa-rusa-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano a la altura del hombro. Flexiona ligeramente las rodillas y activa el core. Presiona la pesa rusa por encima de la cabeza en línea recta, extendiendo el brazo por completo. Mientras presionas la pesa rusa por encima de la cabeza, flexiona las rodillas simultáneamente y estíralas rápidamente para generar impulso. Cuando la pesa rusa llegue a su punto más alto, baja rápidamente por debajo de ella flexionando las rodillas y las caderas. Atrapa la pesa rusa con una ligera flexión de rodillas y caderas, y el brazo completamente extendido por encima de la cabeza. Ponte de pie recto, extendiendo por completo las rodillas y las caderas, y estabiliza la pesa rusa por encima de la cabeza. Baja la pesa rusa de vuelta a la posición inicial flexionando las rodillas y las caderas, y repite el número de repeticiones deseado."
+}

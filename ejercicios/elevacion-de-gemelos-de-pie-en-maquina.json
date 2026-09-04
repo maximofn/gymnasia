@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-gemelos-de-pie-en-maquina",
+  "name": "Elevación de gemelos de pie en máquina",
+  "image_male": "images/elevacion-de-gemelos-de-pie-en-maquina-male.webp",
+  "image_female": "images/elevacion-de-gemelos-de-pie-en-maquina-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "soleus",
+    "ankle stabilizers"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la máquina a tu altura y ponte de pie con los pies separados a la altura de los hombros. Coloca los hombros debajo de las almohadillas y sujétate de las asas para mayor estabilidad. Eleva los talones tan alto como puedas extendiendo los tobillos. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

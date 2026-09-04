@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-de-cuadriceps-tumbado-lateral",
+  "name": "Estiramiento de cuádriceps tumbado lateral",
+  "image_male": "images/estiramiento-de-cuadriceps-tumbado-lateral-male.webp",
+  "image_female": "images/estiramiento-de-cuadriceps-tumbado-lateral-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate de lado con las piernas rectas. Flexiona la pierna de arriba y agarra tu tobillo o pie con la mano. Tira suavemente del tobillo o del pie hacia los glúteos hasta sentir un estiramiento en los cuádriceps. Mantén el estiramiento durante 20-30 segundos. Suelta el estiramiento y repite del otro lado."
+}

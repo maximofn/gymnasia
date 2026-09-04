@@ -1,0 +1,13 @@
+{
+  "id": "flexion-de-hombros-sentado-unilateral-con-rodillo",
+  "name": "Flexión de hombros sentado unilateral con rodillo",
+  "image_male": "images/flexion-de-hombros-sentado-unilateral-con-rodillo-male.webp",
+  "image_female": "images/flexion-de-hombros-sentado-unilateral-con-rodillo-female.webp",
+  "muscle_group": "deltoides",
+  "secondary_muscles": [
+    "tríceps"
+  ],
+  "equipment": "rodillo de espuma",
+  "difficulty": "beginner",
+  "instructions": "Siéntate sobre una superficie plana con las piernas extendidas frente a ti. Sostén el rodillo con ambas manos, con las palmas hacia abajo, y colócalo sobre tus muslos. Inclínate ligeramente hacia atrás y contrae los músculos del core. Eleva el rodillo hasta la altura de los hombros, manteniendo los brazos rectos. Baja lentamente el rodillo de nuevo hacia los muslos. Repite el número de repeticiones deseado."
+}

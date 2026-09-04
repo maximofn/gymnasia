@@ -1,0 +1,13 @@
+{
+  "id": "flexion-de-hombros-sentado-con-rodillo",
+  "name": "Flexión de hombros sentado con rodillo",
+  "image_male": "images/flexion-de-hombros-sentado-con-rodillo-male.webp",
+  "image_female": "images/flexion-de-hombros-sentado-con-rodillo-female.webp",
+  "muscle_group": "deltoides",
+  "secondary_muscles": [
+    "tríceps"
+  ],
+  "equipment": "rodillo de espuma",
+  "difficulty": "beginner",
+  "instructions": "Siéntate sobre una superficie plana con las piernas extendidas frente a ti. Sostén el rodillo con ambas manos, con las palmas hacia abajo, y colócalo sobre tus muslos. Inclínate ligeramente hacia delante y aleja el rodillo de tu cuerpo, extendiendo los brazos rectos frente a ti. Haz una pausa por un momento, luego rueda el rodillo lentamente de vuelta hacia tu cuerpo, doblando los brazos y trayéndolo de nuevo hacia los muslos. Repite el número de repeticiones deseado."
+}

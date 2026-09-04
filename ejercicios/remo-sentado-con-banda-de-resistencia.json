@@ -1,0 +1,13 @@
+{
+  "id": "remo-sentado-con-banda-de-resistencia",
+  "name": "Remo sentado con banda de resistencia",
+  "image_male": "images/remo-sentado-con-banda-de-resistencia-male.webp",
+  "image_female": "images/remo-sentado-con-banda-de-resistencia-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "banda de resistencia",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el suelo con las piernas extendidas y enrolla la banda elástica alrededor de los pies. Sostén los extremos de la banda elástica con las manos, con las palmas enfrentadas. Mantén la espalda recta e inclínate ligeramente hacia atrás, activando el core. Tira de la banda elástica hacia el pecho, juntando las escápulas. Haz una pausa por un momento en la parte superior, luego suelta lentamente la tensión y regresa a la posición inicial. Repite el número de repeticiones deseado."
+}

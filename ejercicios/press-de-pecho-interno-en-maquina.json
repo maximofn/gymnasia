@@ -1,0 +1,14 @@
+{
+  "id": "press-de-pecho-interno-en-maquina",
+  "name": "Press de pecho interno en máquina",
+  "image_male": "images/press-de-pecho-interno-en-maquina-male.webp",
+  "image_female": "images/press-de-pecho-interno-en-maquina-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda totalmente apoyada en la almohadilla. Sujeta las asas con un agarre prono y coloca los codos en un ángulo de 90 grados. Empuja las asas hacia adelante hasta que los brazos queden completamente extendidos, exhalando durante el movimiento. Haz una pausa al final del movimiento y luego vuelve lentamente a la posición inicial, inhalando mientras lo haces. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "sentadilla-profunda",
+  "name": "Sentadilla profunda",
+  "image_male": "images/sentadilla-profunda-male.webp",
+  "image_female": "images/sentadilla-profunda-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "cuádriceps",
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, los dedos de los pies ligeramente hacia afuera. Baja el cuerpo flexionando las rodillas y empujando las caderas hacia atrás como si te sentaras en una silla. Mantén el pecho hacia arriba y la espalda recta durante todo el movimiento. Baja hasta que los muslos queden paralelos al suelo o hasta donde puedas llegar cómodamente. Haz una pausa por un momento en la parte inferior, luego empuja con los talones para regresar a la posición inicial. Repite el número de repeticiones deseado."
+}

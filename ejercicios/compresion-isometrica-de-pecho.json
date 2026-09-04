@@ -1,0 +1,14 @@
+{
+  "id": "compresion-isometrica-de-pecho",
+  "name": "Compresión isométrica de pecho",
+  "image_male": "images/compresion-isometrica-de-pecho-male.webp",
+  "image_female": "images/compresion-isometrica-de-pecho-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Extiende los brazos rectos frente a ti, paralelos al suelo, con las palmas una frente a la otra. Aprieta los músculos del pecho con la mayor fuerza posible, manteniendo los brazos rectos. Mantén esta posición durante unos segundos, concentrándote en contraer los músculos del pecho. Suelta la contracción y relaja los músculos del pecho. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "fondo-inverso",
+  "name": "Fondo inverso",
+  "image_male": "images/fondo-inverso-male.webp",
+  "image_female": "images/fondo-inverso-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Colócate entre dos barras paralelas con los brazos completamente extendidos y el cuerpo recto. Baja el cuerpo flexionando los codos hasta que los brazos queden paralelos al suelo. Haz una pausa breve, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+}

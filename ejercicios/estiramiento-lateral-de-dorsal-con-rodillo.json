@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-lateral-de-dorsal-con-rodillo",
+  "name": "Estiramiento lateral de dorsal con rodillo",
+  "image_male": "images/estiramiento-lateral-de-dorsal-con-rodillo-male.webp",
+  "image_female": "images/estiramiento-lateral-de-dorsal-con-rodillo-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps"
+  ],
+  "equipment": "rodillo de espuma",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta el rodillo con ambas manos frente al cuerpo. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Extiende los brazos hacia delante y rueda el rodillo hacia los pies, sintiendo un estiramiento en los dorsales. Mantén el estiramiento durante unos segundos, luego rueda el rodillo lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

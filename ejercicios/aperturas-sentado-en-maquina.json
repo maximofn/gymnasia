@@ -1,0 +1,14 @@
+{
+  "id": "aperturas-sentado-en-maquina",
+  "name": "Aperturas sentado en máquina",
+  "image_male": "images/aperturas-sentado-en-maquina-male.webp",
+  "image_female": "images/aperturas-sentado-en-maquina-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "deltoids",
+    "trapecios"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda apoyada en la almohadilla. Agarra las asas con un agarre pronado y mantén los codos ligeramente flexionados. Exhala y empuja las asas hacia adelante, juntándolas frente a tu pecho. Haz una pausa por un momento, contrayendo los músculos del pecho. Inhala y vuelve lentamente a la posición inicial, permitiendo que los músculos del pecho se estiren. Repite el número de repeticiones deseado."
+}

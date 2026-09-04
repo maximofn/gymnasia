@@ -1,0 +1,14 @@
+{
+  "id": "slam-unilateral-con-balon-medicinal",
+  "name": "Slam unilateral con balón medicinal",
+  "image_male": "images/slam-unilateral-con-balon-medicinal-male.webp",
+  "image_female": "images/slam-unilateral-con-balon-medicinal-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "back"
+  ],
+  "equipment": "balón medicinal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo el balón medicinal con una mano frente a la cintura. Flexiona ligeramente las rodillas y activa el core. Eleva el balón medicinal por encima de la cabeza, extendiendo completamente el brazo. Lanza con fuerza el balón medicinal contra el suelo, usando el core y los hombros para generar potencia. Atrapa el balón medicinal al rebotar y repite el número de repeticiones deseado."
+}

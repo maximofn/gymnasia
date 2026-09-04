@@ -1,0 +1,13 @@
+{
+  "id": "curl-martillo-con-barra-olimpica",
+  "name": "Curl martillo con barra olímpica",
+  "image_male": "images/curl-martillo-con-barra-olimpica-male.webp",
+  "image_female": "images/curl-martillo-con-barra-olimpica-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "barra olímpica",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una barra olímpica con un agarre prono. Deja que la barra cuelgue a la altura de los brazos frente a tus muslos, con las palmas hacia tu cuerpo. Manteniendo los brazos superiores fijos, exhala y levanta el peso mientras contraes los bíceps. Continúa levantando la barra hasta que los bíceps estén completamente contraídos y la barra esté a la altura de los hombros. Mantén la posición contraída durante una breve pausa mientras aprietas los bíceps. Inhala y comienza a bajar lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-del-corredor",
+  "name": "Estiramiento del corredor",
+  "image_male": "images/estiramiento-del-corredor-male.webp",
+  "image_female": "images/estiramiento-del-corredor-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "cuádriceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de la cadera. Da un paso hacia delante con el pie derecho, manteniendo el pie izquierdo firme en el suelo. Dobla la rodilla derecha y baja el cuerpo, manteniendo la pierna izquierda recta. Coloca las manos sobre el muslo derecho para apoyarte. Mantén el estiramiento durante 20-30 segundos, luego cambia de lado y repite."
+}

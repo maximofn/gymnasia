@@ -1,0 +1,14 @@
+{
+  "id": "press-alternado-en-suelo-con-pesas-rusas",
+  "name": "Press alternado en suelo con pesas rusas",
+  "image_male": "images/press-alternado-en-suelo-con-pesas-rusas-male.webp",
+  "image_female": "images/press-alternado-en-suelo-con-pesas-rusas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Comienza acostado boca arriba en el suelo con las rodillas dobladas y los pies planos sobre el suelo. Sostén una pesa rusa en cada mano, con las palmas hacia los pies y los brazos extendidos rectos hacia el techo. Baja una pesa rusa hacia el hombro mientras mantienes la otra pesa rusa extendida recta hacia arriba. Empuja la pesa rusa bajada de vuelta hacia la posición inicial mientras al mismo tiempo bajas la otra pesa rusa hacia el hombro. Continúa alternando el movimiento de empuje con cada pesa rusa durante el número de repeticiones deseado."
+}

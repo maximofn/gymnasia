@@ -1,0 +1,13 @@
+{
+  "id": "flexion-sobre-antebrazos",
+  "name": "Flexión sobre antebrazos",
+  "image_male": "images/flexion-sobre-antebrazos-male.webp",
+  "image_female": "images/flexion-sobre-antebrazos-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de plancha con los antebrazos en el suelo y los codos directamente debajo de los hombros. Activa el core y mantén el cuerpo en línea recta de la cabeza a los pies. Baja el pecho hacia el suelo flexionando los codos, manteniéndolos cerca del cuerpo. Haz una pausa por un momento en la parte inferior, luego empuja tu cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "press-de-hombros-en-maquina-v2",
+  "name": "Press de hombros en máquina v2",
+  "image_male": "images/press-de-hombros-en-maquina-v2-male.webp",
+  "image_female": "images/press-de-hombros-en-maquina-v2-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "pecho"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y el respaldo de la máquina de palanca a una posición cómoda. Siéntate en la máquina con la espalda apoyada en el respaldo y los pies planos en el suelo. Agarra las asas de la máquina con un agarre prono, un poco más separadas que la anchura de los hombros. Empuja las asas hacia arriba y hacia adelante hasta que los brazos queden completamente extendidos, pero sin bloquear los codos. Haz una pausa breve en lo alto, luego baja lentamente las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

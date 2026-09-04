@@ -1,0 +1,14 @@
+{
+  "id": "remo-invertido-v2",
+  "name": "Remo invertido v2",
+  "image_male": "images/remo-invertido-v2-male.webp",
+  "image_female": "images/remo-invertido-v2-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Coloca una barra a la altura de la cintura en una máquina Smith o usa un entrenador de suspensión. Ponte de pie frente a la barra o al entrenador de suspensión y agárrala con agarre prono, manos separadas a la altura de los hombros. Camina con los pies hacia adelante, inclinándote hacia atrás hasta que el cuerpo quede en un ligero ángulo. Mantén el cuerpo recto y tira del pecho hacia la barra o las asas, apretando los omóplatos entre sí. Haz una pausa breve en la parte más alta, luego baja lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

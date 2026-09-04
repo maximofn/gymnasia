@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-isometrica-en-pared-con-marcha",
+  "name": "Sentadilla isométrica en pared con marcha",
+  "image_male": "images/sentadilla-isometrica-en-pared-con-marcha-male.webp",
+  "image_female": "images/sentadilla-isometrica-en-pared-con-marcha-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con la espalda contra una pared y los pies separados a la altura de las caderas. Desliza lentamente la espalda hacia abajo por la pared hasta que las rodillas formen un ángulo de 90 grados. Levanta el pie derecho del suelo y lleva la rodilla hacia el pecho. Baja el pie derecho de nuevo y levanta el pie izquierdo del suelo, llevando la rodilla hacia el pecho. Continúa alternando entre levantar el pie derecho y el izquierdo el número de repeticiones deseado."
+}

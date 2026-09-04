@@ -1,0 +1,13 @@
+{
+  "id": "extension-de-triceps-en-maquina",
+  "name": "Extensión de tríceps en máquina",
+  "image_male": "images/extension-de-triceps-en-maquina-male.webp",
+  "image_female": "images/extension-de-triceps-en-maquina-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda apoyada en la almohadilla. Agarra las asas con un agarre prono y extiende completamente los brazos frente a ti. Manteniendo la parte superior de los brazos inmóvil, baja lentamente las asas hacia tu frente flexionando los codos. Haz una pausa por un momento en la parte baja y luego empuja las asas de vuelta hacia arriba hasta la posición inicial extendiendo los brazos. Repite el número de repeticiones deseado."
+}

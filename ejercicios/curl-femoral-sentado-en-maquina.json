@@ -1,0 +1,13 @@
+{
+  "id": "curl-femoral-sentado-en-maquina",
+  "name": "Curl femoral sentado en máquina",
+  "image_male": "images/curl-femoral-sentado-en-maquina-male.webp",
+  "image_female": "images/curl-femoral-sentado-en-maquina-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "gemelos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la máquina a tu cuerpo y siéntate en ella con la espalda apoyada en el respaldo. Coloca la parte baja de las piernas debajo de la palanca acolchada, justo por encima de los tobillos. Sujeta las asas a los lados de la máquina para mayor apoyo. Manteniendo la parte superior de las piernas inmóvil, exhala y flexiona las piernas hacia arriba todo lo que puedas. Mantén la posición contraída durante una pausa breve mientras aprietas los isquiotibiales. Inhala y baja lentamente la palanca de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

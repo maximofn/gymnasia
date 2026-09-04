@@ -1,0 +1,13 @@
+{
+  "id": "postura-reclinada-del-dedo-gordo-con-cuerda",
+  "name": "Postura reclinada del dedo gordo con cuerda",
+  "image_male": "images/postura-reclinada-del-dedo-gordo-con-cuerda-male.webp",
+  "image_female": "images/postura-reclinada-del-dedo-gordo-con-cuerda-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "cuerda",
+  "difficulty": "beginner",
+  "instructions": "Túmbate sobre tu espalda con las piernas extendidas y los brazos a los lados. Enrolla la cuerda alrededor de la planta del pie derecho y sujeta los extremos de la cuerda con las manos. Eleva lentamente la pierna derecha hacia el pecho, manteniendo la rodilla recta y el pie flexionado. Mantén el estiramiento durante unos segundos y luego baja lentamente la pierna de vuelta a la posición inicial. Repite con la pierna izquierda. Continúa alternando las piernas durante el número de repeticiones deseado."
+}

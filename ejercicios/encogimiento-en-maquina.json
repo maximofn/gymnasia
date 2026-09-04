@@ -1,0 +1,13 @@
+{
+  "id": "encogimiento-en-maquina",
+  "name": "Encogimiento en máquina",
+  "image_male": "images/encogimiento-en-maquina-male.webp",
+  "image_female": "images/encogimiento-en-maquina-female.webp",
+  "muscle_group": "trapecios",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina de palanca con la espalda apoyada en la almohadilla. Sujeta las asas con un agarre prono y mantén los brazos rectos. Manteniendo la espalda recta, eleva los hombros hacia las orejas tan alto como sea posible. Mantén la contracción por un momento, luego baja lentamente los hombros de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "press-de-pecho-declinado-en-maquina",
+  "name": "Press de pecho declinado en máquina",
+  "image_male": "images/press-de-pecho-declinado-en-maquina-male.webp",
+  "image_female": "images/press-de-pecho-declinado-en-maquina-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y el respaldo de la máquina de palanca a una posición cómoda. Siéntate en la máquina con la espalda apoyada en el respaldo y los pies planos en el suelo. Sujeta las asas con un agarre prono y coloca las manos un poco más separadas que la altura de los hombros. Empuja las asas hacia adelante y alejándolas del cuerpo hasta que los brazos queden completamente extendidos. Baja lentamente las asas de vuelta hacia el pecho, manteniendo los codos ligeramente flexionados. Haz una pausa breve en la parte baja, luego empuja las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "flexion-con-toque-de-hombros",
+  "name": "Flexión con toque de hombros",
+  "image_male": "images/flexion-con-toque-de-hombros-male.webp",
+  "image_female": "images/flexion-con-toque-de-hombros-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en una posición de plancha alta con las manos un poco más separadas que la anchura de los hombros y el cuerpo en línea recta desde la cabeza hasta los talones. Baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Mientras empujas hacia arriba, levanta la mano derecha del suelo y toca el hombro izquierdo. Vuelve a colocar la mano derecha en el suelo y repite la flexión, esta vez levantando la mano izquierda y tocando el hombro derecho. Continúa alternando los toques de hombro en cada repetición de la flexión. Mantén el core estable y evita una rotación excesiva de la cadera durante todo el ejercicio. Repite el número de repeticiones deseado."
+}

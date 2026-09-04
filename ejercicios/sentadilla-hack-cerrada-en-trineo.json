@@ -1,0 +1,14 @@
+{
+  "id": "sentadilla-hack-cerrada-en-trineo",
+  "name": "Sentadilla hack cerrada en trineo",
+  "image_male": "images/sentadilla-hack-cerrada-en-trineo-male.webp",
+  "image_female": "images/sentadilla-hack-cerrada-en-trineo-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "máquina de trineo",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina de trineo a un peso cómodo y colócate con la espalda contra el respaldo. Coloca los pies separados a la altura de los hombros sobre la plataforma, con los dedos de los pies ligeramente apuntando hacia fuera. Sujeta las asas a los lados de la máquina para mayor estabilidad. Activa el core y baja lentamente el cuerpo doblando las rodillas y las caderas, manteniendo la espalda recta. Continúa bajando hasta que los muslos queden paralelos al suelo o un poco por debajo. Haz una pausa por un momento en la posición baja, luego empuja con los talones para extender las piernas y volver a la posición inicial. Repite el número de repeticiones deseado."
+}

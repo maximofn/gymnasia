@@ -1,0 +1,13 @@
+{
+  "id": "puente-declinado-posterior",
+  "name": "Puente declinado posterior",
+  "image_male": "images/puente-declinado-posterior-male.webp",
+  "image_female": "images/puente-declinado-posterior-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "lumbar"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con los pies planos en el suelo y las rodillas flexionadas. Coloca los brazos a los lados del cuerpo con las palmas hacia abajo. Activa los glúteos y los isquiotibiales, y eleva las caderas del suelo hasta que tu cuerpo forme una línea recta desde las rodillas hasta los hombros. Mantén esta posición durante unos segundos y luego baja lentamente las caderas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

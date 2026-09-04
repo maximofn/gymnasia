@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-del-piriforme-sentado",
+  "name": "Estiramiento del piriforme sentado",
+  "image_male": "images/estiramiento-del-piriforme-sentado-male.webp",
+  "image_female": "images/estiramiento-del-piriforme-sentado-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti. Dobla la rodilla derecha y coloca el pie derecho en la parte exterior de la rodilla izquierda. Coloca el codo izquierdo en la parte exterior de la rodilla derecha y gira suavemente el torso hacia la derecha. Mantén el estiramiento durante 20-30 segundos, luego cambia de lado y repite."
+}

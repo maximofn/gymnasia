@@ -1,0 +1,14 @@
+{
+  "id": "remo-invertido-rodillas-flexionadas",
+  "name": "Remo invertido con rodillas flexionadas",
+  "image_male": "images/remo-invertido-rodillas-flexionadas-male.webp",
+  "image_female": "images/remo-invertido-rodillas-flexionadas-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Coloca una barra a la altura de la cintura y túmbate debajo de ella. Agarra la barra con agarre prono, ligeramente más ancho que la altura de los hombros. Coloca el cuerpo de manera que los talones queden en el suelo y el cuerpo esté recto. Tira del pecho hacia arriba en dirección a la barra apretando los omóplatos entre sí. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

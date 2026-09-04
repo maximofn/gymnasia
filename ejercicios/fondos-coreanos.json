@@ -1,0 +1,14 @@
+{
+  "id": "fondos-coreanos",
+  "name": "Fondos coreanos",
+  "image_male": "images/fondos-coreanos-male.webp",
+  "image_female": "images/fondos-coreanos-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Colócate entre dos barras paralelas con los brazos extendidos sosteniendo el peso de tu cuerpo. Baja el cuerpo flexionando los codos hasta que los brazos queden paralelos al suelo. Haz una pausa breve, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "flexion-modificada-bajando-a-antebrazos",
+  "name": "Flexión modificada bajando a antebrazos",
+  "image_male": "images/flexion-modificada-bajando-a-antebrazos-male.webp",
+  "image_female": "images/flexion-modificada-bajando-a-antebrazos-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [
+    "tríceps",
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de flexión con las manos directamente debajo de los hombros y el cuerpo en línea recta. Baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de tu costado. Cuando los codos formen un ángulo de 90 grados, baja los antebrazos hasta el suelo, manteniendo los codos justo debajo de los hombros. Haz una pausa por un momento y luego empuja con las palmas para llevar los antebrazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

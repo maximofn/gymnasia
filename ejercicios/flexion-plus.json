@@ -1,0 +1,13 @@
+{
+  "id": "flexion-plus",
+  "name": "Flexión plus",
+  "image_male": "images/flexion-plus-male.webp",
+  "image_female": "images/flexion-plus-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en una posición de plancha alta con las manos un poco más separadas que la anchura de los hombros y el cuerpo en línea recta desde la cabeza hasta los talones. Baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Cuando el pecho esté justo por encima del suelo, empuja con las manos para extender los brazos y levantar la parte superior del cuerpo. En la parte alta del movimiento, separa las escápulas empujando la parte superior de la espalda hacia el techo. Haz una pausa por un momento y luego invierte el movimiento juntando las escápulas y bajando el cuerpo de nuevo a la posición inicial. Repite el número de repeticiones deseado."
+}

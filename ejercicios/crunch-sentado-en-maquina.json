@@ -1,0 +1,13 @@
+{
+  "id": "crunch-sentado-en-maquina",
+  "name": "Crunch sentado en máquina",
+  "image_male": "images/crunch-sentado-en-maquina-male.webp",
+  "image_female": "images/crunch-sentado-en-maquina-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en la máquina de palanca con la espalda apoyada en la almohadilla y los pies planos en el suelo. Sujeta las asas o coloca las manos sobre las almohadillas laterales para mayor apoyo. Activa el abdomen e inclínate lentamente hacia atrás, dejando que la almohadilla se mueva contigo. Cuando la parte superior del cuerpo esté en un ángulo de 45 grados, contrae el abdomen y haz un crunch hacia adelante, llevando el pecho hacia las rodillas. Haz una pausa breve en lo alto, luego suelta lentamente y vuelve a la posición inicial. Repite el número de repeticiones deseado."
+}

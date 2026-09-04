@@ -1,0 +1,14 @@
+{
+  "id": "remo-inclinado-unilateral-con-barra",
+  "name": "Remo inclinado unilateral con barra",
+  "image_male": "images/remo-inclinado-unilateral-con-barra-male.webp",
+  "image_female": "images/remo-inclinado-unilateral-con-barra-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "barra",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, las rodillas ligeramente flexionadas, y sujeta una barra con agarre prono. Inclínate hacia adelante desde las caderas, manteniendo la espalda recta y la cabeza erguida. Deja que la barra cuelgue frente a ti con los brazos completamente extendidos. Tira de la barra hacia el pecho, manteniendo los codos cerca del cuerpo. Junta los omóplatos en la parte superior del movimiento. Baja la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

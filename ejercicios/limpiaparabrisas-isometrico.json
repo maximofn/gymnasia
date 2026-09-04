@@ -1,0 +1,15 @@
+{
+  "id": "limpiaparabrisas-isometrico",
+  "name": "Limpiaparabrisas isométrico",
+  "image_male": "images/limpiaparabrisas-isometrico-male.webp",
+  "image_female": "images/limpiaparabrisas-isometrico-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza acostado boca arriba en una esterilla o un banco. Extiende los brazos hacia los lados, perpendiculares al cuerpo. Activa el core y levanta ambas piernas del suelo, manteniéndolas juntas y rectas. Baja lentamente las piernas hacia un lado, intentando tocar el suelo con los pies mientras mantienes el control. Haz una pausa breve, luego usa el core para llevar las piernas de vuelta a la posición inicial. Repite el movimiento, esta vez bajando las piernas hacia el lado opuesto. Continúa alternando lados durante el número de repeticiones deseado."
+}

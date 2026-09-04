@@ -1,0 +1,13 @@
+{
+  "id": "crunch-sentado-con-almohadilla-de-pecho-en-maquina",
+  "name": "Crunch sentado con almohadilla de pecho en máquina",
+  "image_male": "images/crunch-sentado-con-almohadilla-de-pecho-en-maquina-male.webp",
+  "image_female": "images/crunch-sentado-con-almohadilla-de-pecho-en-maquina-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y la posición de la almohadilla para el pecho según tu comodidad. Siéntate en la máquina con la espalda apoyada en la almohadilla para el pecho y los pies planos en el suelo. Sujeta las asas o las barras laterales para mayor estabilidad. Activa el abdomen y reclínate lentamente hacia atrás, permitiendo que el respaldo se mueva contigo. Haz una pausa en la contracción máxima, sintiendo la tensión en el abdomen. Vuelve lentamente a la posición inicial contrayendo el abdomen y tirando de tu cuerpo hacia arriba. Repite el número de repeticiones deseado."
+}

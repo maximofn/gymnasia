@@ -1,0 +1,15 @@
+{
+  "id": "paso-de-esqui",
+  "name": "Paso de esquí",
+  "image_male": "images/paso-de-esqui-male.webp",
+  "image_female": "images/paso-de-esqui-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Dobla ligeramente las rodillas y mantén la espalda recta. Salta hacia la derecha, aterrizando sobre el pie derecho mientras balanceas la pierna izquierda detrás de la pierna derecha. Salta inmediatamente hacia la izquierda, aterrizando sobre el pie izquierdo mientras balanceas la pierna derecha detrás de la pierna izquierda. Continúa alternando los saltos de lado a lado, imitando un movimiento de esquí. Repite el número de repeticiones deseado."
+}

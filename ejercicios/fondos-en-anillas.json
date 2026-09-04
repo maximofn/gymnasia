@@ -1,0 +1,13 @@
+{
+  "id": "fondos-en-anillas",
+  "name": "Fondos en anillas",
+  "image_male": "images/fondos-en-anillas-male.webp",
+  "image_female": "images/fondos-en-anillas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza colgándote de las anillas con los brazos completamente extendidos y el cuerpo recto. Baja el cuerpo flexionando los codos hasta que los hombros queden por debajo de los codos. Empújate de vuelta hacia arriba a la posición inicial extendiendo los brazos. Repite el número de repeticiones deseado."
+}

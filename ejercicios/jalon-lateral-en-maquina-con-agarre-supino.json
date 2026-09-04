@@ -1,0 +1,13 @@
+{
+  "id": "jalon-lateral-en-maquina-con-agarre-supino",
+  "name": "Jalón lateral en máquina con agarre supino",
+  "image_male": "images/jalon-lateral-en-maquina-con-agarre-supino-male.webp",
+  "image_female": "images/jalon-lateral-en-maquina-con-agarre-supino-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con las rodillas debajo de las almohadillas y los pies planos en el suelo. Sujeta las asas con un agarre supino, un poco más separadas que la altura de los hombros. Siéntate erguido con el pecho hacia afuera y los hombros hacia atrás, manteniendo un ligero arco en la zona lumbar. Tira de las asas hacia el pecho, juntando las escápulas. Haz una pausa breve en la parte baja del movimiento, luego suelta lentamente las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

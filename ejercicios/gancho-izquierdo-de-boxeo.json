@@ -1,0 +1,15 @@
+{
+  "id": "gancho-izquierdo-de-boxeo",
+  "name": "Gancho izquierdo de boxeo",
+  "image_male": "images/gancho-izquierdo-de-boxeo-male.webp",
+  "image_female": "images/gancho-izquierdo-de-boxeo-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "bíceps",
+    "tríceps",
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Mantén la mano izquierda arriba para proteger el rostro y la mano derecha junto a la barbilla. Rota las caderas y pívota sobre el pie izquierdo mientras extiendes el brazo izquierdo hacia adelante con un movimiento de golpe. Gira el torso y activa los músculos del core para generar potencia en el golpe. Lleva el brazo rápidamente de vuelta a la posición inicial y repite el número de repeticiones deseado."
+}

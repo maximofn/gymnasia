@@ -1,0 +1,14 @@
+{
+  "id": "flexion-estrecha-sobre-fitball",
+  "name": "Flexión estrecha sobre fitball",
+  "image_male": "images/flexion-estrecha-sobre-fitball-male.webp",
+  "image_female": "images/flexion-estrecha-sobre-fitball-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "fitball",
+  "difficulty": "intermediate",
+  "instructions": "Coloca el balón de estabilidad en el suelo y ponte en posición de flexión con las manos sobre el balón, un poco más juntas que la anchura de los hombros. Activa el core y mantén el cuerpo en línea recta de la cabeza a los pies. Baja el pecho hacia el balón flexionando los codos, manteniéndolos cerca del cuerpo. Haz una pausa breve en la parte baja, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+}

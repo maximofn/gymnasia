@@ -1,0 +1,13 @@
+{
+  "id": "ergometro-de-esqui",
+  "name": "Ergómetro de esquí",
+  "image_male": "images/ergometro-de-esqui-male.webp",
+  "image_female": "images/ergometro-de-esqui-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "máquina SkiErg",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la resistencia del SkiErg. Ponte de pie frente a la máquina, con los pies separados a la anchura de las caderas, y agarra un asa con cada mano por encima de la cabeza. Flexiona ligeramente las rodillas y las caderas mientras tiras de ambas asas hacia abajo hasta los muslos, manteniendo el core firme y los brazos casi extendidos. Regresa de forma controlada a la posición inicial y repite."
+}

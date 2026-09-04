@@ -1,0 +1,13 @@
+{
+  "id": "curl-predicador-agarre-martillo-en-maquina",
+  "name": "Curl predicador con agarre martillo en máquina",
+  "image_male": "images/curl-predicador-agarre-martillo-en-maquina-male.webp",
+  "image_female": "images/curl-predicador-agarre-martillo-en-maquina-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina de palanca. Coloca los brazos superiores sobre la almohadilla de predicador, asegurándote de que el pecho quede apoyado contra ella. Sujeta las asas con agarre neutro (palmas una frente a la otra). Manteniendo los brazos superiores inmóviles, exhala y flexiona las asas hacia los hombros. Haz una pausa breve en la parte alta, apretando los bíceps. Inhala y baja lentamente las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

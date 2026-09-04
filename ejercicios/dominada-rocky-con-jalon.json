@@ -1,0 +1,13 @@
+{
+  "id": "dominada-rocky-con-jalon",
+  "name": "Dominada Rocky con jalón",
+  "image_male": "images/dominada-rocky-con-jalon-male.webp",
+  "image_female": "images/dominada-rocky-con-jalon-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie frente a una barra de dominadas con los pies separados a la altura de los hombros. Estira los brazos hacia arriba y agarra la barra con agarre prono, ligeramente más ancho que la altura de los hombros. Cuélgate de la barra con los brazos completamente extendidos y el cuerpo recto. Activa los músculos de la espalda y tira de tu cuerpo hacia la barra, llevando el pecho por delante. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

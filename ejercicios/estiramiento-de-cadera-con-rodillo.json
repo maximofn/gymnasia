@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-de-cadera-con-rodillo",
+  "name": "Estiramiento de cadera con rodillo",
+  "image_male": "images/estiramiento-de-cadera-con-rodillo-male.webp",
+  "image_female": "images/estiramiento-de-cadera-con-rodillo-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "cuádriceps"
+  ],
+  "equipment": "rodillo de espuma",
+  "difficulty": "beginner",
+  "instructions": "Comienza sentándote en el suelo con las piernas extendidas frente a ti. Coloca el rodillo debajo de los glúteos, justo por encima de las rodillas. Inclínate hacia atrás y coloca las manos en el suelo detrás de ti para apoyarte. Activa los glúteos y rueda lentamente el rodillo hacia adelante, flexionando las rodillas y llevándolas hacia el pecho. Haz una pausa al final del movimiento, sintiendo un estiramiento en los glúteos. Rueda lentamente el rodillo de vuelta a la posición inicial, extendiendo las piernas. Repite el número de repeticiones deseado."
+}

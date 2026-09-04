@@ -1,0 +1,14 @@
+{
+  "id": "press-pirata-unilateral-con-pesa-rusa",
+  "name": "Press pirata unilateral con pesa rusa",
+  "image_male": "images/press-pirata-unilateral-con-pesa-rusa-male.webp",
+  "image_female": "images/press-pirata-unilateral-con-pesa-rusa-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "antebrazos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Levanta la pesa rusa hasta la altura del hombro, manteniendo el codo cerca del cuerpo. Extiende el brazo por completo por encima de la cabeza, enderezando el codo. Baja la pesa rusa de vuelta a la altura del hombro, luego vuelve a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

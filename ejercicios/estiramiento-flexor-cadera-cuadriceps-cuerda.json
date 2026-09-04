@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-flexor-cadera-cuadriceps-cuerda",
+  "name": "Estiramiento de flexor de cadera y cuádriceps con cuerda",
+  "image_male": "images/estiramiento-flexor-cadera-cuadriceps-cuerda-male.webp",
+  "image_female": "images/estiramiento-flexor-cadera-cuadriceps-cuerda-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "cuerda",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros. Sujétate de un objeto estable para mayor apoyo. Dobla la rodilla derecha y lleva el pie derecho hacia los glúteos, sujetando la cuerda con la mano derecha. Tira lentamente del pie derecho hacia los glúteos, sintiendo un estiramiento en el cuádriceps derecho. Mantén el estiramiento durante 20-30 segundos. Suelta el estiramiento y repite en el lado izquierdo."
+}

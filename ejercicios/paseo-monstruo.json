@@ -1,0 +1,14 @@
+{
+  "id": "paseo-monstruo",
+  "name": "Paseo monstruo",
+  "image_male": "images/paseo-monstruo-male.webp",
+  "image_female": "images/paseo-monstruo-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps"
+  ],
+  "equipment": "banda elástica",
+  "difficulty": "beginner",
+  "instructions": "Coloca una banda elástica alrededor de los tobillos. Coloca los pies separados a la altura de los hombros y flexiona ligeramente las rodillas. Da un paso hacia el lado con el pie derecho, manteniendo la tensión en la banda elástica. Continúa con el pie izquierdo, dando un paso lateral para volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

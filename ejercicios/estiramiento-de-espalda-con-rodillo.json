@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-de-espalda-con-rodillo",
+  "name": "Estiramiento de espalda con rodillo",
+  "image_male": "images/estiramiento-de-espalda-con-rodillo-male.webp",
+  "image_female": "images/estiramiento-de-espalda-con-rodillo-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "rodillo de espuma",
+  "difficulty": "beginner",
+  "instructions": "Comienza sentándote en el suelo con las piernas extendidas frente a ti. Coloca el rodillo perpendicular a tu cuerpo, justo debajo de los glúteos. Rueda lentamente el cuerpo hacia atrás, dejando que el rodillo se desplace hacia arriba por tu espalda. Continúa rodando hasta que el rodillo llegue a la parte superior de tu espalda. Haz una pausa por un momento y luego rueda lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

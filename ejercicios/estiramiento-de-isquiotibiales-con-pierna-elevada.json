@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-de-isquiotibiales-con-pierna-elevada",
+  "name": "Estiramiento de isquiotibiales con pierna elevada",
+  "image_male": "images/estiramiento-de-isquiotibiales-con-pierna-elevada-male.webp",
+  "image_female": "images/estiramiento-de-isquiotibiales-con-pierna-elevada-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las piernas extendidas. Flexiona una rodilla y llévala hacia el pecho, sujetándote del muslo o la espinilla. Endereza la pierna tanto como sea posible mientras la mantienes elevada. Mantén el estiramiento durante 20-30 segundos. Repite con la otra pierna."
+}

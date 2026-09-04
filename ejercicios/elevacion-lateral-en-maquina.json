@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-lateral-en-maquina",
+  "name": "Elevación lateral en máquina",
+  "image_male": "images/elevacion-lateral-en-maquina-male.webp",
+  "image_female": "images/elevacion-lateral-en-maquina-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "espalda alta"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda apoyada en la almohadilla. Sujeta las asas con un agarre prono y mantén los brazos rectos. Exhala y levanta los brazos hacia los lados hasta que queden paralelos al suelo. Haz una pausa breve en lo alto, luego inhala y baja lentamente los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

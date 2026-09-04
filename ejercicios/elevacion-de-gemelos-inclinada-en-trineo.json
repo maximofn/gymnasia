@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-de-gemelos-inclinada-en-trineo",
+  "name": "Elevación de gemelos inclinada en trineo",
+  "image_male": "images/elevacion-de-gemelos-inclinada-en-trineo-male.webp",
+  "image_female": "images/elevacion-de-gemelos-inclinada-en-trineo-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "máquina de trineo",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina de trineo a un peso cómodo y colócate en la máquina con la punta de los pies sobre la plataforma y los talones colgando. Coloca las manos en las asas o a los lados de la máquina para apoyarte. Activa las pantorrillas y eleva lentamente los talones lo más alto posible, empujando contra la resistencia del trineo. Haz una pausa breve en la parte alta del movimiento, luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

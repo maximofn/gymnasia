@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-de-gluteo-sentado",
+  "name": "Estiramiento de glúteo sentado",
+  "image_male": "images/estiramiento-de-gluteo-sentado-male.webp",
+  "image_female": "images/estiramiento-de-gluteo-sentado-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti. Dobla la rodilla derecha y cruza el tobillo derecho sobre el muslo izquierdo. Coloca la mano derecha en el suelo detrás de ti para apoyarte. Con la mano izquierda, presiona suavemente la rodilla derecha para profundizar el estiramiento. Mantén el estiramiento durante 30 segundos a 1 minuto. Cambia de lado y repite."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-goblet-con-pesa-rusa",
+  "name": "Sentadilla goblet con pesa rusa",
+  "image_male": "images/sentadilla-goblet-con-pesa-rusa-male.webp",
+  "image_female": "images/sentadilla-goblet-con-pesa-rusa-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa cerca del pecho con ambas manos. Manteniendo el pecho elevado y el core activado, baja el cuerpo a una posición de sentadilla flexionando las rodillas y las caderas. Continúa bajando hasta que los muslos queden paralelos al suelo, o tan abajo como puedas hacerlo cómodamente. Haz una pausa por un momento en la parte inferior, luego empuja con los talones para regresar a la posición inicial. Repite el número de repeticiones deseado."
+}

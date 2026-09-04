@@ -1,0 +1,13 @@
+{
+  "id": "curl-femoral-inverso-autoasistido-en-suelo",
+  "name": "Curl femoral inverso autoasistido en suelo",
+  "image_male": "images/curl-femoral-inverso-autoasistido-en-suelo-male.webp",
+  "image_female": "images/curl-femoral-inverso-autoasistido-en-suelo-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre tu espalda con las piernas extendidas y los brazos a los lados. Dobla las rodillas y coloca los pies planos sobre el suelo, separados a la altura de la cadera. Levanta las caderas del suelo, activando los glúteos y los isquiotibiales. Flexiona lentamente las piernas hacia los glúteos, manteniendo las caderas elevadas. Haz una pausa breve en la parte superior, luego extiende lentamente las piernas de vuelta a la posición inicial. Baja las caderas de nuevo hacia el suelo. Repite el número de repeticiones deseado."
+}

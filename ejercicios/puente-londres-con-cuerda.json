@@ -1,0 +1,15 @@
+{
+  "id": "puente-londres-con-cuerda",
+  "name": "Puente Londres con cuerda",
+  "image_male": "images/puente-londres-con-cuerda-male.webp",
+  "image_female": "images/puente-londres-con-cuerda-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "hombros",
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "cuerda",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta la cuerda a un punto de anclaje alto. Ponte de pie de espaldas al punto de anclaje con los pies separados a la altura de los hombros. Agarra la cuerda con un agarre prono, con las palmas hacia abajo. Inclínate ligeramente hacia adelante, manteniendo la espalda recta y el core activado. Tira de la cuerda hacia tu cuerpo, juntando las escápulas. Haz una pausa por un momento en el punto más alto del movimiento, luego libera lentamente la tensión y regresa a la posición inicial. Repite el número de repeticiones deseado."
+}

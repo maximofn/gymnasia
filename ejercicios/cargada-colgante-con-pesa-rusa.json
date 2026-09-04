@@ -1,0 +1,15 @@
+{
+  "id": "cargada-colgante-con-pesa-rusa",
+  "name": "Cargada colgante con pesa rusa",
+  "image_male": "images/cargada-colgante-con-pesa-rusa-male.webp",
+  "image_female": "images/cargada-colgante-con-pesa-rusa-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos",
+    "cuádriceps",
+    "gemelos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa frente a los muslos. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Baja la pesa rusa hacia el suelo, dejando que se balancee entre las piernas. Extiende rápidamente las caderas y las rodillas, usando el impulso para hacer que la pesa rusa suba hasta la altura del hombro. Cuando la pesa rusa llegue a la altura del hombro, rota las muñecas y atrápala en posición de descanso, con el codo pegado al cuerpo y la pesa rusa apoyada en el antebrazo. Baja la pesa rusa de vuelta a la posición inicial entre las piernas y repite el número de repeticiones deseado."
+}

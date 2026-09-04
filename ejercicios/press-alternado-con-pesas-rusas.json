@@ -1,0 +1,14 @@
+{
+  "id": "press-alternado-con-pesas-rusas",
+  "name": "Press alternado con pesas rusas",
+  "image_male": "images/press-alternado-con-pesas-rusas-male.webp",
+  "image_female": "images/press-alternado-con-pesas-rusas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo una pesa rusa en cada mano a la altura de los hombros. Empuja una pesa rusa por encima de la cabeza, extendiendo el brazo por completo. Baja la pesa rusa de nuevo a la altura de los hombros. Repite con el otro brazo. Continúa alternando los brazos durante el número de repeticiones deseado."
+}

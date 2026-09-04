@@ -1,0 +1,13 @@
+{
+  "id": "flexion-en-pared",
+  "name": "Flexión en pared",
+  "image_male": "images/flexion-en-pared-male.webp",
+  "image_female": "images/flexion-en-pared-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "deltoides"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a una pared, a una distancia aproximada de un brazo. Coloca las manos en la pared a la altura de los hombros, un poco más separadas que la anchura de los hombros. Da un paso atrás, manteniendo el cuerpo recto y los pies separados a la altura de las caderas. Flexiona los codos y baja el pecho hacia la pared, manteniendo el cuerpo en línea recta. Empuja de vuelta a la posición inicial, estirando los brazos. Repite el número de repeticiones deseado."
+}

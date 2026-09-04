@@ -1,0 +1,14 @@
+{
+  "id": "agarre-de-manos-en-maquina",
+  "name": "Agarre de manos en máquina",
+  "image_male": "images/agarre-de-manos-en-maquina-male.webp",
+  "image_female": "images/agarre-de-manos-en-maquina-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [
+    "bíceps",
+    "tríceps"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y sujeta las asas de la máquina de palanca. Mantén la espalda recta y los pies planos en el suelo. Exhala y aprieta las asas, contrayendo los antebrazos. Mantén la contracción durante un segundo, luego suelta lentamente y vuelve a la posición inicial. Repite el número de repeticiones deseado."
+}

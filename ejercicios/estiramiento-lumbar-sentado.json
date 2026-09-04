@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-lumbar-sentado",
+  "name": "Estiramiento lumbar sentado",
+  "image_male": "images/estiramiento-lumbar-sentado-male.webp",
+  "image_female": "images/estiramiento-lumbar-sentado-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el borde de una silla con los pies planos sobre el suelo. Coloca las manos sobre los muslos o a los lados de la silla para apoyarte. Inclínate lentamente hacia delante desde la cadera, manteniendo la espalda recta. Siente el estiramiento en la zona lumbar y mantén la posición durante 20-30 segundos. Regresa lentamente a la posición inicial y repite el número de repeticiones deseado."
+}

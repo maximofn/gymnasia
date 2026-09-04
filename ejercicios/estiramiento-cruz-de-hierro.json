@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-cruz-de-hierro",
+  "name": "Estiramiento cruz de hierro",
+  "image_male": "images/estiramiento-cruz-de-hierro-male.webp",
+  "image_female": "images/estiramiento-cruz-de-hierro-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con los brazos extendidos hacia los lados. Levanta las piernas hacia el techo, manteniéndolas rectas. Baja lentamente las piernas hacia un lado, intentando tocar el suelo con los pies. Mantén el estiramiento durante unos segundos, luego regresa las piernas a la posición inicial. Repite el estiramiento en el otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+}

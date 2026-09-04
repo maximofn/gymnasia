@@ -1,0 +1,13 @@
+{
+  "id": "flexion-escapular",
+  "name": "Flexión escapular",
+  "image_male": "images/flexion-escapular-male.webp",
+  "image_female": "images/flexion-escapular-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en una posición de plancha alta con las manos justo debajo de los hombros y el cuerpo en línea recta. Baja el pecho hacia el suelo, manteniendo los codos cerca del cuerpo. A medida que bajas, junta las escápulas y empuja el pecho hacia delante. Haz una pausa por un momento en la posición baja, luego empuja de nuevo hacia arriba hasta la posición inicial. Repite el número de repeticiones deseado."
+}

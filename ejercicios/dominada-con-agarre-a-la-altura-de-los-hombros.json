@@ -1,0 +1,13 @@
+{
+  "id": "dominada-con-agarre-a-la-altura-de-los-hombros",
+  "name": "Dominada con agarre a la altura de los hombros",
+  "image_male": "images/dominada-con-agarre-a-la-altura-de-los-hombros-male.webp",
+  "image_female": "images/dominada-con-agarre-a-la-altura-de-los-hombros-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Sujeta la barra de dominadas con un agarre a la altura de los hombros, con las palmas mirando hacia fuera. Cuélgate libremente con los brazos completamente extendidos. Activa los músculos de la espalda y tira de tu cuerpo hacia la barra hasta que la barbilla quede por encima de ella. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

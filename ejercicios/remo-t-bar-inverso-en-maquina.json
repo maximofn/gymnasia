@@ -1,0 +1,14 @@
+{
+  "id": "remo-t-bar-inverso-en-maquina",
+  "name": "Remo T-bar inverso en máquina",
+  "image_male": "images/remo-t-bar-inverso-en-maquina-male.webp",
+  "image_female": "images/remo-t-bar-inverso-en-maquina-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y la posición de la placa para los pies en la máquina de palanca. Siéntate en la máquina con el pecho contra la almohadilla y los pies planos sobre la placa para los pies. Agarra las agarraderas con un agarre prono, un poco más separadas que el ancho de los hombros. Mantén la espalda recta y activa el core. Tira de las asas hacia el pecho, juntando los omóplatos. Haz una pausa breve en la parte alta del movimiento, luego suelta lentamente y extiende los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

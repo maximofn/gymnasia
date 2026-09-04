@@ -1,0 +1,14 @@
+{
+  "id": "remo-alternado-con-pesas-rusas",
+  "name": "Remo alternado con pesas rusas",
+  "image_male": "images/remo-alternado-con-pesas-rusas-male.webp",
+  "image_female": "images/remo-alternado-con-pesas-rusas-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, las rodillas ligeramente flexionadas, y sostén una pesa rusa en cada mano con las palmas hacia el cuerpo. Inclínate hacia adelante desde las caderas, manteniendo la espalda recta y el core activado. Tira de una pesa rusa hacia el pecho, manteniendo el codo cerca del cuerpo y apretando los omóplatos entre sí. Baja la pesa rusa de nuevo a la posición inicial y repite con el otro brazo. Continúa alternando los brazos durante el número de repeticiones deseado."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "flexion-hindu-modificada",
+  "name": "Flexión hindú modificada",
+  "image_male": "images/flexion-hindu-modificada-male.webp",
+  "image_female": "images/flexion-hindu-modificada-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y los pies separados a la altura de las caderas. Baja el cuerpo hacia el suelo, flexionando los codos y manteniendo el core activado. Mientras bajas el cuerpo, desplaza el peso hacia atrás y eleva las caderas hacia el techo, formando una V invertida con tu cuerpo. Sigue bajando el cuerpo hasta que el pecho quede justo por encima del suelo y luego invierte el movimiento, empujando las caderas hacia abajo y extendiendo los brazos para volver a la posición inicial. Repite el número de repeticiones deseado."
+}

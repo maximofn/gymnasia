@@ -1,0 +1,14 @@
+{
+  "id": "sentadilla-pistola",
+  "name": "Sentadilla pistola",
+  "image_male": "images/sentadilla-pistola-male.webp",
+  "image_female": "images/sentadilla-pistola-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los brazos extendidos frente a ti. Levanta el pie derecho del suelo y extiéndelo hacia delante. Baja lentamente el cuerpo doblando la rodilla izquierda y empujando las caderas hacia atrás. Mantén el pecho elevado y la espalda recta mientras bajas el cuerpo. Baja hasta que el muslo izquierdo quede paralelo al suelo, o lo más abajo que puedas llegar cómodamente. Haz una pausa por un momento en la posición baja, luego empuja con el talón izquierdo para volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+}

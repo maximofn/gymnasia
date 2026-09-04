@@ -1,0 +1,14 @@
+{
+  "id": "doble-jerk-con-pesas-rusas",
+  "name": "Doble jerk con pesas rusas",
+  "image_male": "images/doble-jerk-con-pesas-rusas-male.webp",
+  "image_female": "images/doble-jerk-con-pesas-rusas-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "pesa rusa",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo una pesa rusa en cada mano a la altura de los hombros. Flexiona ligeramente las rodillas y activa el core. Presiona las pesas rusas por encima de la cabeza, extendiendo los brazos por completo. Flexiona las rodillas y baja rápidamente a una sentadilla parcial. Extiende explosivamente las caderas y las rodillas, impulsando las pesas rusas hacia arriba. Bloquea los brazos y atrapa las pesas rusas por encima de la cabeza con las rodillas ligeramente flexionadas. Ponte de pie recto y vuelve a la posición inicial. Repite el número de repeticiones deseado."
+}

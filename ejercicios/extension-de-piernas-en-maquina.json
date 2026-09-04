@@ -1,0 +1,13 @@
+{
+  "id": "extension-de-piernas-en-maquina",
+  "name": "Extensión de piernas en máquina",
+  "image_male": "images/extension-de-piernas-en-maquina-male.webp",
+  "image_female": "images/extension-de-piernas-en-maquina-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y el respaldo de la máquina a tu cuerpo. Siéntate en la máquina con la espalda apoyada en el respaldo y los pies sobre la almohadilla para los pies. Sujeta las asas o las barras laterales para mayor estabilidad. Extiende las piernas hacia adelante enderezando las rodillas, levantando el peso. Haz una pausa breve en lo alto, luego baja lentamente el peso de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

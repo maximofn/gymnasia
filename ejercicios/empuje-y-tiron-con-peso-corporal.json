@@ -1,0 +1,14 @@
+{
+  "id": "empuje-y-tiron-con-peso-corporal",
+  "name": "Empuje y tirón con peso corporal",
+  "image_male": "images/empuje-y-tiron-con-peso-corporal-male.webp",
+  "image_female": "images/empuje-y-tiron-con-peso-corporal-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "deltoids"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y el cuerpo en línea recta. Baja el pecho hacia el suelo flexionando los codos, manteniendo el cuerpo recto. Empuja con las palmas para extender los brazos y regresar a la posición inicial. Desde la posición de flexión, tira del pecho hacia el suelo flexionando los codos, manteniendo el cuerpo recto. Empuja con las palmas para extender los brazos y regresar a la posición inicial. Repite el número de repeticiones deseado."
+}

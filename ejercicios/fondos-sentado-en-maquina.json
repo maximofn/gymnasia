@@ -1,0 +1,14 @@
+{
+  "id": "fondos-sentado-en-maquina",
+  "name": "Fondos sentado en máquina",
+  "image_male": "images/fondos-sentado-en-maquina-male.webp",
+  "image_female": "images/fondos-sentado-en-maquina-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento de modo que tus pies queden planos en el suelo y tus rodillas formen un ángulo de 90 grados. Agarra las asas de la máquina de palanca con las palmas hacia abajo y los brazos completamente extendidos. Baja lentamente el cuerpo flexionando los codos hasta que tus brazos queden paralelos al suelo. Haz una pausa breve, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+}

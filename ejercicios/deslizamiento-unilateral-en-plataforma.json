@@ -1,0 +1,13 @@
+{
+  "id": "deslizamiento-unilateral-en-plataforma",
+  "name": "Deslizamiento unilateral en plataforma",
+  "image_male": "images/deslizamiento-unilateral-en-plataforma-male.webp",
+  "image_female": "images/deslizamiento-unilateral-en-plataforma-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza de pie con un pie sobre una plataforma o tabla deslizante. Dobla ligeramente la rodilla y desliza el pie sobre la plataforma hacia atrás, extendiendo la pierna. Mantén el core activado y conserva una postura recta durante todo el movimiento. Vuelve lentamente a la posición inicial deslizando el pie de regreso a la posición inicial. Repite el movimiento el número de repeticiones deseado y luego cambia de pierna."
+}
