@@ -39,6 +39,7 @@
     "test:legal": "node --test scripts/legal/*.test.mjs",
     "test": "npm run test:deterministic && npm run test:dev-store",
     "test:deterministic": "npm --workspace apps/mobile run test:deterministic",
+    "test:proxy": "npm --workspace apps/anthropic_proxy run test",
     "check:dev-store": "node scripts/dev-store/check.mjs",
     "test:dev-store": "npm run check:dev-store && node --test scripts/dev-store/*.test.mjs",
     "test:dev-store:e2e": "node apps/mobile/scripts/dev-store.e2e.mjs",
