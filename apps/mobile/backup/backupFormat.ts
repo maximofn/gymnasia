@@ -22,6 +22,7 @@ export type BackupDataShape = {
   store: {
     measurements?: Array<{
       id?: unknown;
+      measured_on?: unknown;
       measured_at?: unknown;
       photo_uri?: unknown;
       [key: string]: unknown;

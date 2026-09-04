@@ -1897,7 +1897,7 @@
         {
           "id": "GYM-171",
           "title": "Unificar y probar el contrato de mediciones entre UI y agente",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Alinear fecha, duplicados, null, validación y éxito durable de las mediciones creadas por UI y tools.",
           "dependsOn": [],
           "related": [

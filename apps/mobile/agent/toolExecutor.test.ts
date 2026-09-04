@@ -17,8 +17,6 @@ function createDependencies(
     loadPersonalData: async () => [],
     savePersonalData: async () => {},
     loadMeasurements: async () => [],
-    saveMeasurements: async () => {},
-    sortMeasurements: (measurements) => measurements,
     createId: (prefix) => `${prefix}_test`,
     getExerciseImageUrl: (exercise, sex) => `${sex}/${exercise.image_male}`,
     submitFeedbackIssue: async () => ({ status: "canceled" as const }),
@@ -72,6 +70,25 @@ const exercises: ToolExerciseRepoEntry[] = [{
 
 function createEmptyStore(): ToolStore {
   return { templates: [], dietByDate: {}, measurements: [] };
+}
+
+function createMeasurement(id: string, measuredOn: string, weightKg: number | null = null) {
+  return {
+    id,
+    measured_on: measuredOn,
+    measured_at: `${measuredOn}T12:00:00.000Z`,
+    weight_kg: weightKg,
+    body_fat_pct: null,
+    photo_uri: null,
+    neck_cm: null,
+    chest_cm: null,
+    waist_cm: null,
+    hips_cm: null,
+    biceps_cm: null,
+    quadriceps_cm: null,
+    calf_cm: null,
+    height_cm: null,
+  };
 }
 
 describe("ejecutor de tools", () => {
@@ -135,14 +152,121 @@ describe("ejecutor de tools", () => {
   });
 
   it("mantiene respuestas controladas para tools y JSON desconocidos", async () => {
-    const saveMeasurements = vi.fn(async () => {});
-    const execute = createAgentToolExecutor(createDependencies({ saveMeasurements }));
+    const execute = createAgentToolExecutor(createDependencies());
     await expect(execute("unknown_tool", {})).resolves.toBe("Herramienta no reconocida.");
     await expect(execute("write_measurement", {
       date: "2026-04-11",
       data: "{json roto",
     })).resolves.toBe("El JSON de medidas no es válido.");
-    expect(saveMeasurements).not.toHaveBeenCalled();
+  });
+
+  it("crea y completa la medición del día con entrada estructurada sin borrar lo omitido", async () => {
+    let store = createEmptyStore();
+    const commitStore = vi.fn(async (updater: (previous: ToolStore) => ToolStore) => {
+      store = updater(store);
+    });
+    const execute = createAgentToolExecutor(createDependencies({
+      loadMeasurements: async () => store.measurements,
+    }));
+
+    await expect(execute("write_measurement", {
+      date: "2024-04-11",
+      data: { weight_kg: 75.555, waist_cm: 82 },
+    }, { commitStore })).resolves.toContain("guardadas correctamente");
+    const id = store.measurements[0].id;
+    expect(store.measurements[0]).toMatchObject({
+      measured_on: "2024-04-11",
+      weight_kg: 75.56,
+      waist_cm: 82,
+      body_fat_pct: null,
+    });
+
+    await expect(execute("write_measurement", {
+      date: "2024-04-11",
+      data: { body_fat_pct: 18.5 },
+    }, { commitStore })).resolves.toContain("actualizadas correctamente");
+    expect(store.measurements).toHaveLength(1);
+    expect(store.measurements[0]).toMatchObject({
+      id,
+      weight_kg: 75.56,
+      waist_cm: 82,
+      body_fat_pct: 18.5,
+    });
+
+    expect(JSON.parse(await execute("read_measurement", { date: "2024-04-11" }))).toMatchObject({
+      measured_on: "2024-04-11",
+      weight_kg: 75.56,
+      body_fat_pct: 18.5,
+    });
+  });
+
+  it("acepta el JSON heredado durante la transición y permite borrar un campo explícito", async () => {
+    let store: ToolStore = {
+      ...createEmptyStore(),
+      measurements: [{ ...createMeasurement("existing", "2024-04-11", 75), waist_cm: 82 }],
+    };
+    const execute = createAgentToolExecutor(createDependencies());
+    const context = {
+      commitStore: async (updater: (previous: ToolStore) => ToolStore) => {
+        store = updater(store);
+      },
+    };
+    await expect(execute("write_measurement", {
+      date: "2024-04-11",
+      data: '{"body_fat_pct":"18,5"}',
+      clear_fields: ["weight_kg"],
+    }, context)).resolves.toContain("actualizadas correctamente");
+    expect(store.measurements[0]).toMatchObject({
+      id: "existing",
+      weight_kg: null,
+      waist_cm: 82,
+      body_fat_pct: 18.5,
+    });
+  });
+
+  it("rechaza valores inválidos y fechas duplicadas heredadas sin persistir", async () => {
+    let store: ToolStore = {
+      ...createEmptyStore(),
+      measurements: [
+        createMeasurement("a", "2024-04-11", 75),
+        createMeasurement("b", "2024-04-11", 76),
+      ],
+    };
+    const commitStore = vi.fn(async (updater: (previous: ToolStore) => ToolStore) => {
+      store = updater(store);
+    });
+    const execute = createAgentToolExecutor(createDependencies({
+      loadMeasurements: async () => store.measurements,
+    }));
+
+    await expect(execute("write_measurement", {
+      date: "2024-04-11",
+      data: { body_fat_pct: 101 },
+    }, { commitStore })).resolves.toContain("no puede superar el 100");
+    expect(commitStore).not.toHaveBeenCalled();
+
+    await expect(execute("write_measurement", {
+      date: "2024-04-11",
+      data: { waist_cm: 80 },
+    }, { commitStore })).resolves.toContain("Hay varias mediciones");
+    expect(store.measurements).toHaveLength(2);
+    await expect(execute("read_measurement", { date: "2024-04-11" })).resolves.toContain(
+      "Hay varias mediciones",
+    );
+  });
+
+  it("no confirma ni muestra éxito si falla la persistencia de una medición", async () => {
+    const execute = createDetailedAgentToolExecutor(createDependencies());
+    const result = await execute("write_measurement", {
+      date: "2024-04-11",
+      data: { weight_kg: 75 },
+    }, {
+      commitStore: async () => {
+        throw new Error("storage unavailable");
+      },
+    });
+    expect(result.status).toBe("failed_before_commit");
+    expect(result.output).not.toContain("correctamente");
   });
 
   it("inyecta almacenamiento y efectos externos para poder probarlos sin Expo", async () => {

@@ -287,6 +287,31 @@ describe("LocalStore recovery repository", () => {
     expect(storage.values.has(KEYS.quarantine)).toBe(false);
   });
 
+  it("quarantines a semantic normalization failure without replacing the original payload", async () => {
+    const { storage, repository: repo } = repository();
+    const raw = validRaw({
+      measurements: [{
+        id: "invalid-date",
+        measured_at: "not-a-date",
+        weight_kg: 80,
+      }],
+    });
+    storage.values.set(KEYS.primary, raw);
+    await expect(repo.inspect()).resolves.toMatchObject({ status: "valid" });
+
+    await expect(repo.quarantineUnexpectedNormalization(raw, "primary")).resolves.toMatchObject({
+      cause: "invalid_shape",
+      rawPayload: raw,
+      issues: [{ code: "normalization_failed" }],
+    });
+    expect(storage.values.get(KEYS.primary)).toBe(raw);
+    await expect(repo.inspect()).resolves.toMatchObject({
+      status: "recoverable",
+      currentValid: true,
+      quarantine: { rawPayload: raw },
+    });
+  });
+
   it("discards only affected keys and preserves independent data", async () => {
     const { storage, repository: repo } = repository();
     const independentKey = "personal-data";

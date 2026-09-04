@@ -1,0 +1,16 @@
+event: response.created
+data: {"type":"response.created","response":{"id":"resp_openai_measurement_tool"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":0,"item":{"type":"function_call","id":"fc_openai_measurement","call_id":"call_openai_measurement","name":"write_measurement","arguments":"","status":"in_progress"}}
+
+event: response.function_call_arguments.done
+data: {"type":"response.function_call_arguments.done","item_id":"fc_openai_measurement","output_index":0,"arguments":"{\"date\":\"2024-04-11\",\"data\":{\"weight_kg\":75.5,\"body_fat_pct\":18.5}}"}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","output_index":0,"item":{"type":"function_call","id":"fc_openai_measurement","call_id":"call_openai_measurement","name":"write_measurement","arguments":"{\"date\":\"2024-04-11\",\"data\":{\"weight_kg\":75.5,\"body_fat_pct\":18.5}}","status":"completed"}}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"resp_openai_measurement_tool","output":[{"type":"function_call","id":"fc_openai_measurement","call_id":"call_openai_measurement","name":"write_measurement","arguments":"{\"date\":\"2024-04-11\",\"data\":{\"weight_kg\":75.5,\"body_fat_pct\":18.5}}","status":"completed"}]}}
+
+data: [DONE]

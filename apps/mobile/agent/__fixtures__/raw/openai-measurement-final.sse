@@ -1,0 +1,13 @@
+event: response.created
+data: {"type":"response.created","response":{"id":"resp_openai_measurement_final"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":0,"item":{"type":"message","id":"msg_openai_measurement","content":[]}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","item_id":"msg_openai_measurement","output_index":0,"content_index":0,"delta":"He guardado 75,5 kg y 18,5 % de grasa para el 11 de abril de 2024."}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"resp_openai_measurement_final","output":[{"type":"message","id":"msg_openai_measurement","content":[{"type":"output_text","text":"He guardado 75,5 kg y 18,5 % de grasa para el 11 de abril de 2024."}]}]}}
+
+data: [DONE]

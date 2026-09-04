@@ -16,6 +16,7 @@ const STEP_TIMEOUT_MS = 30000;
 const DEVELOPMENT_NAMESPACE = "gymnasia.development";
 const scopedKey = (key) => `${DEVELOPMENT_NAMESPACE}:${key}`;
 const STORE_KEY = scopedKey("gymnasia.mobile.local.v3");
+const STORE_SNAPSHOT_KEY = scopedKey("gymnasia.mobile.local.last_good.v1");
 const PROVIDER_CONFIGURATION_KEY = scopedKey("gymnasia.mobile.provider_configuration.v1");
 const PERSONAL_DATA_KEY = scopedKey("gymnasia.mobile.personal_data.v1");
 const TRACE_KEY = scopedKey("gymnasia_debug_traces");
@@ -557,8 +558,10 @@ async function runAgentChatE2E(
     personalDataKey,
     store,
   }) => {
+    if (window.sessionStorage.getItem("gymnasia-agent-e2e-seeded") === "1") return;
     window.localStorage.clear();
     window.localStorage.setItem(storeKey, JSON.stringify(store));
+    window.sessionStorage.setItem("gymnasia-agent-e2e-seeded", "1");
     // GYM-139: los dos campos de inyección permanecen en la memoria durante toda
     // la prueba. El test demuestra que su contenido no llega al system prompt
     // aunque los campos existan, que es más fuerte que comprobar que se borraron.
@@ -621,11 +624,17 @@ async function runAgentChatE2E(
     const body = route.request().postDataJSON();
     requestBodies.push(body);
     logStep(`${provider}: ronda ${requestBodies.length}`);
-    const responseFixture = requestBodies.length === 1
-      ? fixture(`${provider}-tool-call.sse`)
-      : requestBodies.length === 2
-        ? fixture(`${provider}-final.sse`)
-        : fixture(`${provider}-identity.sse`);
+    const fixtureByRound = [
+      null,
+      `${provider}-tool-call.sse`,
+      `${provider}-final.sse`,
+      `${provider}-identity.sse`,
+      `${provider}-measurement-tool-call.sse`,
+      `${provider}-measurement-final.sse`,
+    ];
+    const fixtureName = fixtureByRound[requestBodies.length];
+    assert(fixtureName, `${provider} no esperaba una ronda ${requestBodies.length}.`);
+    const responseFixture = fixture(fixtureName);
     await route.fulfill({
       status: 200,
       headers: {
@@ -665,6 +674,18 @@ async function runAgentChatE2E(
     "el proveedor debe recibir primero el prompt local de development",
   );
   assert(systemPrompt.includes("Eres Gymnasia Coach, un sistema de inteligencia artificial"));
+  const providerTools = provider === "google"
+    ? requestBodies[0].tools?.[0]?.functionDeclarations
+    : requestBodies[0].tools;
+  const measurementTool = providerTools?.find((tool) => tool.name === "write_measurement");
+  const measurementSchema = provider === "anthropic"
+    ? measurementTool?.input_schema
+    : measurementTool?.parameters;
+  assert.equal(
+    measurementSchema?.properties?.data?.type,
+    "object",
+    `${provider} debe recibir data como objeto estructurado en write_measurement.`,
+  );
   // GYM-139: los campos "debug" y "Notas" siguen en la memoria personal, con
   // texto de inyección dentro. Nada de eso puede aparecer en el system prompt.
   for (const injected of [
@@ -810,13 +831,127 @@ async function runAgentChatE2E(
     { timeout: STEP_TIMEOUT_MS },
   );
 
+  logStep(`${provider}: guardando una medición estructurada y comprobando su persistencia`);
+  await page.locator('[data-testid="chat-input"]').fill(
+    "Guarda para el 11 de abril de 2024 un peso de 75,5 kg y un 18,5 % de grasa.",
+  );
+  await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid^="chat-message-assistant-"]')
+    .filter({ hasText: "He guardado 75,5 kg y 18,5 % de grasa" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  assert.equal(requestBodies.length, 5, `${provider} debe completar las dos rondas de la medición.`);
+  assert(
+    JSON.stringify(requestBodies[4]).includes("Medidas guardadas correctamente para 2024-04-11."),
+    `${provider} debe recibir el resultado durable de write_measurement.`,
+  );
+  await page.waitForFunction(
+    ({ storeKey }) => {
+      const saved = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
+      const measurement = saved.measurements?.find((item) => item.measured_on === "2024-04-11");
+      return measurement?.weight_kg === 75.5 && measurement?.body_fat_pct === 18.5;
+    },
+    { storeKey: STORE_KEY },
+    { timeout: STEP_TIMEOUT_MS },
+  );
+  await page.locator('[data-testid="nav-tab-measures"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText("75.5 kg", { exact: false }).first()
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+
   if (provider === "openai") {
+    logStep("Comprobando validación del formulario y actualización parcial del mismo día");
+    await page.locator('[data-testid="measurement-add"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-date-trigger"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-date-input"]').fill("2024-04-11");
+    const chooserPromise = page.waitForEvent("filechooser", { timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-photo-upload"]').click({ timeout: STEP_TIMEOUT_MS });
+    const chooser = await chooserPromise;
+    await chooser.setFiles({
+      name: "progress.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+3MxZ5wAAAABJRU5ErkJggg==",
+        "base64",
+      ),
+    });
+    await page.locator('[data-testid="measurement-photo-preview"]')
+      .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-body-fat-input"]').fill("101");
+    await page.locator('[data-testid="measurement-waist-input"]').fill("82");
+    await page.locator('[data-testid="measurement-save-primary"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.getByText("Introduce un valor válido para % grasa corporal.", { exact: true }).first()
+      .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-body-fat-input"]').fill("");
+    await page.locator('[data-testid="measurement-save-primary"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-save-primary"]')
+      .waitFor({ state: "detached", timeout: STEP_TIMEOUT_MS });
+    await page.waitForFunction(
+      ({ storeKey }) => {
+        const saved = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
+        const matches = saved.measurements?.filter((item) => item.measured_on === "2024-04-11") ?? [];
+        return matches.length === 1
+          && matches[0].weight_kg === 75.5
+          && matches[0].waist_cm === 82
+          && typeof matches[0].photo_uri === "string";
+      },
+      { storeKey: STORE_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
+    await page.locator('[data-testid^="measurement-history-"]').first()
+      .click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-weight-input"]').fill("75.8");
+    await page.locator('[data-testid="measurement-save-primary"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-save-primary"]')
+      .waitFor({ state: "detached", timeout: STEP_TIMEOUT_MS });
+    await page.waitForFunction(
+      ({ storeKey }) => {
+        const saved = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
+        const matches = saved.measurements?.filter((item) => item.measured_on === "2024-04-11") ?? [];
+        return matches.length === 1 && matches[0].weight_kg === 75.8 && matches[0].waist_cm === 82;
+      },
+      { storeKey: STORE_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
     await assertSpecializedAiDisclosures(page);
     await assertPersonalDataKeptAsPlainData(page);
+
+    logStep("Comprobando que los duplicados heredados se conservan y se señalan");
+    await page.evaluate(({ storeKey, snapshotKey }) => {
+      const saved = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
+      const original = saved.measurements.find((item) => item.measured_on === "2024-04-11");
+      saved.measurements.push({ ...original, id: "legacy-duplicate", weight_kg: 76 });
+      window.localStorage.setItem(storeKey, JSON.stringify(saved));
+      window.localStorage.removeItem(snapshotKey);
+    }, { storeKey: STORE_KEY, snapshotKey: STORE_SNAPSHOT_KEY });
+    await page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="nav-tab-measures"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-duplicate-warning"]')
+      .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    await page.evaluate(() => {
+      document.querySelectorAll("*").forEach((element) => {
+        if (element.scrollTop > 0) element.scrollTop = 0;
+      });
+    });
+    await page.screenshot({
+      path: join(repositoryRoot, "docs", "testing", "screenshots", "gym-171-measurement-contract.png"),
+      fullPage: true,
+    });
+    await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="settings-tab-measures"]').click({ timeout: STEP_TIMEOUT_MS });
+    await page.locator('[data-testid="measurement-delete-legacy-duplicate"]')
+      .click({ timeout: STEP_TIMEOUT_MS });
+    await page.waitForFunction(
+      ({ storeKey }) => {
+        const saved = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
+        return saved.measurements?.length === 1
+          && saved.measurements[0].measured_on === "2024-04-11";
+      },
+      { storeKey: STORE_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
   }
   assert.equal(deploymentRequests, 0, "development no debe consultar deployments de política");
   assertNoLegacyUpdaterRequests();
-  logStep(`${provider}/local completado: UI → SSE → tool → segunda ronda → UI`);
+  logStep(`${provider}/local completado: UI → SSE → tools de lectura/escritura → persistencia → UI`);
 }
 
 /**

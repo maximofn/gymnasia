@@ -20,24 +20,18 @@ import {
   type ExerciseCatalogEntry,
   type FoodCatalogEntry,
 } from "../catalogs/types";
+import {
+  formatMeasurementIssues,
+  measurementDuplicateDates,
+  parseMeasurementToolPatch,
+  upsertMeasurementByDate,
+  validateMeasurementDate,
+  type Measurement,
+} from "../measurements/measurementContract";
 
 export type { PersonalDataField };
 
-export type ToolMeasurement = {
-  id: string;
-  measured_at: string;
-  weight_kg: number | null;
-  body_fat_pct: number | null;
-  photo_uri: string | null;
-  neck_cm: number | null;
-  chest_cm: number | null;
-  waist_cm: number | null;
-  hips_cm: number | null;
-  biceps_cm: number | null;
-  quadriceps_cm: number | null;
-  calf_cm: number | null;
-  height_cm: number | null;
-};
+export type ToolMeasurement = Measurement;
 
 export type ToolDietItem = {
   id: string;
@@ -122,8 +116,6 @@ export type ToolExecutorDependencies = {
   loadPersonalData: () => Promise<PersonalDataField[]>;
   savePersonalData: (fields: PersonalDataField[]) => Promise<void>;
   loadMeasurements: () => Promise<ToolMeasurement[]>;
-  saveMeasurements: (measurements: ToolMeasurement[]) => Promise<void>;
-  sortMeasurements: (measurements: ToolMeasurement[]) => ToolMeasurement[];
   createId: (prefix: string) => string;
   getExerciseImageUrl: (exercise: ToolExerciseRepoEntry, sex: "male" | "female") => string;
   /**
@@ -243,64 +235,50 @@ const readFieldValue: ToolHandler = async (args, _context, dependencies) => {
 };
 
 const readMeasurement: ToolHandler = async (args, _context, dependencies) => {
-  const date = (args.date as string) ?? "";
-  if (!date) return "No se proporcionó una fecha.";
+  const dateResult = validateMeasurementDate(args.date);
+  if (!dateResult.ok) return formatMeasurementIssues(dateResult.issues);
   const measurements = await dependencies.loadMeasurements();
-  const match = measurements.find((measurement) => measurement.measured_at.startsWith(date));
-  if (!match) return `No hay registro de medidas para la fecha "${date}".`;
-  const { id: _id, photo_uri: _photoUri, ...data } = match;
+  if (measurementDuplicateDates(measurements).includes(dateResult.value)) {
+    return `Hay varias mediciones para ${dateResult.value}. Revísalas desde el historial para decidir cuál conservar.`;
+  }
+  const match = measurements.find((measurement) => measurement.measured_on === dateResult.value);
+  if (!match) return `No hay registro de medidas para la fecha "${dateResult.value}".`;
+  const { id: _id, photo_uri: _photoUri, measured_at: _measuredAt, ...data } = match;
   return JSON.stringify(data);
 };
 
 const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
-  const date = (args.date as string) ?? "";
-  if (!date) return "No se proporcionó una fecha.";
-  const parsed = parseObjectArgument(
-    args.data,
-    "El JSON de medidas no es válido.",
-    "No se proporcionaron medidas.",
-  );
-  if (parsed.error || !parsed.value) return parsed.error ?? "No se proporcionaron medidas.";
-  const data = parsed.value;
-  const measurements = await dependencies.loadMeasurements();
-  const existingIndex = measurements.findIndex((measurement) => measurement.measured_at.startsWith(date));
-  const existing = existingIndex >= 0 ? measurements[existingIndex] : null;
-  const toNumber = (value: unknown): number | null => {
-    if (value === null || value === undefined) return null;
-    const number = Number(value);
-    return Number.isFinite(number) && number > 0 ? number : null;
-  };
-  const measurement: ToolMeasurement = {
-    id:
-      existing?.id ??
-      (context.operationId
-        ? `measurement_op_${context.operationId.slice(0, 24)}`
-        : dependencies.createId("measurement")),
-    measured_at: existing?.measured_at ?? new Date(`${date}T12:00:00`).toISOString(),
-    weight_kg: data.weight_kg !== undefined ? toNumber(data.weight_kg) : (existing?.weight_kg ?? null),
-    body_fat_pct: data.body_fat_pct !== undefined ? toNumber(data.body_fat_pct) : (existing?.body_fat_pct ?? null),
-    photo_uri: existing?.photo_uri ?? null,
-    neck_cm: data.neck_cm !== undefined ? toNumber(data.neck_cm) : (existing?.neck_cm ?? null),
-    chest_cm: data.chest_cm !== undefined ? toNumber(data.chest_cm) : (existing?.chest_cm ?? null),
-    waist_cm: data.waist_cm !== undefined ? toNumber(data.waist_cm) : (existing?.waist_cm ?? null),
-    hips_cm: data.hips_cm !== undefined ? toNumber(data.hips_cm) : (existing?.hips_cm ?? null),
-    biceps_cm: data.biceps_cm !== undefined ? toNumber(data.biceps_cm) : (existing?.biceps_cm ?? null),
-    quadriceps_cm: data.quadriceps_cm !== undefined ? toNumber(data.quadriceps_cm) : (existing?.quadriceps_cm ?? null),
-    calf_cm: data.calf_cm !== undefined ? toNumber(data.calf_cm) : (existing?.calf_cm ?? null),
-    height_cm: data.height_cm !== undefined ? toNumber(data.height_cm) : (existing?.height_cm ?? null),
-  };
-  const base = existingIndex >= 0
-    ? measurements.filter((_measurement, index) => index !== existingIndex)
-    : measurements;
-  const sorted = dependencies.sortMeasurements([measurement, ...base]).slice(0, 1826);
-  if (context.commitStore) {
-    await context.commitStore((previous) => ({ ...previous, measurements: sorted }));
-  } else {
-    await dependencies.saveMeasurements(sorted);
-    context.setStore?.((previous) => ({ ...previous, measurements: sorted }));
+  const dateResult = validateMeasurementDate(args.date);
+  if (!dateResult.ok) return formatMeasurementIssues(dateResult.issues);
+  const patchResult = parseMeasurementToolPatch(args.data, args.clear_fields);
+  if (!patchResult.ok) return formatMeasurementIssues(patchResult.issues);
+  if (!context.commitStore) return "No se pudo acceder al almacenamiento durable.";
+
+  const measurementId = context.operationId
+    ? `measurement_op_${context.operationId.slice(0, 24)}`
+    : dependencies.createId("measurement");
+  let mutationError: string | null = null;
+  let successMessage = `Medidas guardadas correctamente para ${dateResult.value}.`;
+  await context.commitStore((previous) => {
+    const result = upsertMeasurementByDate(previous.measurements, {
+      date: dateResult.value,
+      patch: patchResult.value,
+      createId: () => measurementId,
+    });
+    if (!result.ok) {
+      mutationError = formatMeasurementIssues(result.issues);
+      return previous;
+    }
+    if (result.action === "updated") {
+      successMessage = `Medidas actualizadas correctamente para ${dateResult.value}.`;
+    }
+    return { ...previous, measurements: result.measurements };
+  });
+  if (mutationError) {
+    return `No se guardaron las medidas. ${mutationError}`;
   }
   context.markEffectCommitted?.();
-  return `Medidas guardadas correctamente para ${date}.`;
+  return successMessage;
 };
 
 const readMealFoods: ToolHandler = async (args, context) => {

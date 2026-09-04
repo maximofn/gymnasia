@@ -52,8 +52,6 @@ function createExecutorWithBackend(fetchImpl: typeof fetch) {
     loadPersonalData: async () => [],
     savePersonalData: async () => {},
     loadMeasurements: async () => [],
-    saveMeasurements: async () => {},
-    sortMeasurements: (measurements: unknown[]) => measurements,
     createId: (prefix: string) => `${prefix}_test`,
     getExerciseImageUrl: () => "",
     submitFeedbackIssue: async (draft: FeedbackIssueDraft): Promise<FeedbackIssueOutcome> => {
