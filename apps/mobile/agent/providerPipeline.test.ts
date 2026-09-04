@@ -259,6 +259,45 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
   });
 });
 
+describe("deteccion de streams cortados", () => {
+  it("un turno completo no se marca como truncado", () => {
+    const result = replayInNetworkChunks(
+      readRawFixture("anthropic-final.sse"),
+      createAnthropicStreamParser(),
+    );
+
+    expect(result.truncated).toBe(false);
+  });
+
+  it("un stream sin message_stop se marca como truncado", () => {
+    // Antes esto llegaba al usuario como una respuesta buena a medias: el
+    // parser terminaba sin ruido y quien llamaba solo miraba el codigo 200.
+    const raw = readRawFixture("anthropic-final.sse");
+    const cortado = raw.slice(0, Math.floor(raw.length * 0.6));
+
+    const result = replayInNetworkChunks(cortado, createAnthropicStreamParser());
+
+    expect(result.truncated).toBe(true);
+  });
+
+  it("un stream vacio se marca como truncado", () => {
+    const parser = createAnthropicStreamParser();
+
+    expect(parser.finish().truncated).toBe(true);
+  });
+
+  it("el evento de error que inyecta el proxy sigue lanzando", () => {
+    const parser = createAnthropicStreamParser();
+
+    expect(() =>
+      parser.push(
+        'event: error\ndata: {"type":"error","error":{"type":"truncated_stream",'
+        + '"message":"El stream de Anthropic termino antes de completarse."}}\n\n',
+      ),
+    ).toThrow("El stream de Anthropic termino antes de completarse.");
+  });
+});
+
 describe("contrato de parsing de llamadas a herramientas", () => {
   it("una respuesta sin llamadas no ejecuta ni continúa ningún proveedor", async () => {
     const openAIExecute = vi.fn(async () => "unused");

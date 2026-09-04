@@ -48,6 +48,12 @@ export type AnthropicStreamTurnResult = {
   thinking: string | null;
   contentBlocks: AnthropicResponseBlock[];
   stopReason: string | null;
+  /**
+   * El stream acabó sin el `message_stop` que lo cierra. Señal de que la
+   * respuesta llegó a medias: sin esto, un corte se ve igual que un turno
+   * completo y el contenido parcial pasa por bueno.
+   */
+  truncated: boolean;
 };
 
 export type GoogleStreamTurnResult = {
@@ -279,6 +285,7 @@ export function createAnthropicStreamParser(handlers?: StreamingHandlers) {
   let streamedContent = "";
   let streamedThinking = "";
   let stopReason: string | null = null;
+  let sawTerminalEvent = false;
   const blocks = new Map<number, AnthropicResponseBlock & { partial_json?: string }>();
   const processEvent = (rawEvent: string) => {
     const event = parseSSEEvent(rawEvent);
@@ -347,6 +354,8 @@ export function createAnthropicStreamParser(handlers?: StreamingHandlers) {
       stopReason = payload.message?.stop_reason
         ?? (typeof payload.delta?.stop_reason === "string" ? payload.delta.stop_reason : null)
         ?? stopReason;
+    } else if (type === "message_stop") {
+      sawTerminalEvent = true;
     }
   };
   const push = (chunk: string) => {
@@ -375,6 +384,7 @@ export function createAnthropicStreamParser(handlers?: StreamingHandlers) {
         thinking: streamedThinking.trim() || null,
         contentBlocks,
         stopReason,
+        truncated: !sawTerminalEvent,
       };
     },
   };
