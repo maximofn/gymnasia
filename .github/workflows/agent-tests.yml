@@ -5,6 +5,7 @@ on:
     paths:
       - "apps/mobile/**"
       - "apps/feedback-worker/**"
+      - "apps/anthropic_proxy/**"
       - "prompts/**"
       - "policy/health-safety/**"
       - "scripts/health-safety/**"
@@ -22,6 +23,7 @@ on:
     paths:
       - "apps/mobile/**"
       - "apps/feedback-worker/**"
+      - "apps/anthropic_proxy/**"
       - "prompts/**"
       - "policy/health-safety/**"
       - "scripts/health-safety/**"
@@ -85,3 +87,26 @@ jobs:
 
       - name: Type-check mobile app
         run: npm --workspace apps/mobile exec tsc --noEmit
+
+  # Job aparte: el proxy es lo unico de Python del repositorio, y asi el job de
+  # Node ni se entera ni se ralentiza. No necesita npm ci: la suite se lanza con
+  # uv, igual que en local.
+  anthropic-proxy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository without traversing legacy gitlinks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -c protocol.version=2 fetch --no-tags --depth=1 origin "$GITHUB_REF"
+          git checkout --detach FETCH_HEAD
+
+      - name: Install uv
+        run: pipx install uv==0.7.14
+
+      - name: Run Anthropic proxy suite
+        run: uv run --project apps/anthropic_proxy --extra dev pytest apps/anthropic_proxy

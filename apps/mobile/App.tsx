@@ -198,6 +198,13 @@ import {
   providerCredential,
 } from "./agent/providerTransport";
 import {
+  anthropicModelsQuery,
+  collectAnthropicModels,
+  parseAnthropicModelOptions,
+  type AnthropicModelCatalog,
+  type AnthropicModelOption,
+} from "./agent/anthropicModels";
+import {
   DIET_MEAL_CATEGORIES,
   NUTRITION_FOOD_TYPES,
   evaluateDietPlan,
@@ -573,7 +580,8 @@ type HealthSafetyConsentState = {
   providers: Record<Provider, boolean>;
   noticeSeen: Record<Provider, boolean>;
 };
-type AnthropicModelOption = { id: string; display_name: string | null };
+// `AnthropicModelOption` vive ahora en ./agent/anthropicModels, junto al
+// recorrido de la paginación, para poder probarse sin arrastrar App.tsx.
 type StreamingHandlers = {
   onContentDelta?: (delta: string, aggregate: string) => void;
   onThinkingDelta?: (delta: string, aggregate: string) => void;
@@ -926,6 +934,8 @@ const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
   "Anthropic en navegador necesita un proxy HTTP por CORS. " +
   "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
   "o abre la app en el movil.";
+const ANTHROPIC_TRUNCATED_STREAM_MESSAGE =
+  "La respuesta de Anthropic se cortó antes de completarse. Vuelve a intentarlo.";
 const FOOD_ESTIMATOR_SYSTEM_PROMPT =
   "Eres Gymnasia Food Estimator, el sistema de inteligencia artificial de la aplicación Gymnasia especializado en estimación visual de comidas. " +
   "Tu tarea es estimar siempre: calorías totales (kcal), gramos de proteína, gramos de carbohidratos, gramos de grasas y peso total de la comida en gramos. " +
@@ -1876,31 +1886,6 @@ function extractErrorMessage(payload: unknown, fallback: string): string {
   return candidate.error?.message ?? candidate.detail ?? candidate.message ?? fallback;
 }
 
-function parseAnthropicModelOptions(payload: unknown): AnthropicModelOption[] {
-  if (!payload || typeof payload !== "object") return [];
-
-  const maybeDirect = payload as {
-    data?: Array<{ id?: string; display_name?: string }>;
-    models?: Array<{ id?: string; display_name?: string }>;
-  };
-  const rawItems = Array.isArray(maybeDirect.models)
-    ? maybeDirect.models
-    : Array.isArray(maybeDirect.data)
-      ? maybeDirect.data
-      : [];
-
-  const dedup = new Map<string, AnthropicModelOption>();
-  rawItems.forEach((item) => {
-    const modelId = item?.id?.trim();
-    if (!modelId) return;
-    dedup.set(modelId, {
-      id: modelId,
-      display_name: item?.display_name?.trim() || null,
-    });
-  });
-  return Array.from(dedup.values());
-}
-
 function parseOpenAIModelOptions(payload: unknown): OpenAIModelOption[] {
   if (!payload || typeof payload !== "object") return [];
 
@@ -1964,31 +1949,45 @@ function parseGoogleModelOptions(payload: unknown): GoogleModelOption[] {
 async function fetchAnthropicModelsViaWebProxy(
   apiKey: string,
   workspaceId?: string,
-): Promise<AnthropicModelOption[]> {
-  if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.anthropic];
+): Promise<AnthropicModelCatalog> {
+  if (IS_FAKE_PROVIDER_MODE) {
+    return {
+      options: [...FAKE_PROVIDER_MODELS.anthropic],
+      pagesFetched: 1,
+      truncated: false,
+      partial: false,
+      warning: null,
+    };
+  }
   try {
-    const response = await fetchProviderConfiguration(buildWebProxyUrl("/chat/providers/anthropic/models"), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(anthropicProxyCredentials(apiKey, workspaceId)),
+    // El proxy ya recorre la paginación y devuelve el catálogo agregado, así
+    // que este bucle termina en la primera vuelta. Se usa el mismo recorrido
+    // que en nativo para que una app nueva contra un proxy viejo —que sí
+    // pagina— siga funcionando.
+    return await collectAnthropicModels(async () => {
+      const response = await fetchProviderConfiguration(buildWebProxyUrl("/chat/providers/anthropic/models"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(anthropicProxyCredentials(apiKey, workspaceId)),
+      });
+
+      let payload: unknown = null;
+      try {
+        payload = await response.json();
+      } catch {
+        // ignore json parse errors
+      }
+
+      if (!response.ok) {
+        throw new Error(explainAnthropicError(
+          extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`),
+        ));
+      }
+
+      return payload;
     });
-
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      throw new Error(explainAnthropicError(
-        extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`),
-      ));
-    }
-
-    return parseAnthropicModelOptions(payload);
   } catch (err) {
     const rawMessage = err instanceof Error ? err.message.trim() : "";
     if (rawMessage.toLowerCase().includes("failed to fetch")) {
@@ -2001,29 +2000,44 @@ async function fetchAnthropicModelsViaWebProxy(
 async function fetchAnthropicModelsDirect(
   apiKey: string,
   workspaceId?: string,
-): Promise<AnthropicModelOption[]> {
-  if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.anthropic];
-  const response = await fetchProviderConfiguration("https://api.anthropic.com/v1/models", {
-    method: "GET",
-    headers: anthropicApiHeaders(apiKey, ANTHROPIC_API_VERSION, workspaceId, {
-      "Content-Type": "application/json",
-    }),
+): Promise<AnthropicModelCatalog> {
+  if (IS_FAKE_PROVIDER_MODE) {
+    return {
+      options: [...FAKE_PROVIDER_MODELS.anthropic],
+      pagesFetched: 1,
+      truncated: false,
+      partial: false,
+      warning: null,
+    };
+  }
+  // En nativo no hay proxy que agregue el catálogo, así que la paginación se
+  // recorre aquí: sin esto, el móvil enseñaba solo la primera página.
+  return collectAnthropicModels(async (afterId) => {
+    const response = await fetchProviderConfiguration(
+      `https://api.anthropic.com/v1/models${anthropicModelsQuery(afterId)}`,
+      {
+        method: "GET",
+        headers: anthropicApiHeaders(apiKey, ANTHROPIC_API_VERSION, workspaceId, {
+          "Content-Type": "application/json",
+        }),
+      },
+    );
+
+    let payload: unknown = null;
+    try {
+      payload = await response.json();
+    } catch {
+      // ignore json parse errors
+    }
+
+    if (!response.ok) {
+      throw new Error(explainAnthropicError(
+        extractErrorMessage(payload, `Anthropic error (${response.status})`),
+      ));
+    }
+
+    return payload;
   });
-
-  let payload: unknown = null;
-  try {
-    payload = await response.json();
-  } catch {
-    // ignore json parse errors
-  }
-
-  if (!response.ok) {
-    throw new Error(explainAnthropicError(
-      extractErrorMessage(payload, `Anthropic error (${response.status})`),
-    ));
-  }
-
-  return parseAnthropicModelOptions(payload);
 }
 
 async function fetchOpenAIModelsDirect(apiKey: string): Promise<OpenAIModelOption[]> {
@@ -2389,7 +2403,15 @@ async function streamAnthropicRequestViaXHR(
 
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
-          resolveOnce(parser.finish());
+          const result = parser.finish();
+          // Un 200 no basta: la conexión puede haberse cortado a mitad y las
+          // cabeceras de éxito ya iban enviadas. Sin este control, una
+          // respuesta incompleta se entregaba como si estuviera entera.
+          if (result.truncated) {
+            rejectOnce(new Error(ANTHROPIC_TRUNCATED_STREAM_MESSAGE));
+            return;
+          }
+          resolveOnce(result);
         } catch (err) {
           rejectOnce(
             err instanceof Error ? err : new Error("No se pudo finalizar el stream de Anthropic."),
@@ -12546,16 +12568,23 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setAnthropicModelOptionsLoading(true);
     setAnthropicModelOptionsMessage(null);
     try {
-      const options =
+      const catalog =
         Platform.OS === "web"
           ? await fetchAnthropicModelsViaWebProxy(apiKey, workspaceId)
           : await fetchAnthropicModelsDirect(apiKey, workspaceId);
 
       if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
-      setAnthropicModelOptions(options);
-      if (options.length === 0) {
+      setAnthropicModelOptions(catalog.options);
+      if (catalog.options.length === 0) {
         setAnthropicModelOptionsMessage({
           text: toMediumProviderDetail("No hay modelos disponibles para esta API key."),
+          severity: "warning",
+        });
+      } else if (catalog.warning) {
+        // Una lista recortada tiene que decirlo: el fallo original no era
+        // enseñar pocos modelos, era enseñarlos aparentando que estaban todos.
+        setAnthropicModelOptionsMessage({
+          text: toMediumProviderDetail(catalog.warning),
           severity: "warning",
         });
       }

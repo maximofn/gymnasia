@@ -45,6 +45,7 @@ El resultado queda en `apps/mobile/dist/` y la configuración de Vercel está en
 Para probar Anthropic localmente antes de un build de desarrollo:
 
 ```bash
+uv sync --project apps/anthropic_proxy --extra dev   # solo la primera vez
 apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py
 EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8000 npm --workspace apps/mobile run web
 ```

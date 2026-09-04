@@ -1,0 +1,7 @@
+{
+  "name": "anthropic-proxy",
+  "private": true,
+  "scripts": {
+    "test": "uv run --project . --extra dev pytest"
+  }
+}
