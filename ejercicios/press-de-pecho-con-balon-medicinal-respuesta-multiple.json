@@ -1,0 +1,14 @@
+{
+  "id": "press-de-pecho-con-balon-medicinal-respuesta-multiple",
+  "name": "Press de pecho con balón medicinal de respuesta múltiple",
+  "image_male": "images/press-de-pecho-con-balon-medicinal-respuesta-multiple-male.webp",
+  "image_female": "images/press-de-pecho-con-balon-medicinal-respuesta-multiple-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "balón medicinal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo un balón medicinal a la altura del pecho. Extiende los brazos hacia adelante, alejando el balón medicinal de tu pecho. Haz una pausa por un momento y luego lleva lentamente el balón medicinal de vuelta al pecho. Repite el número de repeticiones deseado."
+}

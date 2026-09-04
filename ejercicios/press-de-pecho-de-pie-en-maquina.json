@@ -1,0 +1,14 @@
+{
+  "id": "press-de-pecho-de-pie-en-maquina",
+  "name": "Press de pecho de pie en máquina",
+  "image_male": "images/press-de-pecho-de-pie-en-maquina-male.webp",
+  "image_female": "images/press-de-pecho-de-pie-en-maquina-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con los pies planos en el suelo. Agarra las asas con un agarre prono y coloca las manos a la altura del pecho. Empuja las asas hacia adelante hasta que los brazos queden completamente extendidos, manteniendo los codos ligeramente flexionados. Haz una pausa por un momento y luego lleva lentamente las asas de vuelta hacia el pecho, manteniendo el control durante todo el movimiento. Repite el número de repeticiones deseado."
+}

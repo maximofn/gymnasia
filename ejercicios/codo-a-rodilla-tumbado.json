@@ -1,0 +1,14 @@
+{
+  "id": "codo-a-rodilla-tumbado",
+  "name": "Codo a rodilla tumbado",
+  "image_male": "images/codo-a-rodilla-tumbado-male.webp",
+  "image_female": "images/codo-a-rodilla-tumbado-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hip flexors",
+    "zona lumbar"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Activa el abdomen y levanta la parte superior del cuerpo del suelo, llevando el codo derecho hacia la rodilla izquierda. Al mismo tiempo, extiende la pierna derecha en línea recta y levántala del suelo. Haz una pausa breve y luego vuelve a la posición inicial. Repite el movimiento, esta vez llevando el codo izquierdo hacia la rodilla derecha y extendiendo la pierna izquierda. Continúa alternando lados durante el número de repeticiones deseado."
+}

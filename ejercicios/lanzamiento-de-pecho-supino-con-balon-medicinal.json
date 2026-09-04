@@ -1,0 +1,14 @@
+{
+  "id": "lanzamiento-de-pecho-supino-con-balon-medicinal",
+  "name": "Lanzamiento de pecho supino con balón medicinal",
+  "image_male": "images/lanzamiento-de-pecho-supino-con-balon-medicinal-male.webp",
+  "image_female": "images/lanzamiento-de-pecho-supino-con-balon-medicinal-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "balón medicinal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco con las rodillas flexionadas y los pies planos en el suelo. Sostén el balón medicinal con ambas manos, extendiendo los brazos rectos por encima del pecho. Baja el balón medicinal hacia el pecho, manteniendo los codos cerca del cuerpo. Empuja el balón medicinal explosivamente hacia arriba, extendiendo completamente los brazos y lanzando el balón lo más alto posible. Atrapa el balón medicinal y repite el número de repeticiones deseado."
+}

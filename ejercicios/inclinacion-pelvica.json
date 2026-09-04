@@ -1,0 +1,13 @@
+{
+  "id": "inclinacion-pelvica",
+  "name": "Inclinación pélvica",
+  "image_male": "images/inclinacion-pelvica-male.webp",
+  "image_female": "images/inclinacion-pelvica-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "zona lumbar"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos a los lados del cuerpo. Activa el abdomen e inclina la pelvis hacia arriba, presionando la zona lumbar contra el suelo. Mantén esta posición durante unos segundos, concentrándote en contraer el abdomen. Deshaz la inclinación y vuelve a la posición inicial. Repite el número de repeticiones deseado."
+}

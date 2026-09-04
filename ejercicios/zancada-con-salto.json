@@ -1,0 +1,15 @@
+{
+  "id": "zancada-con-salto",
+  "name": "Zancada con salto",
+  "image_male": "images/zancada-con-salto-male.webp",
+  "image_female": "images/zancada-con-salto-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros. Da un paso adelante con el pie derecho, bajando el cuerpo hasta una posición de zancada. Empújate con el pie derecho y salta al aire, cambiando la posición de los pies en pleno vuelo. Aterriza suavemente con el pie izquierdo hacia adelante y baja inmediatamente el cuerpo a una posición de zancada. Continúa alternando entre zancadas y saltos el número de repeticiones deseado."
+}

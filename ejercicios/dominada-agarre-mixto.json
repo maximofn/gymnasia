@@ -1,0 +1,14 @@
+{
+  "id": "dominada-agarre-mixto",
+  "name": "Dominada con agarre mixto",
+  "image_male": "images/dominada-agarre-mixto-male.webp",
+  "image_female": "images/dominada-agarre-mixto-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Agarra la barra de dominadas con un agarre supino (las palmas hacia ti) y las manos un poco más separadas que la anchura de los hombros. Cuélgate de la barra con los brazos completamente extendidos y los pies fuera del suelo. Activa los músculos de la espalda y tira de tu cuerpo hacia la barra, llevando el pecho por delante. Continúa subiendo hasta que la barbilla quede por encima de la barra. Haz una pausa por un momento en la parte alta y luego baja lentamente tu cuerpo, con control, hasta la posición inicial. Repite el número de repeticiones deseado."
+}

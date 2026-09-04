@@ -1,0 +1,13 @@
+{
+  "id": "extension-de-triceps-con-barra-olimpica",
+  "name": "Extensión de tríceps con barra olímpica",
+  "image_male": "images/extension-de-triceps-con-barra-olimpica-male.webp",
+  "image_female": "images/extension-de-triceps-con-barra-olimpica-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "barra olímpica",
+  "difficulty": "intermediate",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros y sosteniendo la barra con un agarre prono. Levanta la barra por encima de la cabeza, extendiendo completamente los brazos. Manteniendo los brazos superiores cerca de la cabeza, baja lentamente la barra detrás de la cabeza flexionando los codos. Haz una pausa por un momento y luego extiende los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

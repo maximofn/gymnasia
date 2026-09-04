@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-lateral-de-cuello",
+  "name": "Estiramiento lateral de cuello",
+  "image_male": "images/estiramiento-lateral-de-cuello-male.webp",
+  "image_female": "images/estiramiento-lateral-de-cuello-female.webp",
+  "muscle_group": "elevador de la escápula",
+  "secondary_muscles": [
+    "trapecios",
+    "sternocleidomastoid"
+  ],
+  "equipment": "ninguno",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie o siéntate erguido con los hombros relajados. Inclina la cabeza hacia un lado, llevando la oreja hacia el hombro. Mantén el estiramiento durante 15-30 segundos. Repite del otro lado. Realiza de 2 a 4 series por cada lado."
+}

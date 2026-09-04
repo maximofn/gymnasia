@@ -1,0 +1,14 @@
+{
+  "id": "remo-alto-lateral-unilateral-en-maquina",
+  "name": "Remo alto lateral unilateral en máquina",
+  "image_male": "images/remo-alto-lateral-unilateral-en-maquina-male.webp",
+  "image_female": "images/remo-alto-lateral-unilateral-en-maquina-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "hombros"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate frente a la máquina. Sujeta el asa con una mano y mantén la espalda recta. Tira del asa hacia el cuerpo, manteniendo el codo cerca del costado. Aprieta los músculos de la espalda en la parte superior del movimiento. Suelta lentamente la agarradera de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

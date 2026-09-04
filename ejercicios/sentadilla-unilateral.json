@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-unilateral",
+  "name": "Sentadilla unilateral",
+  "image_male": "images/sentadilla-unilateral-male.webp",
+  "image_female": "images/sentadilla-unilateral-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Extiende una pierna hacia adelante, manteniéndola elevada del suelo. Flexiona la pierna de apoyo y baja el cuerpo como si te sentaras en una silla. Mantén el pecho arriba y la espalda recta. Empuja con el talón para regresar a la posición inicial. Repite con la otra pierna."
+}

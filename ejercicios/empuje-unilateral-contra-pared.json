@@ -1,0 +1,14 @@
+{
+  "id": "empuje-unilateral-contra-pared",
+  "name": "Empuje unilateral contra pared",
+  "image_male": "images/empuje-unilateral-contra-pared-male.webp",
+  "image_female": "images/empuje-unilateral-contra-pared-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "pared",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a una pared con los pies separados a la altura de los hombros. Extiende un brazo recto hacia adelante y coloca la palma contra la pared. Activa el core e inclina el cuerpo hacia adelante, manteniendo el brazo recto y la espalda plana. Empuja lentamente la pared con la palma, activando los dorsales. Mantén la posición durante unos segundos, luego suelta y repite con el otro brazo."
+}

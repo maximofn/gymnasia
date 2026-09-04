@@ -1,0 +1,14 @@
+{
+  "id": "remo-vertical-agarre-inverso-en-maquina",
+  "name": "Remo vertical con agarre inverso en máquina",
+  "image_male": "images/remo-vertical-agarre-inverso-en-maquina-male.webp",
+  "image_female": "images/remo-vertical-agarre-inverso-en-maquina-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y la posición de la placa para los pies para asegurar una alineación correcta. Siéntate en la máquina con el pecho contra la almohadilla y los pies planos sobre la placa para los pies. Sujeta las asas con un agarre supino, con las palmas hacia arriba. Mantén la espalda recta y activa el core. Tira de las asas hacia el pecho, juntando los omóplatos. Haz una pausa breve en la parte alta del movimiento, luego suelta lentamente y extiende los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

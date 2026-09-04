@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-de-triceps-sobre-la-cabeza",
+  "name": "Estiramiento de tríceps sobre la cabeza",
+  "image_male": "images/estiramiento-de-triceps-sobre-la-cabeza-male.webp",
+  "image_female": "images/estiramiento-de-triceps-sobre-la-cabeza-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie o siéntate erguido con los pies separados a la altura de los hombros. Extiende un brazo por encima de la cabeza, flexionando el codo de modo que la mano llegue hacia la escápula opuesta. Con la otra mano, tira suavemente del codo del brazo extendido hacia el lado opuesto de la cabeza, sintiendo un estiramiento en el tríceps. Mantén el estiramiento durante 15-30 segundos, luego suelta. Repite del otro lado."
+}

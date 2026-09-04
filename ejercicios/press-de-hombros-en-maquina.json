@@ -1,0 +1,14 @@
+{
+  "id": "press-de-hombros-en-maquina",
+  "name": "Press de hombros en máquina",
+  "image_male": "images/press-de-hombros-en-maquina-male.webp",
+  "image_female": "images/press-de-hombros-en-maquina-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "pecho"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda apoyada en el respaldo. Agarra las asas con un agarre prono y coloca las manos a la altura de los hombros. Empuja las asas hacia arriba hasta que los brazos queden completamente extendidos, pero sin bloquear los codos. Haz una pausa breve en lo alto, luego baja lentamente las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

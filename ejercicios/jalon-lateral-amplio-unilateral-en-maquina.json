@@ -1,0 +1,15 @@
+{
+  "id": "jalon-lateral-amplio-unilateral-en-maquina",
+  "name": "Jalón lateral amplio unilateral en máquina",
+  "image_male": "images/jalon-lateral-amplio-unilateral-en-maquina-male.webp",
+  "image_female": "images/jalon-lateral-amplio-unilateral-en-maquina-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "bíceps",
+    "romboides",
+    "deltoides posteriores"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con el pecho contra la almohadilla y los pies planos en el suelo. Sujeta el asa con un agarre prono y extiende el brazo por completo, manteniendo una ligera flexión en el codo. Tira del asa hacia abajo y a través del cuerpo en dirección a la cadera opuesta, apretando el dorsal en la parte baja del movimiento. Devuelve lentamente el asa a la posición inicial, extendiendo el brazo por completo. Repite el número de repeticiones deseado, luego cambia de lado."
+}

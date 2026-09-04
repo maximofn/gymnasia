@@ -1,0 +1,14 @@
+{
+  "id": "fondos-de-triceps-agarre-prono-en-maquina",
+  "name": "Fondos de tríceps con agarre prono en máquina",
+  "image_male": "images/fondos-de-triceps-agarre-prono-en-maquina-male.webp",
+  "image_female": "images/fondos-de-triceps-agarre-prono-en-maquina-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina a la altura adecuada y asegura tu cuerpo en posición. Sujeta las asas con un agarre prono y coloca el cuerpo de modo que los brazos queden completamente extendidos. Baja el cuerpo flexionando los codos, manteniendo los brazos superiores cerca de los costados. Continúa bajando hasta que los brazos superiores queden paralelos al suelo. Haz una pausa breve, luego empújate de vuelta hacia arriba a la posición inicial extendiendo los codos. Repite el número de repeticiones deseado."
+}

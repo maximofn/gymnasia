@@ -1,0 +1,15 @@
+{
+  "id": "elevacion-de-gemelos-sentado-en-prensa-de-piernas",
+  "name": "Elevación de gemelos sentado en prensa de piernas",
+  "image_male": "images/elevacion-de-gemelos-sentado-en-prensa-de-piernas-male.webp",
+  "image_female": "images/elevacion-de-gemelos-sentado-en-prensa-de-piernas-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el asiento de la máquina de prensa de piernas de modo que tus rodillas queden ligeramente flexionadas cuando los pies estén sobre la plataforma. Siéntate en la máquina con la espalda apoyada en el respaldo y los pies planos sobre la plataforma, separados a la altura de los hombros. Coloca los dedos y la planta de los pies sobre la plataforma, manteniendo los talones alejados del borde. Suelta las palancas de seguridad y empuja la plataforma alejándola de ti extendiendo las rodillas. Una vez que tus rodillas estén completamente extendidas, baja lentamente los talones flexionando las pantorrillas. Haz una pausa por un momento en la parte baja y luego empuja la plataforma de nuevo hacia arriba extendiendo las pantorrillas. Repite el número de repeticiones deseado."
+}

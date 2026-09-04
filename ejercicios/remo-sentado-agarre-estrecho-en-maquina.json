@@ -1,0 +1,14 @@
+{
+  "id": "remo-sentado-agarre-estrecho-en-maquina",
+  "name": "Remo sentado con agarre estrecho en máquina",
+  "image_male": "images/remo-sentado-agarre-estrecho-en-maquina-male.webp",
+  "image_female": "images/remo-sentado-agarre-estrecho-en-maquina-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y los apoyapiés para asegurar una postura correcta. Siéntate en la máquina con los pies planos sobre los apoyapiés y las rodillas ligeramente flexionadas. Sujeta las asas con un agarre estrecho, con las palmas una frente a la otra. Mantén la espalda recta e inclínate ligeramente hacia adelante. Tira de las asas hacia el torso, juntando los omóplatos. Haz una pausa breve en la parte alta del movimiento. Suelta lentamente las asas y vuelve a la posición inicial. Repite el número de repeticiones deseado."
+}

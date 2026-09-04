@@ -1,0 +1,14 @@
+{
+  "id": "crunch-sentado-en-maquina-v2",
+  "name": "Crunch sentado en máquina v2",
+  "image_male": "images/crunch-sentado-en-maquina-v2-male.webp",
+  "image_female": "images/crunch-sentado-en-maquina-v2-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "hip flexors"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en la máquina de palanca con la espalda apoyada en el respaldo y los pies sujetos bajo las almohadillas. Coloca las manos en las asas o en los lados del asiento para mayor apoyo. Activa el abdomen y flexiona lentamente el torso hacia adelante, llevando el pecho hacia las rodillas. Haz una pausa por un momento en la parte superior del movimiento, apretando el abdomen. Vuelve lentamente a la posición inicial, dejando que tu espalda se redondee ligeramente. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "cargada-de-potencia",
+  "name": "Cargada de potencia",
+  "image_male": "images/cargada-de-potencia-male.webp",
+  "image_female": "images/cargada-de-potencia-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos",
+    "cuádriceps",
+    "gemelos"
+  ],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Comienza con la barra en el suelo frente a ti, con los pies separados a la altura de los hombros. Agáchate y agarra la barra con un agarre prono, un poco más separado que la anchura de los hombros. Mantén la espalda recta y el pecho hacia arriba al levantar la barra del suelo, extendiendo las caderas y las rodillas. Cuando la barra llegue a la mitad del muslo, tira de ella explosivamente hacia arriba, encogiendo los hombros y llevando los codos hacia arriba y hacia los lados. Cuando la barra alcance su punto más alto, baja rápidamente debajo de ella, rotando los codos y atrapando la barra sobre los hombros en una posición de sentadilla frontal. Ponte de pie con la barra, extendiendo completamente las caderas y las rodillas. Baja la barra de nuevo a la posición inicial, manteniendo el control del peso durante todo el movimiento. Repite el número de repeticiones deseado."
+}

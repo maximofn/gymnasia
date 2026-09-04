@@ -1,0 +1,15 @@
+{
+  "id": "muscle-up-en-barra-vertical",
+  "name": "Muscle-up en barra vertical",
+  "image_male": "images/muscle-up-en-barra-vertical-male.webp",
+  "image_female": "images/muscle-up-en-barra-vertical-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "bíceps",
+    "tríceps",
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza colgándote de una barra vertical con las palmas hacia afuera y los brazos completamente extendidos. Activa el core y tira de tu cuerpo hacia arriba, hacia la barra, guiando con el pecho. Al subir tu cuerpo, inclínate ligeramente hacia atrás y lleva los codos hacia los costados. Sigue tirando hasta que el pecho llegue a la barra y los codos estén completamente flexionados. Haz una pausa breve en la parte más alta, luego baja lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

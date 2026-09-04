@@ -1,0 +1,14 @@
+{
+  "id": "fondos-unilaterales-en-banco",
+  "name": "Fondos unilaterales en banco",
+  "image_male": "images/fondos-unilaterales-en-banco-male.webp",
+  "image_female": "images/fondos-unilaterales-en-banco-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "banco",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie de espaldas a un banco o silla, con los pies separados a la altura de los hombros. Coloca una mano en el banco o silla detrás de ti, con los dedos apuntando hacia tu cuerpo. Extiende las piernas hacia adelante, manteniendo los talones en el suelo. Flexiona los codos y baja el cuerpo hacia el suelo, manteniendo la espalda cerca del banco o silla. Haz una pausa por un momento en la parte baja y luego empuja con las palmas para estirar los brazos y volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado y repite con el otro brazo."
+}

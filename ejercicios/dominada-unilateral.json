@@ -1,0 +1,14 @@
+{
+  "id": "dominada-unilateral",
+  "name": "Dominada unilateral",
+  "image_male": "images/dominada-unilateral-male.webp",
+  "image_female": "images/dominada-unilateral-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie frente a una barra de dominadas con los pies separados a la altura de los hombros. Estírate y agarra la barra con un agarre supino, con una mano sujetando la barra y la otra sosteniendo la muñeca como apoyo. Cuélgate de la barra con el brazo completamente extendido, manteniendo el cuerpo recto y el core activado. Tira de tu cuerpo hacia la barra flexionando el codo y contrayendo los músculos de la espalda. Continúa subiendo hasta que la barbilla quede por encima de la barra, luego bájate lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo y repite."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "curl-lumbar",
+  "name": "Curl lumbar",
+  "image_male": "images/curl-lumbar-male.webp",
+  "image_female": "images/curl-lumbar-female.webp",
+  "muscle_group": "zona lumbar",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca abajo con las piernas extendidas y los brazos a los lados del cuerpo. Activa los glúteos y los isquiotibiales, y eleva lentamente la parte superior del cuerpo del suelo, curvando la espalda hacia arriba. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

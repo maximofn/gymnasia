@@ -1,0 +1,14 @@
+{
+  "id": "flexion-agarre-cerrado-sobre-balon-medicinal",
+  "name": "Flexión con agarre cerrado sobre balón medicinal",
+  "image_male": "images/flexion-agarre-cerrado-sobre-balon-medicinal-male.webp",
+  "image_female": "images/flexion-agarre-cerrado-sobre-balon-medicinal-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "balón medicinal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en una posición de plancha alta con las manos sobre el balón medicinal, separadas a la altura de los hombros. Baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Empuja de vuelta hasta la posición inicial, extendiendo completamente los brazos. Repite el número de repeticiones deseado."
+}

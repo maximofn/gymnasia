@@ -1,0 +1,15 @@
+{
+  "id": "flexion-de-pica-a-cobra",
+  "name": "Flexión de pica a cobra",
+  "image_male": "images/flexion-de-pica-a-cobra-male.webp",
+  "image_female": "images/flexion-de-pica-a-cobra-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "core",
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Activa el core y eleva las caderas hacia el techo, formando una V invertida con tu cuerpo. Baja la parte superior del cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca del cuerpo. Al bajar, desplaza el peso hacia adelante y haz la transición a una postura de cobra estirando los brazos y elevando el pecho. Invierte el movimiento flexionando los codos y bajando el pecho de nuevo hacia el suelo. Empuja con las manos para volver a la posición de V invertida. Continúa el movimiento bajando las caderas de nuevo hacia el suelo, volviendo a la posición inicial de flexión. Repite el número de repeticiones deseado."
+}

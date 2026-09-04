@@ -1,0 +1,15 @@
+{
+  "id": "plancha-power-point",
+  "name": "Plancha power point",
+  "image_male": "images/plancha-power-point-male.webp",
+  "image_female": "images/plancha-power-point-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps",
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de plancha alta con las manos directamente debajo de los hombros y el cuerpo en línea recta de la cabeza a los pies. Activa el core y aprieta los glúteos para mantener una posición estable. Baja el cuerpo hasta los antebrazos, un brazo a la vez, manteniendo una línea recta de la cabeza a los pies. Mantén esta posición durante el tiempo deseado, con el core y los glúteos activados. Para volver a la posición inicial, empuja con los antebrazos y eleva el cuerpo de nuevo a una posición de plancha alta. Repite el número de repeticiones deseado."
+}
