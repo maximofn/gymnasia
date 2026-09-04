@@ -1,0 +1,14 @@
+{
+  "id": "flexion-con-carrera",
+  "name": "Flexión con carrera",
+  "image_male": "images/flexion-con-carrera-male.webp",
+  "image_female": "images/flexion-con-carrera-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de flexión con las manos separadas a la altura de los hombros y el cuerpo en línea recta. Baja el pecho hacia el suelo flexionando los codos, manteniendo el cuerpo recto. Empuja con las manos para extender los brazos y volver a la posición inicial. Lleva rápidamente una rodilla hacia el pecho, luego cambia rápidamente y lleva la otra rodilla hacia el pecho. Continúa alternando las rodillas tan rápido como puedas manteniendo una buena forma. Continúa durante el tiempo o el número de repeticiones deseado."
+}

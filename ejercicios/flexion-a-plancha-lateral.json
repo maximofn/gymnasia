@@ -1,0 +1,14 @@
+{
+  "id": "flexion-a-plancha-lateral",
+  "name": "Flexión a plancha lateral",
+  "image_male": "images/flexion-a-plancha-lateral-male.webp",
+  "image_female": "images/flexion-a-plancha-lateral-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "pecho",
+    "tríceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de flexión con las manos separadas a la altura de los hombros y el cuerpo en línea recta. Baja el cuerpo hacia el suelo flexionando los codos, manteniendo el core activado. Empuja hacia arriba para volver a la posición inicial. Desplaza el peso hacia la mano izquierda y rota el cuerpo hacia la derecha, elevando el brazo derecho hacia el techo. Mantén la posición de plancha lateral durante unos segundos y luego vuelve a la posición inicial. Repite la flexión y la plancha lateral en el lado opuesto. Continúa alternando lados durante el número de repeticiones deseado."
+}

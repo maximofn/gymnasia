@@ -1,0 +1,11 @@
+{
+  "id": "estiramiento-de-gemelo-sentado",
+  "name": "Estiramiento de gemelo sentado",
+  "image_male": "images/estiramiento-de-gemelo-sentado-male.webp",
+  "image_female": "images/estiramiento-de-gemelo-sentado-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el borde de una silla o banco con los pies planos sobre el suelo. Extiende una pierna recta frente a ti, manteniendo el talón en el suelo. Inclínate ligeramente hacia delante, sintiendo un estiramiento en la pantorrilla. Mantén el estiramiento durante 20-30 segundos. Cambia de pierna y repite el estiramiento."
+}

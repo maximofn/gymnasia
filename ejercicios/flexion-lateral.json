@@ -1,0 +1,14 @@
+{
+  "id": "flexion-lateral",
+  "name": "Flexión lateral",
+  "image_male": "images/flexion-lateral-male.webp",
+  "image_female": "images/flexion-lateral-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "pecho",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza tumbado de lado con las piernas extendidas y apiladas una sobre la otra. Coloca la mano de abajo en el suelo directamente debajo del hombro, con los dedos apuntando hacia delante. Empuja con la mano de abajo para levantar el cuerpo del suelo, manteniendo las piernas rectas y el core activado. Extiende el brazo de arriba recto hacia el techo, formando una línea recta desde la cabeza hasta los talones. Baja el cuerpo de nuevo a la posición inicial con control. Repite el número de repeticiones deseado, luego cambia de lado."
+}

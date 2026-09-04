@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-lateral-de-cadera-con-rodillo",
+  "name": "Estiramiento lateral de cadera con rodillo",
+  "image_male": "images/estiramiento-lateral-de-cadera-con-rodillo-male.webp",
+  "image_female": "images/estiramiento-lateral-de-cadera-con-rodillo-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "cuádriceps"
+  ],
+  "equipment": "rodillo de espuma",
+  "difficulty": "beginner",
+  "instructions": "Comienza arrodillándote en el suelo con el rodillo colocado debajo de las caderas. Coloca las manos sobre el rodillo para mayor apoyo. Rueda lentamente el rodillo hacia adelante, extendiendo las caderas y estirando los glúteos. Mantén el estiramiento durante unos segundos, luego regresa a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-de-rana-con-balanceo",
+  "name": "Estiramiento de rana con balanceo",
+  "image_male": "images/estiramiento-de-rana-con-balanceo-male.webp",
+  "image_female": "images/estiramiento-de-rana-con-balanceo-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "cuádriceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Comienza arrodillándote en el suelo con las rodillas separadas a la altura de las caderas. Coloca las manos en el suelo frente a ti para mayor apoyo. Inclínate lentamente hacia adelante, desplazando el peso hacia las manos y extendiendo las piernas detrás de ti. Mantén la espalda recta y activa los glúteos mientras empujas las caderas hacia atrás y hacia arriba en dirección al techo. Mantén esta posición durante unos segundos, sintiendo un estiramiento en los glúteos. Vuelve lentamente a la posición inicial flexionando las rodillas y bajando las caderas de nuevo. Repite el número de repeticiones deseado."
+}

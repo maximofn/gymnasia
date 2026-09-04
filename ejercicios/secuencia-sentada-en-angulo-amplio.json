@@ -1,0 +1,13 @@
+{
+  "id": "secuencia-sentada-en-angulo-amplio",
+  "name": "Secuencia sentada en ángulo amplio",
+  "image_male": "images/secuencia-sentada-en-angulo-amplio-male.webp",
+  "image_female": "images/secuencia-sentada-en-angulo-amplio-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el suelo con las piernas extendidas formando un ángulo amplio. Flexiona los pies y contrae los cuádriceps. Coloca las manos en el suelo detrás de ti para apoyarte. Manteniendo la espalda recta, inclínate hacia delante desde la cadera. Continúa inclinándote hacia delante hasta sentir un estiramiento en los isquiotibiales. Mantén esta posición durante unas cuantas respiraciones. Libera lentamente el estiramiento y vuelve a la posición inicial. Repite el número de repeticiones deseado."
+}

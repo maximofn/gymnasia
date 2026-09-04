@@ -1,0 +1,14 @@
+{
+  "id": "carrera-en-el-sitio-v2",
+  "name": "Carrera en el sitio v2",
+  "image_male": "images/carrera-en-el-sitio-v2-male.webp",
+  "image_female": "images/carrera-en-el-sitio-v2-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Comienza de pie con los pies separados a la altura de la cadera. Activa el core y mantén la parte superior del cuerpo relajada. Comienza a trotar en el lugar, levantando las rodillas hacia el pecho y aterrizando suavemente sobre la punta de los pies. Mantén un ritmo constante y continúa trotando durante la duración o distancia deseada. Recuerda respirar profundamente y mantener una buena postura durante todo el ejercicio."
+}

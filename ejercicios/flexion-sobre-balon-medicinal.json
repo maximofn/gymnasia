@@ -1,0 +1,14 @@
+{
+  "id": "flexion-sobre-balon-medicinal",
+  "name": "Flexión sobre balón medicinal",
+  "image_male": "images/flexion-sobre-balon-medicinal-male.webp",
+  "image_female": "images/flexion-sobre-balon-medicinal-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "balón medicinal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en una posición de plancha alta con las manos sobre el balón medicinal, separadas a la altura de los hombros. Activa el core y baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta. Empuja con las palmas para extender los brazos y regresar a la posición inicial. Repite el número de repeticiones deseado."
+}

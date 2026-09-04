@@ -1,0 +1,13 @@
+{
+  "id": "curl-femoral-inverso-autoasistido-v2",
+  "name": "Curl femoral inverso autoasistido v2",
+  "image_male": "images/curl-femoral-inverso-autoasistido-v2-male.webp",
+  "image_female": "images/curl-femoral-inverso-autoasistido-v2-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo en una máquina de curl femoral con las piernas extendidas y los tobillos enganchados bajo la palanca acolchada. Coloca las manos en las asas laterales de la máquina para apoyarte. Manteniendo la parte superior del cuerpo inmóvil, exhala y flexiona las piernas hacia arriba lo más posible. Mantén la posición contraída durante una pausa breve mientras aprietas los isquiotibiales. Baja lentamente las piernas de vuelta a la posición inicial mientras inhalas. Repite el número de repeticiones deseado."
+}

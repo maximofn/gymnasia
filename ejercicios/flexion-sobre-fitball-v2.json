@@ -1,0 +1,14 @@
+{
+  "id": "flexion-sobre-fitball-v2",
+  "name": "Flexión sobre fitball v2",
+  "image_male": "images/flexion-sobre-fitball-v2-male.webp",
+  "image_female": "images/flexion-sobre-fitball-v2-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "fitball",
+  "difficulty": "intermediate",
+  "instructions": "Coloca el balón de estabilidad en el suelo y ponte boca abajo con las manos sobre el balón, separadas a la altura de los hombros. Extiende las piernas rectas detrás de ti, equilibrándote sobre los dedos de los pies. Activa el core y baja el pecho hacia el balón flexionando los codos, manteniendo el cuerpo en línea recta. Haz una pausa breve en la parte baja, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+}

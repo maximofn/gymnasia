@@ -1,0 +1,15 @@
+{
+  "id": "flexion-con-patada-interior",
+  "name": "Flexión con patada interior",
+  "image_male": "images/flexion-con-patada-interior-male.webp",
+  "image_female": "images/flexion-con-patada-interior-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta y el core activado. Al empujar de vuelta hacia arriba, levanta una pierna del suelo y lánzala hacia el lado, manteniéndola recta. Baja la pierna de nuevo y repite la flexión, luego cambia a la otra pierna. Continúa alternando las patadas de pierna en cada repetición de la flexión."
+}

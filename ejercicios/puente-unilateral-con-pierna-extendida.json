@@ -1,0 +1,13 @@
+{
+  "id": "puente-unilateral-con-pierna-extendida",
+  "name": "Puente unilateral con pierna extendida",
+  "image_male": "images/puente-unilateral-con-pierna-extendida-male.webp",
+  "image_female": "images/puente-unilateral-con-pierna-extendida-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "cuádriceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Extiende una pierna recta hacia delante. Activa los glúteos y levanta las caderas del suelo, formando una línea recta desde las rodillas hasta los hombros. Mantén la posición alta por un momento, luego baja lentamente las caderas de nuevo a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+}

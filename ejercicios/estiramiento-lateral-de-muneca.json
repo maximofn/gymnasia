@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-lateral-de-muneca",
+  "name": "Estiramiento lateral de muñeca",
+  "image_male": "images/estiramiento-lateral-de-muneca-male.webp",
+  "image_female": "images/estiramiento-lateral-de-muneca-female.webp",
+  "muscle_group": "muñecas",
+  "secondary_muscles": [
+    "manos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los brazos extendidos frente a ti. Extiende el brazo derecho hacia el lado, paralelo al suelo, con la palma hacia abajo. Con la mano izquierda, sujeta la mano derecha y tira de ella suavemente hacia tu cuerpo, sintiendo un estiramiento en el antebrazo derecho. Mantén el estiramiento durante 15-30 segundos, luego suelta. Repite del otro lado."
+}

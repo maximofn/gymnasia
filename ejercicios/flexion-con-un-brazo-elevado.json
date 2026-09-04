@@ -1,0 +1,14 @@
+{
+  "id": "flexion-con-un-brazo-elevado",
+  "name": "Flexión con un brazo elevado",
+  "image_male": "images/flexion-con-un-brazo-elevado-male.webp",
+  "image_female": "images/flexion-con-un-brazo-elevado-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Extiende un brazo hacia el lado, paralelo al suelo. Baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta y el core activado. Empuja de vuelta a la posición inicial, usando los músculos del pecho para elevar el cuerpo. Repite con el otro brazo extendido."
+}

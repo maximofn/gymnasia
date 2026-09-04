@@ -1,0 +1,13 @@
+{
+  "id": "abduccion-de-cadera-sentado-con-banda-de-resistencia",
+  "name": "Abducción de cadera sentado con banda de resistencia",
+  "image_male": "images/abduccion-de-cadera-sentado-con-banda-de-resistencia-male.webp",
+  "image_female": "images/abduccion-de-cadera-sentado-con-banda-de-resistencia-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales"
+  ],
+  "equipment": "banda de resistencia",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en una silla o banco con la espalda recta y los pies apoyados en el suelo. Envuelve la banda elástica alrededor de los muslos, justo por encima de las rodillas. Coloca las manos en los lados de la silla o el banco para mayor apoyo. Activa los abductores (los músculos externos del muslo) y empuja lentamente las rodillas hacia afuera, contra la resistencia de la banda. Haz una pausa al final del movimiento y luego junta lentamente las rodillas de nuevo. Repite el número de repeticiones deseado."
+}

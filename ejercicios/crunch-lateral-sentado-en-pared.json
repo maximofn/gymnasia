@@ -1,0 +1,11 @@
+{
+  "id": "crunch-lateral-sentado-en-pared",
+  "name": "Crunch lateral sentado en pared",
+  "image_male": "images/crunch-lateral-sentado-en-pared-male.webp",
+  "image_female": "images/crunch-lateral-sentado-en-pared-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": [],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el suelo con la espalda contra una pared y las piernas extendidas frente a ti. Dobla las rodillas y coloca los pies planos sobre el suelo, separados a la altura de la cadera. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Contrae el abdomen e inclínate hacia un lado, llevando el codo hacia la cadera. Haz una pausa breve y luego vuelve a la posición inicial. Repite del otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "fondos-escapulares",
+  "name": "Fondos escapulares",
+  "image_male": "images/fondos-escapulares-male.webp",
+  "image_female": "images/fondos-escapulares-female.webp",
+  "muscle_group": "romboides",
+  "secondary_muscles": [
+    "deltoides"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros y los brazos extendidos frente a ti. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Baja el cuerpo doblando los codos y retrayendo las escápulas, como si intentaras apretar un lápiz entre ellas. Haz una pausa por un momento en la posición baja, luego empuja con las manos para extender los codos y volver a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-lateral-de-cuello-con-mano",
+  "name": "Estiramiento lateral de cuello con mano",
+  "image_male": "images/estiramiento-lateral-de-cuello-con-mano-male.webp",
+  "image_female": "images/estiramiento-lateral-de-cuello-con-mano-female.webp",
+  "muscle_group": "trapecio",
+  "secondary_muscles": [
+    "esternocleidomastoideo"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie o siéntate erguido con los hombros relajados. Inclina la cabeza hacia la derecha, llevando la oreja derecha hacia el hombro derecho. Coloca la mano derecha en el lado izquierdo de la cabeza y aplica una presión suave para aumentar el estiramiento. Mantén el estiramiento durante 15-30 segundos. Repite hacia el otro lado, inclinando la cabeza hacia la izquierda y aplicando presión con la mano izquierda. Repite el estiramiento 2-3 veces en cada lado."
+}

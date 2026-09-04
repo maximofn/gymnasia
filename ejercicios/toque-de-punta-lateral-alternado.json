@@ -1,0 +1,13 @@
+{
+  "id": "toque-de-punta-lateral-alternado",
+  "name": "Toque de punta lateral alternado",
+  "image_male": "images/toque-de-punta-lateral-alternado-male.webp",
+  "image_female": "images/toque-de-punta-lateral-alternado-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los brazos extendidos hacia los lados. Dobla la cintura hacia la derecha, llevando la mano derecha hacia el pie derecho mientras mantienes la mano izquierda extendida hacia el lado. Vuelve a la posición inicial y luego dobla la cintura hacia la izquierda, llevando la mano izquierda hacia el pie izquierdo mientras mantienes la mano derecha extendida hacia el lado. Repite el movimiento de flexión lateral el número de repeticiones deseado."
+}

@@ -14,6 +14,32 @@
     "instructions": "Siéntate con la espalda apoyada y coloca la parte exterior de las rodillas contra las almohadillas. Mantén los pies en los soportes y abre las piernas empujando las almohadillas hacia fuera sin inclinar el torso. Haz una pausa en la apertura máxima y vuelve lentamente hasta mantener la tensión inicial."
   },
   {
+    "id": "abduccion-de-cadera-sentado-con-banda-de-resistencia",
+    "name": "Abducción de cadera sentado con banda de resistencia",
+    "image_male": "images/abduccion-de-cadera-sentado-con-banda-de-resistencia-male.webp",
+    "image_female": "images/abduccion-de-cadera-sentado-con-banda-de-resistencia-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales"
+    ],
+    "equipment": "banda de resistencia",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en una silla o banco con la espalda recta y los pies apoyados en el suelo. Envuelve la banda elástica alrededor de los muslos, justo por encima de las rodillas. Coloca las manos en los lados de la silla o el banco para mayor apoyo. Activa los abductores (los músculos externos del muslo) y empuja lentamente las rodillas hacia afuera, contra la resistencia de la banda. Haz una pausa al final del movimiento y luego junta lentamente las rodillas de nuevo. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "abduccion-lateral-de-cadera-de-pie",
+    "name": "Abducción lateral de cadera de pie",
+    "image_male": "images/abduccion-lateral-de-cadera-de-pie-male.webp",
+    "image_female": "images/abduccion-lateral-de-cadera-de-pie-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "cuádriceps"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las manos en las caderas. Traslada el peso a una pierna y levanta la pierna opuesta hacia el lado, manteniéndola recta. Haz una pausa por un momento en la posición alta, luego baja lentamente la pierna de nuevo a la posición inicial. Repite del otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+  },
+  {
     "id": "abrazo-fitball-estiramiento-espalda",
     "name": "Abrazo de fitball para estirar la espalda",
     "image_male": "images/abrazo-fitball-estiramiento-espalda-male.webp",
@@ -68,6 +94,19 @@
     "equipment": "polea",
     "difficulty": "beginner",
     "instructions": "Colócate de lado a una polea baja y fija la tobillera a la pierna más cercana. Sujétate a la máquina y mantén ambas piernas casi rectas. Cruza la pierna conectada por delante de la pierna de apoyo hacia la línea media y regresa lentamente sin inclinar el torso."
+  },
+  {
+    "id": "aduccion-de-cadera-tumbado-lateral",
+    "name": "Aducción de cadera tumbado lateral",
+    "image_male": "images/aduccion-de-cadera-tumbado-lateral-male.webp",
+    "image_female": "images/aduccion-de-cadera-tumbado-lateral-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate de lado con las piernas rectas y apiladas una sobre la otra. Coloca el brazo de abajo bajo la cabeza para apoyarte. Activa los aductores y levanta la pierna de arriba lo más alto posible sin rotar las caderas ni inclinarte hacia atrás. Haz una pausa por un momento en la posición alta, luego baja lentamente la pierna de nuevo a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
   },
   {
     "id": "agarre-de-manos-en-maquina",
@@ -996,6 +1035,48 @@
     "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano en agarre prono. Flexiona ligeramente las rodillas y inclínate desde las caderas, bajando la pesa rusa entre las piernas. Extiende explosivamente las caderas, las rodillas y los tobillos, usando el impulso para hacer que la pesa rusa suba hasta la altura del hombro. Cuando la pesa rusa llegue a la altura del hombro, rota la muñeca y lanza la mano recta hacia arriba, bloqueando el brazo por encima de la cabeza. Baja la pesa rusa de vuelta a la posición inicial y repite el número de repeticiones deseado."
   },
   {
+    "id": "carrera-con-zancada-corta",
+    "name": "Carrera con zancada corta",
+    "image_male": "images/carrera-con-zancada-corta-male.webp",
+    "image_female": "images/carrera-con-zancada-corta-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Busca un espacio abierto o una cinta de correr para realizar el ejercicio. Ponte de pie con los pies separados a la altura de la cadera. Comienza a trotar en el lugar, levantando las rodillas alto y moviendo los brazos. Después de unos segundos, comienza a dar pasos cortos hacia delante, manteniendo un ritmo rápido. Continúa corriendo con pasos cortos durante la duración o distancia deseada."
+  },
+  {
+    "id": "carrera-en-el-sitio-v2",
+    "name": "Carrera en el sitio v2",
+    "image_male": "images/carrera-en-el-sitio-v2-male.webp",
+    "image_female": "images/carrera-en-el-sitio-v2-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Comienza de pie con los pies separados a la altura de la cadera. Activa el core y mantén la parte superior del cuerpo relajada. Comienza a trotar en el lugar, levantando las rodillas hacia el pecho y aterrizando suavemente sobre la punta de los pies. Mantén un ritmo constante y continúa trotando durante la duración o distancia deseada. Recuerda respirar profundamente y mantener una buena postura durante todo el ejercicio."
+  },
+  {
+    "id": "carrera-en-el-sitio",
+    "name": "Carrera en el sitio",
+    "image_male": "images/carrera-en-el-sitio-male.webp",
+    "image_female": "images/carrera-en-el-sitio-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Comienza de pie con los pies separados a la altura de la cadera. Activa el core y mantén la parte superior del cuerpo relajada. Comienza a trotar en el lugar, levantando las rodillas hacia el pecho y aterrizando suavemente sobre la punta de los pies. Mantén un ritmo constante y continúa trotando durante la duración o distancia deseada. Recuerda respirar profundamente y mantener una buena postura durante todo el ejercicio."
+  },
+  {
     "id": "circulos-alrededor-mundo-pie-mancuernas",
     "name": "Círculos alrededor del mundo de pie con mancuernas",
     "image_male": "images/circulos-alrededor-mundo-pie-mancuernas-male.webp",
@@ -1352,6 +1433,17 @@
     "instructions": "Túmbate boca arriba con la cabeza próxima a una polea baja y sujeta la agarradera con ambas manos sobre el pecho. Eleva las piernas con las rodillas flexionadas y contrae el abdomen para acercarlas al torso mientras enrollas la pelvis y separas las caderas del suelo. Pausa arriba y desciende lentamente sin perder la tensión del cable."
   },
   {
+    "id": "crunch-inverso-con-rodillo",
+    "name": "Crunch inverso con rodillo",
+    "image_male": "images/crunch-inverso-con-rodillo-male.webp",
+    "image_female": "images/crunch-inverso-con-rodillo-female.webp",
+    "muscle_group": "flexores de cadera",
+    "secondary_muscles": [],
+    "equipment": "rodillo de espuma",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba con los brazos extendidos rectos por encima de la cabeza y las piernas rectas frente a ti. Coloca el rodillo entre los pies y sujétalo con los dedos de los pies. Activando el abdomen, levanta las piernas del suelo y flexiona las rodillas hacia el pecho, rodando el rodillo hacia tu cuerpo. Haz una pausa por un momento en la parte alta y luego baja lentamente las piernas de vuelta a la posición inicial, rodando el rodillo alejándolo de tu cuerpo. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "crunch-inverso-polea",
     "name": "Crunch inverso en polea",
     "image_male": "images/crunch-inverso-polea-male.webp",
@@ -1402,6 +1494,17 @@
     "equipment": "polea",
     "difficulty": "intermediate",
     "instructions": "Ponte de pie de lado a una polea alta y sujeta la agarradera junto a la cabeza con el codo flexionado. Mantén la pelvis estable y flexiona el torso lateralmente llevando el codo hacia la cadera. Contrae los oblicuos y vuelve despacio a la posición vertical antes de completar el otro lado."
+  },
+  {
+    "id": "crunch-lateral-sentado-en-pared",
+    "name": "Crunch lateral sentado en pared",
+    "image_male": "images/crunch-lateral-sentado-en-pared-male.webp",
+    "image_female": "images/crunch-lateral-sentado-en-pared-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en el suelo con la espalda contra una pared y las piernas extendidas frente a ti. Dobla las rodillas y coloca los pies planos sobre el suelo, separados a la altura de la cadera. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Contrae el abdomen e inclínate hacia un lado, llevando el codo hacia la cadera. Haz una pausa breve y luego vuelve a la posición inicial. Repite del otro lado. Continúa alternando lados durante el número de repeticiones deseado."
   },
   {
     "id": "crunch-negativo",
@@ -1561,6 +1664,17 @@
     "equipment": "mancuernas",
     "difficulty": "advanced",
     "instructions": "De pie con una mancuerna en cada mano, eleva los brazos hacia los lados hasta quedar paralelos al suelo y formar una cruz con el cuerpo. Mantén los codos ligeramente flexionados, el abdomen firme y los hombros bajos. Sostén brevemente y baja de forma controlada."
+  },
+  {
+    "id": "cuarto-de-sit-up",
+    "name": "Cuarto de sit-up",
+    "image_male": "images/cuarto-de-sit-up-male.webp",
+    "image_female": "images/cuarto-de-sit-up-female.webp",
+    "muscle_group": "flexores de cadera",
+    "secondary_muscles": [],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Activando el abdomen, levanta lentamente la parte superior del cuerpo del suelo, curvándote hacia adelante hasta que tu torso forme un ángulo de 45 grados. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "cuerdas-batalla",
@@ -2520,6 +2634,17 @@
     "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda apoyada en la almohadilla. Sujeta las asas con un agarre supino, con las palmas hacia arriba, y mantén los codos cerca de los costados. Exhala y flexiona las asas hacia arriba, contrayendo los bíceps. Haz una pausa breve en la parte más alta del movimiento, contrayendo los bíceps. Inhala y baja lentamente los mangos de vuelta a la posición inicial, extendiendo completamente los brazos. Repite el número de repeticiones deseado."
   },
   {
+    "id": "curl-de-biceps-sentado-con-banda-de-resistencia",
+    "name": "Curl de bíceps sentado con banda de resistencia",
+    "image_male": "images/curl-de-biceps-sentado-con-banda-de-resistencia-male.webp",
+    "image_female": "images/curl-de-biceps-sentado-con-banda-de-resistencia-female.webp",
+    "muscle_group": "antebrazos",
+    "secondary_muscles": [],
+    "equipment": "banda de resistencia",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en una silla o banco con la espalda recta y los pies apoyados en el suelo. Sostén la banda elástica con un agarre supino, con las palmas hacia arriba y los brazos extendidos a los lados del cuerpo. Manteniendo la parte superior de los brazos inmóvil, exhala y flexiona la banda elástica hacia los hombros. Haz una pausa breve en la parte alta, apretando los bíceps. Inhala y baja lentamente la banda elástica de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "curl-dedos-barra",
     "name": "Curl de dedos con barra",
     "image_male": "images/curl-dedos-barra-male.webp",
@@ -2572,6 +2697,45 @@
     "equipment": "fitball",
     "difficulty": "advanced",
     "instructions": "Comienza acostado sobre la espalda con las piernas extendidas y los talones apoyados sobre el balón de estabilidad. Coloca los brazos a los lados del cuerpo para mantener el equilibrio. Activa los glúteos y el abdomen para levantar las caderas del suelo, formando una línea recta desde los hombros hasta los talones. Dobla la rodilla derecha y llévala hacia el pecho, manteniendo la pierna izquierda extendida y el pie en flexión. Lleva la pierna derecha en diagonal a través del cuerpo, extendiéndola por completo y activando los isquiotibiales. Regresa lentamente la pierna derecha a la posición inicial, manteniendo el control y el equilibrio. Repite el movimiento con la pierna izquierda, alternando los lados durante el número de repeticiones deseado."
+  },
+  {
+    "id": "curl-femoral-inverso-autoasistido-en-suelo",
+    "name": "Curl femoral inverso autoasistido en suelo",
+    "image_male": "images/curl-femoral-inverso-autoasistido-en-suelo-male.webp",
+    "image_female": "images/curl-femoral-inverso-autoasistido-en-suelo-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate sobre tu espalda con las piernas extendidas y los brazos a los lados. Dobla las rodillas y coloca los pies planos sobre el suelo, separados a la altura de la cadera. Levanta las caderas del suelo, activando los glúteos y los isquiotibiales. Flexiona lentamente las piernas hacia los glúteos, manteniendo las caderas elevadas. Haz una pausa breve en la parte superior, luego extiende lentamente las piernas de vuelta a la posición inicial. Baja las caderas de nuevo hacia el suelo. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "curl-femoral-inverso-autoasistido-v2",
+    "name": "Curl femoral inverso autoasistido v2",
+    "image_male": "images/curl-femoral-inverso-autoasistido-v2-male.webp",
+    "image_female": "images/curl-femoral-inverso-autoasistido-v2-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca abajo en una máquina de curl femoral con las piernas extendidas y los tobillos enganchados bajo la palanca acolchada. Coloca las manos en las asas laterales de la máquina para apoyarte. Manteniendo la parte superior del cuerpo inmóvil, exhala y flexiona las piernas hacia arriba lo más posible. Mantén la posición contraída durante una pausa breve mientras aprietas los isquiotibiales. Baja lentamente las piernas de vuelta a la posición inicial mientras inhalas. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "curl-femoral-inverso-autoasistido",
+    "name": "Curl femoral inverso autoasistido",
+    "image_male": "images/curl-femoral-inverso-autoasistido-male.webp",
+    "image_female": "images/curl-femoral-inverso-autoasistido-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba sobre una esterilla o banco con las piernas extendidas. Coloca las manos a los lados o debajo de los glúteos para apoyarte. Dobla las rodillas y levanta los pies del suelo, llevando los muslos hacia el pecho. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "curl-femoral-inverso-banco",
@@ -3958,6 +4122,19 @@
     "instructions": "Túmbate boca arriba con los brazos apuntando al techo y las caderas y rodillas flexionadas a 90 grados. Presiona suavemente la zona lumbar contra el suelo. Extiende a la vez un brazo por detrás de la cabeza y la pierna contraria sin que lleguen a tocar el suelo. Regresa al centro con control y alterna el lado manteniendo el abdomen activo."
   },
   {
+    "id": "deslizamiento-unilateral-en-plataforma",
+    "name": "Deslizamiento unilateral en plataforma",
+    "image_male": "images/deslizamiento-unilateral-en-plataforma-male.webp",
+    "image_female": "images/deslizamiento-unilateral-en-plataforma-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "cuádriceps"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza de pie con un pie sobre una plataforma o tabla deslizante. Dobla ligeramente la rodilla y desliza el pie sobre la plataforma hacia atrás, extendiendo la pierna. Mantén el core activado y conserva una postura recta durante todo el movimiento. Vuelve lentamente a la posición inicial deslizando el pie de regreso a la posición inicial. Repite el movimiento el número de repeticiones deseado y luego cambia de pierna."
+  },
+  {
     "id": "doble-cargada-colgante-alternada-con-pesas-rusas",
     "name": "Doble cargada colgante alternada con pesas rusas",
     "image_male": "images/doble-cargada-colgante-alternada-con-pesas-rusas-male.webp",
@@ -4100,6 +4277,45 @@
     "instructions": "Ajusta el contrapeso, apoya las rodillas en la plataforma y toma las asas paralelas con las palmas enfrentadas y las manos juntas. Activa los hombros y sube llevando los codos hacia las costillas hasta superar las asas con la barbilla. Desciende lentamente sin dejar que la plataforma rebote."
   },
   {
+    "id": "dominada-con-agarre-a-la-altura-de-los-hombros",
+    "name": "Dominada con agarre a la altura de los hombros",
+    "image_male": "images/dominada-con-agarre-a-la-altura-de-los-hombros-male.webp",
+    "image_female": "images/dominada-con-agarre-a-la-altura-de-los-hombros-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Sujeta la barra de dominadas con un agarre a la altura de los hombros, con las palmas mirando hacia fuera. Cuélgate libremente con los brazos completamente extendidos. Activa los músculos de la espalda y tira de tu cuerpo hacia la barra hasta que la barbilla quede por encima de ella. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "dominada-con-agarre-inverso",
+    "name": "Dominada con agarre inverso",
+    "image_male": "images/dominada-con-agarre-inverso-male.webp",
+    "image_female": "images/dominada-con-agarre-inverso-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Agarra la barra de dominadas con un agarre supino, con las manos separadas a la altura de los hombros. Cuélgate de la barra con los brazos completamente extendidos y el cuerpo recto. Activa los músculos de la espalda y tira de tu cuerpo hacia la barra, llevando el pecho por delante. Continúa subiendo hasta que la barbilla quede por encima de la barra. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "dominada-con-desplazamiento-lateral",
+    "name": "Dominada con desplazamiento lateral",
+    "image_male": "images/dominada-con-desplazamiento-lateral-male.webp",
+    "image_female": "images/dominada-con-desplazamiento-lateral-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Sujeta una barra de dominadas con un agarre prono, con las manos un poco más separadas que el ancho de los hombros. Cuélgate de la barra con los brazos completamente extendidos y el cuerpo relajado. Levántate doblando los codos y llevando la barbilla hacia la barra, manteniendo el cuerpo recto. Una vez que la barbilla esté por encima de la barra, bájate de nuevo a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "dominada-en-l",
     "name": "Dominada en L",
     "image_male": "images/dominada-en-l-male.webp",
@@ -4112,6 +4328,20 @@
     "equipment": "peso corporal",
     "difficulty": "advanced",
     "instructions": "Sujeta la barra de dominadas con un agarre prono, un poco más ancho que la altura de los hombros. Cuélgate con los brazos completamente extendidos y el cuerpo recto. Activa los dorsales y los bíceps para llevar el cuerpo hacia arriba en dirección a la barra, manteniendo los codos cerca del cuerpo. Continúa subiendo hasta que la barbilla quede por encima de la barra. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "dominada-escapular",
+    "name": "Dominada escapular",
+    "image_male": "images/dominada-escapular-male.webp",
+    "image_female": "images/dominada-escapular-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "romboides",
+      "rear deltoids"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza colgándote de una barra de dominadas con las palmas hacia afuera y los brazos completamente extendidos. Retrae las escápulas llevándolas hacia abajo y atrás. Activa los músculos de la espalda y tira de tu cuerpo hacia la barra, enfocándote en juntar las escápulas. Haz una pausa breve en la parte superior del movimiento, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "dominada-esternon-gironda",
@@ -4141,6 +4371,19 @@
     "equipment": "barra de dominadas",
     "difficulty": "advanced",
     "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Sujeta una barra de dominadas con agarre prono, ligeramente más ancho que la altura de los hombros. Cuélgate de la barra con los brazos completamente extendidos y las palmas hacia afuera. Activa el core y tira del cuerpo hacia la barra, llevando la barbilla por encima de la barra. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "dominada-posterior",
+    "name": "Dominada posterior",
+    "image_male": "images/dominada-posterior-male.webp",
+    "image_female": "images/dominada-posterior-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Sujeta la barra de dominadas con un agarre prono, un poco más ancho que la altura de los hombros. Cuélgate de la barra con los brazos completamente extendidos y el cuerpo recto. Activa los músculos de la espalda y tira de tu cuerpo hacia arriba, hacia la barra, manteniendo los codos cerca del cuerpo. Continúa subiendo hasta que la barbilla quede por encima de la barra. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "dominada-prona-asistida-maquina-de-pie",
@@ -4184,6 +4427,19 @@
     "equipment": "barra de dominadas",
     "difficulty": "intermediate",
     "instructions": "Cuélgate con agarre prono a la anchura de los hombros. Inicia el movimiento bajando las escápulas y flexiona los codos para acercar el pecho a la barra sin balancearte. Haz una pausa arriba y baja con control hasta recuperar la extensión completa."
+  },
+  {
+    "id": "dominada-rocky-con-jalon",
+    "name": "Dominada Rocky con jalón",
+    "image_male": "images/dominada-rocky-con-jalon-male.webp",
+    "image_female": "images/dominada-rocky-con-jalon-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie frente a una barra de dominadas con los pies separados a la altura de los hombros. Estira los brazos hacia arriba y agarra la barra con agarre prono, ligeramente más ancho que la altura de los hombros. Cuélgate de la barra con los brazos completamente extendidos y el cuerpo recto. Activa los músculos de la espalda y tira de tu cuerpo hacia la barra, llevando el pecho por delante. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "dominada-supina-agarre-cerrado",
@@ -4451,6 +4707,19 @@
     "instructions": "Ponte de pie con los pies separados a la altura de los hombros, con las puntas de los pies apuntando hacia adelante. Coloca las manos sobre una superficie estable para apoyarte, como una pared o una barra. Levanta una pierna del suelo, manteniendo la rodilla ligeramente flexionada. Eleva el talón lo más alto posible, usando los músculos de la pantorrilla. Haz una pausa por un momento en la parte superior, luego baja lentamente el talón de vuelta hacia abajo. Repite el número de repeticiones deseado, luego cambia de pierna."
   },
   {
+    "id": "elevacion-de-gemelo-unilateral-con-mancuerna",
+    "name": "Elevación de gemelo unilateral con mancuerna",
+    "image_male": "images/elevacion-de-gemelo-unilateral-con-mancuerna-male.webp",
+    "image_female": "images/elevacion-de-gemelo-unilateral-con-mancuerna-female.webp",
+    "muscle_group": "tobillos",
+    "secondary_muscles": [
+      "pies"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de la cadera y sujeta una mancuerna en una mano. Levanta un pie del suelo y mantén el equilibrio sobre el otro pie. Eleva lentamente el talón lo más alto posible, usando los músculos de la pantorrilla. Haz una pausa por un momento en la parte superior, luego baja lentamente el talón de vuelta hacia abajo. Repite el número de repeticiones deseado, luego cambia a la otra pierna."
+  },
+  {
     "id": "elevacion-de-gemelo-unilateral-en-suelo",
     "name": "Elevación de gemelo unilateral en suelo",
     "image_male": "images/elevacion-de-gemelo-unilateral-en-suelo-male.webp",
@@ -4491,6 +4760,19 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Ajusta la máquina a tu altura y ponte de pie con los pies separados a la altura de los hombros. Coloca los hombros debajo de las almohadillas y sujétate de las asas para mayor estabilidad. Eleva los talones tan alto como puedas extendiendo los tobillos. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "elevacion-de-gemelos-inclinada-en-trineo",
+    "name": "Elevación de gemelos inclinada en trineo",
+    "image_male": "images/elevacion-de-gemelos-inclinada-en-trineo-male.webp",
+    "image_female": "images/elevacion-de-gemelos-inclinada-en-trineo-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta la máquina de trineo a un peso cómodo y colócate en la máquina con la punta de los pies sobre la plataforma y los talones colgando. Coloca las manos en las asas o a los lados de la máquina para apoyarte. Activa las pantorrillas y eleva lentamente los talones lo más alto posible, empujando contra la resistencia del trineo. Haz una pausa breve en la parte alta del movimiento, luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "elevacion-de-gemelos-rotatoria-en-maquina",
@@ -4547,6 +4829,17 @@
     "equipment": "máquina",
     "difficulty": "intermediate",
     "instructions": "Siéntate en la máquina de palanca con la espalda apoyada en el respaldo y los pies sobre los apoyapiés. Sujeta las asas o las barras laterales para mayor estabilidad. Activa el abdomen y eleva lentamente las piernas hacia el pecho, mientras curvas el torso hacia adelante al mismo tiempo. Haz una pausa por un momento en la parte alta y luego baja lentamente las piernas y el torso a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "elevacion-de-piernas-sentado",
+    "name": "Elevación de piernas sentado",
+    "image_male": "images/elevacion-de-piernas-sentado-male.webp",
+    "image_female": "images/elevacion-de-piernas-sentado-female.webp",
+    "muscle_group": "flexores de cadera",
+    "secondary_muscles": [],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate en un banco plano con la espalda recta y los pies planos sobre el suelo. Coloca las manos a los lados del banco para apoyarte. Manteniendo las piernas rectas, levántalas lentamente frente a ti hasta que queden paralelas al suelo. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "elevacion-de-piernas-y-cadera-tumbado",
@@ -5142,6 +5435,19 @@
     "equipment": "mancuernas y banco",
     "difficulty": "intermediate",
     "instructions": "Siéntate en un banco con la espalda recta y los pies planos sobre el suelo. Sujeta una mancuerna en cada mano con las palmas hacia tu cuerpo y los brazos flexionados en un ángulo de 90 grados. Manteniendo los codos flexionados, levanta los brazos hacia los lados hasta que queden paralelos al suelo. Haz una pausa por un momento en la parte superior, luego baja lentamente los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "elevacion-lateral-de-cadera-en-paralelas",
+    "name": "Elevación lateral de cadera en paralelas",
+    "image_male": "images/elevacion-lateral-de-cadera-en-paralelas-male.webp",
+    "image_female": "images/elevacion-lateral-de-cadera-en-paralelas-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie entre dos barras paralelas con los pies separados a la altura de los hombros. Coloca las manos sobre las barras y levanta el cuerpo del suelo, apoyando tu peso en los brazos. Contrae el abdomen y levanta lentamente las piernas hacia el lado, manteniéndolas rectas. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "elevacion-lateral-en-maquina",
@@ -5810,6 +6116,19 @@
     "instructions": "Cuélgate de una barra con los brazos extendidos y estabiliza los hombros. Mantén las piernas juntas y eleva los pies por delante flexionando las caderas hasta que las piernas queden al menos paralelas al suelo. Evita balancearte o tomar impulso. Haz una pausa breve y baja las piernas lentamente hasta recuperar la posición inicial."
   },
   {
+    "id": "empuje-de-cadera-de-rodillas-con-banda",
+    "name": "Empuje de cadera de rodillas con banda",
+    "image_male": "images/empuje-de-cadera-de-rodillas-con-banda-male.webp",
+    "image_female": "images/empuje-de-cadera-de-rodillas-con-banda-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "cuádriceps"
+    ],
+    "equipment": "banda de resistencia",
+    "difficulty": "intermediate",
+    "instructions": "Comienza arrodillándote en el suelo con las rodillas separadas a la altura de las caderas y los pies flexionados. Envuelve la banda elástica alrededor de los muslos, justo por encima de las rodillas. Coloca las manos en las caderas o extiéndelas frente a ti para mantener el equilibrio. Activa los glúteos y los músculos del core. Empuja las caderas hacia adelante y aprieta los glúteos mientras levantas las rodillas del suelo, extendiendo las caderas hasta que los muslos queden paralelos al suelo. Mantén la posición por un momento y luego baja lentamente las rodillas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "empuje-unilateral-contra-pared",
     "name": "Empuje unilateral contra pared",
     "image_male": "images/empuje-unilateral-contra-pared-male.webp",
@@ -6033,6 +6352,33 @@
     "instructions": "Coloca la tabla sobre una superficie plana y sube un pie en el centro. Transfiere el peso poco a poco, manteniendo la rodilla ligeramente flexionada y el abdomen activo. Sostén la posición evitando que los bordes toquen el suelo y cambia de pierna."
   },
   {
+    "id": "ergometro-de-esqui",
+    "name": "Ergómetro de esquí",
+    "image_male": "images/ergometro-de-esqui-male.webp",
+    "image_female": "images/ergometro-de-esqui-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "máquina SkiErg",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta la resistencia del SkiErg. Ponte de pie frente a la máquina, con los pies separados a la anchura de las caderas, y agarra un asa con cada mano por encima de la cabeza. Flexiona ligeramente las rodillas y las caderas mientras tiras de ambas asas hacia abajo hasta los muslos, manteniendo el core firme y los brazos casi extendidos. Regresa de forma controlada a la posición inicial y repite."
+  },
+  {
+    "id": "escalada-de-cuerda",
+    "name": "Escalada de cuerda",
+    "image_male": "images/escalada-de-cuerda-male.webp",
+    "image_female": "images/escalada-de-cuerda-female.webp",
+    "muscle_group": "antebrazos",
+    "secondary_muscles": [
+      "bíceps",
+      "hombros"
+    ],
+    "equipment": "cuerda",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie frente a la cuerda con los pies separados a la altura de los hombros. Sujeta la cuerda con ambas manos, con las palmas mirando hacia ti. Flexiona ligeramente las rodillas y activa el core. Comienza a subir por la cuerda alternando los movimientos de las manos. Usa las piernas para ayudar en el movimiento ascendente. Continúa trepando hasta alcanzar la altura deseada o la parte superior de la cuerda. Para descender, invierte el movimiento alterno de las manos mientras controlas tu descenso. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "escalador-cruzado",
     "name": "Escalador cruzado",
     "image_male": "images/escalador-cruzado-male.webp",
@@ -6133,6 +6479,19 @@
     "instructions": "Túmbate boca abajo con las piernas extendidas. Flexiona una rodilla, agarra el tobillo del mismo lado y acerca suavemente el talón al glúteo manteniendo ambas caderas contra el suelo. Sostén el estiramiento sin arquear la espalda, suelta despacio y cambia de pierna."
   },
   {
+    "id": "estiramiento-de-cadera-con-rodillo",
+    "name": "Estiramiento de cadera con rodillo",
+    "image_male": "images/estiramiento-de-cadera-con-rodillo-male.webp",
+    "image_female": "images/estiramiento-de-cadera-con-rodillo-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "cuádriceps"
+    ],
+    "equipment": "rodillo de espuma",
+    "difficulty": "beginner",
+    "instructions": "Comienza sentándote en el suelo con las piernas extendidas frente a ti. Coloca el rodillo debajo de los glúteos, justo por encima de las rodillas. Inclínate hacia atrás y coloca las manos en el suelo detrás de ti para apoyarte. Activa los glúteos y rueda lentamente el rodillo hacia adelante, flexionando las rodillas y llevándolas hacia el pecho. Haz una pausa al final del movimiento, sintiendo un estiramiento en los glúteos. Rueda lentamente el rodillo de vuelta a la posición inicial, extendiendo las piernas. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "estiramiento-de-cuadriceps-tumbado-lateral",
     "name": "Estiramiento de cuádriceps tumbado lateral",
     "image_male": "images/estiramiento-de-cuadriceps-tumbado-lateral-male.webp",
@@ -6144,6 +6503,41 @@
     "equipment": "peso corporal",
     "difficulty": "beginner",
     "instructions": "Túmbate de lado con las piernas rectas. Flexiona la pierna de arriba y agarra tu tobillo o pie con la mano. Tira suavemente del tobillo o del pie hacia los glúteos hasta sentir un estiramiento en los cuádriceps. Mantén el estiramiento durante 20-30 segundos. Suelta el estiramiento y repite del otro lado."
+  },
+  {
+    "id": "estiramiento-de-espalda-con-rodillo",
+    "name": "Estiramiento de espalda con rodillo",
+    "image_male": "images/estiramiento-de-espalda-con-rodillo-male.webp",
+    "image_female": "images/estiramiento-de-espalda-con-rodillo-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "rodillo de espuma",
+    "difficulty": "beginner",
+    "instructions": "Comienza sentándote en el suelo con las piernas extendidas frente a ti. Coloca el rodillo perpendicular a tu cuerpo, justo debajo de los glúteos. Rueda lentamente el cuerpo hacia atrás, dejando que el rodillo se desplace hacia arriba por tu espalda. Continúa rodando hasta que el rodillo llegue a la parte superior de tu espalda. Haz una pausa por un momento y luego rueda lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "estiramiento-de-gemelo-sentado",
+    "name": "Estiramiento de gemelo sentado",
+    "image_male": "images/estiramiento-de-gemelo-sentado-male.webp",
+    "image_female": "images/estiramiento-de-gemelo-sentado-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en el borde de una silla o banco con los pies planos sobre el suelo. Extiende una pierna recta frente a ti, manteniendo el talón en el suelo. Inclínate ligeramente hacia delante, sintiendo un estiramiento en la pantorrilla. Mantén el estiramiento durante 20-30 segundos. Cambia de pierna y repite el estiramiento."
+  },
+  {
+    "id": "estiramiento-de-gluteo-sentado",
+    "name": "Estiramiento de glúteo sentado",
+    "image_male": "images/estiramiento-de-gluteo-sentado-male.webp",
+    "image_female": "images/estiramiento-de-gluteo-sentado-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti. Dobla la rodilla derecha y cruza el tobillo derecho sobre el muslo izquierdo. Coloca la mano derecha en el suelo detrás de ti para apoyarte. Con la mano izquierda, presiona suavemente la rodilla derecha para profundizar el estiramiento. Mantén el estiramiento durante 30 segundos a 1 minuto. Cambia de lado y repite."
   },
   {
     "id": "estiramiento-de-isquiotibiales-con-pierna-elevada",
@@ -6173,6 +6567,19 @@
     "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti. Enrolla la cuerda alrededor de la planta del pie y sujeta los extremos de la cuerda con las manos. Tira suavemente de la cuerda hacia ti, flexionando el pie y estirando los músculos de la pantorrilla. Mantén el estiramiento durante 15-30 segundos. Suelta la tensión de la cuerda y repite el estiramiento en la otra pierna. Repite el número de repeticiones deseado."
   },
   {
+    "id": "estiramiento-de-rana-con-balanceo",
+    "name": "Estiramiento de rana con balanceo",
+    "image_male": "images/estiramiento-de-rana-con-balanceo-male.webp",
+    "image_female": "images/estiramiento-de-rana-con-balanceo-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "cuádriceps"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Comienza arrodillándote en el suelo con las rodillas separadas a la altura de las caderas. Coloca las manos en el suelo frente a ti para mayor apoyo. Inclínate lentamente hacia adelante, desplazando el peso hacia las manos y extendiendo las piernas detrás de ti. Mantén la espalda recta y activa los glúteos mientras empujas las caderas hacia atrás y hacia arriba en dirección al techo. Mantén esta posición durante unos segundos, sintiendo un estiramiento en los glúteos. Vuelve lentamente a la posición inicial flexionando las rodillas y bajando las caderas de nuevo. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "estiramiento-de-triceps-sobre-la-cabeza",
     "name": "Estiramiento de tríceps sobre la cabeza",
     "image_male": "images/estiramiento-de-triceps-sobre-la-cabeza-male.webp",
@@ -6184,6 +6591,43 @@
     "equipment": "peso corporal",
     "difficulty": "beginner",
     "instructions": "Ponte de pie o siéntate erguido con los pies separados a la altura de los hombros. Extiende un brazo por encima de la cabeza, flexionando el codo de modo que la mano llegue hacia la escápula opuesta. Con la otra mano, tira suavemente del codo del brazo extendido hacia el lado opuesto de la cabeza, sintiendo un estiramiento en el tríceps. Mantén el estiramiento durante 15-30 segundos, luego suelta. Repite del otro lado."
+  },
+  {
+    "id": "estiramiento-del-corredor",
+    "name": "Estiramiento del corredor",
+    "image_male": "images/estiramiento-del-corredor-male.webp",
+    "image_female": "images/estiramiento-del-corredor-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "cuádriceps"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de la cadera. Da un paso hacia delante con el pie derecho, manteniendo el pie izquierdo firme en el suelo. Dobla la rodilla derecha y baja el cuerpo, manteniendo la pierna izquierda recta. Coloca las manos sobre el muslo derecho para apoyarte. Mantén el estiramiento durante 20-30 segundos, luego cambia de lado y repite."
+  },
+  {
+    "id": "estiramiento-del-deltoides-posterior",
+    "name": "Estiramiento del deltoides posterior",
+    "image_male": "images/estiramiento-del-deltoides-posterior-male.webp",
+    "image_female": "images/estiramiento-del-deltoides-posterior-female.webp",
+    "muscle_group": "trapecio",
+    "secondary_muscles": [
+      "romboides"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros. Extiende el brazo derecho a través del pecho, colocando la mano izquierda sobre el codo derecho. Tira suavemente del brazo derecho hacia el hombro izquierdo, sintiendo un estiramiento en el hombro derecho. Mantén el estiramiento durante 15-30 segundos, luego suelta. Repite del otro lado."
+  },
+  {
+    "id": "estiramiento-del-piriforme-sentado",
+    "name": "Estiramiento del piriforme sentado",
+    "image_male": "images/estiramiento-del-piriforme-sentado-male.webp",
+    "image_female": "images/estiramiento-del-piriforme-sentado-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti. Dobla la rodilla derecha y coloca el pie derecho en la parte exterior de la rodilla izquierda. Coloca el codo izquierdo en la parte exterior de la rodilla derecha y gira suavemente el torso hacia la derecha. Mantén el estiramiento durante 20-30 segundos, luego cambia de lado y repite."
   },
   {
     "id": "estiramiento-del-tibial-posterior-con-cuerda",
@@ -6376,6 +6820,32 @@
     "instructions": "Siéntate en el balón de estabilidad con los pies planos en el suelo y las rodillas flexionadas en un ángulo de 90 grados. Haz rodar el balón lentamente hacia adelante, caminando con los pies hacia afuera hasta que la parte superior de la espalda quede apoyada sobre el balón y las piernas queden extendidas rectas frente a ti. Coloca las manos en las caderas para mayor apoyo. Activa el core y baja lentamente la parte superior del cuerpo hacia el suelo, manteniendo la espalda recta y el pecho elevado. Detente cuando sientas un estiramiento en los isquiotibiales y mantén la posición durante 20-30 segundos. Regresa lentamente a la posición inicial empujando con los talones y usando los isquiotibiales para volver a subir. Repite el número de repeticiones deseado."
   },
   {
+    "id": "estiramiento-lateral-de-cadera-con-rodillo",
+    "name": "Estiramiento lateral de cadera con rodillo",
+    "image_male": "images/estiramiento-lateral-de-cadera-con-rodillo-male.webp",
+    "image_female": "images/estiramiento-lateral-de-cadera-con-rodillo-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "cuádriceps"
+    ],
+    "equipment": "rodillo de espuma",
+    "difficulty": "beginner",
+    "instructions": "Comienza arrodillándote en el suelo con el rodillo colocado debajo de las caderas. Coloca las manos sobre el rodillo para mayor apoyo. Rueda lentamente el rodillo hacia adelante, extendiendo las caderas y estirando los glúteos. Mantén el estiramiento durante unos segundos, luego regresa a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "estiramiento-lateral-de-cuello-con-mano",
+    "name": "Estiramiento lateral de cuello con mano",
+    "image_male": "images/estiramiento-lateral-de-cuello-con-mano-male.webp",
+    "image_female": "images/estiramiento-lateral-de-cuello-con-mano-female.webp",
+    "muscle_group": "trapecio",
+    "secondary_muscles": [
+      "esternocleidomastoideo"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie o siéntate erguido con los hombros relajados. Inclina la cabeza hacia la derecha, llevando la oreja derecha hacia el hombro derecho. Coloca la mano derecha en el lado izquierdo de la cabeza y aplica una presión suave para aumentar el estiramiento. Mantén el estiramiento durante 15-30 segundos. Repite hacia el otro lado, inclinando la cabeza hacia la izquierda y aplicando presión con la mano izquierda. Repite el estiramiento 2-3 veces en cada lado."
+  },
+  {
     "id": "estiramiento-lateral-de-cuello",
     "name": "Estiramiento lateral de cuello",
     "image_male": "images/estiramiento-lateral-de-cuello-male.webp",
@@ -6390,6 +6860,45 @@
     "instructions": "Ponte de pie o siéntate erguido con los hombros relajados. Inclina la cabeza hacia un lado, llevando la oreja hacia el hombro. Mantén el estiramiento durante 15-30 segundos. Repite del otro lado. Realiza de 2 a 4 series por cada lado."
   },
   {
+    "id": "estiramiento-lateral-de-dorsal-con-rodillo",
+    "name": "Estiramiento lateral de dorsal con rodillo",
+    "image_male": "images/estiramiento-lateral-de-dorsal-con-rodillo-male.webp",
+    "image_female": "images/estiramiento-lateral-de-dorsal-con-rodillo-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps"
+    ],
+    "equipment": "rodillo de espuma",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta el rodillo con ambas manos frente al cuerpo. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Extiende los brazos hacia delante y rueda el rodillo hacia los pies, sintiendo un estiramiento en los dorsales. Mantén el estiramiento durante unos segundos, luego rueda el rodillo lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "estiramiento-lateral-de-muneca",
+    "name": "Estiramiento lateral de muñeca",
+    "image_male": "images/estiramiento-lateral-de-muneca-male.webp",
+    "image_female": "images/estiramiento-lateral-de-muneca-female.webp",
+    "muscle_group": "muñecas",
+    "secondary_muscles": [
+      "manos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los brazos extendidos frente a ti. Extiende el brazo derecho hacia el lado, paralelo al suelo, con la palma hacia abajo. Con la mano izquierda, sujeta la mano derecha y tira de ella suavemente hacia tu cuerpo, sintiendo un estiramiento en el antebrazo derecho. Mantén el estiramiento durante 15-30 segundos, luego suelta. Repite del otro lado."
+  },
+  {
+    "id": "estiramiento-lateral-tumbado-en-suelo",
+    "name": "Estiramiento lateral tumbado en suelo",
+    "image_male": "images/estiramiento-lateral-tumbado-en-suelo-male.webp",
+    "image_female": "images/estiramiento-lateral-tumbado-en-suelo-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Túmbate de lado con las piernas rectas y el brazo de abajo extendido recto por encima de la cabeza. Dobla la rodilla de arriba y coloca el pie en el suelo frente a la pierna de abajo. Extiende el brazo de arriba por encima de la cabeza y agárrate a algo estable, como una pared o un mueble. Levanta lentamente la pierna de abajo del suelo, manteniéndola recta, hasta sentir un estiramiento en el costado. Mantén el estiramiento durante 20-30 segundos, luego baja lentamente la pierna de nuevo. Repite del otro lado."
+  },
+  {
     "id": "estiramiento-lumbar-piramide-fitball",
     "name": "Estiramiento lumbar pirámide en fitball",
     "image_male": "images/estiramiento-lumbar-piramide-fitball-male.webp",
@@ -6402,6 +6911,19 @@
     "equipment": "fitball",
     "difficulty": "beginner",
     "instructions": "Siéntate en el balón de estabilidad con los pies planos en el suelo y las rodillas flexionadas en un ángulo de 90 grados. Camina lentamente hacia adelante con los pies, haciendo rodar el balón por tu espalda hasta que tu zona lumbar quede apoyada sobre el balón. Coloca las manos detrás de la cabeza o crúzalas sobre el pecho. Activa el core y baja lentamente la parte superior del cuerpo hacia el suelo, permitiendo que tu zona lumbar se estire sobre el balón. Mantén el estiramiento durante unos segundos, luego regresa lentamente a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "estiramiento-lumbar-sentado",
+    "name": "Estiramiento lumbar sentado",
+    "image_male": "images/estiramiento-lumbar-sentado-male.webp",
+    "image_female": "images/estiramiento-lumbar-sentado-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en el borde de una silla con los pies planos sobre el suelo. Coloca las manos sobre los muslos o a los lados de la silla para apoyarte. Inclínate lentamente hacia delante desde la cadera, manteniendo la espalda recta. Siente el estiramiento en la zona lumbar y mantén la posición durante 20-30 segundos. Regresa lentamente a la posición inicial y repite el número de repeticiones deseado."
   },
   {
     "id": "estiramiento-pecho-fitball",
@@ -6591,6 +7113,17 @@
     "equipment": "máquina",
     "difficulty": "intermediate",
     "instructions": "Ajusta la máquina a tu cuerpo y siéntate en ella con la espalda apoyada en el respaldo. Coloca los pies en los apoyapiés y sujeta las asas para mayor estabilidad. Activa los glúteos y los isquiotibiales, luego empuja contra los apoyapiés para extender las caderas y levantar las piernas hacia atrás. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "extension-de-pierna-con-banda-de-resistencia",
+    "name": "Extensión de pierna con banda de resistencia",
+    "image_male": "images/extension-de-pierna-con-banda-de-resistencia-male.webp",
+    "image_female": "images/extension-de-pierna-con-banda-de-resistencia-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [],
+    "equipment": "banda de resistencia",
+    "difficulty": "beginner",
+    "instructions": "Sujeta la banda elástica a un punto de anclaje firme y asegúrala alrededor de tu tobillo. Ponte de pie frente al punto de anclaje con los pies separados a la altura de los hombros. Manteniendo el core activado y la parte superior del cuerpo estable, extiende la pierna recta frente a ti. Haz una pausa por un momento en la parte alta y luego vuelve lentamente la pierna a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
   },
   {
     "id": "extension-de-piernas-en-maquina",
@@ -7450,6 +7983,20 @@
     "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa con una mano. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Pasa la pesa rusa entre las piernas, cambiándola de mano cuando llegue detrás de las piernas. Cuando la pesa rusa vuelva hacia adelante, pásala a la otra mano entre las piernas. Continúa pasando la pesa rusa entre las piernas con un movimiento en forma de ocho. Mantén un ritmo constante y activa el core durante todo el ejercicio. Repite el número de repeticiones deseado."
   },
   {
+    "id": "flexion-a-plancha-lateral",
+    "name": "Flexión a plancha lateral",
+    "image_male": "images/flexion-a-plancha-lateral-male.webp",
+    "image_female": "images/flexion-a-plancha-lateral-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "pecho",
+      "tríceps"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en posición de flexión con las manos separadas a la altura de los hombros y el cuerpo en línea recta. Baja el cuerpo hacia el suelo flexionando los codos, manteniendo el core activado. Empuja hacia arriba para volver a la posición inicial. Desplaza el peso hacia la mano izquierda y rota el cuerpo hacia la derecha, elevando el brazo derecho hacia el techo. Mantén la posición de plancha lateral durante unos segundos y luego vuelve a la posición inicial. Repite la flexión y la plancha lateral en el lado opuesto. Continúa alternando lados durante el número de repeticiones deseado."
+  },
+  {
     "id": "flexion-agarre-cerrado-rodillas",
     "name": "Flexión con agarre cerrado sobre rodillas",
     "image_male": "images/flexion-agarre-cerrado-rodillas-male.webp",
@@ -7476,6 +8023,19 @@
     "equipment": "balón medicinal",
     "difficulty": "intermediate",
     "instructions": "Comienza en una posición de plancha alta con las manos sobre el balón medicinal, separadas a la altura de los hombros. Baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Empuja de vuelta hasta la posición inicial, extendiendo completamente los brazos. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-agarre-cerrado-sobre-mancuernas",
+    "name": "Flexión con agarre cerrado sobre mancuernas",
+    "image_male": "images/flexion-agarre-cerrado-sobre-mancuernas-male.webp",
+    "image_female": "images/flexion-agarre-cerrado-sobre-mancuernas-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "mancuernas",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en posición de flexión con las manos juntas, directamente debajo de los hombros. Sostén una mancuerna en cada mano, apoyándolas en el suelo. Baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Empuja con las palmas para extender los brazos y regresar a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "flexion-agarre-cerrado",
@@ -7507,6 +8067,34 @@
     "instructions": "Adopta una posición de flexión con las manos mucho más separadas que los hombros y el cuerpo alineado. Desplaza el pecho hacia una mano mientras flexionas ese codo y mantienes el brazo contrario casi extendido, como la cuerda de un arco. Empuja el suelo para volver al centro y repite hacia el otro lado sin girar la pelvis."
   },
   {
+    "id": "flexion-clasica",
+    "name": "Flexión clásica",
+    "image_male": "images/flexion-clasica-male.webp",
+    "image_female": "images/flexion-clasica-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "deltoides",
+      "core"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en una posición de plancha alta con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Activa el core y baja el cuerpo hacia el suelo flexionando los codos, manteniendo el cuerpo en línea recta. Haz una pausa cuando el pecho esté justo por encima del suelo y luego empújate de vuelta a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-con-carrera",
+    "name": "Flexión con carrera",
+    "image_male": "images/flexion-con-carrera-male.webp",
+    "image_female": "images/flexion-con-carrera-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en posición de flexión con las manos separadas a la altura de los hombros y el cuerpo en línea recta. Baja el pecho hacia el suelo flexionando los codos, manteniendo el cuerpo recto. Empuja con las manos para extender los brazos y volver a la posición inicial. Lleva rápidamente una rodilla hacia el pecho, luego cambia rápidamente y lleva la otra rodilla hacia el pecho. Continúa alternando las rodillas tan rápido como puedas manteniendo una buena forma. Continúa durante el tiempo o el número de repeticiones deseado."
+  },
+  {
     "id": "flexion-con-palmada",
     "name": "Flexión con palmada",
     "image_male": "images/flexion-con-palmada-male.webp",
@@ -7519,6 +8107,21 @@
     "equipment": "peso corporal",
     "difficulty": "advanced",
     "instructions": "Comienza en plancha alta con el cuerpo firme y baja el pecho flexionando los codos. Empuja el suelo de manera explosiva hasta despegar ambas manos, da una palmada rápida delante del pecho y vuelve a separarlas para aterrizar. Amortigua la caída con los codos flexionados y mantén la alineación antes de repetir."
+  },
+  {
+    "id": "flexion-con-patada-interior",
+    "name": "Flexión con patada interior",
+    "image_male": "images/flexion-con-patada-interior-male.webp",
+    "image_female": "images/flexion-con-patada-interior-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos",
+      "core"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta y el core activado. Al empujar de vuelta hacia arriba, levanta una pierna del suelo y lánzala hacia el lado, manteniéndola recta. Baja la pierna de nuevo y repite la flexión, luego cambia a la otra pierna. Continúa alternando las patadas de pierna en cada repetición de la flexión."
   },
   {
     "id": "flexion-con-patada-lateral",
@@ -7534,6 +8137,59 @@
     "equipment": "peso corporal",
     "difficulty": "advanced",
     "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta y el core activado. Al empujar de vuelta hacia arriba, lanza una pierna hacia el lado, extendiéndola completamente y activando los glúteos. Vuelve a colocar la pierna en la posición inicial y repite la flexión, alternando las piernas en cada repetición. Continúa alternando las patadas de pierna y las flexiones el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-con-toque-de-hombros",
+    "name": "Flexión con toque de hombros",
+    "image_male": "images/flexion-con-toque-de-hombros-male.webp",
+    "image_female": "images/flexion-con-toque-de-hombros-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "core"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en una posición de plancha alta con las manos un poco más separadas que la anchura de los hombros y el cuerpo en línea recta desde la cabeza hasta los talones. Baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Mientras empujas hacia arriba, levanta la mano derecha del suelo y toca el hombro izquierdo. Vuelve a colocar la mano derecha en el suelo y repite la flexión, esta vez levantando la mano izquierda y tocando el hombro derecho. Continúa alternando los toques de hombro en cada repetición de la flexión. Mantén el core estable y evita una rotación excesiva de la cadera durante todo el ejercicio. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-con-un-brazo-elevado",
+    "name": "Flexión con un brazo elevado",
+    "image_male": "images/flexion-con-un-brazo-elevado-male.webp",
+    "image_female": "images/flexion-con-un-brazo-elevado-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "core"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Extiende un brazo hacia el lado, paralelo al suelo. Baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta y el core activado. Empuja de vuelta a la posición inicial, usando los músculos del pecho para elevar el cuerpo. Repite con el otro brazo extendido."
+  },
+  {
+    "id": "flexion-de-hombros-sentado-con-rodillo",
+    "name": "Flexión de hombros sentado con rodillo",
+    "image_male": "images/flexion-de-hombros-sentado-con-rodillo-male.webp",
+    "image_female": "images/flexion-de-hombros-sentado-con-rodillo-female.webp",
+    "muscle_group": "deltoides",
+    "secondary_muscles": [
+      "tríceps"
+    ],
+    "equipment": "rodillo de espuma",
+    "difficulty": "beginner",
+    "instructions": "Siéntate sobre una superficie plana con las piernas extendidas frente a ti. Sostén el rodillo con ambas manos, con las palmas hacia abajo, y colócalo sobre tus muslos. Inclínate ligeramente hacia delante y aleja el rodillo de tu cuerpo, extendiendo los brazos rectos frente a ti. Haz una pausa por un momento, luego rueda el rodillo lentamente de vuelta hacia tu cuerpo, doblando los brazos y trayéndolo de nuevo hacia los muslos. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-de-hombros-sentado-unilateral-con-rodillo",
+    "name": "Flexión de hombros sentado unilateral con rodillo",
+    "image_male": "images/flexion-de-hombros-sentado-unilateral-con-rodillo-male.webp",
+    "image_female": "images/flexion-de-hombros-sentado-unilateral-con-rodillo-female.webp",
+    "muscle_group": "deltoides",
+    "secondary_muscles": [
+      "tríceps"
+    ],
+    "equipment": "rodillo de espuma",
+    "difficulty": "beginner",
+    "instructions": "Siéntate sobre una superficie plana con las piernas extendidas frente a ti. Sostén el rodillo con ambas manos, con las palmas hacia abajo, y colócalo sobre tus muslos. Inclínate ligeramente hacia atrás y contrae los músculos del core. Eleva el rodillo hasta la altura de los hombros, manteniendo los brazos rectos. Baja lentamente el rodillo de nuevo hacia los muslos. Repite el número de repeticiones deseado."
   },
   {
     "id": "flexion-de-pica-a-cobra",
@@ -7565,6 +8221,32 @@
     "instructions": "Comienza arrodillado en el suelo con las manos separadas a la altura de los hombros, los dedos apuntando hacia adelante. Extiende las piernas hacia atrás, apoyándote en la punta de los pies, de modo que tu cuerpo forme una línea recta desde la cabeza hasta los talones. Activa el core y baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Continúa bajando hasta que el pecho esté justo encima del suelo, luego empuja hacia arriba a la posición inicial enderezando los brazos. Repite el número de repeticiones deseado."
   },
   {
+    "id": "flexion-en-pared-v2",
+    "name": "Flexión en pared v2",
+    "image_male": "images/flexion-en-pared-v2-male.webp",
+    "image_female": "images/flexion-en-pared-v2-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie frente a una pared, a una distancia aproximada de un brazo. Coloca las manos en la pared a la altura de los hombros, un poco más separadas que la anchura de los hombros. Retrocede con los pies, manteniéndolos separados a la altura de las caderas. Activa el core y mantén el cuerpo en línea recta desde la cabeza hasta los talones. Flexiona los codos y baja el pecho hacia la pared, manteniendo el cuerpo recto. Haz una pausa por un momento y luego empújate de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-en-pared",
+    "name": "Flexión en pared",
+    "image_male": "images/flexion-en-pared-male.webp",
+    "image_female": "images/flexion-en-pared-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "deltoides"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie frente a una pared, a una distancia aproximada de un brazo. Coloca las manos en la pared a la altura de los hombros, un poco más separadas que la anchura de los hombros. Da un paso atrás, manteniendo el cuerpo recto y los pies separados a la altura de las caderas. Flexiona los codos y baja el pecho hacia la pared, manteniendo el cuerpo en línea recta. Empuja de vuelta a la posición inicial, estirando los brazos. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "flexion-escapular-inclinada",
     "name": "Flexión escapular inclinada",
     "image_male": "images/flexion-escapular-inclinada-male.webp",
@@ -7577,6 +8259,19 @@
     "equipment": "peso corporal",
     "difficulty": "beginner",
     "instructions": "Coloca un banco inclinado a un ángulo de 45 grados. Coloca las manos en el banco, ligeramente más separadas que la altura de los hombros. Coloca los pies en el suelo, separados a la altura de las caderas. Baja el pecho hacia el banco, manteniendo los codos pegados al cuerpo. Mientras bajas, retrae los omóplatos, apretándolos entre sí. Empuja con las palmas para extender los brazos y regresar a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-escapular",
+    "name": "Flexión escapular",
+    "image_male": "images/flexion-escapular-male.webp",
+    "image_female": "images/flexion-escapular-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en una posición de plancha alta con las manos justo debajo de los hombros y el cuerpo en línea recta. Baja el pecho hacia el suelo, manteniendo los codos cerca del cuerpo. A medida que bajas, junta las escápulas y empuja el pecho hacia delante. Haz una pausa por un momento en la posición baja, luego empuja de nuevo hacia arriba hasta la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "flexion-estrecha-sobre-fitball",
@@ -7719,6 +8414,20 @@
     "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros, sujetando una mancuerna con una mano y dejando que cuelgue a tu costado. Manteniendo la espalda recta y el core activado, inclínate lentamente hacia el lado opuesto de la mancuerna, bajando el peso tanto como te sea posible con comodidad. Haz una pausa por un momento, luego regresa lentamente a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado y repite."
   },
   {
+    "id": "flexion-lateral",
+    "name": "Flexión lateral",
+    "image_male": "images/flexion-lateral-male.webp",
+    "image_female": "images/flexion-lateral-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "pecho",
+      "core"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Comienza tumbado de lado con las piernas extendidas y apiladas una sobre la otra. Coloca la mano de abajo en el suelo directamente debajo del hombro, con los dedos apuntando hacia delante. Empuja con la mano de abajo para levantar el cuerpo del suelo, manteniendo las piernas rectas y el core activado. Extiende el brazo de arriba recto hacia el techo, formando una línea recta desde la cabeza hasta los talones. Baja el cuerpo de nuevo a la posición inicial con control. Repite el número de repeticiones deseado, luego cambia de lado."
+  },
+  {
     "id": "flexion-modificada-bajando-a-antebrazos",
     "name": "Flexión modificada bajando a antebrazos",
     "image_male": "images/flexion-modificada-bajando-a-antebrazos-male.webp",
@@ -7809,6 +8518,19 @@
     "instructions": "Comienza en posición de plancha alta con las manos un poco más separadas que el ancho de los hombros. Baja el pecho hacia el suelo flexionando los codos, manteniendo el cuerpo en línea recta. Empuja explosivamente contra el suelo, usando los músculos del pecho para impulsar la parte superior del cuerpo fuera del suelo. Aterriza suavemente con las manos de vuelta en la posición inicial. Repite el número de repeticiones deseado."
   },
   {
+    "id": "flexion-plus",
+    "name": "Flexión plus",
+    "image_male": "images/flexion-plus-male.webp",
+    "image_female": "images/flexion-plus-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en una posición de plancha alta con las manos un poco más separadas que la anchura de los hombros y el cuerpo en línea recta desde la cabeza hasta los talones. Baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Cuando el pecho esté justo por encima del suelo, empuja con las manos para extender los brazos y levantar la parte superior del cuerpo. En la parte alta del movimiento, separa las escápulas empujando la parte superior de la espalda hacia el techo. Haz una pausa por un momento y luego invierte el movimiento juntando las escápulas y bajando el cuerpo de nuevo a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "flexion-profunda-dos-bancos",
     "name": "Flexión profunda entre dos bancos",
     "image_male": "images/flexion-profunda-dos-bancos-male.webp",
@@ -7853,6 +8575,89 @@
     "instructions": "Adopta una plancha alta y realiza una flexión manteniendo el cuerpo alineado. Al extender los brazos, desplaza una mano y el pie contrario lateralmente para girar el cuerpo alrededor de los pies como las agujas de un reloj. Repite la flexión y continúa avanzando por posiciones alrededor del punto central."
   },
   {
+    "id": "flexion-sobre-antebrazos",
+    "name": "Flexión sobre antebrazos",
+    "image_male": "images/flexion-sobre-antebrazos-male.webp",
+    "image_female": "images/flexion-sobre-antebrazos-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en posición de plancha con los antebrazos en el suelo y los codos directamente debajo de los hombros. Activa el core y mantén el cuerpo en línea recta de la cabeza a los pies. Baja el pecho hacia el suelo flexionando los codos, manteniéndolos cerca del cuerpo. Haz una pausa por un momento en la parte inferior, luego empuja tu cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-sobre-balon-medicinal",
+    "name": "Flexión sobre balón medicinal",
+    "image_male": "images/flexion-sobre-balon-medicinal-male.webp",
+    "image_female": "images/flexion-sobre-balon-medicinal-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "core"
+    ],
+    "equipment": "balón medicinal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en una posición de plancha alta con las manos sobre el balón medicinal, separadas a la altura de los hombros. Activa el core y baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta. Empuja con las palmas para extender los brazos y regresar a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-sobre-bosu-v2",
+    "name": "Flexión sobre bosu v2",
+    "image_male": "images/flexion-sobre-bosu-v2-male.webp",
+    "image_female": "images/flexion-sobre-bosu-v2-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "core"
+    ],
+    "equipment": "bosu",
+    "difficulty": "intermediate",
+    "instructions": "Coloca el bosu en el suelo con el lado plano hacia arriba. Colócate en posición de flexión con las manos en los bordes exteriores del bosu. Activa el core y baja el cuerpo hacia el bosu flexionando los codos. Empuja tu cuerpo de vuelta a la posición inicial extendiendo los brazos. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-sobre-bosu",
+    "name": "Flexión sobre bosu",
+    "image_male": "images/flexion-sobre-bosu-male.webp",
+    "image_female": "images/flexion-sobre-bosu-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "core"
+    ],
+    "equipment": "bosu",
+    "difficulty": "intermediate",
+    "instructions": "Coloca el bosu en el suelo con el lado plano hacia arriba. Colócate en posición de flexión con las manos en los bordes exteriores del bosu. Activa el core y baja el cuerpo hacia el bosu flexionando los codos. Empuja tu cuerpo de vuelta a la posición inicial extendiendo los brazos. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-sobre-fitball-v2",
+    "name": "Flexión sobre fitball v2",
+    "image_male": "images/flexion-sobre-fitball-v2-male.webp",
+    "image_female": "images/flexion-sobre-fitball-v2-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "core"
+    ],
+    "equipment": "fitball",
+    "difficulty": "intermediate",
+    "instructions": "Coloca el balón de estabilidad en el suelo y ponte boca abajo con las manos sobre el balón, separadas a la altura de los hombros. Extiende las piernas rectas detrás de ti, equilibrándote sobre los dedos de los pies. Activa el core y baja el pecho hacia el balón flexionando los codos, manteniendo el cuerpo en línea recta. Haz una pausa breve en la parte baja, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "flexion-sobre-fitball",
+    "name": "Flexión sobre fitball",
+    "image_male": "images/flexion-sobre-fitball-male.webp",
+    "image_female": "images/flexion-sobre-fitball-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "core"
+    ],
+    "equipment": "fitball",
+    "difficulty": "intermediate",
+    "instructions": "Coloca el balón de estabilidad en el suelo y ponte boca abajo con las manos sobre el balón, separadas a la altura de los hombros. Extiende las piernas rectas detrás de ti, equilibrándote sobre los dedos de los pies. Activa el core y baja el pecho hacia el balón flexionando los codos, manteniendo el cuerpo en línea recta. Haz una pausa breve en la parte baja, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "flexion-toque-pecho",
     "name": "Flexión con toque de pecho",
     "image_male": "images/flexion-toque-pecho-male.webp",
@@ -7866,6 +8671,20 @@
     "equipment": "peso corporal",
     "difficulty": "advanced",
     "instructions": "Comienza en plancha alta con los pies algo separados para ganar estabilidad. Baja en una flexión y, al volver arriba, transfiere el peso a una mano para tocar el pecho con la otra sin girar la pelvis. Apoya de nuevo la mano y alterna el lado en cada repetición."
+  },
+  {
+    "id": "flexion-unilateral",
+    "name": "Flexión unilateral",
+    "image_male": "images/flexion-unilateral-male.webp",
+    "image_female": "images/flexion-unilateral-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "hombros",
+      "core"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Comienza en posición de flexión con las manos separadas a la altura de los hombros y una mano colocada un poco más ancha que la otra. Activa el core y baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta. Al bajar, traslada el peso hacia un lado y levanta el brazo opuesto del suelo, extendiéndolo recto hacia el lado. Empuja con el pecho y los tríceps para subir el cuerpo de nuevo a la posición inicial, mientras bajas simultáneamente el brazo extendido de vuelta al suelo. Repite el movimiento, alternando el brazo que extiendes en cada repetición."
   },
   {
     "id": "flexiones-agarre-cerrado-banda",
@@ -7935,6 +8754,19 @@
     "equipment": "banco",
     "difficulty": "beginner",
     "instructions": "Apoya las manos en el borde de un banco detrás de las caderas y coloca los talones en el suelo. Desliza el cuerpo delante del banco y baja flexionando los codos hacia atrás hasta una profundidad cómoda. Extiende los brazos para subir manteniendo la espalda cerca del banco."
+  },
+  {
+    "id": "fondo-inverso",
+    "name": "Fondo inverso",
+    "image_male": "images/fondo-inverso-male.webp",
+    "image_female": "images/fondo-inverso-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Colócate entre dos barras paralelas con los brazos completamente extendidos y el cuerpo recto. Baja el cuerpo flexionando los codos hasta que los brazos queden paralelos al suelo. Haz una pausa breve, luego empújate de nuevo hacia arriba a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
   },
   {
     "id": "fondo-pecho-agarre-amplio-asistido-maquina",
@@ -8007,6 +8839,19 @@
     "instructions": "Ajusta la máquina a la altura adecuada y asegura tu cuerpo en posición. Sujeta las asas con un agarre prono y coloca el cuerpo de modo que los brazos queden completamente extendidos. Baja el cuerpo flexionando los codos, manteniendo los brazos superiores cerca de los costados. Continúa bajando hasta que los brazos superiores queden paralelos al suelo. Haz una pausa breve, luego empújate de vuelta hacia arriba a la posición inicial extendiendo los codos. Repite el número de repeticiones deseado."
   },
   {
+    "id": "fondos-en-anillas",
+    "name": "Fondos en anillas",
+    "image_male": "images/fondos-en-anillas-male.webp",
+    "image_female": "images/fondos-en-anillas-female.webp",
+    "muscle_group": "pecho",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Comienza colgándote de las anillas con los brazos completamente extendidos y el cuerpo recto. Baja el cuerpo flexionando los codos hasta que los hombros queden por debajo de los codos. Empújate de vuelta hacia arriba a la posición inicial extendiendo los brazos. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "fondos-en-banco",
     "name": "Fondos en banco",
     "image_male": "images/fondos-en-banco-male.webp",
@@ -8019,6 +8864,19 @@
     "equipment": "banco",
     "difficulty": "beginner",
     "instructions": "Apoya las manos en el borde de un banco junto a las caderas y adelanta los pies con las rodillas flexionadas. Mantén la espalda cerca del banco y baja el cuerpo doblando los codos hacia atrás hasta acercarte a 90 grados. Empuja con las palmas para volver arriba sin encoger los hombros ni separarte del banco."
+  },
+  {
+    "id": "fondos-escapulares",
+    "name": "Fondos escapulares",
+    "image_male": "images/fondos-escapulares-male.webp",
+    "image_female": "images/fondos-escapulares-female.webp",
+    "muscle_group": "romboides",
+    "secondary_muscles": [
+      "deltoides"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza de pie con los pies separados a la altura de los hombros y los brazos extendidos frente a ti. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Baja el cuerpo doblando los codos y retrayendo las escápulas, como si intentaras apretar un lápiz entre ellas. Haz una pausa por un momento en la posición baja, luego empuja con las manos para extender los codos y volver a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "fondos-imposibles",
@@ -8493,6 +9351,19 @@
     "instructions": "Apoya las caderas y el abdomen sobre el fitball y fija los pies contra una superficie estable. Con las manos junto a la cabeza o cruzadas sobre el pecho, eleva el torso hasta formar una línea recta desde los talones. Evita hiperextender la zona lumbar y vuelve a bajar lentamente."
   },
   {
+    "id": "hiperextension-inversa-en-banco-plano",
+    "name": "Hiperextensión inversa en banco plano",
+    "image_male": "images/hiperextension-inversa-en-banco-plano-male.webp",
+    "image_female": "images/hiperextension-inversa-en-banco-plano-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "lumbar"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca abajo en un banco plano con las caderas en el borde y las piernas colgando del banco. Sujétate del banco para mantener la estabilidad. Manteniendo las piernas rectas, elévalas hacia el techo tan alto como puedas. Aprieta los glúteos en la parte alta del movimiento. Baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "hiperextension-inversa-en-maquina",
     "name": "Hiperextensión inversa en máquina",
     "image_male": "images/hiperextension-inversa-en-maquina-male.webp",
@@ -8505,6 +9376,19 @@
     "equipment": "máquina",
     "difficulty": "intermediate",
     "instructions": "Ajusta la máquina de palanca a tu cuerpo y asegura los pies en las almohadillas para los pies. Túmbate boca abajo en la máquina con la parte superior del cuerpo colgando fuera del borde y las caderas apoyadas en la almohadilla. Cruza los brazos sobre el pecho o colócalos detrás de la cabeza. Activa los glúteos y los isquiotibiales para levantar las piernas hacia arriba hasta que queden paralelas al suelo. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "hiperextension-inversa-sobre-fitball",
+    "name": "Hiperextensión inversa sobre fitball",
+    "image_male": "images/hiperextension-inversa-sobre-fitball-male.webp",
+    "image_female": "images/hiperextension-inversa-sobre-fitball-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "lumbar"
+    ],
+    "equipment": "fitball",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca abajo sobre un balón de estabilidad con las caderas apoyadas en el balón y las piernas extendidas rectas detrás de ti. Coloca las manos en el suelo frente a ti para mayor estabilidad. Activando los glúteos y los isquiotibiales, eleva las piernas hacia el techo tan alto como puedas. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "hiperextension-lumbar",
@@ -8888,6 +9772,19 @@
     "equipment": "polea",
     "difficulty": "intermediate",
     "instructions": "Ponte de pie frente a una polea alta y sujeta los extremos de una cuerda con agarre neutro. Inclina ligeramente el torso hacia atrás sin arquear la zona lumbar. Lleva los extremos hacia los lados de la parte superior del pecho, baja los hombros y junta las escápulas antes de volver con control."
+  },
+  {
+    "id": "jalon-lateral-en-maquina-con-agarre-supino",
+    "name": "Jalón lateral en máquina con agarre supino",
+    "image_male": "images/jalon-lateral-en-maquina-con-agarre-supino-male.webp",
+    "image_female": "images/jalon-lateral-en-maquina-con-agarre-supino-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "antebrazos"
+    ],
+    "equipment": "máquina",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta la altura del asiento y colócate en la máquina con las rodillas debajo de las almohadillas y los pies planos en el suelo. Sujeta las asas con un agarre supino, un poco más separadas que la altura de los hombros. Siéntate erguido con el pecho hacia afuera y los hombros hacia atrás, manteniendo un ligero arco en la zona lumbar. Tira de las asas hacia el pecho, juntando las escápulas. Haz una pausa breve en la parte baja del movimiento, luego suelta lentamente las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "jalon-poleas",
@@ -9372,6 +10269,21 @@
     "instructions": "Ponte de pie con los pies separados a la altura de las caderas y los brazos a los lados del cuerpo. Da un paso hacia atrás con el pie derecho, apoyándote en la punta del pie. Flexiona la rodilla izquierda y baja el cuerpo a una posición de zancada. Mientras bajas a la zancada, lleva simultáneamente los brazos por encima de la cabeza. Haz una pausa por un momento en la parte baja de la zancada y luego vuelve a la posición inicial empujando con el talón izquierdo y llevando el pie derecho hacia adelante. Repite el movimiento hacia el otro lado, retrocediendo con el pie izquierdo y flexionando la rodilla derecha. Continúa alternando lados durante el número de repeticiones deseado."
   },
   {
+    "id": "paso-de-esqui",
+    "name": "Paso de esquí",
+    "image_male": "images/paso-de-esqui-male.webp",
+    "image_female": "images/paso-de-esqui-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "glúteos",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Dobla ligeramente las rodillas y mantén la espalda recta. Salta hacia la derecha, aterrizando sobre el pie derecho mientras balanceas la pierna izquierda detrás de la pierna derecha. Salta inmediatamente hacia la izquierda, aterrizando sobre el pie izquierdo mientras balanceas la pierna derecha detrás de la pierna izquierda. Continúa alternando los saltos de lado a lado, imitando un movimiento de esquí. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "paso-zancada-adelante-atras",
     "name": "Paso en zancada hacia delante y atrás",
     "image_male": "images/paso-zancada-adelante-atras-male.webp",
@@ -9811,6 +10723,19 @@
     "instructions": "Cuélgate de una barra de dominadas con los brazos completamente extendidos y las palmas mirando hacia afuera. Activa el core y levanta las piernas hacia la barra, manteniéndolas rectas. Continúa levantando hasta que el cuerpo forme una 'V', con las piernas paralelas al suelo. Mantén la posición por un momento, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
+    "id": "pies-rapidos-v2",
+    "name": "Pies rápidos v2",
+    "image_male": "images/pies-rapidos-v2-male.webp",
+    "image_female": "images/pies-rapidos-v2-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "isquiotibiales"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los brazos a los costados. Comienza moviendo los pies rápidamente hacia arriba y hacia abajo, como si estuvieras corriendo en el sitio. Mantén los movimientos rápidos y ligeros, concentrándote en quedarte sobre la punta de los pies. Continúa durante el tiempo o el número de repeticiones deseado."
+  },
+  {
     "id": "pino",
     "name": "Pino",
     "image_male": "images/pino-male.webp",
@@ -9883,6 +10808,20 @@
     "instructions": "Comienza en una posición de flexión con las manos separadas a la altura de los hombros y el cuerpo recto. Activa el core y traslada lentamente el peso hacia adelante, llevando los hombros más allá de las manos. Mantén los codos ligeramente flexionados y el cuerpo recto mientras te inclinas hacia adelante. Mantén esta posición durante unos segundos, luego vuelve lentamente a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
+    "id": "plancha-inversa-con-elevacion-de-pierna",
+    "name": "Plancha inversa con elevación de pierna",
+    "image_male": "images/plancha-inversa-con-elevacion-de-pierna-male.webp",
+    "image_female": "images/plancha-inversa-con-elevacion-de-pierna-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "hombros"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti y las manos apoyadas en el suelo detrás de ti, con los dedos apuntando hacia los pies. Presiona con las manos y levanta las caderas del suelo, llegando a una posición de plancha inversa. Activa el core y levanta una pierna del suelo, extendiéndola recta hacia el techo. Mantén la posición por un momento y luego baja la pierna de nuevo. Repite con la otra pierna. Continúa alternando las piernas durante el número de repeticiones deseado."
+  },
+  {
     "id": "plancha-lateral-apertura-posterior-mancuerna",
     "name": "Plancha lateral con apertura posterior de mancuerna",
     "image_male": "images/plancha-lateral-apertura-posterior-mancuerna-male.webp",
@@ -9895,6 +10834,19 @@
     "equipment": "mancuerna",
     "difficulty": "advanced",
     "instructions": "Comienza tumbado de lado con las piernas extendidas y apiladas una sobre la otra. Coloca el antebrazo en el suelo, justo debajo del hombro, manteniendo el codo flexionado en un ángulo de 90 grados. Sujeta una mancuerna con la mano de arriba, con el brazo extendido recto hacia el suelo. Activa el core y levanta las caderas del suelo, formando una línea recta desde la cabeza hasta los talones. Manteniendo la posición de plancha lateral, levanta la mancuerna hacia el techo, apretando los omóplatos entre sí. Baja la mancuerna de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+  },
+  {
+    "id": "plancha-lateral-con-aduccion-de-cadera",
+    "name": "Plancha lateral con aducción de cadera",
+    "image_male": "images/plancha-lateral-con-aduccion-de-cadera-male.webp",
+    "image_female": "images/plancha-lateral-con-aduccion-de-cadera-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza tumbado de lado con las piernas extendidas y apiladas una sobre la otra. Apóyate sobre el antebrazo, manteniendo el codo directamente debajo del hombro. Activa el core y levanta las caderas del suelo, formando una línea recta desde la cabeza hasta los pies. Manteniendo la posición de plancha lateral, levanta la pierna de arriba hacia el techo, manteniéndola recta. Baja lentamente la pierna de nuevo a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
   },
   {
     "id": "plancha-lateral-inclinada-peso-corporal",
@@ -9971,6 +10923,19 @@
     "instructions": "Siéntate erguido, junta las plantas de los pies y deja caer las rodillas hacia los lados. Sujeta los pies o los tobillos y alarga la columna sin forzar las rodillas hacia el suelo. Mantén la postura durante varias respiraciones y sal de ella lentamente."
   },
   {
+    "id": "postura-reclinada-del-dedo-gordo-con-cuerda",
+    "name": "Postura reclinada del dedo gordo con cuerda",
+    "image_male": "images/postura-reclinada-del-dedo-gordo-con-cuerda-male.webp",
+    "image_female": "images/postura-reclinada-del-dedo-gordo-con-cuerda-female.webp",
+    "muscle_group": "gemelos",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "cuerda",
+    "difficulty": "beginner",
+    "instructions": "Túmbate sobre tu espalda con las piernas extendidas y los brazos a los lados. Enrolla la cuerda alrededor de la planta del pie derecho y sujeta los extremos de la cuerda con las manos. Eleva lentamente la pierna derecha hacia el pecho, manteniendo la rodilla recta y el pie flexionado. Mantén el estiramiento durante unos segundos y luego baja lentamente la pierna de vuelta a la posición inicial. Repite con la pierna izquierda. Continúa alternando las piernas durante el número de repeticiones deseado."
+  },
+  {
     "id": "prensa-alternada-de-piernas-en-maquina",
     "name": "Prensa alternada de piernas en máquina",
     "image_male": "images/prensa-alternada-de-piernas-en-maquina-male.webp",
@@ -9996,6 +10961,62 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Ajusta el asiento de la máquina de palanca de modo que los hombros queden alineados con la almohadilla de la palanca. Coloca los dedos de los pies sobre la almohadilla de la palanca, con los talones colgando fuera del borde. Sujeta las asas o los soportes laterales para mayor estabilidad. Empuja la almohadilla de la palanca hacia abajo extendiendo los tobillos, contrayendo los músculos de las pantorrillas. Haz una pausa por un momento en la parte baja del movimiento. Vuelve lentamente a la posición inicial dejando que los talones se eleven de nuevo. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "prensa-de-piernas-a-45-grados-en-trineo-vista-lateral",
+    "name": "Prensa de piernas a 45 grados en trineo, vista lateral",
+    "image_male": "images/prensa-de-piernas-a-45-grados-en-trineo-vista-lateral-male.webp",
+    "image_female": "images/prensa-de-piernas-a-45-grados-en-trineo-vista-lateral-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta el asiento de la máquina de trineo de modo que las rodillas queden en un ángulo de 90 grados cuando los pies estén sobre la placa. Siéntate en la máquina de trineo con la espalda plana contra el respaldo y los pies separados a la altura de los hombros sobre la placa. Sujeta las asas a los lados del asiento para mayor estabilidad. Empuja contra la placa para extender las piernas, estirándolas por completo. Haz una pausa por un momento en la posición alta, luego dobla lentamente las rodillas para bajar la placa de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "prensa-de-piernas-a-45-grados-en-trineo-vista-posterior",
+    "name": "Prensa de piernas a 45 grados en trineo, vista posterior",
+    "image_male": "images/prensa-de-piernas-a-45-grados-en-trineo-vista-posterior-male.webp",
+    "image_female": "images/prensa-de-piernas-a-45-grados-en-trineo-vista-posterior-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta el asiento de la máquina de trineo de modo que las rodillas queden en un ángulo de 45 grados. Siéntate en la máquina de trineo con la espalda contra el respaldo y los pies separados a la altura de los hombros sobre la placa. Sujeta las asas a los lados del asiento para mayor estabilidad. Empuja la placa alejándola de tu cuerpo extendiendo las piernas, manteniendo los talones sobre la placa. Haz una pausa por un momento en la posición completamente extendida. Dobla lentamente las rodillas y baja la placa de vuelta hacia tu cuerpo, controlando el movimiento. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "prensa-de-piernas-a-45-grados-en-trineo",
+    "name": "Prensa de piernas a 45 grados en trineo",
+    "image_male": "images/prensa-de-piernas-a-45-grados-en-trineo-male.webp",
+    "image_female": "images/prensa-de-piernas-a-45-grados-en-trineo-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta el asiento y la placa de la máquina de trineo a una posición cómoda. Siéntate en la máquina de trineo con la espalda contra el respaldo y los pies separados a la altura de los hombros sobre la placa. Sujeta las asas a los lados del asiento para mayor estabilidad. Empuja la placa alejándola de tu cuerpo extendiendo las piernas, manteniendo los talones sobre la placa. Continúa empujando hasta que las piernas estén casi completamente extendidas, pero sin bloquear las rodillas. Haz una pausa por un momento en la parte alta del movimiento, luego baja lentamente la placa de vuelta hacia tu cuerpo doblando las rodillas. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "prensa-de-piernas-amplia-a-45-grados-en-trineo",
+    "name": "Prensa de piernas amplia a 45 grados en trineo",
+    "image_male": "images/prensa-de-piernas-amplia-a-45-grados-en-trineo-male.webp",
+    "image_female": "images/prensa-de-piernas-amplia-a-45-grados-en-trineo-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta la máquina de trineo a un ángulo de 45 grados. Siéntate en la máquina de trineo con la espalda contra el respaldo y los pies sobre la plataforma. Coloca los pies más separados que el ancho de los hombros. Empuja contra la plataforma para extender las piernas y enderezar las rodillas. Haz una pausa por un momento al final del movimiento, luego dobla lentamente las rodillas para volver a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "prensa-horizontal-unilateral-en-maquina",
@@ -10039,6 +11060,20 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Siéntate en la prensa inclinada con la espalda y la cabeza apoyadas en el respaldo. Coloca los pies en la plataforma a la anchura de los hombros. Desbloquea los seguros y baja la plataforma flexionando las rodillas hasta que formen un ángulo de 90°, manteniendo la espalda pegada al respaldo. Empuja la plataforma hacia arriba extendiendo las piernas sin bloquear las rodillas por completo."
+  },
+  {
+    "id": "prensa-unilateral-a-45-grados-en-trineo",
+    "name": "Prensa unilateral a 45 grados en trineo",
+    "image_male": "images/prensa-unilateral-a-45-grados-en-trineo-male.webp",
+    "image_female": "images/prensa-unilateral-a-45-grados-en-trineo-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta la máquina de trineo a un ángulo de 45 grados. Siéntate en la máquina de trineo con la espalda contra el respaldo y los pies sobre la placa. Coloca un pie sobre la placa y extiende la pierna, empujando el trineo alejándolo de ti. Dobla lentamente la rodilla y baja el trineo de vuelta a la posición inicial. Repite con la otra pierna. Continúa alternando las piernas durante el número de repeticiones deseado."
   },
   {
     "id": "prensa-vertical",
@@ -10523,6 +11558,30 @@
     "instructions": "De pie con mancuernas ligeras, eleva los codos hasta la altura de los hombros y flexiónalos a 90 grados. Rota externamente los hombros hasta colocar las mancuernas sobre los codos y termina con un press por encima de la cabeza. Invierte cada fase con control."
   },
   {
+    "id": "press-de-gemelos-a-45-grados-en-trineo",
+    "name": "Press de gemelos a 45 grados en trineo",
+    "image_male": "images/press-de-gemelos-a-45-grados-en-trineo-male.webp",
+    "image_female": "images/press-de-gemelos-a-45-grados-en-trineo-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta la máquina de trineo a un ángulo de 45 grados. Coloca los pies sobre la plataforma del trineo con los dedos de los pies apuntando hacia delante. Empuja la plataforma del trineo alejándola de ti extendiendo los tobillos y las pantorrillas. Haz una pausa por un momento en la posición alta, luego baja lentamente la plataforma del trineo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "press-de-gemelos-en-prensa-de-trineo",
+    "name": "Press de gemelos en prensa de trineo",
+    "image_male": "images/press-de-gemelos-en-prensa-de-trineo-male.webp",
+    "image_female": "images/press-de-gemelos-en-prensa-de-trineo-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "cuádriceps"
+    ],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta el asiento de la máquina de prensa de piernas de modo que las rodillas queden ligeramente flexionadas cuando los pies estén sobre el trineo. Coloca los pies separados a la altura de los hombros sobre el trineo, con los dedos de los pies apuntando hacia delante. Suelta las asas de seguridad y empuja el trineo alejándolo de ti extendiendo las rodillas y los tobillos. Haz una pausa por un momento en la parte alta del movimiento, luego baja lentamente el trineo doblando las rodillas y los tobillos. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "press-de-gemelos-sentado-en-maquina",
     "name": "Press de gemelos sentado en máquina",
     "image_male": "images/press-de-gemelos-sentado-en-maquina-male.webp",
@@ -10535,6 +11594,19 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Ajusta el asiento de la máquina de modo que los hombros queden alineados con la almohadilla de la palanca. Coloca los dedos de los pies en la parte inferior de la plataforma y posiciona las rodillas debajo de la almohadilla de la palanca. Sujeta las asas a los lados del asiento para mayor estabilidad. Presiona la almohadilla de la palanca hacia abajo extendiendo los tobillos, elevando los talones tan alto como sea posible. Haz una pausa breve en la parte alta del movimiento, luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "press-de-gemelos-tumbado-en-trineo",
+    "name": "Press de gemelos tumbado en trineo",
+    "image_male": "images/press-de-gemelos-tumbado-en-trineo-male.webp",
+    "image_female": "images/press-de-gemelos-tumbado-en-trineo-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta la máquina de trineo a un peso adecuado. Siéntate en la máquina de trineo con la espalda contra el respaldo y los pies sobre la plataforma. Coloca la punta y la almohadilla de los pies en el borde de la plataforma, con los talones colgando. Empuja la plataforma alejándola de ti extendiendo los tobillos, manteniendo las rodillas ligeramente flexionadas. Continúa empujando hasta que las pantorrillas estén completamente contraídas. Mantén la contracción por un momento, luego baja lentamente la plataforma de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "press-de-hombro-unilateral-en-maquina",
@@ -10591,6 +11663,19 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda apoyada en el respaldo. Agarra las asas con un agarre prono y coloca las manos a la altura de los hombros. Empuja las asas hacia arriba hasta que los brazos queden completamente extendidos, pero sin bloquear los codos. Haz una pausa breve en lo alto, luego baja lentamente las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "press-de-hombros-sentado-con-banda-de-resistencia",
+    "name": "Press de hombros sentado con banda de resistencia",
+    "image_male": "images/press-de-hombros-sentado-con-banda-de-resistencia-male.webp",
+    "image_female": "images/press-de-hombros-sentado-con-banda-de-resistencia-female.webp",
+    "muscle_group": "tríceps",
+    "secondary_muscles": [
+      "espalda alta"
+    ],
+    "equipment": "banda de resistencia",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en una silla o banco con la espalda recta y los pies apoyados en el suelo. Sostén la banda elástica con ambas manos, con las palmas hacia adelante, y elévala hasta la altura de los hombros. Empuja la banda por encima de la cabeza, extendiendo completamente los brazos. Haz una pausa por un momento en la parte alta y luego baja lentamente la banda hasta la altura de los hombros. Repite el número de repeticiones deseado."
   },
   {
     "id": "press-de-pecho-con-balon-medicinal-en-tres-apoyos",
@@ -10746,6 +11831,19 @@
     "equipment": "máquina",
     "difficulty": "beginner",
     "instructions": "Ajusta la altura del asiento y colócate en la máquina con la espalda totalmente apoyada en la almohadilla. Sujeta las asas con un agarre prono y coloca los codos en un ángulo de 90 grados. Empuja las asas hacia adelante hasta que los brazos queden completamente extendidos, exhalando durante el movimiento. Haz una pausa al final del movimiento y luego vuelve lentamente a la posición inicial, inhalando mientras lo haces. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "press-de-pecho-sentado-con-banda-de-resistencia",
+    "name": "Press de pecho sentado con banda de resistencia",
+    "image_male": "images/press-de-pecho-sentado-con-banda-de-resistencia-male.webp",
+    "image_female": "images/press-de-pecho-sentado-con-banda-de-resistencia-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps"
+    ],
+    "equipment": "banda de resistencia",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en una silla o banco con la espalda recta y los pies apoyados en el suelo. Sostén las asas de la banda elástica en cada mano, con las palmas hacia abajo y los codos flexionados en un ángulo de 90 grados. Extiende los brazos hacia adelante, alejando la banda elástica de tu pecho. Haz una pausa por un momento al final del movimiento, luego regresa lentamente a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "press-declinado-agarre-amplio-barra",
@@ -11979,6 +13077,19 @@
     "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca los brazos a los lados del cuerpo, con las palmas hacia abajo. Activa los glúteos y el core, y luego eleva las caderas del suelo hasta que tu cuerpo forme una línea recta desde las rodillas hasta los hombros. Haz una pausa breve en la parte alta, apretando los glúteos. Baja lentamente las caderas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
+    "id": "puente-declinado-posterior",
+    "name": "Puente declinado posterior",
+    "image_male": "images/puente-declinado-posterior-male.webp",
+    "image_female": "images/puente-declinado-posterior-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "lumbar"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate boca arriba con los pies planos en el suelo y las rodillas flexionadas. Coloca los brazos a los lados del cuerpo con las palmas hacia abajo. Activa los glúteos y los isquiotibiales, y eleva las caderas del suelo hasta que tu cuerpo forme una línea recta desde las rodillas hasta los hombros. Mantén esta posición durante unos segundos y luego baja lentamente las caderas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "puente-gluteos-banda",
     "name": "Puente de glúteos con banda",
     "image_male": "images/puente-gluteos-banda-male.webp",
@@ -12035,6 +13146,19 @@
     "instructions": "Túmbate boca arriba con las rodillas flexionadas y eleva las caderas hasta alinear hombros, caderas y rodillas. Sin dejar que la pelvis caiga o rote, despega un pie y acerca esa rodilla al pecho. Vuelve a apoyar el pie, cambia de lado y continúa alternando mientras mantienes los glúteos y el abdomen activos."
   },
   {
+    "id": "puente-lateral-con-abduccion-de-cadera",
+    "name": "Puente lateral con abducción de cadera",
+    "image_male": "images/puente-lateral-con-abduccion-de-cadera-male.webp",
+    "image_female": "images/puente-lateral-con-abduccion-de-cadera-female.webp",
+    "muscle_group": "glúteos",
+    "secondary_muscles": [
+      "oblicuos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate de lado con las piernas extendidas y una sobre la otra. Apóyate sobre el antebrazo, manteniendo el codo directamente debajo del hombro. Activa el core y levanta las caderas del suelo, formando una línea recta desde la cabeza hasta los pies. Manteniendo el core activado, levanta la pierna superior lo más alto posible sin rotar las caderas. Haz una pausa por un momento en la posición alta, luego baja la pierna de nuevo. Repite el número de repeticiones deseado, luego cambia de lado."
+  },
+  {
     "id": "puente-londres-con-cuerda",
     "name": "Puente Londres con cuerda",
     "image_male": "images/puente-londres-con-cuerda-male.webp",
@@ -12048,6 +13172,19 @@
     "equipment": "cuerda",
     "difficulty": "intermediate",
     "instructions": "Sujeta la cuerda a un punto de anclaje alto. Ponte de pie de espaldas al punto de anclaje con los pies separados a la altura de los hombros. Agarra la cuerda con un agarre prono, con las palmas hacia abajo. Inclínate ligeramente hacia adelante, manteniendo la espalda recta y el core activado. Tira de la cuerda hacia tu cuerpo, juntando las escápulas. Haz una pausa por un momento en el punto más alto del movimiento, luego libera lentamente la tensión y regresa a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "puente-unilateral-con-pierna-extendida",
+    "name": "Puente unilateral con pierna extendida",
+    "image_male": "images/puente-unilateral-con-pierna-extendida-male.webp",
+    "image_female": "images/puente-unilateral-con-pierna-extendida-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "cuádriceps"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Extiende una pierna recta hacia delante. Activa los glúteos y levanta las caderas del suelo, formando una línea recta desde las rodillas hasta los hombros. Mantén la posición alta por un momento, luego baja lentamente las caderas de nuevo a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
   },
   {
     "id": "pull-through-banda",
@@ -13253,6 +14390,19 @@
     "instructions": "Ajusta la altura del asiento y la posición de la placa para los pies para asegurar una alineación correcta. Siéntate en la máquina con la espalda recta y los pies planos sobre la placa para los pies. Sujeta las asas con un agarre estrecho, con las palmas una frente a la otra. Mantén el pecho elevado y los hombros hacia atrás durante todo el ejercicio. Tira de una asa hacia el torso mientras mantienes la otra asa inmóvil. Aprieta los omóplatos al final del movimiento. Devuelve lentamente el asa a la posición inicial y repite con el otro lado. Continúa alternando lados durante el número de repeticiones deseado."
   },
   {
+    "id": "remo-sentado-con-banda-de-resistencia",
+    "name": "Remo sentado con banda de resistencia",
+    "image_male": "images/remo-sentado-con-banda-de-resistencia-male.webp",
+    "image_female": "images/remo-sentado-con-banda-de-resistencia-female.webp",
+    "muscle_group": "bíceps",
+    "secondary_muscles": [
+      "hombros"
+    ],
+    "equipment": "banda de resistencia",
+    "difficulty": "intermediate",
+    "instructions": "Siéntate en el suelo con las piernas extendidas y enrolla la banda elástica alrededor de los pies. Sostén los extremos de la banda elástica con las manos, con las palmas enfrentadas. Mantén la espalda recta e inclínate ligeramente hacia atrás, activando el core. Tira de la banda elástica hacia el pecho, juntando las escápulas. Haz una pausa por un momento en la parte superior, luego suelta lentamente la tensión y regresa a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "remo-sentado-cuerda-cruzada-polea",
     "name": "Remo sentado con cuerda cruzada en polea",
     "image_male": "images/remo-sentado-cuerda-cruzada-polea-male.webp",
@@ -13897,6 +15047,20 @@
     "instructions": "Colócate frente a un cajón estable, carga las caderas y salta hacia la superficie. Aterriza suavemente sobre un pie con la rodilla alineada y mantén la otra pierna en el aire. Estabiliza la posición antes de bajar con control y cambia de lado."
   },
   {
+    "id": "salto-desde-media-sentadilla",
+    "name": "Salto desde media sentadilla",
+    "image_male": "images/salto-desde-media-sentadilla-male.webp",
+    "image_female": "images/salto-desde-media-sentadilla-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Flexiona las rodillas y baja el cuerpo hacia una posición de sentadilla. Salta de forma explosiva, extendiendo las caderas y las rodillas mientras balanceas los brazos para generar impulso. Aterriza suavemente sobre la punta de los pies y pasa de inmediato a la siguiente repetición. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "salto-estrella-sentadilla",
     "name": "Salto en estrella desde sentadilla",
     "image_male": "images/salto-estrella-sentadilla-male.webp",
@@ -13955,6 +15119,20 @@
     "instructions": "Ponte de pie con los pies juntos y los brazos a los costados. Salta, separando los pies y levantando los brazos por encima de la cabeza. Al aterrizar, salta rápidamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
+    "id": "saltos-de-tijera-v2",
+    "name": "Saltos de tijera v2",
+    "image_male": "images/saltos-de-tijera-v2-male.webp",
+    "image_female": "images/saltos-de-tijera-v2-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Salta del suelo y al mismo tiempo cruza la pierna derecha por delante de la pierna izquierda. Al aterrizar, cambia rápidamente de pierna, cruzando la pierna izquierda por delante de la pierna derecha. Continúa alternando las piernas y saltando lo más rápido posible. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "saltos-estrella",
     "name": "Saltos de estrella",
     "image_male": "images/saltos-estrella-male.webp",
@@ -13984,6 +15162,19 @@
     "equipment": "peso corporal",
     "difficulty": "intermediate",
     "instructions": "Desde una posición atlética, impúlsate lateralmente y aterriza sobre una pierna con la rodilla alineada con el pie. Lleva la pierna libre por detrás sin cargar peso sobre ella y usa los brazos para equilibrarte. Salta inmediatamente hacia el lado contrario, amortiguando cada apoyo con la cadera atrás y el torso estable."
+  },
+  {
+    "id": "secuencia-sentada-en-angulo-amplio",
+    "name": "Secuencia sentada en ángulo amplio",
+    "image_male": "images/secuencia-sentada-en-angulo-amplio-male.webp",
+    "image_female": "images/secuencia-sentada-en-angulo-amplio-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Siéntate en el suelo con las piernas extendidas formando un ángulo amplio. Flexiona los pies y contrae los cuádriceps. Coloca las manos en el suelo detrás de ti para apoyarte. Manteniendo la espalda recta, inclínate hacia delante desde la cadera. Continúa inclinándote hacia delante hasta sentir un estiramiento en los isquiotibiales. Mantén esta posición durante unas cuantas respiraciones. Libera lentamente el estiramiento y vuelve a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "sentadilla-amplia-barra",
@@ -14181,6 +15372,19 @@
     "equipment": "barra",
     "difficulty": "intermediate",
     "instructions": "Coloca la barra sobre la parte alta de la espalda y separa los pies al ancho de los hombros. Lleva las caderas atrás y abajo mientras las rodillas siguen la dirección de los pies, descendiendo por debajo de la paralela si tu movilidad lo permite. Impúlsate con los talones para extender caderas y rodillas."
+  },
+  {
+    "id": "sentadilla-con-peso-corporal-v2",
+    "name": "Sentadilla con peso corporal v2",
+    "image_male": "images/sentadilla-con-peso-corporal-v2-male.webp",
+    "image_female": "images/sentadilla-con-peso-corporal-v2-female.webp",
+    "muscle_group": "isquiotibiales",
+    "secondary_muscles": [
+      "glúteos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Baja el cuerpo flexionando las rodillas y empujando las caderas hacia atrás como si te sentaras en una silla. Mantén el pecho arriba y la espalda recta. Baja hasta que los muslos queden paralelos al suelo. Empuja con los talones para volver a ponerte de pie en la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "sentadilla-con-salto-desde-rodillas-con-barra",
@@ -14437,6 +15641,20 @@
     "instructions": "Colócate de pie con la barra en el suelo justo detrás de los talones. Baja flexionando caderas y rodillas, agarra la barra por detrás de las piernas y mantén el pecho elevado. Empuja con los pies para levantarte llevando la barra pegada a la parte posterior de las piernas, y desciende con control."
   },
   {
+    "id": "sentadilla-hack-cerrada-en-trineo",
+    "name": "Sentadilla hack cerrada en trineo",
+    "image_male": "images/sentadilla-hack-cerrada-en-trineo-male.webp",
+    "image_female": "images/sentadilla-hack-cerrada-en-trineo-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "máquina de trineo",
+    "difficulty": "intermediate",
+    "instructions": "Ajusta la máquina de trineo a un peso cómodo y colócate con la espalda contra el respaldo. Coloca los pies separados a la altura de los hombros sobre la plataforma, con los dedos de los pies ligeramente apuntando hacia fuera. Sujeta las asas a los lados de la máquina para mayor estabilidad. Activa el core y baja lentamente el cuerpo doblando las rodillas y las caderas, manteniendo la espalda recta. Continúa bajando hasta que los muslos queden paralelos al suelo o un poco por debajo. Haz una pausa por un momento en la posición baja, luego empuja con los talones para extender las piernas y volver a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "sentadilla-hack-maquina",
     "name": "Sentadilla hack en máquina",
     "image_male": "images/sentadilla-hack-maquina-male.webp",
@@ -14572,6 +15790,20 @@
     "equipment": "pesa rusa",
     "difficulty": "advanced",
     "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sujetando una pesa rusa frente al pecho con ambas manos. Levanta el pie izquierdo del suelo y extiéndelo hacia adelante, manteniéndolo paralelo al suelo. Baja lentamente el cuerpo a una posición de sentadilla, manteniendo el pie derecho plano en el suelo y la pierna izquierda extendida. Haz una pausa breve en la parte baja de la sentadilla, luego empuja con el talón derecho para volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+  },
+  {
+    "id": "sentadilla-pistola",
+    "name": "Sentadilla pistola",
+    "image_male": "images/sentadilla-pistola-male.webp",
+    "image_female": "images/sentadilla-pistola-female.webp",
+    "muscle_group": "cuádriceps",
+    "secondary_muscles": [
+      "isquiotibiales",
+      "gemelos"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los brazos extendidos frente a ti. Levanta el pie derecho del suelo y extiéndelo hacia delante. Baja lentamente el cuerpo doblando la rodilla izquierda y empujando las caderas hacia atrás. Mantén el pecho elevado y la espalda recta mientras bajas el cuerpo. Baja hasta que el muslo izquierdo quede paralelo al suelo, o lo más abajo que puedas llegar cómodamente. Haz una pausa por un momento en la posición baja, luego empuja con el talón izquierdo para volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
   },
   {
     "id": "sentadilla-pliometrica-mancuernas",
@@ -14813,6 +16045,20 @@
     "instructions": "Coloca la barra en el pliegue de los codos, junta las manos delante del pecho y mantén los antebrazos elevados. Separa los pies a la anchura de los hombros, activa el core y desciende entre las caderas con el torso erguido. Baja solo mientras mantengas las rodillas alineadas y la espalda neutra; empuja con todo el pie para volver a la posición inicial."
   },
   {
+    "id": "sierra-corporal-con-rodillo",
+    "name": "Sierra corporal con rodillo",
+    "image_male": "images/sierra-corporal-con-rodillo-male.webp",
+    "image_female": "images/sierra-corporal-con-rodillo-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps",
+      "core"
+    ],
+    "equipment": "rodillo de espuma",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en posición de plancha con los antebrazos sobre el rodillo y el cuerpo en línea recta. Activa el core y rueda lentamente el rodillo hacia adelante, extendiendo el cuerpo tanto como puedas mientras mantienes el control. Haz una pausa por un momento en el punto más lejano y luego rueda lentamente el rodillo de vuelta hacia tu posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
     "id": "sit-up-asistido-pies-sujetos",
     "name": "Sit-up asistido con pies sujetos",
     "image_male": "images/sit-up-asistido-pies-sujetos-male.webp",
@@ -14852,6 +16098,17 @@
     "equipment": "peso corporal",
     "difficulty": "intermediate",
     "instructions": "Túmbate boca arriba con las rodillas flexionadas, los pies apoyados y los brazos rectos sobre la cabeza. Activa el abdomen y eleva el torso de forma continua hasta quedar sentado, conservando los brazos alineados con las orejas. Haz una pausa arriba y vuelve al suelo lentamente sin dejarte caer."
+  },
+  {
+    "id": "sit-up-con-brazos-cruzados",
+    "name": "Sit-up con brazos cruzados",
+    "image_male": "images/sit-up-con-brazos-cruzados-male.webp",
+    "image_female": "images/sit-up-con-brazos-cruzados-female.webp",
+    "muscle_group": "flexores de cadera",
+    "secondary_muscles": [],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Cruza los brazos sobre el pecho. Contrayendo el abdomen, levanta la parte superior del cuerpo del suelo hacia las rodillas. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
   },
   {
     "id": "sit-up-declinado",
@@ -14974,6 +16231,30 @@
     "equipment": "peso corporal",
     "difficulty": "beginner",
     "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies apoyados. Coloca las manos detrás de la cabeza sin tirar del cuello y eleva el torso contrayendo el abdomen hasta alcanzar unos 45 grados. Haz una pausa breve y desciende de forma controlada sin perder la tensión abdominal."
+  },
+  {
+    "id": "sit-up-v2",
+    "name": "Sit-up v2",
+    "image_male": "images/sit-up-v2-male.webp",
+    "image_female": "images/sit-up-v2-female.webp",
+    "muscle_group": "flexores de cadera",
+    "secondary_muscles": [],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Activando el abdomen, levanta lentamente la parte superior del cuerpo del suelo, curvándote hacia adelante hasta que tu torso forme un ángulo de 45 grados. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "skin-the-cat",
+    "name": "Skin the cat",
+    "image_male": "images/skin-the-cat-male.webp",
+    "image_female": "images/skin-the-cat-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "core"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "advanced",
+    "instructions": "Comienza colgándote de una barra con los brazos completamente extendidos y el cuerpo relajado. Activa el core y levanta las piernas, llevando las rodillas hacia el pecho. Continúa levantando las piernas por encima de la cabeza, permitiendo que el cuerpo pase entre los brazos. Una vez que las piernas estén completamente extendidas por encima de la cabeza, comienza a bajarlas de nuevo hacia la posición inicial. Mientras bajas las piernas, permite que el cuerpo pase de nuevo entre los brazos hasta quedar colgado con los brazos completamente extendidos otra vez. Repite el número de repeticiones deseado."
   },
   {
     "id": "slam-sobre-cabeza-con-balon-medicinal",
@@ -15238,6 +16519,32 @@
     "equipment": "ninguno",
     "difficulty": "beginner",
     "instructions": "Ponte de pie con las piernas casi rectas y los pies a la anchura de las caderas. Inclínate desde las caderas y lleva las manos hacia las puntas de los pies sin forzar la espalda ni bloquear las rodillas. Mantén un instante el rango cómodo y vuelve lentamente a la vertical."
+  },
+  {
+    "id": "toque-de-hombros-en-plancha",
+    "name": "Toque de hombros en plancha",
+    "image_male": "images/toque-de-hombros-en-plancha-male.webp",
+    "image_female": "images/toque-de-hombros-en-plancha-female.webp",
+    "muscle_group": "hombros",
+    "secondary_muscles": [
+      "tríceps"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "intermediate",
+    "instructions": "Comienza en una posición de plancha alta con las manos justo debajo de los hombros y el cuerpo en línea recta. Activa el core y levanta la mano derecha del suelo, extendiéndola para tocar el hombro izquierdo. Coloca la mano derecha de nuevo en el suelo y repite tocando el hombro derecho con la mano izquierda. Continúa alternando los toques de hombro mientras mantienes las caderas y el torso estables. Repite el número de repeticiones deseado."
+  },
+  {
+    "id": "toque-de-punta-lateral-alternado",
+    "name": "Toque de punta lateral alternado",
+    "image_male": "images/toque-de-punta-lateral-alternado-male.webp",
+    "image_female": "images/toque-de-punta-lateral-alternado-female.webp",
+    "muscle_group": "oblicuos",
+    "secondary_muscles": [
+      "flexores de cadera"
+    ],
+    "equipment": "peso corporal",
+    "difficulty": "beginner",
+    "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los brazos extendidos hacia los lados. Dobla la cintura hacia la derecha, llevando la mano derecha hacia el pie derecho mientras mantienes la mano izquierda extendida hacia el lado. Vuelve a la posición inicial y luego dobla la cintura hacia la izquierda, llevando la mano izquierda hacia el pie izquierdo mientras mantienes la mano derecha extendida hacia el lado. Repite el movimiento de flexión lateral el número de repeticiones deseado."
   },
   {
     "id": "toque-pie-giro-cangrejo",

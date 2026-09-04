@@ -1,0 +1,13 @@
+{
+  "id": "pies-rapidos-v2",
+  "name": "Pies rápidos v2",
+  "image_male": "images/pies-rapidos-v2-male.webp",
+  "image_female": "images/pies-rapidos-v2-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "isquiotibiales"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los brazos a los costados. Comienza moviendo los pies rápidamente hacia arriba y hacia abajo, como si estuvieras corriendo en el sitio. Mantén los movimientos rápidos y ligeros, concentrándote en quedarte sobre la punta de los pies. Continúa durante el tiempo o el número de repeticiones deseado."
+}

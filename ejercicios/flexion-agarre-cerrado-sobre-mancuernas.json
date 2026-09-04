@@ -1,0 +1,13 @@
+{
+  "id": "flexion-agarre-cerrado-sobre-mancuernas",
+  "name": "Flexión con agarre cerrado sobre mancuernas",
+  "image_male": "images/flexion-agarre-cerrado-sobre-mancuernas-male.webp",
+  "image_female": "images/flexion-agarre-cerrado-sobre-mancuernas-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de flexión con las manos juntas, directamente debajo de los hombros. Sostén una mancuerna en cada mano, apoyándolas en el suelo. Baja el cuerpo hacia el suelo flexionando los codos, manteniéndolos cerca de los costados. Empuja con las palmas para extender los brazos y regresar a la posición inicial. Repite el número de repeticiones deseado."
+}
