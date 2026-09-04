@@ -1,0 +1,14 @@
+{
+  "id": "salto-desde-media-sentadilla",
+  "name": "Salto desde media sentadilla",
+  "image_male": "images/salto-desde-media-sentadilla-male.webp",
+  "image_female": "images/salto-desde-media-sentadilla-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Flexiona las rodillas y baja el cuerpo hacia una posición de sentadilla. Salta de forma explosiva, extendiendo las caderas y las rodillas mientras balanceas los brazos para generar impulso. Aterriza suavemente sobre la punta de los pies y pasa de inmediato a la siguiente repetición. Repite el número de repeticiones deseado."
+}

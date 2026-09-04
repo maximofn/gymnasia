@@ -1,0 +1,13 @@
+{
+  "id": "toque-de-hombros-en-plancha",
+  "name": "Toque de hombros en plancha",
+  "image_male": "images/toque-de-hombros-en-plancha-male.webp",
+  "image_female": "images/toque-de-hombros-en-plancha-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en una posición de plancha alta con las manos justo debajo de los hombros y el cuerpo en línea recta. Activa el core y levanta la mano derecha del suelo, extendiéndola para tocar el hombro izquierdo. Coloca la mano derecha de nuevo en el suelo y repite tocando el hombro derecho con la mano izquierda. Continúa alternando los toques de hombro mientras mantienes las caderas y el torso estables. Repite el número de repeticiones deseado."
+}

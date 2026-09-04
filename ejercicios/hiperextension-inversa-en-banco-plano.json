@@ -1,0 +1,13 @@
+{
+  "id": "hiperextension-inversa-en-banco-plano",
+  "name": "Hiperextensión inversa en banco plano",
+  "image_male": "images/hiperextension-inversa-en-banco-plano-male.webp",
+  "image_female": "images/hiperextension-inversa-en-banco-plano-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "lumbar"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca abajo en un banco plano con las caderas en el borde y las piernas colgando del banco. Sujétate del banco para mantener la estabilidad. Manteniendo las piernas rectas, elévalas hacia el techo tan alto como puedas. Aprieta los glúteos en la parte alta del movimiento. Baja lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

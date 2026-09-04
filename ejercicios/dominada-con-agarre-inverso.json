@@ -1,0 +1,13 @@
+{
+  "id": "dominada-con-agarre-inverso",
+  "name": "Dominada con agarre inverso",
+  "image_male": "images/dominada-con-agarre-inverso-male.webp",
+  "image_female": "images/dominada-con-agarre-inverso-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Agarra la barra de dominadas con un agarre supino, con las manos separadas a la altura de los hombros. Cuélgate de la barra con los brazos completamente extendidos y el cuerpo recto. Activa los músculos de la espalda y tira de tu cuerpo hacia la barra, llevando el pecho por delante. Continúa subiendo hasta que la barbilla quede por encima de la barra. Haz una pausa por un momento en la parte superior, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

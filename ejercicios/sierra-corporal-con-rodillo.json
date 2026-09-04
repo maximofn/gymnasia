@@ -1,0 +1,14 @@
+{
+  "id": "sierra-corporal-con-rodillo",
+  "name": "Sierra corporal con rodillo",
+  "image_male": "images/sierra-corporal-con-rodillo-male.webp",
+  "image_female": "images/sierra-corporal-con-rodillo-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps",
+    "core"
+  ],
+  "equipment": "rodillo de espuma",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en posición de plancha con los antebrazos sobre el rodillo y el cuerpo en línea recta. Activa el core y rueda lentamente el rodillo hacia adelante, extendiendo el cuerpo tanto como puedas mientras mantienes el control. Haz una pausa por un momento en el punto más lejano y luego rueda lentamente el rodillo de vuelta hacia tu posición inicial. Repite el número de repeticiones deseado."
+}

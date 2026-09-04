@@ -1,0 +1,14 @@
+{
+  "id": "flexion-unilateral",
+  "name": "Flexión unilateral",
+  "image_male": "images/flexion-unilateral-male.webp",
+  "image_female": "images/flexion-unilateral-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de flexión con las manos separadas a la altura de los hombros y una mano colocada un poco más ancha que la otra. Activa el core y baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta. Al bajar, traslada el peso hacia un lado y levanta el brazo opuesto del suelo, extendiéndolo recto hacia el lado. Empuja con el pecho y los tríceps para subir el cuerpo de nuevo a la posición inicial, mientras bajas simultáneamente el brazo extendido de vuelta al suelo. Repite el movimiento, alternando el brazo que extiendes en cada repetición."
+}

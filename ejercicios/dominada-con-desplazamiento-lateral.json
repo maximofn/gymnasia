@@ -1,0 +1,13 @@
+{
+  "id": "dominada-con-desplazamiento-lateral",
+  "name": "Dominada con desplazamiento lateral",
+  "image_male": "images/dominada-con-desplazamiento-lateral-male.webp",
+  "image_female": "images/dominada-con-desplazamiento-lateral-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Sujeta una barra de dominadas con un agarre prono, con las manos un poco más separadas que el ancho de los hombros. Cuélgate de la barra con los brazos completamente extendidos y el cuerpo relajado. Levántate doblando los codos y llevando la barbilla hacia la barra, manteniendo el cuerpo recto. Una vez que la barbilla esté por encima de la barra, bájate de nuevo a la posición inicial. Repite el número de repeticiones deseado."
+}

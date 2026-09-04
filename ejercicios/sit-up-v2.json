@@ -1,0 +1,11 @@
+{
+  "id": "sit-up-v2",
+  "name": "Sit-up v2",
+  "image_male": "images/sit-up-v2-male.webp",
+  "image_female": "images/sit-up-v2-female.webp",
+  "muscle_group": "flexores de cadera",
+  "secondary_muscles": [],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Activando el abdomen, levanta lentamente la parte superior del cuerpo del suelo, curvándote hacia adelante hasta que tu torso forme un ángulo de 45 grados. Haz una pausa por un momento en la parte superior, luego baja lentamente la parte superior del cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

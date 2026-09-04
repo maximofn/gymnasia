@@ -1,0 +1,13 @@
+{
+  "id": "plancha-lateral-con-aduccion-de-cadera",
+  "name": "Plancha lateral con aducción de cadera",
+  "image_male": "images/plancha-lateral-con-aduccion-de-cadera-male.webp",
+  "image_female": "images/plancha-lateral-con-aduccion-de-cadera-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza tumbado de lado con las piernas extendidas y apiladas una sobre la otra. Apóyate sobre el antebrazo, manteniendo el codo directamente debajo del hombro. Activa el core y levanta las caderas del suelo, formando una línea recta desde la cabeza hasta los pies. Manteniendo la posición de plancha lateral, levanta la pierna de arriba hacia el techo, manteniéndola recta. Baja lentamente la pierna de nuevo a la posición inicial. Repite el número de repeticiones deseado, luego cambia de lado."
+}

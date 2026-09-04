@@ -1,0 +1,14 @@
+{
+  "id": "saltos-de-tijera-v2",
+  "name": "Saltos de tijera v2",
+  "image_male": "images/saltos-de-tijera-v2-male.webp",
+  "image_female": "images/saltos-de-tijera-v2-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Salta del suelo y al mismo tiempo cruza la pierna derecha por delante de la pierna izquierda. Al aterrizar, cambia rápidamente de pierna, cruzando la pierna izquierda por delante de la pierna derecha. Continúa alternando las piernas y saltando lo más rápido posible. Repite el número de repeticiones deseado."
+}

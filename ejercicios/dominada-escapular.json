@@ -1,0 +1,14 @@
+{
+  "id": "dominada-escapular",
+  "name": "Dominada escapular",
+  "image_male": "images/dominada-escapular-male.webp",
+  "image_female": "images/dominada-escapular-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "romboides",
+    "rear deltoids"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza colgándote de una barra de dominadas con las palmas hacia afuera y los brazos completamente extendidos. Retrae las escápulas llevándolas hacia abajo y atrás. Activa los músculos de la espalda y tira de tu cuerpo hacia la barra, enfocándote en juntar las escápulas. Haz una pausa breve en la parte superior del movimiento, luego baja lentamente el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

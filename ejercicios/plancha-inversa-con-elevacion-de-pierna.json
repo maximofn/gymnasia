@@ -1,0 +1,14 @@
+{
+  "id": "plancha-inversa-con-elevacion-de-pierna",
+  "name": "Plancha inversa con elevación de pierna",
+  "image_male": "images/plancha-inversa-con-elevacion-de-pierna-male.webp",
+  "image_female": "images/plancha-inversa-con-elevacion-de-pierna-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti y las manos apoyadas en el suelo detrás de ti, con los dedos apuntando hacia los pies. Presiona con las manos y levanta las caderas del suelo, llegando a una posición de plancha inversa. Activa el core y levanta una pierna del suelo, extendiéndola recta hacia el techo. Mantén la posición por un momento y luego baja la pierna de nuevo. Repite con la otra pierna. Continúa alternando las piernas durante el número de repeticiones deseado."
+}

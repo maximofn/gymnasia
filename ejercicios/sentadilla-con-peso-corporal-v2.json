@@ -1,0 +1,13 @@
+{
+  "id": "sentadilla-con-peso-corporal-v2",
+  "name": "Sentadilla con peso corporal v2",
+  "image_male": "images/sentadilla-con-peso-corporal-v2-male.webp",
+  "image_female": "images/sentadilla-con-peso-corporal-v2-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Baja el cuerpo flexionando las rodillas y empujando las caderas hacia atrás como si te sentaras en una silla. Mantén el pecho arriba y la espalda recta. Baja hasta que los muslos queden paralelos al suelo. Empuja con los talones para volver a ponerte de pie en la posición inicial. Repite el número de repeticiones deseado."
+}

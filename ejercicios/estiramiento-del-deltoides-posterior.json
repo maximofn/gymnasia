@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-del-deltoides-posterior",
+  "name": "Estiramiento del deltoides posterior",
+  "image_male": "images/estiramiento-del-deltoides-posterior-male.webp",
+  "image_female": "images/estiramiento-del-deltoides-posterior-female.webp",
+  "muscle_group": "trapecio",
+  "secondary_muscles": [
+    "romboides"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros. Extiende el brazo derecho a través del pecho, colocando la mano izquierda sobre el codo derecho. Tira suavemente del brazo derecho hacia el hombro izquierdo, sintiendo un estiramiento en el hombro derecho. Mantén el estiramiento durante 15-30 segundos, luego suelta. Repite del otro lado."
+}

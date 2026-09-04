@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-lateral-tumbado-en-suelo",
+  "name": "Estiramiento lateral tumbado en suelo",
+  "image_male": "images/estiramiento-lateral-tumbado-en-suelo-male.webp",
+  "image_female": "images/estiramiento-lateral-tumbado-en-suelo-female.webp",
+  "muscle_group": "oblicuos",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate de lado con las piernas rectas y el brazo de abajo extendido recto por encima de la cabeza. Dobla la rodilla de arriba y coloca el pie en el suelo frente a la pierna de abajo. Extiende el brazo de arriba por encima de la cabeza y agárrate a algo estable, como una pared o un mueble. Levanta lentamente la pierna de abajo del suelo, manteniéndola recta, hasta sentir un estiramiento en el costado. Mantén el estiramiento durante 20-30 segundos, luego baja lentamente la pierna de nuevo. Repite del otro lado."
+}

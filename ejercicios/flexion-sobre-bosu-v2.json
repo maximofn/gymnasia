@@ -1,0 +1,14 @@
+{
+  "id": "flexion-sobre-bosu-v2",
+  "name": "Flexión sobre bosu v2",
+  "image_male": "images/flexion-sobre-bosu-v2-male.webp",
+  "image_female": "images/flexion-sobre-bosu-v2-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "bosu",
+  "difficulty": "intermediate",
+  "instructions": "Coloca el bosu en el suelo con el lado plano hacia arriba. Colócate en posición de flexión con las manos en los bordes exteriores del bosu. Activa el core y baja el cuerpo hacia el bosu flexionando los codos. Empuja tu cuerpo de vuelta a la posición inicial extendiendo los brazos. Repite el número de repeticiones deseado."
+}

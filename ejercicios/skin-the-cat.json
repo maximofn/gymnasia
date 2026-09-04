@@ -1,0 +1,13 @@
+{
+  "id": "skin-the-cat",
+  "name": "Skin the cat",
+  "image_male": "images/skin-the-cat-male.webp",
+  "image_female": "images/skin-the-cat-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza colgándote de una barra con los brazos completamente extendidos y el cuerpo relajado. Activa el core y levanta las piernas, llevando las rodillas hacia el pecho. Continúa levantando las piernas por encima de la cabeza, permitiendo que el cuerpo pase entre los brazos. Una vez que las piernas estén completamente extendidas por encima de la cabeza, comienza a bajarlas de nuevo hacia la posición inicial. Mientras bajas las piernas, permite que el cuerpo pase de nuevo entre los brazos hasta quedar colgado con los brazos completamente extendidos otra vez. Repite el número de repeticiones deseado."
+}

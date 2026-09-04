@@ -1,0 +1,14 @@
+{
+  "id": "prensa-de-piernas-amplia-a-45-grados-en-trineo",
+  "name": "Prensa de piernas amplia a 45 grados en trineo",
+  "image_male": "images/prensa-de-piernas-amplia-a-45-grados-en-trineo-male.webp",
+  "image_female": "images/prensa-de-piernas-amplia-a-45-grados-en-trineo-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "máquina de trineo",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina de trineo a un ángulo de 45 grados. Siéntate en la máquina de trineo con la espalda contra el respaldo y los pies sobre la plataforma. Coloca los pies más separados que el ancho de los hombros. Empuja contra la plataforma para extender las piernas y enderezar las rodillas. Haz una pausa por un momento al final del movimiento, luego dobla lentamente las rodillas para volver a la posición inicial. Repite el número de repeticiones deseado."
+}

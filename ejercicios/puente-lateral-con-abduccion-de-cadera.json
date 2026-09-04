@@ -1,0 +1,13 @@
+{
+  "id": "puente-lateral-con-abduccion-de-cadera",
+  "name": "Puente lateral con abducción de cadera",
+  "image_male": "images/puente-lateral-con-abduccion-de-cadera-male.webp",
+  "image_female": "images/puente-lateral-con-abduccion-de-cadera-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "oblicuos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate de lado con las piernas extendidas y una sobre la otra. Apóyate sobre el antebrazo, manteniendo el codo directamente debajo del hombro. Activa el core y levanta las caderas del suelo, formando una línea recta desde la cabeza hasta los pies. Manteniendo el core activado, levanta la pierna superior lo más alto posible sin rotar las caderas. Haz una pausa por un momento en la posición alta, luego baja la pierna de nuevo. Repite el número de repeticiones deseado, luego cambia de lado."
+}

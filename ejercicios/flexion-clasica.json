@@ -1,0 +1,14 @@
+{
+  "id": "flexion-clasica",
+  "name": "Flexión clásica",
+  "image_male": "images/flexion-clasica-male.webp",
+  "image_female": "images/flexion-clasica-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "deltoides",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza en una posición de plancha alta con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Activa el core y baja el cuerpo hacia el suelo flexionando los codos, manteniendo el cuerpo en línea recta. Haz una pausa cuando el pecho esté justo por encima del suelo y luego empújate de vuelta a la posición inicial estirando los brazos. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "abduccion-lateral-de-cadera-de-pie",
+  "name": "Abducción lateral de cadera de pie",
+  "image_male": "images/abduccion-lateral-de-cadera-de-pie-male.webp",
+  "image_female": "images/abduccion-lateral-de-cadera-de-pie-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las manos en las caderas. Traslada el peso a una pierna y levanta la pierna opuesta hacia el lado, manteniéndola recta. Haz una pausa por un momento en la posición alta, luego baja lentamente la pierna de nuevo a la posición inicial. Repite del otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-de-gemelo-unilateral-con-mancuerna",
+  "name": "Elevación de gemelo unilateral con mancuerna",
+  "image_male": "images/elevacion-de-gemelo-unilateral-con-mancuerna-male.webp",
+  "image_female": "images/elevacion-de-gemelo-unilateral-con-mancuerna-female.webp",
+  "muscle_group": "tobillos",
+  "secondary_muscles": [
+    "pies"
+  ],
+  "equipment": "mancuernas",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de la cadera y sujeta una mancuerna en una mano. Levanta un pie del suelo y mantén el equilibrio sobre el otro pie. Eleva lentamente el talón lo más alto posible, usando los músculos de la pantorrilla. Haz una pausa por un momento en la parte superior, luego baja lentamente el talón de vuelta hacia abajo. Repite el número de repeticiones deseado, luego cambia a la otra pierna."
+}

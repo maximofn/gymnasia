@@ -1,0 +1,13 @@
+{
+  "id": "press-de-pecho-sentado-con-banda-de-resistencia",
+  "name": "Press de pecho sentado con banda de resistencia",
+  "image_male": "images/press-de-pecho-sentado-con-banda-de-resistencia-male.webp",
+  "image_female": "images/press-de-pecho-sentado-con-banda-de-resistencia-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "tríceps"
+  ],
+  "equipment": "banda de resistencia",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en una silla o banco con la espalda recta y los pies apoyados en el suelo. Sostén las asas de la banda elástica en cada mano, con las palmas hacia abajo y los codos flexionados en un ángulo de 90 grados. Extiende los brazos hacia adelante, alejando la banda elástica de tu pecho. Haz una pausa por un momento al final del movimiento, luego regresa lentamente a la posición inicial. Repite el número de repeticiones deseado."
+}

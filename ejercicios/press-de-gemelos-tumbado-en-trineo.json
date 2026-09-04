@@ -1,0 +1,13 @@
+{
+  "id": "press-de-gemelos-tumbado-en-trineo",
+  "name": "Press de gemelos tumbado en trineo",
+  "image_male": "images/press-de-gemelos-tumbado-en-trineo-male.webp",
+  "image_female": "images/press-de-gemelos-tumbado-en-trineo-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "máquina de trineo",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina de trineo a un peso adecuado. Siéntate en la máquina de trineo con la espalda contra el respaldo y los pies sobre la plataforma. Coloca la punta y la almohadilla de los pies en el borde de la plataforma, con los talones colgando. Empuja la plataforma alejándola de ti extendiendo los tobillos, manteniendo las rodillas ligeramente flexionadas. Continúa empujando hasta que las pantorrillas estén completamente contraídas. Mantén la contracción por un momento, luego baja lentamente la plataforma de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

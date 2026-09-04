@@ -1,0 +1,14 @@
+{
+  "id": "carrera-con-zancada-corta",
+  "name": "Carrera con zancada corta",
+  "image_male": "images/carrera-con-zancada-corta-male.webp",
+  "image_female": "images/carrera-con-zancada-corta-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Busca un espacio abierto o una cinta de correr para realizar el ejercicio. Ponte de pie con los pies separados a la altura de la cadera. Comienza a trotar en el lugar, levantando las rodillas alto y moviendo los brazos. Después de unos segundos, comienza a dar pasos cortos hacia delante, manteniendo un ritmo rápido. Continúa corriendo con pasos cortos durante la duración o distancia deseada."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "escalada-de-cuerda",
+  "name": "Escalada de cuerda",
+  "image_male": "images/escalada-de-cuerda-male.webp",
+  "image_female": "images/escalada-de-cuerda-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [
+    "bíceps",
+    "hombros"
+  ],
+  "equipment": "cuerda",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie frente a la cuerda con los pies separados a la altura de los hombros. Sujeta la cuerda con ambas manos, con las palmas mirando hacia ti. Flexiona ligeramente las rodillas y activa el core. Comienza a subir por la cuerda alternando los movimientos de las manos. Usa las piernas para ayudar en el movimiento ascendente. Continúa trepando hasta alcanzar la altura deseada o la parte superior de la cuerda. Para descender, invierte el movimiento alterno de las manos mientras controlas tu descenso. Repite el número de repeticiones deseado."
+}
