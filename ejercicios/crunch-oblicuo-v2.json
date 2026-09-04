@@ -1,0 +1,13 @@
+{
+  "id": "crunch-oblicuo-v2",
+  "name": "Crunch oblicuo v2",
+  "image_male": "images/crunch-oblicuo-v2-male.webp",
+  "image_female": "images/crunch-oblicuo-v2-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos detrás de la cabeza o crúzalas sobre el pecho. Activa el abdomen y levanta las escápulas del suelo, rotando el torso hacia un lado. Haz una pausa por un momento y luego baja las escápulas de nuevo a la posición inicial. Repite del otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+}

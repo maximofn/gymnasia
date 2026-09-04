@@ -1,0 +1,16 @@
+{
+  "id": "paso-atras-con-alcance-sobre-la-cabeza",
+  "name": "Paso atrás con alcance sobre la cabeza",
+  "image_male": "images/paso-atras-con-alcance-sobre-la-cabeza-male.webp",
+  "image_female": "images/paso-atras-con-alcance-sobre-la-cabeza-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales",
+    "cuádriceps",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de las caderas y los brazos a los lados del cuerpo. Da un paso hacia atrás con el pie derecho, apoyándote en la punta del pie. Flexiona la rodilla izquierda y baja el cuerpo a una posición de zancada. Mientras bajas a la zancada, lleva simultáneamente los brazos por encima de la cabeza. Haz una pausa por un momento en la parte baja de la zancada y luego vuelve a la posición inicial empujando con el talón izquierdo y llevando el pie derecho hacia adelante. Repite el movimiento hacia el otro lado, retrocediendo con el pie izquierdo y flexionando la rodilla derecha. Continúa alternando lados durante el número de repeticiones deseado."
+}

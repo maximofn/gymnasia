@@ -1,0 +1,13 @@
+{
+  "id": "curl-predicador-en-maquina",
+  "name": "Curl predicador en máquina",
+  "image_male": "images/curl-predicador-en-maquina-male.webp",
+  "image_female": "images/curl-predicador-en-maquina-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina de palanca. Coloca los brazos superiores en la almohadilla y sujeta las asas con un agarre supino. Mantén la espalda recta y los codos colocados sobre la almohadilla. Exhala y flexiona los antebrazos hacia los brazos superiores, contrayendo los bíceps. Haz una pausa breve en la parte más alta del movimiento, contrayendo los bíceps. Inhala y baja lentamente las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

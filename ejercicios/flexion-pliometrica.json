@@ -1,0 +1,15 @@
+{
+  "id": "flexion-pliometrica",
+  "name": "Flexión pliométrica",
+  "image_male": "images/flexion-pliometrica-male.webp",
+  "image_female": "images/flexion-pliometrica-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de plancha alta con las manos un poco más separadas que el ancho de los hombros. Baja el pecho hacia el suelo flexionando los codos, manteniendo el cuerpo en línea recta. Empuja explosivamente contra el suelo, usando los músculos del pecho para impulsar la parte superior del cuerpo fuera del suelo. Aterriza suavemente con las manos de vuelta en la posición inicial. Repite el número de repeticiones deseado."
+}

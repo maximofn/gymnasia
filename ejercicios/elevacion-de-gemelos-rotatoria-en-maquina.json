@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-gemelos-rotatoria-en-maquina",
+  "name": "Elevación de gemelos rotatoria en máquina",
+  "image_male": "images/elevacion-de-gemelos-rotatoria-en-maquina-male.webp",
+  "image_female": "images/elevacion-de-gemelos-rotatoria-en-maquina-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "soleus",
+    "ankle stabilizers"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento de modo que las rodillas queden ligeramente flexionadas y los pies queden planos sobre la placa para los pies. Coloca los dedos de los pies sobre la placa para los pies, con los talones colgando fuera del borde. Sujeta las asas o los lados de la máquina para mayor estabilidad. Empuja con la parte delantera de los pies, elevando los talones tan alto como sea posible. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

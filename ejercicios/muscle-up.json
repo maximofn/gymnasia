@@ -1,0 +1,16 @@
+{
+  "id": "muscle-up",
+  "name": "Muscle-up",
+  "image_male": "images/muscle-up-male.webp",
+  "image_female": "images/muscle-up-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "bíceps",
+    "tríceps",
+    "hombros",
+    "pecho"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza colgándote de una barra de dominadas con las palmas hacia afuera y los brazos completamente extendidos. Activa el core y tira de tu cuerpo hacia arriba, hacia la barra, guiando con el pecho. Al llegar a la parte alta del movimiento, cambia el agarre de modo que las palmas queden hacia ti. Sigue tirando hacia arriba hasta que el pecho quede por encima de la barra y los brazos estén completamente flexionados. Invierte el movimiento bajando lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

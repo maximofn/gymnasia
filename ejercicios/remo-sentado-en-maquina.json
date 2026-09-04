@@ -1,0 +1,14 @@
+{
+  "id": "remo-sentado-en-maquina",
+  "name": "Remo sentado en máquina",
+  "image_male": "images/remo-sentado-en-maquina-male.webp",
+  "image_female": "images/remo-sentado-en-maquina-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura del asiento y los apoyapiés a una posición cómoda. Siéntate en la máquina con el pecho apoyado en la almohadilla y los pies sobre los apoyapiés. Agarra las asas con un agarre prono, con las manos separadas a la altura de los hombros. Mantén la espalda recta y el core activado. Jala las agarraderas hacia el cuerpo, apretando los omóplatos entre sí. Haz una pausa breve en la parte alta del movimiento. Suelta lentamente las asas y vuelve a la posición inicial. Repite el número de repeticiones deseado."
+}

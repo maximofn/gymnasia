@@ -1,0 +1,14 @@
+{
+  "id": "remo-unilateral-en-maquina",
+  "name": "Remo unilateral en máquina",
+  "image_male": "images/remo-unilateral-en-maquina-male.webp",
+  "image_female": "images/remo-unilateral-en-maquina-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate frente a la máquina. Agarra las asas con un agarre prono y mantén la espalda recta. Jala las agarraderas hacia el cuerpo, apretando los omóplatos entre sí. Haz una pausa en el punto máximo del movimiento y luego suelta lentamente, extendiendo los brazos de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

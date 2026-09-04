@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-de-peroneos-con-cuerda",
+  "name": "Estiramiento de peroneos con cuerda",
+  "image_male": "images/estiramiento-de-peroneos-con-cuerda-male.webp",
+  "image_female": "images/estiramiento-de-peroneos-con-cuerda-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "ankles",
+    "feet"
+  ],
+  "equipment": "cuerda",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti. Enrolla la cuerda alrededor de la planta del pie y sujeta los extremos de la cuerda con las manos. Tira suavemente de la cuerda hacia ti, flexionando el pie y estirando los músculos de la pantorrilla. Mantén el estiramiento durante 15-30 segundos. Suelta la tensión de la cuerda y repite el estiramiento en la otra pierna. Repite el número de repeticiones deseado."
+}

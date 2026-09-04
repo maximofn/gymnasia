@@ -1,0 +1,13 @@
+{
+  "id": "curl-predicador-en-maquina-v2",
+  "name": "Curl predicador en máquina v2",
+  "image_male": "images/curl-predicador-en-maquina-v2-male.webp",
+  "image_female": "images/curl-predicador-en-maquina-v2-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con los brazos superiores apoyados en la almohadilla y el pecho contra el soporte. Sujeta las asas con un agarre supino, un poco más separadas que la altura de los hombros. Mantén los brazos superiores inmóviles y exhala mientras flexionas las asas hacia los hombros, contrayendo los bíceps. Haz una pausa breve en la parte más alta del movimiento, contrayendo los bíceps. Inhala mientras bajas lentamente las asas de vuelta a la posición inicial, extendiendo los brazos por completo. Repite el número de repeticiones deseado."
+}

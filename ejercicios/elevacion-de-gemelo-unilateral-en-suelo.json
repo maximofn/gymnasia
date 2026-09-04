@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-gemelo-unilateral-en-suelo",
+  "name": "Elevación de gemelo unilateral en suelo",
+  "image_male": "images/elevacion-de-gemelo-unilateral-en-suelo-male.webp",
+  "image_female": "images/elevacion-de-gemelo-unilateral-en-suelo-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "ankles",
+    "feet"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de las caderas y coloca las manos en una pared u objeto firme para mantener el equilibrio. Levanta un pie del suelo y mantén el equilibrio sobre el otro pie. Levanta lentamente el talón del suelo, elevando el cuerpo sobre las puntas de los pies. Haz una pausa por un momento en la parte superior, luego baja lentamente el talón de vuelta a la posición inicial. Repite el número de repeticiones deseado y luego cambia de pierna y repite."
+}

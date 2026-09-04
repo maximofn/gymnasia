@@ -1,0 +1,14 @@
+{
+  "id": "puente-de-gluteos-bajo-en-suelo",
+  "name": "Puente de glúteos bajo en suelo",
+  "image_male": "images/puente-de-gluteos-bajo-en-suelo-male.webp",
+  "image_female": "images/puente-de-gluteos-bajo-en-suelo-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca los brazos a los lados del cuerpo, con las palmas hacia abajo. Activa los glúteos y el core, y luego eleva las caderas del suelo hasta que tu cuerpo forme una línea recta desde las rodillas hasta los hombros. Haz una pausa breve en la parte alta, apretando los glúteos. Baja lentamente las caderas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

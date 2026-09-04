@@ -1,0 +1,14 @@
+{
+  "id": "giro-prono-sobre-fitball",
+  "name": "Giro prono sobre fitball",
+  "image_male": "images/giro-prono-sobre-fitball-male.webp",
+  "image_female": "images/giro-prono-sobre-fitball-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "zona lumbar"
+  ],
+  "equipment": "fitball",
+  "difficulty": "intermediate",
+  "instructions": "Comienza tumbándote boca abajo sobre un balón de estabilidad con los pies separados a la altura de los hombros y los dedos de los pies tocando el suelo. Coloca las manos detrás de la cabeza o crúzalas sobre el pecho. Activa los músculos del core y eleva lentamente la parte superior del cuerpo del balón, manteniendo la espalda recta. Rota el torso hacia un lado, llevando el hombro hacia la cadera. Mantén las caderas y las piernas estables durante todo el movimiento. Haz una pausa breve y luego vuelve a la posición inicial. Repite la rotación hacia el otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+}

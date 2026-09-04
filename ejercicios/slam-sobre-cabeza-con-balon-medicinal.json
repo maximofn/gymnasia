@@ -1,0 +1,14 @@
+{
+  "id": "slam-sobre-cabeza-con-balon-medicinal",
+  "name": "Slam sobre la cabeza con balón medicinal",
+  "image_male": "images/slam-sobre-cabeza-con-balon-medicinal-male.webp",
+  "image_female": "images/slam-sobre-cabeza-con-balon-medicinal-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "balón medicinal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo un balón medicinal con ambas manos por encima de la cabeza. Activa el core y mantén la espalda recta. Flexiona ligeramente las rodillas y lanza con fuerza el balón medicinal contra el suelo frente a ti. Al lanzar el balón al suelo, utiliza todo el cuerpo para generar potencia, incluidos los hombros y el core. Atrapa el balón al rebotar y repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "press-de-gemelos-sentado-en-maquina",
+  "name": "Press de gemelos sentado en máquina",
+  "image_male": "images/press-de-gemelos-sentado-en-maquina-male.webp",
+  "image_female": "images/press-de-gemelos-sentado-en-maquina-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "soleus",
+    "isquiotibiales"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta el asiento de la máquina de modo que los hombros queden alineados con la almohadilla de la palanca. Coloca los dedos de los pies en la parte inferior de la plataforma y posiciona las rodillas debajo de la almohadilla de la palanca. Sujeta las asas a los lados del asiento para mayor estabilidad. Presiona la almohadilla de la palanca hacia abajo extendiendo los tobillos, elevando los talones tan alto como sea posible. Haz una pausa breve en la parte alta del movimiento, luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

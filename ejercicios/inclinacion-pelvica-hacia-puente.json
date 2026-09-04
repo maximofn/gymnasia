@@ -1,0 +1,14 @@
+{
+  "id": "inclinacion-pelvica-hacia-puente",
+  "name": "Inclinación pélvica hacia puente",
+  "image_male": "images/inclinacion-pelvica-hacia-puente-male.webp",
+  "image_female": "images/inclinacion-pelvica-hacia-puente-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca los brazos a los lados del cuerpo con las palmas hacia abajo. Activa los glúteos y los músculos del core. Inclina la pelvis hacia arriba, levantando las caderas del suelo. Mantén la posición de puente durante unos segundos. Baja lentamente las caderas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

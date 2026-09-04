@@ -1,0 +1,13 @@
+{
+  "id": "curl-femoral-tumbado-en-maquina",
+  "name": "Curl femoral tumbado en máquina",
+  "image_male": "images/curl-femoral-tumbado-en-maquina-male.webp",
+  "image_female": "images/curl-femoral-tumbado-en-maquina-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "gemelos"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la máquina a tu cuerpo y selecciona el peso deseado. Túmbate boca abajo en la máquina con las piernas rectas y los talones contra la palanca acolchada. Sujeta las asas o los lados de la máquina para mayor estabilidad. Manteniendo la parte superior del cuerpo inmóvil, exhala y flexiona las piernas hacia arriba tanto como sea posible sin levantar las caderas de la almohadilla. Mantén la posición contraída durante una pausa breve mientras aprietas los isquiotibiales. Inhala y baja lentamente la palanca de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

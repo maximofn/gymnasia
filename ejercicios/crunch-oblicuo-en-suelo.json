@@ -1,0 +1,13 @@
+{
+  "id": "crunch-oblicuo-en-suelo",
+  "name": "Crunch oblicuo en suelo",
+  "image_male": "images/crunch-oblicuo-en-suelo-male.webp",
+  "image_female": "images/crunch-oblicuo-en-suelo-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies planos en el suelo. Coloca las manos detrás de la cabeza o crúzalas sobre el pecho. Activa el abdomen y levanta las escápulas del suelo, rotando el torso hacia un lado. Haz una pausa por un momento y luego baja las escápulas de nuevo hasta el suelo. Repite hacia el otro lado, alternando los lados en cada repetición."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "flexion-con-patada-lateral",
+  "name": "Flexión con patada lateral",
+  "image_male": "images/flexion-con-patada-lateral-male.webp",
+  "image_female": "images/flexion-con-patada-lateral-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Baja el cuerpo hacia el suelo flexionando los codos, manteniendo la espalda recta y el core activado. Al empujar de vuelta hacia arriba, lanza una pierna hacia el lado, extendiéndola completamente y activando los glúteos. Vuelve a colocar la pierna en la posición inicial y repite la flexión, alternando las piernas en cada repetición. Continúa alternando las patadas de pierna y las flexiones el número de repeticiones deseado."
+}

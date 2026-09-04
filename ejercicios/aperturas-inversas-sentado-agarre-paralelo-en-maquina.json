@@ -1,0 +1,14 @@
+{
+  "id": "aperturas-inversas-sentado-agarre-paralelo-en-maquina",
+  "name": "Aperturas inversas sentado con agarre paralelo en máquina",
+  "image_male": "images/aperturas-inversas-sentado-agarre-paralelo-en-maquina-male.webp",
+  "image_female": "images/aperturas-inversas-sentado-agarre-paralelo-en-maquina-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "romboides"
+  ],
+  "equipment": "máquina",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con el pecho contra la almohadilla y los pies planos en el suelo. Agarra las asas con un agarre paralelo, con las palmas enfrentadas, y mantén los brazos ligeramente flexionados. Exhala y junta las escápulas mientras llevas las asas hacia atrás y hacia afuera, alejándolas de tu cuerpo. Haz una pausa breve en el punto máximo de contracción, luego inhala y vuelve lentamente a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "zancada-con-giro",
+  "name": "Zancada con giro",
+  "image_male": "images/zancada-con-giro-male.webp",
+  "image_female": "images/zancada-con-giro-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "cuádriceps",
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros. Da un paso adelante con el pie derecho, bajando el cuerpo hasta una posición de zancada. Al hacer la zancada, gira el torso hacia la derecha, llevando el codo izquierdo hacia la rodilla derecha. Haz una pausa breve y luego vuelve a la posición inicial. Repite hacia el otro lado, dando un paso adelante con el pie izquierdo y girando el torso hacia la izquierda. Continúa alternando lados durante el número de repeticiones deseado."
+}

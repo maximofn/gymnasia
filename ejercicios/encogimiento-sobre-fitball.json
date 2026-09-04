@@ -1,0 +1,13 @@
+{
+  "id": "encogimiento-sobre-fitball",
+  "name": "Encogimiento sobre fitball",
+  "image_male": "images/encogimiento-sobre-fitball-male.webp",
+  "image_female": "images/encogimiento-sobre-fitball-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "hip flexors"
+  ],
+  "equipment": "fitball",
+  "difficulty": "intermediate",
+  "instructions": "Comienza sentándote en el balón de estabilidad con los pies planos en el suelo y las rodillas flexionadas a un ángulo de 90 grados. Coloca las manos a los lados del balón de estabilidad para mayor apoyo. Activa el abdomen y rueda lentamente las caderas hacia adelante, llevando las rodillas hacia el pecho. Haz una pausa por un momento en la parte alta del movimiento y luego extiende lentamente las piernas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "pase-de-pecho-con-balon-medicinal",
+  "name": "Pase de pecho con balón medicinal",
+  "image_male": "images/pase-de-pecho-con-balon-medicinal-male.webp",
+  "image_female": "images/pase-de-pecho-con-balon-medicinal-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "balón medicinal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo el balón medicinal a la altura del pecho. Extiende los brazos hacia adelante, empujando el balón medicinal con fuerza para alejarlo del pecho. Al soltar el balón, continúa el movimiento con los brazos y el torso, transfiriendo el peso del pie de atrás al pie de adelante. Atrapa el balón cuando rebote en la pared o en tu compañero, y repite el movimiento de inmediato. Continúa durante el número de repeticiones deseado."
+}

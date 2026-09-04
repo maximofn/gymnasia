@@ -1,0 +1,15 @@
+{
+  "id": "press-de-pecho-con-balon-medicinal-y-carrera",
+  "name": "Press de pecho con balón medicinal y carrera",
+  "image_male": "images/press-de-pecho-con-balon-medicinal-y-carrera-male.webp",
+  "image_female": "images/press-de-pecho-con-balon-medicinal-y-carrera-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros",
+    "core"
+  ],
+  "equipment": "balón medicinal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, sosteniendo un balón medicinal a la altura del pecho. Da un paso adelante con el pie derecho y, al mismo tiempo, empuja el balón medicinal hacia adelante, extendiendo completamente los brazos. Mientras empujas el balón hacia adelante, suéltalo y déjalo rodar. Corre rápidamente hacia adelante y atrapa el balón antes de que toque el suelo. Una vez que atrapes el balón, llévalo de vuelta al pecho y repite el movimiento con el pie izquierdo adelante. Continúa alternando piernas y repitiendo el ejercicio el número de repeticiones deseado."
+}

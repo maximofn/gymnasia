@@ -1,0 +1,14 @@
+{
+  "id": "remo-unilateral-con-toalla",
+  "name": "Remo unilateral con toalla",
+  "image_male": "images/remo-unilateral-con-toalla-male.webp",
+  "image_female": "images/remo-unilateral-con-toalla-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "toalla",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, las rodillas ligeramente flexionadas, y sujeta una toalla con una mano. Inclínate hacia adelante desde la cintura, manteniendo la espalda recta y el core activado. Extiende completamente el brazo, dejando que la toalla cuelgue frente a ti. Tira de la toalla hacia el pecho, juntando los omóplatos. Haz una pausa breve en la parte más alta, luego baja lentamente la toalla de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia de brazo."
+}

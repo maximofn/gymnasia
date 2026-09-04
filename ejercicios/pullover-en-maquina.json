@@ -1,0 +1,14 @@
+{
+  "id": "pullover-en-maquina",
+  "name": "Pullover en máquina",
+  "image_male": "images/pullover-en-maquina-male.webp",
+  "image_female": "images/pullover-en-maquina-female.webp",
+  "muscle_group": "dorsales",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "máquina",
+  "difficulty": "beginner",
+  "instructions": "Ajusta el asiento y las asas de la máquina de palanca a una posición cómoda. Siéntate en la máquina con la espalda apoyada en la almohadilla y sujeta las asas con un agarre prono. Mantén los brazos ligeramente flexionados y el core activado. Tira lentamente de las asas hacia el pecho, apretando los dorsales. Haz una pausa breve en el punto máximo de contracción, luego vuelve lentamente a la posición inicial. Repite el número de repeticiones deseado."
+}
