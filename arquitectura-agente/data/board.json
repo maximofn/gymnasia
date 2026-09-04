@@ -2027,7 +2027,7 @@
         {
           "id": "GYM-181",
           "title": "Añadir pruebas de contrato y validación al proxy de Anthropic",
-          "state": "todo",
+          "state": "done",
           "summary": "Cubrir las cuatro rutas con upstream falso, schemas, paginación, timeouts y streams interrumpidos.",
           "dependsOn": [],
           "related": [
