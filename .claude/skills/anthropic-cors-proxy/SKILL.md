@@ -29,8 +29,10 @@ Browser (localhost:8081)  -->  Proxy (localhost:8000)  -->  api.anthropic.com
 Si el virtualenv no existe:
 
 ```bash
-cd apps/anthropic_proxy && uv venv .venv && .venv/bin/pip install fastapi uvicorn
+uv sync --project apps/anthropic_proxy --extra dev
 ```
+
+Las dependencias estan declaradas en `apps/anthropic_proxy/pyproject.toml`.
 
 ## Arrancar el proxy
 
@@ -56,6 +58,15 @@ curl -sS http://127.0.0.1:8000/health
 
 Debe devolver `{"ok": true}`.
 
+## Ejecutar sus pruebas
+
+```bash
+npm run test:proxy
+```
+
+No tocan la red ni necesitan clave: el upstream de Anthropic se sustituye entero.
+Tambien se ejecutan en CI, en un job propio de `agent-tests.yml`.
+
 ## Endpoints disponibles
 
 | Endpoint | Metodo | Descripcion |
@@ -65,11 +76,21 @@ Debe devolver `{"ok": true}`.
 | `/chat/providers/anthropic/messages` | POST | Chat con streaming SSE. Body: payload de Anthropic + `"api_key"` extra |
 | `/chat/providers/anthropic/models` | POST | Listar modelos disponibles. Body: `{"api_key": "sk-..."}` |
 
-Todos los endpoints aceptan `api_key` en el body del request, no en headers. El proxy lo extrae y lo reenvía a Anthropic como `x-api-key`.
+Todos los endpoints aceptan `api_key` en el body del request, no en headers. El proxy lo extrae y lo reenvía a Anthropic como `x-api-key`; **nunca la reenvía dentro del cuerpo**.
+
+El proxy valida la entrada: un cuerpo que no sea JSON o una credencial ausente
+devuelven `422` sin llegar a Anthropic. Un timeout da `504` y un fallo de red
+`502`. El contrato completo, con la tabla de codigos y la politica de
+paginacion, esta en `apps/anthropic_proxy/README.md`.
 
 ## Streaming SSE
 
 El endpoint `/messages` soporta streaming cuando el body incluye `"stream": true`. El proxy reenvía los chunks SSE de Anthropic sin buffering, asi el chat en el navegador muestra los tokens de razonamiento y respuesta en tiempo real.
+
+Si el stream se corta a mitad, el proxy inyecta un evento `error` dentro del
+propio stream. Las cabeceras `200` ya se enviaron y el codigo de estado no puede
+cambiar, asi que esa es la unica forma de que un corte se vea como fallo en vez
+de como una respuesta buena a medias.
 
 ## Version de la API
 

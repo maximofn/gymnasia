@@ -111,8 +111,15 @@ Run from repo root unless noted.
   - The real implementation lives in `apps/anthropic_proxy/cors-proxy.py`; `apps/mobile/cors-proxy.py` is a symlink to that file.
   - Start it with the project virtualenv interpreter:
     `apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py`
-  - If the virtualenv is missing, create/install it once:
-    `cd apps/anthropic_proxy && uv venv .venv && .venv/bin/pip install fastapi uvicorn`
+  - If the virtualenv is missing, create it once from the declared dependencies:
+    `uv sync --project apps/anthropic_proxy --extra dev`
+  - Its contract, status codes, pagination policy and truncated-stream signal
+    are documented in `apps/anthropic_proxy/README.md`. Run its suite with
+    `npm run test:proxy`.
+  - Keep it as a **single file**: the documented startup runs it through the
+    symlink, so `sys.path[0]` is `apps/mobile/`, not the proxy directory. A
+    sibling-module import would crash on startup while passing green in the
+    tests, which load it by its real path.
   - It runs on `http://127.0.0.1:8000`; set `EXPO_PUBLIC_API_BASE_URL` to that
     URL when you want Anthropic in the browser. Production web builds leave this
     variable empty by default because no proxy is bundled.
@@ -211,6 +218,7 @@ Run from repo root unless noted.
 The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - deterministic tests: `npm test`
 - backend de incidencias: `npm --workspace apps/feedback-worker run test`
+- proxy CORS de Anthropic (pytest, sin red ni clave): `npm run test:proxy`
 - browser E2E with a fake OpenAI provider: `npm run test:agent:e2e`
 - published privacy policy E2E: `npm run test:privacy:e2e` (exports the web build and
   reads it with a clean browser context; `PRIVACY_E2E_SKIP_EXPORT=1` reuses `dist/`)
@@ -220,7 +228,9 @@ The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - LLM eval boundary: `npm run test:llm` (reserved for LangSmith; never part of commit-blocking CI)
 
 CI runs `npm test` and the mobile type-check without network, provider keys, or
-LLM calls. Add deterministic bugs as regression fixtures/tests under
+LLM calls. The Anthropic proxy suite runs in its own Python job of
+`agent-tests.yml` — it is the only Python in CI, kept apart so the Node job is
+unaffected. Add deterministic bugs as regression fixtures/tests under
 `apps/mobile/agent/`. Use the reusable QA checklist and closure policy in
 `docs/testing/agent-testing.md` for non-trivial tickets.
 
@@ -326,6 +336,15 @@ Only non-obvious gotchas that could recur are kept here.
 ### Anthropic API version must be `2023-06-01`
 - Gotcha: Anthropic rejects requests with newer version strings like `2025-01-01`. The only stable version is `2023-06-01`.
 - Applies to: all Anthropic requests (verify, messages, models) and the CORS proxy (`apps/anthropic_proxy/cors-proxy.py`).
+- The proxy side is now pinned by a contract test, so an "update" to a newer string fails the suite instead of failing in production.
+
+### Starlette applies middleware in reverse order of registration
+- Gotcha: `add_middleware` inserts at position 0, so the **last** middleware added is the **outermost**. In `cors-proxy.py`, `CORSMiddleware` is registered *after* the body-size limiter on purpose: otherwise a `413` or `422` is returned without CORS headers and the browser reports only a generic "Failed to fetch", with nothing in the response the page can read.
+- Symptom: the error is perfectly visible with `curl` and in `TestClient` (neither enforces origin policy), and invisible in the browser. Verify this class of change in a real browser, not only in tests.
+
+### FastAPI validation errors don't match the shape the app reads
+- Gotcha: FastAPI answers a `422` with `{"detail": [...]}` — a **list**. `extractErrorMessage` (`App.tsx`) and `errorMessage` (`agent/providerStreamParsers.ts`) read `error.message` first and then `detail` **as a string**, so an unreshaped `422` surfaces as an unusable message.
+- Fix: `cors-proxy.py` installs a `RequestValidationError` handler that returns `{"error": {"type", "message"}}`. Any new endpoint returning errors must use that shape.
 
 ### Google `thinkingConfig` must be under `generationConfig`, not top-level
 - Gotcha: Gemini REST API rejects `thinkingConfig` at the top level of the request body with `Unknown name "thinkingConfig": Cannot find field`.
