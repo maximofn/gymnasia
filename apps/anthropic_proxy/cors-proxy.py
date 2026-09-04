@@ -218,6 +218,29 @@ def _describe_validation_errors(errors: list[dict]) -> str:
     return f"Cuerpo invalido en '{location}': {detail}." if location else f"Cuerpo invalido: {detail}."
 
 
+MAX_VALIDATION_DETAILS = 10
+
+
+def _safe_validation_detail(errors: list[dict]) -> list[dict]:
+    """Detalle acotado y sin eco del cuerpo rechazado.
+
+    Cada entrada de `exc.errors()` trae un campo `input` con el valor que fallo
+    la validacion, es decir, justo la parte del cuerpo que puede contener la
+    clave del usuario. Se descarta entera: se conservan solo el tipo, la
+    posicion y el mensaje, cada uno con su propio limite.
+    """
+    resumen = []
+    for error in errors[:MAX_VALIDATION_DETAILS]:
+        resumen.append(
+            {
+                "type": str(error.get("type", ""))[:80],
+                "loc": [str(parte)[:80] for parte in error.get("loc", ())][:10],
+                "msg": redact(str(error.get("msg", "")), limit=300),
+            }
+        )
+    return resumen
+
+
 @app.exception_handler(RequestValidationError)
 async def validation_error_handler(request, exc: RequestValidationError):
     """FastAPI devuelve `detail` como lista, y el cliente lo espera como texto.
@@ -229,9 +252,7 @@ async def validation_error_handler(request, exc: RequestValidationError):
     return JSONResponse(
         {
             **error_payload("invalid_request_error", _describe_validation_errors(errors)),
-            # Se conserva el detalle estructurado para depurar, pero redactado:
-            # el cuerpo rechazado puede contener la clave del usuario.
-            "detail": json.loads(redact(json.dumps(errors, default=str))),
+            "detail": _safe_validation_detail(errors),
         },
         status_code=422,
     )

@@ -210,11 +210,36 @@ def test_el_413_lleva_cabeceras_cors(client, proxy):
 
 
 def test_el_detalle_del_422_no_filtra_la_clave(client):
-    """El detalle estructurado repite el cuerpo rechazado, que puede llevarla."""
+    """El detalle no debe repetir el cuerpo rechazado, que puede llevarla."""
     response = client.post(MESSAGES, json={"api_key": KEY, "max_tokens": 0})
 
     assert response.status_code == 422
     assert KEY not in response.text
+
+
+def test_un_cuerpo_invalido_y_enorme_sigue_dando_422_y_no_500(client, fake_upstream):
+    """Regresion: el detalle se construia serializando los errores a JSON,
+    truncandolo y volviendolo a parsear. Con un cuerpo grande el corte caia a
+    mitad del JSON y el reparseo lanzaba, convirtiendo un 422 en un 500 — justo
+    lo que este endurecimiento venia a evitar. Lo encontro el fuzzing."""
+    campos = {f"campo_{i}": "x" * 200 for i in range(30)}
+
+    response = client.post(MESSAGES, json={**campos, "messages": "no soy una lista"})
+
+    assert response.status_code == 422
+    mensaje_valido(response)
+    assert fake_upstream.call_count == 0
+
+
+def test_el_detalle_del_422_esta_acotado(client, proxy):
+    cuerpo = {"messages": [{"role": "malo"} for _ in range(50)], "api_key": KEY}
+
+    response = client.post(MESSAGES, json=cuerpo)
+
+    detalle = response.json()["detail"]
+    assert len(detalle) <= proxy.MAX_VALIDATION_DETAILS
+    # `input` es el trozo de cuerpo rechazado: no debe viajar de vuelta.
+    assert all(set(entrada) == {"type", "loc", "msg"} for entrada in detalle)
 
 
 def test_preflight_permite_al_cliente_web(client):
