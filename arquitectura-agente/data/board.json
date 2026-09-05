@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-04",
+    "updated": "2026-09-05",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -2012,9 +2012,9 @@
         },
         {
           "id": "GYM-180",
-          "title": "Endurecer el proxy de Anthropic para un despliegue de producción",
+          "title": "Cerrar el proxy de Anthropic como herramienta de desarrollo, no endurecerlo para producción",
           "state": "todo",
-          "summary": "Añadir autenticación, CORS restringido, TLS, límites y redacción antes de exponer claves BYOK.",
+          "summary": "La web ya puede llamar a Anthropic sin proxy, así que el proxy se cierra con llave como herramienta local en vez de convertirse en un servicio.",
           "dependsOn": [
             "GYM-181"
           ],

@@ -1022,6 +1022,20 @@ function buildWebProxyUrl(path: string): string {
   return baseUrl ? `${baseUrl}${path}` : path;
 }
 
+// El navegador puede hablar con Anthropic sin intermediarios si la petición
+// declara `anthropic-dangerous-direct-browser-access`, igual que ya se hace con
+// OpenAI y Google. El proxy deja de ser obligatorio y pasa a ser opcional: solo
+// se usa si alguien configura EXPO_PUBLIC_API_BASE_URL a propósito.
+const ANTHROPIC_DIRECT_BROWSER_ACCESS = Platform.OS === "web";
+
+function shouldUseAnthropicWebProxy(): boolean {
+  return Platform.OS === "web" && resolveWebApiBaseUrl() !== "";
+}
+
+function anthropicWebProxyUrl(path: string): string | undefined {
+  return shouldUseAnthropicWebProxy() ? buildWebProxyUrl(path) : undefined;
+}
+
 const EXERCISE_EQUIPMENT_OPTIONS = [
   "Peso corporal", "Barra", "Mancuernas", "Máquina", "Cable",
   "Kettlebell", "Banda elástica", "Polea", "Otro",
@@ -2017,9 +2031,13 @@ async function fetchAnthropicModelsDirect(
       `https://api.anthropic.com/v1/models${anthropicModelsQuery(afterId)}`,
       {
         method: "GET",
-        headers: anthropicApiHeaders(apiKey, ANTHROPIC_API_VERSION, workspaceId, {
-          "Content-Type": "application/json",
-        }),
+        headers: anthropicApiHeaders(
+          apiKey,
+          ANTHROPIC_API_VERSION,
+          workspaceId,
+          { "Content-Type": "application/json" },
+          { directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS },
+        ),
       },
     );
 
@@ -2138,7 +2156,7 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
   return verifyProviderConfiguration(provider, {
     platform: Platform.OS === "web" ? "web" : "native",
     fakeMode: IS_FAKE_PROVIDER_MODE,
-    anthropicProxyUrl: buildWebProxyUrl("/chat/providers/anthropic/verify"),
+    anthropicProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/verify"),
   });
 }
 
@@ -2840,7 +2858,7 @@ async function callProviderChatAPI(
   }
 
   if (provider.provider === "anthropic") {
-    if (Platform.OS === "web") {
+    if (shouldUseAnthropicWebProxy()) {
       const webResult = await callAnthropicViaWebProxy(provider, systemPrompt, nonSystemMessages);
       return webResult.content;
     }
@@ -2854,6 +2872,7 @@ async function callProviderChatAPI(
         {
           "Content-Type": "application/json",
         },
+        { directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS },
       ),
       body: JSON.stringify({
         model: provider.model || DEFAULT_MODELS.anthropic,
@@ -3159,7 +3178,7 @@ async function callProviderChatAPIWithTools(
         messages: msgs,
       };
       if (includeTools) body.tools = CHAT_TOOLS.anthropic;
-      if (Platform.OS === "web") {
+      if (shouldUseAnthropicWebProxy()) {
         return streamAnthropicRequestViaXHR(
           buildWebProxyUrl("/chat/providers/anthropic/messages"),
           {
@@ -3186,6 +3205,7 @@ async function callProviderChatAPIWithTools(
             "Content-Type": "application/json",
             Accept: "text/event-stream",
           },
+          { directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS },
         ),
         body,
         streamHandlers,
@@ -3536,7 +3556,7 @@ async function callFoodEstimatorAPI(
         messages: msgs,
         tools: foodEstimatorTools.anthropic,
       };
-      if (Platform.OS === "web") {
+      if (shouldUseAnthropicWebProxy()) {
         return streamAnthropicRequestViaXHR(
           buildWebProxyUrl("/chat/providers/anthropic/messages"),
           {
@@ -3562,6 +3582,7 @@ async function callFoodEstimatorAPI(
             "Content-Type": "application/json",
             Accept: "text/event-stream",
           },
+          { directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS },
         ),
         body,
         streamHandlers,
@@ -10407,7 +10428,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     if (provider.provider === "anthropic") {
-      const isWeb = Platform.OS === "web";
+      const isWeb = shouldUseAnthropicWebProxy();
       const baseUrl = isWeb
         ? buildWebProxyUrl("/chat/providers/anthropic/messages")
         : "https://api.anthropic.com/v1/messages";
@@ -10418,6 +10439,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             ANTHROPIC_API_VERSION,
             provider.workspace_id,
             { "Content-Type": "application/json" },
+            { directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS },
           );
       const response = await fetch(baseUrl, {
         method: "POST",
@@ -12568,10 +12590,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setAnthropicModelOptionsLoading(true);
     setAnthropicModelOptionsMessage(null);
     try {
-      const catalog =
-        Platform.OS === "web"
-          ? await fetchAnthropicModelsViaWebProxy(apiKey, workspaceId)
-          : await fetchAnthropicModelsDirect(apiKey, workspaceId);
+      const catalog = shouldUseAnthropicWebProxy()
+        ? await fetchAnthropicModelsViaWebProxy(apiKey, workspaceId)
+        : await fetchAnthropicModelsDirect(apiKey, workspaceId);
 
       if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       setAnthropicModelOptions(catalog.options);

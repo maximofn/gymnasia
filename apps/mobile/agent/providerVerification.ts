@@ -88,9 +88,9 @@ export async function verifyProviderConfiguration(
         fetchImpl,
         timeoutMs,
       );
-    } else if (provider.provider === "anthropic" && options.platform === "web") {
+    } else if (provider.provider === "anthropic" && options.anthropicProxyUrl) {
       response = await fetchProviderConfiguration(
-        options.anthropicProxyUrl || "/chat/providers/anthropic/verify",
+        options.anthropicProxyUrl,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -138,6 +138,7 @@ export async function verifyProviderConfiguration(
             ANTHROPIC_API_VERSION,
             provider.workspace_id,
             { "Content-Type": "application/json" },
+            { directBrowserAccess: options.platform === "web" },
           ),
           body: JSON.stringify({
             model,

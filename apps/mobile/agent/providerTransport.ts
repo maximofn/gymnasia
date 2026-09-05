@@ -39,11 +39,21 @@ export function normalizeAnthropicWorkspaceId(
   return (workspaceId ?? "").trim();
 }
 
+// Anthropic solo devuelve cabeceras CORS si la petición declara esta. Sin
+// ella el navegador recibe la respuesta y se niega a dejar que la página la
+// lea, que es el muro por el que existía el proxy de desarrollo. Se llama
+// "dangerous" porque expone la clave a quien abra las herramientas del
+// navegador; aquí la clave es del propio usuario y ya vive en su navegador,
+// igual que las de OpenAI y Google.
+export const ANTHROPIC_DIRECT_BROWSER_ACCESS_HEADER =
+  "anthropic-dangerous-direct-browser-access";
+
 export function anthropicApiHeaders(
   apiKey: string,
   apiVersion: string,
   workspaceId?: string | null,
   extraHeaders: Record<string, string> = {},
+  options: { directBrowserAccess?: boolean } = {},
 ): Record<string, string> {
   const normalizedWorkspaceId = normalizeAnthropicWorkspaceId(workspaceId);
   return {
@@ -52,6 +62,10 @@ export function anthropicApiHeaders(
     "anthropic-version": apiVersion,
     ...(normalizedWorkspaceId
       ? { "anthropic-workspace-id": normalizedWorkspaceId }
+      : {}),
+    // En nativo no hay origen que validar, así que no se envía.
+    ...(options.directBrowserAccess
+      ? { [ANTHROPIC_DIRECT_BROWSER_ACCESS_HEADER]: "true" }
       : {}),
   };
 }
