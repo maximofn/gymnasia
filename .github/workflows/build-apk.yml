@@ -317,6 +317,11 @@ jobs:
           TAG: ${{ needs.select-transaction.outputs.tag }}
           VERSION: ${{ needs.select-transaction.outputs.version }}
           SOURCE_COMMIT: ${{ needs.select-transaction.outputs.source_commit }}
+          # Los comandos de EAS resuelven el proyecto con `expo config`, y
+          # `app.config.ts` aborta si no hay APP_ENV. Se declara aquí en vez de
+          # confiar en que un paso anterior lo dejara en el entorno: ese efecto
+          # lateral no se ve al leer este paso y se pierde si aquel se salta.
+          APP_ENV: production
         shell: bash
         run: |
           set -euo pipefail
@@ -325,9 +330,21 @@ jobs:
             printf '[]' > /tmp/eas-candidates.json
             EAS_OFFSET=0
             while true; do
-              (cd apps/mobile && eas build:list --platform android \
-                --limit 50 --offset "$EAS_OFFSET" --json) > /tmp/eas-page.json
-              jq -e 'type == "array"' /tmp/eas-page.json >/dev/null
+              # `--json` manda el detalle del error a stdout, y stdout va a un
+              # fichero: sin volcarlo, un fallo aquí solo deja en el log un
+              # `build:list command failed.` que no dice nada. Se vuelca al log
+              # antes de abortar.
+              if ! (cd apps/mobile && eas build:list --platform android \
+                --limit 50 --offset "$EAS_OFFSET" --json) > /tmp/eas-page.json; then
+                echo "::error::eas build:list falló. Salida capturada:"
+                cat /tmp/eas-page.json >&2 || true
+                exit 1
+              fi
+              if ! jq -e 'type == "array"' /tmp/eas-page.json >/dev/null; then
+                echo "::error::eas build:list no devolvió un array. Salida capturada:"
+                cat /tmp/eas-page.json >&2 || true
+                exit 1
+              fi
               PAGE_SIZE="$(jq 'length' /tmp/eas-page.json)"
               jq -s 'add' /tmp/eas-candidates.json /tmp/eas-page.json \
                 > /tmp/eas-candidates.next.json
