@@ -1,0 +1,15 @@
+{
+  "id": "prensa-de-piernas-en-smith",
+  "name": "Prensa de piernas en Smith",
+  "image_male": "images/prensa-de-piernas-en-smith-male.webp",
+  "image_female": "images/prensa-de-piernas-en-smith-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "advanced",
+  "instructions": "Ajusta el asiento y la placa para los pies de la máquina Smith a una posición cómoda. Siéntate en la máquina con la espalda apoyada en el respaldo y los pies separados a la altura de los hombros sobre la placa para los pies. Sujeta las asas o los lados de la máquina para mayor estabilidad. Empuja la placa alejándola de ti extendiendo las piernas, manteniendo la espalda contra el respaldo. Haz una pausa por un momento en la posición completamente extendida. Dobla lentamente las rodillas y baja la placa de vuelta hacia ti, regresando a la posición inicial. Repite el número de repeticiones deseado."
+}

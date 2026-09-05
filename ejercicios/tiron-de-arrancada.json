@@ -1,0 +1,15 @@
+{
+  "id": "tiron-de-arrancada",
+  "name": "Tirón de arrancada",
+  "image_male": "images/tiron-de-arrancada-male.webp",
+  "image_female": "images/tiron-de-arrancada-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos",
+    "gemelos"
+  ],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Coloca la barra en el suelo y adopta un agarre amplio de arrancada. Mantén la espalda neutra y eleva la barra extendiendo con fuerza las rodillas y las caderas. Cuando la barra alcance la cadera, encoge los hombros y lleva los codos altos y hacia fuera para que la barra suba pegada al cuerpo hasta la parte baja del pecho. No te coloques debajo de la barra ni la recibas sobre la cabeza: finaliza el tirón y vuelve al suelo de forma controlada."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-de-columna",
+  "name": "Estiramiento de columna",
+  "image_male": "images/estiramiento-de-columna-male.webp",
+  "image_female": "images/estiramiento-de-columna-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti. Coloca las manos en el suelo detrás de ti, con los dedos apuntando hacia tu cuerpo. Activa el core e inclínate lentamente hacia atrás, manteniendo la espalda recta. Sigue inclinándote hacia atrás hasta que sientas un estiramiento en la columna. Mantén el estiramiento durante unos segundos, luego regresa lentamente a la posición inicial. Repite el número de repeticiones deseado."
+}

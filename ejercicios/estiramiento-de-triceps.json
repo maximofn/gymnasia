@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-de-triceps",
+  "name": "Estiramiento de tríceps",
+  "image_male": "images/estiramiento-de-triceps-male.webp",
+  "image_female": "images/estiramiento-de-triceps-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie o siéntate erguido con la espalda recta. Extiende un brazo por encima de la cabeza, flexionándolo por el codo. Coloca la mano opuesta sobre el codo flexionado y tira de él suavemente hacia tu cabeza. Mantén el estiramiento de 15 a 30 segundos, sintiendo un estiramiento suave en el tríceps. Suelta el estiramiento y repite con el otro brazo."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "curl-femoral-unilateral-de-pie",
+  "name": "Curl femoral unilateral de pie",
+  "image_male": "images/curl-femoral-unilateral-de-pie-male.webp",
+  "image_female": "images/curl-femoral-unilateral-de-pie-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de las caderas y las manos en las caderas. Traslada tu peso a la pierna izquierda y levanta el pie derecho del suelo, flexionando la rodilla. Curva lentamente el talón derecho hacia los glúteos, contrayendo el isquiotibial. Haz una pausa de un momento en la parte superior y luego baja lentamente el pie derecho de nuevo a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+}

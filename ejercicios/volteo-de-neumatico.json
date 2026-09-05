@@ -1,0 +1,15 @@
+{
+  "id": "volteo-de-neumatico",
+  "name": "Volteo de neumático",
+  "image_male": "images/volteo-de-neumatico-male.webp",
+  "image_female": "images/volteo-de-neumatico-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps",
+    "core"
+  ],
+  "equipment": "neumático",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, de frente al neumático. Flexiona las rodillas y dobla las caderas, bajando a una posición de sentadilla. Agáchate y agarra el borde inferior del neumático con ambas manos, con los dedos apuntando hacia ti. Activa los glúteos y los músculos de las piernas, y empuja con fuerza a través de las piernas para levantar el neumático del suelo. Mientras el neumático se voltea, usa la fuerza de la parte superior del cuerpo para guiarlo y mantener el control. Una vez que el neumático esté completamente volteado, retrocede rápidamente y reinicia tu postura. Repite el número de repeticiones deseado."
+}

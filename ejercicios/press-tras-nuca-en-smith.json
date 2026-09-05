@@ -1,0 +1,14 @@
+{
+  "id": "press-tras-nuca-en-smith",
+  "name": "Press tras nuca en Smith",
+  "image_male": "images/press-tras-nuca-en-smith-male.webp",
+  "image_female": "images/press-tras-nuca-en-smith-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "advanced",
+  "instructions": "Ajusta la altura del asiento de la máquina Smith de modo que la barra quede a la altura de los hombros. Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Sujeta la barra con agarre prono, un poco más separado que el ancho de los hombros. Levanta la barra del soporte y da un paso atrás, manteniendo una postura estable. Baja la barra hacia la parte de atrás del cuello, manteniendo los codos apuntando hacia delante. Empuja la barra hacia arriba, por encima de la cabeza, hasta que los brazos queden completamente extendidos. Haz una pausa por un momento en la posición alta, luego baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

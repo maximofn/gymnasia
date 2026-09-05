@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-split",
+  "name": "Sentadilla split",
+  "image_male": "images/sentadilla-split-male.webp",
+  "image_female": "images/sentadilla-split-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros. Da un paso adelante con un pie y colócalo aproximadamente a dos pies de distancia por delante del otro pie. Baja el cuerpo flexionando las rodillas y las caderas, manteniendo la espalda recta. Sigue bajando hasta que el muslo delantero quede paralelo al suelo y la rodilla trasera quede justo por encima del suelo. Haz una pausa breve, luego empuja con el talón delantero para volver a la posición inicial. Repite el número de repeticiones deseado y luego cambia de pierna y repite."
+}

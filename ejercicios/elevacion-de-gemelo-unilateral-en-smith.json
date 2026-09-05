@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-gemelo-unilateral-en-smith",
+  "name": "Elevación de gemelo unilateral en Smith",
+  "image_male": "images/elevacion-de-gemelo-unilateral-en-smith-male.webp",
+  "image_female": "images/elevacion-de-gemelo-unilateral-en-smith-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Colócate bajo la barra de la máquina Smith con la barra apoyada sobre la parte alta de la espalda. Sitúa la almohadilla de un solo pie sobre un escalón, dejando el talón libre, y flexiona la otra pierna para que no toque la plataforma. Eleva el talón del pie de apoyo todo lo posible, mantén la contracción del gemelo y desciende de forma controlada. Completa las repeticiones y cambia de pierna."
+}

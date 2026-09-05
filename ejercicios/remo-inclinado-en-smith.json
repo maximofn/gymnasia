@@ -1,0 +1,14 @@
+{
+  "id": "remo-inclinado-en-smith",
+  "name": "Remo inclinado en Smith",
+  "image_male": "images/remo-inclinado-en-smith-male.webp",
+  "image_female": "images/remo-inclinado-en-smith-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Configura la máquina Smith con la barra a la altura de la cadera. Ponte de pie frente a la barra con los pies separados a la altura de los hombros. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Sujeta la barra con un agarre prono, con las manos un poco más separadas que el ancho de los hombros. Tira de la barra hacia la parte baja del pecho, juntando las escápulas. Haz una pausa por un momento en la posición alta, luego baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

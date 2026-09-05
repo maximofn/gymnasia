@@ -1,0 +1,14 @@
+{
+  "id": "remo-en-suspension",
+  "name": "Remo en suspensión",
+  "image_male": "images/remo-en-suspension-male.webp",
+  "image_female": "images/remo-en-suspension-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "bíceps",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Coloca un entrenador de suspensión a una altura adecuada. Ponte de pie frente al punto de anclaje con los pies separados a la altura de los hombros. Sostén las asas con un agarre prono, con las palmas mirándose entre sí. Inclínate hacia atrás, manteniendo el cuerpo recto y los talones en el suelo. Tira del pecho hacia las asas, apretando los omóplatos entre sí. Haz una pausa breve en la parte más alta, luego baja lentamente de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

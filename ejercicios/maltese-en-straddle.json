@@ -1,0 +1,14 @@
+{
+  "id": "maltese-en-straddle",
+  "name": "Maltese en straddle",
+  "image_male": "images/maltese-en-straddle-male.webp",
+  "image_female": "images/maltese-en-straddle-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros",
+    "pecho"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza colgándote de un par de anillas con los brazos completamente extendidos y el cuerpo en línea recta. Separa bien las piernas, formando una posición a horcajadas. Activa el core y baja lentamente el cuerpo hasta que los brazos queden paralelos al suelo. Mantén esta posición durante unos segundos, luego empújate de nuevo hacia arriba a la posición inicial. Repite el número de repeticiones deseado."
+}

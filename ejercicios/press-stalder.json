@@ -1,0 +1,14 @@
+{
+  "id": "press-stalder",
+  "name": "Press Stalder",
+  "image_male": "images/press-stalder-male.webp",
+  "image_female": "images/press-stalder-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros y los brazos extendidos por encima de la cabeza. Flexiona ligeramente las rodillas y activa el core. Baja el cuerpo a una posición de sentadilla mientras mantienes los brazos extendidos por encima de la cabeza. Mientras bajas en la sentadilla, empuja los brazos hacia el suelo, activando los tríceps. Haz una pausa de un momento en la parte baja de la sentadilla, luego empuja con los talones para levantarte mientras al mismo tiempo elevas de nuevo los brazos por encima de la cabeza. Repite el número de repeticiones deseado."
+}

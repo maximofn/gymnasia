@@ -1,0 +1,14 @@
+{
+  "id": "remo-estrecho-en-smith",
+  "name": "Remo estrecho en Smith",
+  "image_male": "images/remo-estrecho-en-smith-male.webp",
+  "image_female": "images/remo-estrecho-en-smith-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "bíceps",
+    "hombro posterior"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con los pies planos sobre el suelo. Sujeta las asas con un agarre prono, un poco más estrecho que el ancho de los hombros. Mantén la espalda recta y el pecho elevado mientras tiras de las asas hacia tu cuerpo, juntando las escápulas. Haz una pausa por un momento en el punto máximo del movimiento, luego suelta lentamente las agarraderas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

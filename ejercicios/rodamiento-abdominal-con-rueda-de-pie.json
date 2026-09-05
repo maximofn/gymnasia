@@ -1,0 +1,14 @@
+{
+  "id": "rodamiento-abdominal-con-rueda-de-pie",
+  "name": "Rodamiento abdominal con rueda de pie",
+  "image_male": "images/rodamiento-abdominal-con-rueda-de-pie-male.webp",
+  "image_female": "images/rodamiento-abdominal-con-rueda-de-pie-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "zona lumbar",
+    "hombros"
+  ],
+  "equipment": "rueda abdominal",
+  "difficulty": "advanced",
+  "instructions": "Comienza de pie, erguido, con los pies separados a la altura de los hombros y el rodillo frente a ti. Dobla la cintura y haz rodar lentamente el rodillo hacia adelante, manteniendo la espalda recta y el core activado. Continúa rodando hacia adelante hasta sentir un estiramiento en el abdomen y que tu cuerpo esté extendido lo máximo posible. Haz una pausa de un momento, luego haz rodar lentamente el rodillo de regreso hacia tu cuerpo, volviendo a la posición inicial. Repite el número de repeticiones deseado."
+}

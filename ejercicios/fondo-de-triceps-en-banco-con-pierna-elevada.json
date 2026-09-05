@@ -1,0 +1,14 @@
+{
+  "id": "fondo-de-triceps-en-banco-con-pierna-elevada",
+  "name": "Fondo de tríceps en banco con pierna elevada",
+  "image_male": "images/fondo-de-triceps-en-banco-con-pierna-elevada-male.webp",
+  "image_female": "images/fondo-de-triceps-en-banco-con-pierna-elevada-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el borde de un banco con las manos agarrando el borde, los dedos apuntando hacia adelante. Camina con los pies hacia adelante, deslizando los glúteos fuera del banco, y estira los brazos. Flexiona los codos y baja el cuerpo hacia el suelo, manteniendo la espalda cerca del banco. Empuja con las palmas para estirar los brazos y regresar a la posición inicial. Repite el número de repeticiones deseado."
+}

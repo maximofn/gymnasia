@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-completa-en-smith",
+  "name": "Sentadilla completa en Smith",
+  "image_male": "images/sentadilla-completa-en-smith-male.webp",
+  "image_female": "images/sentadilla-completa-en-smith-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Configura la máquina Smith con la barra a la altura de los hombros. Ponte de pie con los pies separados a la altura de los hombros, con los dedos de los pies ligeramente hacia afuera. Colócate debajo de la barra y posiciónala sobre la parte alta de la espalda, apoyándola en los trapecios. Sujeta la barra con las manos un poco más separadas que el ancho de los hombros. Suelta la barra del soporte y da un paso atrás, manteniendo una postura estable. Manteniendo el pecho elevado y el core activado, inicia la sentadilla empujando las caderas hacia atrás y doblando las rodillas. Baja el cuerpo hasta que los muslos queden paralelos al suelo, o tan abajo como tu flexibilidad lo permita. Haz una pausa por un momento en la posición baja, luego empuja con los talones para volver a la posición inicial. Repite el número de repeticiones deseado."
+}

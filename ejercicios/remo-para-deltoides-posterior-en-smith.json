@@ -1,0 +1,15 @@
+{
+  "id": "remo-para-deltoides-posterior-en-smith",
+  "name": "Remo para deltoides posterior en Smith",
+  "image_male": "images/remo-para-deltoides-posterior-en-smith-male.webp",
+  "image_female": "images/remo-para-deltoides-posterior-en-smith-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "trapecios",
+    "romboides",
+    "bíceps"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina con el pecho contra la almohadilla y los pies planos en el suelo. Agarra las agarraderas con un agarre prono, un poco más separadas que el ancho de los hombros. Mantén la espalda recta y el core activado mientras tiras de las asas hacia el pecho, juntando las escápulas. Haz una pausa por un momento en la parte alta del movimiento, luego suelta lentamente las asas de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

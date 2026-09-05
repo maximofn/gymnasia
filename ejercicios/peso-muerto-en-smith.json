@@ -1,0 +1,15 @@
+{
+  "id": "peso-muerto-en-smith",
+  "name": "Peso muerto en Smith",
+  "image_male": "images/peso-muerto-en-smith-male.webp",
+  "image_female": "images/peso-muerto-en-smith-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps",
+    "zona lumbar"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Configura la máquina Smith con la barra a la altura de la cadera. Ponte de pie con los pies separados a la altura de los hombros, los dedos de los pies ligeramente hacia afuera. Dobla las caderas y las rodillas, manteniendo la espalda recta y el pecho elevado, y sujeta la barra con un agarre prono un poco más ancho que los hombros. Activa el core y levanta la barra extendiendo las caderas y las rodillas, manteniendo la barra cerca del cuerpo. Ponte de pie erguido, extendiendo por completo las caderas y las rodillas. Baja la barra de nuevo doblando las caderas y las rodillas, manteniendo el control y la espalda recta. Repite el número de repeticiones deseado."
+}

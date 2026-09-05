@@ -1,0 +1,15 @@
+{
+  "id": "peso-muerto-con-barra-hexagonal",
+  "name": "Peso muerto con barra hexagonal",
+  "image_male": "images/peso-muerto-con-barra-hexagonal-male.webp",
+  "image_female": "images/peso-muerto-con-barra-hexagonal-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps",
+    "zona lumbar"
+  ],
+  "equipment": "barra hexagonal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y la barra hexagonal en el suelo frente a ti. Flexiona las caderas y las rodillas para bajar y agarra las asas de la barra hexagonal con un agarre prono. Mantén la espalda recta y el pecho elevado mientras comienzas a levantar la barra hexagonal del suelo extendiendo las caderas y las rodillas. Al levantar, concéntrate en empujar con los talones y contraer los glúteos en la parte superior del movimiento. Baja la barra hexagonal de nuevo al suelo flexionando las caderas y las rodillas, manteniendo la espalda recta durante todo el movimiento. Repite el número de repeticiones deseado."
+}

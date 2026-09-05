@@ -1,0 +1,13 @@
+{
+  "id": "encogimiento-en-smith",
+  "name": "Encogimiento en Smith",
+  "image_male": "images/encogimiento-en-smith-male.webp",
+  "image_female": "images/encogimiento-en-smith-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Agarra la barra con un agarre pronado, con las manos un poco más separadas que el ancho de los hombros. Mantén los brazos rectos y los hombros relajados. Levanta los hombros hacia las orejas, contrayendo los trapecios en la parte alta. Mantén la posición por un momento y luego baja lentamente los hombros de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

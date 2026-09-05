@@ -1,0 +1,14 @@
+{
+  "id": "fondo-de-triceps-en-suelo",
+  "name": "Fondo de tríceps en suelo",
+  "image_male": "images/fondo-de-triceps-en-suelo-male.webp",
+  "image_female": "images/fondo-de-triceps-en-suelo-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el borde de una silla o banco con las manos junto a las caderas, los dedos apuntando hacia adelante. Desliza los glúteos fuera del frente de la silla con las piernas extendidas frente a ti. Estira los brazos, manteniendo una ligera flexión en los codos para conservar la tensión en los tríceps y aliviarla en las articulaciones del codo. Flexiona lentamente los codos para bajar el cuerpo hacia el suelo hasta que los codos formen un ángulo de aproximadamente 90 grados. Cuando llegues al punto más bajo del movimiento, empuja hacia abajo contra la silla para estirar los codos, volviendo a la posición inicial. Repite el número de repeticiones deseado."
+}

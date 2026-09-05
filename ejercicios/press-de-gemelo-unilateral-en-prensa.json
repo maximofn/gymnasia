@@ -1,0 +1,14 @@
+{
+  "id": "press-de-gemelo-unilateral-en-prensa",
+  "name": "Press de gemelo unilateral en prensa",
+  "image_male": "images/press-de-gemelo-unilateral-en-prensa-male.webp",
+  "image_female": "images/press-de-gemelo-unilateral-en-prensa-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "máquina de trineo",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la prensa de piernas y siéntate con la espalda apoyada. Coloca únicamente la almohadilla de un pie en el borde inferior de la plataforma, con el talón libre, y mantén la otra pierna flexionada fuera de la plataforma. Con la rodilla de trabajo ligeramente flexionada, extiende el tobillo para empujar la plataforma con la punta del pie. Haz una pausa con el gemelo contraído y baja el talón de forma controlada. Completa las repeticiones y cambia de pierna."
+}

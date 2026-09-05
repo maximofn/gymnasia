@@ -1,0 +1,15 @@
+{
+  "id": "jalon-al-pecho-con-agarre-paralelo-doble",
+  "name": "Jalón al pecho con agarre paralelo doble",
+  "image_male": "images/jalon-al-pecho-con-agarre-paralelo-doble-male.webp",
+  "image_female": "images/jalon-al-pecho-con-agarre-paralelo-doble-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "bíceps",
+    "romboides",
+    "hombro posterior"
+  ],
+  "equipment": "polea",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate de frente a la máquina de cable. Agarra las asas con un agarre prono, con las manos separadas a la altura de los hombros. Siéntate y coloca los muslos debajo de las almohadillas para muslos, manteniendo los pies planos sobre el suelo. Inclínate ligeramente hacia atrás y mantén el pecho elevado, conservando una columna neutral. Tira de las asas hacia la parte superior del pecho, apretando los omóplatos entre sí. Haz una pausa por un momento en la parte inferior del movimiento, sintiendo la contracción en los dorsales. Suelta lentamente las asas y vuelve a la posición inicial. Repite el número de repeticiones deseado."
+}

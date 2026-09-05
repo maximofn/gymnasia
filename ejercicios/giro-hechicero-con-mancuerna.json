@@ -1,0 +1,14 @@
+{
+  "id": "giro-hechicero-con-mancuerna",
+  "name": "Giro hechicero con mancuerna",
+  "image_male": "images/giro-hechicero-con-mancuerna-male.webp",
+  "image_female": "images/giro-hechicero-con-mancuerna-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "zona lumbar"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta una mancuerna con una mano. Flexiona ligeramente las rodillas e inclínate hacia adelante desde la cintura, manteniendo la espalda recta. Extiende el brazo con la mancuerna hacia el pie opuesto, rotando el torso mientras lo haces. Regresa a la posición inicial y repite del otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+}

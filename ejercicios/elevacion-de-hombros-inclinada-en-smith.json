@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-hombros-inclinada-en-smith",
+  "name": "Elevación de hombros inclinada en Smith",
+  "image_male": "images/elevacion-de-hombros-inclinada-en-smith-male.webp",
+  "image_female": "images/elevacion-de-hombros-inclinada-en-smith-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros",
+    "trapecios"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Colócate de pie frente a la máquina Smith con los pies separados a la anchura de los hombros. Agarra la barra en pronación, algo más abierta que los hombros, y mantén el torso estable. Eleva la barra hasta la parte superior del pecho guiando el movimiento con los codos altos y hacia fuera, sin llevarla por encima de la cabeza. Haz una pausa breve y baja la barra de forma controlada."
+}

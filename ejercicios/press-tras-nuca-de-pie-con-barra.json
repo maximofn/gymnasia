@@ -1,0 +1,14 @@
+{
+  "id": "press-tras-nuca-de-pie-con-barra",
+  "name": "Press tras nuca de pie con barra",
+  "image_male": "images/press-tras-nuca-de-pie-con-barra-male.webp",
+  "image_female": "images/press-tras-nuca-de-pie-con-barra-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sostén la barra detrás del cuello con un agarre prono. Mantén la espalda recta y el core activado. Empuja la barra por encima de la cabeza extendiendo los brazos, estirando completamente los codos. Haz una pausa breve en la parte alta y luego baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

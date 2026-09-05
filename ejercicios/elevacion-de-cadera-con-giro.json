@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-cadera-con-giro",
+  "name": "Elevación de cadera con giro",
+  "image_male": "images/elevacion-de-cadera-con-giro-male.webp",
+  "image_female": "images/elevacion-de-cadera-con-giro-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "oblicuos",
+    "isquiotibiales"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre tu espalda con las rodillas flexionadas y los pies apoyados en el suelo. Coloca las manos a los lados para mayor apoyo. Activa los glúteos y levanta las caderas del suelo, formando una línea recta desde las rodillas hasta los hombros. Manteniendo las caderas elevadas, gira la parte inferior del cuerpo hacia el lado derecho, llevando las rodillas hacia el suelo. Vuelve a la posición inicial y repite el giro hacia el lado izquierdo. Continúa alternando los giros el número de repeticiones deseado."
+}

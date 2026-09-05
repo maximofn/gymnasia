@@ -1,0 +1,14 @@
+{
+  "id": "giro-de-360-grados",
+  "name": "Giro de 360 grados",
+  "image_male": "images/giro-de-360-grados-male.webp",
+  "image_female": "images/giro-de-360-grados-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Mantén los brazos extendidos rectos frente a ti, paralelos al suelo. Activa el core y mueve los brazos en un movimiento circular, rotando el torso mientras lo haces. Continúa el movimiento circular, moviendo los brazos y rotando el torso el número de repeticiones deseado. Recuerda respirar durante todo el ejercicio."
+}

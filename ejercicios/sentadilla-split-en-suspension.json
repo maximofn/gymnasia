@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-split-en-suspension",
+  "name": "Sentadilla split en suspensión",
+  "image_male": "images/sentadilla-split-en-suspension-male.webp",
+  "image_female": "images/sentadilla-split-en-suspension-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie de espaldas a un entrenador de suspensión con los pies separados a la altura de los hombros. Extiende una pierna hacia adelante y coloca el empeine del pie en el soporte para pie del entrenador de suspensión. Flexiona la pierna de apoyo y baja el cuerpo a una posición de zancada, manteniendo el pecho elevado y la rodilla alineada con la punta del pie. Empuja con el talón para regresar a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+}

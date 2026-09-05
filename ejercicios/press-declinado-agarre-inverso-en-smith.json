@@ -1,0 +1,14 @@
+{
+  "id": "press-declinado-agarre-inverso-en-smith",
+  "name": "Press declinado con agarre inverso en Smith",
+  "image_male": "images/press-declinado-agarre-inverso-en-smith-male.webp",
+  "image_female": "images/press-declinado-agarre-inverso-en-smith-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "advanced",
+  "instructions": "Ajusta la máquina Smith a una posición declinada. Túmbate en el banco con los pies asegurados bajo las almohadillas para los pies. Agarra la barra con un agarre invertido, manos un poco más separadas que el ancho de los hombros. Suelta la barra y bájala hacia el pecho, manteniendo los codos pegados al cuerpo. Haz una pausa breve en la parte baja y luego empuja la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

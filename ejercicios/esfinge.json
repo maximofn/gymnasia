@@ -1,0 +1,14 @@
+{
+  "id": "esfinge",
+  "name": "Esfinge",
+  "image_male": "images/esfinge-male.webp",
+  "image_female": "images/esfinge-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca abajo con la pelvis y los muslos apoyados en la esterilla. Coloca los antebrazos paralelos en el suelo y los codos justo debajo de los hombros. Presiona suavemente con los antebrazos para elevar el pecho, alargando la columna y manteniendo el cuello neutral. Conserva la pelvis en el suelo, respira en la postura y desciende de forma controlada."
+}

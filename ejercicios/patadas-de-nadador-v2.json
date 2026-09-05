@@ -1,0 +1,15 @@
+{
+  "id": "patadas-de-nadador-v2",
+  "name": "Patadas de nadador v2",
+  "image_male": "images/patadas-de-nadador-v2-male.webp",
+  "image_female": "images/patadas-de-nadador-v2-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "cuádriceps",
+    "gemelos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca abajo sobre una esterilla con los brazos extendidos por encima de la cabeza. Activa el core y levanta el pecho y las piernas del suelo al mismo tiempo. Mueve las piernas hacia arriba y hacia abajo con un movimiento de aleteo, como si estuvieras nadando. Continúa el movimiento de patada el número de repeticiones deseado. Baja el pecho y las piernas de nuevo a la posición inicial."
+}

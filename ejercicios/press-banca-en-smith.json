@@ -1,0 +1,14 @@
+{
+  "id": "press-banca-en-smith",
+  "name": "Press de banca en Smith",
+  "image_male": "images/press-banca-en-smith-male.webp",
+  "image_female": "images/press-banca-en-smith-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura de la barra de la máquina Smith a la altura del pecho. Túmbate en el banco con los pies firmemente apoyados en el suelo. Sujeta la barra con agarre prono, un poco más separado que el ancho de los hombros. Suelta la barra del soporte y bájala hacia el pecho, manteniendo los codos pegados al cuerpo. Haz una pausa por un momento cuando la barra toque el pecho. Empuja la barra de vuelta a la posición inicial, extendiendo los brazos por completo. Repite el número de repeticiones deseado."
+}

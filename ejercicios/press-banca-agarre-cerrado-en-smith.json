@@ -1,0 +1,14 @@
+{
+  "id": "press-banca-agarre-cerrado-en-smith",
+  "name": "Press de banca con agarre cerrado en Smith",
+  "image_male": "images/press-banca-agarre-cerrado-en-smith-male.webp",
+  "image_female": "images/press-banca-agarre-cerrado-en-smith-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en el banco con los pies planos sobre el suelo. Agarra la barra con un agarre cerrado, un poco más estrecho que el ancho de los hombros. Baja la barra hacia el pecho, manteniendo los codos pegados cerca del cuerpo. Haz una pausa breve en la parte baja y luego empuja la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

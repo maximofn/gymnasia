@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-con-alcance-y-giro-sobre-la-cabeza",
+  "name": "Sentadilla con alcance y giro sobre la cabeza",
+  "image_male": "images/sentadilla-con-alcance-y-giro-sobre-la-cabeza-male.webp",
+  "image_female": "images/sentadilla-con-alcance-y-giro-sobre-la-cabeza-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y los dedos de los pies ligeramente hacia afuera. Baja el cuerpo hacia una posición de sentadilla flexionando las rodillas y empujando las caderas hacia atrás. Mientras te levantas de la sentadilla, eleva los brazos por encima de la cabeza y gira el torso hacia un lado. Vuelve a la posición inicial y repite la sentadilla, esta vez girando el torso hacia el lado opuesto. Continúa alternando los lados en cada repetición de la sentadilla."
+}

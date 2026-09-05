@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-gemelos-de-pie",
+  "name": "Elevación de gemelos de pie",
+  "image_male": "images/elevacion-de-gemelos-de-pie-male.webp",
+  "image_female": "images/elevacion-de-gemelos-de-pie-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros, con las puntas de los pies apuntando hacia adelante. Levanta los talones del suelo lo más alto posible, apoyándote sobre la punta de los pies. Mantén la posición por un momento y luego baja lentamente los talones de nuevo a la posición inicial. Repite el número de repeticiones deseado."
+}

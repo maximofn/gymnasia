@@ -1,0 +1,14 @@
+{
+  "id": "sentadilla-split-unilateral-en-smith",
+  "name": "Sentadilla split unilateral en Smith",
+  "image_male": "images/sentadilla-split-unilateral-en-smith-male.webp",
+  "image_female": "images/sentadilla-split-unilateral-en-smith-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie frente a la máquina Smith con los pies separados a la altura de los hombros. Coloca un pie detrás de ti sobre un banco o escalón, con los dedos del pie apuntando hacia delante. Sujétate de la barra de la máquina Smith para mayor estabilidad. Dobla la rodilla delantera y baja el cuerpo hacia una posición de zancada, manteniendo la espalda recta. Haz una pausa por un momento en la posición baja, luego empuja con el talón delantero para volver a la posición inicial. Repite el número de repeticiones deseado, luego cambia de pierna."
+}

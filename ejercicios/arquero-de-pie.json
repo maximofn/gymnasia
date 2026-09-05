@@ -1,0 +1,15 @@
+{
+  "id": "arquero-de-pie",
+  "name": "Arquero de pie",
+  "image_male": "images/arquero-de-pie-male.webp",
+  "image_female": "images/arquero-de-pie-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros",
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Extiende los brazos rectos hacia adelante a la altura de los hombros, paralelos al suelo. Gira el torso hacia la derecha, manteniendo los brazos extendidos y la espalda recta. Mientras giras, extiende el brazo derecho hacia adelante y el brazo izquierdo hacia atrás, imitando el movimiento de tensar un arco. Mantén la posición por un momento y luego vuelve a la posición inicial. Repite el movimiento, esta vez girando el torso hacia la izquierda y extendiendo el brazo izquierdo hacia adelante y el brazo derecho hacia atrás. Continúa alternando lados durante el número de repeticiones deseado."
+}
