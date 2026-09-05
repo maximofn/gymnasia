@@ -46,7 +46,7 @@ describe("provider credentials", () => {
   it("removes provider keys before native AsyncStorage serialization", () => {
     const store = {
       keys: [
-        { provider: "google", api_key: "secret", model: "gemini-3.6-flash" },
+        { provider: "google", api_key: "secret", model: "gemini-3.8-flash" },
       ],
       threads: [{ id: "thread-1" }],
     };
@@ -55,7 +55,7 @@ describe("provider credentials", () => {
     expect(sanitized.keys[0]).toEqual({
       provider: "google",
       api_key: "",
-      model: "gemini-3.6-flash",
+      model: "gemini-3.8-flash",
     });
     expect(sanitized.threads).toEqual(store.threads);
     expect(store.keys[0].api_key).toBe("secret");

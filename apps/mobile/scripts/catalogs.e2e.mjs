@@ -81,7 +81,7 @@ function seedStore(agentEnabled = false) {
     threads: [{ id: "thread_catalogs_e2e", title: "Catálogos E2E" }],
     messagesByThread: { thread_catalogs_e2e: [] },
     keys: [
-      { provider: "openai", is_active: agentEnabled, api_key: agentEnabled ? "e2e-local-fake-key" : "", model: "gpt-5-mini" },
+      { provider: "openai", is_active: agentEnabled, api_key: agentEnabled ? "e2e-local-fake-key" : "", model: "gpt-5.6-luna" },
       { provider: "anthropic", is_active: false, api_key: "", model: "claude-sonnet-4-5" },
       { provider: "google", is_active: false, api_key: "", model: "gemini-2.5-flash" },
     ],

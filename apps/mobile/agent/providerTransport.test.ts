@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   anthropicApiHeaders,
   anthropicProxyCredentials,
+  anthropicThinkingConfig,
   createFakeProviderResult,
   DEFAULT_GOOGLE_MODEL,
   explainAnthropicError,
@@ -11,6 +12,7 @@ import {
   normalizeAnthropicWorkspaceId,
   normalizeGoogleModel,
   providerCredential,
+  usesLegacyAnthropicThinking,
 } from "./providerTransport";
 
 describe("development provider transport", () => {
@@ -85,5 +87,56 @@ describe("development provider transport", () => {
       "anthropic-workspace-id is required when authenticating with an identity-linked API key",
     )).toContain("wrkspc_…");
     expect(explainAnthropicError("another error")).toBe("another error");
+  });
+
+  // Regresión: con `type: "enabled"` los modelos desde la generación 4.6
+  // responden 400 y la conversación muere. Verificado en un móvil real con
+  // claude-sonnet-5 el 5 de septiembre de 2026.
+  it("pide razonamiento adaptativo a los modelos que rechazan el presupuesto fijo", () => {
+    for (const model of [
+      "claude-sonnet-5",
+      "claude-opus-5",
+      "claude-sonnet-4-6",
+      "claude-opus-4-8",
+      "claude-fable-5-1",
+    ]) {
+      expect(usesLegacyAnthropicThinking(model)).toBe(false);
+      expect(anthropicThinkingConfig(model, 1024)).toEqual({
+        type: "adaptive",
+        display: "summarized",
+      });
+    }
+  });
+
+  it("conserva el presupuesto fijo en los modelos que solo entienden esa forma", () => {
+    for (const model of [
+      "claude-haiku-4-5",
+      "claude-haiku-4-5-20251001",
+      "claude-sonnet-4-5-20250929",
+      "claude-opus-4-5",
+      "claude-3-5-sonnet-latest",
+      "claude-3-7-sonnet-latest",
+    ]) {
+      expect(usesLegacyAnthropicThinking(model)).toBe(true);
+      expect(anthropicThinkingConfig(model, 1024)).toEqual({
+        type: "enabled",
+        budget_tokens: 1024,
+      });
+    }
+  });
+
+  it("trata cualquier modelo desconocido como moderno, para no romper con los que salgan", () => {
+    fc.assert(fc.property(fc.string(), (raw) => {
+      const config = anthropicThinkingConfig(raw, 1024);
+      if (usesLegacyAnthropicThinking(raw)) {
+        expect(config).toEqual({ type: "enabled", budget_tokens: 1024 });
+      } else {
+        expect(config).toEqual({ type: "adaptive", display: "summarized" });
+      }
+    }));
+    expect(anthropicThinkingConfig("claude-sonnet-9-9", 1024)).toEqual({
+      type: "adaptive",
+      display: "summarized",
+    });
   });
 });

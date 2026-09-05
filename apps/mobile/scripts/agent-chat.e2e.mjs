@@ -169,20 +169,20 @@ function createSeedStore(activeProvider) {
         provider: "openai",
         is_active: activeProvider === "openai",
         api_key: activeProvider === "openai" ? "e2e-local-fake-key" : "",
-        model: "gpt-5-mini",
+        model: "gpt-5.6-luna",
         reasoning_effort: "low",
       },
       {
         provider: "anthropic",
         is_active: activeProvider === "anthropic",
         api_key: activeProvider === "anthropic" ? "e2e-local-fake-key" : "",
-        model: "claude-3-5-sonnet-latest",
+        model: "claude-sonnet-5",
       },
       {
         provider: "google",
         is_active: activeProvider === "google",
         api_key: activeProvider === "google" ? "e2e-local-fake-key" : "",
-        model: "gemini-3.6-flash",
+        model: "gemini-3.8-flash",
       },
     ],
     chatProvider: activeProvider,
@@ -399,7 +399,7 @@ async function runByokLifecycleE2E(page, baseUrl) {
         contentType: "application/json",
         body: JSON.stringify({
           models: [{
-            name: "models/gemini-3.6-flash",
+            name: "models/gemini-3.8-flash",
             displayName: "Gemini 3.6 Flash",
             supportedGenerationMethods: ["generateContent"],
           }],
@@ -423,7 +423,7 @@ async function runByokLifecycleE2E(page, baseUrl) {
           await route.fulfill({
             status: 200,
             contentType: "application/json",
-            body: JSON.stringify({ name: "models/gemini-3.6-flash" }),
+            body: JSON.stringify({ name: "models/gemini-3.8-flash" }),
           });
           resolve();
         };
@@ -433,7 +433,7 @@ async function runByokLifecycleE2E(page, baseUrl) {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ name: "models/gemini-3.6-flash" }),
+      body: JSON.stringify({ name: "models/gemini-3.8-flash" }),
     });
   });
 
@@ -461,7 +461,7 @@ async function runByokLifecycleE2E(page, baseUrl) {
   await keyInput.fill(firstKey);
   await page.locator('[data-testid="provider-model-dropdown-google"]')
     .click({ timeout: STEP_TIMEOUT_MS });
-  await page.locator('[data-testid="provider-model-option-google-gemini-3.6-flash"]')
+  await page.locator('[data-testid="provider-model-option-google-gemini-3.8-flash"]')
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await saveButton.click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="provider-status-detail-google"]')
@@ -704,6 +704,26 @@ async function runAgentChatE2E(
     "object",
     `${provider} debe recibir data como objeto estructurado en write_measurement.`,
   );
+  if (provider === "anthropic") {
+    // Regresión: con `type: "enabled"` los modelos desde la generación 4.6
+    // responden 400 y el chat muere. Verificado en un móvil real con
+    // claude-sonnet-5 el 5 de septiembre de 2026.
+    assert.equal(
+      requestBodies[0].thinking?.type,
+      "adaptive",
+      "claude-sonnet-5 debe recibir razonamiento adaptativo, no un presupuesto fijo.",
+    );
+    assert.equal(
+      requestBodies[0].thinking?.budget_tokens,
+      undefined,
+      "El presupuesto fijo de razonamiento no puede viajar a un modelo moderno.",
+    );
+    assert.equal(
+      requestBodies[0].thinking?.display,
+      "summarized",
+      "Sin display resumido el bloque de Razonamiento llegaría vacío a la interfaz.",
+    );
+  }
   // GYM-139: los campos "debug" y "Notas" siguen en la memoria personal, con
   // texto de inyección dentro. Nada de eso puede aparecer en el system prompt.
   for (const injected of [
