@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { once } from "node:events";
 import { existsSync, readFileSync } from "node:fs";
 import { createServer } from "node:http";
+import { tmpdir } from "node:os";
 import { dirname, extname, join, normalize } from "node:path";
 import process from "node:process";
 import { spawn } from "node:child_process";
@@ -23,6 +24,18 @@ const TRACE_KEY = scopedKey("gymnasia_debug_traces");
 const LEGACY_RELEASES_API = "https://api.github.com/repos/maximofn/gymnasia/releases/latest";
 const mobileRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const repositoryRoot = dirname(dirname(mobileRoot));
+
+// La captura de evidencia se escribe fuera del repositorio salvo que se pida lo
+// contrario. Un PNG se renderiza distinto en cada máquina, así que regenerarlo en
+// cada ejecución dejaba el checkout sucio; el gate `validate-production` exige que
+// las pruebas no toquen el repositorio y abortaba la publicación con todos los
+// gates en verde. Para actualizar la evidencia versionada a propósito:
+// `GYMNASIA_E2E_UPDATE_SCREENSHOTS=1 npm run test:agent:e2e`.
+const SCREENSHOT_RELATIVE_PATH = ["docs", "testing", "screenshots"];
+const updateVersionedScreenshots = process.env.GYMNASIA_E2E_UPDATE_SCREENSHOTS === "1";
+const screenshotRoot = updateVersionedScreenshots
+  ? join(repositoryRoot, ...SCREENSHOT_RELATIVE_PATH)
+  : join(tmpdir(), "gymnasia-e2e-screenshots");
 const bundledPrompt = readFileSync(join(repositoryRoot, "prompts", "AGENTS.md"), "utf8")
   .replace(/^\uFEFF/, "")
   .replace(/\r\n?/g, "\n");
@@ -937,7 +950,7 @@ async function runAgentChatE2E(
       });
     });
     await page.screenshot({
-      path: join(repositoryRoot, "docs", "testing", "screenshots", "gym-171-measurement-contract.png"),
+      path: join(screenshotRoot, "gym-171-measurement-contract.png"),
       fullPage: true,
     });
     await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
