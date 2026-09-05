@@ -1,0 +1,14 @@
+{
+  "descripcion": "Ejercicio corriente, tal y como lo escribe la app hoy. No debe producir ni una sola incidencia: si la normalización hace ruido con datos sanos, el registro de reparaciones deja de significar nada.",
+  "exercise": {
+    "name": "Sentadilla",
+    "load_kg": 80,
+    "rest_seconds": 150,
+    "sets": [10, 8, 8],
+    "series": [
+      { "id": "set_a", "reps": "10", "weight_kg": "80", "rest_seconds": "150" },
+      { "id": "set_b", "type": "normal", "reps": "8", "weight_kg": "85", "rest_seconds": "150" },
+      { "id": "set_c", "type": "failure", "reps": "8", "weight_kg": "85", "rest_seconds": "150" }
+    ]
+  }
+}

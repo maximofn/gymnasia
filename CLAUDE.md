@@ -222,6 +222,10 @@ The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - browser E2E with a fake OpenAI provider: `npm run test:agent:e2e`
 - published privacy policy E2E: `npm run test:privacy:e2e` (exports the web build and
   reads it with a clean browser context; `PRIVACY_E2E_SKIP_EXPORT=1` reuses `dist/`)
+- migración de series avanzadas E2E: `npm run test:train:series:e2e` (siembra un
+  almacén con tempo, drop-set y un tipo de serie inexistente; comprueba que la app
+  arranca sin pantalla de recuperación y que nada se pierde al recargar;
+  `TRAIN_SERIES_E2E_SKIP_EXPORT=1` reutiliza `dist/`)
 - data inventory guard rail: `npm run check:data-inventory`, `npm run test:data-inventory`
 - generated privacy policy: `npm run check:legal`, `npm run test:legal`, `npm run sync:legal`
 - mobile type-check: `npm --workspace apps/mobile exec tsc --noEmit`
@@ -448,6 +452,31 @@ Expo por su cuenta. Compruébalo con `eas build:view <build-id>` o la URL que im
 log: si sigue `in queue`/`in progress`, el APK acabará y se descarga desde Expo. Si esto
 se repite pese al plan de pago, considera `eas build --no-wait` publicando la release desde
 un webhook de Expo, o compila en local con la skill `build-apk`.
+
+### `test:train:e2e` es intermitente por diseño, y además **miente en su código de salida**
+Dos trampas distintas del mismo script (`apps/mobile/scripts/train-usability.e2e.mjs`),
+verificadas el 5 de septiembre de 2026.
+
+**1. Falla de forma intermitente en "Completing session".** El recorrido pone el
+descanso de las series a **1 segundo** y después espera a que aparezca
+`training-session-skip-rest`. Ese botón solo existe mientras
+`activeWorkoutSession.is_resting` es cierto, o sea un segundo: el test compite con
+su propio reloj y pierde cuando la máquina va cargada (por ejemplo, justo después
+de un `expo export`). El síntoma es
+`locator.click: Timeout 30000ms exceeded ... waiting for locator('[data-testid="training-session-skip-rest"]')`,
+con la captura en `/tmp/train-usability-failure.png` mostrando la sesión con las
+series ya completadas.
+
+Es fácil confundirlo con una regresión propia: falló en una rama y pasó en `main`
+a la primera, y al reejecutar pasó en las dos. **Antes de investigar el código,
+ejecútalo dos o tres veces**, y compáralo con `main` solo si falla siempre.
+
+**2. Sale con código 0 aunque el recorrido falle.** Imprime `[train-e2e] FAILED`
+y el error, pero el proceso termina con `exit code 0`, así que `npm run` lo da por
+bueno y un `&&` encadenado sigue adelante. **No basta con mirar el código de
+salida: hay que leer la última línea**, que en un recorrido correcto es
+`Entrenamiento usability e2e completed successfully`. Si algún día entra en CI,
+esto hay que arreglarlo antes o el job pasará siempre.
 
 ### Clearing `localStorage` does NOT reset the app on web — it also persists to `.dev-store.json`
 - Gotcha: on web + `__DEV__`, `App.tsx` (`loadDevStoreFile` / `saveDevStoreFile`) mirrors the store to `apps/mobile/.dev-store.json` through a Metro middleware (`metro.config.js`, `/dev-store` endpoint) so data survives dev-server restarts. On boot it reads that file back, so wiping `localStorage` leaves the app fully populated. The file is served per dev server, not per origin, so `localhost:8081` and `127.0.0.1:8081` restore the *same* data even though their `localStorage` is separate.

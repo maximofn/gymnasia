@@ -215,6 +215,7 @@ function validateTemplate(
   ["id", "name", "duration_minutes", "category", "icon"].forEach((key) =>
     validateOptionalScalar(template, key, path, "string", issues),
   );
+  validateOptionalScalar(template, "series_schema_version", path, "number", issues);
   if (template.exercises !== undefined && template.exercises !== null) {
     validateRecordArray(template.exercises, `${path}.exercises`, issues, validateExercise);
   }

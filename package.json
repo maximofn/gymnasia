@@ -56,6 +56,7 @@
     "check:store-listing": "node scripts/store-listing/check.mjs",
     "test:store-listing": "node --test scripts/store-listing/*.test.mjs",
     "test:train:e2e": "node apps/mobile/scripts/train-usability.e2e.mjs",
+    "test:train:series:e2e": "node apps/mobile/scripts/train-series-migration.e2e.mjs",
     "test:diet:e2e": "node apps/mobile/scripts/diet-validation.e2e.mjs",
     "test:storage-recovery:e2e": "node apps/mobile/scripts/storage-recovery.e2e.mjs",
     "test:user-preferences:e2e": "node apps/mobile/scripts/user-preferences.e2e.mjs",

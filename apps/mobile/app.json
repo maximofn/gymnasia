@@ -2,7 +2,7 @@
   "expo": {
     "name": "Gymnasia",
     "slug": "gymnasia",
-    "version": "1.34.0",
+    "version": "1.35.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
