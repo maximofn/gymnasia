@@ -156,10 +156,21 @@ import {
   synchronizeLinkedExercises,
 } from "./catalogs/migrations";
 import {
+  buildSeriesFromLegacyExercise,
+  createIssueSink,
+  formatTrainingIssues,
   isCompoundSeriesType,
+  readSeriesSchemaVersion,
+  resolveTrainingIssues,
+  sealedSeriesSchemaVersion,
+  seriesToLegacySets,
+  summarizeTrainingIssues,
+  TRAINING_SERIES_SCHEMA_VERSION,
   type ExerciseSeries,
   type SeriesType,
   type SubSeries,
+  type TrainingNormalizationMode,
+  type TrainingValidationIssue,
 } from "./training/seriesContract";
 import {
   ALL_SERIES_TYPES,
@@ -406,6 +417,12 @@ type RoutineIconName =
 
 type WorkoutTemplate = {
   id: string;
+  /**
+   * Versión del esquema de series con que se normalizó esta rutina. Vive aquí y
+   * no en la raíz del almacén porque `validateLocalStoreTree` rechaza cualquier
+   * clave raíz desconocida; dentro de la rutina el portero tolera claves nuevas.
+   */
+  series_schema_version?: number;
   name: string;
   category?: TrainingCategory;
   icon?: RoutineIconName;
@@ -4087,60 +4104,6 @@ function gkgMacroCaloriesPerGram(macro: GkgMacroKey): number {
   return macro === "fat" ? 9 : 4;
 }
 
-function buildSeriesFromLegacyExercise(exercise: {
-  sets?: number[];
-  load_kg?: number | null;
-  rest_seconds?: number | null;
-  series?: ExerciseSeries[];
-}): ExerciseSeries[] {
-  if (Array.isArray(exercise.series) && exercise.series.length > 0) {
-    return exercise.series.map((item, index) => ({
-      ...item,
-      id: item.id || uid("set"),
-      reps: item.reps?.trim() || `${index + 1}`,
-      weight_kg: item.weight_kg?.trim() ?? "",
-      rest_seconds: item.rest_seconds?.trim() ?? "",
-      sub_series: item.sub_series?.map((subSeries) => ({
-        ...subSeries,
-        catalog_link: normalizeCatalogLink(
-          subSeries.catalog_link,
-        ) ?? (() => {
-          const legacyRef = normalizeCatalogItemRef(
-            (subSeries as SubSeries & { exercise_ref?: unknown }).exercise_ref,
-          );
-          return legacyRef ? linkedCatalog(legacyRef, "selection") : undefined;
-        })(),
-      })),
-    }));
-  }
-
-  const legacyWeight = exercise.load_kg;
-  const legacyRest = exercise.rest_seconds;
-  return (exercise.sets ?? []).map((setValue, setIndex) => {
-    const reps = Number.isFinite(setValue) ? `${Math.round(setValue)}` : "";
-    const weight =
-      typeof legacyWeight === "number" && Number.isFinite(legacyWeight)
-        ? `${Math.max(0, Math.round((legacyWeight - setIndex * 2) * 10) / 10)}`
-        : "";
-    const rest =
-      typeof legacyRest === "number" && Number.isFinite(legacyRest)
-        ? `${Math.max(0, Math.round(legacyRest))}`
-        : "";
-    return {
-      id: uid("set"),
-      reps,
-      weight_kg: weight,
-      rest_seconds: rest,
-    };
-  });
-}
-
-function seriesToLegacySets(series: ExerciseSeries[]): number[] {
-  return series
-    .map((item) => extractFirstPositiveInt(item.reps))
-    .filter((value): value is number => value !== null);
-}
-
 function defaultTemplateIcon(category: TrainingCategory, index: number): RoutineIconName {
   const options = ROUTINE_ICON_BY_CATEGORY[category];
   if (options.length === 0) return "activity";
@@ -5099,9 +5062,19 @@ function normalizeMessagesByThread(
   );
 }
 
-function normalizeStore(raw: LocalStore): LocalStore {
+function normalizeStore(
+  raw: LocalStore,
+  options: {
+    training?: TrainingNormalizationMode;
+    onTrainingIssues?: (issues: TrainingValidationIssue[]) => void;
+  } = {},
+): LocalStore {
   const normalizedDietSettings = normalizeDietSettings(raw.dietSettings);
   const keys = normalizeProviderConfigurations(raw.keys);
+  // "repair" por defecto y a propósito: en el arranque, lanzar aquí manda el
+  // almacén del usuario a cuarentena y bloquea la app en la pantalla de
+  // recuperación. Solo la importación de una copia pide "strict".
+  const trainingSink = createIssueSink(options.training ?? "repair");
 
   // Migrate chatProvider / foodAIProvider
   const chatProvider: Provider = (raw as Record<string, unknown>).chatProvider as Provider
@@ -5110,8 +5083,22 @@ function normalizeStore(raw: LocalStore): LocalStore {
   const foodAIProvider: Provider = (raw as Record<string, unknown>).foodAIProvider as Provider ?? "google";
 
   const templates: WorkoutTemplate[] = (raw.templates ?? []).map((template, templateIndex) => {
+    const templateField = `templates[${templateIndex}]`;
+    const templateSchemaVersion = readSeriesSchemaVersion(template);
+    if (templateSchemaVersion !== null && templateSchemaVersion > TRAINING_SERIES_SCHEMA_VERSION) {
+      trainingSink.push(
+        `${templateField}.series_schema_version`,
+        "unknown_schema_version",
+        "Una rutina se guardó con una versión posterior de la app y se ha leído lo mejor posible.",
+      );
+    }
     const normalizedExercises = (template.exercises ?? []).map((exercise, exerciseIndex) => {
-      const normalizedSeries = buildSeriesFromLegacyExercise(exercise);
+      const normalizedSeries = buildSeriesFromLegacyExercise(
+        exercise,
+        `${templateField}.exercises[${exerciseIndex}]`,
+        uid,
+        trainingSink,
+      );
       const nextSets = seriesToLegacySets(normalizedSeries);
       const firstWeightText = normalizedSeries.find((item) => item.weight_kg.trim())?.weight_kg ?? "";
       const firstRestText = normalizedSeries.find((item) => item.rest_seconds.trim())?.rest_seconds ?? "";
@@ -5142,6 +5129,7 @@ function normalizeStore(raw: LocalStore): LocalStore {
     const normalizedIcon = normalizeTemplateIcon(template.icon, normalizedCategory, templateIndex);
     return {
       ...template,
+      series_schema_version: sealedSeriesSchemaVersion(template),
       name: template.name?.trim() || `Rutina ${templateIndex + 1}`,
       category: normalizedCategory,
       icon: normalizedIcon,
@@ -5149,6 +5137,12 @@ function normalizeStore(raw: LocalStore): LocalStore {
       exercises: normalizedExercises,
     };
   });
+
+  const trainingResult = resolveTrainingIssues(templates, trainingSink);
+  if (!trainingResult.ok) {
+    throw new Error(formatTrainingIssues(trainingResult.issues));
+  }
+  if (trainingResult.issues.length > 0) options.onTrainingIssues?.(trainingResult.issues);
 
   const normalizedMeasurementsResult = normalizeMeasurementCollection(
     Array.isArray(raw.measurements) ? raw.measurements : [],
@@ -8108,7 +8102,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     let baseStore: LocalStore;
     try {
       baseStore = sourceCandidate
-        ? normalizeStore(sourceCandidate.value as unknown as LocalStore)
+        ? normalizeStore(sourceCandidate.value as unknown as LocalStore, {
+            // Sin "strict" a propósito: reparar y seguir. Lanzar aquí manda el
+            // almacén a cuarentena y deja al usuario en la pantalla de
+            // recuperación por un dato que sí se podía arreglar.
+            onTrainingIssues: (issues) => {
+              // Solo códigos y conteos: la traza no lleva datos del usuario.
+              void pushTrace(
+                "trainingMigration",
+                "hydration-repaired",
+                summarizeTrainingIssues(issues),
+              );
+            },
+          })
         : createInitialStore();
     } catch {
       if (sourceCandidate) {
@@ -9865,7 +9871,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (!repository) {
         throw new Error("No se pudo acceder al almacenamiento seguro de proveedores.");
       }
-      const importedStore = stripProviderApiKeys(normalizeStore(data.store));
+      // "strict" aquí sí: si la copia trae una estructura ininterpretable, abortar
+      // la importación deja intacto lo que el usuario ya tenía. Es la diferencia
+      // con el arranque, donde lanzar destruiría el acceso a sus datos.
+      const trainingRepairs: TrainingValidationIssue[] = [];
+      const importedStore = stripProviderApiKeys(
+        normalizeStore(data.store, {
+          training: "strict",
+          onTrainingIssues: (issues) => trainingRepairs.push(...issues),
+        }),
+      );
       const currentKeys = repository.getCurrent()?.keys ?? storeRef.current.keys;
       const mergedKeys = importedStore.keys.map((imported) => {
         const current = currentKeys.find((item) => item.provider === imported.provider);
@@ -9936,6 +9951,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         warnings.push(normalizedPrefs.repairs.every((code) => code === "legacy_unversioned")
           ? "Las preferencias se actualizaron al formato actual."
           : "Se repararon ajustes de preferencias incompletos o incompatibles.");
+      }
+      if (trainingRepairs.length > 0) {
+        warnings.push(formatTrainingIssues(trainingRepairs));
       }
       setBackupResult({
         status: warnings.length > 0 ? "warning" : "ok",
