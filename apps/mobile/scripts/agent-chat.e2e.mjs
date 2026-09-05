@@ -615,10 +615,15 @@ async function runAgentChatE2E(
     });
   });
 
+  // Anthropic se intercepta en su URL real, no en la del proxy: desde que la web
+  // declara `anthropic-dangerous-direct-browser-access`, el navegador llama a
+  // api.anthropic.com igual que el móvil y la ruta del proxy ya no se visita.
+  // Interceptar la vieja dejaba escapar la petición a la API real, que respondía
+  // 401 a la clave de mentira del arnés.
   const routePattern = provider === "openai"
     ? "**/v1/responses*"
     : provider === "anthropic"
-      ? "**/chat/providers/anthropic/messages"
+      ? "**/v1/messages*"
       : "**/v1beta/models/**";
   await page.route(routePattern, async (route) => {
     const body = route.request().postDataJSON();
