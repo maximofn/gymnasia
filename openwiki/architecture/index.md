@@ -1,3 +1,3 @@
 # Archivos
 
-- [Arquitectura actual de ejecución](overview.md) - Mapa basado en las fuentes de la ejecución de Expo con prioridad local de Gymnasia, los servicios de desarrollo opcionales, las dependencias externas y los límites de confianza.
+- [Arquitectura actual de ejecución](overview.md) - Mapa de la aplicación Expo local-first y sus límites de confianza, con la política del agente distribuida como bundles firmados, deployments de GitHub verificados, snapshot integrado y caché anti-retroceso.

@@ -1,10 +1,10 @@
 ---
-okf_version: "0.1"
+okf_version: "0.2"
 ---
 
 # Archivos
 
-- [Inicio rápido de Gymnasia](quickstart.md) - Punto de entrada de alto nivel a la arquitectura actual de Gymnasia, que prioriza el almacenamiento local, sus puntos de entrada del código fuente, conceptos de la wiki, comandos de inicio, pruebas y límites de seguridad.
+- [Inicio rápido de Gymnasia](quickstart.md) - Mapa de entrada para ejecutar Gymnasia y dirigir cambios al dominio responsable. Distingue el runtime local-first de la aplicación del ciclo firmado que gobierna el prompt y la política sanitaria.
 
 # Directorios
 

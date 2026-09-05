@@ -8,16 +8,13 @@ type: concepto
 title: Streaming de proveedores y continuación de herramientas
 description: Encuadre SSE, selección de transporte, contratos de turnos analizados, correlación, errores, pruebas y superficies de extensión para OpenAI, Anthropic y Google.
 summary: SSE framing, transport selection, parsed turn contracts, correlation, errors, tests, and extension surfaces for OpenAI, Anthropic, and Google.
-tags: [agent, streaming, events, openai, anthropic, google]
-sources:
-  - apps/mobile/App.tsx
-  - apps/mobile/agent/sse.ts
-  - apps/mobile/agent/providerStreamParsers.ts
-  - apps/mobile/agent/providerToolLoop.ts
-  - apps/mobile/agent/sse.test.ts
-  - apps/mobile/agent/providerPipeline.test.ts
-  - apps/mobile/agent/providerToolLoop.test.ts
-  - apps/mobile/agent/__fixtures__/raw
+tags:
+  - agent
+  - streaming
+  - events
+  - openai
+  - anthropic
+  - google
 related:
   - ./runtime.md
   - ./provider-configuration.md

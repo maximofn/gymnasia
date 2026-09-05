@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:73cace4290442645bcc1fd19e6e2deb92caa35094219a69a19b00aaad6eff1df",
+  "claims": [
+    {
+      "id": "claim_4779fa69b9fa4aba9f04c8e63375d46b",
+      "statement": "`.github/prompt-policy.json` declara `main`, el propietario, checks, rutas sensibles y rutas de promoción; `validatePolicy` exige las fronteras obligatorias y que toda ruta de promoción esté cubierta por una ruta sensible.",
+      "evidence": [
+        {
+          "resource": "repo://.github/prompt-policy.json#L2-L24",
+          "version": "repo-lines-v1:sha256:92665fe472c4d44da5da6fef246eb6755ae6653a25342c9cc47f46d4d0a0596d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmMDYyNmIzMTA3NWUzNjRiZmYwNWNhYTYzMTJhZTUyOThkMDU5MGNjMTUyNGU5YWJhMDlkODg3OGE3NWRiZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2NGQ4YzA3MzQyOTg5MzEwMTU3NmQ4OGQ5OTEyN2U4OWQ2ODkxZDNiMTdlODlkZjAyZWM5YWU3MDcwNWQ4YmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoxLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ZmYyY2M2NmFiZWI1OGQ4ZWFhMTc1MTMxMmMzOTZlZjNlMzZmYTZkMTY2OTYyNWI4NjZkODc5Yjc2OGJlYzkifQ"
+        },
+        {
+          "resource": "repo://scripts/prompt-policy/policy.mjs#L18-L84",
+          "version": "repo-lines-v1:sha256:0cb8d8f1644979543bd1da565958048406af2fc49b9197a7044738ccebab5d2a:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlMWJlYThmZWVhMzY1NjdmNDNiNTY5MmZjZTEwMWRkNzVkYjY0MzczOTBmZjYxZGVhYjFlNDM0ZDFkNjVjZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwM2JjYWNkNDdhNWI5NDBmYzliM2ZjOTVkYjUxZDc5YmVlNWQ0NmNkNGY1MDViZGM1NDhkNjYxZDQ5ODlhOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM5YmFiZWIzM2QyMjU1ZjczMDMxOWNlNGU5YzkzNDJlNmVkYTBhZGZlMjMzMjc3OTZiY2ZkNzQ4ZGU0MDNlNDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_faa52b0e26a84e0a82159bbc90b34821",
+      "statement": "Las únicas rutas de promoción declaradas actualmente son `prompts/` y `policy/health-safety/`, y `AGENTS.md` ordena explicar en lenguaje natural cualquier cambio en ellas, esperar aprobación explícita y no promover, fusionar ni esquivar la puerta por otra rama.",
+      "evidence": [
+        {
+          "resource": "repo://.github/prompt-policy.json#L15-L24",
+          "version": "repo-lines-v1:sha256:66b5625b76f986f0b8d0d6e31a99fdc0545d5badbbd0a4c6a95f84fad265d369:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1MjgzYTZkOTk1OTU4MGJmNDhjOTcyMjZhNDNmMjRhZTBjMmU1ZmI3MmY0MTAwNzFiMDY2YzE3MGJjYzIwMDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2NGQ4YzA3MzQyOTg5MzEwMTU3NmQ4OGQ5OTEyN2U4OWQ2ODkxZDNiMTdlODlkZjAyZWM5YWU3MDcwNWQ4YmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyN2YxNTY5NmYyMWE2YzY0OGNhYmZjYjQwNWZjNDdmNDFlYjViZmQ1NjZhZjNlOTgwZTBlMWM5MTFlM2QzZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ZmYyY2M2NmFiZWI1OGQ4ZWFhMTc1MTMxMmMzOTZlZjNlMzZmYTZkMTY2OTYyNWI4NjZkODc5Yjc2OGJlYzkifQ"
+        },
+        {
+          "resource": "repo://AGENTS.md#L12-L31",
+          "version": "repo-lines-v1:sha256:636c352173e01e0326b0378f5c4c78e96de39fb51be9711617d9e9352ec4e774:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmMGU1NzQzOGQ4ZDIyMjhjM2ExODU4NmU0YzY0MWYxNzQyNTVlZTA0MzNmOTA0ZTcwNmU4NjFmNGJiNGZiNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiNDc0YjZjZGJlZTIwZGNjNTI3YWYzNzM1ZDU5MzliN2E2MmRlMzk4MjUwNjAzYjA1ZmU1MDlhY2U5ZTAxZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxNDU2ZWZjYWQzYjM5NmZmZjBkODE2MDM0MGM3MjkyNzQ1OTQzYzU0YzBiNTg4ZjFkYzA0ZTJmMDJkOTlhOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1YWFiMDJjMWJlZGNhNjk3ZDQwZTA0ZmE4YWNmOTg5OGY3MjEzZmM4YmI0OTI5M2RhYzI1NzI0Y2UzMWU1OWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b0da29e373ec4734aeb8cc6aa7ea92f2",
+      "statement": "El ruleset generado para `main` exige los estados `prompt-policy`, `gymnasia/owner-authorization` y `gymnasia/policy-promotion`, además de protección contra borrado, non-fast-forward y resolución de hilos.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/prompt-policy/policy.mjs#L156-L204",
+          "version": "repo-lines-v1:sha256:b42e3d6c8a50e7c001d7ede7e945eca3cf65d20b68981777aeb4c7899d495624:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkYzc5OTZlYjI1MDhjN2QwMTk2NDIzYWUwZGQ4NjVjMDc0ZTAzYjhiYWM2MGNmMzg2MDRiZjFiYTg5Y2M2YjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5MTdhZTFhMWU2OTIzMGY4NGE3M2NlOTU4MTYyMGVmMTNhZDdjYmNjYzI4YzJiNzJlYjQxOTY5N2Q2ZWYwNjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlMDk1M2Q2OTg4NzdjMGM5Yzk4MmExNmZiNGVhZWYyMmZiN2RhOTkzZWQ2OGUyMWIxZjk1OGRjMDhkNGZkODIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ef82aee0de1e41498c2daf0a776e146b",
+      "statement": "La autorización de PR clasifica rutas sensibles, acepta al propietario solo si coinciden login e ID, y para autores externos exige que la última revisión decisiva del propietario para el SHA head actual sea `APPROVED`; en caso contrario publica `pending`.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/prompt-policy/policy.mjs#L211-L244",
+          "version": "repo-lines-v1:sha256:83fc2f2a7cf1bbafa5878f273d9e3848d285a245feaadc106889054f1837bde7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1N2QyMmJhZDU2NzAwOGY3M2I1NjcyNDQ2OWI2NWQwYzhkMTFlOWUwODUzNWZjNjAwZjg0YWI1NjJlYWQ1OGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1NjU0NjFkYjFiNGY0ZWVmOWU0NDJmYjNkNDY3OGI5NzY2MDc3ZTg0MDcwNTUzZTg5MWJlMzBmNzkzMzVkMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzZGRjZmMzMmZiMWY1N2M1NjhhZTBkOGQwZmJkYzIxMWE2YzI5ZjY1YTc0ZWEzN2RhYmNiODQ2YTdhN2FlNTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d2d7026d97884a4c8b5334ec20bb9f98",
+      "statement": "El workflow de autorización usa `pull_request_target`, ejecución programada y manual, hace checkout solo del SHA base confiable y tiene permisos de lectura de contenidos, PR y deployments más escritura de estados.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/owner-authorization.yml#L3-L24",
+          "version": "repo-lines-v1:sha256:e881459cf3ddf048adf9c022ddf51dba35719c5c39f18208f991ad63646fa254:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0YTc5NmEwMWY4NDU4Yzg5OWQ1YjIyODkwZTVkZjQ0ODAzY2E0ZDgwMTdjMzg3OGQ3Zjg3OTQ0NDkxMjBjOGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjNmNjMDMzZTE3ZDRjMzE5OTFiNzE0ZTY1OGRhYTZlNzc4Yjc1ZjFlNjQ2MGU4MjJiN2ZhN2RkN2Q3OWZmMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyMWUwNmNmZjc4NjdkODIwNzA4MDdkYmZlZGU0YTk2MzIyM2U2ZGZmZThiYWEzOGRiZjRmYjM5NjY4OWYyZjUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/owner-authorization.yml#L31-L48",
+          "version": "repo-lines-v1:sha256:abd30c7b2eefde5ade966d63afea14d615f488f4e76f64fe2710401188f42d7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4OTk5MTEwM2Y2YmE4ODhlM2RlNzY1MWM1YTMwNWM3N2U1NTQ3Njc3M2FiYTgzOTU5MWVjYzViZDBmMmFiMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2MTljMDQxNWYyMWUzMWZlZDQxNDk4OWQ3MWI1OGNlYzA0YWNhZjU3YzRkZjExMjczZTkzMWQzNjY3YTA3MjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiMWE1MDc4MzM4NDA4NjRiOGM2MzkxYjljYjZhODFlY2RiNWNmMTI5Y2I2MGFkMTU5ODFmZDI4ZGZlZjYyMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_caff6cb835714c089f7a3c67e1b2e4a0",
+      "statement": "`assertWorkflowPolicy` prohíbe secretos y permisos de escritura en workflows de PR y restringe `pull_request_target` al workflow de autorización, donde también prohíbe checkout, referencias al head, secretos y `npm ci`.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/prompt-policy/policy.mjs#L266-L335",
+          "version": "repo-lines-v1:sha256:5b69d72fa666ef209090cd6d10537ddb4fe9dfc666b501daaccb9722b65ac573:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YmNkMmZhMWQ0YzBiMWJiNjE5Y2JmODIzOGEzMzM0MzM5MzEyYWI2YTAwMDM3NjEzYWY5YTMwY2NkNGU4MDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0MDA1MjRmZDJjOWUwNzVhNzQ2YjM3MTc0M2EwMjFmNDY0ODlkNjYwYTMxNjA1YjkzNTA2MjcyODZjM2M2OGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_274bfbbba1d14812849fe05a31fecba2",
+      "statement": "El workflow `prompt-policy` se ejecuta en PR y push a `main`, y ejecuta comprobaciones de política generada, gates y tests sanitarios, snapshot de prompt, suite determinista, pruebas OpenWiki y comprobación de tipos móvil.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/prompt-policy.yml#L3-L108",
+          "version": "repo-lines-v1:sha256:c280552b084eb1e9c1ab4b8065568ad8c40e56c7f4a341405e80a01e20797ed7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlOTZkYzQ4MTQ5ZjVhODNkMWVkNmRiYjM5YmJjN2UyYjkwMmFhM2QzNGQ2YmQ1YWU0YjI5MWI2OGRmMGNhNzlhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmMDI0NjUyOTdmNWZiYjA0NjFlNTkxNmI2NTE4Y2MwNzQxN2UzNzY4ZTE2MWVjMTU5MmM1Yzk3ZWMyY2EwZWI2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MiwicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3YTcwMDcyYmQ4YzhlZmQ5MTZjOTBlMTk0OGYyNGFjOWNmMWYxMThmZjA2Y2ZmNjVhZDk0NDQxOWQxOTEzYjE0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2NmMwMWQ5ZjEwMmM4NjM4NjU2ZjUwYjQ0YzlmZmY3OGI1NTFhNzM1Y2Y2ZTZhNTk5Zjk0ZjNmOTZmMWNlM2JkIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_25263a9807124c7b93fbf7830da45f4c",
+      "statement": "El gate sanitario valida política y prompt gestionado, detecta patrones de exfiltración, exige snapshots móvil coherentes y no usa red, secretos ni una evaluación LLM autorizadora.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/health-safety/check.mjs#L22-L90",
+          "version": "repo-lines-v1:sha256:36b345309da1d18936680779d4367b023caed8c6cdccfb67bd74377a57da64b4:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjZGE0MzIzZDljZmI1MmI1MjAyYmVlMjkyMTlmYjk1ZDdjNWM5YjBjYWZlNzJhZjA1ZmNkZDRhZDEzYWRhNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMjc4NGFiMDE1MDRlOGQ4ZjViMzg3MmVkYWIwYzAzOGFkZGM2YmZjMzI2Mzg0MGQ3ZDlkZjI4MGQwYTExNWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3ZTBkYmJkZTI1ODY5Yzg4YjcyOGE3MTc2OGIyNjY2M2I4ZDJmOTgyMjNkMTU2NmVkYzZkMjMwNWY2NjkwMzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiOTY4NTI0ZGEyYWQzOWIyNzhmNmE4Yzk3ZjZkOTMwZDc0Y2JkYTI2NWI4ZTY0YWU2ZmVlMDdiMjRjOWE5YmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_38447516d7854012b9ed263b7375f5b4",
+      "statement": "El verificador de artefactos valida bundle, firmas y activación con raíces confiables, herramientas anunciadas y canal esperado; además exige activación reciente, certificado vigente y opcionalmente paridad con las fuentes del commit.",
+      "evidence": [
+        {
+          "resource": "repo://policy/signing/trusted-roots.json#L1-L10",
+          "version": "repo-lines-v1:sha256:994e4a64c171bda998b59e8a1b788eeec5a621333400b7cb27564e69c110a2ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/verify-artifacts.mjs#L38-L85",
+          "version": "repo-lines-v1:sha256:cc4bafceb439f422c6c87fb579d8387276317fca7be901eaec0684e562c1f120:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzYmQ2OTdhMDRkMjE1YzkxNzIyNGFiMWNjZTBhYTBkNjQwYjk1NzA4NTBmMjI4Mjk0MGI2ODA1Yzc4NmUyZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxMTMxODg3NDFkYjY0NDFmOWEyNmZlNmEzNTdiODk5Y2EwMDMxYzZmODYwODhjOWExMzA3ZGNjZjcxZmNhM2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5827bd85d0a748aea3dbc9bedea732b4",
+      "statement": "La promoción se inicia manualmente para `staging`, `production` o `rollback`, se serializa por canal y requiere un motivo operativo cerrado; Staging exige una PR abierta autorizada y gates, mientras Production vuelve a verificar la release de Staging y exige secuencia creciente y el candidato más reciente de Staging.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/promote-policy.yml#L249-L305",
+          "version": "repo-lines-v1:sha256:a2c3db7a3c9b69bf6f1a21aae53469714b6135a4031dddba0b2fdbf25d1f2746:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkNjA3MmYwODhmZmFmMzRmNTdmMDE0NGEwMzRiOTc0ZDhmNGE4ODJkZDhkNzA0MGI2MTQwZWZkNjZlN2FlMDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmNTU5NzljZTczMDIwMzNlNmIyZmQ3ZDg4ZjUzN2EzYjhlMDkxZWEzMDVjODExZmZhMTI3NGJmNTc2NGVhNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwZmE5MTE5OTQ1ZTk3NDY4YzViZWI1MmY1ZGE4NzgzZDNhNzljZDdhMWY0MTU5MzlkZTBiMjg0NmJhNjYwZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViNDM4ZTY0NDcxMDNiYmU2ZTJkMTIwNWY2ZDgyOGNhM2M3ZTE4MmY2YmU4Mzg5NjQ2YWMyYmYxOGEwNWJjYjIifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/promote-policy.yml#L3-L40",
+          "version": "repo-lines-v1:sha256:5d4772a1cdb36faaf5b5d0eb1ead26ab33cf3128c9a30731f0241aa4bd4f26f5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0YTAxZjI4YjZiMDRkNDVjYWQwZmU2Yjg2MmQxYTgwMmQ3YzFiYzVlNzdlYjg4NTgwMGI4ZDkxY2Y3ZjQ0ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5ZDhiZTNkNTk4ODZjZDEwODM5OGMxMmFjYTZmOWU2NDc5YmU0MDgzM2ZiYTdkNDE0ZTA5YTc2NWJmYzMyOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4ZDM1NzUwNTk3ZTljMTIwNWNhMTU3ZWZiZjkyOWNmMGE1OGFjYzllYTJlOGIwMTdhODdlNThkNzQxNzk2MzQifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/promote-policy.yml#L57-L153",
+          "version": "repo-lines-v1:sha256:d90f5fba60bd15de96dafc64896741457e0c552b8aa5d8206f7bdd19cbe78fe1:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxYmE5ZGEwZGI2NTYzOGM3ZGVjZDgxNTQ5YzVjZDBjYTE2OWQ1Y2U5NDY4ODQzMGIzZjBiMzliODUyMzdhMjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliZjQ1ZDJiYzIxMDg5NWU2N2JkMWQyMGRhYWFjMWI1OTgyYTc2NjQwODI5ZmQxZjFiYjRhNjk5NTUyOTI5NDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwM2Q2NTMwMjFmOGYzMjQyNWRjYmYyMTE1MmRlZDFjMGU4YTA5YTc1NGJmOGU0MDE1ZWQ5ZmM1MmZiMDc3ZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxOTFkNThlMjdjMjkyMTJkNjUzOTA0MmQwZjA1ZjY1ZWUzZmNkYWZiYTA1OGRlMDQ1OTAwNTIxYzA1ZTVlYjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_29407c06d7344dc2b3cd65abb5ad7988",
+      "statement": "La CLI de firma genera y comprueba bundles y activaciones localmente, obtiene el material privado desde el almacén local configurado, escribe al repositorio únicamente la raíz pública y despacha el workflow manual; el workflow no contiene los identificadores ni el campo de clave privada del almacén.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/policy-promotion/policy-contract.test.mjs#L48-L61",
+          "version": "repo-lines-v1:sha256:519aa532797b8a5c00241cb1d965ce43f8b7112bd2b5afe83b0a38b7bb852dba:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlMDg4YTkwNjIyNTdiYjQ4ZTk0MTJjMmE4Nzc1MTEzYjk5YjdjNzE0MmEzY2Y4NDgyMjU1MWQ0YzMwM2M1NTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzZTQxZWVjNjQ5MGYwMmZiODI0ODcxODMxMGVkMzAzNjlmMTc0ZmZjMWUwY2QwOTYyM2E4YTQ1N2M5OTJiYzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYwMTJlODk5MDI5MTNjODQ5MWQ3NjAwZTRiMjMxYzhlZjAyYmU0MmE3OTk0ZGNjMTY2NDM5ZDM5MzljNGQ0ZTIifQ"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/sign-policy.mjs#L108-L140",
+          "version": "repo-lines-v1:sha256:77fe5f51b20e3a86df5a28395aad23e1fe76ba0567dfce877560d7fe34a28b23:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1OTkyMjhmZjBlNTMwM2ViY2RkZTgwOWI3ZDU4YzQ5MzU0NTZlYjViN2Q4ODIxNjU3MDRhZmY5ODJmMzg3N2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczNjlhN2M1Y2VlZWQ5MWU3YTY5YjRiZmVmNTNmMjM3OTk2Y2U1MzQ0ODAxNjM0OTVjMGE5YjZhOTU3MzIzOGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzN2E4ZmM4Y2UwODMzYjhjZDllN2I2ZmI0NDllYTNkZjljODI3ODY2MzYzNzAwNGQ1OWEwZTA5OTMyZTViNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNmNTQ0ZGU2YTU4NDQ2MTY0YzY3OWJiNDhkYWQ0ZjBhMzE1OTg0Y2M5YzFhM2E3NTc0YWMwMjNiNmI0NGIwZDkifQ"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/sign-policy.mjs#L186-L245",
+          "version": "repo-lines-v1:sha256:246a1e27c4ebab4b78830b74b7c667dbbc7def840e3f0dbd0d10a2db8e6dc1a6:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyZDQ1NTVhMTQxOTM0M2YwYmQ0N2FhMWQ2MmE0NDc1NzFhYmU5YWQyZmYyZGQ2MDZhM2I5NjdiY2QzZWM3OTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlMzI0Yzc5YjMxZjE1MDhlNDc1N2NlZTkxNWM4MmIzMjNmMTM3YmNiMDIzZWYxNDliOGMzMjdiY2JlYzhiYzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliNWUwMjVjM2RkNjI2MzlmOTYxN2YwNzRhZGQ5YTRjYmY4MGQwNWMxYjhkNWZhMDFjOWM3NDQ1M2MzMzk5MzEifQ"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/sign-policy.mjs#L508-L546",
+          "version": "repo-lines-v1:sha256:d2c0a711c0a5a2ba70f810181d1f5a35f5023e2ef55d08a5a9e787b2d06b9408:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhYmY0M2M3ZmMyYjQ3ZGQ5MDZmZGRmNWY0ZDVhMmZhYzU4ZTMyZDVlMTYxYjQwMTc3ZmY2OTIwN2Y4NmZkNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmOTAxYzBhODE0MGEzNDRmOWVjYjkzZTUxMTAzNTBmMjczNTg2MzUyYTY2MjAzNjM4NTYwNDZkNGJiMjQxYTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1Y2RmODUxNmMyN2M5Nzk3ZTlkN2E4YmZhNTk5MDkxMjQ3ZjY3NmEyOGE2NTU3NjQ0ZDM1MGZiZmEzNWQ2YmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_21a1d17cf86f40c19902c089f04167da",
+      "statement": "Un rollback requiere un candidato histórico exitoso en Staging y Production, distinto del activo, y publica una activación nueva que declara el bundle activo de Production como origen.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/promote-policy.yml#L296-L305",
+          "version": "repo-lines-v1:sha256:7f712c5d685c4e941e37ee54930a2e5482701f593916f2ffe26cb899a48a1cfe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxMjFhYTBkYTY1YmY4MThkOGE0ZmY4Nzc0NzNhNjU5NDQ0MjVlZmRhNzNhN2FkYzJjYThkZDEwOTBkYmFlZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmNTU5NzljZTczMDIwMzNlNmIyZmQ3ZDg4ZjUzN2EzYjhlMDkxZWEzMDVjODExZmZhMTI3NGJmNTc2NGVhNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxMWMxOTdiMGYwMmEyNDUxMmVlODllYTJmMTA0ZDU2YWRmZWIwMzhhOTg4MDBhNmM1ZDNkZmMwYzhmMGFkNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViNDM4ZTY0NDcxMDNiYmU2ZTJkMTIwNWY2ZDgyOGNhM2M3ZTE4MmY2YmU4Mzg5NjQ2YWMyYmYxOGEwNWJjYjIifQ"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/sign-policy.mjs#L384-L406",
+          "version": "repo-lines-v1:sha256:67b998aea31ad34aaa1c2f302aa57cefb8e5342c6e73dbf7b9e8292a008aa205:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4NTQ4ZTBlNThmOGJhOWM1OGJlNzEwY2JhZGVhMmU5NzMwMDRkOGE2NWY4ZGQ2N2M5MjkwNTg1OTFhYzMxMzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5NjZiMTMyMjI2MzY0YWJmMzdjZjgxMDE0NmQzMzM3MDU1ZDM3OGQzYWUzNWM3OTI4ZTlkMDc2M2ExMGI1NmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzMTY4MzI2NWQ4MzY4MWJmODY1MWVkNjk5NTcxOTAzMGM1YTc3M2JkZWIwMjM2NTU1MmExZmJhMGZmOWE4MjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmODdiNThjZTIxMGYzNWYwMmUzYTU1NGEzZDc0ZmI3YjAzZTEyMTMzMmExNDhlODNiODVlZTQ4ZmY2YjdlNDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8c1b76e141714b4eb6ce99a83151b6d6",
+      "statement": "La auditoría final registra la operación incluso si falla; la notificación Telegram es opcional y sus errores no alteran el resultado de la política.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/promote-policy.yml#L361-L390",
+          "version": "repo-lines-v1:sha256:4b60dfa3e75dbedbf869bc50e652dc6aa7b2d8162d380f30a787db81a590345a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3MGNlYjlkN2EzNzBjNDNkMzNiYjQxYWEwYTgwMmRjMDViYzFmMGNiYTRhYTk2NzJiNGE5Mzk2ZTA3YzZkZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZjdkY2M2ZmQwOGJmNWRmNmQxMTRmODQzNGY5MzNmYTg5MGIzZjNkNWE0ZjZiNGMwODAzNjYyNDNlNDZiN2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzZGUxNjQzNjg1YjQ2YWI5NzJiMjRlNjcwZDdiNWQzODVkY2IwMmM3NzVhYzRmMzg4NzMwNzkyZTZjMTBhYzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/policy-audit.mjs#L295-L331",
+          "version": "repo-lines-v1:sha256:bb7e2cec092808c5864e971e4bdcb76f75413533cfaebd7e3dec895a851b661a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlODIwMGViZDE3MDliNmE2NzViZWNiM2JlOWYzOWU1M2JiYWMwMmNjOTI3MjM0NjJjMDU0NjhlYjBkYTZhMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjYThlNjdhMGQ4YTIyZGUyMDUwOTU1ZGE0NzhiNDFjZjI4NTVhMDJkNTViZDJmMTVkY2E1ODZiYjRlZTM2NTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxNDY1YWZiYTQ4NjNmZmY0ZGI1Yzc5NTMxYTU4YjQ3ZGNkOGQ2MTYzMjBjZjJjYjk5ZjBhZTAwMTg5NTQ1OWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxMTMxODg3NDFkYjY0NDFmOWEyNmZlNmEzNTdiODk5Y2EwMDMxYzZmODYwODhjOWExMzA3ZGNjZjcxZmNhM2QifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-09-05T11:27:14.639Z"
+  }
+}

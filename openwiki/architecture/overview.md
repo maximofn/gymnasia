@@ -1,139 +1,166 @@
 ---
 type: concepto
 title: Arquitectura actual de ejecución
-description: Mapa basado en las fuentes de la ejecución de Expo con prioridad local de Gymnasia, los servicios de desarrollo opcionales, las dependencias externas y los límites de confianza.
-tags: [architecture, local-first, expo, mobile, web]
+description: Mapa de la aplicación Expo local-first y sus límites de confianza, con la política del agente distribuida como bundles firmados, deployments de GitHub verificados, snapshot integrado y caché anti-retroceso.
+tags: [architecture, local-first, expo, mobile, signed-policy]
+verified:
+  - by: openwiki/0.4.3
+    at: 2026-09-05T11:27:14.639Z
+sources:
+  - id: openwiki-source-338e77d1d6cb373155f08ceb
+    resource: repo://.github/workflows/agent-tests.yml
+  - id: openwiki-source-192849a5973afd8b6e55db2c
+    resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
+  - id: openwiki-source-0c30fc96b9e7c8b57c35473c
+    resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
+  - id: openwiki-source-1e4c5fa0eb2ff2a63ebc75dc
+    resource: repo://apps/mobile/agent/generated/signedPolicySnapshot.generated.ts
+  - id: openwiki-source-c8058179f2f675901a8caa09
+    resource: repo://apps/mobile/agent/healthSafety.ts
+  - id: openwiki-source-caf3dfa7003a78fa386af33e
+    resource: repo://apps/mobile/agent/policyDeployment.test.ts
+  - id: openwiki-source-2d700f6a4bc31347c3488941
+    resource: repo://apps/mobile/agent/policyDeployment.ts
+  - id: openwiki-source-0c63120d58188f63614c7f7c
+    resource: repo://apps/mobile/agent/signedPolicy.ts
+  - id: openwiki-source-a9edace0149f999b4868ad8d
+    resource: repo://apps/mobile/agent/signedPolicyRuntime.ts
+  - id: openwiki-source-84be58492f0ea3a94b78df97
+    resource: repo://apps/mobile/agent/signedPolicySelection.test.ts
+  - id: openwiki-source-12eb5a2ff2aba163c7cf41d3
+    resource: repo://apps/mobile/agent/signedPolicySelection.ts
+  - id: openwiki-source-a6ba9053969a3e00cd971742
+    resource: repo://apps/mobile/app.config.ts
+  - id: openwiki-source-929e8e1df23628a3f3848ff8
+    resource: repo://apps/mobile/App.tsx
+  - id: openwiki-source-7a047b00a95eb325eb147887
+    resource: repo://apps/mobile/environment.ts
+  - id: openwiki-source-12bdb95b5f863aab1ff9964a
+    resource: repo://apps/mobile/index.js
+  - id: openwiki-source-e86fe7b76c693666bc2cb828
+    resource: repo://apps/mobile/package.json
+  - id: openwiki-source-f5a826b1adfe83cfcc01ce9c
+    resource: repo://apps/mobile/vercel.json
+  - id: openwiki-source-8899fbcb52b1d704245f96cc
+    resource: repo://apps/mobile/vitest.config.mts
+  - id: openwiki-source-8274b71174283745d37c2eff
+    resource: repo://policy/signing/trusted-roots.json
+  - id: openwiki-source-a7c2a4372bd38ad6a4a65c9a
+    resource: repo://scripts/policy-promotion/prepare-policy-snapshot.mjs
+generated: { by: "openwiki/0.4.3", at: "2026-09-05T11:27:14.639Z" }
 ---
 
 # Arquitectura actual de ejecución
 
-Gymnasia es una aplicación Expo con prioridad local, no un cliente para una API de producto de Gymnasia. La única ejecución del producto es `apps/mobile`: `apps/mobile/index.js` importa la exportación predeterminada `App` desde `apps/mobile/App.tsx` y la registra con Expo mediante `registerRootComponent(App)`. El mismo árbol de React Native se ejecuta como aplicación para Android/iOS y, mediante `react-native-web`, como una exportación web estática.
+Gymnasia se ejecuta principalmente como una aplicación Expo local-first en `apps/mobile`. `index.js` registra `App` como raíz; el shell y gran parte del estado de producto viven en el proceso cliente. El estado de entrenamientos, dieta, conversaciones y ajustes no depende de una API de producto autoritativa ni de sincronización remota: las dependencias salientes enriquecen funciones concretas o proporcionan IA, pero no son propietarios del estado del usuario.
 
-En el repositorio **no existe actualmente ningún `apps/api`, `apps/web`, base de datos de Supabase, sistema de cuentas del lado del servidor ni servicio de sincronización**. En particular, `docs/architecture/stack-and-systems.md` y los documentos incluidos en `docs/backend/` describen una antigua arquitectura planificada de FastAPI/Postgres y están **obsoletos para la ejecución actual**. No deben utilizarse para inferir endpoints desplegados, autenticación, persistencia ni propiedad de los datos.
+La corrección esencial de este mapa es el límite de confianza de la IA: **el prompt y la protección sanitaria de los canales no locales no se descargan desde GitHub Raw en cada envío**. Proceden conjuntamente de un bundle firmado y verificado. GitHub publica y señala candidatos, pero el cliente sólo acepta un deployment exitoso con formato cerrado, assets de Release con URL exacta, digest, firmas Ed25519 y contrato compatibles. La app conserva un snapshot firmado integrado y una caché verificada para operar sin red y evitar retrocesos.
 
-## Mapa del sistema
+## Mapa de ejecución y confianza
 
 ```mermaid
 flowchart TD
-    User["Usuario"] --> Shell["Aplicación Expo en apps/mobile"]
-    Shell --> State["LocalStore y registros locales independientes"]
-    State --> AS["AsyncStorage"]
-    State --> SS["SecureStore cuando está disponible"]
-    Shell --> Agent["Ejecución del agente en apps/mobile/agent"]
-    Shell --> Catalogs["Catálogos de referencia de GitHub Raw"]
-    Agent --> Prompt["Prompt mutable del entrenador en GitHub Raw"]
-    Shell --> APIs["OpenAI, Google, Open Food Facts y política de GitHub"]
-    Agent --> APIs
-    Shell --> Native["Capacidades nativas de Expo"]
-    Shell -. "Anthropic durante el desarrollo en navegador" .-> Proxy["Proxy CORS de FastAPI"]
-    Proxy --> Anthropic["API de Anthropic"]
-    Board["Panel de arquitectura estático"] --> BoardData["arquitectura-agente/data/board.json"]
+    User["Usuario"] --> App["Aplicación Expo apps/mobile"]
+    App --> Local["Estado local y AsyncStorage"]
+    App --> Agent["Runtime del agente"]
+    Agent --> Lease["Lease inmutable de política"]
+    Lease --> Provider["Proveedor IA BYOK o fixtures"]
+    App --> Feedback["Worker de feedback opcional"]
+    Agent --> Channel{"Canal de política"}
+    Channel -->|Local| Builtin["Artefactos integrados de desarrollo"]
+    Channel -->|Staging o Production| Deploy["GitHub Deployments verificados"]
+    Deploy --> Release["Assets de GitHub Release"]
+    Release --> Verify["Digest firma y contrato"]
+    Verify --> Cache["Caché firmada por variante"]
+    Builtin --> Lease
+    Cache --> Lease
+    Verify --> Lease
+    Snapshot["Snapshot firmado integrado en la build"] --> Lease
 ```
 
-*Figura 1. Componentes desplegables actuales y dependencias salientes; el tráfico discontinuo representa la ruta opcional de desarrollo en navegador, no un backend del producto.*
+*Figura 1. El cliente conserva el estado local y adquiere un único lease de política por frontera segura; GitHub es un canal de distribución sujeto a verificación, no una fuente implícitamente confiable de instrucciones.*
 
-La arquitectura tiene dos artefactos independientes orientados al usuario:
+## Componentes y dirección de dependencias
 
-- **Aplicación Gymnasia:** `apps/mobile`, con el punto de entrada del paquete en `apps/mobile/index.js` y la composición de la aplicación en `apps/mobile/App.tsx::App`. `apps/mobile/package.json` ofrece desarrollo nativo con Expo, vista previa web, exportación web estática y pruebas deterministas.
-- **Panel de arquitectura:** `arquitectura-agente/index.html` junto con `arquitectura-agente/script.js` y `arquitectura-agente/data/board.json`. Es un sitio estático de seguimiento independiente; ni lo carga `App` ni forma parte del flujo de datos del producto. Consulte [Panel de arquitectura](../services/architecture-board.md).
+| Capa | Responsabilidad actual | Límite relevante |
+|---|---|---|
+| Arranque y shell | `apps/mobile/index.js` registra `App`; `App.tsx` compone la interfaz, el estado local y las integraciones. | No introduce un backend de producto al arrancar. |
+| Estado de usuario | Los datos de producto y las conversaciones se mantienen en el cliente y se persisten localmente. | El dispositivo o navegador es el límite de durabilidad; la variante separa namespaces de almacenamiento. |
+| Runtime del agente | `AgentPolicyLease` entrega prompt, política sanitaria, contexto de activación y estado de selección al chat. | Una petición no debe volver a resolver ni mezclar por separado prompt y guardrail. |
+| Política Local | Development usa canal `Local`; su modo de proveedor predeterminado es `fake`. | No consulta deployments remotos de política. |
+| Política Staging/Production | Resuelve deployments `gymnasia-policy`, descarga assets de Release y los verifica. | Sólo acepta el canal y entorno instalados; URLs, digest, firmas, herramientas y contrato están restringidos. |
+| Feedback | Staging y Production pueden configurar el Worker de feedback; desarrollo lo deja vacío por defecto. | Es un endpoint de función específica, no un almacén ni autenticación del producto. |
 
-`apps/anthropic_proxy/cors-proxy.py::app` es un puente de desarrollo limitado basado en FastAPI. Su ruta `/health` y sus tres rutas `/chat/providers/anthropic/*` actúan como proxy para la verificación de Anthropic, el listado de modelos y los mensajes. Existe porque las llamadas a Anthropic desde el navegador encuentran restricciones de CORS; los clientes nativos llaman directamente a Anthropic. No es un backend general de Gymnasia ni es propietario de registros del producto. Consulte [Proxy de Anthropic](../services/anthropic-proxy.md).
+`APP_ENV` es obligatorio y selecciona variantes instalables distintas: `development` usa `Local`, `staging` usa `Staging` y `production` usa `Production`. Los IDs de aplicación y los namespaces de almacenamiento son distintos; `development` usa fixtures salvo opt-in explícito a `DEV_PROVIDER_MODE=byok`, mientras Staging y Production usan BYOK. La configuración pública se valida como un conjunto coherente antes de aceptarse, para impedir combinaciones híbridas de entorno, canal o namespace.
 
-`apps/feedback-worker` es una excepción distinta y limitada: un Worker de Cloudflare recibe únicamente feedback para crear incidencias verificables de GitHub, porque el cliente no puede custodiar esa credencial de escritura. No autentica usuarios ni conserva el estado del producto; sus límites de esquema, deduplicación, privacidad y retención se documentan en [Worker de feedback e incidencias verificables](../services/feedback-worker.md).
+## Política firmada: control de flujo y fallos
 
-## Composición de la ejecución y dirección de las dependencias
+### Entrada y lease
 
-| Capa | Rutas y símbolos canónicos | Responsabilidad | Puede depender de |
-|---|---|---|---|
-| Arranque y shell | `apps/mobile/index.js`, `apps/mobile/App.tsx::App`, `TabKey`, `DesktopSidebar` | Registrar la raíz de Expo, hidratar el estado, seleccionar la navegación adaptable y componer todas las pantallas y superposiciones | Lógica de dominio, agente, API de Expo/React Native, persistencia local y servicios remotos |
-| Dominios del producto | Principalmente funciones, tipos, estado y ramas de renderizado en `apps/mobile/App.tsx` | Entrenamiento, dieta, mediciones, Inicio, ajustes, copias de seguridad, trazas y denuncias | Estado y adaptadores propiedad del shell |
-| Ejecución del agente | `apps/mobile/agent/toolDefinitions.ts`, `toolExecutor.ts`, `providerToolLoop.ts`, `providerStreamParsers.ts`, `sse.ts` | Contrato canónico de herramientas, ejecución, rondas independientes del proveedor y análisis de transmisiones | Contexto proporcionado por `App`; transportes de proveedores |
-| Persistencia local | `LocalStore` y auxiliares de almacenamiento en `apps/mobile/App.tsx` | Hidratación, normalización, efectos de almacenamiento, separación de claves seguras, copia de seguridad/importación | `AsyncStorage`, `expo-secure-store`; un reflejo de archivos exclusivo para desarrollo |
-| Catálogos de referencia | `alimentos/`, `productos_comerciales/`, `recetas/`, `ejercicios/` | JSON e imágenes de ejecución servidos desde GitHub Raw; enriquecen los registros locales, pero no definen la política del agente | Archivos del repositorio y disponibilidad de GitHub |
-| Política mutable del agente | `prompts/AGENTS.md`, `App.tsx::loadChatSystemPrompt`, `DEFAULT_CHAT_SYSTEM_PROMPT` | Seleccionar el prompt de GitHub Raw, después el último prompt conocido almacenado en caché y, finalmente, el recurso alternativo integrado; añadir el campo exacto `debug` de memoria personal | GitHub Raw, caché de AsyncStorage y memoria personal |
-| Servicio opcional | `apps/anthropic_proxy/cors-proxy.py` | Reenviar las solicitudes a Anthropic durante el desarrollo en navegador | Solo la API de Anthropic |
-| Servicio estático independiente | `arquitectura-agente/` | Renderizar datos de planificación mantenidos manualmente | Su propio `data/board.json` |
+`acquireAgentPolicyLease(boundary)` es la entrada para consumidores de política. En `Local` construye un lease a partir de los artefactos integrados. En Staging y Production serializa la carga firmada y después crea un lease profundamente inmutable. El prompt, la política sanitaria fusionada, el candidato, la activación y la secuencia de ese lease corresponden a la **misma** selección; se registra una traza de metadatos públicos, no el prompt ni datos del usuario.
 
-La dirección de las dependencias va deliberadamente desde el cliente hacia el exterior: el estado del producto y las mutaciones de dominio residen dentro del proceso de la aplicación; los proveedores y repositorios remotos son dependencias de ese cliente. Ningún servicio remoto de este repositorio es la fuente autoritativa de los entrenamientos, comidas, mediciones, conversaciones o ajustes del usuario.
+La política sanitaria remota no sustituye libremente las protecciones compiladas: se fusiona con la política sanitaria integrada y el resultado debe cumplir el contrato móvil. Si no lo cumple, la adquisición falla. El chat utiliza ese mismo lease para clasificar entrada y salida, formar el mensaje de sistema y atribuir la respuesta persistida; esto impide que una actualización cambie las reglas a mitad de una petición. Véase [Entorno de ejecución del agente](../agent/runtime.md).
 
-Para obtener más información, consulte [Shell de la aplicación](../mobile/application-shell.md), [Estado local y copias de seguridad](../mobile/local-state-and-backup.md), [Ejecución del agente](../agent/runtime.md) y [Repositorios de contenido](../content/repositories.md).
+### Resolución de los canales no locales
 
-## Propiedad de los datos y límites de confianza
+1. La build debe contener `BUNDLED_SIGNED_POLICY_PACKAGE`; si falta, el runtime firmado no continúa.
+2. Se lee la caché de `AsyncStorage`, aislada mediante la clave de la variante, y se verifica de nuevo todo paquete recuperado.
+3. El cliente consulta GitHub Deployments para el `environment` y task `gymnasia-policy` del canal, y sólo considera entradas schema 3 cuyo estado más reciente sea `success`.
+4. El payload debe tener exactamente los campos previstos y apuntar exactamente a `policy.bundle.json` y `policy.bundle.signature.json` de una Release del candidato en `maximofn/gymnasia`; no admite URLs Raw, `main` ni hosts arbitrarios.
+5. Descarga los assets con límites de tipo, tamaño y UTF-8, comprueba el SHA-256 anunciado y verifica paquete, activación, raíz confiable, firma y contrato contra el entorno, canal y herramientas anunciadas por el móvil.
+6. Persiste los resultados verificados y devuelve la selección activa, una actualización pendiente o el fallback válido acompañado de estado de degradación.
 
-### Estado del usuario
+Las cachés en memoria de resolución de deployment y paquete remoto duran cinco minutos; una comprobación manual con `force` las limpia, pero no borra la caché persistente verificada. Los errores de resolución de deployment también se cachean durante ese periodo para limitar reintentos.
 
-`App` inicializa un `LocalStore`, normaliza los datos persistidos durante `hydrate` y vuelve a escribir los cambios después de que `isHydrated` pasa a ser verdadero. `AsyncStorage` es el almacén duradero de uso general. Las claves de API de los proveedores se separan en `expo-secure-store` cuando está disponible; el `LocalStore` serializado se censura en consecuencia. En la web, AsyncStorage es un almacenamiento local del navegador y SecureStore puede no estar disponible, por lo que la interfaz advierte explícitamente que las claves se almacenan sin cifrado seguro. Las claves exactas, el mecanismo alternativo, el esquema de copia de seguridad y el comportamiento de migración se documentan en [Estado local y copias de seguridad](../mobile/local-state-and-backup.md).
+### Caché, activación y anti-retroceso
 
-Esto crea un límite estricto: cambiar el perfil del navegador o el dispositivo, borrar el almacenamiento de la aplicación o desinstalarla puede eliminar el estado, a menos que el usuario haya exportado una copia de seguridad. No existe una copia en el servidor ni reconciliación entre varios dispositivos.
+El registro persistente schema 2 conserva `active`, `previous`, `pending`, la mayor secuencia e ID de activación observados, y el resultado de comprobación. Su ámbito debe coincidir exactamente con entorno y canal. Una caché v1 válida se migra; un registro ilegible, mal estructurado o que no vuelva a verificar se rechaza y se reconstruye desde el snapshot integrado.
 
-### Contenido remoto y proveedores
+Sin red, el orden de recuperación es copia activa válida, copia anterior válida y snapshot integrado. Un remoto con secuencia menor —o igual pero con otro ID de activación— se rechaza como `anti-rollback`; una activación idéntica es idempotente. Por tanto, un rollback seguro es una activación nueva y firmada de secuencia superior que señala un bundle histórico, no la repetición de un deployment antiguo.
 
-`apps/mobile/App.tsx` obtiene dos clases de datos de GitHub Raw arquitectónicamente distintas. Los repositorios `ejercicios`, `alimentos`, `productos_comerciales` y `recetas` son catálogos de referencia. `prompts/AGENTS.md` es una política privilegiada mutable: cada envío de chat da preferencia a su texto de GitHub Raw con invalidación de caché, recurre a `gymnasia.mobile.chat.system_prompt.v1` y solo entonces utiliza el prompt integrado. Las copias del prompt presentan actualmente divergencias: el archivo remoto/incluido en el repositorio solo documenta el comportamiento de la memoria, mientras que el recurso alternativo integrado también contiene políticas de dieta y entrenamiento, por lo que los clientes pueden comportarse de manera diferente según el estado de la red o la caché. Un campo de memoria personal no vacío con la clave exacta y sensible a mayúsculas y minúsculas `debug` se añade al prompt del sistema seleccionado. Consulte [Ejecución del agente](../agent/runtime.md) para conocer la precedencia, la memoria de propiedad compartida, el comportamiento de sustitución/borrado y las carencias de las pruebas.
+Una actualización ordinaria verificada queda `pending` en `background` y se activa al iniciar una conversación (`new-conversation`). Una actualización crítica o una activación `rollback` puede activarse al inicio de un `turn`; `background` nunca cambia la política activa. La interfaz refresca el estado en segundo plano cada cinco minutos y ofrece una comprobación forzada, pero esas operaciones respetan esa frontera de activación. El detalle operativo está en [Ciclo de vida de la política firmada](../agent/signed-policy-lifecycle.md).
 
-La aplicación también realiza llamadas salientes directas a:
+## Distribución, compilación y operación
 
-- Las API Responses y Models de OpenAI;
-- Las API Messages y Models de Anthropic en entornos nativos, o al proxy configurado en la web;
-- Los modelos y endpoints de generación de Google Generative Language;
-- La búsqueda de productos de Open Food Facts;
-- GitHub Deployments y releases de política para resolver las instrucciones del agente correspondientes al canal instalado. La aplicación no consulta releases de APK ni contiene un actualizador propio;
+La confianza empieza antes del dispositivo. `policy/signing/trusted-roots.json` contiene raíces públicas Ed25519; las claves privadas no se incluyen en la app. Para una build Staging o Production, `prepare-policy-snapshot.mjs` localiza el deployment exitoso del canal, verifica assets y firmas contra las raíces del repositorio, valida evidencia de promoción y el gate sanitario, y genera los módulos de prompt, guardrail y paquete firmado incorporados por la app. La preparación falla ante identidad, digest, firma, evidencia o contrato no válidos.
 
-Estas llamadas trasladan datos de usuario o credenciales almacenados localmente a dominios de confianza de terceros. Las claves de los proveedores son credenciales BYOK; no establecen una cuenta de Gymnasia. El comportamiento de los proveedores, la ejecución de herramientas y la transmisión se describen en [Configuración de proveedores](../agent/provider-configuration.md), [Transmisión de proveedores](../agent/provider-streaming.md) y [Ejecución del agente](../agent/runtime.md).
+Una build de Production que omita esa preparación puede compilar, pero no aporta un snapshot firmado utilizable a una instalación sin caché. El procedimiento de release y sus gates se documentan en [Compilación, publicación y pruebas](../operations/build-release-and-testing.md); el cambio de contenido privilegiado se rige por [Gobernanza de prompts y política](../operations/prompt-policy-governance.md).
 
-### Límite de capacidades nativas
-
-`apps/mobile/app.json` configura SecureStore, las notificaciones y los sonidos incluidos, mientras que el límite generado de Android puede verse en `apps/mobile/android/app/src/main/AndroidManifest.xml` y `MainActivity.kt`. Las compilaciones nativas pueden utilizar notificaciones, comportamiento relacionado con el audio en segundo plano, almacenamiento seguro, uso compartido de archivos/documentos, selección de imágenes e intents de APK. La compilación web estática no puede garantizar un comportamiento equivalente. El shell mantiene una interfaz compartida, pero las comprobaciones de capacidades y el comportamiento degradado siguen siendo específicos de cada plataforma.
-
-## Formas de plataforma y despliegue
-
-| Forma | Compilación/entrada | Persistencia | Topología de red |
-|---|---|---|---|
-| Ejecución Expo para Android/iOS | `apps/mobile/index.js`; `expo start`, `expo run:android` o `expo run:ios` | AsyncStorage junto con SecureStore cuando está disponible | Llamadas directas a proveedores/contenido; no se requiere proxy para las llamadas nativas a Anthropic |
-| Ejecución web estática | `npm --workspace apps/mobile run build:web`; salida `apps/mobile/dist` configurada mediante `apps/mobile/vercel.json` | AsyncStorage respaldado por el navegador; no se garantiza un equivalente de almacenamiento seguro | Llamadas directas a OpenAI/Google/contenido; Anthropic requiere un proxy compatible configurado |
-| Desarrollo en navegador con Anthropic | Expo web junto con `apps/anthropic_proxy/cors-proxy.py` en la URL base de API configurada | El mismo estado local del navegador | Solo la verificación, los modelos y los mensajes de Anthropic pasan por el proxy local |
-| Panel de arquitectura | Archivos estáticos en `arquitectura-agente/` y su propio `vercel.json` | Preferencias locales de la interfaz del panel junto con datos JSON incluidos en el repositorio | Sin dependencia de la aplicación Gymnasia |
-
-Los comandos de compilación y publicación, el comportamiento de EAS, la integración continua y el despliegue estático se detallan en [Compilación, publicación y pruebas](../operations/build-release-and-testing.md).
-
-## Invariantes arquitectónicas
-
-1. **El cliente es autoritativo.** Las mutaciones actuales de los dominios de usuario se producen en `App` o mediante un `ToolExecutionContext` del agente respaldado por `App`; ningún backend del producto las confirma.
-2. **La hidratación precede a los efectos de persistencia.** Los efectos que guardan `store`, preferencias, alimentos personales y sesiones activas regresan mientras `isHydrated` es falso, lo que evita que los valores predeterminados sobrescriban el estado persistido durante el inicio.
-3. **Los catálogos remotos son datos de referencia, no almacenamiento del usuario ni políticas.** Los archivos JSON agregados y las imágenes alojados en GitHub enriquecen los registros locales; sus fallos no deben interpretarse como la pérdida de datos de usuario persistidos localmente. El prompt del entrenador, obtenido por separado, es una política mutable del sistema y sigue la precedencia remoto → caché → integrado.
-4. **GitHub Issues está deshabilitado actualmente.** Un token vacío codificado de forma fija hace que todos los escritores de incidencias no realicen ninguna operación. No modele Issues como un requisito saliente actual ni confíe en el texto de éxito de `create_feature_issue` como prueba de creación.
-5. **El proxy es opcional y específico de Anthropic.** El tráfico nativo de OpenAI, Google y Anthropic no depende de `apps/anthropic_proxy`; el proxy no debe convertirse en una autoridad de datos no documentada.
-6. **La web es estática y tiene prioridad local.** `apps/mobile/vercel.json` compila `dist`; el despliegue no introduce ninguna ejecución de servidor ni base de datos.
-7. **El panel de arquitectura está aislado.** Sus datos de tickets y pruebas no determinan el comportamiento de la aplicación.
-8. **Los secretos de proveedores dependen del entorno.** Se prefiere SecureStore donde sea compatible; el mecanismo alternativo web/local es menos seguro y debe seguir siendo visible para los usuarios.
-
-## Pruebas y validación
-
-La cobertura automatizada es intencionadamente desigual:
-
-- `npm test` ejecuta Vitest con `apps/mobile/vitest.config.mts`, que solo incluye `apps/mobile/agent/**/*.test.ts`. Estas pruebas validan las definiciones/ejecución de herramientas, los bucles de proveedores, el análisis de SSE y las canalizaciones de proveedores sin credenciales de red.
-- `npm run test:agent:e2e` exporta la aplicación web, inicializa el almacenamiento del navegador, intercepta el tráfico de GitHub Raw y OpenAI, y valida el flujo de interfaz a SSE, herramienta y segunda ronda en `apps/mobile/scripts/agent-chat.e2e.mjs`.
-- `npm run test:train:e2e` inicia Expo web y prueba la navegación del shell, el restablecimiento de ajustes, la edición de rutinas, la finalización de entrenamientos y el comportamiento de descarte en `apps/mobile/scripts/train-usability.e2e.mjs`.
-- `npm run test:board` y `npm run test:board:e2e` validan el panel estático independiente.
-- `.github/workflows/agent-tests.yml` ejecuta `npm test` y `npm --workspace apps/mobile exec tsc --noEmit` para los cambios móviles. Los flujos de Playwright son comandos explícitos y no forman parte de ese trabajo determinista de CI.
-
-Un cambio arquitectónico específico debe ejecutar, como mínimo:
+Para desarrollo normal:
 
 ```bash
-npm --workspace apps/mobile exec tsc --noEmit
-npm test
+npm --workspace apps/mobile run start
+```
+
+Para una build web estática:
+
+```bash
 npm --workspace apps/mobile run build:web
 ```
 
-Ejecute el flujo de Playwright pertinente al cambiar la navegación del shell, el comportamiento visible durante la hidratación, el entrenamiento o el chat. Los cambios en el proxy requieren comprobaciones directas de `/health`, verificación, modelos, mensajes sin transmisión y mensajes con transmisión, ya que no existe ningún conjunto de pruebas del proxy.
+La exportación web se publica como `dist`; sigue siendo un cliente estático y no introduce una base de datos ni ejecución de servidor para el estado del producto.
 
-## Riesgos y restricciones de cambio
+## Invariantes y riesgos de cambio
 
-- **Propiedad monolítica:** `apps/mobile/App.tsx` contiene el shell, la mayoría de los dominios, los transportes, la persistencia y grandes ramas de renderizado. Una edición local puede afectar a pantallas no relacionadas y la cobertura de pruebas unitarias específicas fuera de `apps/mobile/agent` es limitada.
-- **Sin sincronización ni recuperación desde el servidor:** la prioridad local es una propiedad deliberada de la ejecución, pero las copias de seguridad siguen dependiendo del usuario y las escrituras en claves de almacenamiento independientes no constituyen una transacción de base de datos.
-- **Exposición de secretos en la web:** cuando SecureStore no está disponible, las credenciales BYOK residen en un almacenamiento accesible desde el navegador. Por tanto, XSS, los perfiles compartidos, las extensiones del navegador y el acceso al dispositivo son riesgos importantes.
-- **Disponibilidad remota, divergencia de esquemas y política mutable:** los catálogos sin procesar de GitHub y las API de terceros pueden degradar funcionalidades debido a cambios de disponibilidad o respuesta. Aún más importante, `prompts/AGENTS.md` puede cambiar el comportamiento privilegiado del chat sin una publicación móvil, mientras que las copias en caché e integradas pueden conservar semánticas diferentes. No existen pruebas específicas de precedencia, paridad, mutación ni inyección de `debug`.
-- **Propiedad compartida de la memoria personal:** los ajustes y las herramientas del agente sobrescriben un único array independiente de AsyncStorage. Las claves son exactas y sensibles a mayúsculas y minúsculas, los guardados de herramientas realizan una sustitución completa, y un JSON de herramienta mal formado guarda `[]` mientras informa de éxito; además, un valor exacto de `debug` pasa a formar parte del texto del prompt del sistema. La copia de seguridad/importación incluye el array y la acción específica de memoria lo borra, pero el restablecimiento general de datos locales no lo hace. Un estado obsoleto de Ajustes puede sobrescribir los cambios de las herramientas sin detección de conflictos.
-- **Ruta inactiva de escritura de incidencias:** los escritores de incidencias actuales no realizan ninguna operación debido a que el token está vacío, y la herramienta de funcionalidades informa falsamente de éxito. Si se habilitan más adelante, los estados/fallos HTTP ignorados y los reintentos de solicitudes completas del chat generarán riesgos de corrección y duplicación, a menos que el escritor incorpore propagación de errores e idempotencia.
-- **Confianza en el proxy:** `CORSMiddleware` permite todos los orígenes y el proxy acepta claves de API en los cuerpos de las solicitudes. Es adecuado como el puente local documentado, no como un intermediario de secretos de producción expuesto a Internet sin autenticación, restricción de orígenes, limitación de frecuencia y observabilidad.
-- **Divergencia del código nativo generado:** `apps/mobile/app.json` es la configuración de Expo, mientras que `apps/mobile/android/` es el estado nativo generado incluido en el repositorio. Los cambios de permisos o del ciclo de vida deben conciliarse en ambas superficies.
-- **Narrativa de backend obsoleta:** los antiguos `docs/backend/*` y `docs/architecture/stack-and-systems.md` pueden generar suposiciones falsas sobre autenticación JWT, recursos REST, Postgres, Supabase Storage o trabajos. Trátelos como planes históricos, salvo que el código fuente introduzca esos componentes.
+1. **Local-first permanece siendo la autoridad de datos.** No diseñe cambios suponiendo una confirmación, recuperación o reconciliación desde un backend de producto.
+2. **GitHub no es autoridad criptográfica.** Un deployment exitoso sólo es un puntero: el runtime debe conservar las validaciones de URL, digest, firma, raíz, ámbito y contrato antes de utilizar contenido de política.
+3. **Prompt y guardrail son atómicos por petición.** Los consumidores interactivos deben adquirir un `AgentPolicyLease`, no llamar a adaptadores de prompt y salud por separado ni hacer fetch de texto remoto.
+4. **El fallback debe seguir verificándose.** Caché y snapshot son mecanismos de disponibilidad, no una vía para aceptar artefactos heredados, de otro canal o manipulados.
+5. **La secuencia no retrocede.** No borre la caché ni reutilice activaciones para forzar una reversión; publique un rollback firmado con secuencia superior.
+6. **Las fronteras de activación preservan conversaciones.** No active actualizaciones ordinarias en `background` o a mitad de turno.
+7. **Los secretos siguen siendo BYOK y locales.** El canal de política no protege credenciales de proveedor ni convierte a los proveedores externos en depósitos seguros de datos personales.
+
+## Validación focalizada
+
+Los cambios a este límite requieren pruebas de contrato, no sólo una prueba visual del chat:
+
+```bash
+npm --workspace apps/mobile exec vitest run --config vitest.config.mts agent/policyDeployment.test.ts agent/signedPolicy.test.ts agent/signedPolicySelection.test.ts agent/agentPolicyRuntime.test.ts
+npm run check:health-safety
+npm run check:chat-prompt
+npm --workspace apps/mobile exec tsc --noEmit
+```
+
+`policyDeployment.test.ts` cubre payload cerrado, Release URLs exactas, estado exitoso y TTL. `signedPolicySelection.test.ts` cubre migración, fallbacks, actualizaciones pendientes, fronteras de activación y anti-retroceso. `agentPolicyRuntime.test.ts` comprueba que el lease congela y atribuye los artefactos del mismo bundle. La CI determinista además valida snapshot de prompt, política sanitaria, pruebas móviles y comprobación de tipos.
+
+Al modificar promoción, roots, formato de paquete o herramientas requeridas, ejecute también la validación de promoción y un recorrido Staging → Production más un rollback simulado. Una regresión que acepte GitHub Raw, una URL libre, una firma ajena, una secuencia menor o artefactos de bundles distintos es un fallo de seguridad.

@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:41730dc471c3b5e8b0c25945d460dd18df38f5a2b671122d5b9cdc7970a8214a",
+  "claims": [
+    {
+      "id": "claim_7371ed00a3a9425b916be5fafe494a24",
+      "statement": "El repositorio usa un espacio de trabajo npm con aplicaciones en `apps/*`; los scripts de raíz orquestan los controles de política y publicación, y los workflows instalan dependencias con `npm ci`.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/prompt-policy.yml#L26-L34",
+          "version": "repo-lines-v1:sha256:3020b23ec7bab8885ab2ad589225c3a5cbd53b31f749093ffbb17bab4321d8f0:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2YxODQ0MGZhZjg0ODQwMGFjMDEzZGVkMzI0ZjM2NTY4N2UxNmIyNjJjNmFlMGY1MzYxMDgxMDI0NTA5Y2NiOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2VjM2IxOTUwYmJiZmY3MjA1ZjZiNDNmY2M1ZTQyYjQ5OWFkZGI0OThkODU3OGZiNzA1NmI1MTkwMjRiYzBiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDk3OWZhMjY4NDUyNzI2Y2RlODI0NGE4NjNhZjU0MGVhZWUyZDIyMGUxN2EwZGI4OTNjNTE1MTU4ZjlkNjdlNyJ9"
+        },
+        {
+          "resource": "repo://package.json#L1-L17",
+          "version": "repo-lines-v1:sha256:a505801b039d3a83dd49312046a966cd7a618b1c8d9fd19b08f7920eac8dcf57:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhOWU1ZGNlN2JiYzRkYTJkMzc1Y2I5MGY1MTJiZTY5NDY0Mjg2OGI5MGZjYTcwN2Q5NDgxMGI2M2Y1NmIzYzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2OWQzMTA2MDM5MzExYTNmOWJlMThlYTgzNWFjMzMxZmIxMDUxYThlYjU1OWExMjIxNDExZWZkZmNhZTlhMDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6577672f476c4b0e99eb472ec644d931",
+      "statement": "`npm test` ejecuta la suite determinista móvil y las pruebas del dev store; no es un agregador de E2E, compilaciones EAS ni todos los controles de política.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/vitest.config.mts#L3-L17",
+          "version": "repo-lines-v1:sha256:44bb880a175306205b1ace581cf30e4386304574e710c1cc32623adb8aa30a0a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyY2VjYjE0NGE0NmY1ZGNmMTJhNjE2OWZjZWVkNzY5NWU4Mjk0YjA5MGRlNzZmMzY2MWNkZDAyNDkzMDAxNDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwNmQ1NjlkMTVkZjJlMGU3NTI1MmRmNWIxZjRmZGRlOTI1MDM0NjE2OTVhYjMwYzY0ZTEwYTVhYTExMGRkNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://package.json#L40-L47",
+          "version": "repo-lines-v1:sha256:8d67f83e9f5da2cc648f9ad8358457bc8b96714b200fb734fe52b4f06417cecd:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTVjYmRkZDI2OGUxMzg2OTAyNjBhYWU0MDA1MzIzNjQxODJjYTRkYTZhZmQ2OWExODAxNTgwZWY0YWZiY2M1NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzA3ZWUxMDg2ZmQwMzM5ZTQ0NWQyMjJmZTEwM2IzNDVkMzI4Njk1MjMyMjliYzM3MWQxZTJlOWNiOGUxZWE2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDY5NGVjY2E3OTIyNWU0ZjVkZmYzNWJmY2VjOGQ5OGI1OWFkYmYxNTM5ZGQzOTE3NDY2MTY0ZDM5Yjk3MWY0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWY1YmQ3YWZlNzg2YTFlM2FhYWQyNDFhY2RkZDBiZTU5YzEzNmQ1ZTQ4YWRjYmI2YzkzM2E1ZThiYTU1NWJjZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1c9789e3c03a4092b499ddabf5bdbefa",
+      "statement": "La puerta `check:health-safety` valida la política sanitaria frente a herramientas anunciadas, el bloque administrado del prompt, patrones de exfiltración y snapshots de prompt/runtime; falla sin requerir red, secretos ni una evaluación LLM autorizadora.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/health-safety/check.mjs#L22-L53",
+          "version": "repo-lines-v1:sha256:3753741513ae138adb47ce521c647d14337095c7ca4a5bc24ef35cb1ee7302fb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjZGE0MzIzZDljZmI1MmI1MjAyYmVlMjkyMTlmYjk1ZDdjNWM5YjBjYWZlNzJhZjA1ZmNkZDRhZDEzYWRhNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3ZTBkYmJkZTI1ODY5Yzg4YjcyOGE3MTc2OGIyNjY2M2I4ZDJmOTgyMjNkMTU2NmVkYzZkMjMwNWY2NjkwMzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlYThiOTI2YmM5ZGNkNDM1NDBhYTUyOWU4YWUxYjMxOGQ1NTY3YzJmZjU1NDY3OTZmMDljZTNjMDMzNmVkNjUifQ"
+        },
+        {
+          "resource": "repo://scripts/health-safety/check.mjs#L55-L90",
+          "version": "repo-lines-v1:sha256:a64d20a247deae59f387f2a8b9439699f023ae39042cfdcfe3e9f53ffe3c924b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5ZDkxY2YzYWUxOGNlNjY4ZDg3MmNmZjJmMzhiM2FhZDdmZWY1NjIwMTA3YzhmODg5MDhkMmViMzRhOGMyNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMjc4NGFiMDE1MDRlOGQ4ZjViMzg3MmVkYWIwYzAzOGFkZGM2YmZjMzI2Mzg0MGQ3ZDlkZjI4MGQwYTExNWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3YTcxOTA1YmI0ZTkwYzU0NmZjNzJkZDVhNTA1ZGU1Yjg1Y2FjNjMwM2Q4Y2JhMjg4MTkyMmJmNzIxM2Q0MzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiOTY4NTI0ZGEyYWQzOWIyNzhmNmE4Yzk3ZjZkOTMwZDc0Y2JkYTI2NWI4ZTY0YWU2ZmVlMDdiMjRjOWE5YmUifQ"
+        },
+        {
+          "resource": "repo://scripts/health-safety/policy.mjs#L10-L28",
+          "version": "repo-lines-v1:sha256:3e60a50d3919e8e09df468f5a1fa09a45707d2431cb2388c6cf27bfe84e0e525:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYzNiOGVlOWI5ZGY5MGU4YzJkZTY0ZTYxY2Q1N2UwMzFkYzgzNjJjOTJjYmZhMTkxNWFmM2M4YjM2MzM2NTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5OTY3ZWMxZWQzODM2ZjhlYjE3YWZmMTcyYjViZmVmN2RlNjA0ODVhNDM5YzZjYTExYzU5MWUxNzU1NzM5YWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxN2UyZmMxZGI4ZTc4NzdiOTY1NTA5ZTdiZjdhNzNlNzI0NmRmMjJhOWNhMDIwYWEyY2ZjNGVmMGJhN2U1ZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2N2ZmOGJlNDU4YmJkMTM4YjFlMmZjNDM1MTQ1ODQ2NDIyODk3MTk4MzIxYWMzZjZlNWZmNmVlOTQzZWRlM2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3eaa774f617440f88301d61f171a841a",
+      "statement": "`Prompt policy` se ejecuta en toda PR y push a `main`, y combina versión Production, gobierno, permisos Android, salud, inventario de datos, legal, snapshot de chat, pruebas deterministas, OpenWiki y TypeScript.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/prompt-policy.yml#L1-L108",
+          "version": "repo-lines-v1:sha256:eedcbc8ea61097124c85fd6dcd1604a97fcf4f821be27e45cc7eef8ab3203b04:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI5NDZhMWU3ODExOGU4MmJhY2I1N2E3MjdlMjcxOGRiZmY3MDNlZGQ2NDQ4YzIxMzZlZmYxZDg4NGJlZmI1NTE2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmMDI0NjUyOTdmNWZiYjA0NjFlNTkxNmI2NTE4Y2MwNzQxN2UzNzY4ZTE2MWVjMTU5MmM1Yzk3ZWMyY2EwZWI2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2NmMwMWQ5ZjEwMmM4NjM4NjU2ZjUwYjQ0YzlmZmY3OGI1NTFhNzM1Y2Y2ZTZhNTk5Zjk0ZjNmOTZmMWNlM2JkIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_db762fb2cc504380bd549914535e59b1",
+      "statement": "`Agent deterministic tests` se filtra por rutas y ejecuta snapshot de chat, controles y pruebas sanitarias, suite del agente, dev-store E2E, feedback worker, OpenWiki y TypeScript; el proxy Anthropic se prueba en un job Python/uv separado.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/agent-tests.yml#L3-L89",
+          "version": "repo-lines-v1:sha256:29b08478d0cd8b7f6a9adced9b9f5116d61bdbab2d4fc767de430cb7d3c2e209:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwMjQ2NTI5N2Y1ZmJiMDQ2MWU1OTE2YjY1MThjYzA3NDE3ZTM3NjhlMTYxZWMxNTkyYzVjOTdlYzJjYTBlYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1OWMwYzY4NTJkMTUwOGRiMTI0ZTAxYzFlOTRiNTFkZmI1NWRmMGE0OTY2OTQzODliNWJhOWY4ODg3ODlmNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4MDMyNTY0ZmM2MWE3Njk1NjBiYzI0ZTc4ZDQ1ZGU5MzE0NTFjMzRkYjdlMjczOWQwOTA3OGUxYmFmODZmYmMifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/agent-tests.yml#L91-L112",
+          "version": "repo-lines-v1:sha256:56eaef8be9bdf26805a026ab2e3cae1f964acdb4a0fbc7a01c674ec5e17bf72e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4OWRhZTJmZWE3MmUwNzFhYzQ0MTdkODRmOTg0OTZlMGQ1NDM2YTBiODRkMjA2NTg3NDRiYWQyMTBkMGVkODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyNjM0Nzg5ZTU3ZmM3NDQzNzg0YWMzNmNmNjlhNjAzNGE1MTcwOWMwYjE2MTM2Y2RhZDJlOGQ1ODI2NmJhMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhZjc1MDFjYTRkYWM4ZTdhNzc1ZDExMjU4ZDk0ZjlhZmQxMzI4ZDAyY2I2MTJiYjllMTczYzA4Y2I2ZjVkNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a7ac225694214267a88ab75503e2fdcc",
+      "statement": "La promoción de política firmada es manual, serializada por canal y separa Staging de Production/rollback; exige activación y firma proporcionadas como entradas, no claves de firma dentro del workflow.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/promote-policy.yml#L1-L40",
+          "version": "repo-lines-v1:sha256:4e0eb17d708cf82a48188f43395f1e685d3c9f803df8c7536d7112ac31a516d2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmYjAzOTU1OGQzMmI1M2IyNjBlMThlZTUwOTEyMzQxMGY0NWI2MTM4NGQwZTExZWUzMDZkZjA0MmVlMWY0OTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0YTAxZjI4YjZiMDRkNDVjYWQwZmU2Yjg2MmQxYTgwMmQ3YzFiYzVlNzdlYjg4NTgwMGI4ZDkxY2Y3ZjQ0ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4ZDM1NzUwNTk3ZTljMTIwNWNhMTU3ZWZiZjkyOWNmMGE1OGFjYzllYTJlOGIwMTdhODdlNThkNzQxNzk2MzQifQ"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/policy-contract.test.mjs#L48-L60",
+          "version": "repo-lines-v1:sha256:658c220130838fb5c41690f8d208070a3bc386916d9d44ce3e20e7304f39bb95:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlMDg4YTkwNjIyNTdiYjQ4ZTk0MTJjMmE4Nzc1MTEzYjk5YjdjNzE0MmEzY2Y4NDgyMjU1MWQ0YzMwM2M1NTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0MGRjNGMzMTlkOTYzOGVlNTlhYWQ5OGQ2OTM1NmZmOGU1MTYyMmM1OTYxMzVjNGE5MzJlMDIzYTJiN2VkM2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzZTQxZWVjNjQ5MGYwMmZiODI0ODcxODMxMGVkMzAzNjlmMTc0ZmZjMWUwY2QwOTYyM2E4YTQ1N2M5OTJiYzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA1NjU4ZWQ2ODNkZjI2Zjc0M2FlNDllYzUyZDNiOGM5ZDI2ZTRmZTY1Mjg4ZGMxNDI2YmJjNTEyYjA2ZDY4MWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5c90d10bc9774d0dafb9f01af310ce1d",
+      "statement": "En Staging el workflow valida el candidato con la puerta sanitaria y un verificador confiable de `main`, publica un bundle inmutable y registra un deployment; Production descarga ese candidato, repite la verificación y exige secuencia y procedencia de Staging para una activación normal.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/promote-policy.yml#L169-L198",
+          "version": "repo-lines-v1:sha256:fe25d53c2b539e47bae93b67a9ae85d4431ac9441c4c8bf41aeadcc154e512e8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyMTAyOTMyYzA3ZjQzMzA1ZjFlMzEyMWFiY2I1NDM1OGQ2MDg5NzM4MmUyODY2ZmNjMDhlYzVlOWY4YmI5ZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0MzBhYTJkYWNkNTNjMzYyYTA5OTMwMmViNWUxZGIzZmYwODE3NTllZWRiYTY2MGE2MDE5ODRkZGQ5MzQwYjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzYTE0ZTg2ZTI3MmZlYWRiZmUwM2FmNTYyYTViZGY4ZTVjNjZkOTE4YzJiNmJjMDRjODQ5OGMyZmY2MDUwYjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhmZjQ3ZWIyODdjOTg5Nzg3MDc2N2UxYWExZDVlOTE2YzQ4ZjZmNTc3ZGZlN2MyZWZjMWZiZDA2MjVlMjQ3ZGYifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/promote-policy.yml#L249-L305",
+          "version": "repo-lines-v1:sha256:a2c3db7a3c9b69bf6f1a21aae53469714b6135a4031dddba0b2fdbf25d1f2746:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkNjA3MmYwODhmZmFmMzRmNTdmMDE0NGEwMzRiOTc0ZDhmNGE4ODJkZDhkNzA0MGI2MTQwZWZkNjZlN2FlMDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmNTU5NzljZTczMDIwMzNlNmIyZmQ3ZDg4ZjUzN2EzYjhlMDkxZWEzMDVjODExZmZhMTI3NGJmNTc2NGVhNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwZmE5MTE5OTQ1ZTk3NDY4YzViZWI1MmY1ZGE4NzgzZDNhNzljZDdhMWY0MTU5MzlkZTBiMjg0NmJhNjYwZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViNDM4ZTY0NDcxMDNiYmU2ZTJkMTIwNWY2ZDgyOGNhM2M3ZTE4MmY2YmU4Mzg5NjQ2YWMyYmYxOGEwNWJjYjIifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/promote-policy.yml#L57-L145",
+          "version": "repo-lines-v1:sha256:30ad98e3a2334fe21f633b6f875817146f74da8053db1129834188c0bd74db74:eyJzZWxlY3RlZExpbmVDb3VudCI6ODksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxYmE5ZGEwZGI2NTYzOGM3ZGVjZDgxNTQ5YzVjZDBjYTE2OWQ1Y2U5NDY4ODQzMGIzZjBiMzliODUyMzdhMjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwYTc1MzMwODcxZjc5YTlmNWUzYTllYmQ5YzA4YzJhZmJhNTZiOWI1NGMxZjkxZDA0NmYyMTQ5OWQyZmZiYmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwM2Q2NTMwMjFmOGYzMjQyNWRjYmYyMTE1MmRlZDFjMGU4YTA5YTc1NGJmOGU0MDE1ZWQ5ZmM1MmZiMDc3ZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFjM2UxZjEwN2I2MGE2NzE3NWE3MzFjYjM3YTczMjNhZGM1OWFlYmU0MGU1ZjAzNzA3NmFhZWMzNTZiNWRiNjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b2e59e78a5cd4c8488672334521a67cd",
+      "statement": "El cliente móvil acepta únicamente deployments exitosos de `gymnasia-policy` con payload schema 3 y URLs exactas de releases del repositorio, y cachea durante cinco minutos tanto la resolución correcta como el error.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/policyDeployment.ts#L127-L183",
+          "version": "repo-lines-v1:sha256:24e05e576871c60641c8b9e83e376ee7e639cc467fb3f982ccf5e162f808c244:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMzliYzY3MTNjYmU0YzRiZmFiZmI2YzcxODEzMGY2YzliMzJlOTc2MzkxNzY2OTlhYWU0YjNjYzZkNjhmOTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4M2YyMDVmZWFmZDc2M2ZkYjc3Y2Y4M2JlYzUzODcyYjRhZWZjNjE1MzRkZmU2MzY3ZTk0MmE3NzM5ZWM2NWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3MzhlMjhmNjRkYjQwYzJkNTFlNzJmMmYzZDdiOTJmMTFiMWI0OWNlYTRiMDFkMTIyNjU2YmRhMWI2OWEzY2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/policyDeployment.ts#L4-L12",
+          "version": "repo-lines-v1:sha256:5231230418878a56a1294a42404515fed054d17681af3b969053dfb7a3c59812:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTA1NzMzNjVhMzAwNzBmMzkwYmRjMDU4ODUwYTllZTg2MzJjODIxNDM5Mzg1ZTk3NzdhMDI1NTNlZTdjZDE5ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdkOGQ2YjIzMjY4NTE3OWVjYjRmNzUwYTI1NmNhOTIzMmQwZWQ1Nzc2NzVhYmU0YjEzNjFkNGYzZDdjMTNmZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjRmZmFiYWU2MGU3OTg1ZjQwNTk1OGI0OWU0NjAzMDNmMDM5MGVlNDJiMDExZDM2NmY3ZWVmMTc1Zjg2M2RkYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNThlOTIyNGU4N2Y4ZDZhNmNmNzU3MTQ2YTYwYWJlNTFmMGM5MGQ3YmZlNzA1YjhiMzZmYTY1YjAxNzMwMzAzYSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/policyDeployment.ts#L58-L107",
+          "version": "repo-lines-v1:sha256:6beac07b6db4e31921c9cb28419eeed887d6d71916a0fb765cf85fa2eb40f730:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyYWUwMzgzNDI1ZjBjN2RmNDJhM2I2NzdjNzZmODk2NzczZTU2ODdjZjgwZWE4NzJkMzJiYjA1YWUwMjE5NzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1YWJmY2Y2Njc0MThhYjUzZGQ3OTNiNzcxY2VjZDg0NThiZWMxYWU4MDNlNWY5YzVjOTRiNjY1N2FhZTJlMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4MDkxYTg0NjEzNjZlZmNhZjdhMTZhZmM2MjBiMDIyYTU3MDg3MjYxNTNiMmRhOWFhNmQxZWIxYWZiYzc3OTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ba824f9426b548798aff82f46ea97e35",
+      "statement": "La verificación de política firmada del cliente exige JSON canónico, firmas Ed25519 encadenadas a raíces confiables, y compatibilidad de canal, entorno, herramientas y protocolo; las pruebas cubren alteraciones y configuraciones incompatibles.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicy.test.ts#L168-L227",
+          "version": "repo-lines-v1:sha256:76a591378a434dcf14b17a04ce6af45374cc45b82a34bb1216fb44b31289d077:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5YzEzMmVhMGFiYzAwYjk1ZGY3ZDIyNzI0NmE1ZjBmNTBiZDBlN2ZhMTM5ZTFhMmU0NmE0ZDNiMmM5M2Y3ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicy.ts#L118-L120",
+          "version": "repo-lines-v1:sha256:34080c7c85215d6eeb4563076b958a68c24372b9716db95713081460fea3fa5f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWYyZGRiZDBhMDhmY2EzOGU1MjA4NDYxZGVjNTkzNDZhNzBhN2RlNzEwYWVhNzQxOGNhOTM1NjQ2YTFkOWIxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzE4ODcwYTgwNDA5ZjhjNGM5OTQ4MDdhZjgyNTljYzA0YmQwYzVjYTJlOWYxYzNiMTNkZWYxMGIxNjI3ODZkNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGJlMjYyMGY1Y2NmMjhhMWMzNDIwNDQwMGQ1ZTZhYWE3OTBmZTE3ZGQzNDg2ZmY2NzE0NzA1YjNkZjhkODdhYSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicy.ts#L251-L308",
+          "version": "repo-lines-v1:sha256:5b8ac490b917c573162fcf961be61aa9c2bb433062eca4679ff0241438f62734:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1YWM1NzBjMzBkMTFkMzJjOWVjMWJiNTVhZmM0YTNiYWRiMTFlYTdiMGFiNDg2NzE5ZjkxNWUyNGE4ZTBkZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzZjlmMjZmOWFmNWRjNGI0YjUzOTUyYTJmMmZjZGU4YTMwYWU1NDg2NzcxOTJjOTM4MzJmYTZlNWI1OGJmZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxMjFkMDcwMzYyZjU4NmQ4NGEwMzI1NjVhNjU0NGI3YzY0ZTEzYjVlYmU3YTY1YzhlYTQ2NWE2OTg0YTkyMzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzOWNjMzRlZmIwN2U5MWJmZGVhOGE2MmRjYjdiNzM3NGIyZDBlMDY0YWU0NDViY2ViYzE2NGFiZDAwOGEwODYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9ac4f8e855db4db880e1fee22d1dd2ae",
+      "statement": "`prepare-policy-snapshot.mjs` resuelve el deployment firmado exitoso del canal, descarga y verifica bundle, digest, firmas y evidencia sanitaria, y genera los módulos móviles y metadatos que identifican el candidato y su secuencia.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/policy-promotion/prepare-policy-snapshot.mjs#L146-L247",
+          "version": "repo-lines-v1:sha256:e75c6cee64ef39a85627b150286904a6d021cede50bedc2d8f7b3a98c36921ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmMzY2OWY3OTZhMmZkOWIwMjQyMGJmYzM0MTZmYmM0YzU1NWExNjRjOGYwMjZiY2U0OWNmMTMwYjQzZTQ5Y2QzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyMTRmZmY3OWI3ZGI1ZmJhYWU1ZTNkZWQ3ZDhkODk5MThhNDUyOTE4NjI4YWJkYTAxMjk4NzNjMzg4NDZmNTkwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyYzc5M2MwZDU5ZjJhODMyNWI4NWU5NmZlOGIzYzBjNmE3ZTM4YjRjMjQzNTExYmM2YThkYjJkNjgwYzA3YTQzIn0"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/prepare-policy-snapshot.mjs#L97-L113",
+          "version": "repo-lines-v1:sha256:edda9a0229df22af257e9abccc922bf50a10fac11fba2105fc4b6a820e674d45:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzYzEwZDBmMzcyOGQyZTViYzIxMjEzYzEyNWQ4YmEwM2M4Y2ExNjJmNDVmODYwOTk5N2NlOWViZWI2NTE2YjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwOTM0NGY1ZTA0OTg3NzcxZWQ3NTY3ZGU1Nzg5ODY3MTcwMzIzZjAxOTg2MGQ0NDZmNWY5OTJkMzM3MDY1YzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExN2Y0NmQyZjZlNmY1OThiNjJhMTY0NTE1N2U4ZGZmNmUzNmEyZGIxNTFlZjhjMTRiNDJhYjdhZWViODc0YWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_947b502cbb264668ba0487f8b8b79928",
+      "statement": "La configuración EAS efectiva de móvil define `production-apk` como extensión de `production` con `APP_ENV=production`, incremento remoto y `android.buildType: apk`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/eas.json#L1-L41",
+          "version": "repo-lines-v1:sha256:ff31ad2578995a365466cc571abde4247b670c3470dd9dc0e735e37838e0a290:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eda436530aa54780b4f8637c71d018d7",
+      "statement": "El workflow de APK selecciona una transacción durable y valida el commit exacto antes de usar el token EAS; la validación de fuente ejecuta los gates Production y falla si éstos ensucian el checkout.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L30-L143",
+          "version": "repo-lines-v1:sha256:2759b996bcbe160d9b3d7c0c79d6305fb85910a47641e32e5a3f8b611a864f45:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4NGFmZTI0ZGFmMzRkMWI1Y2Y4M2ZjYWEzZjU2YWE0YzEwN2MwNTgwMzljODU3YmNiNmQ1MTZkNjIxOTQ3ZjA1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI4ZDMyYWMyMDgwYTEzNDVjNjQ2OGQwZTBlMDlhNDkzMjAxNTE3Njc0M2Y5MmE1MjUzNTVjZmRmZDU4OTdjZmQzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhMzZiYzYwMmNmZmQwMTYwZWYzYmY1MzcyYTI5Zjk4NGUwYzg4ZWEyODIxOTc4MTlmNmI4ZDBkZjgxYmU0MTlkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3MTM5MDQ1MjBmNzY3OWE0OTZmZjBlZWY3NjVhNTFlMzZjY2UzNDIyNTUwYmIzOGE0ZjkwZDA5ODFiOWY0NDhmIn0"
+        },
+        {
+          "resource": "repo://scripts/production-release/production-release.mjs#L22-L45",
+          "version": "repo-lines-v1:sha256:db3a488babb189a4aeeb1a40ff3119d9a68ac6d8c3c953f052e073c475393b6e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYTdlZDQ5NTg5OTEzNWMxYjc0Zjc5YjU3YjY0YWQwM2I1MDIwZTU2YzU5YWQzYjg1YTI3NTQ0NTIwMmMxZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1OWMwOTA2MDI0YmRiZjMxOWI3Y2MzYjU5NWVjZjVkYTI1NGI2YzQ0YjY2ZWY1ZmYzNGMzZTZlZWZkMTMyOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmIxNWM2ZjkxMjg0MTBiMTFmNDNkZDg1MGM5NTE0ZmIxNzNhYTBhNzhjMWI1NTUzODljZjEzZWJmMjA2MDIifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/verify-source.mjs#L137-L247",
+          "version": "repo-lines-v1:sha256:fbbbef10905d9a9d679bc18eb716db8ad1dac7724e8a7fa7b0934a4559a49f02:eyJzZWxlY3RlZExpbmVDb3VudCI6MTExLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjZTgyMDBlYmQxNzA5YjZhNjc1YmVjYjNiZTlmMzllNTNiYmFjMDJjYzkyNzIzNDYyYzA1NDY4ZWIwZGE2YTE2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2Y2ZjNWQwMTg2NjhmNWFlMzE1MzY1Mzc4MWRiZDU3MjBkYzRjMTc5OGUwMjhhYWQwMTBhMmJhYTQxY2QyODYzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3MGU4ZTQwNDVjNGU3OWY0MjI3ZWI2NTRhODM2N2UwMDQ1YmEyZDA1MGI3ZGY0MDVjNDg0MDFjMzJlZDEzY2FlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1NGMxM2UyMzA2Y2UzY2RhODlmYjBjYWQxNmRjZmFlYzc0YzliOGYxZWU0OGY4Yjk3ODlkZGRhMWU0YjM3NDQ3In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_cc9d3908f34a4cef86b9d3e45f160d0e",
+      "statement": "Para una transacción nueva de APK, el workflow prepara entradas inmutables de política Production, conserva el snapshot y bundle en el draft, y EAS adopta como máximo un build coincidente o envía uno con el perfil `production-apk`.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L214-L251",
+          "version": "repo-lines-v1:sha256:d9a7f9121f0db62bc7d6a1e7a148d429f8cc15a6de15a911a699dadc709d77be:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTFjZDdjMWU5ZTE1MDMzMzJmZjgwNjc3NDI4Njg4NzY2MjM5NzNlZmNiODczZWY4M2QwYzI4NDdhZWM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5MWExNmE0OGZlNmY1NDdjMzQzN2Q1N2M5NTc4ODM1NjRhZmU2OTU2MzU5NjE1MzIxZjA0YjEyNjgzYWI5MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMjNkNmQyNjQxMDdkZTc2YzYwOTBhM2ZkY2Y2NzUwZjMxNGYyMmM4YjZjYWMyZjBmZTI5MGQ3MDE3ZDViNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyYTI0ZjlmYmIwOTJiZTVlNzJlZTA0MGI5ODZiY2IxNTk1MmZiMTM2NmYyN2VjNDIzYzVhNDlhNmE0NDVlYTgifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L253-L289",
+          "version": "repo-lines-v1:sha256:f01fba74aa87c2834107a533b8abbb713b194c008b21b415b29f6a75cc688058:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYmU1YzY1NTUzYTk0YjNjMDQzYmYyNDFlNjgyNmI5NGM2OTQzNGFmMmE1OTk5OTE5NTE3YWQ1ZGIzNWFmNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1NGExMjY3NDIzNWVmNjM0MzM3MjRmOTU2M2M0YWViZTY0YTliOTg2MTliY2EyZjgwMmRiMzQ3ZDJiNDAwYjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiN2RhNGIxOGY4ODIzZjRkNjI0NmNkYjhjOTU1MTcwYjMzZGU5MmFhZDM2YTQzZmYwYmUzNWVjZjcyOGY3ZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5YWM3NDE1NzE4MzFkNDg2ODg1YTYzYWEyY2JiYTY5ZDYxMmYyZGIxYTUxYzdmYWYyMDhmMTQzNDJjMDg5MGIifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L300-L362",
+          "version": "repo-lines-v1:sha256:f8a832cb80b5c68bc5be5e1736d0927657476e2d91a536e2bc2e3599c155ec33:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4YmI3OTNhOGY1YzQyZjA3ZDA4MDAxMzk1ZmRkYjlhZWMxYjJlYzJmNTlmMmFkNWFiNjc2NjI3NWU4YmEwMjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkOTljMDM0NDE3YmViNThhMTk0OTJkOWVjMDRmMTA0MWJmYjYzNjRhMTJlNGZjY2UwYjc5MTA0MDkwZmZjNzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2ODViNTJhY2Q2ZDU4ZTMwNWU3ODlkOGZkMTUzYzc3MWVmODNiZmZlMGUwYjUxYTk2MGI4ZTBmNzZkYTI0MGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmM2UzN2UwYjM0OWMyYmY1NTFhZmU2Y2JhOTUxMTU0Zjk2ZDU5YjFmZDdmMTAwNGNkMjk5ZTg5YzIwZjJiZTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3168b951d5254e139a1cf32df0c7dc3e",
+      "statement": "El APK se descarga inicialmente a una ruta de cuarentena, se verifica antes de renombrarse, y el draft no se publica hasta comprobar identidad del commit, MIME, límites de tamaño y hashes de la cadena de evidencia.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L403-L444",
+          "version": "repo-lines-v1:sha256:3d85b37c505e6a3addf7b66c10a069101056a0a89658a1d880180de2c4b59fc2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkNDlkZDc0NzMzMGFjZmRlODQwNDFhYTRjMDJhYjIwNzkwZmZmY2ZmYjQ0NDYxMzZmZDQwODM5ZDIwODZkYmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViMDJkYjJlMGEwZjY2ODdjNjYyZTZkNTRlMTYyMGI4YzJlZDNlYjcxODdkNzgyNjljYTNkNzFmZWQyYzk2MjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkZmFkYjlkOGM3NjkxZjhkZGVkNzU0NmY1MTUyYzQyMzlhZGMxZTgwODY0MzNiNDFjZTk2NjdmMDI2MGI4NTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiNDg1YjFlZTUyY2YzMzA2YWI5YTA0ZjczNmU4MzViYjdiNTM2YWVmZjczMGE2Yzk2MzI3N2UzZTZiZWNlODIifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L462-L526",
+          "version": "repo-lines-v1:sha256:beab0615a8ae6cb52480efbba0f297a2e292b83fe2d477a59f61757f9514fec1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiYWZlOTE4NzA1MjliZjAwZWRhNDYzNmRlMDljMzhmZmNjNTQ1MWM0Mzg3MDA0YzAwZjUxZTM0ZDJmMmFkN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ODA5YjI5MDM5ZTM3YTg5Y2Y3YjIzMzk3NGQwMjcyMmY5YjkwMTE2N2I5YTU5MzA1NTI2NWM5MTg3Mzk2NTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiNGIxYTQ2MDIxYzJmMWVjNGM0OGZjN2M5NjYyNGIwMmYwOGVjZmY3NTdlMzU5NzY2MGUxM2Q0OTM1ZGI1NmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzNGZhZjJiYmUwMDEyZWRjNTZmNmM3MTcwNjAzY2ZmMDAyYzY4ZDU5YmE3Mzg2MjMwNWMzOTA4OWQyYzAzMTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_46bd3649568349a59847d15e81f05de8",
+      "statement": "Un build EAS conserva su ID en la transacción para que `reconcile` pueda retomarlo tras un timeout; los estados `ERRORED` y `CANCELED` requieren una acción manual de reintento o sustitución con motivo.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L181-L201",
+          "version": "repo-lines-v1:sha256:53235759cfd3be842334f0c96db138b4a89ee317ee7e1017cd047a484e354835:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2YmNhYjdlNDZlMDNjNGU3YTgzZjA4NTUxM2Y1ODkzOWZjMjRhNjhhMmE0YWE1YzYyODM5YmJlNDRjYWYyNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1MTA3YjRhNjljZTJlYmM1ZGM2YmE0NDk2Nzk0ZmY4ZWY4ODg4MDYzYjBmNTI3NTI1MWM5NGY3NGJhMzAzZDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkZTk2NWU5Zjg0MjgyZTgzNTdkZjNhZTA4MzU2N2U1NjVkOWJkNjdhNDUyZTQ5ZDNkZDU4MzhlZjgxY2Y3MzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmMjEwYWE0ZTdkM2ViZmM2NzVkMGE0YzY5MWQ2YWViNDgwYjRiMDYxY2FkYmJmZGNlOWE4YjIzOTk0NTJhNTUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L364-L401",
+          "version": "repo-lines-v1:sha256:a92f986d668d1869edf75bf1b68e03b8b40c6bbae013e27e9a9e9c7e7cdba61d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1NTE1M2U1NTg3MTNjZGI5ZmIyYWYyYThjYTNlOTgxZDNkNzUwNTNlYWYzM2JhOGMwYjJhZDIwZWNmYjNmM2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2NzRlN2NiYThlNjU3YjdkNmVhOGE3OGQ5MDQzZGRkM2NkNjE3YmQ1ZGYyMmM1YTVkYjA4OWRiZjg0NjJhN2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3N2Q5NjdiYzZlMjg2MmJhMzk0ZGVlMGQ5MmI3ODExYTk0YTAyOTVmYmMwYjAyOGRiYWY3N2ZhYTk4ZDMwNTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4ZjhmYTI5YTI4NWViMGRhZjVlYzg0NWQ3ZmRlMTIzYTE5ZWE3MTIwNjVhZmRkN2JiYzM5ZjE3ZDU1YzgxY2YifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-09-05T11:27:14.639Z"
+  }
+}

@@ -9,19 +9,13 @@ type: concepto
 title: Configuración de proveedores
 description: Ciclo de vida completo de la configuración, selección, credenciales, modelos, verificación, enrutamiento, fallos, pruebas y extensiones de OpenAI, Anthropic y Google.
 summary: RQ-01-complete lifecycle for OpenAI, Anthropic, and Google configuration, selection, credentials, models, verification, routing, failures, tests, and extensions.
-tags: [agent, configuration, providers, credentials, models, requirements]
-sources:
-  - apps/mobile/App.tsx
-  - apps/mobile/agent/providerConfiguration.ts
-  - apps/mobile/agent/providerConfigurationPersistence.ts
-  - apps/mobile/agent/providerVerification.ts
-  - apps/mobile/agent/providerTransport.ts
-  - apps/mobile/agent/providerConfiguration.test.ts
-  - apps/mobile/agent/providerConfigurationPersistence.test.ts
-  - apps/mobile/agent/providerVerification.test.ts
-  - apps/mobile/scripts/agent-chat.e2e.mjs
-  - apps/mobile/package.json
-  - apps/anthropic_proxy/cors-proxy.py
+tags:
+  - agent
+  - configuration
+  - providers
+  - credentials
+  - models
+  - requirements
 related:
   - ./runtime.md
   - ./provider-streaming.md

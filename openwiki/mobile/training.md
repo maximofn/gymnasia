@@ -3,6 +3,7 @@ type: concepto
 title: Plantillas de entrenamiento, sesiones, descanso e historial
 description: Ciclo de vida y contratos fundamentados en el código fuente para las plantillas de entrenamiento de Gymnasia, la integración del repositorio de ejercicios, las sesiones de entrenamiento activas, la temporización del descanso, la persistencia, el historial, las estadísticas y la validación.
 tags: [mobile, training, workouts, sessions, persistence]
+generated: { by: "openwiki/0.4.3", at: "2026-09-05T11:27:14.639Z" }
 ---
 
 # Plantillas de entrenamiento, sesiones, descanso e historial
@@ -109,6 +110,7 @@ El intervalo de un segundo hace avanzar el tiempo transcurrido solo mientras el 
 
 ### Preferencias de notificación y efectos exactos
 
+<!-- openwiki: broken internal link [./local-state-and-backup.md#propiedad-de-las-notificaciones] heading anchor "propiedad-de-las-notificaciones" does not exist in "./local-state-and-backup.md". Fix the href or restore the target, then delete this comment. -->
 La configuración de notificaciones no forma parte de los datos de plantillas o sesiones de entrenamiento. Se encuentra en `userPrefs.notifications` bajo la clave persistida de forma independiente `gymnasia.mobile.user_prefs.v1`; la copia de seguridad la incluye como `data.userPrefs`. Los valores predeterminados son `{ enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" }`. Ajustes ofrece los sonidos `rest_finished`, `beep`, `bell`, `ascending` y `buzzer`. Consulta [Estructura de la aplicación](./application-shell.md#control-de-la-configuración-de-notificaciones) para conocer la ruta de ajustes y [Estado local y copia de seguridad](./local-state-and-backup.md#propiedad-de-las-notificaciones) para conocer la responsabilidad sobre el almacenamiento, la importación y el restablecimiento.
 
 - `enabled` solo controla la programación de una notificación de fin de descanso en segundo plano. Desactivarlo no deshabilita la alerta de fin natural del descanso dentro de la aplicación: con la aplicación abierta, `playRestFinishedAlert` sigue respetando `sound` y `vibrate`.
