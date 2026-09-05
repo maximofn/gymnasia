@@ -269,9 +269,14 @@ jobs:
             echo
             echo "<!-- android-release-transaction:${TRANSACTION_BASE64} -->"
             echo "### Changes"
-            LATEST_TAG="$(git tag --list 'v*' --sort=-version:refname | head -1)"
+            # Sin tuberías a propósito. Con `set -o pipefail`, un `git ... | head -N`
+            # puede tumbar el paso: `head` cierra la tubería al llegar a N, `git` recibe
+            # SIGPIPE y sale con 141. Solo ocurre si la salida no cabe entera en el búfer
+            # de la tubería, así que es un fallo latente que aparece sin avisar cuando
+            # crece el historial. `--max-count` y `sed` recortan sin cerrar nada.
+            LATEST_TAG="$(git tag --list 'v*' --sort=-version:refname | sed -n '1p')"
             if [ -n "$LATEST_TAG" ]; then
-              git log "$LATEST_TAG"..HEAD --pretty=format:'- %s' | head -30
+              git log "$LATEST_TAG"..HEAD --max-count=30 --pretty=format:'- %s'
             fi
             echo
             echo "### Install"
