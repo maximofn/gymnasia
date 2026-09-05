@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:b8c2f02857830caa044967aeca0d674cee1d2db4d462a808a548de71a20d2fcc",
+  "claims": [
+    {
+      "id": "claim_947c2dbee6c74deeaa9e27b9557ef566",
+      "statement": "`LocalStore` se persiste bajo `gymnasia.mobile.local.v3` y su serialización elimina las API keys; la recuperación usa las claves independientes `local.last_good.v1` y `local.quarantine.v1`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L1695-L1699",
+          "version": "repo-lines-v1:sha256:11494b7ae5ce59dac74c90665ed5d02671945d1618c557ff51bb7808eb04a1b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWIxYjIxOGU3Mjk0MzZhNDU4OGQyNTczZjUyNmI0NmRmMzE3ODExZTU0ZjQ1NmYwYjYxZGUxNDNkYTk3NTJkNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWM3ZGY5ZDE3ZDRiODJhMjM3N2MyYTE1MDAzMjQ2NzZhYzZlYWI5OWU3YjQyNGRhNmE2YTZiN2RiMzdjYWQyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjFjNmQyZTc4OTlmYThiMWYwNjNlYjkyNmViOWI2NjJiMGIyOTU2MTZiZjhkZGY3ZTYwMmNkOWU5MTQ4NTE4NCJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L689-L721",
+          "version": "repo-lines-v1:sha256:04d833aae86e6ce78de2ac74189b9075270fcaf443b842c3a83b3f0b442909cd:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkZDI4MjkyMDNlMDg3YTY1MzQ1YzJhZTE3ZmQwYTc1M2U3MTliY2NmYjIxZWI1NWI3ZTk1MWNiOTMxZDllNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhMmIzMWJjMWUxMzBjMjBlNzdjZDlkY2RiYjcwOTcxODYxOWRhYjY3YWU4OGZlMmQwZDU3NThiYTZiOTViODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjllY2ZkNWQ1MGM4ZGFhMTk1NGU3NDkyY2U5YmU0NmQ3NTk5NjcwZDg5YWYwMTI5ZjZjOWQ0Y2JlMjNjZWUzZDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c961560510cd47768050edcea3cc0478",
+      "statement": "El repositorio de recuperación valida la forma del agregado y, ante corrupción, lectura fallida, desaparición del principal con snapshot o commit no verificable, crea cuarentena y bloquea escrituras ordinarias hasta una resolución explícita.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L302-L370",
+          "version": "repo-lines-v1:sha256:351a864d125a550e920ce5cfdc385d1cfb9891ffe0db4db932f9189bbd88b9b2:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5NGVlNDAzM2U0NDI2YmM4NTg2NzI3MWRiMzczMjNiMmFjNDVhN2ZiMzI5YjIxZjQ4NzgyOTA4ZWE3N2QxNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4YzU2YThjMjhlOTRmOGQ2NzRiM2M1ODYzOTdhZmUzM2IyOWU2MDA4ZDc5ZmE2MDZlNTI5NjQyZWFhNzBlY2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE3ZGU4Yjg3MGU0NGNjY2I0YmZkNGFjNTdjODIxMDI4OWEzNWIxMTA2NTM2NjdmNzdiNzc0YzM0MmU1Y2YwNDQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L531-L601",
+          "version": "repo-lines-v1:sha256:e3119d5fd79d4419ae35d1148aa45c2de32d89c6ffc58ad86ef8718248933335:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzN2YyNzllNGM5YmU2ODBjMTA3MTE1ZjkyNGQ1N2Y4MDFlNTAwMzkzMmY1ZTA0YjgwNTU5NjkxZWU3OTNmNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViYmFhYTgxOGNkMzdhMTRlYjgxYTI0MGVlYjVhNzE0ZTUzM2RjOTBiOTRmZjAyZjIwYjQ4NDI0OWU2NzYzYjQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L680-L723",
+          "version": "repo-lines-v1:sha256:e414cc293c094b473d4620a6071595cc298bc8596a15663b5d87cb499a040d0c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxZDZhYTcwMTg3ZWI4OGRmYWFhYTRhMzdlMjI3ZGMwOGEzNTczNjJmZWU2YjIwYmU0ZTUwN2I0NzY1MmRmNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmMjM2OGQ5ZTExYWQ5YzkxZDgzOTNiNmFhMzQzMDVlYzgyYzY5YTcxYWNmODRjOTA5YzQxNDYyZDMyMmYxNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4YTU0ZWIyN2UyODU0YWUxOWJkNjVjNDI3NmUxN2M5MWFjYjZiNWEwYjgyMThhMTc5NTBkMzU0MTk3MTQ4ZDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4241ae46c8ce458ca204e02f1d81961c",
+      "statement": "Un commit del agregado escribe y relee el principal antes de actualizar el snapshot con SHA-256; un fallo de verificación deja cuarentena y un fallo al escribir el snapshot se informa después de que el principal ya pueda haberse actualizado.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.test.ts#L250-L273",
+          "version": "repo-lines-v1:sha256:8c9bfa78939ff390de0d37229b56713e4db65ff9a04f93bf1a9247dbd6d42b79:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlZDA4ZDk1Zjg3NjEwNmNjNjUyNTJmMWEzZTcxMzg4Nzg4NGU3MzM2MDZkMzBhMzM5NWE3MTUyZGU1NjcxN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxNjQ4YmMyYWEyODlkNmM2YzcwZmQ2ZjIxMmY1OGQwMDU5YmYzMjUzMWU0YTQ1M2RlNzc2NjMyOTZmZDE1MzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5ZGIxNjQ5OWE5ZWJhMWNkYjk1MDA0YjM2YTM4ODk3N2ZmZmM4ZGEwYzc1YTMzODFlYjUyMThjZWE2NmYxMTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L377-L412",
+          "version": "repo-lines-v1:sha256:d5cfaeb6924e5cf08771282611869a74296a3f991af731d1a3e5ab7a2f5f1db4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZWJiZTBkYjhlZDQ0ZmUzMjY5ZWRiNmM1ZGMzYzNkYWZmMDIzZDRlMWRjM2Y0ZjE1Mzc1N2NkMzU3YmY0ZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiNzZhODgwYTE0NGQzMTAwNDBjZjU1ZWYzYzc4MzMxYjMyNWIzMjU4MGU5MTRmMDZhOTRlN2UxMDIyMjhmODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkYWM1MzcwMTJhMTFjY2FhNTRmNDFjNjRhN2IxNDU3NDc4ZmMyMGQzMzA4Y2JjMWNjY2YxNWNiZTQwMjI1YjEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L680-L712",
+          "version": "repo-lines-v1:sha256:83a06d27b3dce2f9aa071e021f106eb558901c1ca098b462866bf744175f8abf:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxZDZhYTcwMTg3ZWI4OGRmYWFhYTRhMzdlMjI3ZGMwOGEzNTczNjJmZWU2YjIwYmU0ZTUwN2I0NzY1MmRmNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmMjM2OGQ5ZTExYWQ5YzkxZDgzOTNiNmFhMzQzMDVlYzgyYzY5YTcxYWNmODRjOTA5YzQxNDYyZDMyMmYxNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4M2NjYmJjOTQ0ODg4ZDRhZTAwNjYxM2E4NzAxN2Q1MDczMmE0MzUwNjhhYzdhMGMwZjhkODg2Y2U4YzA0Y2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eac3dd3bb42e475cacdf16eec5e5bb8d",
+      "statement": "La configuración de proveedores se normaliza a OpenAI, Anthropic y Google con exactamente uno activo, y su repositorio usa snapshots `committed` y `pending` serializados; un `pending` sobreviviente no se promociona automáticamente.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/providerConfiguration.ts#L161-L180",
+          "version": "repo-lines-v1:sha256:290b9ffeb60eac0094d39b0cc52f10a401b03fc74c599cfdc857a018407f2f63:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYjM3NzU2MDhmMTRmODlkYzFkMzVkYzQwMWM2MGVlY2U1YTc5MjdhMDM0MDc3YzQzNzJlNTFkYTUxMmJmMmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjNWRiZTM1MzAzOTg1NzMwNGZmODI5NWE5OGMzYTQ5NGMwMjY2NGZlYWE0NmY4YzM0NWJlOTBmNzE1NTM2ZWEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerConfigurationPersistence.ts#L179-L211",
+          "version": "repo-lines-v1:sha256:6e4a7006c0255e730f26abcfbf7f64414ca7394c661f63bbb38f154b8f95066b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhNGI0ZWU1MGJhYjcxMDNmZWUyNzc4NGI4YzhmMmYyNDZjYWI3NzdiMmMxNmNhYzBkMTYyYWMyMmNkNjMzZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyZDExY2FmNDNlOTdlZjM2OWU2YmVlZDFhMjY4YmQwNTgzOGYyOWI5ZGQyNTRiZjY5YmE2NDg4NDE0NzIzNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiZmQzMDI5N2Q1OTk3NmMzZTg5OWI4MjU2Mjc3N2QyOTIwZmYyYzIwMTQ1MjZjMzZjNzY4YWYxZTY2OGQ2MjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjZWY1YWViYjc1MTFjNTNiMTQ2MjIyNTRhYjU2NDhjYzdjOWNmMmZjN2YwOTU2OTcyOGMzZDJkZDllNzgyMGEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerConfigurationPersistence.ts#L18-L32",
+          "version": "repo-lines-v1:sha256:b19c0925cdc13d52d15d4b52e2c962645afe923487bc1d365944a752d8d37487:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMWUwYmQ2ZGI2YjZkOTRmMDE4MDljZmNjZjQwZmVmZjRjNWU3YzU0NTI2MWE4Y2RhOTdmYjdmNjY3NWUwODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1Y2NjMjIwYTI0MWQxZjgxZWNhODA4MTk2Y2I4NzUyNzVkNDMwOTE2Mzg4OTFmZDAwOGE0YTllMzExYjUwMDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1MzNlY2VhZGM1MjdkNTVjYTYzN2I5Y2NhNjU3YTNkZTdjYzY4NmViODU4YmE5ZDVmMjI0NGIxOTg3NTM2ZTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1M2ViZTU5NWI2NGYwZDdlNWEwZmJiM2MzYWIyYmFlZWM5NjBhOTQ4YjkzZmE5MTQyNmVmZDg2ZGNjNGQ1NjcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerConfigurationPersistence.ts#L214-L256",
+          "version": "repo-lines-v1:sha256:55463a98b1c245478fde2a5f309b968f6e553794df2313826af126882989b80a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0MzNkZjg0NzZiOGQ4YzhmMjc1NTI2M2M1YmE1Y2Y1OWQ2ZWZiNDRkMDZmMTY3ZDgyNmRmNDFhZGQ2ZDkwMzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyZDExY2FmNDNlOTdlZjM2OWU2YmVlZDFhMjY4YmQwNTgzOGYyOWI5ZGQyNTRiZjY5YmE2NDg4NDE0NzIzNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlMTJiNjExODk0M2UzMGMwMDY4MzNlNzgxNjMwYTUzYjMyZjQxN2VmNWY5Nzk1YzNmMTJmMzMwODAyNGM1ZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0ZGRlODJkMjA2NjFkMjdkZDcyMDE3NmQ1OWE2ZTU2ZGNmNzE0Zjk0MTVlOTZiYTI0NGM1YzFkMmE1ZjVmZjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_94cfea691dab435f946b7e2539a47656",
+      "statement": "En nativo, el diario completo de proveedores se guarda en SecureStore y AsyncStorage recibe un espejo sin API keys; en web, sin almacenamiento seguro configurado, el diario completo se guarda en AsyncStorage.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8202-L8214",
+          "version": "repo-lines-v1:sha256:f15612b209278ccf4bc3ebf93ab45855184c47018e02e14f921d8cbebbc970aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxNDEzYmI1NzA5MjFlNzhiM2U0NGI1NjY1YTE5MDBhY2UxMTk5MWYwNWQyYTM4NjI5OGI1MGYwNWJhNzExNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4ZWFkZjBiMWJlMjBmYTk4MzgzNTE1Y2U4MzY3ODdkNzVmNWI5ZWJiOWE1MmVjOWE5MTRlYTJkYzZmNDQxYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxMTIzNTE5ODdkYjIyYWYyZDcyM2Y0NGJmOGQyNWQzZGJhMTVmYmE0ZGU4YjZkMTJlZjYxYzJjYTNiMmI4NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmMWNlMDNjZGYxOTJlNDI0M2RhOGViY2Y5ZjFmNzk1ZjhkNTMxZWU1YTA0OGNiOGVlZDlkNmE3OGY0NWM0NDcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerConfigurationPersistence.ts#L121-L160",
+          "version": "repo-lines-v1:sha256:f7bcb133f8438701c105da3fbd7b0c71742ad319d4070da83430a9aa1c54b095:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwNmU2MDJkZDlkZGVhMGQ4MjZkY2IzNDg4NWYzMTMwZDE0ZDFkNTNmMDgxNzFkNjIwMjdlZWJkYmM2N2YxODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhN2U4ZjdhNTczYmNlNDI4MmQyN2FlYzc2N2E0NjYxOTc5M2NlNTU2OWVkOTc5NzgzZGY4NTRlN2YxNTNkYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhN2JlMDlhZmQ5ZGM2ZjUzZWFhYzk0YjkyYjkwOGMzZDQ5MjNjMjM5Zjk1MjI1MWQxZjcxOWY5NDM1NGQyMjMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerConfigurationPersistence.ts#L57-L73",
+          "version": "repo-lines-v1:sha256:b0555cb43c2ea4ad176a34df9e86cec0846ebd7aa2d9f417d2d4808c101b2568:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzYjU2YWEwZmFhM2EyMzhmMGIyYmExODNmZDIwZGE4NGMwNWZhZWYwNDViZDZlMmNkNjBlYjEzNTQ5ZWMxNzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhZGE2NTg4NmNmMzdiOWZkNzkzNWNmZWFhZjJjZDYyOTBkNTkwNWU3NzRjNTAwN2UyM2RkZTE4NTk5MjQwNGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_54509584201945cd81a0e32e785bb096",
+      "statement": "El ledger `gymnasia.mobile.agent.tool_operations.v1` es una partición técnica para idempotencia de herramientas, limitada a 256 entradas con TTL de siete días, y se borra tanto con actividad como con borrado total.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13256-L13263",
+          "version": "repo-lines-v1:sha256:3cfd03e3d16c2cc6fe84a5ed624bfe0785dd4a481822f91f2cfb22c9a88d3330:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTZkZWUyZmIxZWE3MTE2YmIyNzYyZmM1OTFiMmViNTA2YWE3NDJmYTQ5NjEyNjgyYzU1OGY5YzNlMGQ5MGNhOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjJkMTFjYWY0M2U5N2VmMzY5ZTZiZWVkMWEyNjhiZDA1ODM4ZjI5YjlkZDI1NGJmNjliYTY0ODg0MTQ3MjM0YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDRiOWEwYjE2Yjk5MTBiYWE1ZDBhNGRjYWZmOGE2MGM0Mjk2MzNiZjJhZTNjYmFjYzgyMDI5MDc1ODBkMTBjYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2JkY2IwNGU3YTRkMTdlYjYzMWI4MmVhMjNkNjM3MDdhNDFkNmYwNTVjZjZhNWU0OTUxNzQ2ZTUwZTZmMzRhOCJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L24-L53",
+          "version": "repo-lines-v1:sha256:1741af44f19ae2710ba21e79227331047a9eac29cafbd573bdaac6435f280495:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhMTk0ZWQyODI5ZmFmNzg5NjI4YzI3NDkyOTc4YmRjYjY1OWY3OWI3NWI4OTk1NzRlYWE1ODllNzM5MjY0NjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxNjQ1NjEyMDZjMjBkMzBlODMzMTVjMDE4MjkzYjdlNDIxNDM0MTY2MmUyYmQ5MDRjOTY2NWU1Yzg1MWIwZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjYmExMjA0YTgwNWFmMDFjMWNhYTQ1ODFiZDY3ZTcyMTY2ZTE0MmU3YzE0YzcyZTI5YjY0NTgxMmRiNjlkNjkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L32-L61",
+          "version": "repo-lines-v1:sha256:5e96871744e288ff927e13caa331e16c32b85384d46cd9c58276e5d9731060d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjYzZmYWI4ODczMjdlYWMwNGExNWY4YzQxZDA0NGI2YWEzZjczMzRmMjM1ZDMyNjA2NzQzMjUwMzUxMGUzN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZGM3NmQxMmU1MzA0ZDMwNzllZGI1Zjg5MDAwN2VhMDVmMjI2ZTRkOTNiNjk1Njg0NjBjYWZhZjgwMDc0NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MzUxNmE4NDZiYjc1Zjg3N2ZiMDM0NzQ0YmJmYzU5ZTQ5OWJiNGEyODA3ZjRiOTA0ZDVmOGI1ODdlOThmNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliZjlmMDUyNmI4NjQ0NDM2OTFkNDUyOTZmMWQzYTc0YjdhNmUwYWFjNTllNGIxOTgwMzM5NDhlMzk1YjI0YzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d36178160aab4e62a60c343dea8c1b49",
+      "statement": "La caché firmada `gymnasia.mobile.signed_policy.cache.v1` contiene secuencia y activación máximas, paquetes activo/anterior/pendiente y estado de comprobación por entorno y canal; el selector rechaza una activación remota de secuencia inferior o distinta a igual secuencia.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicyRuntime.ts#L145-L160",
+          "version": "repo-lines-v1:sha256:0e0978534dad687fdef25326825e5dacdeeaade2c86ca0206d4e79ea2c454320:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNWQ2MjRkZGNlOTVkZTEyMmVjYTAzNjQ0MTljMTMwZmUzZDVjOWQ1MzkzMzQ5MWIyYzI1NzFmMzE2NGY4ODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkYzJmNzBkMjVkZjJjN2JiYTAyZjFmNmIzYWYwMGJmOWFmNDQ0NjZiNWM4YTQwOTVmMDQ5ZjNiZjUzYTRmOTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1NWUyZDk2NDczZjY3YTU2YzMzZTIxNTc4NjM4YTU2OTI5NzAwMTA2MTQ5ZWI3YzVlOTFkYWRiNDBjOTIwZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlMmNkMDA1NzA3ZTI2ZTA5YmFmNDg0OGM3YTYzNDhiYjlhMjgyNzZhZmI0OWM2MWI2ZmFlNTFhYjM5MTZiNmEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicyRuntime.ts#L31-L35",
+          "version": "repo-lines-v1:sha256:38bc0f054584492b551c8524c460e4264e91a913bab39025e7b14ca781e18c9c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTM1MzUzMmNiNGVlZTI1OTA4YThkYzgwMjcwZjc1NTQxODdhZjNmODY3ZTIzY2UyZWNiNzc5MGEzZjI4NzZjNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdhNDg1MGQ3NjQ0NjM1ZDVjYWQzYWZlYmRlNmE2MjMwM2IxNGZjNzQ4OTVlOWZmOWU0MjA2ZWVlM2FmNjI3NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2QwODU3YzdiZTQxZGU1N2YyOTYyYWNlYzM3ODA5NzRjNWYzNGFhNjk1NzUyNzdhYzAwMzY4OTIxMWRlODEzZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDNlMTQzOWU4OTQ1ZjU3NTljMDlkYzVhZTQ5NTY1OWRlNDI2ZTY4ZjEwMTEzYTc4NDlhMzZmZGUxMzZjNTI5ZiJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L114-L127",
+          "version": "repo-lines-v1:sha256:facdab201035552ebcb9f892fa6d6207f68ac339d20bad3ed1f82f252def0529:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2OGU5ZjM2MjliYTQzMjY4MjZhYmFlOWFjMzc4NWY4MjAxNWMwNjZlNzQyZjgzMzE1NzUwNjk1NWVjZDU5MjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3ZDUzYjE0YzFlZWVhYjA3Y2ExY2M1YmYyZmMzYTM5Y2Y2MjQxYTg1M2I5ODk1ZmFhODg3YjY2MTJhMjM0Y2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1ZTIxNDU4Y2RhMjE2Y2YwMWM1ZWZjN2NmNzlmNTAxODlmN2Q4MGRmZTViOGYzZmRiOTNlOGMyM2IyZmNlNGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L523-L551",
+          "version": "repo-lines-v1:sha256:5cc496d4c462a125100a825a51cd7be5b235c468950e619f69a07d0b8b62d9cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxZGMwYTA1Y2NmZDAyZmViODU4OTE0M2UwNDE4OTlhMjVkODEyYTFmNDNjNzk0Y2JmMjFiM2M5NWFhNmZhNDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YjA0NDkxNDY5NzIyZTgzNjNhOTRlNDA0NDUzOGUwMTNhMmEyMTdlMzZiMWU1NjhiYTYwYWNiN2I0YzhmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwNjNiZjJlNzlmMDBjMDliZmUwNGExMzVkZmRjNmY4NTk1ZjUyODU2MmIzMWFlNDIzY2ZkN2MxNGI2MDlhNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiYTMwMzgyM2M5MWYwNTI0NTMzODk5OWIxODA5ZTUzNWNhYzY1MDBhYWU5ZGU3NDcwMzA5MWQ5MjlmMWUyOWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0b39b43dcd3441998a5bc3c497c585e4",
+      "statement": "Las actualizaciones normales de política se mantienen pendientes salvo al iniciar conversación nueva; una actualización crítica o rollback puede activarse al comienzo de turno, y ninguna política remota se activa en segundo plano.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.test.ts#L213-L276",
+          "version": "repo-lines-v1:sha256:d7b1cbb62f3808d1303c5a45bb2ec2aa2d5d55c7834bc3076a54e24e45814da6:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzZhZmM5OWE4MjRhYzBhNTU0NDMyNWRhMzE5ODdhN2JjOTM0MTdhNzBiOGNiMjc0N2QwNjE0NGNkNGZjODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwY2VkMTg5YzNlYWI3N2I2Y2U5MjE4Nzc3YWY5N2I4ODYzN2ViNjdkNzVkYzFmNWRhNGY2ZTgyZjQ1YjgwYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2ZThhNzUzZmMzODNjYTAyMjU5Yjg5YmRiM2VkZDNiOWUxODVhZTcyYjUyMzZjNzIyNmRmZDk2NDFlNmE0N2MifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L349-L353",
+          "version": "repo-lines-v1:sha256:6b61f981aa0ab7c60528ff0648d8d311b38d632b31d02eabb1de20fb634706bd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZiMTI5NzRmMmUzNmQ5OTI2OTFhYzc3M2MzMzBkODdiMjM0NDgxNDAzZTNkZjg4ZWE4OTRkYzU2OGE3OGNlMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmI1ODBlOTY0ZjgzYTQ3M2Y0M2Q0NDM4NDYyOTQ5ZDY4YjU2MDBmZGE3ODdmMTYzNzQ1ZDAwZGU4OWNiZjM2YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmY2YzMyMjFkOGMyMzY0NmQwZTA4NjBiZTg4NGU4NmQzMzM2Y2NhZGY0NmYxY2VhYjU5MjQ5NTI3NTE5NDA0NSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L473-L488",
+          "version": "repo-lines-v1:sha256:f7ade81b58da32ea5f191b0d1861d985763f5a7f79ccc19ad08249544720ee50:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MmY3N2I5YzYyODEwNjFkZjk2OWZlZTgwZmYwMTY4OTMxNjQ3YmM5ODI0OWNmNjM5M2ViZjQ1NDQzOGM1OWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4ODdkYmU4ZTkyMTgzMzQzZGUyMzlkMDQyY2YxYmM1Y2NlMzkwM2VmMDFmZjhjOGJlMmY1NWI4YTZhMWZiOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhhZjE2MGRmN2E2MjM2OGNhMWI5YTdiZjExZjBhOGQ2ZDNiZWQzMjY3ZjAwNDlkOGYxNTU2MzhhOTllMDRlZGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L553-L581",
+          "version": "repo-lines-v1:sha256:b9d01a2c365a27c5c8d3cfd8118785fdcdc436f10f109d31bc73c2b8c1141ebd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1NjIyMmQyZDhiMzkwZDc0YThlZjE0ZGFlNjJjOTA0MzI4NDMyMzczZmE0ZmVhMjQ0OTk2MzZhZjI1NjZlYmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YjA0NDkxNDY5NzIyZTgzNjNhOTRlNDA0NDUzOGUwMTNhMmEyMTdlMzZiMWU1NjhiYTYwYWNiN2I0YzhmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2M2U4MDYyZWE2ZjA1MGY3MTE3NGY2OTc4YmEzYTU5NWI2NjQ0ZjQ2ZjcwMjZlMjcwYmZjYmZhMzYyNDExMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFjMDhjYjdiODU0OTI2NGYxNWIyNGMyM2EzOTJiOTQ2YjM0ODM1ZTMyMDg1NGUwYWM1YTA1MzNjNTZjOWMzNmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c4b2f0e7a764be58601bebd9b02ba13",
+      "statement": "El runtime construye un lease inmutable que combina el prompt del bundle seleccionado, la política sanitaria fusionada, contexto público de activación y estado; las trazas de lease se generan mediante una allowlist de metadatos públicos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L108-L171",
+          "version": "repo-lines-v1:sha256:324f26b159413f3b8959f72bfe71adb70ffb7a011a68620fba028c8ae5276b2e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMjc2YmI1NGEyMmI5ZGM5YjJhNzY2MTU5OTE0YzljZTY5MTA5ZDY0MDQxNWU2OTVmMWM3NjkyODJiOWY2MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L23-L49",
+          "version": "repo-lines-v1:sha256:4ef6e5d6e860be53c13f325b73fbe2f2d8e9bfbf996d56813c43dd44acea75e8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllM2VhOWJhMzdlMDQ3NDU1Zjc0MDI3ODg4YjdkOTNhMDljNmY3ZjBmODQ0NjU1MTI5MWIzYTg0MTZiN2FmNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMTU1NjU2ZTc0OGRjOWVmMTQ0NzliYjBlNWU0NTI1YjgzZjQwZjUxNjFiMDJhN2U2NDFjZTQ0M2U0ZGI5NDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0ZWUxYWNlNzVkN2E0NTBlZjJiYTQyNDJlNjgxNWIxZTc5MDJkNzk5MjE1NzAzMDFlNTE1NmJmMTY0NzdiMmMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/policyContext.ts#L13-L25",
+          "version": "repo-lines-v1:sha256:496fef2b0883978d7305bad71560532c191873b37838374d138db45dfd953f5f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwZDFiNDJiNTRmMDg5MzMxNWU0NjhiZmExYWZkNzc4NzZhOTc0YWRlMzkxOTcwODgzZTVhZTJlODUzZDQzYTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyZjJjZjUzMTNmNjY3NjY0MGY3ZjZhODY5ZjMwM2UzMWIyNmE5NGJhNzk0NjVkZGY3ZGViMDFlYzg1MDEzODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4YjNjOWQ2ZTdkMmIwNDczMmVhNjU3OTYzNWM0Yjc0MGRkNjA0ZDEyNGJkZWI2MmY3OTE3OWRiNmRhYWVjZDMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.test.ts#L170-L191",
+          "version": "repo-lines-v1:sha256:1a2a09535dbeebf0192c953d0d1f81ba5dfeccf5a55f0a532938d0ed1ab173ad:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3OGY1ZmVkMjhmNzNlNjQ2YTIzNDExMjY3NTU1NTMxM2NhMjlhMjg0MjdiMGM2M2ZlNGJkNGU2YWFhZjg0OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyZjE1YzU0MmFkYThjYzRmZjNiNWYwOTgwZGJmYTJkYzQyNzFmNjQ4MDk2Zjk2MWI5MGQ1NGJhZmQ1NWI1MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1ZWViYTAzODM2Mzc4ODIzYWJhYjBlMzc5MTg4ZmY2NDVkZDI4NWJmNWU3MzVjZWI1MGM3MTdiZmE0YjNjZTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b7186274472f468eba59ae418fc8175e",
+      "statement": "La exportación manual actual crea un paquete ZIP `.gymnasia` de esquema 2 con `manifest.json`; incluye datos saneados y medios JPEG con límites, checksums y enlaces, mientras que el importador conserva compatibilidad con JSON de esquema 1.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9666-L9766",
+          "version": "repo-lines-v1:sha256:b3a68336c09eadcd885ce8f0d606dfa2373363b9373b3fd82a1c25a8b21d9002:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiODQ2NzM4OGU5NTI2OGMwNDAzMTMxYmJiNmU3MDZhZWQ2ZDU0NzYxODQ0ZmMyMzA2YmU1NTFjODIzNjJhOWRiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI3MTdhZjExMDFjOTdiN2MyZjUyNTQwNzgyZTYzNGNjNDQ0MGYwZTk3MDM0MWU1MmY5NzUyMzExZDc4YjdkN2QwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjMTlkODQ0ZjMxNGU0ZWY1MzI5NjA1MTUzYjllNTI5OTBhMDc4MzcxNmI3MDFmMWQ3YTk1NTEzMTAwYzkwNWFjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhZjM5NTk5ZTUxNzk5OWM2NGYyYWU1YWVhNmE1ZDk5OTk5NDFiOWNlNmViOWRhOGY4NjFmYTcxMjg0ODE0YmMxIn0"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L104-L129",
+          "version": "repo-lines-v1:sha256:d2e6f3f8c11dd5ab10faf4c140b2bea360978010bb5c5b556e0c58ac5c3ecace:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlYzhlMGVlNTZmMTNiNWU2ZmE1NDdiM2ZlZmZiN2M4YWZkYzdiNjIzYzkyNzVmNDk5MTYwMjZkOWRhOWJlOTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhNmE1MWZjZTY2YmIwYjNkOTE4NTM1MzAxNDM4MDg1Njc3NzA1YzFiMWNkNWYwYzc4ZjhjYzM1NzIzODhkZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExNjEwOTBjYTY4MGMyZjBmY2M4NjQyMjg5NzhiODlhOTg5ZTViNjc1NDc5YzA2YWQxZjg0MjY4Mzk3NmY5ZGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L3-L17",
+          "version": "repo-lines-v1:sha256:157d9418d3b6593bd4578487a0c8abea713dcd27ecdbd376a6fdae8cd1bbc1d2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYjA0NjdiZjk3NGIxNmZjNzZiMmZlYzY4ZTM1YTljMzk2MTkyMzdiZjcxMGRkY2M0ODdiNGU4MjhjOGI0YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkOWJlNDU5MDBjMDdlZTU3ZWY3YmRkYTJiOTI3NTA1NmVmYjI3M2EwNzU0Njg3Yjg1MjAyODMwMjBlOWM5ODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjZDU2MWU2YTNkYWJkMTAwYmQ0YTRmMjc3MzU5NDEwYjBkYjAzYzU4NWJjZTI2Njc2YTMyYTBhYzZhOWFjZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYzFlMDczMzMyYjJjOThjZjc4NGU4NjA3ZjU3MWUyOTVkNzExOTIzYTc3MzcxODFiZDk4OWNkNWI2NmQ4ZGEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L70-L82",
+          "version": "repo-lines-v1:sha256:9c8547b9f5cf82d4ad9460fa4aa299587adcb0aa29e5d8c9fe6da5e29994501b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2YTIxZDRlM2E1Njg2MjIyZjY4YTFiNTk2YTliYWU5YTk0MDM3ZDdhMjZkMjE4ZTlkOTFmZDg4MTRhNjYxYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc4NDNmYmYwZTVkODY1ZmU0NjBhYTFlMjBlYmRlN2EwYmU4Y2UyODc5YzQzYjhiNjZjYjlmOGQ5OWM1MTdkMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1MmZkYTE3NTJkODE5ZGRkMDgxZjg2NzA3M2M4NDA0ZjNkZDRiMWNhMjY4ZGMwZjhkNTk0Yjg2NWVlYWE1YWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e4bf6538d1e468fbb993948d93622a1",
+      "statement": "El backup portable excluye credenciales de proveedores y pone las `photo_uri` a `null`; las fotos v2 se recuperan desde assets verificados por checksum, sin perder las mediciones numéricas cuando hay omisiones.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L1749-L1797",
+          "version": "repo-lines-v1:sha256:4c89cc0b95e8540372ee7b9836cfcb79f7113d1adf32311a2e0ef27baab7be2c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1ZDc0ZDJjZWNiYWE1OWQzNjlmYWY0NTNkZjYxN2RiOWU1ZWE2ZGY4OWU3YjNiY2ExOTVjZjAxZjk5YWRkZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2YmJmMGUwM2Q2ZWFjYTYzMjUzMDNjYTk0Njc3OWIxOTkwMTlhOGU1MzA0ZDU2NGY3ZjAwNzU2YWI4YzM0NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzZDFiNzBmNDQ2ZDUyMDkwZjBjNmJmYjYxNzNiYjM2OTE3YzI3MTg0ODA3MGEzY2EwM2M4MDg5ZjVjNmQ4OWIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9831-L9908",
+          "version": "repo-lines-v1:sha256:c3d53a9bc8c9ec728e5ba2e1c5a27d9b4be293d1dee843b49e248427d3f75cbd:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwMTYzNmY2NWZiYTc5MDk3NzVkY2JjYTY0NGY0MGViZGU3OWRmMDdjNzM2MmNhMTY5NmNhNzQzZDVhNzQ2YTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1Y2RlZjgwODVhZTc0YWI2MzZkNjQ1OWY1YzZkNWZiZmIwZGIyNjRmMWIwZDc1YmFjNTE5YzliM2Y2NzE3YWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ5ZDVlYmIwZmFhZjZmZmIwMGQ2NTQzN2E4NjZjNTFkYjcxNTIwM2EwYjczZGQxNThhNTE2MzlhMjYzM2Q4ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2Njg4ZWNlMTc3NGQ1YTY2YTI1NGYwMGE2NjQ2NzQwNDM5ZjViZGNkYzY1ODUzODgyZmVmYjRiNDIyZTIxNjEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L161-L172",
+          "version": "repo-lines-v1:sha256:a0e2e6483268adabf627422f18547df2d6953bf8d71178b6c5f4b67c4537f664:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZmEwNmFmNmM4YjU2NmVkNzkyMDJiNTJkNzE0Y2U2NGMxYWViMTJjZjg4ZmVmYjc5NDg4ZWVjOTM4NTUwM2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0OWQwMDA1OGEwYjEwNzRmMzFlYTBmOWNjNGM0YTllNDVhZGVjYTg2MmM3MDhhMTdlN2RiNWY2NDQ2NDcxYjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5MTVmYTBkMzM2OWZlMjFmMmIwNDhjYWYyZDNkZGVlOTdjN2FjOTJlYTljY2IzNzdlYzU5ODUwYjA5ZWI1MmUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L174-L227",
+          "version": "repo-lines-v1:sha256:b0dc4b67818c2d726a7d487606c3a7c2b19ac9b92c1ff8b960fcfa4ac296bf23:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5YjMxNGIyYWU2ZjA3ZjRlYmIzZWU5NzUyMDcwMWUyY2U2YWVlMzg2ZDQ2N2I2ZGI0MmEzNjk5M2M5ZGJiZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVjZTJlMjM1NzA2ZTc5NDJkZDQyYjA3MDk1MzZjNzI2MWJkYmI5MTVhMWRhZTBmMDQ4MTI0Mzk5NTAyYzc4MTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_af8dad35f4de428c95c16530689451dc",
+      "statement": "La importación confirmada conserva claves y workspace locales mediante commit del repositorio de proveedores, sustituye las particiones incluidas, reinicia la caché de Memoria en React y termina la sesión activa; no ofrece atomicidad transversal.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9819-L9827",
+          "version": "repo-lines-v1:sha256:8d565d04391730972c28edd3bfedba7ffa9034a5b48c79a3084cca8ef1b66658:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDk3MDQ0MDEwNDZlMGJmMGU4YWIzZThjOGQ0ZWRmYzU2NDA1MDM5MWQ1OWU4ZDIwYzViMjdjOTdjMDM4OWM2YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDYxMDI1ZTY0ZjJiMDlkMGExZDg0MTNhNDBiOGM3ZTVkNjUzZjRhNGY1OTY3ZDEyMDBkMDdkN2FkZmFlNWNkYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTdkODYzMmU1NGU5Mjk4YWJiOTU4NzI3ZTJkNTE0MDhhYmFmMTM2NjAzNTM3OTEwMTQwYWJmNjViMzBhYjYxMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDlkNWViYjBmYWFmNmZmYjAwZDY1NDM3YTg2NmM1MWRiNzE1MjAzYTBiNzNkZDE1OGE1MTYzOWEyNjMzZDhkOCJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9911-L9977",
+          "version": "repo-lines-v1:sha256:ae53a653c750e6f99c86546d2b3f1530afc07291f38930c9ab5fc032e6323887:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiNDE2MGJjN2I0NDg1MGNiODdmYjQzNGE0MWIyYzhiZTAxZTZiYTEwY2I2YjhjZmEwMWVhOGU2NGYxODY2ZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxYmUxMzA4OTVkNWFlZmVlODdhMjE4MmFiZDJiMGRmNGM0MmFiNTVlYzY4ZWZhODVjNzA5MjJlZTRjZTM3M2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkOWM1MTIyYTgxZmU2ZTE5M2VlNTAzODUzMmU0OTliMmVkZDgxMmIxYTEzZDE1MDM1ZTA1YzJiMTE5ZTBhMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjMTcxYzEyNWVjODI1M2U2YmQyYmQxNjAzMjI0MjgwY2Y4NjMwNzQwYTg4NTI4NDQwZTZiZDI3MWMzODc0MWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7b828a34578c40c38a7c8d2dd379e512",
+      "statement": "El borrado de actividad reescribe solo la familia de actividad y elimina fotos y ledger, mientras que el borrado total elimina las particiones personales inventariadas pero conserva exclusivamente la caché firmada por `preserve-security`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13105-L13140",
+          "version": "repo-lines-v1:sha256:98ac307351e944c128fd8f24ced52c680e0795106b2c9225d12116bb9842d91d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5NjM2OTY5ZDg1NjhhODU2NGJhODgyMTAyMTU2ZTg3N2EyMDMxODdhMTIzMGE0MWJjZTA4YmE4NWY4YjE1YjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2YjQ5MWQwNzA3MWQ1NDczOTM1ZjRmZmI4NDI0MTA4YmQxODViOTZhZDEwNjA0MzlmN2ZjZGJiNGFhNGY1OTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0MGVmM2Q1OWI3N2QyYWRmODFmMWUxOTE0MWU0ZjliNjU4MWMyMjg4ZGM5Y2NiZDMyZGQxY2NjZTc4YmEwODkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13141-L13263",
+          "version": "repo-lines-v1:sha256:514509c5fb78c83299b747fcaaa27821d212f1c163593f616a5b18375e850011:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NmI0MDljMWExNmFmN2Q1NDVkMzM3ZmMyZDJkN2ZhZmU4ZWVmNDFiMzMyMDVlZTU1ZDhlZTg2OTRiOGY2OTg1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyMmQxMWNhZjQzZTk3ZWYzNjllNmJlZWQxYTI2OGJkMDU4MzhmMjliOWRkMjU0YmY2OWJhNjQ4ODQxNDcyMzRhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzMzRhYzQ5MjA3MGJkMzQyZmMyYmUyM2U0MmRjZDk1ZWE2ZDkwZDM2ZDIyNDcwN2NlMDAwOWU1M2I2N2RlYmZlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3YmRjYjA0ZTdhNGQxN2ViNjMxYjgyZWEyM2Q2MzcwN2E0MWQ2ZjA1NWNmNmE1ZTQ5NTE3NDZlNTBlNmYzNGE4In0"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.test.ts#L117-L149",
+          "version": "repo-lines-v1:sha256:44e5c49d61ab94261d9cf091d9d69d2986b25e1c97a2b3338d155a6aa92e2e6a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyYTliNzFiMTZiNjdkYmQwZGZmMTI4OWE5YjRkYTNjNDFiNWVmNWRjMTc5ZmRhMGJkNDVkNDc1NDY4M2QxYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjMTdhYjQyZDg0MmE1OGZjNzMwZGU5ZjE4NGY5MDg0YmM4NTk5NjUxM2JlOTlhYjkyYjRlNjg2NDhlZDlhMTkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L32-L78",
+          "version": "repo-lines-v1:sha256:b08d74e0f071d3b2a617456403ff895d051a35b657fa65f4db3f9ca4da3934bb:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjYzZmYWI4ODczMjdlYWMwNGExNWY4YzQxZDA0NGI2YWEzZjczMzRmMjM1ZDMyNjA2NzQzMjUwMzUxMGUzN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZGM3NmQxMmU1MzA0ZDMwNzllZGI1Zjg5MDAwN2VhMDVmMjI2ZTRkOTNiNjk1Njg0NjBjYWZhZjgwMDc0NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MzUxNmE4NDZiYjc1Zjg3N2ZiMDM0NzQ0YmJmYzU5ZTQ5OWJiNGEyODA3ZjRiOTA0ZDVmOGI1ODdlOThmNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkZWYwZWYyOTQ5OTA0YzlkODY4NGFkZmY4OGYyNWM5MzE2OGM2ZjJkZWQ3MGY4NGRkM2E2Y2YwZGJkZGUyY2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_376bc7f138964624a89e79db459b75df",
+      "statement": "Cada tarea de borrado requiere borrado y verificación con timeout de cinco segundos; los fallos no detienen los demás destinos y el informe queda incompleto para permitir reintento.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.test.ts#L22-L91",
+          "version": "repo-lines-v1:sha256:cd1289ff2cefa2ec5a2691e9ddc4e752ed9a75136ac112a2cd24ade167e623a8:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwNDZmM2Y0ZTM4OTA5ODhkZGRjM2UwYTRiZmNkNzI0NTVkYmRlZmFkNzUzMTkzNGRkZDFmOGE2NzM1Y2Y5YzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE1MTAwZDMxZjk3NjQxMTMwODY0ZDZhZTk5YzY3ZjQ0Mzg3ZTZjZGYzMWFjNDEzN2EwNzU4ZDI3NWE4YTEwYTIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L105-L167",
+          "version": "repo-lines-v1:sha256:13107e4bab2fe832a4717e5ca86fc24742fb54167fba2e7c910e977a49e9aafe:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmZTgzNGNhYzQ3ZWJjNmFjZjk5NjcyNTk4MzMzMjY1M2U4MjcxMDZmOWQyNmM3Y2EwOWEyZjNhOWJlNmNlMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlNGViZTNmYmQ5ZjUwNmU0Njk2YjM4YzkyODA0OTczYmM4MDk1N2EyNjVlYTlhYzM1ZWI4MGY3ZDk3ZjkxNjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L30-L30",
+          "version": "repo-lines-v1:sha256:d48809538f246fb9b4fd83ff4f3cc1a3651746fd327244882e596c43a00df7c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQ4ODA5NTM4ZjI0NmZiOWI0ZmQ4M2ZmNGYzY2MxYTM2NTE3NDZmZDMyNzI0NDg4MmU1OTZjNDNhMDBkZjdjNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQ4ODA5NTM4ZjI0NmZiOWI0ZmQ4M2ZmNGYzY2MxYTM2NTE3NDZmZDMyNzI0NDg4MmU1OTZjNDNhMDBkZjdjNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDkyMDRmODZiYWVhY2Y5NDMzYWNhODUzNzJkZGM5NDNlZDFjNGM5ZWMwOTYwYTU1YzU4NDZmOTc3MTk0MjIwYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTRjODZlN2M1ZWFmYzliNDY5MGVkMDhjNjc2MjAyYTg4ZGI3NjNiOTEwNzY1MmIwMmMyMTdmMzEwMjk4MjZhMCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-09-05T11:27:14.639Z"
+  }
+}

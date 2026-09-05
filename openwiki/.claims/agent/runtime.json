@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:a3b3b4b26098ee53b69404c2bb0c87ebce43aa3716cf1d2f857a4f0dbf2ea071",
+  "claims": [
+    {
+      "id": "claim_a0f43807ba9b466785b607f797e43123",
+      "statement": "`sendMessage` rechaza un envío sin hilo, texto útil, proveedor activo o clave configurada; para un turno válido adquiere un lease con límite `new-conversation` o `turn`, conserva su `policy_context` en el borrador y actualiza la selección y estado de política visibles.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8990-L9028",
+          "version": "repo-lines-v1:sha256:fb4b82abb3b6167846ad5974152eaf840f6a53d15269496e1b1922775d54ec1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNWMyMDc0OWJlNjYxNmU1ZWJjOWI5MWFiOTZhZWQ5NzcxMDY4NWUwZWE2MTk1MTljMWU4ZGE3NTg5ZjhmMzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzYjQ0YTZiNTM3YTI2NjVhZTJhOTAwOWM2ZmNiY2QzMGUzM2IwOGRhYzlkMmQyYjQ1OTg5MzVhYTMyNWEyMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlMTJiNjExODk0M2UzMGMwMDY4MzNlNzgxNjMwYTUzYjMyZjQxN2VmNWY5Nzk1YzNmMTJmMzMwODAyNGM1ZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYTYzYmY2ZTQ0YTRkM2E0MTU3NDY4MjBkZDMyNWFhZmM4ODc5YmJkMDAwNTY4MmJjNjBlYWM3ZDY4ZDVmNWIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9058-L9076",
+          "version": "repo-lines-v1:sha256:5f943eba10c329194c8c72dce3bee4896da8c87b7dd0d4e917e6c6565c7fbe81:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MjdhOTQzZDEzZThjYzY5NTcyZjM2ODE5Nzg5YTM0NDMyYmVhYjg4ODUwN2Q3ZmM4YmE1MzA0YzM5ZDJhMGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliMjBhZmY2YzAxMjJiZmI2MGIwZjAyNzJhNmQ4MGNjMjI4OGU0ZjA4M2I5NzE1YjM4ZWFiYzYyMTQyMTY4YmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzN2JmMDAzYzQyODEzOTA2MmJjMDNmYmY2MmMyOTFmMDgwMDc2Zjc1NDU2ODdkODM1NzE4ZTVmNTJkMTdmMzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkYjFiNTQ0ZGI5OWMzODA1ZTNmNDMwYzgzODdmMjU2ZTMzNjIzYmQ4NjVhNzlmNDVmNzcwZDZmOWFhNjZjNjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c3336ba876c641f0949f56e6dc624e91",
+      "statement": "`AgentPolicyLease` reúne el prompt, la política sanitaria, el contexto de política, el límite y el estado de ejecución; tanto el lease como sus componentes se congelan profundamente, y el lease firmado deriva prompt, guardrail y atribución de una misma selección de bundle.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.test.ts#L98-L113",
+          "version": "repo-lines-v1:sha256:36596a4dd09b1b04649c3925545f1a166ad549cc89227c673febc8ca50b88c59:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjNmYzMWQ1MDNiNjI5MjBkZTA4MTk3M2QyNDcyYzEwYjZjZGQxNzU1Y2ZhZDlkNmYzZGZjZDExYzllMjVjMTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5MWJkZjZmYTFjZTJlNTFiNzZlN2Y5ZmEwYmMyNjNkNjk2ZTc1YTA3NWM4YzFmNzliMGYxYmU4NjUwNjdmNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L126-L171",
+          "version": "repo-lines-v1:sha256:4a06f8986f6e80e9996ce931b02999418d0b264cf0587da6e016b802fdbc4b7d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYzEzNGJhZjAyMmQxZjA3MWI0MDk2NDg5ZGU5YWY2NzU5YzBlOTE3NjY3MDEzOWQ2ODcyY2M2Y2IzN2ZlNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0ZWY3YzFhMDAyYjRlOTY4ZmIyODYyMzRkYjgxZTc2OWNhNWFkYjkwODJmNmVmN2FhNzBjNzJkNDk4YjVmNjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L23-L44",
+          "version": "repo-lines-v1:sha256:c20cba94c836f0b2394bbcefff5e204c030fc3d623580b94fb1b36692e3a7c19:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllM2VhOWJhMzdlMDQ3NDU1Zjc0MDI3ODg4YjdkOTNhMDljNmY3ZjBmODQ0NjU1MTI5MWIzYTg0MTZiN2FmNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMTU1NjU2ZTc0OGRjOWVmMTQ0NzliYjBlNWU0NTI1YjgzZjQwZjUxNjFiMDJhN2U2NDFjZTQ0M2U0ZGI5NDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3OTNkMGM4MTI0MmU5ZDA4YzNkNzQ0ZjQ5YTdhNWQ3ZjhkYmQ1MDQ1OTY0YmE5NzlkYzFkNWU0OTQ1OGU5NzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ae513caaf7f747308a902180e077772a",
+      "statement": "En canal `Local`, `acquireAgentPolicyLease` construye un lease a partir del prompt y la política sanitaria integrados; en otros canales delega en la resolución de política firmada y siempre emite una traza `lease-acquired` con el contexto y límite.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L51-L123",
+          "version": "repo-lines-v1:sha256:7ea4b47ed3dc9e4300a619d37e9b904b6cb313281be062f8381dd457483bb345:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMTY4NWIyODk2Mzc0NGM3YTMyM2U4ODE4YzA1ZmM3Zjk5Yzk3ODZlN2VmN2M2OTYwY2U0MTFmNDdmNzEyMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOTFiN2QxYTRlOGUyMzg4MjNlYzI0YTIyOWViOWQ1OWQ1Zjg0NjdhYmM5MzhiNjc5OGQ0Y2M3NzQ0YzhhMDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NGMzMjhmYzA5YjRjOTQwOGEyMzAxZGZhY2I2YTg5OGMxODJiYTUxM2E1ZDk5Y2MyZmYxYWNiZWZlNjU5ZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1NGMzZmQ2ZTFiODczZjNlZDVjYTBiY2IxYTkzOGRjYTEyYzMwMDczODIwZGU0MDAyMGRmZGIzNzYzNWFjNjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_639ebed46a784c89b8d137ef51481414",
+      "statement": "La ruta principal de chat usa el prompt del lease como único mensaje de sistema, excluye mensajes locales de divulgación, limita el historial a los últimos 20 mensajes y no lee memoria personal para añadir texto local al prompt.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9131-L9161",
+          "version": "repo-lines-v1:sha256:61d5e1bb5f49ea5d4bbf284477361d1ac03264a226e9089bc19c54b42300f62a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1NDk1MzM0ZjExYjk2YWRiYWYxYzU1ZTMxZGRjYmNiZGE3ZDUyMTMxNDBlYTJkNjQ4YjFmZTNhMDc4MzIyYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyZWVjNzVjYzY2YjlmMWM4ZmUzYmRkMTVhNGFhMWQyNTcyOTcyOWEzZmZmN2I5YTNhMGY1YzE3MWNmZjY4MDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1OTBhMzM4NTUzNjMxMmYyNmE5MTdkMDQyMWJlODIxZmI5YTU0MzIzOTcxNTI1NzVhOWRkNTliOWZkOWU3NWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1NzNkZGYxODIwYjA5NTM4Y2ZlMTY2NzVmNzVhN2ZlODg0ZmM0MTRiODM1ZWZlYWQ5YTFmNzQ5NGM0NzZjYTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c95dab4c8f2a4f31a653b8f48d32015d",
+      "statement": "El runtime clasifica la entrada con la política sanitaria del lease, bloquea los riesgos `high` y `critical` antes de contactar al proveedor y aplica un gate de salida que puede sustituir el resultado transmitido por una respuesta local de seguridad.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9023-L9056",
+          "version": "repo-lines-v1:sha256:e4900dcef22cb613e8ca8d1001335adb12364c160dd1637c73f778e23e4e50eb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1YjgxYTViN2EzMWMxNGMyM2EwNDlmZjIwNjhlMDQ3MzM0OThhZTJkMzYxMDMwMmJiMzMwOGI3ODAzYWM1ZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyYjQwNWJhMWE0ZGQyMmNiZDc3OTBjMDczNzJlNDI3YThhMzk0OTJiZmU3NDIyMGQ4MWFiYTIxOWQ3MTZmNGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhYzUyNGVlMzMwZDNlNmY0M2NkMGQ4OWNjZDdiMjI0OWFmYjBlNTYzYTZmY2JjMDRlZjAwYjEzNjY2NmY0OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjMWViYzUzMzE4MzRjOTkzYjdlNDMzMGFkY2M4Y2Q2ZmJmM2E3YmZlY2I4NzAwZGYxYTczNzRhMWFjYWFiYzgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9078-L9083",
+          "version": "repo-lines-v1:sha256:ca91ecd02e92820a61014a18b7058f31ddbae8bf28cd253730ea65d4c2fb6195:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGYwZDBkODRiMWY1NTg1N2I4OTJmOGQyMzhjZTZmMGI2Yzc5NjE4NGYyMjU0NjNiMGI1NzcxYmQ4MzEwYzM2OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzE3YWYxMTAxYzk3YjdjMmY1MjU0MDc4MmU2MzRjYzQ0NDBmMGU5NzAzNDFlNTJmOTc1MjMxMWQ3OGI3ZDdkMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODRjOWQxNDNiNTY0MGIzYzAxMmVjYzIxNTlhMThjZjk5ZjI2NGE2MGM2ZDE4M2RiZDRiNjcyZjVkNTcxMmRhZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2VjOGE4ZjdhMjFiNTI5MGI0YTcyMWJhZGU3MWZmMzBkYjViOTg0NDYzNTM4Nzc3ZDJmNWExNTg1OWQ1OTcxNyJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9197-L9219",
+          "version": "repo-lines-v1:sha256:7ed6345edb3f7f323b538ffdf1a78cce39b06c088cc403dedcfab356c404a4c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzZTVlNDhlMWUyYWNhMWVmZDIyZDc1YmJiZGM2OTI0NzQ3M2QzMGZiZmNkNzk0NGI0MTlmMmFjMGNhNmI1YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwYzU5ZTc3OTVkNjQzODY5M2U0MTNjNTljMmI0N2NiMWM3Y2QxZWZlZmQ0OTBkMDE1MDRhYjQ3YjEyZDlmN2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5N2I0MDIyNDAzMTk4YWFjODQxYTFmOTU1N2M1NzkxOTM0NzYyY2FmMGUxYWEzMzgxMTEyNDkxODhlMzllZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyMGNjNTRjZTU1ZGRhMDU2ZDg5MjMyYjllMTcwZDI2YWVhYzg3NDczM2ZhYTViYzgwZGIzNDNlMGZkZTE5ZDYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.ts#L155-L175",
+          "version": "repo-lines-v1:sha256:42d466e172671f1424152c29541690544aec77c7c0a967ca2286037919d89a8a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlODdmZjY3OGVkMjE4MmU2Zjk4NDIxNjIyOGM1NTAxYWIxZDM5ODZhMGIzYzMxNDVlNWZkYWMyNDRlNjIxZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2NTRhMDM5ODc1Y2RiMjg4NmZkZGIxYmVkOWVkNDQwOGY2NzA1OGYyYWQ3OTQ0OWEyYTMyMmM3MTA2MzY4ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzY2Y5N2VlZTQ1ZTAzZDZkOWJkMGJlZTg1ZTg5ZjA0ODUzZWRkMzBjYTVlYjAwMDVmNDQxMjg5ZTU4MTYxYjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_547697d056484f648d8795eea61c579a",
+      "statement": "Los deltas de streaming actualizan un borrador persistido con una cadencia máxima de 40 ms; los fallos transitorios reconocidos se reintentan hasta tres veces con esperas de 2 y 4 segundos, y la ausencia de contenido final se convierte en error.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9085-L9129",
+          "version": "repo-lines-v1:sha256:6575c9a049c6475cc358a77e9a402ef471453cf30a5ff2d308476871fe98fa83:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmNWI5NzQyYzc4NDE5YjQ4NGJkN2Y0NDg4ODlhNjU1MzQ1ZjZkMzAwYzA1OGFjNDFmOGQ5MjIxNDU4MWYxZTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlMzNkYzczMWU3ZDA3YjFmMGMwNWNmZWJkN2UxOTIyMDIzZTYwNzdiYzBhZTdiYTMwMTQ4ZjUwODMzYTI1YTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxYzM1NzFlNWVkYmUzODc2NjY4ZDJjNTM5N2Q3NTJiZTBjYTM0ZTI5YTdmYTYxMTk0NmYxZGM2OTAyZTY4MjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyZWQ1YmQxNGQ2NjFhNjNhMzVhNGNkNWU1NDc1ODY4NTQ0OTY2NWZjZDZhOGIxYmQxMzVkYWRlMjNiNmQyNmYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9156-L9191",
+          "version": "repo-lines-v1:sha256:e7a7972e7d6fb9f6d4b2d4abb28a97cc2ccc9451b97b9a9de0a63a9cc5cfa317:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmNGM4NmQyYmVkMzZlMmM4YmU0Zjc1MGZjMWUwMjcxODk4OTRhNDIxMjI1YmMwYmFiMTQ5MjI3NmE3MDE5ZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlYjc0OWYwOTUzZjc2NzlhZGNmZDhiZjljNzdjZWZiM2Q4MzgxNjg3YjM4NmUzZGNkMTRjYjhkMjA3MzJlMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE1YjYyNzE4NGZmNTlkMDcwZjZhYmI3Y2Y0ZTIxYzM2MWIwZGJlZGRkZjViNmMwYmJmMTE2MDFmZmRjZGVkNDQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9221-L9230",
+          "version": "repo-lines-v1:sha256:abd57ef6aa671684c0a7b267dfcb175415b8b5c998f0f59b5d40aa3e0c862880:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjlhNjZmNWU0MDliYmVkZDFjY2Q1ZDdjNDA3YzIyNjU5NDNjZjAwNWY2ZDhlZTdhZjdiMTlkMjVmNjc4YWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjYjMzZDZjN2Q2ODMzYTUwZmEwMjE0N2IyNmNjMThhMDIwZjQxNGI5MDFmYjI2MjE1YTk1MmJmNjA3ZDVhNDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjNGM2YjM1Mzk0NThkZGVkODFhZDA2NzY2ZWE3Mzc0MjBkZGY0ZDcxNGNlODM3YTIwMTZiZDY0NWExYjgzZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwMTY1NGU2MjM5MjY5Mjg4MWVkNDI1M2JlYTQ3YzY0ZWQxMzJkOWFlYzA2YTZmYTdkZTUxZDJjOTE2ODE5Y2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_46d4fa0d077949f5ab22bd901558edc6",
+      "statement": "Las operaciones de herramientas con efecto se identifican por ejecución, proveedor, nombre, argumentos canónicos y ocurrencia; el coordinador deduplica ejecuciones en curso, reproduce resultados comprometidos desde memoria o ledger y rechaza colisiones de fingerprint.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L265-L357",
+          "version": "repo-lines-v1:sha256:bde93b9a8999f9af1b0bd6777eb42a39ef5a083e24921b4f3a4cb12cd6f1f69d:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5MGZiNDkzMDdhZmFiOGQ2ZGU5NTczMGI4OTEyNDg0OWMzZTdiN2UzNTQyMmQ5MWJiODFkODc5OTk1MWFjZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2MGQ5ZDQ1NjhiZDMyNzZmNjczODg5MTM2NmI4NGQ4ZmE2MmRlMjM4ZGI3YjJhOGIyNGIzMzFiM2NiZmQxOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0ZGRlODJkMjA2NjFkMjdkZDcyMDE3NmQ1OWE2ZTU2ZGNmNzE0Zjk0MTVlOTZiYTI0NGM1YzFkMmE1ZjVmZjkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L84-L115",
+          "version": "repo-lines-v1:sha256:83634eef63683965c1e5b47927a150a04540c0787db13583a2694695162886da:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjZGYzYmJjNGI4YjA0ZTVlMWEzZmYwNDZkNzM5MjVkMzBiMmYzMzJmNTQxYjYyNmFkMGE2OGU4Mjc4MzBmNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkN2NlNmQ2ZjhkMGE4MWQ3ODUxZDViNTQ5ZTJiM2JlMGI2N2YxZWIwYjAyNmRmNWU4OTRhNjU0MDRhZDM0YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxODg3MGE4MDQwOWY4YzRjOTk0ODA3YWY4MjU5Y2MwNGJkMGM1Y2EyZTlmMWMzYjEzZGVmMTBiMTYyNzg2ZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliYTMyODkwZDU0ODQ1N2M4NDk4YjY3N2U3YzBhMDkxN2M3NGFmZmEzNzlhYjU2MWJhMWQzODYzNTQ3MWRkNmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0039b6383d424fc39ca267b4200a7e82",
+      "statement": "El ledger de herramientas retiene como máximo 256 operaciones durante siete días, serializa sus escrituras y solo persiste resultados con estado `committed`; si la escritura del ledger falla después del efecto, el resultado se devuelve pero solo queda la protección en memoria.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L149-L263",
+          "version": "repo-lines-v1:sha256:7e334d52c9726045c51f4191566a9d2ec25c74e5048d8a8a690328bd14369018:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIzZmQ3NDZmNjRmODAzZWJkYzUyNjMyNGU5Yjk1YzZjZDhiNDRiZDdlOWE3NjVhMTdmN2ZiYTBiOGIxN2NiZjhlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1ODY0ZWZmNGNkYWM0ZThlNGUyMTcxMjkxNmQ3ZTRmNDllMjEwNmIyYWRlMjFkYzk4MDNiMDBiYmUxYWE4NTQ5In0"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L334-L357",
+          "version": "repo-lines-v1:sha256:b2ee50f7526124ed104cdd51c91c0e38511872c84adba89ceb3fb9e925fbeae9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyNGE1OWE0MjY0OGI3MTVkYzk1YTU4ZDAzYzlkMjE3ZTIxYTYxN2JiMTcwY2RmMzk4MzQwYjQxZDFhM2M3YjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2MGQ5ZDQ1NjhiZDMyNzZmNjczODg5MTM2NmI4NGQ4ZmE2MmRlMjM4ZGI3YjJhOGIyNGIzMzFiM2NiZmQxOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyNGRlNzk4MDc2MzgxNmYzNWU1ZDhhOTllNTkwNDNiNzJlOGI2N2JmNzc3MmE5MzhkYTIyMWY1NjMxN2EwYjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0ZGRlODJkMjA2NjFkMjdkZDcyMDE3NmQ1OWE2ZTU2ZGNmNzE0Zjk0MTVlOTZiYTI0NGM1YzFkMmE1ZjVmZjkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L47-L48",
+          "version": "repo-lines-v1:sha256:54053dc7a0cd832ebe996b26fa5360a550f2a97ae5ec1073115ad0466534664d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2M1YmQxYjAzMGIwODZmM2YzNzMwYjcxYzVkN2ZjYWZlNGMxYzg3YzAzMTE1MmU2YTc5OGFkZTA3OWRlMjIzOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGYyY2FhZDFiNTU3NTMwODdiYmYwNzMwNzcwOGY4ZmEwZDljMDVmMDg3YmFlMjhkZmM1MDExMzUzMjdiMjZiOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjg5MWI4MDU2ZjkyMzA5YTEzNzJhNjNkMjYwOTU2MjAyNjdjYWE5NDU4ZDVmOTJkNDE4ODZhODk5ZjBlZDg3MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDM4MDU4ZjA4MGMxODE2YjFiZTJhZTMwYWNkYTZmNmFiMWNhMWVhZmZjMjhiYjIxZjM0ZDk5YzMwZmM3YTkyMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8112aff089b74d6da913af1f0cd327a3",
+      "statement": "`PolicyContext` admite únicamente las claves de activación, hash de bundle, candidato, secuencia, origen y versión con formatos estrictos; la normalización devuelve `undefined` para cualquier estructura o valor inválido.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/policyContext.ts#L1-L11",
+          "version": "repo-lines-v1:sha256:49725d901f0b6db91279e9a8e366261e7d774336fee74625e074826e20db997f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmNmRmYjhiM2Q2MjE1NmNmOTk4OGFlODczN2FmMTQ3NGZiNGRmODRiMGI4OTkzOWY3NzYyNDIxMTYzZDE2MzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzMDNmNWZkOGM3ZmVhYWVmZDhjZjI1MjAxY2E2ZGUyMjMwMDk2NDViNzJiYTk1ZDI4OTM3YjVhN2JlOTBmNmUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/policyContext.ts#L28-L81",
+          "version": "repo-lines-v1:sha256:a2b87e72345d2a9a159042771e82484c56febd0a4cfe90af029fa0d7653d0dbf:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZTNlNjA1MzRhNTM1NTk4MDI4MjBlZGE4MWExMjJmN2NhNzliMzA2NGMwMWU4NzZiZDNkZDhjYTE4MTc1NTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_08fd4c13be8740b7b37fbc409bdd9d7e",
+      "statement": "`MiniChat` y el estimador de alimentos adquieren también un lease por conversación o turno, aplican la política sanitaria y guardan el contexto de política; el estimador combina el prompt del lease con `FOOD_ESTIMATOR_SYSTEM_PROMPT`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L10129-L10179",
+          "version": "repo-lines-v1:sha256:46edfd689007d677afab061ed1be52f6a0e2f3777ee3860d76737e9491ddf2cd:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NjNkNDMxZWNlNjY4MDc5NTc4MjU5YzEwYmI2NDg0Y2VkOTI3NWU2NjEyZjU2YzgwOWZkNTAxZTY1ZDdmYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhNTkwMGQzMzAzZGUxNjE3MzQ0MThkZjZiM2IwMjBkNmY1MWE0MTNhOTI2OWMyY2E4ZDYzZGI0ZGIxM2UxNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlYzBiYjdmMDg4MWFlNTk0OTk4M2JmYzU3M2Q5ZDY3MTAxODMwZmYzNzliODI5YzZiZjQ3Y2M3OGIyZDY0YzcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L10263-L10298",
+          "version": "repo-lines-v1:sha256:1a917ed024ea59bfaad5009448f36270927d82e3f67cdbad9a892962d6764f02:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwMDA2YzM1M2FkODJkODgzYTM4ZTJlMWZhMzJjNzgwNjlkZGZlZTIxN2UwZTk3ZmEzMWRmMjMwNTg1OTA3ODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmZWQ3MzIyNzAzMDBhYjBjZDFhNzk3ZTgwMWU2YjI4YzczZmI3Zjc5NzIyYmU4MmRlMDAwYTllZmY4NTFjNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlZDUwNzMxNDk5OGNlNGNhNGFmOTJlMjBmNzdjZmFjNjQ2MjBhZDJlYTJlOGIyMTMyNzllYzQ3NjI0OWY5YmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlhYjVlYmM4Yzk2ZTYwYzFlMGM2NDIxZTY0ZTNkNTRjNmVmMGYwYmEwZmFlM2U4NDgwZDBiZTg2ZjA0ZTM1NjUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L5292-L5376",
+          "version": "repo-lines-v1:sha256:43663c6293e4181651b35f1a4318dec8954671e989208187201365c7a738365c:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4N2I5ZTQyZmYxYjE3MmRjMGRiYWJhNjI3YjAxMzU0NjliNDJhMTAzYWJkMGE2OWViODhlNGM5ODAwZDdlYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwMGVhMzNkMDI0Y2Q4ZDgwMjlmOTAxMDc3OWMyZTcxNDFkMmFlYzFjOWQ2YjZlMmJlYzkwNmUzZWE3YjQyY2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMDIxNGZlZjM5YmM0ZTM5NmM3OTk3ZjJkOTgxMjA1YTY5NTFjYzI3ZGFhZWYyZWM0NTI0OTJkMTI3MWZmZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3NjQ5MmU3MjhhZGY4YmE2NGE2MjViOTgwZmI4NWFiNzFjZTk3ODhlMDE2ODE4ZmI2ODBkNDhmYmFkMjU5NjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f51d8fdbe74248139fb0340dc7058fbc",
+      "statement": "`loadChatSystemPrompt` y `loadHealthSafetyPolicy` son adaptadores de carga en segundo plano que adquieren un lease con límite `background` y extraen de él la selección correspondiente; la carga sanitaria usa la política integrada solo si esa adquisición falla.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/chatSystemPromptRuntime.ts#L13-L25",
+          "version": "repo-lines-v1:sha256:28e00b4d74ff55e602020dd7c35da83d4e769b42feeea9fd4c7553ddeac565b3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzYmFmOGRhMjU0ZWMyZmI0MGJlZGEzY2QxZTE3MTM1Y2Y0NWQ2MWE1NTg1NDJkMTQ2YjZlNjRiNDZhNWZlOGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3NWM4N2M0ZmNmZjhjN2M0ODcyNGE3MDNlZDY3MzZmYjAwNTE1YzAxZjdhYzc5MGM1NjhkNTEzMTAxZTQ1MWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM1YzgxMWJiYjQ5NTYwZWM1NTIzNmRhNWM1ZTFiNjY5NWNkZGE3MTVlNDhhZjY5YjdlZjc5MzJiODY3NjE3YWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyRuntime.ts#L19-L48",
+          "version": "repo-lines-v1:sha256:840a305ca54f5620a75d7d7ce345f0facbee1a9580db539dbdeba77bfc6e8936:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzNWIzMGQ3ZGQ0ZWJmNWQxYzUwOTY4ODY3NTZmNGQwMGFlMDZlZmM1MDZiMzdmODJiOWNlMjRlZmJkYWQ2NTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiZjg2NjUwZjhmOTA1MjVmNGUwYmYwZGMwYjc4ZTkyZjQyZWRmNTA5YTBlNTRkNDhmOGY4MjhjY2M1MGU0NTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiZjFhMmFhMzdkMmQxNjliOTE1MDA3YWJlZjg4NWE0YmI1N2Q2MTUzNTNmYjJiMTZlZDc0YmY3NzM1MWFlNDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_312748018eca427195781fc2e217e429",
+      "statement": "El contrato del snapshot de prompt verifica que el contenido integrado procede de `prompts/AGENTS.md` normalizado en el mismo commit, publica su SHA-256 reproducible e impide que `App.tsx` vuelva a contener el fallback manual o su clave de almacenamiento.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/chatSystemPrompt.contract.test.ts#L24-L56",
+          "version": "repo-lines-v1:sha256:7ebfd11fffbe2f3ba1afda0bc5c3f5b3a7bd115bbde30de0d7c10430245da636:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3NTVlN2NjNGMwYTUzZDJkYjA4ZGM4ZWNlYjdiOWI1NmQ0NGU1YmUxZDUwNDBjZDQ2Y2U1NzA5MmU2ZDY2YzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5YTFkNDljNTU4ZGIwY2QwYWFiNzViMWM1ZDZmMDdjYWRhNTdjYmYyNmUxMTVjY2Q2NDhkNWYyODY5MmE4NzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-09-05T11:27:14.639Z"
+  }
+}

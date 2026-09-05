@@ -3,6 +3,7 @@ type: concepto
 title: Shell de aplicaciones móviles y web
 description: Composición en tiempo de ejecución, navegación adaptativa, puerta de hidratación, derivaciones de Inicio, enrutamiento de configuración, comportamiento del botón Atrás de Android y validación del shell para apps/mobile.
 tags: [mobile, web, application-shell, navigation, hydration]
+generated: { by: "openwiki/0.4.3", at: "2026-09-05T11:27:14.639Z" }
 ---
 
 # Shell de aplicaciones móviles y web
@@ -117,6 +118,7 @@ Configuración es una superficie de integración, no un límite de servicio inde
 
 La pantalla de configuración de Memoria y las herramientas del agente controlan conjuntamente el mismo registro `gymnasia.mobile.personal_data.v1` de `{ key, description, value }[]`. Al entrar en la sección Memoria, se llama de forma diferida a `loadMemoryFields` una vez por cada `App` montada; las ediciones de campos modifican primero el valor `memoryFields` de la pantalla, mientras que desenfocar/confirmar, añadir y eliminar llaman a `savePersonalData`. La función `save_personal_data` del agente sustituye ese mismo array almacenado, y sus lectores de lista/descripción/valor cargan la clave directamente. No existe ninguna suscripción que propague las escrituras del agente a un valor `memoryFields` ya cargado, por lo que la vista de configuración abierta puede quedar obsoleta y una confirmación posterior en la interfaz puede sobrescribir una actualización del agente. A la inversa, las escrituras de la interfaz son visibles de inmediato para la siguiente lectura del agente porque esos lectores cargan el almacenamiento en lugar del estado de la pantalla.
 
+<!-- openwiki: broken internal link [local-state-and-backup.md#copropiedad-en-memoria] heading anchor "copropiedad-en-memoria" does not exist in "local-state-and-backup.md". Fix the href or restore the target, then delete this comment. -->
 La exportación de la copia de seguridad también carga este registro directamente. Una importación confirmada escribe el valor `personalData` importado de forma directa y usa `[]` de manera predeterminada si el valor no existe o no es un array, pero no actualiza ni invalida `memoryFields`/`memoryLoaded`. Si Memoria ya se había cargado, su copia visible en memoria puede conservar el estado anterior a la importación y posteriormente sobrescribir el registro importado. El borrado parcial conserva ambas copias; el total elimina el registro duradero y remonta toda la aplicación para invalidar la instantánea de React. El contrato completo de almacenamiento e importación se encuentra en [Estado local y copia de seguridad](local-state-and-backup.md#copropiedad-en-memoria).
 
 ### Semántica del borrado local
@@ -134,16 +136,19 @@ Inicio con una confirmación. Un fallo remonta la app directamente en Configurac
 Datos, muestra cada destino pendiente y ofrece reintentar el mismo alcance. El botón
 Atrás de Android cierra la confirmación si no se está borrando y queda consumido durante
 el borrado para impedir abandonar una operación activa. Consulta la matriz exacta y los
+<!-- openwiki: broken internal link [local-state-and-backup.md#atomicidad-restablecimiento-y-comportamiento-ante-fallos] heading anchor "atomicidad-restablecimiento-y-comportamiento-ante-fallos" does not exist in "local-state-and-backup.md". Fix the href or restore the target, then delete this comment. -->
 límites externos en [Estado local y copia de seguridad](local-state-and-backup.md#atomicidad-restablecimiento-y-comportamiento-ante-fallos).
 
 ### Control de la configuración de notificaciones
 
+<!-- openwiki: broken internal link [local-state-and-backup.md#propiedad-de-las-notificaciones] heading anchor "propiedad-de-las-notificaciones" does not exist in "local-state-and-backup.md". Fix the href or restore the target, then delete this comment. -->
 Configuración → Notificaciones edita `userPrefs.notifications`, no el estado de entrenamiento. Los cuatro campos exactos son `enabled`, `sound`, `vibrate` y `soundKey`; los valores predeterminados y los efectos en tiempo de ejecución se documentan en [Entrenamiento](training.md#preferencias-de-notificación-y-efectos-exactos), mientras que el comportamiento de persistencia/importación/restablecimiento se documenta en [Estado local y copia de seguridad](local-state-and-backup.md#propiedad-de-las-notificaciones). La fila de alarmas exactas de Android abre la configuración del sistema operativo y no es una preferencia almacenada.
 
 ### Panel de trazas y límite de privacidad
 
 `TracePanel` solo se monta para la sección Trazas y llama a `getTraces`, que carga de forma diferida el búfer a nivel de módulo desde `gymnasia_debug_traces`. Actualizar repite esa API de lectura, pero, una vez cargada, devuelve el búfer actual en memoria en lugar de volver a leer AsyncStorage. El panel da formato a todas las entradas con plataforma, hora de generación, marcas de tiempo ISO, etiquetas, mensajes y `data` serializado como JSON. **Copiar trazas** escribe ese volcado completo en texto sin formato en el portapapeles del sistema e ignora los errores de copia; no censura, comparte, sube ni crea un archivo. Después de la copia, la conservación y el acceso al portapapeles quedan bajo el control del sistema operativo y de otras aplicaciones.
 
+<!-- openwiki: broken internal link [local-state-and-backup.md#carga-copia-borrado-y-privacidad-de-las-trazas] heading anchor "carga-copia-borrado-y-privacidad-de-las-trazas" does not exist in "local-state-and-backup.md". Fix the href or restore the target, then delete this comment. -->
 **Borrar** espera a `clearTraces`, vacía el búfer del módulo, elimina la clave de AsyncStorage y después borra el estado del panel; los errores de eliminación del almacenamiento se silencian dentro de `clearTraces`, por lo que la interfaz puede aparecer vacía sin confirmación duradera. El borrado parcial y la copia de seguridad no borran, exportan ni importan trazas; el borrado total añade una lectura de verificación tanto de la clave como del búfer y declara el alcance incompleto si persisten. Los productores de trazas incluyen el ciclo de vida de la aplicación, la programación/cancelación de descansos, la entrega/pulsación de notificaciones, las acciones de permisos/configuración y los errores; se permite cualquier `data`, por lo que quienes realizan las llamadas no deben introducir allí credenciales ni contenido personal. Consulta [Estado local y copia de seguridad](local-state-and-backup.md#carga-copia-borrado-y-privacidad-de-las-trazas).
 
 ## Ciclo de vida del botón Atrás de Android

@@ -6,210 +6,144 @@ okf:
   scope: apps/mobile/agent and chat orchestration in apps/mobile/App.tsx
 type: concepto
 title: Entorno de ejecución del agente
-description: Contratos independientes del proveedor para chat, ejecución de herramientas, persistencia, reintentos y extensiones del agente móvil.
+description: Ciclo de ejecución local-first del agente móvil, desde el lease inmutable de política y los controles sanitarios hasta el streaming, las herramientas y la persistencia del resultado.
 summary: Provider-independent chat, tool execution, persistence, retry, and extension contracts for the mobile agent.
-tags: [agent, chat, tools, runtime, mobile]
-sources:
-  - apps/mobile/App.tsx
-  - apps/mobile/agent/toolDefinitions.ts
-  - apps/mobile/agent/toolExecutor.ts
-  - apps/mobile/agent/providerToolLoop.ts
-  - apps/mobile/agent/toolDefinitions.test.ts
-  - apps/mobile/agent/toolExecutor.test.ts
-  - apps/mobile/agent/providerToolLoop.test.ts
-  - apps/mobile/agent/providerPipeline.test.ts
-  - prompts/AGENTS.md
+tags:
+  - agent
+  - chat
+  - tools
+  - runtime
+  - mobile
 related:
   - ./provider-streaming.md
   - ./provider-configuration.md
+  - ./signed-policy-lifecycle.md
   - ../mobile/local-state-and-backup.md
-  - ../mobile/diet-and-food-estimation.md
-  - ../mobile/measurements.md
+  - ../operations/build-release-and-testing.md
+  - ../operations/prompt-policy-governance.md
+verified:
+  - by: openwiki/0.4.3
+    at: 2026-09-05T11:27:14.639Z
+sources:
+  - id: openwiki-source-192849a5973afd8b6e55db2c
+    resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
+  - id: openwiki-source-0c30fc96b9e7c8b57c35473c
+    resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
+  - id: openwiki-source-600d0c06462286badb80af0a
+    resource: repo://apps/mobile/agent/chatSystemPrompt.contract.test.ts
+  - id: openwiki-source-60bf595411222eba5d93cbd0
+    resource: repo://apps/mobile/agent/chatSystemPromptRuntime.ts
+  - id: openwiki-source-c8058179f2f675901a8caa09
+    resource: repo://apps/mobile/agent/healthSafety.ts
+  - id: openwiki-source-8281cde290f55702198714d3
+    resource: repo://apps/mobile/agent/healthSafetyRuntime.ts
+  - id: openwiki-source-a5860dc24336c2fe655bbc75
+    resource: repo://apps/mobile/agent/policyContext.ts
+  - id: openwiki-source-9e7ddd51c09caf628a81acad
+    resource: repo://apps/mobile/agent/toolOperationLedger.ts
+  - id: openwiki-source-929e8e1df23628a3f3848ff8
+    resource: repo://apps/mobile/App.tsx
+generated: { by: "openwiki/0.4.3", at: "2026-09-05T11:27:14.639Z" }
 ---
 
 # Entorno de ejecución del agente
 
-El agente es una capacidad en proceso de la aplicación Expo, no un servicio de backend. `App.tsx::sendMessage` controla el ciclo de vida del chat visible para el usuario; `callProviderChatAPIWithTools` adapta una conversación normalizada a OpenAI, Anthropic o Google; `providerToolLoop.ts` realiza rondas de continuación específicas de cada proveedor; y `createAgentToolExecutor` despacha el catálogo canónico de herramientas al estado local, los repositorios locales, los datos respaldados por SecureStore/AsyncStorage o el adaptador de incidencias de GitHub actualmente deshabilitado. Los detalles del streaming se encuentran en [Streaming del proveedor](./provider-streaming.md), mientras que la selección del proveedor y las credenciales se encuentran en [Configuración del proveedor](./provider-configuration.md).
+El agente se ejecuta en el proceso Expo y su orquestación vive en `apps/mobile/App.tsx`; no hay un backend propio que posea la conversación ni el estado de dominio. La ruta principal `sendMessage` adquiere una política, aplica controles de salud, transmite el turno al proveedor y persiste el mensaje final en `LocalStore`. Las herramientas operan sobre dependencias locales inyectadas y sus acciones con efecto se coordinan con un ledger. Los protocolos SSE y la continuación específica de OpenAI, Anthropic y Google se documentan en [Streaming de proveedores y continuación de herramientas](./provider-streaming.md); las claves, modelos y transportes se documentan en [Configuración de proveedores](./provider-configuration.md).
 
-## Límites del entorno de ejecución e interfaces exactas
+La política ya **no** se carga como texto mutable desde GitHub Raw ni usa el fallback manual de `AsyncStorage` que describía versiones anteriores de esta página. Cada envío adquiere un `AgentPolicyLease`; el lease reúne el prompt, la política sanitaria, su procedencia y la atribución de activación del mismo bundle. Para verificación criptográfica, selección remoto/caché/integrado, límites de activación y promoción, consulte [Ciclo de vida de la política firmada](./signed-policy-lifecycle.md). Esta página describe únicamente cómo el runtime consume ese contrato.
 
-| Capa | Superficie exacta del código fuente | Responsabilidad |
-|---|---|---|
-| Ciclo de vida de la IU | `App.tsx::sendMessage`, `appendMessagesToThread`, `updateThreadMessage` | Validar los requisitos previos del envío, anexar mensajes del usuario y borradores, limitar la frecuencia de las escrituras de streaming en la IU, reintentar y finalizar o materializar un error. |
-| Adaptador del proveedor | `App.tsx::callProviderChatAPIWithTools(provider, messages, options)` | Separar los mensajes del sistema y ajenos al sistema, crear cargas útiles para los proveedores, adjuntar `CHAT_TOOLS`, transmitir turnos, invocar un bucle del proveedor y exigir contenido final. |
-| Esquema canónico | `AgentToolDefinition`, `ToolInputSchema`, `AGENT_TOOL_DEFINITIONS`, `AGENT_TOOL_NAMES`, `CHAT_TOOLS` | Definir un catálogo único de 13 herramientas y derivar los tres formatos de intercambio. |
-| Continuación | `ExecuteTool`, `runOpenAIToolLoop`, `runAnthropicToolLoop`, `runGoogleToolLoop`, `MAX_TOOL_ROUNDS` | Ejecutar llamadas secuencialmente y correlacionar los resultados en el siguiente turno del proveedor. |
-| Ejecución | `ToolExecutionContext`, `ToolExecutorDependencies`, `ToolHandler`, `AGENT_TOOL_HANDLERS`, `createAgentToolExecutor` | Resolver nombres e implementar lecturas/escrituras. Los nombres desconocidos devuelven `Herramienta no reconocida.`. |
-| Puente de la aplicación | `App.tsx::createToolExecutionContext`, `executeChatTool` | Adaptar `LocalStore`, el `setStore` de React, los repositorios de alimentos/ejercicios, los auxiliares de persistencia, los identificadores, las URL de imágenes y la creación de incidencias. |
-
-`ToolExecutionContext` es deliberadamente opcional: `setStore`, `store`, `foodsRepo` y `exercisesRepo` pueden estar ausentes. Los controladores que necesitan alguno devuelven una cadena de error en español en lugar de generar una excepción. `ToolExecutorDependencies` proporciona `loadPersonalData`, `savePersonalData`, E/S y ordenación de mediciones, `createId`, `getExerciseImageUrl` y `createFeatureIssue`.
-
-## Ciclo de vida de extremo a extremo
+## Flujo de un envío de chat
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant Send as sendMessage
+    participant App as AppRuntime
+    participant Lease as PolicyLease
+    participant Safety as HealthSafety
+    participant Provider as ProviderAdapter
+    participant Tool as ToolCoordinator
     participant Store as LocalStore
-    participant Adapter as ProviderAdapter
-    participant Provider
-    participant ToolLoop as ProviderToolLoop
-    participant Executor as ToolExecutor
-    User->>Send: Send nonempty input
-    Send->>Store: Append user and draft messages
-    Send->>Send: Load prompt and debug field
-    Send->>Adapter: Prompt and last 20 messages
-    Adapter->>Provider: Stream request with CHAT_TOOLS
-    Provider-->>Adapter: Text thinking and tool calls
-    Adapter-->>Store: Throttled draft updates
-    Adapter->>ToolLoop: Parsed provider turn
-    loop Up to 10 rounds
-        ToolLoop->>Executor: Execute name and arguments
-        Executor->>Store: Read or mutate local data
-        Executor-->>ToolLoop: String result
-        ToolLoop->>Provider: Correlated tool result
-        Provider-->>ToolLoop: Next parsed turn
+    User->>App: Envía texto no vacío
+    App->>Lease: Acquire new-conversation o turn
+    Lease-->>App: Prompt, guardrail y contexto inmutables
+    App->>Safety: Clasifica la entrada
+    alt Riesgo alto o crítico
+        Safety-->>Store: Respuesta local con contexto de política
+    else Turno permitido
+        App->>Store: Añade usuario y borrador streaming
+        App->>Provider: Prompt del lease e historial reciente
+        Provider->>Tool: Llamadas de herramientas si existen
+        Tool-->>Provider: Resultado o repetición segura
+        Provider-->>App: Contenido y razonamiento transmitidos
+        App->>Safety: Gate de salida
+        App->>Store: Finaliza respuesta o intervención local
     end
-    Adapter-->>Send: Final content and thinking
-    Send->>Store: Finalize assistant message
 ```
 
-*Leyenda: El envío de un chat transmite un turno del proveedor, puede ejecutar herramientas locales mediante rondas de continuación correlacionadas y termina como un único mensaje persistente del asistente.*
+*Un envío usa una única selección de política para clasificar, transmitir y atribuir el resultado; el proveedor solo se alcanza si el control de entrada permite continuar.*
 
-1. `sendMessage` retorna a menos que existan tanto `activeThreadId` como una entrada no vacía después de eliminar espacios. Rechaza un proveedor ausente o una clave vacía antes de crear mensajes.
-2. Anexa el mensaje del usuario y un mensaje vacío del asistente con `is_streaming: true`, expande el panel de razonamiento y borra la entrada.
-3. El historial consta del hilo anterior más el nuevo mensaje del usuario, truncado a los últimos **20** mensajes. `loadChatSystemPrompt()` y `loadPersonalData()` se ejecutan simultáneamente. Un campo de datos personales cuya clave exacta sea `debug` se anexa bajo `## Instrucciones de depuracion`.
-4. La política base efectiva sigue una cadena de precedencia estricta: una solicitud con invalidación de caché al archivo `prompts/AGENTS.md` de GitHub Raw; si la solicitud falla o la respuesta no es correcta, `gymnasia.mobile.chat.system_prompt.v1` de AsyncStorage; si la caché no existe, está vacía, no puede leerse o se normaliza a un valor vacío, se usa `DEFAULT_CHAT_SYSTEM_PROMPT` integrado. Una lectura remota correcta se devuelve de inmediato y su texto normalizado se almacena en caché de forma asíncrona. La clave exacta y en minúsculas de memoria personal `debug`, cuando tiene un valor no vacío, se anexa después bajo `## Instrucciones de depuracion`; no constituye un rol independiente del proveedor.
-5. Las devoluciones de llamada del stream mantienen agregados locales de texto/razonamiento. `flushAssistantDraft` agrupa las actualizaciones del almacén de React mediante un temporizador de 40 ms; los reintentos restablecen el borrador visible.
-6. `callProviderChatAPIWithTools` transmite un turno inicial con todas las herramientas canónicas y delega la continuación de herramientas. Las llamadas dentro de un turno se ejecutan secuencialmente, conservando el orden del proveedor.
-7. Un turno sin llamadas a herramientas termina el bucle. El límite predeterminado es `MAX_TOOL_ROUNDS = 10`; alcanzarlo devuelve el último turno en lugar de generar un error específico de agotamiento. A continuación, el adaptador exige contenido final no vacío.
-8. En caso de éxito, se reemplaza el contenido/razonamiento del borrador y se elimina `is_streaming`. En caso de error, se escribe `Error de proveedor: …` en ese mismo registro del asistente y también se actualiza el estado global de error. `finally` borra `sendingChat`.
+### Entrada, lease y atribución
 
-## Política mutable del prompt del sistema
+`sendMessage` rechaza la operación sin hilo, texto útil, proveedor activo o clave configurada. Antes de crear el borrador decide el límite: `new-conversation` si el hilo aún no contiene un mensaje de usuario y `turn` en caso contrario. Después llama a `acquireAgentPolicyLease`, refleja la selección y el estado en la interfaz, y conserva el `policy_context` del lease en el borrador y en las respuestas locales de seguridad.
 
-El archivo `prompts/AGENTS.md` incluido en el repositorio es una política de tiempo de ejecución, no un catálogo integrado. `loadChatSystemPrompt` lee su URL de GitHub Raw en cada envío con un parámetro de consulta de marca de tiempo, por lo que los cambios en el repositorio pueden modificar las instrucciones del agente sin compilar ni publicar la aplicación. La caché es un recurso de reserva con la última política conocida, no una sustitución local de mayor prioridad; la constante integrada solo se utiliza cuando no están disponibles ni el origen remoto ni una caché utilizable.
+El lease es una estructura profundamente congelada. En canal `Local` se construye con el snapshot integrado del prompt y la política sanitaria incluida; para los demás canales deriva el prompt, el guardrail fusionado y el contexto de la misma selección firmada. De este modo, una petición no puede mezclar un prompt de un candidato con reglas sanitarias o atribución de otro. La traza `lease-acquired` registra la identidad de activación, candidato, secuencia, origen y límite, no el contenido del prompt.
 
-Actualmente existe una divergencia semántica entre estas copias de la política. La versión actual de GitHub y del archivo `prompts/AGENTS.md` incluido en el repositorio solo describe las herramientas y los flujos de trabajo de memoria personal, mientras que `DEFAULT_CHAT_SYSTEM_PROMPT` también describe flujos de trabajo de dieta y entrenamiento. Debido a que GitHub Raw tiene precedencia, una solicitud correcta usa el prompt más restringido y **no** combina las secciones integradas de dieta/entrenamiento. En cambio, un cliente sin conexión puede usar una política remota anterior almacenada en caché, y un cliente sin red ni caché utiliza la política integrada más amplia. En consecuencia, dos clientes que ejecuten el mismo binario pueden recibir instrucciones del sistema sustancialmente diferentes.
+`PolicyContext` persistido en los mensajes tiene claves exactas: activación (`activate` o `rollback` e ID), `bundle_sha256`, candidato, secuencia, origen y versión. Al rehidratar mensajes, `normalizePolicyContext` descarta un objeto que no cumpla exactamente el formato esperado; esto evita que metadatos arbitrarios se presenten como atribución de política válida.
 
-Esta mutabilidad constituye un límite de política y de cadena de suministro: un cambio en el archivo del repositorio se convierte en texto privilegiado del sistema en el siguiente envío correcto y se conserva en la caché local. El campo exacto de memoria `debug` es una política mutable aún más local, anexada después del prompt base seleccionado y capaz de cambiar el comportamiento en todas las conversaciones. Ninguna de las fuentes se valida mediante un esquema, se fija a una versión, se firma, se muestra para su aprobación ni se restringe al catálogo de herramientas anunciado. Las pruebas deterministas cubren los esquemas y la ejecución de las herramientas canónicas, así como los envoltorios de los proveedores, pero no existe una prueba específica para la precedencia remoto → caché → integrado, el fallo de escritura en caché, la paridad entre copias del prompt, la mutación remota o la inyección de `debug`. Por lo tanto, los cambios en cualquier copia del prompt requieren revisar ambas copias y añadir pruebas de precedencia/divergencia, en lugar de asumir que el recurso de reserva es equivalente.
+### Controles sanitarios antes, durante y después del proveedor
 
-## Ciclo de vida y copropiedad de la memoria personal
+El runtime clasifica determinísticamente la entrada contra la política sanitaria del lease. Los riesgos `high` y `critical` bloquean el proveedor y materializan una respuesta local; un riesgo `elevated` puede solicitar consentimiento para un evaluador del proveedor, pero mientras tanto el modo efectivo de herramientas es solo lectura. Para el resto, el modo es `all`.
 
-La memoria personal es un registro independiente de AsyncStorage en `gymnasia.mobile.personal_data.v1`, serializado como un único arreglo de objetos `{key, description, value}`. No forma parte de `LocalStore`. Tanto la IU de **Memoria del coach** en Configuración como las cuatro herramientas de memoria del agente son propietarias del mismo registro y lo sobrescriben.
+Durante la transmisión, `createHealthSafeStreamGate` retiene la salida visible hasta límites de segmentos completos y la evalúa con la misma política. Al finalizar, una decisión bloqueante sustituye la salida del modelo por una respuesta local de seguridad y marca el mensaje como `health_safety_intervention`. La clasificación de entrada, el gate de salida y los resultados locales usan por tanto la política sanitaria que acompañaba al prompt en el lease, no una recarga independiente a mitad del turno.
 
-```mermaid
-flowchart TD
-    Storage["AsyncStorage personal data array"] --> Settings["Settings memory editor loads once"]
-    Storage --> Tools["Agent list and read tools load on demand"]
-    Settings --> SaveUI["Blur add delete or clear saves full UI array"]
-    Tools --> SaveTool["save_personal_data parses and saves full supplied array"]
-    SaveUI --> Storage
-    SaveTool --> Storage
-    Storage --> DebugCheck["sendMessage finds exact key debug"]
-    DebugCheck --> Prompt["Append nonempty debug value to system prompt"]
-    Storage --> Backup["Backup export personalData"]
-    Restore["Confirmed backup import"] --> Storage
-```
+### Historial, streaming y finalización
 
-*Leyenda: Configuración y las herramientas del agente comparten la propiedad de un arreglo de memoria que se reemplaza por completo y que también alimenta la inyección de la política de depuración y la copia de seguridad/restauración.*
+Cuando la entrada está permitida, la aplicación añade a `LocalStore` el mensaje de usuario y un borrador del asistente con `is_streaming: true`, vacía el campo y abre el razonamiento. El historial excluye los mensajes locales de divulgación de IA, conserva los últimos 20 y coloca `policyLease.prompt.content` como único mensaje de sistema. La ruta de chat no lee ni concatena memoria personal como una anulación local del prompt.
 
-- **Carga y tratamiento de la estructura:** `loadPersonalData` devuelve `[]` cuando falta un valor, el JSON está mal formado o el valor analizado no es un arreglo. No valida cada elemento del arreglo. Por lo tanto, un registro almacenado con formato incorrecto se observa como vacío, aunque la carga por sí sola no reescribe el almacenamiento.
-- **Claves exactas:** `list_personal_data_keys` conserva las claves tal como están almacenadas. `read_field_description` y `read_field_value` usan `item.key === key`: la búsqueda es exacta y distingue entre mayúsculas y minúsculas, sin recorte ni normalización. `Nombre`, `nombre` y ` nombre ` son distintos. La IU recorta una clave nueva, pero permite duplicados; las ediciones pueden introducir valores vacíos, espacios en blanco, duplicados o variantes de mayúsculas/minúsculas.
-- **Comportamiento de sustitución y borrado de las herramientas:** `save_personal_data` no es una operación de inserción o actualización. Reemplaza el arreglo completo, por lo que el prompt indica al modelo que lea los campos existentes y envíe todas las entradas anteriores junto con las nuevas. Una cadena JSON con formato incorrecto, un valor JSON válido que no sea un arreglo o una entrada no admitida se analiza como `[]`, se guarda y aun así se confirma con `Datos personales guardados correctamente.`; por lo tanto, una salida de herramienta con formato incorrecto puede borrar toda la memoria y devolver una confirmación de éxito falsa.
-- **Condiciones de carrera entre Configuración y las herramientas:** Configuración carga su `memoryFields` local una sola vez al entrar por primera vez en la pestaña de memoria. El desenfoque de un campo, así como añadir, eliminar y **Borrar toda la memoria**, guarda esa instantánea completa de la IU. Las lecturas del agente cargan el almacenamiento bajo demanda y las escrituras del agente no actualizan la instantánea de Configuración. Si una herramienta cambia la memoria mientras permanece montada una instantánea anterior de Configuración, el siguiente guardado de Configuración puede sobrescribir el cambio de la herramienta; también es posible la condición de carrera inversa en la que prevalece la última escritura. No existe revisión, combinación, bloqueo ni detección de conflictos.
-- **Inyección de depuración:** antes de cada solicitud de chat, `sendMessage` carga la memoria simultáneamente con el prompt base y selecciona el primer campo cuya clave sea exactamente `debug` en minúsculas. Un `value` no vacío se anexa literalmente bajo `## Instrucciones de depuracion`. `Debug`, los campos `debug` duplicados posteriores y una primera coincidencia vacía no se inyectan. Esto convierte la memoria persistente ordinaria —editable tanto por el usuario como por el modelo— en una política mutable de nivel de sistema.
-- **Copia de seguridad, restauración y borrado:** la copia de seguridad manual exporta este arreglo independiente y una importación confirmada lo reemplaza por completo; consulte [Estado local y copia de seguridad](../mobile/local-state-and-backup.md). La acción específica de memoria de Configuración **Borrar toda la memoria** guarda `[]`. **Borrar actividad y conversaciones** conserva esta partición; **Borrar todos mis datos** elimina y verifica su clave y remonta el runtime para descartar la instantánea cargada en la IU, incluidos los posibles datos de `debug`.
+Los deltas de contenido y razonamiento actualizan agregados locales; las escrituras del borrador en React se agrupan cada 40 ms. `callProviderChatAPIWithTools` puede realizar rondas de herramientas, pero el mensaje final exige contenido no vacío. Un fallo transitorio reconocido se reintenta hasta tres intentos, con espera de 2 y 4 segundos; cada reintento reinicia el borrador y su gate. Al terminar, el gate decide entre contenido visible del modelo y una intervención sanitaria; en error, el mismo borrador se convierte en `technical_error` y se elimina el estado de envío.
 
-`toolExecutor.test.ts` comprueba un guardado válido del arreglo completo, pero no cubre el borrado debido a entradas con formato incorrecto, la búsqueda con distinción entre mayúsculas y minúsculas, las claves duplicadas, las actualizaciones perdidas entre Configuración y las herramientas, la inyección de depuración, la sustitución mediante copia de seguridad/importación ni la excepción del restablecimiento general. Estos son los casos de regresión críticos para cualquier cambio en la memoria personal.
+## Herramientas: ejecución local y semántica de repetición
 
-## Frontera de feedback verificable
+El proveedor recibe el catálogo canónico `CHAT_TOOLS`; el adaptador y la continuación de protocolo se tratan en la página de streaming. En `App.tsx`, las llamadas se convierten en `ToolCallEnvelope` con `executionId` igual al ID del mensaje del usuario, proveedor, ID de llamada cuando exista, nombre, argumentos y ocurrencia. `ToolOperationCoordinator` decide si una operación se debe ejecutar, unirse a una ejecución en curso o reproducir una salida ya comprometida.
 
-La creación de propuestas y denuncias ya no debe depender de un escritor de GitHub dentro de `App.tsx`. `apps/mobile/agent/feedbackIssues.ts` prepara el único borrador que puede salir (`kind`, `title`, `summary`) y deriva una `idempotency_key` estable con `buildIdempotencyKey`; el receptor remoto fija repositorio y etiquetas, sanea de nuevo y solo confirma éxito con número y URL de issue. Consulte [Worker de feedback e incidencias verificables](../services/feedback-worker.md) para el protocolo, la retención y el despliegue.
+Las herramientas de lectura se ejecutan directamente. Para una herramienta con efecto, su identidad incluye versión, ejecución, proveedor, nombre, argumentos JSON canónicos y ocurrencia; el fingerprint protege además contra una colisión de identidad con otros argumentos. El coordinador deduplica ejecuciones simultáneas en memoria y consulta un ledger persistente antes de llamar al ejecutor. Una repetición válida devuelve la salida previa; una colisión devuelve `No se ejecutó la acción porque su identidad no era segura.`
 
-Esta es una frontera de privacidad: `formatAiResponseReport` prepara una denuncia explícitamente previsualizada y saneada, no el hilo completo ni el razonamiento. Al cambiar `create_feature_issue`, los límites o la URL del receptor, actualice la réplica del contrato y ejecute `feedbackContract.contract.test.ts` además de las pruebas del Worker; la prueba ancla también que el APK publicado tenga endpoint de producción y que no regresen credenciales/escrituras directas de GitHub al cliente.
+Solo los resultados con estado `committed` se registran. El ledger conserva como máximo 256 entradas, vence cada una a los siete días y serializa escrituras para no corromper su estado. Si el almacenamiento del ledger falla tras el efecto, el resultado se conserva en memoria y se devuelve, pero no queda protección persistente tras reiniciar la aplicación: es un riesgo operativo que debe considerarse al añadir efectos no idempotentes. El borrado de datos debe limpiar también el coordinador/ledger con su método `clear`.
 
-## Catálogo canónico de herramientas
+Los controladores reciben estado, repositorios y funciones de persistencia como dependencias del runtime; no deben acceder a credenciales del proveedor. `healthSafetyToolAllowed` se aplica al efecto declarado de la herramienta y a la mayor severidad entre la decisión del turno y la de los argumentos. Por ello, una extensión debe clasificar correctamente su efecto como `read`, `local_write` o `external_write`: etiquetarla como lectura ampliaría indebidamente el acceso bajo riesgo elevado.
 
-Todos los nombres siguientes aparecen tanto en `AGENT_TOOL_DEFINITIONS` como en `AGENT_TOOL_HANDLERS`; `toolDefinitions.test.ts` verifica la igualdad exacta de los conjuntos y la equivalencia de los esquemas de OpenAI, Anthropic y Google.
+## Otros consumidores del lease
 
-| Herramienta | Entrada obligatoria | Lectura/efecto y cadena/JSON devuelto |
-|---|---|---|
-| `save_personal_data` | `personal_data: string` | Analiza un arreglo JSON completo, llama a `savePersonalData` y devuelve una confirmación. Un JSON no válido se convierte en un arreglo vacío y aun así se guarda. |
-| `list_personal_data_keys` | ninguna | Carga los datos personales; devuelve un arreglo JSON de claves o `No hay campos guardados.` |
-| `read_field_description` | `key: string` | Búsqueda por clave exacta; devuelve la descripción, `(sin descripcion)` o texto que indica que no se encontró. |
-| `read_field_value` | `key: string` | Búsqueda por clave exacta; devuelve el valor, `(sin valor)` o texto que indica que no se encontró. |
-| `read_measurement` | `date: string` | Busca la primera coincidencia de `measured_at.startsWith(date)` y omite `id`/`photo_uri` del JSON. |
-| `write_measurement` | `date: string`, `data: string` | Inserta o actualiza por fecha, acepta solo campos numéricos finitos y positivos, conserva los valores existentes omitidos y la foto, ordena, limita a 1.826, persiste y después lo refleja en `setStore`. |
-| `read_meal_foods` | `date`, `meal` | Busca la comida sin distinguir entre mayúsculas y minúsculas en `context.store`; devuelve JSON nutricional localizado o texto explicativo. |
-| `search_foods` | ninguna | Filtra/ordena `foodsRepo` sin distinguir acentos, limita a 15 y devuelve JSON por cada 100 g. |
-| `add_meal_food` | `date`, `meal`, `data` | Anexa un elemento mediante `setStore` funcional; crea/ordena una comida si no existe. La coerción numérica utiliza cero como valor de reserva. |
-| `search_exercises` | ninguna | Filtra por nombre, músculo, músculo secundario, equipamiento y dificultad; limita a 15. |
-| `read_routines` | ninguna | Serializa plantillas, ejercicios, series, tempo y subseries. |
-| `create_routine` | `data: string` | Exige al menos un ejercicio, busca imágenes/músculos en el repositorio mediante coincidencias exactas de nombre, crea identificadores y anexa una plantilla. |
-| `create_feature_issue` | `title_summary`, `conversation_excerpt`, `interpretation` | Llama al escritor de incidencias inyectado y después informa de éxito incondicionalmente. En la aplicación actual, el escritor retorna inmediatamente porque su token codificado está vacío, por lo que no se crea ninguna incidencia y el texto de éxito es un falso positivo. |
+El chat principal no es el único consumidor. `MiniChat` del asistente de alimentos personales y `sendFoodEstimatorMessage` también eligen `new-conversation` o `turn`, adquieren un lease, clasifican entrada/salida y guardan `policy_context` junto a los mensajes. El estimador combina el prompt del lease con `FOOD_ESTIMATOR_SYSTEM_PROMPT` para su tarea especializada; esa composición no restaura la antigua carga Raw del prompt base.
 
-El vocabulario del esquema solo admite `string`, `number`, `object` y `array`. Varias cargas útiles complejas se declaran intencionadamente como cadenas que contienen JSON (`personal_data` y `data` de mediciones/alimentos/rutinas). `validateToolInput(schema, input)` informa de campos ausentes e incompatibilidades de tipos primitivos y tolera campos desconocidos, pero la ruta de producción `executeChatTool` **no** lo llama. Por lo tanto, los argumentos proporcionados por el proveedor llegan directamente a los controladores. Esto constituye una brecha material de validación en tiempo de ejecución, no solo un detalle de las pruebas.
+Las cargas en segundo plano usan el límite `background`, incluido `loadChatSystemPrompt` y `loadHealthSafetyPolicy`. Son adaptadores de compatibilidad/estado: extraen una copia de la parte correspondiente del lease y trazan su selección. No deben usarse para ensamblar por separado el prompt y las reglas de una petición interactiva, porque romperían la coherencia que proporciona un único lease adquirido para el turno.
 
-## Invariantes de continuación independientes del proveedor
+## Límites, privacidad y operación
 
-- **OpenAI:** `OpenAIToolTurn.outputItems` se filtra por `type: "function_call"`. Los argumentos pasan por `parseOpenAIFunctionArguments`; los JSON con formato incorrecto, vacíos, de tipo arreglo o escalares se convierten en `{}`. Un turno de herramienta sin `responseId` genera una excepción. Los resultados tienen la forma `{type: "function_call_output", call_id, output}` y la siguiente solicitud recibe `previous_response_id`.
-- **Anthropic:** cada bloque `tool_use` se convierte en un `tool_result` identificado por `tool_use_id`. Los bloques exactos de contenido del asistente y un mensaje sintético de resultados del usuario se anexan a los mensajes acumulados.
-- **Google:** las partes del modelo se conservan mediante `mapGoogleResponsePartToRequestPart`, incluidas `thought` y `thoughtSignature`; cada llamada se convierte en una `functionResponse` de usuario cuya `response` es `{result: string}`.
-- Varias llamadas en un mismo turno no se ejecutan en paralelo. Si un controlador posterior falla, las mutaciones anteriores se mantienen.
-- Las salidas de las herramientas son cadenas incluso cuando semánticamente contienen JSON. No existe transacción, reversión, deduplicación de identificadores de llamadas ni token de idempotencia.
+- El contenido del prompt y la política sanitaria son texto privilegiado obtenido del bundle o de una selección firmada; su cambio requiere el proceso de [gobierno de política de prompt](../operations/prompt-policy-governance.md), no una edición del shell de chat. La promoción, rollback y degradación pertenecen al documento especializado de ciclo de vida.
+- El historial y las respuestas se almacenan localmente. La atribución de política guardada permite explicar qué activación gobernó una respuesta sin persistir secretos del proveedor. Consulte [Estado local y copia de seguridad](../mobile/local-state-and-backup.md) para los límites de almacenamiento y borrado.
+- Los deltas y las llamadas de herramientas pasan al proveedor configurado; la validación sanitaria local no convierte al proveedor en un entorno confiable para datos personales. Mantenga el prompt, las trazas y los fixtures libres de conversaciones, claves y otros datos sensibles.
+- La UI puede mostrar el estado de política (`active`, `pending` o `degraded`) que llega en el lease. Ese estado describe la selección, no prueba por sí solo que una respuesta de modelo sea correcta ni revierte efectos locales ya comprometidos.
 
-## Riesgos de estado, persistencia y efectos secundarios
+## Validación focalizada y cambios seguros
 
-`sendMessage` pasa la instantánea de `store` del momento del renderizado a `createToolExecutionContext`, al tiempo que pasa un `setStore` funcional. Por lo tanto, las lecturas realizadas mediante `context.store` pueden estar obsoletas después de una mutación anterior de una herramienta dentro de la misma solicitud al proveedor. Las escrituras que utilizan el `setStore` funcional se combinan con el estado actual de React, pero la instantánea de lectura de la continuación no se actualiza.
-
-Los mensajes de chat y los cambios ordinarios del dominio local pasan por los efectos de persistencia de `LocalStore` descritos en [Estado local y copia de seguridad](../mobile/local-state-and-backup.md). Los datos personales y las mediciones también utilizan funciones de persistencia inyectadas. `write_measurement` realiza la persistencia antes de reflejar los datos en la IU; las escrituras de dieta/rutina actualizan el estado de React y dependen del efecto de persistencia posterior de la aplicación.
-
-Los tres escritores de incidencias de GitHub en `App.tsx` —alimentos, ejercicios y funcionalidades— son actualmente operaciones nulas deshabilitadas porque `GITHUB_FOOD_ISSUE_TOKEN` está codificado como `""` para un cliente estático. Retornan antes de `fetch`, por lo que GitHub Issues **no es una dependencia efectiva actual del entorno de ejecución**. En particular, `create_feature_issue` espera a la operación nula y después devuelve `Issue de mejora creada en GitHub correctamente.`, un falso positivo de éxito aunque no exista ninguna incidencia. Si en el futuro se habilita un escritor de confianza, su implementación actual también ignora las respuestas que no sean 2xx y captura internamente los fallos de transporte, por lo que la herramienta aún podría afirmar que tuvo éxito a menos que se modifique ese contrato.
-
-`sendMessage` reintenta una llamada completa a `callProviderChatAPIWithTools` hasta tres veces para los mensajes que coincidan con `failed to fetch`, `network`, `timeout`, `econnrefused`, `econnreset`, `overloaded`, `529`, `503` o `429`, esperando 2 s y después 4 s. Las herramientas de escritura local pueden repetirse porque ni el reintento externo ni los bucles registran los identificadores de llamadas completadas, por lo que presentan una semántica de **al menos una vez** durante los reintentos. La creación repetida de incidencias de GitHub solo es un **riesgo futuro si se habilita la escritura de incidencias**; la operación nula actual con token vacío no puede crear ni duplicar una incidencia. Cualquier escritor futuro deberá añadir idempotencia/deduplicación y exponer los fallos antes de habilitar la herramienta.
-
-## Errores y estados terminales observables
-
-| Condición | Comportamiento |
-|---|---|
-| No hay ningún proveedor de chat seleccionado/configurado | Error global de configuración; no se anexa ningún mensaje. |
-| Herramienta desconocida | El resultado de cadena `Herramienta no reconocida.` se devuelve al modelo. |
-| Falta el contexto/repositorio de ejecución | Se devuelve al modelo una cadena de resultado específica del controlador en español; el bucle continúa. |
-| La continuación de OpenAI carece de identificador de respuesta | El bucle genera `OpenAI no devolvio response_id…`. |
-| Fallo del stream, la red o el proveedor | Puede reintentarse; un fallo terminal finaliza el borrador como mensaje de error. |
-| El proveedor no devuelve texto final | Error de ausencia de contenido específico del adaptador/proveedor o el error externo `El modelo no devolvió contenido.` |
-| Se alcanza el límite de rondas de herramientas con otra llamada a una herramienta | Se devuelve el último turno; normalmente se convierte en un error de ausencia de contenido, pero no existe un error explícito de límite. |
-| Llamada actual a `create_feature_issue` | El token vacío codificado hace que el escritor inyectado sea una operación nula, pero el controlador informa de que la incidencia de GitHub se creó correctamente. |
-| Una dependencia del controlador genera una excepción | Se propaga por el bucle y la política de reintentos; los efectos secundarios anteriores se conservan. El escritor de incidencias actual captura sus propios fallos. |
-
-## Pruebas y comandos de validación específicos
-
-- `toolDefinitions.test.ts`: paridad exacta entre esquema y controlador, derivación para tres proveedores, errores de campos obligatorios/tipos y una prueba de propiedades con semilla de 1.000 casos que demuestra que `validateToolInput` no genera excepciones.
-- `toolExecutor.test.ts`: una sustitución válida de datos personales, además de comportamientos representativos de mediciones, alimentos, rutinas, repositorios y herramientas desconocidas. No comprueba el borrado de memoria por formato incorrecto, las lecturas de claves exactas, el falso éxito de incidencias ni los flujos de prompts/Configuración controlados por la aplicación.
-- `providerToolLoop.test.ts`: los tres envoltorios de continuación y el fallo de OpenAI por ausencia del identificador de respuesta.
-- `providerPipeline.test.ts`: integración para todos los proveedores desde SSE sin procesar y fragmentado → analizador → herramienta → segunda ronda.
-- `sse.test.ts`: detalles del enmarcado. El flujo de chat del navegador también se comprueba mediante `scripts/agent-chat.e2e.mjs`, pero las pruebas deterministas no montan `sendMessage` ni demuestran la idempotencia de los reintentos.
-
-Ejecute el conjunto relevante más pequeño desde la raíz del repositorio:
+Para cambiar el ensamblaje del lease o su contrato de inmutabilidad, ejecute:
 
 ```bash
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/providerPipeline.test.ts
+npm --workspace apps/mobile exec vitest run --config vitest.config.mts agent/agentPolicyRuntime.test.ts agent/chatSystemPrompt.contract.test.ts agent/policyContext.test.ts
 ```
 
-Ejecute el conjunto determinista completo del agente solo cuando el cambio atraviese varias capas:
+Para controles sanitarios, ledger o ejecución de herramientas, añada las pruebas propietarias correspondientes:
 
 ```bash
-npm run test:deterministic
+npm --workspace apps/mobile exec vitest run --config vitest.config.mts agent/healthSafety.contract.test.ts agent/healthSafety.test.ts agent/toolOperationLedger.test.ts agent/toolExecutor.test.ts
 ```
 
-## Superficie de cambios para extensiones
+Cambios que atraviesen la composición del chat, el protocolo de proveedor o efectos de herramientas requieren también las pruebas de streaming y la batería determinista descritas en [Compilación, publicación y pruebas](../operations/build-release-and-testing.md). Al modificar `prompts/AGENTS.md` o snapshots generados, ejecute además `npm run check:chat-prompt` y el control de gobierno; no reintroduzca constantes de fallback ni lecturas Raw en `App.tsx`.
 
-Para añadir o cambiar de forma segura una herramienta de chat:
+Al extender el runtime:
 
-1. Edite la única entrada canónica en `AGENT_TOOL_DEFINITIONS`; no edite manualmente las cargas útiles de los proveedores, ya que `CHAT_TOOLS` las deriva.
-2. Añada/actualice el mismo nombre en `AGENT_TOOL_HANDLERS`. Amplíe `ToolExecutionContext` solo para los datos de instantáneas de renderizado; amplíe `ToolExecutorDependencies` para E/S estable o efectos externos.
-3. Conecte las nuevas dependencias al construir `App.tsx::executeAgentTool` y, cuando sea necesario, en las opciones de `createToolExecutionContext`/`callProviderChatAPIWithTools`.
-4. Decida explícitamente la validación. Llamar a `validateToolInput` en producción supondría un cambio de comportamiento para las salidas con formato incorrecto del proveedor y requeriría un formato de error visible para el proveedor.
-5. Añada pruebas del ejecutor para casos de éxito, datos con formato incorrecto, ausencia de contexto, fallos de persistencia y ejecución repetida. Mantenga correcta la aserción de paridad entre esquema y controlador.
-6. Si la herramienta cambia registros del dominio, verifique los invariantes y la página semántica de ese dominio: [Mediciones](../mobile/measurements.md), [Dieta y estimación de alimentos](../mobile/diet-and-food-estimation.md) o la documentación de entrenamiento. Si cambia los envoltorios de continuación o los argumentos transmitidos, actualice [Streaming del proveedor](./provider-streaming.md) y los archivos de datos sin procesar en el mismo cambio.
+1. Mantenga `AgentPolicyLease` como la única fuente de prompt, guardrail y contexto para una petición interactiva.
+2. Añada una herramienta al catálogo canónico y declare su efecto correctamente; conecte sus dependencias explícitamente en el shell, sin convertirlas en estado global oculto.
+3. Preserve `executionId`, ocurrencia y argumentos canónicos cuando adapte una llamada de un proveedor nuevo; de lo contrario el ledger no puede deduplicar con seguridad.
+4. Pruebe tanto el éxito como la repetición, la colisión, el fallo antes de compromiso y el fallo de persistencia. Para cambios de protocolo, actualice también [Streaming de proveedores y continuación de herramientas](./provider-streaming.md).

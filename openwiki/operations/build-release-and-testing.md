@@ -1,312 +1,170 @@
 ---
-type: concepto
+type: guía operativa
 title: Compilación, publicación y pruebas
-description: Responsabilidad y guía operativa para manifiestos del espacio de trabajo, compilaciones web y nativas de Expo, pruebas deterministas y de navegador, publicaciones de Android con EAS, control de versiones y riesgos de los artefactos.
-tags:
-  - operations
-  - expo
-  - testing
-  - release
-  - ci
+description: Matriz de validación y publicación de Gymnasia que separa snapshots, política sanitaria, firma y promoción de las pruebas del agente y del APK de Android. Indica el conjunto mínimo de comandos según la frontera modificada.
+tags: [operations, ci, testing, release, policy, android]
+verified:
+  - by: openwiki/0.4.3
+    at: 2026-09-05T11:27:14.639Z
+sources:
+  - id: openwiki-source-338e77d1d6cb373155f08ceb
+    resource: repo://.github/workflows/agent-tests.yml
+  - id: openwiki-source-0b86c93537ee4ff0031996d7
+    resource: repo://.github/workflows/build-apk.yml
+  - id: openwiki-source-0820b15716e58461fe98c290
+    resource: repo://.github/workflows/promote-policy.yml
+  - id: openwiki-source-8f8290041af6790179e59245
+    resource: repo://.github/workflows/prompt-policy.yml
+  - id: openwiki-source-2d700f6a4bc31347c3488941
+    resource: repo://apps/mobile/agent/policyDeployment.ts
+  - id: openwiki-source-d46310587be1c93ed124f3f5
+    resource: repo://apps/mobile/agent/signedPolicy.test.ts
+  - id: openwiki-source-0c63120d58188f63614c7f7c
+    resource: repo://apps/mobile/agent/signedPolicy.ts
+  - id: openwiki-source-ee5b295fb9c3f0589728d747
+    resource: repo://apps/mobile/eas.json
+  - id: openwiki-source-8899fbcb52b1d704245f96cc
+    resource: repo://apps/mobile/vitest.config.mts
+  - id: openwiki-source-5b54a58d1b51cd490b0e7162
+    resource: repo://package.json
+  - id: openwiki-source-61e696ba1387a574d3f42c7f
+    resource: repo://scripts/health-safety/check.mjs
+  - id: openwiki-source-171441732a73f3f1dd2fdcde
+    resource: repo://scripts/health-safety/policy.mjs
+  - id: openwiki-source-be753912f4c59051b89efc97
+    resource: repo://scripts/policy-promotion/policy-contract.test.mjs
+  - id: openwiki-source-a7c2a4372bd38ad6a4a65c9a
+    resource: repo://scripts/policy-promotion/prepare-policy-snapshot.mjs
+  - id: openwiki-source-24a206e2ad72f4f0a1502c09
+    resource: repo://scripts/production-release/production-release.mjs
+  - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
+    resource: repo://scripts/production-release/verify-source.mjs
+generated: { by: "openwiki/0.4.3", at: "2026-09-05T11:27:14.639Z" }
 ---
 
 # Compilación, publicación y pruebas
 
-## Alcance
+## Alcance y principio de selección
 
-Este repositorio tiene tres entregables operativamente independientes:
+Gymnasia es un espacio de trabajo npm con aplicaciones en `apps/*`. La aplicación Expo está en `apps/mobile`; la raíz concentra los comandos de política, controles de publicación y orquestación. Aunque `package.json` declara metadatos de Yarn, el bloqueo confirmado y los workflows usan npm: parta de una instalación limpia con `npm ci`.
 
-1. la aplicación Expo React Native en `apps/mobile`, que se ejecuta en Android, iOS y React Native Web;
-2. la exportación web estática de esa aplicación, desplegada desde `apps/mobile/dist`;
-3. el tablero estático e independiente de seguimiento en `arquitectura-agente`, servido sin compilación.
+No interprete `npm test` como una verificación global ni confunda una política publicada con el APK. Hay cinco fronteras independientes:
 
-El proxy CORS de Anthropic es un servicio de desarrollo, no forma parte de la exportación estática de Expo ni del artefacto Android de EAS. El tráfico de Anthropic desde el navegador puede necesitarlo; el tráfico de proveedores desde entornos nativos no.
+1. **snapshot de prompt:** el prompt fuente y los módulos generados que el agente empaqueta deben ser idénticos;
+2. **salud y seguridad:** la política declarativa, sus casos deterministas, el bloque administrado del prompt y el runtime generado deben cumplir su contrato sin red ni secretos;
+3. **política firmada:** un bundle y una activación canónicos, firmados con Ed25519 y anclados en raíces confiables, deben ser aptos para un canal;
+4. **promoción:** Staging y Production autorizan y registran el mismo candidato inmutable mediante deployments de GitHub;
+5. **producto:** las pruebas del agente, el tipado, los E2E y la compilación/publicación Android validan código y artefactos de la aplicación.
 
-## Responsabilidad sobre manifiestos y configuración
+Una comprobación de una frontera no sustituye a otra. En particular, `check:health-safety` no firma ni promueve una política, la promoción no reemplaza las pruebas del agente, y la aprobación de un APK no vuelve a evaluar la política remota.
 
-El repositorio es un espacio de trabajo npm, a pesar de que los metadatos `packageManager` de la raíz indican Yarn 1. El archivo de bloqueo confirmado y todos los comandos de CI documentados utilizan npm (`npm ci`, `npm --workspace` y `npm run`). No cambie de gestor de paquetes a la ligera: el archivo de bloqueo y la caché de CI son entradas operativas administradas por npm.
+## Matriz de comandos mínima
 
-| Archivo | Responsabilidad efectiva | Límite importante |
+Ejecute `npm ci` antes de comprobadores que inspeccionan dependencias o antes de reproducir CI. Los comandos de sincronización con `--write` modifican fuentes generadas: úselos para actualizar deliberadamente artefactos y confirme el resultado; los comandos `check:*` fallan ante divergencias y son los adecuados para validar.
+
+| Frontera o cambio | Comando mínimo | Qué valida y qué no valida |
 | --- | --- | --- |
-| `/package.json` | Declara los espacios de trabajo `apps/*`, los alias de comandos de la raíz y las versiones de Playwright/Vitest/fast-check | Los alias de pruebas de la raíz solo sirven para la orquestación; no implican que todas las baterías se ejecuten en CI |
-| `/package-lock.json` | Grafo reproducible de dependencias npm utilizado por `npm ci` | Los cambios de dependencias deben actualizarlo |
-| `/apps/mobile/package.json` | Punto de entrada de Expo, scripts de la aplicación, dependencias de ejecución y versión de TypeScript | Su `version: 1.0.0` no es la versión de publicación de Expo que muestra la aplicación |
-| `/image-generation/pyproject.toml` | Gestiona el entorno independiente de generación de imágenes con Python 3.12 y sus dependencias `gradio-client`, `httpx`, `python-dotenv` y `websockets` | No es un manifiesto de un espacio de trabajo npm; administre esta utilidad con `uv` desde `image-generation` |
-| `/apps/mobile/app.json` | Metadatos canónicos de la aplicación Expo: versión, identificadores, recursos, permisos, complementos e ID del proyecto EAS | La versión debe quedar confirmada en el PR; el workflow de publicación nunca modifica Git |
-| `/apps/mobile/eas.json` | Perfiles EAS efectivos cuando los comandos se ejecutan desde `apps/mobile` | La vista previa genera explícitamente un APK de Android; producción no declara `buildType: apk` |
-| `/eas.json` | Política EAS similar en la raíz | No es el archivo de perfiles utilizado por el flujo de trabajo incluido, que cambia a `apps/mobile` |
-| `/app.json` | Objeto Expo vacío en la raíz | No es la configuración Expo efectiva de la aplicación móvil |
-| `/apps/mobile/vercel.json` | Comandos de compilación, salida e instalación de la web móvil | `npm run build:web` se ejecuta en el proyecto móvil y publica `dist` |
-| `/arquitectura-agente/vercel.json` | Solo limpieza de URL del tablero | El despliegue del tablero es estático y no tiene compilación |
-| `/apps/mobile/vitest.config.mts` | Entorno de pruebas Node e inclusión de `agent/**/*.test.ts` | La batería determinista se centra en el agente, no es una batería unitaria completa de interfaz/dominio |
-| `/.github/workflows/agent-tests.yml` | CI determinista y control de TypeScript | Filtrado por rutas para cambios en la aplicación móvil y en el manifiesto/archivo de bloqueo de la raíz |
-| `/.github/prompt-policy.json` y `/scripts/prompt-policy/` | Fuente declarativa y generador del gobierno de cambios sensibles | Generan `CODEOWNERS` y el ruleset; consulte [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md) antes de editar salidas derivadas. |
-| `/scripts/android-permissions/` | Política y comprobador de permisos Android publicables | Contrasta `apps/mobile/app.json` y manifests de dependencias; consulte [Validación de permisos Android publicables](android-permissions.md) al cambiar permisos o dependencias móviles. |
-| `/.github/workflows/prompt-policy.yml` y `owner-authorization.yml` | Check obligatorio de política y reconciliación segura de autorización de PR | El primero también verifica la política de permisos Android; el segundo solo procesa metadatos desde el SHA base de confianza y no ejecuta código del head de una PR. |
-| `/.github/workflows/build-apk.yml` | Reconciliación transaccional de EAS y publicación de GitHub | Serializa versiones, persiste el build ID y solo publica un APK validado |
+| `prompts/AGENTS.md` o el snapshot de chat generado | `npm run check:chat-prompt` | Reconstruye y compara el snapshot del prompt. No valida reglas sanitarias ni firmas. Para regenerar intencionadamente: `npm run sync:chat-prompt`. |
+| `policy/health-safety/**`, el bloque sanitario del prompt o módulos sanitarios generados | `npm run check:health-safety && npm run test:health-safety` | El primero valida esquemas, herramientas declaradas, bloque administrado, detección de exfiltración, snapshots de prompt/runtime y fixtures seguros; el segundo ejecuta pruebas Node de unidad, contrato, regresión y propiedades. No es una evaluación LLM autorizadora. Para modificar fuentes y snapshots de forma intencionada: `npm run sync:health-safety`. |
+| Cambios de rutas sensibles, `CODEOWNERS`, ruleset, workflows de gobierno o scripts de promoción | `npm run check:prompt-policy && npm run test:prompt-policy` | Comprueba salidas generadas y ejecuta pruebas de la política de prompt **y** de `scripts/policy-promotion`. No publica ni firma. Ejecute `npm run sync:prompt-policy` solo tras cambiar la fuente declarativa. |
+| Bundle, firma, activación, raíces de confianza o integración móvil de política firmada | `npm run test:prompt-policy && npm test` | Las pruebas Node cubren contrato y firma/promoción; Vitest cubre, entre otras cosas, el contrato del deployment y la verificación Ed25519 en el cliente. Añada el gate sanitario si cambian contenidos de salud. |
+| Lógica, herramientas, persistencia, catálogos, dieta o mediciones del agente móvil | `npm test` | Ejecuta `test:deterministic` de Vitest y `test:dev-store` (comprobador más pruebas Node). No ejecuta Playwright, EAS ni una exportación de producción. |
+| Archivo de prueba móvil concreto | `npm --workspace apps/mobile exec vitest run --config vitest.config.mts agent/path/to/file.test.ts` | Acelera la iteración sobre un archivo; sustituya la ruta por la prueba responsable. |
+| Tipos de la app móvil | `npm --workspace apps/mobile exec tsc --noEmit` | Comprueba TypeScript, no el empaquetado ni el comportamiento en dispositivo. |
+| Flujo de chat o proveedor de desarrollo en la web | `npm run test:agent:e2e` | Ejecuta los E2E de chat y proveedor de desarrollo. |
+| Flujo de entrenamiento | `npm run test:train:e2e` | Ejecuta el E2E de usabilidad de entrenamiento; no sustituye el comportamiento nativo en segundo plano. |
+| Configuración/permisos Android o dependencia nativa | `npm run check:android-permissions && npm run test:android-permissions` | Contrasta permisos declarados y manifests de dependencias con la política, además de sus pruebas. Complete con compilación nativa y dispositivo para APIs nativas. Véase [Validación de permisos Android publicables](android-permissions.md). |
+| Exportación web | `npm --workspace apps/mobile run build:web` | Ejecuta `expo export --platform web`; no prueba un APK ni servicios remotos. |
+| Artefacto publicable Android | no hay sustituto local único; use el workflow `Build Production APK & Publish Release` | Revalida fuente y gates, prepara el snapshot de política Production, compila con EAS y verifica el APK antes de publicar. |
 
-Cuando los archivos Expo/EAS duplicados de la raíz y de la aplicación móvil no coincidan, utilice la configuración de `apps/mobile` para los comandos móviles. El flujo de trabajo de publicación lo hace explícito con `cd apps/mobile` antes de `eas build`.
+`npm test` equivale a `npm run test:deterministic && npm run test:dev-store`. La configuración Vitest móvil incluye pruebas de `agent`, `backup`, `catalogs`, `diet`, `measurements`, `persistence` y `storage`; por eso sigue siendo una batería de producto más amplia que una prueba aislada del agente, pero no incluye los scripts E2E ni los controles de política de la raíz.
 
-## Topología de compilación
+El comando `npm run test:llm` sigue siendo un marcador de posición: ejecutarlo correctamente no demuestra calidad ni seguridad de respuestas. La puerta sanitaria usa evaluación determinista y exige que el ejemplo LLM sea informativo (`authorizing=false`), no una autorización basada en modelo.
+
+## CI: qué ejecuta cada workflow
 
 ```mermaid
 flowchart TD
-    Source["Código fuente y app.json de apps/mobile"] --> Metro["Empaquetador Metro de Expo"]
-    Metro --> WebExport["expo export para web"]
-    WebExport --> Dist["apps/mobile/dist"]
-    Dist --> WebDeploy["Despliegue estático en Vercel"]
-    Source --> NativeConfig["Complementos de configuración de Expo y proyecto nativo"]
-    NativeConfig --> LocalNative["expo run para Android o iOS"]
-    NativeConfig --> EAS["Compilación Android con EAS"]
-    EAS --> Archive["URL del artefacto de EAS"]
-    Archive --> GitHubAsset["Recurso de publicación gymnasia.apk"]
-    BoardData["Archivos estáticos de arquitectura-agente"] --> BoardDeploy["Despliegue manual en Vercel"]
+    Change["Cambio confirmado"] --> Prompt["Prompt policy"]
+    Change --> Agent["Agent deterministic tests"]
+    Prompt --> PolicyChecks["Versión y política"]
+    Prompt --> Health["Salud seguridad y snapshots"]
+    Prompt --> Mobile["Vitest y TypeScript"]
+    Agent --> AgentChecks["Snapshot salud Vitest Dev store"]
+    Agent --> Proxy["Pytest del proxy Anthropic"]
+    Release["Cambio empaquetable en main"] --> Source["Validar fuente Production"]
+    Source --> Signed["Snapshot de política Production"]
+    Signed --> EAS["EAS production-apk"]
+    EAS --> APK["Cuarentena y verificación APK"]
 ```
 
-*El código fuente de Expo se bifurca en una exportación web estática y compilaciones nativas, mientras que el tablero de arquitectura omite la canalización de Expo.*
+*Los checks de PR son distintos de la cadena que firma/prepara política y de la publicación del binario.*
 
-## Desarrollo y compilaciones de plataformas
+### `prompt-policy.yml`: control transversal requerido
 
-Instale desde la raíz del repositorio:
+`Prompt policy` se ejecuta en todas las PR y en cada push a `main`, sin filtros de ruta. Tras `npm ci` exige, en este orden operativo, versión Production confirmada, artefactos de gobierno, pruebas de gobierno/promoción, permisos Android y sus pruebas, política sanitaria y sus pruebas, inventario de datos y su suite, política de privacidad generada y su suite, snapshot de chat, `npm test`, pruebas de automatización OpenWiki y TypeScript. Su resumen solo informa resultados, no contenido de prompts, secretos, conversaciones ni datos personales.
 
-```bash
-npm ci
-```
+Por tanto, un cambio exclusivamente sanitario debe correr localmente al menos los dos comandos sanitarios; un cambio de gobierno debe correr sus dos comandos específicos. En PR el workflow amplía ambos hasta la batería transversal, pero eso no convierte la promoción de política ni la compilación EAS en checks de PR.
 
-Utilice `npm install` cuando cambie intencionadamente las dependencias y el archivo de bloqueo; utilice `npm ci` para una verificación limpia que coincida con GitHub Actions.
+### `agent-tests.yml`: CI determinista por rutas
 
-### Servidor de desarrollo de Expo
+`Agent deterministic tests` se activa para PR y push a `main` cuando cambian las rutas móviles, workers/proxy, prompts, política o scripts sanitarios, dev store, determinados documentos, manifiestos npm o workflows OpenWiki/propio. Tiene un job Node 22 de diez minutos con permisos de lectura: instala con `npm ci`, comprueba el snapshot de chat y la política sanitaria, ejecuta sus pruebas, `npm test`, el E2E Metro protegido de dev store, la suite del feedback worker, las pruebas OpenWiki y TypeScript. Un segundo job aislado instala `uv` y ejecuta `pytest` para `apps/anthropic_proxy`.
 
-```bash
-npm run dev:mobile
-# equivalente exacto del espacio de trabajo
-npm --workspace apps/mobile run start
-```
+No realiza la validación de permisos Android, E2E generales de Playwright, exportación web, firma/promoción de política ni compilación EAS. Los cambios fuera de sus filtros tampoco reciben este workflow; `prompt-policy.yml` es el check transversal.
 
-Esto inicia `expo start`. Desde el espacio de trabajo, los comandos explícitos de cada plataforma son:
+## Política sanitaria, snapshots y promoción firmada
 
-```bash
-npm --workspace apps/mobile run web
-npm --workspace apps/mobile run android
-npm --workspace apps/mobile run ios
-```
+La comprobación sanitaria lee la fuente canónica bajo `policy/health-safety`, extrae las herramientas anunciadas de `apps/mobile/agent/toolDefinitions.ts`, compara el bloque administrado de `prompts/AGENTS.md`, y compara tanto el snapshot de prompt como el módulo de runtime incluidos en móvil. También rechaza patrones de exfiltración y garantiza que los casos seguros y el informe determinista sean válidos. Se diseña para operar sin red, secretos ni evaluación LLM autorizadora.
 
-- `web` ejecuta `expo start --web` mediante Metro y es un servidor de desarrollo, no un artefacto de despliegue.
-- `android` e `ios` ejecutan `expo run:android` y `expo run:ios`; compilan proyectos nativos y requieren el SDK y la cadena de herramientas locales correspondientes.
-- Las compilaciones locales para iOS requieren macOS/Xcode. El flujo de trabajo automatizado de publicación solo compila Android.
-- `apps/mobile/android` está presente, pero `app.json` sigue siendo la fuente declarada y multiplataforma de permisos/complementos. Los cambios que afecten a complementos nativos, identificadores, permisos, sonidos de notificaciones o recursos requieren validación nativa; una exportación web no puede verificarlos.
-
-La configuración de Expo declara la versión `1.16.0` de la aplicación, el ID de paquete de iOS y el paquete de Android `com.maximofn.gymnasia`, orientación vertical, Metro para la web y complementos de notificaciones/fuentes/SecureStore. Los permisos de Android incluyen servicio en primer plano, bloqueo de activación, vibración, finalización del arranque y permisos de alarmas exactas. Esos valores afectan a la configuración nativa generada y requieren comprobaciones en dispositivos cuando se modifican.
-
-### Contrato de exportación y despliegue web
-
-```bash
-npm --workspace apps/mobile run build:web
-# comando subyacente exacto
-npm --workspace apps/mobile exec expo export --platform web
-```
-
-El script del paquete ejecuta `expo export --platform web` y escribe en `apps/mobile/dist`. `apps/mobile/vercel.json` declara:
-
-- `buildCommand`: `npm run build:web`;
-- `outputDirectory`: `dist`;
-- `installCommand`: `npm install`;
-- ningún adaptador de framework.
-
-La exportación incorpora las variables `EXPO_PUBLIC_*` en el momento de la compilación. En particular, `EXPO_PUBLIC_API_BASE_URL` controla el enrutamiento del proxy de Anthropic en el navegador. Trátela como configuración pública, nunca como secreto. Una exportación correcta no demuestra que el proxy configurado exista ni que funcionen las API exclusivas de entornos nativos, como SecureStore, uso compartido, notificaciones, apertura de intents o temporización en segundo plano.
-
-El navegador almacena localmente los datos del usuario y utiliza React Native Web. Las baterías E2E móviles ejercitan esta proyección web porque puede automatizarse con Playwright; no son pruebas integrales de Android/iOS.
-
-## Capas de pruebas y comandos exactos
-
-Elija la prueba más específica que sea responsable del comportamiento modificado y, cuando el cambio atraviese varios contratos, amplíe la validación antes de fusionarlo.
-
-### Comprobaciones específicas
-
-| Cambio | Comando exacto | Qué demuestra |
-| --- | --- | --- |
-| Esquema, analizador, ejecutor, bucle de proveedor y datos de prueba del agente | `npm test` | Ejecuta la batería determinista de Vitest en `apps/mobile/agent/**/*.test.ts` |
-| Un archivo de pruebas del agente | `npm --workspace apps/mobile exec vitest run --config vitest.config.mts agent/path/to/file.test.ts` | Iteración rápida de Vitest sobre un único archivo |
-| Código fuente TypeScript/móvil | `npm --workspace apps/mobile exec tsc --noEmit` | Solo tipado estático; no comprueba el paquete ni el comportamiento en tiempo de ejecución |
-| Empaquetado/configuración web de Expo | `npm --workspace apps/mobile run build:web` | Metro puede generar la exportación estática `dist` |
-| Interfaz de chat/bucle de herramientas del agente | `npm run test:agent:e2e` | Aplicación web exportada más una ida y vuelta simulada de SSE/herramientas de OpenAI |
-| Interacción de entrenamiento | `npm run test:train:e2e` | Servidor web de Expo activo más el flujo de trabajo de entrenamiento de Playwright |
-| Contrato de JSON/hoja de ruta/grafo del tablero | `npm run test:board` | Invariantes estructurales y semánticas del tablero |
-| Renderizado/interacciones/diseño adaptable del tablero | `npm run test:board:e2e` | Servidor estático más comportamiento de Chromium |
-| Política de rutas sensibles, artefactos generados y restricciones de workflows | `npm run check:prompt-policy` | La fuente declarativa, `CODEOWNERS`, el ruleset y los workflows cumplen el contrato de gobierno. |
-| Clasificación de rutas y autorización de PR por SHA | `npm run test:prompt-policy` | Pruebas unitarias, de contrato y de propiedades de `scripts/prompt-policy/policy.test.mjs`. |
-| Permisos Android declarados y aportados por dependencias instaladas | `npm run check:android-permissions` | La lista de Expo coincide con la política y ningún manifest de dependencia aporta un permiso prohibido; requiere `npm ci`. |
-| Política y evaluador de permisos Android | `npm run test:android-permissions` | Contrato del repositorio, detección de cada infracción, vivacidad del escáner y propiedades de normalización. |
-
-El comando `npm test` de la raíz es exactamente `npm run test:deterministic`, que delega en `npm --workspace apps/mobile run test:deterministic` y después en `vitest run --config vitest.config.mts`. No es un agregador de pruebas para todo el repositorio: excluye las pruebas del tablero, las baterías de Playwright, las evaluaciones de LLM y las compilaciones nativas.
-
-### Validación amplia previa a la fusión
-
-Para un cambio transversal en la aplicación móvil que afecte al código fuente, al comportamiento del agente o al renderizado web, ejecute:
-
-```bash
-npm ci
-npm test
-npm --workspace apps/mobile exec tsc --noEmit
-npm --workspace apps/mobile run build:web
-npm run test:agent:e2e
-npm run test:train:e2e
-```
-
-Para los cambios del tablero, la validación amplia del tablero es independiente:
-
-```bash
-npm run test:board
-npm run test:board:e2e
-```
-
-No hay ningún comando incluido que combine todo lo anterior. Ejecute la secuencia explícita en lugar de asumir que `npm test` tiene un alcance amplio.
-
-### Modos con interfaz visible y reutilización del servidor
-
-```bash
-npm run test:board:e2e:headed
-npm run test:train:e2e:headed
-```
-
-- Las pruebas E2E del tablero utilizan `BOARD_E2E_HEADLESS=0` para el modo con interfaz visible y `BOARD_E2E_PORT` para sustituir el puerto predeterminado `8123`.
-- Las pruebas E2E de entrenamiento utilizan `TRAIN_E2E_HEADLESS=0` para el modo con interfaz visible, `TRAIN_E2E_URL` para indicar un servidor explícito, `TRAIN_E2E_REUSE_SERVER=1` para sondear puertos existentes y `TRAIN_E2E_PORT` para sustituir el puerto predeterminado `8090`.
-- Las pruebas E2E del agente aceptan `AGENT_E2E_URL` o `AGENT_E2E_PORT` (valor predeterminado: `8091`). Sin una URL, primero realizan una exportación web estática, sirven `dist`, cargan datos iniciales en el almacenamiento local e interceptan las solicitudes al proveedor y de contenido.
-
-Las pruebas E2E del agente son deterministas con respecto al LLM: utilizan datos de prueba SSE incluidos en el repositorio y una ruta de OpenAI falsa. Las pruebas E2E de entrenamiento controlan la interfaz web, pero no representan las notificaciones ni la ejecución en segundo plano nativas.
-
-### Marcador de posición para la evaluación del LLM
-
-```bash
-npm run test:llm
-```
-
-Este comando delega en `apps/mobile/scripts/run-llm-evals.mjs`, pero el script incluido solo imprime un mensaje informativo y termina: no ejecuta ningún conjunto de datos, llamada a un modelo, aserción, puntuación ni evaluación. Por tanto, una salida correcta solo demuestra que el script de marcador de posición pudo ejecutarse. El mensaje describe un plan futuro para ejecutar evaluaciones desde LangSmith cuando exista un conjunto de datos de observabilidad; dicho plan no está implementado aquí y no está relacionado con el conector de origen de LangSmith de OpenWiki. No considere este comando como cobertura de pruebas ni lo añada a un control hasta que un evaluador real y un contrato explícito de aprobado/reprobado sustituyan el marcador de posición.
-
-## Integración continua
-
-El gobierno de rutas sensibles es un control independiente documentado en [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md). `prompt-policy.yml` se ejecuta en cada PR y cada envío a `main`, sin filtros de rutas porque publica un check requerido. Tras `npm ci`, verifica los artefactos y workflows con `npm run check:prompt-policy`, ejecuta `npm run test:prompt-policy`, verifica `npm run check:android-permissions` y `npm run test:android-permissions`, comprueba el snapshot integrado del prompt, la batería determinista del agente, las pruebas de OpenWiki y TypeScript. Su resumen no incluye contenido de prompts, secretos, conversaciones ni datos personales. Para cambios exclusivos de política, los dos comandos de política son la validación focalizada; para permisos o configuración Android, usa los dos controles de [permisos Android](android-permissions.md); no ejecutes toda la batería móvil por defecto.
-
-`owner-authorization.yml` no prueba código de PR: usa `pull_request_target` para reconciliar metadatos de PR frente a la política confiable y publicar `gymnasia/owner-authorization`. Solo tiene lectura de contenidos/PR y escritura de estados. Su resultado y `prompt-policy` son los checks requeridos por el ruleset generado de `main`.
-
-`agent-tests.yml` se ejecuta para solicitudes de incorporación de cambios y envíos a `main` solo cuando cambian `apps/mobile/**`, el manifiesto/archivo de bloqueo de la raíz o ese flujo de trabajo. Utiliza Ubuntu, Node 22, `npm ci`, un tiempo de espera de 10 minutos y permiso de solo lectura para el contenido. Sus controles son:
-
-```bash
-npm test
-npm --workspace apps/mobile exec tsc --noEmit
-```
-
-**No** ejecuta ninguna de las baterías de Playwright, una exportación web, la validación del tablero, la evaluación de LLM, una compilación EAS ni pruebas nativas. Los cambios fuera de sus filtros de rutas pueden no recibir ningún resultado de este flujo de trabajo.
-
-El flujo de publicación de Android vuelve a ejecutar el contrato canónico
-`verify:production-source` antes de leer `EXPO_TOKEN`. Ese contrato incluye las
-pruebas deterministas, TypeScript, exportación Android y los dos E2E. La versión
-confirmada se comprueba además en cada PR dentro del check requerido
-`prompt-policy`.
-
-`openwiki-update.yml` no está relacionado con la validación del producto. Se ejecuta diariamente o de forma manual, genera documentación con Node 22/OpenWiki y abre una solicitud de incorporación de cambios de documentación.
-
-## Publicación Android con EAS y flujo de versiones
-
-`Build Production APK & Publish Release` usa exclusivamente `production-apk`.
-Los pushes a `main` que cambian código empaquetado y las ejecuciones manuales
-entran en la misma cola global `android-production-release`; esa cola nunca
-cancela la ejecución anterior.
+La promoción es manual mediante `Promote signed policy` (`workflow_dispatch`), con operación `staging`, `production` o `rollback`, un motivo codificado y los cuerpos de activación/firma en Base64. El workflow serializa Staging y Production por canales distintos y no cancela operaciones anteriores.
 
 ```mermaid
 sequenceDiagram
-    participant PR as Pull request
-    participant GH as GitHub Actions
-    participant Rel as Draft de release
-    participant EAS as Expo EAS
+    participant Operator as Operador
+    participant Workflow as Promote signed policy
+    participant Staging as Deployment Staging
+    participant Production as Deployment Production
+    participant Client as Cliente móvil
 
-    PR->>GH: Confirmar app.json con la versión esperada
-    GH->>GH: Recalcular versión y validar SHA/gates
-    GH->>Rel: Guardar transacción, fuente y política
-    GH->>EAS: Enviar build --no-wait
-    EAS-->>GH: Build ID
-    GH->>Rel: Persistir Build ID
-    GH->>EAS: Reconciliar build:view por ID
-    EAS-->>GH: APK terminado
-    GH->>GH: Cuarentena, firma, manifest, MIME, tamaño y SHA
-    GH->>Rel: Adjuntar evidencias y publicar
+    Operator->>Workflow: staging con PR y activación firmada
+    Workflow->>Workflow: health gate y verificar bundle
+    Workflow->>Staging: release inmutable y deployment success
+    Operator->>Workflow: production o rollback
+    Workflow->>Workflow: repetir health gate y verificar evidencia
+    Workflow->>Production: deployment con secuencia nueva
+    Client->>Production: resolver deployment success
+    Client->>Client: verificar paquete Ed25519
 ```
 
-### Versión confirmada en el PR
+*Production reutiliza un candidato ya publicado en Staging; el cliente solo acepta deployments y artefactos con identidad y firma verificables.*
 
-`npm run prepare:production-version` calcula la candidata a partir del máximo
-entre la versión de la base y las releases publicadas. `feat` incrementa minor,
-un Conventional Commit con `!` o `BREAKING CHANGE` incrementa major y el resto
-incrementa patch. `prompt-policy` repite el cálculo sobre los SHA del PR y exige
-que `apps/mobile/app.json` contenga exactamente ese valor. El workflow de release
-no escribe, confirma ni empuja nada a Git.
+En Staging, salvo el bootstrap único desde `main` protegido, la fuente debe ser una PR abierta contra `main` cuyo SHA tenga `prompt-policy` y `gymnasia/owner-authorization` correctos. El workflow descarga el candidato desde ese SHA pero usa el verificador de `main` confiable; vuelve a correr `check:health-safety`, verifica bundle, firma, activación, raíces, canal y correspondencia con fuentes, genera un informe sanitario y publica una release inmutable de pre-release con evidencia.
 
-`appVersionSource: remote` y `autoIncrement: true` siguen administrando el
-`versionCode` nativo en EAS; la versión visible `versionName` procede del
-`app.json` confirmado.
+Production descarga esa release en vez de reconstruir el bundle. Repite la puerta sanitaria y la verificación, exige evidencia con hashes coincidentes, propietario y gate sanitario correcto, requiere que el candidato sea el último Staging para una activación normal y exige una secuencia mayor que cualquier deployment Production. Un rollback debe referirse al bundle Production actual y puede apuntar a un candidato previamente Production. La aprobación de entorno es `Production` o `Production Critical` si la activación es crítica; al éxito se registra el deployment y el status `gymnasia/policy-promotion`.
 
-### Transacción y reconciliación
+El cliente móvil consulta solo deployments `gymnasia-policy` del canal pedido, acepta el primer payload schema 3 con URLs exactas de la release del repositorio y estado más reciente `success`, y cachea tanto resultado como error durante cinco minutos. El paquete firmado se rechaza si no es JSON canónico, si se altera bundle/firma/activación, si la raíz no está integrada, si entorno/canal/herramientas/protocolo no corresponden, o si la activación no es reciente y su certificado no está vigente. Consulte [Ciclo de vida de política firmada](../agent/signed-policy-lifecycle.md) y [Runtime del agente](../agent/runtime.md) para el consumo en la app.
 
-Cada versión tiene un draft con `AndroidReleaseTransactionV1`. Conserva commit,
-perfil, intentos, build ID, estados de EAS y SHA final. La selección siempre toma
-la versión semántica pendiente más antigua. Una cancelación o timeout de GitHub
-no marca EAS como fallido: una ejecución `reconcile` retoma el mismo build ID y,
-si la cancelación ocurrió justo tras el envío, lo adopta por versión, commit y
-mensaje estable.
+## Compilación y publicación del APK
 
-Solo `ERRORED` o `CANCELED` de EAS crean un fallo terminal. Un operador puede
-reintentar o sustituir esa versión mediante `workflow_dispatch`, indicando la
-versión exacta y un motivo. Una sustitución conserva el draft y su auditoría,
-pero permite procesar la siguiente versión. Tras publicar o sustituir, un job
-aislado encola la siguiente versión confirmada si existe.
+La configuración efectiva de Expo y EAS es `apps/mobile/app.json` y `apps/mobile/eas.json`. `production-apk` hereda `production`, fija `APP_ENV=production`, habilita `autoIncrement` remoto y fuerza `android.buildType: apk`; el workflow nunca elige un perfil mediante input. La versión visible procede de `app.json` confirmado. La comprobación de versión Production exige un incremento semántico cuando cambia una ruta empaquetable de `apps/mobile/`: `feat` incrementa minor, un cambio incompatible incrementa major y el resto patch, tomando el máximo entre base y releases publicadas.
 
-### Publicación de artefactos
+`Build Production APK & Publish Release` se inicia manualmente (reconciliar, reintentar o sustituir un fallo) o al hacer push a `main` con cambios empaquetables. Excluye scripts, Markdown, `public/` y tests de la app. La concurrencia global `android-production-release` conserva la ejecución precedente; la transacción durable escoge primero la versión pendiente más antigua.
 
-El APK se descarga primero como `/tmp/gymnasia.apk.download`. Antes de renombrarlo
-se verifica URL HTTPS, MIME HTTP, MIME detectado, límites de 50–200 MiB, estructura
-APK (no AAB), paquete, SDK, versión, permisos, snapshot, certificado y SHA-256.
-Después se adjunta como `gymnasia.apk` junto con la transacción y ambas evidencias.
-El draft vuelve a comprobar commit objetivo, tamaño y MIME de GitHub antes de
-convertirse en release pública. Reejecutar una versión ya publicada solo valida
-la identidad existente; no sobrescribe ni recompila.
+1. **Fuente:** antes de exponer `EXPO_TOKEN`, valida el SHA exacto, checkout limpio, procedencia y alcanzabilidad desde `main`, ruleset activo sin bypass, entorno Production protegido, PR fusionada y los checks requeridos. Después ejecuta todos los gates de Production y falla si alguno modifica el checkout.
+2. **Gates de Production:** incluyen los checks y suites de prompt-policy, permisos Android, salud/seguridad, inventario, legal, snapshot de chat, `npm test`, OpenWiki, pruebas de release, TypeScript, `expo export --platform android --dev` con `APP_ENV=production`, y los E2E de agente y entrenamiento. Esto es más amplio que ambos workflows de PR.
+3. **Snapshot de política:** para una transacción nueva, `prepare-policy-snapshot.mjs --environment production` resuelve el último deployment Production correcto, descarga el bundle y firma desde su release, verifica digest, raíces, firmas, canal, herramientas y evidencia sanitaria, y genera los módulos de prompt/runtime/paquete firmado más metadatos. La transacción conserva un tar y el snapshot para que un reintento reutilice exactamente esas entradas inmutables.
+4. **EAS y transacción:** el workflow crea un draft, adopta como máximo un build EAS con mismo perfil, versión, commit y mensaje, o envía uno con `--no-wait`; persiste el ID y consulta el estado. Un timeout de GitHub no invalida por sí mismo el build: `reconcile` puede retomarlo. Solo `ERRORED` y `CANCELED` son terminales; `retry-failed` y `supersede-failed` requieren versión y motivo.
+5. **Cuarentena y publicación:** descarga primero a `/tmp/gymnasia.apk.download`, verifica con `verify:production-artifact` la identidad del binario y la cadena de evidencia antes de renombrarlo. Luego adjunta APK, transacción, evidencia de fuente, evidencia de artefacto y snapshots al draft; vuelve a comprobar commit, MIME, límites de tamaño y hashes de assets de GitHub antes de hacerlo público como `gymnasia.apk`.
 
-## Riesgos de publicación y de los artefactos
+La validación automatizada no sustituye instalar la candidata en un dispositivo Android: compruebe versión visible, datos locales, notificaciones, alarmas y comportamiento de segundo plano. Una exportación web o los E2E web no validan esas APIs nativas.
 
-1. **La publicación está cerrada a un APK de Production.** Un AAB para Google
-   Play sigue siendo un flujo separado con el perfil `production`.
-2. **Un fallo terminal requiere criterio humano.** La automatización no puede
-   distinguir una incidencia recuperable de EAS de un defecto de fuente; por eso
-   exige reintento o sustitución con motivo.
-3. **Los límites de tamaño son política.** Un cambio legítimo que saque el APK de
-   50–200 MiB fallará cerrado hasta revisar `scripts/production-release/policy.json`.
-4. **La corrección nativa necesita dispositivo.** Los gates verifican artefacto,
-   permisos y flujos web, pero no sustituyen instalación, notificaciones,
-   alarmas, SecureStore ni comportamiento en segundo plano reales.
-5. **Cada cambio móvil empaquetado crea una versión.** Scripts, tests, Markdown y
-   `public/` están excluidos; el resto debe llevar incremento confirmado y entra
-   en la cola Production al fusionarse.
+## Recetas por cambio
 
-Antes de publicar una versión de Android para instalación directa, descargue la candidata, verifique que realmente sea un APK, instálela en un dispositivo representativo, confirme la versión mostrada y la conservación de los datos locales, y ejercite las notificaciones y la temporización en segundo plano. La aplicación no contiene un actualizador de GitHub: la instalación de esos APK es un flujo manual separado de Google Play.
+- **Sólo prompt no sanitario:** `npm run check:chat-prompt`, después `npm test` si cambia la conducta del agente.
+- **Regla sanitaria o runtime sanitario:** `npm run check:health-safety && npm run test:health-safety`, `npm run check:chat-prompt`, `npm test`; incluya el control de gobierno si cambia una ruta sensible.
+- **Firma, roots, activación o workflow de promoción:** `npm run check:prompt-policy && npm run test:prompt-policy && npm test`. No ejecute una promoción real para probar una edición: requiere entradas firmadas, un motivo y aprobación de entorno.
+- **Cliente que resuelve o verifica política remota:** `npm --workspace apps/mobile exec vitest run --config vitest.config.mts agent/policyDeployment.test.ts agent/signedPolicy.test.ts`, seguido de `npm test`.
+- **Código móvil empaquetable:** `npm test`, TypeScript, el E2E responsable y, si cambia configuración/empaquetado, `npm --workspace apps/mobile run build:web`. Para permisos o módulos nativos, añada los dos controles Android y una prueba de dispositivo.
+- **Candidato de APK:** no omita los gates de fuente ni reemplace el workflow por `eas build` manual; inspeccione la evidencia y pruebe el APK publicado en un dispositivo.
 
-## El despliegue del tablero es independiente
-
-La validación del tablero y el despliegue en producción son manuales y no comparten la configuración web de Expo:
-
-```bash
-npm run test:board
-npm run test:board:e2e
-npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
-```
-
-El proyecto del tablero en Vercel sirve directamente los archivos de origen. Un envío a `main` no lo despliega porque su integración de Git con Vercel está inactiva. Consulte [Tablero de arquitectura](../services/architecture-board.md) para conocer su esquema, grafo y guía operativa de actualización.
-
-## Política de validación recomendada
-
-- **Lógica exclusiva del agente:** un archivo específico de Vitest durante la iteración y, después, `npm test` y TypeScript.
-- **Comportamiento de la interfaz/dominio móvil:** TypeScript más el flujo de Playwright responsable; añada `build:web` cuando cambie el empaquetado o la configuración.
-- **Configuración o dependencia nativa/de Expo:** ejecuta primero `npm run check:android-permissions && npm run test:android-permissions`, después las comprobaciones deterministas/de tipos, exportación web y una compilación nativa local o candidata de EAS y una prueba rápida en un dispositivo. El éxito de la web por sí solo no es suficiente; consulta [Validación de permisos Android publicables](android-permissions.md) para el límite del escáner.
-- **Flujo de trabajo de publicación/perfil EAS:** revise ambos archivos efectivos de configuración móvil, ejecute los controles móviles habituales, dispare primero el flujo manualmente e inspeccione el artefacto descargado antes de confiar en la publicación automática provocada por envíos a la rama principal.
-- **Datos del tablero:** primero la prueba del contrato de datos; añada las pruebas E2E del tablero para modificaciones sensibles al renderizado.
-- **JS/CSS/HTML del tablero:** ambas pruebas del tablero y el despliegue manual en Vercel.
-- **Manifiesto/archivo de bloqueo de la raíz:** `npm ci` limpio, batería determinista, TypeScript, baterías E2E pertinentes y cualquier destino de compilación afectado.
-- **Política de rutas sensibles, CODEOWNERS, ruleset o autorización de PR:** primero `npm run check:prompt-policy && npm run test:prompt-policy`; regenera con `npm run sync:prompt-policy` solo cuando cambie la fuente declarativa y amplía al snapshot/controles móviles únicamente si el cambio también llega a `prompts/` o `apps/mobile/`. Consulte [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md).
+Para orientación de privacidad y permisos Android, consulte [Validación de permisos Android publicables](android-permissions.md).
