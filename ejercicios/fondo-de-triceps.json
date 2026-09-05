@@ -1,0 +1,14 @@
+{
+  "id": "fondo-de-triceps",
+  "name": "Fondo de tríceps",
+  "image_male": "images/fondo-de-triceps-male.webp",
+  "image_female": "images/fondo-de-triceps-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el borde de un banco o silla con las manos sujetando el borde, los dedos apuntando hacia adelante. Desliza los glúteos fuera del banco, sosteniendo tu peso con las manos. Flexiona los codos y baja el cuerpo hacia el suelo, manteniendo la espalda cerca del banco. Haz una pausa por un momento en la parte inferior, luego empuja tu cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

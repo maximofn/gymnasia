@@ -1,0 +1,13 @@
+{
+  "id": "crunch-inverso-en-suspension",
+  "name": "Crunch inverso en suspensión",
+  "image_male": "images/crunch-inverso-en-suspension-male.webp",
+  "image_female": "images/crunch-inverso-en-suspension-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Cuélgate de una barra de dominadas con los brazos completamente extendidos y las palmas mirando hacia afuera. Activa el core y sube las rodillas hacia el pecho, curvando la pelvis hacia la caja torácica. Haz una pausa de un momento en la parte superior, luego baja lentamente las rodillas de nuevo a la posición inicial. Repite el número de repeticiones deseado."
+}

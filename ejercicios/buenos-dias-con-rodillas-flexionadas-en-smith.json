@@ -1,0 +1,14 @@
+{
+  "id": "buenos-dias-con-rodillas-flexionadas-en-smith",
+  "name": "Buenos días con rodillas flexionadas en Smith",
+  "image_male": "images/buenos-dias-con-rodillas-flexionadas-en-smith-male.webp",
+  "image_female": "images/buenos-dias-con-rodillas-flexionadas-en-smith-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "zona lumbar"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Comienza de pie con los pies separados a la altura de los hombros, con los dedos de los pies apuntando hacia delante. Coloca la barra sobre la parte superior de la espalda, apoyándola en los trapecios. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Baja el torso hasta que quede paralelo al suelo, sintiendo un estiramiento en los isquiotibiales. Activa los glúteos y los isquiotibiales para levantar el torso de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

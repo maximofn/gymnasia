@@ -1,0 +1,14 @@
+{
+  "id": "curl-de-muneca-sentado-en-smith",
+  "name": "Curl de muñeca sentado en Smith",
+  "image_male": "images/curl-de-muneca-sentado-en-smith-male.webp",
+  "image_female": "images/curl-de-muneca-sentado-en-smith-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "bíceps",
+    "braquial"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en un banco frente a una máquina Smith con los pies planos sobre el suelo. Sujeta la barra con un agarre supino, con las manos separadas a la altura de los hombros. Apoya los antebrazos sobre los muslos, permitiendo que las muñecas cuelguen. Flexiona lentamente las muñecas hacia arriba, llevando la barra hacia los antebrazos. Haz una pausa breve en la parte alta y luego baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

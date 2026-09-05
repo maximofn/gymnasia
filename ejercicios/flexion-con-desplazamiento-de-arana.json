@@ -1,0 +1,15 @@
+{
+  "id": "flexion-con-desplazamiento-de-arana",
+  "name": "Flexión con desplazamiento de araña",
+  "image_male": "images/flexion-con-desplazamiento-de-arana-male.webp",
+  "image_female": "images/flexion-con-desplazamiento-de-arana-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "core",
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de flexión con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Lleva la rodilla derecha hacia el codo derecho, manteniéndola elevada del suelo. Mientras llevas la rodilla derecha hacia atrás, baja simultáneamente el cuerpo hacia el suelo flexionando los codos. Empuja de nuevo hacia arriba a la posición inicial y repite llevando la rodilla izquierda hacia el codo izquierdo. Continúa alternando lados durante el número de repeticiones deseado."
+}

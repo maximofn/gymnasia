@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-tumbada-en-trineo",
+  "name": "Sentadilla tumbada en trineo",
+  "image_male": "images/sentadilla-tumbada-en-trineo-male.webp",
+  "image_female": "images/sentadilla-tumbada-en-trineo-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "máquina de trineo",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la máquina de trineo a un peso adecuado. Túmbate boca arriba en la máquina de trineo con los pies sobre la placa. Coloca los pies separados a la altura de los hombros y ligeramente angulados hacia fuera. Sujeta las asas de la máquina de trineo para mayor estabilidad. Activa los glúteos y los músculos del core. Empuja con los talones y extiende las piernas para levantar el trineo. Baja el trineo de nuevo doblando las rodillas y las caderas. Repite el número de repeticiones deseado."
+}

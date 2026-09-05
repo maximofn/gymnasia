@@ -1,0 +1,14 @@
+{
+  "id": "press-de-hombros-en-smith",
+  "name": "Press de hombros en Smith",
+  "image_male": "images/press-de-hombros-en-smith-male.webp",
+  "image_female": "images/press-de-hombros-en-smith-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura del asiento y colócate en la máquina Smith con los pies separados a la altura de los hombros. Sujeta la barra con agarre prono, un poco más separado que el ancho de los hombros. Levanta la barra del soporte y colócala a la altura de los hombros, con los codos flexionados y las palmas hacia delante. Empuja la barra hacia arriba hasta que los brazos queden completamente extendidos por encima de la cabeza. Haz una pausa por un momento en la posición alta, luego baja lentamente la barra de vuelta a la altura de los hombros. Repite el número de repeticiones deseado."
+}

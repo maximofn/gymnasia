@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-hack-en-smith",
+  "name": "Sentadilla hack en Smith",
+  "image_male": "images/sentadilla-hack-en-smith-male.webp",
+  "image_female": "images/sentadilla-hack-en-smith-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la barra de la máquina Smith a una altura adecuada para tu cuerpo. Ponte de pie con los pies separados a la altura de los hombros, con los dedos de los pies ligeramente hacia afuera. Colócate debajo de la barra, apoyándola en la parte alta de los trapecios y los hombros. Agarra la barra con un agarre pronado un poco más ancho que la separación de los hombros. Activa el core y mantén el pecho elevado mientras sueltas la barra del soporte. Da un paso atrás y coloca los pies un poco más separados que el ancho de los hombros. Dobla las rodillas y baja el cuerpo, manteniendo el pecho elevado y la espalda recta. Continúa descendiendo hasta que los muslos queden paralelos al suelo o un poco por debajo. Haz una pausa por un momento en la parte inferior, luego empuja con los talones para regresar a la posición inicial. Repite el número de repeticiones deseado."
+}

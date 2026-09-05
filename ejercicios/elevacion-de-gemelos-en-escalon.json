@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-gemelos-en-escalon",
+  "name": "Elevación de gemelos en escalón",
+  "image_male": "images/elevacion-de-gemelos-en-escalon-male.webp",
+  "image_female": "images/elevacion-de-gemelos-en-escalon-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "tobillos",
+    "pies"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie en el borde de un escalón o una plataforma firme, con los talones colgando y la punta de los pies sobre el escalón. Sujétate de una baranda o pared para mantener el equilibrio si es necesario. Levanta lentamente los talones lo más alto posible, elevando el peso de tu cuerpo sobre la punta de los pies. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

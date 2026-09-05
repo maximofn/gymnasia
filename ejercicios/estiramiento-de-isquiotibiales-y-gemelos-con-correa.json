@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-de-isquiotibiales-y-gemelos-con-correa",
+  "name": "Estiramiento de isquiotibiales y gemelos con correa",
+  "image_male": "images/estiramiento-de-isquiotibiales-y-gemelos-con-correa-male.webp",
+  "image_female": "images/estiramiento-de-isquiotibiales-y-gemelos-con-correa-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "gemelos"
+  ],
+  "equipment": "correa",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con la espalda recta y los pies separados a la altura de los hombros. Sostén la correa con ambas manos y colócala alrededor de la parte anterior de la planta del pie. Mantén la pierna recta e inclínate lentamente hacia adelante desde las caderas, manteniendo la espalda recta. Siente el estiramiento en los isquiotibiales y en los músculos de la pantorrilla. Mantén el estiramiento durante 20-30 segundos. Suelta el estiramiento y repite con la otra pierna. Repite el número de repeticiones deseado."
+}

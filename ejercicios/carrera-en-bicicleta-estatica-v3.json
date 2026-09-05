@@ -1,0 +1,15 @@
+{
+  "id": "carrera-en-bicicleta-estatica-v3",
+  "name": "Carrera en bicicleta estática v3",
+  "image_male": "images/carrera-en-bicicleta-estatica-v3-male.webp",
+  "image_female": "images/carrera-en-bicicleta-estatica-v3-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "bicicleta estática",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura y la posición del asiento para asegurar una alineación correcta. Coloca los pies sobre los pedales y sujétalos con las correas si están disponibles. Comienza a pedalear a un ritmo cómodo. Mantén un ritmo constante y aumenta la resistencia según lo desees. Activa los músculos del core para mantener la estabilidad y una postura correcta. Continúa pedaleando durante la duración deseada de tu entrenamiento. Disminuye gradualmente la resistencia y reduce la velocidad antes de detenerte por completo. Estira las piernas y enfría después del entrenamiento."
+}

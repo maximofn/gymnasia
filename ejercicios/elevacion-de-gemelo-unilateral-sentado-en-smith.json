@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-de-gemelo-unilateral-sentado-en-smith",
+  "name": "Elevación de gemelo unilateral sentado en Smith",
+  "image_male": "images/elevacion-de-gemelo-unilateral-sentado-en-smith-male.webp",
+  "image_female": "images/elevacion-de-gemelo-unilateral-sentado-en-smith-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "isquiotibiales"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en la máquina con la espalda contra la almohadilla y los pies sobre el apoyapiés. Coloca una pierna sobre el apoyapiés y mantén la otra pierna fuera de él. Eleva el talón lo más alto posible, usando los músculos de la pantorrilla. Haz una pausa por un momento en la parte superior, luego baja lentamente el talón de vuelta a la posición inicial. Repite el número de repeticiones deseado y luego cambia de pierna y repite."
+}

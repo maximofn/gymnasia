@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-lateral-de-pie",
+  "name": "Estiramiento lateral de pie",
+  "image_male": "images/estiramiento-lateral-de-pie-male.webp",
+  "image_female": "images/estiramiento-lateral-de-pie-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros",
+    "oblicuos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Extiende los brazos hacia los lados, paralelos al suelo. Inclina lentamente la parte superior del cuerpo hacia un lado, sintiendo un estiramiento en el costado y los dorsales. Mantén el estiramiento durante 15-30 segundos. Regresa a la posición inicial y repite del otro lado. Repite el número de repeticiones deseado."
+}

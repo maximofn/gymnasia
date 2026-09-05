@@ -1,0 +1,14 @@
+{
+  "id": "press-agarre-inverso-en-smith",
+  "name": "Press con agarre inverso en Smith",
+  "image_male": "images/press-agarre-inverso-en-smith-male.webp",
+  "image_female": "images/press-agarre-inverso-en-smith-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "advanced",
+  "instructions": "Ajusta la altura de la barra de la máquina Smith a la altura del pecho. Ponte de pie frente a la barra con los pies separados a la altura de los hombros. Sujeta la barra con un agarre prono, con las manos un poco más separadas que el ancho de los hombros. Da un paso atrás y colócate con una ligera flexión en las rodillas. Mantén el pecho elevado y el core activado durante todo el ejercicio. Baja la barra hacia el pecho, manteniendo los codos pegados al cuerpo. Haz una pausa por un momento en la posición baja, luego empuja la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

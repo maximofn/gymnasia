@@ -1,0 +1,14 @@
+{
+  "id": "press-inclinado-agarre-inverso-en-smith",
+  "name": "Press inclinado con agarre inverso en Smith",
+  "image_male": "images/press-inclinado-agarre-inverso-en-smith-male.webp",
+  "image_female": "images/press-inclinado-agarre-inverso-en-smith-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "advanced",
+  "instructions": "Ajusta el asiento de la máquina Smith a un ángulo de inclinación cómodo. Siéntate en la máquina con la espalda contra la almohadilla y los pies planos sobre el suelo. Sujeta la barra con un agarre prono un poco más ancho que el ancho de los hombros. Suelta la barra y bájala lentamente hacia el pecho, manteniendo los codos pegados al cuerpo. Haz una pausa por un momento cuando la barra esté justo por encima del pecho. Empuja la barra de vuelta a la posición inicial, extendiendo los brazos por completo. Repite el número de repeticiones deseado."
+}

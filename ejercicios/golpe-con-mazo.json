@@ -1,0 +1,14 @@
+{
+  "id": "golpe-con-mazo",
+  "name": "Golpe con mazo",
+  "image_male": "images/golpe-con-mazo-male.webp",
+  "image_female": "images/golpe-con-mazo-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [
+    "antebrazos",
+    "hombros"
+  ],
+  "equipment": "mazo",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y sujeta el mazo con ambas manos. Activa el core y mantén la espalda recta. Balancea el mazo hacia el suelo, usando la fuerza del core y de la parte superior del cuerpo. Mientras balanceas hacia abajo, gira las caderas y transfiere la fuerza al mazo. Repite el número de repeticiones deseado."
+}

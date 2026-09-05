@@ -1,0 +1,15 @@
+{
+  "id": "pedaleo-suave-en-bicicleta-estatica",
+  "name": "Pedaleo suave en bicicleta estática",
+  "image_male": "images/pedaleo-suave-en-bicicleta-estatica-male.webp",
+  "image_female": "images/pedaleo-suave-en-bicicleta-estatica-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "bicicleta estática",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la altura y la posición del asiento en la bicicleta estática para asegurar una alineación correcta. Coloca los pies sobre los pedales y sujétalos con las correas si están disponibles. Comienza a pedalear a un ritmo cómodo, manteniendo la espalda recta y el core activado. Mantén un ritmo constante y aumenta el nivel de resistencia si lo deseas. Continúa pedaleando durante la duración deseada de tu entrenamiento cardiovascular. Enfría reduciendo gradualmente tu ritmo y el nivel de resistencia. Estira los músculos de las piernas después del entrenamiento para prevenir la rigidez y favorecer la recuperación."
+}

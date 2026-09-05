@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-gemelos-de-pie-en-smith",
+  "name": "Elevación de gemelos de pie en Smith",
+  "image_male": "images/elevacion-de-gemelos-de-pie-en-smith-male.webp",
+  "image_female": "images/elevacion-de-gemelos-de-pie-en-smith-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la barra de la máquina Smith a una altura que te permita estar de pie con los pies planos sobre el suelo y los hombros debajo de la barra. Colócate debajo de la barra con los pies separados a la altura de los hombros y los dedos de los pies apuntando hacia delante. Coloca las manos sobre la barra para mayor estabilidad. Activa las pantorrillas y levanta lentamente los talones del suelo, elevando el cuerpo sobre la punta de los pies. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

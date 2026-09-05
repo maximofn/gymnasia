@@ -1,0 +1,14 @@
+{
+  "id": "flexion-superman",
+  "name": "Flexión Superman",
+  "image_male": "images/flexion-superman-male.webp",
+  "image_female": "images/flexion-superman-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "core",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en una posición de plancha alta con las manos un poco más separadas que la anchura de los hombros y los pies juntos. Activa el core y baja el cuerpo hacia el suelo, manteniendo los codos cerca de los costados. Mientras bajas el cuerpo, levanta simultáneamente el brazo derecho y la pierna izquierda del suelo, extendiéndolos completamente. Haz una pausa de un momento en la parte superior, luego baja el brazo y la pierna mientras te empujas de nuevo hacia arriba a la posición inicial. Repite el movimiento, esta vez levantando el brazo izquierdo y la pierna derecha. Continúa alternando lados durante el número de repeticiones deseado."
+}

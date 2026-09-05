@@ -1,0 +1,15 @@
+{
+  "id": "flexion-en-suspension",
+  "name": "Flexión en suspensión",
+  "image_male": "images/flexion-en-suspension-male.webp",
+  "image_female": "images/flexion-en-suspension-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros",
+    "core"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Busca un entrenador de suspensión y ajústalo a una altura adecuada. Ponte de pie de espaldas al punto de anclaje y sostén las asas con un agarre prono. Camina hacia adelante con los pies, inclinando el cuerpo hacia adelante hasta que tu peso quede sostenido por el entrenador de suspensión. Mantén el cuerpo recto desde la cabeza hasta los talones, activa el core y baja el pecho hacia las asas. Empuja con el pecho y los brazos para volver a la posición inicial. Repite el número de repeticiones deseado."
+}

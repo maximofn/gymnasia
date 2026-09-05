@@ -1,0 +1,14 @@
+{
+  "id": "curl-de-muneca-posterior-de-pie-en-smith",
+  "name": "Curl de muñeca posterior de pie en Smith",
+  "image_male": "images/curl-de-muneca-posterior-de-pie-en-smith-male.webp",
+  "image_female": "images/curl-de-muneca-posterior-de-pie-en-smith-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "bíceps",
+    "tríceps"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a la máquina Smith con los pies separados a la altura de los hombros. Sujeta la barra con un agarre prono, con las manos separadas a la altura de los hombros. Mantén la espalda recta y los codos cerca del cuerpo. Flexiona lentamente las muñecas hacia arriba, llevando la barra hacia el cuerpo. Haz una pausa breve en la parte alta y luego baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

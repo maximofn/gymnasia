@@ -1,0 +1,13 @@
+{
+  "id": "curl-de-biceps-en-smith",
+  "name": "Curl de bíceps en Smith",
+  "image_male": "images/curl-de-biceps-en-smith-male.webp",
+  "image_female": "images/curl-de-biceps-en-smith-female.webp",
+  "muscle_group": "antebrazos",
+  "secondary_muscles": [
+    "antebrazos"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura de la barra de la máquina Smith a la altura de la cintura. Ponte de pie frente a la máquina Smith con los pies separados a la altura de los hombros. Sujeta la barra con un agarre supino, con las manos un poco más separadas que el ancho de los hombros. Mantén los codos cerca de los costados y los brazos superiores quietos. Exhala y flexiona la barra hacia los hombros, contrayendo los bíceps. Haz una pausa breve en la parte más alta del movimiento, contrayendo los bíceps. Inhala y baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-puntas-en-smith",
+  "name": "Elevación de puntas en Smith",
+  "image_male": "images/elevacion-de-puntas-en-smith-male.webp",
+  "image_female": "images/elevacion-de-puntas-en-smith-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "tobillos",
+    "tibiales"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la barra de la máquina Smith a una altura que te permita pararte cómodamente con los pies planos sobre el suelo. Colócate debajo de la barra con los hombros justo debajo de ella y los pies separados a la altura de los hombros. Coloca la planta de los pies sobre una plataforma elevada o discos de peso, dejando los talones colgando fuera del borde. Sujeta la barra con agarre prono, un poco más separado que el ancho de los hombros. Activa el core y mantén la espalda recta durante todo el ejercicio. Levanta lentamente los talones lo más alto posible, elevando el peso de tu cuerpo sobre la punta de los pies. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

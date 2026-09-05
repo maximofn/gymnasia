@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-piernas-con-giro",
+  "name": "Elevación de piernas con giro",
+  "image_male": "images/elevacion-de-piernas-con-giro-male.webp",
+  "image_female": "images/elevacion-de-piernas-con-giro-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "flexores de cadera"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate sobre tu espalda con las piernas extendidas y los brazos a los lados. Coloca las manos debajo de los glúteos como apoyo. Activa el abdomen y levanta ambas piernas del suelo, manteniéndolas rectas. Mientras levantas las piernas, gira las caderas hacia un lado, llevando las piernas hacia el hombro opuesto. Haz una pausa por un momento en la parte superior, luego baja lentamente las piernas de vuelta a la posición inicial. Repite el movimiento, esta vez girando las caderas hacia el otro lado. Continúa alternando lados durante el número de repeticiones deseado."
+}

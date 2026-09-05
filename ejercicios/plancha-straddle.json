@@ -1,0 +1,15 @@
+{
+  "id": "plancha-straddle",
+  "name": "Plancha straddle",
+  "image_male": "images/plancha-straddle-male.webp",
+  "image_female": "images/plancha-straddle-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps",
+    "pecho"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Comienza en posición de flexión con las manos separadas a la altura de los hombros y los pies bien separados. Activa el core y traslada lentamente tu peso hacia adelante, llevando los hombros por encima de las manos. Flexiona los codos y baja el cuerpo hacia el suelo, manteniendo los codos cerca de los costados. Haz una pausa por un momento en la posición más baja, luego empuja con las manos para enderezar los brazos y levantar el cuerpo de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

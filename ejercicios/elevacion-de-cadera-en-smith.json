@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-cadera-en-smith",
+  "name": "Elevación de cadera en Smith",
+  "image_male": "images/elevacion-de-cadera-en-smith-male.webp",
+  "image_female": "images/elevacion-de-cadera-en-smith-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Colócate en la máquina Smith con la espalda contra la almohadilla y los pies separados a la altura de los hombros. Coloca las manos en la barra, un poco más separadas que el ancho de los hombros. Activa el core y los glúteos, luego empuja con los talones para levantar las caderas del suelo. Continúa levantando hasta que el cuerpo forme una línea recta desde las rodillas hasta los hombros. Mantén la posición alta por un momento, luego baja lentamente las caderas de nuevo a la posición inicial. Repite el número de repeticiones deseado."
+}

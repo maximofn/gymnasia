@@ -1,0 +1,14 @@
+{
+  "id": "press-militar-de-pie-en-smith",
+  "name": "Press militar de pie en Smith",
+  "image_male": "images/press-militar-de-pie-en-smith-male.webp",
+  "image_female": "images/press-militar-de-pie-en-smith-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "espalda alta"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Agarra la barra con un agarre pronado un poco más ancho que la separación de los hombros. Levanta la barra del soporte y bájala hasta la altura de los hombros, con las palmas hacia delante. Empuja la barra hacia arriba hasta que tus brazos queden completamente extendidos por encima de la cabeza. Haz una pausa de un momento en la parte superior y luego baja lentamente la barra de nuevo hasta la altura de los hombros. Repite el número de repeticiones deseado."
+}

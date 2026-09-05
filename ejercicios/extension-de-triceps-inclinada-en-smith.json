@@ -1,0 +1,13 @@
+{
+  "id": "extension-de-triceps-inclinada-en-smith",
+  "name": "Extensión de tríceps inclinada en Smith",
+  "image_male": "images/extension-de-triceps-inclinada-en-smith-male.webp",
+  "image_female": "images/extension-de-triceps-inclinada-en-smith-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "advanced",
+  "instructions": "Ajusta el asiento de la máquina Smith de modo que la barra quede a la altura de los hombros. Siéntate en el banco con la espalda apoyada en el respaldo y los pies planos sobre el suelo. Sujeta la barra con agarre prono, un poco más separado que el ancho de los hombros. Extiende los brazos por completo, levantando la barra del soporte y sosteniéndola directamente sobre el pecho. Baja la barra lentamente hacia la frente, manteniendo los codos cerca de la cabeza. Haz una pausa por un momento en la posición baja, luego empuja la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

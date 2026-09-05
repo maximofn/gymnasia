@@ -1,0 +1,14 @@
+{
+  "id": "giro-de-columna",
+  "name": "Giro de columna",
+  "image_male": "images/giro-de-columna-male.webp",
+  "image_female": "images/giro-de-columna-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "zona lumbar"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Siéntate en el suelo con las piernas extendidas frente a ti. Dobla las rodillas y coloca los pies planos sobre el suelo, separados a la altura de la cadera. Coloca las manos detrás de la cabeza con los codos apuntando hacia afuera. Activa el abdomen y gira lentamente el torso hacia la derecha, llevando el codo derecho hacia la rodilla izquierda. Haz una pausa por un momento al final de la rotación, luego regresa lentamente a la posición inicial. Repite el giro hacia el lado izquierdo, llevando el codo izquierdo hacia la rodilla derecha. Continúa alternando lados durante el número de repeticiones deseado."
+}

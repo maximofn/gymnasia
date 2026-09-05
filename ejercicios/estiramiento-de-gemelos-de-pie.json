@@ -1,0 +1,14 @@
+{
+  "id": "estiramiento-de-gemelos-de-pie",
+  "name": "Estiramiento de gemelos de pie",
+  "image_male": "images/estiramiento-de-gemelos-de-pie-male.webp",
+  "image_female": "images/estiramiento-de-gemelos-de-pie-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie frente a una pared u objeto firme, a una distancia aproximada de un brazo. Coloca las manos sobre la pared o el objeto a la altura de los hombros. Da un paso hacia atrás con un pie, manteniendo el talón plano sobre el suelo. Flexiona ligeramente la rodilla delantera e inclínate hacia adelante, manteniendo la pierna trasera recta. Deberías sentir un estiramiento en el músculo de la pantorrilla. Mantén el estiramiento durante 20-30 segundos. Repite con la otra pierna."
+}

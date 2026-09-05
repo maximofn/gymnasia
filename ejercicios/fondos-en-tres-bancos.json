@@ -1,0 +1,14 @@
+{
+  "id": "fondos-en-tres-bancos",
+  "name": "Fondos en tres bancos",
+  "image_male": "images/fondos-en-tres-bancos-male.webp",
+  "image_female": "images/fondos-en-tres-bancos-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "advanced",
+  "instructions": "Siéntate en un banco con las manos agarrando el borde, los dedos apuntando hacia adelante. Desliza los glúteos fuera del banco, sosteniendo tu peso con las manos. Flexiona los codos y baja el cuerpo hasta que la parte superior de los brazos quede paralela al suelo. Empújate de vuelta hacia arriba hasta la posición inicial. Repite el número de repeticiones deseado."
+}

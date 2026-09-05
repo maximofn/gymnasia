@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-inversa-de-gemelos-en-smith-v2",
+  "name": "Elevación inversa de gemelos en Smith v2",
+  "image_male": "images/elevacion-inversa-de-gemelos-en-smith-v2-male.webp",
+  "image_female": "images/elevacion-inversa-de-gemelos-en-smith-v2-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "isquiotibiales"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la barra de la máquina Smith a una altura justo debajo de los hombros. Ponte de pie frente a la barra con los pies separados a la altura de la cadera y los dedos de los pies apuntando hacia delante. Coloca la punta de los pies en el borde de un escalón o plataforma, con los talones colgando. Sujétate de la barra para apoyarte. Levanta los talones lo más alto posible, elevando el cuerpo sobre la punta de los pies. Haz una pausa breve en la parte alta y luego baja lentamente los talones de vuelta a la posición inicial. Repite el número de repeticiones deseado."
+}

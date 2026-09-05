@@ -1,0 +1,14 @@
+{
+  "id": "press-declinado-agarre-cerrado-en-smith",
+  "name": "Press declinado con agarre cerrado en Smith",
+  "image_male": "images/press-declinado-agarre-cerrado-en-smith-male.webp",
+  "image_female": "images/press-declinado-agarre-cerrado-en-smith-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "pecho",
+    "hombros"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "advanced",
+  "instructions": "Ajusta el banco de la máquina Smith a una posición declinada. Túmbate en el banco con los pies firmemente apoyados en el suelo. Agarra la barra con un agarre cerrado, un poco más estrecho que el ancho de los hombros. Saca la barra del soporte y bájala lentamente hacia el pecho, manteniendo los codos cerca del cuerpo. Haz una pausa breve cuando la barra esté justo encima del pecho. Empuja la barra de vuelta a la posición inicial, extendiendo completamente los brazos. Repite el número de repeticiones deseado."
+}

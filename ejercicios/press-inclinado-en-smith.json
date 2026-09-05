@@ -1,0 +1,14 @@
+{
+  "id": "press-inclinado-en-smith",
+  "name": "Press inclinado en Smith",
+  "image_male": "images/press-inclinado-en-smith-male.webp",
+  "image_female": "images/press-inclinado-en-smith-female.webp",
+  "muscle_group": "hombros",
+  "secondary_muscles": [
+    "hombros",
+    "tríceps"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el banco a una inclinación de 30-45 grados. Siéntate en el banco con la espalda plana contra la almohadilla y los pies firmemente apoyados en el suelo. Agarra la barra con un agarre pronado un poco más ancho que la separación de los hombros. Suelta la barra y bájala lentamente hacia la parte alta del pecho, manteniendo los codos ligeramente pegados al cuerpo. Haz una pausa por un momento en la posición baja, luego empuja la barra de vuelta a la posición inicial, extendiendo los brazos por completo. Repite el número de repeticiones deseado."
+}

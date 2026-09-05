@@ -1,0 +1,13 @@
+{
+  "id": "press-de-triceps-con-peso-corporal",
+  "name": "Press de tríceps con peso corporal",
+  "image_male": "images/press-de-triceps-con-peso-corporal-male.webp",
+  "image_female": "images/press-de-triceps-con-peso-corporal-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Colócate frente a una barra fija a la altura del pecho y apoya ambas manos sobre ella. Retrocede los pies hasta formar una línea recta con el cuerpo. Flexiona únicamente los codos para acercar la frente a la barra, manteniendo los brazos cerca de la cabeza y el core activo. Extiende los codos para alejarte de la barra usando los tríceps y vuelve de forma controlada."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "remo-unilateral-en-smith",
+  "name": "Remo unilateral en Smith",
+  "image_male": "images/remo-unilateral-en-smith-male.webp",
+  "image_female": "images/remo-unilateral-en-smith-female.webp",
+  "muscle_group": "bíceps",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta la altura de la barra de la máquina Smith a la altura de la cintura. Ponte de pie frente a la máquina Smith con los pies separados a la altura de los hombros. Flexiona ligeramente las rodillas e inclínate hacia adelante desde las caderas, manteniendo la espalda recta. Sujeta la barra con una mano usando un agarre prono, con la palma hacia abajo. Mantén el codo cerca del cuerpo y tira de la barra hacia la cintura, juntando las escápulas. Haz una pausa por un momento en la parte alta del movimiento, luego baja lentamente la barra de vuelta a la posición inicial. Repite el número de repeticiones deseado, luego cambia al otro brazo."
+}

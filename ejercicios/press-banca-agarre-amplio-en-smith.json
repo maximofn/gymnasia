@@ -1,0 +1,14 @@
+{
+  "id": "press-banca-agarre-amplio-en-smith",
+  "name": "Press de banca con agarre amplio en Smith",
+  "image_male": "images/press-banca-agarre-amplio-en-smith-male.webp",
+  "image_female": "images/press-banca-agarre-amplio-en-smith-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "tríceps",
+    "hombros"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "intermediate",
+  "instructions": "Ajusta el banco a una posición cómoda en la máquina Smith. Túmbate en el banco con los pies planos sobre el suelo. Agarra la barra con un agarre amplio, un poco más ancho que la separación de los hombros. Desengancha la barra y bájala lentamente hacia tu pecho, manteniendo los codos hacia afuera a los costados. Haz una pausa breve cuando la barra toque el pecho. Empuja la barra de vuelta a la posición inicial, extendiendo completamente los brazos. Repite el número de repeticiones deseado."
+}

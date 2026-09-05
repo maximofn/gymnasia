@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-sobre-bosu",
+  "name": "Sentadilla sobre bosu",
+  "image_male": "images/sentadilla-sobre-bosu-male.webp",
+  "image_female": "images/sentadilla-sobre-bosu-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "bosu",
+  "difficulty": "intermediate",
+  "instructions": "Coloca el bosu en el suelo con el lado plano hacia arriba. Ponte de pie con los pies separados a la altura de los hombros y colócate encima del bosu. Baja el cuerpo flexionando las rodillas y las caderas, como si te sentaras en una silla. Mantén el pecho elevado y el peso en los talones. Baja hasta que los muslos queden paralelos al suelo. Haz una pausa breve y luego empuja con los talones para volver a la posición inicial. Repite el número de repeticiones deseado."
+}

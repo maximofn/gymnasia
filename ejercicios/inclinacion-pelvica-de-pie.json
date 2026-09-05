@@ -1,0 +1,13 @@
+{
+  "id": "inclinacion-pelvica-de-pie",
+  "name": "Inclinación pélvica de pie",
+  "image_male": "images/inclinacion-pelvica-de-pie-male.webp",
+  "image_female": "images/inclinacion-pelvica-de-pie-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "abdomen"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Coloca las manos sobre las caderas o déjalas colgar a los lados. Activa los músculos del core e inclina la pelvis hacia adelante, empujando la zona lumbar hacia la pared detrás de ti. Mantén la posición durante unos segundos, luego suelta y vuelve a la posición inicial. Repite el número de repeticiones deseado."
+}

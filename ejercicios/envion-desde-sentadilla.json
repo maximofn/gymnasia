@@ -1,0 +1,16 @@
+{
+  "id": "envion-desde-sentadilla",
+  "name": "Envión desde sentadilla",
+  "image_male": "images/envion-desde-sentadilla-male.webp",
+  "image_female": "images/envion-desde-sentadilla-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "glúteos",
+    "isquiotibiales",
+    "gemelos",
+    "core"
+  ],
+  "equipment": "barra",
+  "difficulty": "advanced",
+  "instructions": "Comienza con la barra apoyada sobre los hombros y los pies separados a la altura de los hombros. Baja el cuerpo a una posición de sentadilla, manteniendo el pecho elevado y las rodillas alineadas con la punta de los pies. Al llegar al punto más bajo de la sentadilla, empuja con fuerza a través de las piernas y eleva la barra por encima de la cabeza. Cuando la barra alcance su punto más alto, baja rápidamente a una posición de zancada dividida, con un pie adelante y otro atrás. Recibe la barra por encima de la cabeza con los brazos completamente extendidos y la rodilla trasera tocando ligeramente el suelo. Ponte de pie desde la posición dividida, juntando de nuevo los pies. Baja la barra de nuevo a los hombros y repite el número de repeticiones deseado."
+}

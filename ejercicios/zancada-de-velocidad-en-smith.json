@@ -1,0 +1,15 @@
+{
+  "id": "zancada-de-velocidad-en-smith",
+  "name": "Zancada de velocidad en Smith",
+  "image_male": "images/zancada-de-velocidad-en-smith-male.webp",
+  "image_female": "images/zancada-de-velocidad-en-smith-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "máquina Smith",
+  "difficulty": "advanced",
+  "instructions": "Configura la máquina Smith con la barra a la altura de la cadera. Ponte de pie de espaldas a la máquina con los pies separados a la altura de los hombros. Da un paso atrás con el pie derecho y colócalo sobre la barra, apoyando la parte superior del pie en ella. Dobla la rodilla izquierda y baja el cuerpo hacia una posición de zancada, manteniendo la espalda recta. Empuja con el talón izquierdo para volver a la posición inicial. Repite del otro lado, dando un paso hacia atrás con el pie izquierdo. Continúa alternando lados durante el número de repeticiones deseado."
+}
