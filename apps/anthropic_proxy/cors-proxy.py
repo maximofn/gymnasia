@@ -40,7 +40,7 @@ ANTHROPIC_API = os.environ.get(
     "ANTHROPIC_PROXY_UPSTREAM_BASE_URL", "https://api.anthropic.com"
 ).rstrip("/")
 ANTHROPIC_API_VERSION = "2023-06-01"
-DEFAULT_VERIFY_MODEL = "claude-3-5-sonnet-latest"
+DEFAULT_VERIFY_MODEL = "claude-sonnet-5"
 
 VERIFY_TIMEOUT_SECONDS = 15
 MODELS_TIMEOUT_SECONDS = 15

@@ -211,6 +211,7 @@ import {
 import {
   anthropicApiHeaders,
   anthropicProxyCredentials,
+  anthropicThinkingConfig,
   createFakeProviderResult,
   explainAnthropicError,
   FAKE_PROVIDER_MODELS,
@@ -2091,7 +2092,10 @@ async function callAnthropicViaWebProxy(
         ...anthropicProxyCredentials(provider.api_key, provider.workspace_id),
         model: provider.model || DEFAULT_MODELS.anthropic,
         max_tokens: 700 + ANTHROPIC_THINKING_BUDGET,
-        thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
+        thinking: anthropicThinkingConfig(
+          provider.model || DEFAULT_MODELS.anthropic,
+          ANTHROPIC_THINKING_BUDGET,
+        ),
         system: systemPrompt,
         messages,
       }),
@@ -2847,7 +2851,10 @@ async function callProviderChatAPI(
       body: JSON.stringify({
         model: provider.model || DEFAULT_MODELS.anthropic,
         max_tokens: 700 + ANTHROPIC_THINKING_BUDGET,
-        thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
+        thinking: anthropicThinkingConfig(
+          provider.model || DEFAULT_MODELS.anthropic,
+          ANTHROPIC_THINKING_BUDGET,
+        ),
         system: systemPrompt,
         messages: nonSystemMessages,
       }),
@@ -3143,7 +3150,10 @@ async function callProviderChatAPIWithTools(
       const body: any = {
         model: provider.model || DEFAULT_MODELS.anthropic,
         max_tokens: 2048 + ANTHROPIC_THINKING_BUDGET,
-        thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
+        thinking: anthropicThinkingConfig(
+          provider.model || DEFAULT_MODELS.anthropic,
+          ANTHROPIC_THINKING_BUDGET,
+        ),
         system: systemPrompt,
         messages: msgs,
       };
@@ -3520,8 +3530,11 @@ async function callFoodEstimatorAPI(
     const makeRequest = async (msgs: any[]) => {
       const body: Record<string, unknown> = {
         model,
+        // El mismo `model` que se envía, no `provider.model`: normalizarlo puede
+        // cambiarlo, y decidir la forma del razonamiento sobre un modelo distinto
+        // del que atiende la petición es exactamente cómo se cuela este fallo.
+        thinking: anthropicThinkingConfig(model, ANTHROPIC_THINKING_BUDGET),
         max_tokens: 1200 + ANTHROPIC_THINKING_BUDGET,
-        thinking: { type: "enabled", budget_tokens: ANTHROPIC_THINKING_BUDGET },
         system: systemPrompt,
         messages: msgs,
         tools: foodEstimatorTools.anthropic,

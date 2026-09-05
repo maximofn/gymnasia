@@ -50,7 +50,7 @@ function seedStore() {
     threads: [{ id: "thread_diet_e2e", title: "Dieta E2E" }],
     messagesByThread: { thread_diet_e2e: [] },
     keys: [
-      { provider: "openai", is_active: false, api_key: "", model: "gpt-5-mini" },
+      { provider: "openai", is_active: false, api_key: "", model: "gpt-5.6-luna" },
       { provider: "anthropic", is_active: false, api_key: "", model: "claude-sonnet-4-5" },
       { provider: "google", is_active: false, api_key: "", model: "gemini-2.5-flash" },
     ],

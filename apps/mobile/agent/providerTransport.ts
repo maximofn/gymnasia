@@ -8,11 +8,14 @@ export type FakeProviderResult = {
   thinking: null;
 };
 
-export const DEFAULT_GOOGLE_MODEL = "gemini-3.6-flash";
+export const DEFAULT_GOOGLE_MODEL = "gemini-3.8-flash";
 export const PROVIDER_CONFIGURATION_REQUEST_TIMEOUT_MS = 15_000;
+// Modelos que fueron el valor por defecto en su día. Se reescriben al actual
+// para que una instalación antigua no se quede clavada en un modelo retirado.
 const LEGACY_GOOGLE_DEFAULT_MODELS = new Set([
   "gemini-1.5-flash",
   "gemini-3-flash-preview",
+  "gemini-3.6-flash",
 ]);
 
 export function normalizeGoogleModel(rawModel: string | null | undefined): string {
@@ -68,6 +71,41 @@ export function anthropicApiHeaders(
       ? { [ANTHROPIC_DIRECT_BROWSER_ACCESS_HEADER]: "true" }
       : {}),
   };
+}
+
+// Cómo se le pide a Anthropic que razone antes de responder.
+//
+// La fórmula antigua —un presupuesto fijo de tokens— fue retirada: los modelos
+// desde la generación 4.6 la rechazan con "thinking.type.enabled is not
+// supported for this model" y la conversación muere. Los anteriores, en cambio,
+// solo entienden esa. Por eso hay que elegir según el modelo.
+//
+// El criterio es que **lo moderno sea lo predeterminado**: cualquier modelo que
+// no esté en la lista de antiguos usa la fórmula nueva. Así un modelo que
+// Anthropic publique mañana funciona sin tocar la app; al revés —listar los
+// nuevos— obligaría a publicar una versión cada vez que sale uno.
+const ANTHROPIC_LEGACY_THINKING_PATTERNS = [
+  /(^|[^0-9])claude-3/, // familia 3.x: claude-3-5-sonnet-latest, claude-3-7-…
+  /-4-5(-|$)/, // generación 4.5: haiku, sonnet y opus, con o sin fecha
+];
+
+export function usesLegacyAnthropicThinking(model: string): boolean {
+  const normalized = (model ?? "").trim().toLowerCase();
+  if (!normalized) return false;
+  return ANTHROPIC_LEGACY_THINKING_PATTERNS.some((pattern) => pattern.test(normalized));
+}
+
+export function anthropicThinkingConfig(
+  model: string,
+  budgetTokens: number,
+): Record<string, unknown> {
+  if (usesLegacyAnthropicThinking(model)) {
+    return { type: "enabled", budget_tokens: budgetTokens };
+  }
+  // `display` se pide explícitamente: en los modelos nuevos el razonamiento
+  // viene vacío por defecto, y la app lo enseña en su bloque "Razonamiento".
+  // Sin esto el bloque aparecería siempre en blanco.
+  return { type: "adaptive", display: "summarized" };
 }
 
 export function anthropicProxyCredentials(

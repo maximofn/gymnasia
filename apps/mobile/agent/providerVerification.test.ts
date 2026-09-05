@@ -12,7 +12,7 @@ function provider(
     is_active: providerName === "openai",
     api_key: `${providerName}-secret`,
     model: providerName === "openai"
-      ? "gpt-5-mini"
+      ? "gpt-5.6-luna"
       : providerName === "anthropic"
         ? "claude-test"
         : "gemini-test",

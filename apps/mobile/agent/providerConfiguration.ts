@@ -64,8 +64,8 @@ export type ProviderDiscoveryToken = {
 export const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
 
 export const DEFAULT_MODELS: Record<Provider, string> = {
-  openai: "gpt-5-mini",
-  anthropic: "claude-3-5-sonnet-latest",
+  openai: "gpt-5.6-luna",
+  anthropic: "claude-sonnet-5",
   google: DEFAULT_GOOGLE_MODEL,
 };
 

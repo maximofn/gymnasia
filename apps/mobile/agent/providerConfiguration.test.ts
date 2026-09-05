@@ -37,7 +37,7 @@ describe("provider configuration state", () => {
     expect(normalized[0]).toMatchObject({
       provider: "openai",
       api_key: "key-one",
-      model: "gpt-5-mini",
+      model: "gpt-5.6-luna",
       is_active: true,
     });
     expect(normalized[2]).toMatchObject({
