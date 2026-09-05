@@ -12,6 +12,11 @@ import {
   repositoryRoot,
 } from "./production-release.mjs";
 
+// Tope de rutas que se copian a la evidencia cuando los gates ensucian el
+// checkout: suficientes para identificar al culpable, pocas para que un
+// directorio generado entero no inunde el fichero ni el log.
+const MAX_MUTATED_PATHS = 40;
+
 function parseArguments(argv) {
   const options = {};
   for (let index = 0; index < argv.length; index += 2) {
@@ -213,9 +218,17 @@ async function main() {
     const statusAfterGates = stdout("git", ["status", "--porcelain", "--untracked-files=all"]);
     evidence.source.cleanAfterGates = statusAfterGates === "";
     if (statusAfterGates !== "") {
+      // Sin la lista de ficheros esta violación es indiagnosticable: dice que algo
+      // ensució el checkout, pero no qué, y suele no reproducirse fuera del runner.
+      // Se acota para que un `dist/` entero no convierta la evidencia en un volcado.
+      const mutatedPaths = statusAfterGates.split("\n").filter(Boolean);
+      evidence.source.mutatedPaths = mutatedPaths.slice(0, MAX_MUTATED_PATHS);
+      evidence.source.mutatedPathCount = mutatedPaths.length;
       evidence.contractViolations.push({
         code: "gate-mutation",
-        message: "Los gates modificaron el checkout; el binario ya no correspondería al SHA validado.",
+        message: "Los gates modificaron el checkout; el binario ya no correspondería al SHA validado."
+          + ` Rutas afectadas (${mutatedPaths.length}): ${evidence.source.mutatedPaths.join(", ")}`
+          + (mutatedPaths.length > MAX_MUTATED_PATHS ? ", …" : ""),
       });
     }
     evidence.result = evidence.gates.length === PRODUCTION_GATES.length
