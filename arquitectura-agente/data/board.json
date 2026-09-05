@@ -1936,7 +1936,7 @@
           "id": "GYM-173",
           "title": "Blindar y validar la normalización de series avanzadas",
           "state": "todo",
-          "summary": "Evitar que la hidratación descarte tipo, tempo y subseries de las plantillas.",
+          "summary": "Sacar la normalización de series a un módulo con pruebas, validar estructuras corruptas y cubrir con tests que tipo, tempo y subseries sobreviven a la hidratación.",
           "dependsOn": [],
           "related": [
             "GYM-62",
