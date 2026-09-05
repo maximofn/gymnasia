@@ -1935,12 +1935,23 @@
         {
           "id": "GYM-173",
           "title": "Blindar y validar la normalización de series avanzadas",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Sacar la normalización de series a un módulo con pruebas, validar estructuras corruptas y cubrir con tests que tipo, tempo y subseries sobreviven a la hidratación.",
           "dependsOn": [],
           "related": [
             "GYM-62",
-            "GYM-135"
+            "GYM-135",
+            "GYM-227"
+          ]
+        },
+        {
+          "id": "GYM-227",
+          "title": "Corregir la clonación superficial y la firma de cambios de series compuestas",
+          "state": "todo",
+          "summary": "Clonar en profundidad las mini-series al duplicar ejercicios y rutinas, y detectar como cambio de plantilla la edición de tipo, tempo y mini-series.",
+          "dependsOn": [],
+          "related": [
+            "GYM-173"
           ]
         },
         {
@@ -1949,7 +1960,8 @@
           "state": "todo",
           "summary": "Permitir cancelar ediciones y restaurar todos los cambios de plantilla al descartar o finalizar una sesión.",
           "dependsOn": [
-            "GYM-173"
+            "GYM-173",
+            "GYM-227"
           ],
           "related": [
             "GYM-63",
@@ -2984,6 +2996,7 @@
         "GYM-181",
         "GYM-180",
         "GYM-173",
+        "GYM-227",
         "GYM-174",
         "GYM-175",
         "GYM-176",
