@@ -275,7 +275,9 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   `.claude/`, `CLAUDE.md`, `arquitectura-agente/`, `ejercicios/`, `alimentos/` o
   `.github/` **no gastan build**. `apps/mobile/public/` tampoco: solo lo consume
   `expo export --platform web`, EAS no lo empaqueta en el AAB, y ahí vive la
-  política de privacidad publicada, que debe poder republicarse sin gastar cuota. La cuota mensual de Expo es limitada, así que verifica el filtro antes
+  política de privacidad publicada, que debe poder republicarse sin gastar cuota.
+  El plan de Expo es de pago desde septiembre de 2026, así que una build ya no es
+  el recurso escaso que era; sigue siendo finita, así que verifica el filtro antes
   de asumir que un push es caro — y pide confirmación igualmente.
 - PR description should include: summary, impacted paths, commands executed, and screenshots for UI updates.
 
@@ -400,10 +402,52 @@ Only non-obvious gotchas that could recur are kept here.
 - Guard rail: `npm run check:android-permissions` fails if the permission returns via `app.json` or via a dependency's manifest. The approved list lives in `scripts/android-permissions/policy.json`.
 - **Manifest merger trap**: `expo.android.blockedPermissions` makes prebuild emit `<uses-permission android:name="…USE_EXACT_ALARM" tools:node="remove"/>`. So the **source** manifest legitimately contains the string. Absence must be verified on the **merged** manifest of the artifact — grepping the source manifest gives a false positive.
 
-### CI APK build cancelled by job timeout while EAS build sits in the free-tier queue
-- Gotcha: `.github/workflows/build-apk.yml` runs `eas build` (waits for completion by default). On the Expo **free tier the build queue alone can exceed 60 min**, so a `timeout-minutes: 60` job gets cancelled mid-wait. Symptom: GitHub Actions run shows `cancelled` with `##[error]The operation was canceled` in the "Build APK on EAS" step; the later steps (Download APK / Create Release / Commit version bump) are `skipped`, so **no GitHub Release and no version-bump commit are produced** — but the EAS build itself keeps running/queued on Expo independently.
-- Check: `eas build:view <build-id>` (or the Expo build URL printed in the logs). If `Status` is still `in queue`/`in progress`, the APK will finish later on Expo and can be downloaded directly from there, even though the CI release step already gave up.
-- Fix: raised job `timeout-minutes` to 120 to give the queue margin. If it recurs, consider `eas build --no-wait` + publishing the release from an Expo build webhook, or build locally with the `build-apk` skill when in a hurry.
+### Una build parada casi nunca es la cola de Expo: mira antes la puerta de aprobación
+El plan de Expo **es de pago desde septiembre de 2026**. La cola del plan gratuito, que
+antes explicaba casi cualquier espera, ya no es la sospechosa por defecto: empezar por ahí
+hace perder el tiempo. Diagnostica en este orden.
+
+**1. ¿Hay una ejecución anterior esperando aprobación?** Es la causa más frecuente y la
+menos visible. `build-apk.yml` declara `concurrency: android-production-release` con
+`cancel-in-progress: false`, así que las builds se ejecutan de una en una y en orden. Si
+una queda en estado `waiting` —esperando la aprobación del entorno `Production`— **bloquea
+todas las siguientes de forma indefinida**, y las que se apilan detrás aparecen como
+`cancelled` sin haber ejecutado un solo job. Verificado el 5 de septiembre de 2026: una
+ejecución del día 3 llevaba dos días sin aprobar y había cancelado por tiempo las dos
+builds posteriores.
+
+El síntoma que la delata es que el run está en `pending` y **no tiene ningún job**, ni
+siquiera empezado:
+```bash
+gh run list --workflow=build-apk.yml --limit 6 \
+  --json databaseId,status,conclusion,createdAt \
+  --jq '.[] | "\(.databaseId) \(.status) \(.conclusion // "-") \(.createdAt)"'
+```
+Cualquier fila en `waiting` es la que manda, por antigua que sea.
+
+**Trampa: `gh run cancel` no la desbloquea.** Sobre una ejecución detenida en la puerta de
+un entorno no hace nada; el estado sigue en `waiting` y el comando responde correctamente,
+que es lo que despista. Hay que **rechazar el despliegue**, que es una decisión del
+mantenedor y no se toma por iniciativa propia:
+```bash
+gh api repos/maximofn/gymnasia/actions/runs/<run_id>/pending_deployments \
+  --jq '.[] | {id: .environment.id, nombre: .environment.name}'
+gh api -X POST repos/maximofn/gymnasia/actions/runs/<run_id>/pending_deployments \
+  -f state=rejected -F 'environment_ids[]=<id>' -f comment="<motivo>"
+```
+Las comillas simples en `environment_ids[]` son obligatorias: sin ellas zsh intenta
+expandir los corchetes y falla con `no matches found`. Aprobar es el mismo comando con
+`state=approved`.
+
+**2. Si ya está corriendo y muere por tiempo**, entonces sí puede ser la espera de EAS.
+`eas build` espera a que termine, así que un job que agota `timeout-minutes` (hoy 120) sale
+como `cancelled` con `##[error]The operation was canceled` en el paso "Build APK on EAS";
+los pasos siguientes (Download APK / Create Release / Commit version bump) quedan
+`skipped`, así que **no hay Release ni commit de versión** — pero la build sigue viva en
+Expo por su cuenta. Compruébalo con `eas build:view <build-id>` o la URL que imprime el
+log: si sigue `in queue`/`in progress`, el APK acabará y se descarga desde Expo. Si esto
+se repite pese al plan de pago, considera `eas build --no-wait` publicando la release desde
+un webhook de Expo, o compila en local con la skill `build-apk`.
 
 ### Clearing `localStorage` does NOT reset the app on web — it also persists to `.dev-store.json`
 - Gotcha: on web + `__DEV__`, `App.tsx` (`loadDevStoreFile` / `saveDevStoreFile`) mirrors the store to `apps/mobile/.dev-store.json` through a Metro middleware (`metro.config.js`, `/dev-store` endpoint) so data survives dev-server restarts. On boot it reads that file back, so wiping `localStorage` leaves the app fully populated. The file is served per dev server, not per origin, so `localhost:8081` and `127.0.0.1:8081` restore the *same* data even though their `localStorage` is separate.
@@ -521,8 +565,10 @@ ask for explicit confirmation before merging because Expo quota is limited.
 
 Un push a `main` **solo** dispara el build de APK si toca `apps/mobile/**`
 (excluyendo `apps/mobile/scripts/**` y los `.md`). Ver el filtro de rutas en
-"Commit & Pull Request Guidelines". La cuota mensual de Expo es limitada, así que
-un push que sí entre en el filtro gasta build; el resto, no.
+"Commit & Pull Request Guidelines". Un push que sí entre en el filtro gasta build;
+el resto, no. La cuota de Expo es finita aunque el plan sea de pago, y sobre todo
+las builds se ejecutan de una en una: ver "Una build parada casi nunca es la cola
+de Expo" en el Solved Problems Log.
 
 The APK workflow changes `apps/mobile/app.json` only inside the build workspace;
 the GitHub tag and Release persist the published version. It must never commit a
