@@ -156,6 +156,16 @@ import {
   synchronizeLinkedExercises,
 } from "./catalogs/migrations";
 import {
+  isCompoundSeriesType,
+  type ExerciseSeries,
+  type SeriesType,
+  type SubSeries,
+} from "./training/seriesContract";
+import {
+  ALL_SERIES_TYPES,
+  SERIES_TYPE_META,
+} from "./training/seriesPresentation";
+import {
   catalogRef,
   linkedCatalog,
   unresolvedCatalog,
@@ -378,45 +388,6 @@ Notifications.setNotificationHandler({
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
 type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "data" | "traces";
 
-type SeriesType =
-  | "normal"
-  | "warmup"
-  | "failure"
-  | "amrap"
-  | "partial"
-  | "negative"
-  | "forced"
-  | "tempo"
-  | "isometric"
-  | "dropset"
-  | "restpause"
-  | "myoreps"
-  | "cluster"
-  | "superset";
-
-type SubSeries = {
-  id: string;
-  reps: string;
-  weight_kg: string;
-  rest_seconds: string;
-  exercise_name?: string;
-  exercise_id?: string;
-  catalog_link?: CatalogLink;
-};
-
-type ExerciseSeries = {
-  id: string;
-  type?: SeriesType;
-  reps: string;
-  weight_kg: string;
-  rest_seconds: string;
-  tempo_contraction?: string;
-  tempo_pause?: string;
-  tempo_relaxation?: string;
-  sub_series?: SubSeries[];
-};
-
-const COMPOUND_SERIES_TYPES: SeriesType[] = ["dropset", "restpause", "myoreps", "cluster", "superset"];
 type RoutineIconName =
   | "activity"
   | "heart"
@@ -911,24 +882,6 @@ function parseJsonWithoutThrow(raw: string | null): {
     return { value: null, failed: true };
   }
 }
-
-const SERIES_TYPE_META: Record<SeriesType, { label: string; short: string; color?: string }> = {
-  normal:    { label: "Normal",         short: "N" },
-  warmup:    { label: "Calentamiento",  short: "🔥", color: "#FF4A4A" },
-  failure:   { label: "Al fallo",       short: "F" },
-  amrap:     { label: "AMRAP",          short: "A" },
-  partial:   { label: "Parcial",        short: "P" },
-  negative:  { label: "Negativa",       short: "—" },
-  forced:    { label: "Forzada",        short: "F+" },
-  tempo:     { label: "Tempo",          short: "T" },
-  isometric: { label: "Isométrica",     short: "I" },
-  dropset:   { label: "Drop set",       short: "DS" },
-  restpause: { label: "Rest-Pause",     short: "RP" },
-  myoreps:   { label: "Myo-Reps",       short: "MR" },
-  cluster:   { label: "Cluster",        short: "CL" },
-  superset:  { label: "Superserie",     short: "SS" },
-};
-const ALL_SERIES_TYPES = Object.keys(SERIES_TYPE_META) as SeriesType[];
 
 const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
   "Anthropic en navegador necesita un proxy HTTP por CORS. " +
@@ -11623,8 +11576,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             if (exercise.id !== exerciseId) return exercise;
             const nextSeries = (exercise.series ?? []).map((s) => {
               if (s.id !== seriesId) return s;
-              const isCompound = COMPOUND_SERIES_TYPES.includes(newType);
-              const wasCompound = COMPOUND_SERIES_TYPES.includes(s.type ?? "normal");
+              const isCompound = isCompoundSeriesType(newType);
+              const wasCompound = isCompoundSeriesType(s.type ?? "normal");
               return {
                 ...s,
                 type: newType,
@@ -17085,7 +17038,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                     </Pressable>
                                   </View>
                                 )}
-                                {COMPOUND_SERIES_TYPES.includes(seriesItem.type ?? "normal") && (
+                                {isCompoundSeriesType(seriesItem.type ?? "normal") && (
                                   <View style={{ marginLeft: 24, borderLeftWidth: 2, borderLeftColor: "#2A3240", paddingLeft: 8, paddingVertical: 4 }}>
                                     <Pressable
                                       onPress={() => setExpandedCompoundSeriesId(expandedCompoundSeriesId === seriesItem.id ? null : seriesItem.id)}
@@ -25537,7 +25490,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   <Pressable
                     key={st}
                     onPress={() => {
-                      if (COMPOUND_SERIES_TYPES.includes(st)) {
+                      if (isCompoundSeriesType(st)) {
                         changeSeriesType(seriesTypePickerTarget.exerciseId, seriesTypePickerTarget.seriesId, st);
                       } else {
                         const fn = seriesTypePickerTarget.source === "session"

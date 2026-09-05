@@ -11,6 +11,7 @@ export default defineConfig({
       "measurements/**/*.test.ts",
       "persistence/**/*.test.ts",
       "storage/**/*.test.ts",
+      "training/**/*.test.ts",
     ],
     mockReset: true,
     restoreMocks: true,
