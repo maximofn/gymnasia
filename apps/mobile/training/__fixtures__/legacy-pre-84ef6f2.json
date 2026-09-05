@@ -1,0 +1,55 @@
+{
+  "descripcion": "Ejercicio con las series avanzadas que la normalización anterior al commit 84ef6f2 aplanaba en silencio: el tipo, los tres tempos y las mini-series desaparecían en cada arranque. Debe sobrevivir intacto y sin incidencias.",
+  "exercise": {
+    "name": "Press de banca",
+    "load_kg": 60,
+    "rest_seconds": 120,
+    "sets": [8, 8, 6],
+    "series": [
+      {
+        "id": "set_calentamiento",
+        "type": "warmup",
+        "reps": "12",
+        "weight_kg": "20",
+        "rest_seconds": "60"
+      },
+      {
+        "id": "set_tempo",
+        "type": "tempo",
+        "reps": "8",
+        "weight_kg": "60",
+        "rest_seconds": "120",
+        "tempo_contraction": "3",
+        "tempo_pause": "1",
+        "tempo_relaxation": "2"
+      },
+      {
+        "id": "set_dropset",
+        "type": "dropset",
+        "reps": "6",
+        "weight_kg": "70",
+        "rest_seconds": "120",
+        "sub_series": [
+          { "id": "sub_1", "reps": "6", "weight_kg": "55", "rest_seconds": "0" },
+          { "id": "sub_2", "reps": "4", "weight_kg": "40", "rest_seconds": "0" }
+        ]
+      },
+      {
+        "id": "set_superserie",
+        "type": "superset",
+        "reps": "10",
+        "weight_kg": "30",
+        "rest_seconds": "90",
+        "sub_series": [
+          {
+            "id": "sub_3",
+            "reps": "10",
+            "weight_kg": "30",
+            "rest_seconds": "0",
+            "exercise_name": "Aperturas con mancuernas"
+          }
+        ]
+      }
+    ]
+  }
+}
