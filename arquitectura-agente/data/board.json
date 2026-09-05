@@ -254,6 +254,17 @@
             "GYM-199",
             "GYM-201"
           ]
+        },
+        {
+          "id": "GYM-226",
+          "title": "Automatizar la subida a Google Play de los cambios fusionados",
+          "state": "todo",
+          "summary": "Hoy nada de lo que se fusiona llega a Play: el workflow compila un APK y publica una release de GitHub, sin AAB ni subida. Automatizarlo hasta el canal de pruebas internas.",
+          "dependsOn": [],
+          "related": [
+            "GYM-158",
+            "GYM-199"
+          ]
         }
       ]
     },
@@ -1923,7 +1934,7 @@
         },
         {
           "id": "GYM-173",
-          "title": "Preservar series avanzadas al normalizar entrenamientos",
+          "title": "Blindar y validar la normalización de series avanzadas",
           "state": "todo",
           "summary": "Evitar que la hidratación descarte tipo, tempo y subseries de las plantillas.",
           "dependsOn": [],
@@ -2933,6 +2944,7 @@
         "GYM-225",
         "GYM-198",
         "GYM-199",
+        "GYM-226",
         "GYM-200",
         "GYM-201"
       ]
