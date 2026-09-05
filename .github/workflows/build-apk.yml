@@ -390,12 +390,23 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.select-transaction.outputs.tag }}
           BUILD_ID: ${{ steps.submit.outputs.build_id }}
+          # Igual que en el paso que envía el build: `eas` resuelve el proyecto
+          # con `expo config`, y `app.config.ts` aborta sin APP_ENV. Faltaba aquí,
+          # y `build:view` falló en los 200 intentos de la 1.35.1 hasta agotar la
+          # espera de 105 minutos, con el build ya compilándose en Expo.
+          APP_ENV: production
         shell: bash
         run: |
           set -euo pipefail
           DEADLINE=$((SECONDS + 6300))
+          : > /tmp/eas-view.last-error
           while [ "$SECONDS" -lt "$DEADLINE" ]; do
-            if ! (cd apps/mobile && eas build:view "$BUILD_ID" --json > /tmp/eas-view.json); then
+            # El error se guarda en vez de imprimirse: son cientos de intentos y
+            # volcarlos todos ahogaría el log. Se enseña solo al rendirse, que es
+            # cuando hace falta para diagnosticar.
+            if ! (cd apps/mobile && eas build:view "$BUILD_ID" --json \
+              > /tmp/eas-view.json 2> /tmp/eas-view.err); then
+              cat /tmp/eas-view.err /tmp/eas-view.json > /tmp/eas-view.last-error 2>/dev/null || true
               sleep 30
               continue
             fi
@@ -420,6 +431,10 @@ jobs:
             sleep 30
           done
           echo "::error::La espera local terminó; la transacción conserva el build ID y puede reconciliarse sin recompilar."
+          if [ -s /tmp/eas-view.last-error ]; then
+            echo "Último error de eas build:view (build ${BUILD_ID}):" >&2
+            tail -c 4000 /tmp/eas-view.last-error >&2
+          fi
           exit 75
 
       - name: Download APK to quarantine path
