@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-05",
+    "updated": "2026-09-06",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -2036,7 +2036,7 @@
         {
           "id": "GYM-180",
           "title": "Cerrar el proxy de Anthropic como herramienta de desarrollo, no endurecerlo para producción",
-          "state": "todo",
+          "state": "done",
           "summary": "La web ya puede llamar a Anthropic sin proxy, así que el proxy se cierra con llave como herramienta local en vez de convertirse en un servicio.",
           "dependsOn": [
             "GYM-181"
