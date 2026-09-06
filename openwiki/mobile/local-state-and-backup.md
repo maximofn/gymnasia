@@ -8,21 +8,13 @@ type: concepto
 title: Estado local y copia de seguridad
 description: Mapa completo de persistencia y ciclo de vida de la aplicación Expo con enfoque local-first, incluidos los límites de almacenamiento, la normalización, la copia de seguridad manual en JSON, los modos de fallo y las invariantes de seguridad.
 summary: Complete persistence map and lifecycle for the local-first Expo app, including storage boundaries, normalization, manual JSON backup, failure modes, and security invariants.
-tags: [mobile, persistence, local-storage, secure-storage, backup, hydration]
-sources:
-  - apps/mobile/App.tsx
-  - apps/mobile/storage/localDataDeletion.ts
-  - apps/mobile/storage/localDataDeletion.test.ts
-  - apps/mobile/metro.config.js
-  - apps/mobile/trace.ts
-  - apps/mobile/app.json
-  - apps/mobile/package.json
-  - apps/mobile/agent/toolExecutor.ts
-  - apps/mobile/agent/toolExecutor.test.ts
-  - scripts/data-inventory/inventory.json
-  - apps/mobile/agent/providerConfiguration.ts
-  - apps/mobile/agent/providerConfigurationPersistence.ts
-  - apps/mobile/agent/providerConfigurationPersistence.test.ts
+tags:
+  - mobile
+  - persistence
+  - local-storage
+  - secure-storage
+  - backup
+  - hydration
 related:
   - ./application-shell.md
   - ./training.md
