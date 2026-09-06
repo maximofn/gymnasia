@@ -5,7 +5,7 @@ description: Evidencia LangSmith agregada y saneada para interpretar límites, r
 tags: [runtime, langsmith, openwiki, observability, operations]
 verified:
   - by: openwiki/0.4.3
-    at: 2026-09-06T10:32:53.606Z
+    at: 2026-09-06T11:56:49.315Z
 sources:
   - id: openwiki-source-d63b46e4983cf20d445e960a
     resource: repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml
@@ -19,18 +19,18 @@ sources:
     resource: repo://ops/openwiki-automation-template/tests/build-daily-report.test.mjs
   - id: openwiki-source-6928a24ede2e031817053598
     resource: repo://ops/openwiki-automation-template/tests/classify-openwiki-error.test.mjs
-generated: { by: "openwiki/0.4.3", at: "2026-09-06T10:32:53.606Z" }
+generated: { by: "openwiki/0.4.3", at: "2026-09-06T11:56:49.315Z" }
 ---
 
 # Evidencia de ejecución de la automatización OpenWiki
 
-Esta página es el complemento de ejecución de [Automatización privada de OpenWiki](openwiki-automation.md), no un sustituto del código ni un informe de rendimiento de flota. Conserva patrones durables y separa los datos volátiles de cada extracción. Por privacidad no publica entradas, salidas, metadatos, logs, URLs de trazas, secretos ni PII; las cifras se limitan a agregados de duración, tokens y llamadas.
+Esta página complementa [Automatización privada de OpenWiki](openwiki-automation.md): contrasta sus límites y rutas de recuperación con una instantánea de ejecución, pero no sustituye al código ni describe el runtime de Gymnasia. Por privacidad no publica entradas, salidas, metadatos, logs, URLs de trazas, secretos ni PII; solo conserva agregados de raíces, llamadas, duración y tokens.
 
 ## Cómo interpretar la muestra
 
-La última extracción disponible para el proyecto LangSmith `openwiki` se obtuvo el **25 de agosto de 2026**. Es una muestra deliberadamente sesgada por anomalías: contiene 3 raíces del bucket `error`, 0 `outlier` y 1 `baseline`. Por tanto, los conteos por bucket no son tasas de fallo, uso o latencia de la flota. La única referencia de operación normal es la mediana calculada solo sobre `baseline`, y una sola raíz baseline no permite estimar variabilidad.
+La última extracción disponible del proyecto LangSmith `openwiki` se obtuvo el **25 de agosto de 2026**. Es una muestra deliberadamente sesgada por anomalías: contiene 3 raíces del bucket `error`, 0 `outlier` y 1 `baseline`. Los conteos de buckets no son tasas de fallo, uso o latencia de la flota. La única referencia de operación normal es la mediana calculada únicamente sobre `baseline`; con una raíz baseline no se puede estimar variabilidad.
 
-El workflow configura `LANGCHAIN_PROJECT: openwiki` y envía el trazado al endpoint europeo, pero activa `LANGSMITH_HIDE_INPUTS`, `LANGSMITH_HIDE_OUTPUTS` y `LANGSMITH_HIDE_METADATA`. La ausencia de contenido en esta página es, por diseño, compatible con esa frontera. El proyecto `openwiki` también aparece en la configuración local del conector LangSmith.
+En el Code Brain, `Run OpenWiki` define `LANGCHAIN_PROJECT=openwiki`, usa el endpoint europeo y oculta inputs, outputs y metadata; un despacho manual puede desactivar solamente el trazado de esa ejecución. Esta frontera explica por qué la página no contiene contenido de runs y debe preservarse al añadir observabilidad.
 
 ```mermaid
 flowchart TD
@@ -43,27 +43,27 @@ flowchart TD
     Metadata --> Daily["Informe Telegram saneado"]
 ```
 
-*El trazado y el informe tienen límites distintos: el primero oculta contenido de ejecución y el segundo deriva estado de metadatos de Actions, pasos y PR.*
+*El trazado del Code Brain y el informe diario son superficies separadas: el primero oculta contenido de ejecución y el segundo deriva estado de metadatos de Actions y PR.*
 
 ## Hallazgos y oportunidades de ejecución
 
 1. **Prioridad máxima — los errores muestreados terminaron antes de trabajo de herramientas.**
-   - **Observado:** las 3 raíces `error` finalizaron en `ChatOpenAI`/`model_request` con 0 tokens registrados. Dos mostraron firma de autenticación expirada (`401`) y una de límite de uso (`429`). Sus duraciones de raíz estuvieron entre 734 y 1.515 ms. No se observaron fallos de middleware, herramientas ni reintentos de herramientas en esta extracción.
-   - **Correlacionado:** `openwiki-update.yml` restaura el estado OAuth cifrado antes de ejecutar `openwiki code --update`; si el comando falla, limita el resultado a categorías permitidas y marca `oauth` separadamente de `rate-limit`. `classifyOpenWikiError` prioriza patrones OAuth fuertes y reconoce `429` como `rate-limit`; el test fija ambas familias y el cierre a una categoría sin reproducir logs.
-   - **Implicación:** antes de cambiar prompts, índices o herramientas para resolver una incidencia semejante, compruebe la restauración/renovación de OAuth y el presupuesto del proveedor. Al ampliar el clasificador, preserve la separación OAuth/cuota y sus pruebas de no filtración: las rutas de recuperación operativa son diferentes.
-   - **Hipótesis:** exponer en el informe únicamente la categoría final y la fuente abstracta de restauración (`artifact`, `seed` o recuperación), sin logs ni tokens, reduciría el diagnóstico manual. Debe verificarse junto con el contrato de informe y sus pruebas de privacidad.
+   - **Observado:** las 3 raíces `error` finalizaron en `ChatOpenAI`/`model_request` con 0 tokens registrados. Dos mostraron firma de autenticación expirada (`401`) y una de límite de uso (`429`); las raíces duraron entre 734 y 1.515 ms. No se observaron fallos de middleware, herramientas ni reintentos de herramientas.
+   - **Correlacionado:** `Run OpenWiki` restaura primero el OAuth cifrado y, ante un fallo de `openwiki code --update`, reduce el resultado a categorías permitidas y separa `oauth` de otras categorías. `classifyOpenWikiError` prioriza patrones OAuth fuertes, reconoce `429` como `rate-limit` y devuelve `unknown` si no puede leer el log. Sus pruebas fijan esa clasificación y que la salida no reproduzca contenido privado.
+   - **Implicación:** ante una incidencia equivalente, compruebe antes la restauración/renovación OAuth y el presupuesto del proveedor que prompts, índices o herramientas. Si amplía el clasificador, conserve la distinción OAuth/cuota y las pruebas de salida cerrada: las rutas de recuperación son distintas.
+   - **Hipótesis:** informar solo de la categoría final y de una fuente abstracta de restauración (`artifact`, `seed` o recuperación), sin logs ni tokens, reduciría diagnóstico manual. Debe verificarse contra el contrato y las pruebas de privacidad del informe.
 
-2. **Alta prioridad — la baseline observada no se comportó como una única llamada de modelo.**
-   - **Observado:** la única raíz `baseline` correcta duró **286 767 ms** (4 min 46,767 s), que es también la mediana baseline de esta extracción. Incluyó varias llamadas `ChatOpenAI` exitosas de aproximadamente 6,6–7,1 s y rondas de herramientas. Raíz y LLM registraron 0 tokens; esto significa telemetría ausente o no registrada, no consumo nulo. Solo la baseline mostró herramientas y no hubo outliers no erróneos.
-   - **Correlacionado:** el job dispone de un límite de 120 minutos y ejecuta el agente mediante `openwiki code --update`, no una petición directa única. El workflow persiste estado OAuth incluso tras rutas posteriores y solo publica documentación si OpenWiki tuvo éxito y el cifrado OAuth también lo tuvo; por ello una modificación del agente puede afectar tanto el tiempo de actualización como la oportunidad de publicación.
-   - **Implicación:** trate cambios de herramientas, conectores, middleware o instrucciones como potencialmente multiplicativos en rondas de modelo. Mantenga el descubrimiento dirigido y lecturas acotadas; esta extracción no justifica calcular coste de tokens ni optimizarlo porque todos los tokens registrados son cero.
-   - **Hipótesis:** contar de forma saneada llamadas de modelo y llamadas agrupadas por tipo de herramienta por raíz permitiría detectar exploración redundante sin capturar argumentos o resultados y sin reemplazar `LANGSMITH_HIDE_*`.
+2. **Prioridad alta — la baseline observada no fue una única llamada de modelo.**
+   - **Observado:** la única raíz `baseline` correcta duró **286 767 ms** (4 min 46,767 s), que es también la mediana baseline de esta extracción. Incluyó varias llamadas `ChatOpenAI` exitosas de aproximadamente 6,6–7,1 s y rondas de herramientas. Raíz y LLM registraron 0 tokens: esto indica telemetría ausente o no registrada, no consumo nulo. Solo la baseline mostró herramientas y no hubo outliers correctos.
+   - **Correlacionado:** el job `update` tiene un límite de 120 minutos y ejecuta `openwiki code --update`, no una petición directa única. Incluso tras rutas posteriores a la actualización, el workflow intenta cifrar el estado OAuth; el commit de documentación requiere tanto éxito de OpenWiki como cifrado OAuth correcto. Por tanto, una modificación que añada rondas puede afectar a la latencia y a la oportunidad de publicación.
+   - **Implicación:** trate cambios de herramientas, conectores, middleware o instrucciones como potencialmente multiplicativos en rondas de modelo. Mantenga descubrimiento dirigido y lecturas acotadas; estos datos no permiten calcular coste de tokens ni optimizarlo porque todos los tokens registrados son cero.
+   - **Hipótesis:** contar de forma saneada llamadas de modelo y llamadas por tipo de herramienta por raíz permitiría detectar exploración redundante sin capturar argumentos ni resultados y sin sustituir `LANGSMITH_HIDE_*`.
 
-3. **Prioridad media — no hay señal para convertir el informe diario en mecanismo de recuperación.**
-   - **Observado:** no aparecieron reintentos de herramientas, fallbacks de modelo ni outliers correctos en esta extracción; tampoco hay base en ella para atribuir el tiempo baseline a una herramienta concreta.
-   - **Correlacionado:** `buildDailyReport` construye el mensaje con el último run, metadatos de jobs y una PR; solo permite URLs HTTPS de `github.com` y selecciona campos concretos. Para OAuth ofrece guía de recuperación, pero no reejecuta OpenWiki. Sus pruebas introducen campos privados y URLs no permitidas para comprobar que no entran en el informe.
-   - **Implicación:** no añada logs de OpenWiki ni contenido de trazas al informe para diagnosticar estos casos. Si se necesitan nuevas señales, añada un campo agregado y una prueba adversarial que demuestre que entradas no confiables no se propagan a Telegram.
-   - **Hipótesis:** una futura muestra con una herramienta reintentada o un outlier correcto debería decidir si conviene instrumentar ese punto; esta muestra no respalda cambiar orden de middleware ni introducir reintentos.
+3. **Prioridad media — el informe diario no debe convertirse en mecanismo de recuperación.**
+   - **Observado:** la muestra no contiene reintentos de herramientas, fallback de modelo ni outliers correctos; tampoco permite atribuir la latencia baseline a una herramienta concreta.
+   - **Correlacionado:** `buildDailyReport` construye el mensaje desde el último run, sus jobs y una PR; no ejecuta OpenWiki. Acepta URLs HTTPS de `github.com` y selecciona campos concretos. Sus pruebas inyectan campos privados y URLs no confiables para comprobar que no entren en el mensaje.
+   - **Implicación:** no añada logs de OpenWiki ni contenido de trazas al informe para diagnosticar estos casos. Si hace falta una señal nueva, añada un agregado explícito y una prueba adversarial que demuestre que entradas no confiables no se propagan a Telegram.
+   - **Hipótesis:** una futura muestra con una herramienta reintentada o un outlier correcto puede justificar instrumentar ese punto; la muestra actual no justifica cambiar el orden de middleware ni introducir reintentos.
 
 ## Coste y latencia — datos volátiles de la extracción del 25 de agosto de 2026
 
@@ -73,14 +73,15 @@ flowchart TD
 | `error` | 3 | 734–1.515 ms por raíz; 2 firmas OAuth/401 y 1 de cuota/429; sin herramientas observadas. | 0 tokens registrados; no se puede inferir consumo ni coste. |
 | `outlier` | 0 | Sin evidencia de outlier correcto. | Sin evidencia de uso. |
 
-Las herramientas visibles de la baseline duraron decenas de milisegundos, pero hubo varias rondas de modelo; la extracción no permite repartir de forma fiable la latencia total entre herramientas o modelo. Tampoco aporta evidencia de llamadas repetidas a una misma herramienta: no se publica una cifra de repetición cuando el agregado no la permite respaldar. Estas métricas deben refrescarse de forma aditiva; una muestra pequeña no revoca los patrones anteriores por sí sola.
+Las herramientas visibles de la baseline duraron decenas de milisegundos, pero hubo varias rondas de modelo; la extracción no permite repartir fiablemente la latencia total entre herramientas y modelo. Tampoco aporta evidencia para cuantificar llamadas repetidas a una misma herramienta. Refresque estas métricas de forma aditiva: una muestra pequeña no revoca por sí sola los patrones ya respaldados.
 
-## Límites operativos que deben conservarse
+## Límites y recuperación que deben conservarse
 
-- El workflow de actualización se programa a las 08:00 UTC y el informe a las 12:00 UTC; ambos tienen concurrencia propia. El informe consulta hasta 30 ejecuciones recientes, obtiene los jobs del run más reciente y, si existe el token correspondiente, la PR `openwiki/update`.
-- El informe tiene un límite de 10 minutos y la actualización de 120. El formateador redondea duraciones de metadatos de Actions a segundos; no confunda esas duraciones con las de traza ni con coste de modelo.
-- La actualización permite un despacho diagnóstico con `disable_langsmith_tracing`; desactiva trazado para esa ejecución, no aporta fallback de modelo. Un diagnóstico sin trazas debe conservar las mismas barreras de secretos y el clasificador sigue operando solo sobre el log temporal.
-- El log y los estados en claro se eliminan en una ruta `always()` antes de persistir artefactos. Solo se suben estados cifrados y la publicación de documentación requiere éxito del comando y cifrado OAuth correcto.
+- `OpenWiki Update` se programa a las 08:00 UTC, tiene `timeout-minutes: 120` y su grupo `openwiki-update` no cancela una actualización ya iniciada. `OpenWiki Daily Report` se programa cuatro horas después, tiene 10 minutos y usa el grupo independiente `openwiki-daily-report`, que sí cancela informes solapados.
+- Antes de ejecutar OpenWiki, el update busca el último artefacto OAuth válido de la rama predeterminada; si no puede descifrarlo usa una semilla de recuperación si existe, y si no hay fuente recuperable no ejecuta el comando. El mecanismo es restauración de estado, no un reintento ni fallback de modelo.
+- El interruptor `disable_langsmith_tracing` solo inhabilita LangSmith en un despacho diagnóstico. El clasificador sigue trabajando sobre un log temporal y solo expone una categoría permitida; un diagnóstico sin trazas debe conservar las mismas barreras de secretos.
+- La limpieza `always()` elimina logs privados y estados OAuth en claro. Solo se cargan artefactos cifrados y la documentación se confirma únicamente si OpenWiki tuvo éxito y también lo tuvo el cifrado OAuth.
+- El informe consulta como máximo 30 ejecuciones recientes, obtiene los jobs del run más reciente y, cuando existe el token correspondiente, consulta la PR `openwiki/update`. Sus duraciones son metadatos de Actions redondeados a segundos: no las confunda con las duraciones de traza ni con coste de modelo.
 
 ## Validación al cambiar esta zona
 
@@ -90,6 +91,6 @@ Ejecute la suite de la plantilla antes de modificar clasificación, informe, pas
 npm --workspace ops/openwiki-automation-template test
 ```
 
-Las pruebas de `build-daily-report` verifican estados de éxito, ausencia de cambios documentales, historial de fallos y que campos privados o URLs no confiables no se filtren. Las del clasificador comprueban las familias admitidas, su prioridad y que tanto logs como rutas de lectura fallida produzcan solamente una categoría. Esta señal local no demuestra disponibilidad de OAuth, cuota de proveedor, Telegram, GitHub Actions ni LangSmith; para esos límites hace falta una ejecución remota controlada.
+Las pruebas de `build-daily-report` cubren éxito, ausencia de cambios documentales, historial de fallos y la exclusión de campos privados o URLs no confiables. Las de `classify-openwiki-error` cubren familias permitidas, precedencia, salida sin eco y fallo de lectura. Esta señal local no demuestra disponibilidad de OAuth, cuota de proveedor, Telegram, GitHub Actions ni LangSmith; esos límites requieren una ejecución remota controlada.
 
-Consulte [Automatización privada de OpenWiki](openwiki-automation.md) para el ciclo de secretos, artefactos y PR, [Compilación, publicación y pruebas](build-release-and-testing.md) para el marco de validación y [Inicio rápido](../quickstart.md) para el límite entre esta automatización y el runtime del producto.
+Consulte [Automatización privada de OpenWiki](openwiki-automation.md) para el ciclo de secretos, artefactos y PR; [Compilación, publicación y pruebas](build-release-and-testing.md) para el marco de validación; e [Inicio rápido](../quickstart.md) para el límite entre esta automatización y el runtime del producto.

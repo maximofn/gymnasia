@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:976ffe7db71cc11dca3db8c78bfe77159b9ac033610bbcb1b7a0fe81c6616606",
+  "claims": [
+    {
+      "id": "claim_b78ae34fdf464ce1aa6860aa6eeef8e6",
+      "statement": "`ops/openwiki-automation-template` ejecuta un workflow privado de actualización programado a las 08:00 UTC o bajo demanda, con concurrencia `openwiki-update`, límite de 120 minutos y preflight de visibilidad privada y configuración antes de instalar dependencias o clonar Gymnasia.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L1-L25",
+          "version": "repo-lines-v1:sha256:bf740ce1053dcfad20c450a192e685aa5cbfc0ace1124f62ebfde3b6e38caff7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MDI3ODdhZjZkY2MwODM0ZGUxMjFjYmIxY2I5NWY5NDU5YjcyMWVhYjAzNDlmMTA1MDFiOTk2YzFjNzdmZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmZDZjOTY4MTQxZWFmZGIwZjAyNGE3NGY1ZmRkY2M1NjY4MDIzZmQ4YTMyNTYwOTJiMDNkYmFhYTQ5N2E1MTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0YzU1OGUzYzUxNGY4NDNhZDQxYjM3OTc1MzY3MDNlODJlZmU5ZGIwYWNiMWJkODc2OTJkNTVmNzVlODFlNmUifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L38-L84",
+          "version": "repo-lines-v1:sha256:6b01ee84686e7c2e17c4991f3d1693cfe96bba94de34c0a02c6beb58ca678654:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1MTE4NDA2NjY2N2UzZDkwZjYxOThmN2Q3ZjBhOTM2YThkMGE1ZjRiNWE5YjgzNGY5YjlkMjkzM2NlYjVhOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0OTM0N2VjMThjMzAyNTE2ZDNmNmU3MGIzN2Q5NWFjYTk4YmExMzI5OTU4OTc3ZTVlNDUxOTY3YTA5ZmY1YTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3N2ZjZWQxMjlmZmVhNWE0OWRkNzFmNjVjZjhlMmY2MjJlYWM1MmZmODZjMTY5MGZlYjhmNGJiYjcxMGVlOGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYzgzY2RiMzgzMTA5NDBjMDZlMzQ3MmUzNGY4YmI4ZDhjMWQ1ZjMzOGMwNjAxZDE1N2MzNmQyYjQ1MGNiODUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c4f48c9e1f894c8ab1ccec35940baa77",
+      "statement": "El workflow clona Gymnasia, fuerza `openwiki/update` desde `origin/main` y solo prepara para publicar `openwiki` y `.openwikiignore`; restaura `AGENTS.md` y `CLAUDE.md` desde la rama base, y el push usa `--force-with-lease` antes de crear o actualizar la PR.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L462-L513",
+          "version": "repo-lines-v1:sha256:500b1bc0c45c9e8a93ad7118d7c6000ea7bba37f9ed132269e7a593a0c946baa:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzYjEwNzE2NzU4MmIxODA5N2E5ODlkMmNjYWQ1YWI4Mjc0M2YyOGE2M2NjNDEyMDI3YWQwZDhmMDcwNTA3NjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3YWEwOGMzOGQ4ZDA1NGM3YWVkOWVjN2U4MGIwNTk0NTcxM2NmMWUzZDViOTkwYjk1OWNjOGE4NzA2YTAzMDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYTBmZWRhNzQ2MTdlMjExNTk3MDY1OTJhMjUyYmYzMWYzNjJiMjcwMThmOGVkMjVlMzBkZWYxYzcxNWVkOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjODczMGVjMzUwMzhlZWY0YzllMjYzNTJjMjEyYmI0NWZhZGRkNzMwOGNjNDczMDc2YzhlMWZkMjBlZjlmZWYifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L82-L108",
+          "version": "repo-lines-v1:sha256:3faa8e52207801b15a20489737dd02f97020d8cf998913ab20d96b2c6ddf1138:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzMGI4ZTc4MTg1MWI4NjRhNDkyYmIxMjM4ZDQ5NjJiOWM3ZjNjMDE2NTY0YjZhYjQ4NDhjZDZjNDJlOGVkMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiNThmZjUyMjVmMDQ1ZTA0Yzk1OWRmODQ0YjRkNTVkNTZmN2M5YzFhYWUzMzI5M2Y3MTE4NTc4MTBhMmNkMmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmMzJhNWVjOWY2ZGZkNjNjN2QxZGFiZWJhZjYzYmE2MTkzMzJmZDA5NzA5YmMxZjk3NzM0YTU2MzM0NjRkODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlZWQyMzA1ODdkM2Q0ZTdkNmEwYzE1OTk4NTY3ZTYzMTM4YWVhMDRkM2M1MzE3YjJhN2FiOWYyMzU2ZTcwOWUifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/workflow.test.mjs#L75-L96",
+          "version": "repo-lines-v1:sha256:6703c5d7db4a6d07e211b65ae8fe93caa6c9a0c966c81e3248dc79dbb0578c05:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3NTQ2OTJkZmEzMmFiMDQ2NTZhNzlhOTdhYWM4ZmY4YTkyM2EwZWI3MTE2MDhmN2NlMDg0ZGU0NDFkZWViNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhYjU2MzI5YjBkNDY1NTUwZWUwNjRjOTkxZDk3YzA3ODNhMTJhODUyMTkzYjdiZWQ0NzY2NjYxOTUwYzQwNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1NTEzZWNlOTY4NWIwZDE5ZjhjZmQyZDAxZGJjZDRhYTFjYzAyYzAyYTFmNTg2NjM5NmM4NmRlZjEyZWQ5MDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9a1a5becf09442f899099f74ceace466",
+      "statement": "La plantilla declara Node `>=22.22.0 <23` y dependencias directas exactas `openwiki` 0.4.3, `jsdom` 29.1.1 y `mermaid` 11.16.1; el lockfile v3 repite ese manifiesto, por lo que `npm ci` instala el grafo bloqueado.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L69-L80",
+          "version": "repo-lines-v1:sha256:8ae0787b7f0720b915c26beb2087aa32b9a5eab3b686233a1907770e39a30769:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2ZDcxMGExNzYyODk1Y2Q0YzkzYzZhMmEyOWU2MjkyNGQ2ZjczMGQ5NWUyYWQxNzdjYTUwNDhlYjU2OWM5YWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzNzJmOWIyOTI4N2VhMTk2M2Q0YTBjODMwZGVlNDUwNTMwOGRjMTc2NTUwOTM1MjA0MmJlNjYyZjg1Y2FlNTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2MTYzZTZlOTg4NDU0OGFhOTg5NTQ1YWFmYzJmNTBkNTQ1MjY4ZjVlNTFiYWI4ZjhiODJiMTZiMzdlYzRmNzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3MGY3ZmU3NzFmNmFiNjJiZmViZGFhYTc4MWJmMTJjZGY2ZDE2YzlmYTQ1OGM3OWYwYWFlYTFhZmMzY2VlNmIifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/package-lock.json#L1-L18",
+          "version": "repo-lines-v1:sha256:940569959254ac41cca14ffdfc50cdf270247b35815ae82c4917f5d96f161faa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlNGU0OGZmZjQ4MTYzOGQ3Y2Q1YTM4ZjFjM2E1OWUyZGY4ZmNjZDk5OTkyOGJhOTY3OTI3MTc2NmE5YTIwOWYifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/package.json#L1-L16",
+          "version": "repo-lines-v1:sha256:a7880a49d9f9ff55d8067e8cca2370c7459019a91157752a2f5c115e4a43f7a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7f6294d85cd34ae3884656e23355a434",
+      "statement": "El OAuth se restaura desde el artefacto cifrado más reciente de la rama predeterminada o desde una semilla de recuperación; sin una fuente descifrable el comando OpenWiki no se ejecuta.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L110-L162",
+          "version": "repo-lines-v1:sha256:7d959f730d497c899380eb833f7075d2b869a4363a1d7427b7206badc8bf50bb:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4ZGQzNGRkOGQzN2JlMWIxZDBmNzcyZTUwNzIxZjg5OTU3MjczOWFiYjE5NzIxMjBlNjdlODdhNmM3MDc3MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzZDJhODBhN2M3OGIzZTBlYjg4YTE2NmJmODAwZDlmNTAxMzAxMjM0NzljZGE4YWQ5NzYzMzRhODI1MTVlYzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIzZjQxNWMwMTAwMmVjZWY3NjM5NzRkZGQyNTI3ZWU5OGFjNjFjMDQ5YzQxYTgxOTg1ZGU5ZDE1ZDRmN2Q1MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiNTUxZmFlODNjOWIwNDJhMDYwOTQ2YjhmZTIzOTY0MTNkM2Q1NjYyNzZiMDliZjM5YWNhYzY3MGMyZTYxZTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e0ef8ef3a6e4b96820f1112dc2c228a",
+      "statement": "El helper OAuth conserva solo campos ChatGPT permitidos, exige refresh token y account ID, y cifra el estado con AES-256-GCM, una clave `scrypt`, sal/IV aleatorios y datos autenticados; sus archivos se escriben con permisos 0600.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/oauth-state.mjs#L13-L17",
+          "version": "repo-lines-v1:sha256:905cf04675b6698c7fe7a5ff35d610f827434d5f8d2a5c7c11a270425934d563:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWQyYjgxZWE3NjIzYjJjNGZhYTk3MjVkYzczYzFjMWI5NzIzN2FiZTZjZjcwM2JhODM5MzliMGEwZDljOTFlYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDBkOThhNTRkZmI1YjU2ZGE5ZTQ5MWM0MGE4ZWE5OGQwMTUxYWZiMzUwNWIwMWRmOWM4NmE5ZTg4M2NhNzc3YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzI3YjM3YTYwYjMwYTZiNDkxYzdhMmYyZGU4MDY1YTM5MTkyZDI2NDg0MWMyMTQyYzIzOGI5M2NhOWM2NDU3MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjEzMzAxNTg3NDNiZWMwZDllOTVjYTg5NDlmNjM1M2I1NjRkOTQ4MGQ1ZTBmZTkwMjBlMzBhODc3YmQ5MGIzNCJ9"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/oauth-state.mjs#L132-L147",
+          "version": "repo-lines-v1:sha256:4952fb66caf538e09f70806ac9f3b9ec9491d0c2da4461a0e8250e5e22b80319:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNTBlYjhkZDE3OTA5MTJhMWY0NDBmNzgzNTRiZGQ3NWVhNDUxMWE0N2JjY2Q0ZmY1YzhhNmNlMDM5YjlhYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5M2MwOGFlNGNjMmE2MDNmMTczOTE1OTVmZDNhMGIyYjE4MmJlOTAxYzY0MDYzYzAxZTk0NWZkZjdjN2VhOTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4MzY3NjdhY2EzMGI4MmU5ZDYxYTA2NzQ3OTM2MDY5Y2EwZDI4NzUzZGRiMTQ0ZGFhODk2ZTg2NTYyNDRlNmIifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/oauth-state.mjs#L19-L90",
+          "version": "repo-lines-v1:sha256:1d48511453989498b704993472337a3376ebb663bbabe3ab40342724caf25a71:eyJzZWxlY3RlZExpbmVDb3VudCI6NzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiZGE2OWMyZDQwMjgxOTc5ODdmNjg0N2JkZWFlMzNkOTUwNzk3OTY3MzFhYzY1Mjk3N2I1MGIxNDE1YTQ2NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ2MTU0OTkzODRkMmNlNTQ2ZGVmODczMjI4NGFkMWMyZWU4MzI3NTQ0YjgyMjcwNjY0MWNlYmJjNGI5MWJiZjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyODdkYTcxZGI5ZjYwZjU3YTNkN2YxNjIyYjVlNGJiMTk3ODk2YTkyYjZhNGQxZWQ4MzE0ZjkxZWFmOTMzMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyYjk0OTE0YzM5Y2UxNjc2NWE1NGJiZjNjMzViMTAwYjRlZDE1NDQ2Y2U2YWIzMzkzZDZjZjgzMTBlMjg4MTEifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/oauth-state.test.mjs#L28-L83",
+          "version": "repo-lines-v1:sha256:2fdce48caaa7e27fa75fa4f9771f4ee4fea30174967c142a7f902601d221c37e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4ZGE0MjhhNmJmMGM0MmJlY2Y3NDZhMTY2OTc2MGQ2OTNlNjRiMTQ1ZTdhMDUyOGJhZmU5Y2JlNGFlNDk1NTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNmI5MTY3NGNjOWFhODY4Y2NiNDJkOGY2NWZjOTgzNDAxNWU3ZTg2ODc0MGUwNmRhYzNhN2MwZGM4N2JkYWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f1d2956e53034a6a957d47d752b7379f",
+      "statement": "Tras restaurar OAuth, el workflow intenta recifrarlo incluso en rutas posteriores de error, elimina estados en claro y logs temporales, conserva únicamente artefactos cifrados con retención de 30 días y exige éxito del comando y del cifrado OAuth para publicar documentación.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L414-L460",
+          "version": "repo-lines-v1:sha256:6d680690f260abef7a2e74c7a3742bce525db3bfe87de74826e150dc0b43d6af:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjMjdhYzJmOTkzZjNlMDVmM2FlODZiYTVlNzllZWE2ZjIxNDZkNWFjMzFhYjhhYWFmMWEyOTc4ODRmYWNhYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkMzJhYzIwODBhMTM0NWM2NDY4ZDBlMGUwOWE0OTMyMDE1MTc2NzQzZjkyYTUyNTM1NWNmZGZkNTg5N2NmZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxZmMxZjBhYzBmODlhNjRlZDgyOWMwNTZiZmYyZDM1OGRkMGU4ZTg3NzNlZDBjZGMyOWIyMWI1NzI1M2VjNjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0ZDA0NjIwYWRjMmNkZGM1ZTNmMzJhNTEyNWY3OTMxNzc5MTNmMjdmMzdjNjBkYzI3NzgxNTg5MGVlNWRkMGQifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L462-L481",
+          "version": "repo-lines-v1:sha256:2a0a2c348fe9378ab8f32a6081016f09a4ee6b3fcfc6ab3d871bc57aaf858b6c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzYjEwNzE2NzU4MmIxODA5N2E5ODlkMmNjYWQ1YWI4Mjc0M2YyOGE2M2NjNDEyMDI3YWQwZDhmMDcwNTA3NjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwNGZjMmFiMTdjMzZhMmI5MzMzMGZkODMwYjg1ZjNkY2I2ZDQ1ODdjOWM4NTQ2MjVkOWEwZjNkZDgyNWYyZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYTBmZWRhNzQ2MTdlMjExNTk3MDY1OTJhMjUyYmYzMWYzNjJiMjcwMThmOGVkMjVlMzBkZWYxYzcxNWVkOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5ODJhNzk2YWVjZjRlZWM0Zjg2NmIwZWNhZDdlZTY1NTRjNGY0NGJlMGYwNDZmZGVhNjY5ZjAwZTg1ZmZkYTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_973ad7a7f8a142809531678ba7a86784",
+      "statement": "Personal Brain es opcional, se ejecuta sin trazado LangSmith y persiste por separado solo estado privado cifrado; sus fuentes configurables son un export Linear de solo lectura, un repositorio seleccionado y búsqueda web enfocada.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L223-L280",
+          "version": "repo-lines-v1:sha256:06e057c4f884f78b36cf4ef4d921a8889ec448c726b30ab44901bffb0b4570f7:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1ZWRmOWQ2MmMyMTcxYzA0MDIyZjQxOTdmZjM4Y2E4ODUxMDI0Y2MzZjlmMTkwOWEzZWVkMWJhZjBlZTVmM2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1ZjQ0NzBjZjk1MjNjMzU4OWEyZTYxNmI5YzNlMzE1YTM2M2U0ZTFmMmU4YzJiMDAzY2UzZWVkNzkwYmVmNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlNjA4NjBlODM2YjZmNmZhMmM2ZjEyOTBhNTE0OTJmODJmYzBiNjMzYWIyNDA4YjcwMWJkODcyOTRiMjMzMmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1Nzc4OWI5Mjk4ZmMwZDQzMzZkZTNjYjg3M2JiOTMyN2VjYjVlNGNkMzU3ODY1NDQ4ZjY2N2I5NDMyYTdiMWYifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L302-L408",
+          "version": "repo-lines-v1:sha256:f6342398d0194c7729387e0d8195e0e1b92636c3b077525dab29968e91a78b93:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhMzUwY2UyY2Q5MTMxN2JlYmExMjhiZjAyZmRiYzVhZjU4MjAxZjIxMjk0NTdhODc0YjhmMDgzN2E1OTc5OGNhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxNzFjN2ZhZTU0MTI0YTIxODA2NTJmMGMzYTVjYTkyZDk0YmI1NWZhOGQ5N2I5NmQ5ZTA1YzJlNzFhMjM1YjRmIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI1ZDhjOTExOWI1YTY2Njk4YTFkZjhiN2ZiNDA0MTUzZDk1NmYwN2U0ZGU2NzVhZTg5MmU3M2FhMjZlYjdiYWY5IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyMzg1ZDFhYTNlZTNiYmMzYjk2N2YyYWU1N2U0YWIyZDEzZDljZjM0ZGE2ZjQyYjlkYmJhYjZmZDVlZGMzMTc0In0"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/configure-personal-brain.mjs#L24-L91",
+          "version": "repo-lines-v1:sha256:1d516e03c42c8e9a940e5635f9435a1a888918a99dd6a6aa721f5825a83f4b72:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0YWQxMGZiY2Y1ZjFkNGM4YzI3OWI0ZGQ2NjI4YjQwNzJiMjc2OWJjZDQ2YTU3NjJhOGY3MDEwZjYyZGMyNTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwZDg3ZWFhYmQ5OGUwZTAxZmNlZmQxOTFmNWU0NTk1YzRmNWJjMDNlYTdiNjc5M2E4MTY0ZmE0YWNjNDVkNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4MzY3NjdhY2EzMGI4MmU5ZDYxYTA2NzQ3OTM2MDY5Y2EwZDI4NzUzZGRiMTQ0ZGFhODk2ZTg2NTYyNDRlNmIifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/configure-personal-brain.mjs#L8-L22",
+          "version": "repo-lines-v1:sha256:fab6566b2947c8c1b1afe3e58654ff07245c95511fa0f1e6cbca9c809f2f8532:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliZmJmODU5YTQyMzllMDg0ZDk1MDRmYWE4MDIwYTg3ZjhkZTM4YmQyMTI3ZjI3NDc3ZDFjNWE1MmZkMTQ1ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3NjQ3OTE3ZmY2MGQzYjg1NDdhYWY3ODRhZGFkOGY1MjBiODQ1Mzg3NTYxMWQ1YjUyNzE3MTM0MWIyZGE0ODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyN2IzN2E2MGIzMGE2YjQ5MWM3YTJmMmRlODA2NWEzOTE5MmQyNjQ4NDFjMjE0MmMyMzhiOTNjYTljNjQ1NzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExN2Y0OTZlZjYzZDc5YmNiMTZlZjcyMDJkZjgwMGUzNjY0Y2I5NzJlNGE1ZTk5ZGY0ZTY2ZDM3YzUxY2YxMGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4df07b043843463eb79e66108733901d",
+      "statement": "El estado privado de Personal Brain se cifra con AES-256-GCM y `scrypt`, rechaza entradas por encima de límites de tamaño y escribe el resultado con permisos 0600.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/private-state.mjs#L13-L16",
+          "version": "repo-lines-v1:sha256:593693805f4b4e55cb83ed2fc5d9a8597cb5a1c611b61f0e0ccb6a2ad8fef55a:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmRkYjcyMmNmN2Q2YjdhODRjYzM1OTgwZjFhNzYzNDA5ZDAzMTVlMTlmNjQ4MzdiMGMzNjAzM2Q2ZjJiNjAwZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjA0ODlhNDY1YWVhMjRmZjU3ODk0ZDU0ZDM3NGJlMGRiNDg3NDRmMGIwNWM5MDgwYWIxNjhiYzFjZWFjZWNjMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzI3YjM3YTYwYjMwYTZiNDkxYzdhMmYyZGU4MDY1YTM5MTkyZDI2NDg0MWMyMTQyYzIzOGI5M2NhOWM2NDU3MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmNjNmIzY2E2NjI5Y2Y4ZmQ3ZDI0YTFmZjNkY2JhMjZmZWI5M2M4ZDNmODg3NTA3YWZhYzFhMDQ0NGM4NWVmMCJ9"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/private-state.mjs#L35-L49",
+          "version": "repo-lines-v1:sha256:dba8314e7a0b7e381fdf43f43b01b0bc07b0bf25111329782893d802ce2b5b47:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhY2I2ZTEzMDJhYWRlZGUxNTgwZmIxYjljNmNhZjE2MTMyODNkMGMyOTE4NDkwNjVlYWE4ZWJiODFmN2Y5MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjMmY3MTBhZjU2ODBlZWM5ZDI3OGJmMTRmNjY2NzRmZjJlYjdhZDZhOTY1ZDVjMGRmOGI5NGIyYzhmNDg3OWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiODM2NTMyMTg3YmIzMTRjMWIzZDgyZTljNjQyYjI3ZTE3YzA4MDE2ZmE2YTRjYTI0MGQ4YzgxMjJhNjc4N2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhN2YwY2MyNmUzODdkMzQzODA3MmUzZTU3ZmVhMzBiYjE1YmI5MDY3OWZiZDkxOGIxODZmMjY1MDU3OWM3YzYifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/private-state.mjs#L89-L111",
+          "version": "repo-lines-v1:sha256:36542dfd9ab5562b5423f4269d1db175f8a7caf2bbd19de392348c6a2f88d9aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNTBlYjhkZDE3OTA5MTJhMWY0NDBmNzgzNTRiZGQ3NWVhNDUxMWE0N2JjY2Q0ZmY1YzhhNmNlMDM5YjlhYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwOTlmZWE1MTdiODhlMjExMWIxN2FiOWVlMTY0NWY0ZmY3NTZhMTJiZDM0MTVlZTcwNTk3MmRiNzU5ZWVlMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBiNDdlZTJjMGRjNjIwMTRhNThjZmE2YjgwMmVjMGU4ODA2OTQ5MWRhOTAzNDVlNDBmNWUwODhiMTNhODJkNTQifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/private-state.test.mjs#L11-L37",
+          "version": "repo-lines-v1:sha256:1cce7e64ae37031e8110f355da3ace9ca892415215e969ad8e2279aa5216dc15:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMmRjNjE3ZDQwMTBlMjY2M2JjNTlhODNlMWFmM2RhZmRhMWFlZTkzMDBlY2ExZTQxODAzMmM1M2M3ZTgxMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1MDJlYjQyZTA5ZDAzMjlmOWVlMjhmYzA3NGQ2ZTczMzgyNmRkNjM3YTEzNjM5NTk0MDI3ODljOWQxNWVhOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_829aa4ed2f984bae804477285f9ff3a2",
+      "statement": "El Code Brain configura LangSmith para el proyecto `openwiki` y endpoint europeo, oculta inputs, outputs y metadatos, y solo permite desactivar trazado en un despacho manual diagnóstico.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L160-L181",
+          "version": "repo-lines-v1:sha256:66a017f5060b85e0cf320bf1fb705eaa5a74194da2e5282731bc0e4cc6ab0ffa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwZThmOWZhNDBlN2JkMDQ5OWQxYzBkODNmZDc1OGFhODViMzA4NDJkYmQ2MWYwZWE2YjdhZTEwZWZlYzc2ZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0M2I0ODI5ZTZhNzJiMzgxYTYyMzMxZmNkNmM2NjA2YmY3NzBjNWJhYjUzODYwZjk2ZTVhN2JjMjNlZDZlNjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgyNGFjOGU0ZmYxM2VlMGM2ODZhMTY4ODM1ZGE0YmZmNzUzY2EyOTFmZmY4MjE0NzQyMTE4YjczNmQ1YWY0NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxYmNkNjAxOGMyNzA0YzZlZDk1NTU4NmU2ZTE2MDJkMDIzMDU5NzgxZmYzNjkwMGE2N2Q1Y2M0N2RjN2NmMzIifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L3-L12",
+          "version": "repo-lines-v1:sha256:f1ba64225a52bc5e7f1c624663ceda7b9bfe83eebfc62f75283dd503f478842c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzYWVkNTAyYTVhZGVlN2JiMGNhZGQ0NmNkNzQ2M2I1MzIwYzZjY2VlNDQ4MGQ2Njg1NDg4NDMxMDYzNzYxMTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1YjFmMjRlNjE4MDVlZTFhOWJjNzgwNDdlMWU0YjNkODYxNTdkNmUzN2Q4YWMwYmNiZWJkNWU2NWU1ZWYxYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2OWFkMzU1ODY4OTgwZGQ2MGZhNzY0NGNkZGIwMmVlZmVjYzI5ZDJmMTZlNTVhMDhjZGE5MTM1OGE4MmI0NzAifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/workflow.test.mjs#L47-L62",
+          "version": "repo-lines-v1:sha256:492c773581aae0d352ea1adb3b7ea2914a2023f8cc2767a4d9eb15cef8247e9c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmM2QxNDMxYjU4YTkyMWNhOTFmNjIwOWU4OTVlMTNkNWQ2YmEzZmQ5MmU0YWU3NTFmNDE1NjQ3M2YxYjc5ZGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjNWI4NGFkZGYzNDY3ZGRlYmJkMzY0YzM3YWM3NWJjMGZlYmRlNDdlYjYyMzA4N2QyNzM3ZDVjNzBlMmZjNTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNmOWUwNWU1YWM0YTA1ZGE1NWQyMzAwZGQwNWFlNjhiNTdhZWM4ZGE1MGFjNjFhNDFkNjRlNmZiZDAwZTBlNjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe3211f8ded84cd392b028b1638ab28f",
+      "statement": "Ante un fallo de OpenWiki, el clasificador devuelve exclusivamente una categoría permitida; prioriza OAuth fuerte, luego categorías específicas y OAuth amplio, y devuelve `unknown` si no puede leer el log para no exponer contenido o rutas.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L179-L221",
+          "version": "repo-lines-v1:sha256:9383b196b1823b5bb1f26cbed0710c16d63284c5bf9e52f4f19b8ab87146d6ad:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzZDFjZjg3NGFiYmM2YmZlYzQ0MzI2YzlkYTExZTliZDUyNTkzZjE0ZmYyYzQ3ZGZlNTJiNTk4NzcxZjkwNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmMTU2N2MzNzYzZjMyMTQ3MWQ5MDk4M2ZkMTFlMmZhZDM4ZGRhZTA4M2FlYzYwNDk3MmVmODVkODUxMzJkYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNTEyMDk3MmMyYjBjYmFhMjA0MmRhMjhhYTk0Y2M4ZTNkYzY3ZGU4NzUyMzM2MjM5ZjY1MTY1MTU4NzgwMzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxZGYzOWMzN2Q5MjZjMGQ2MzYyNDM5ZTY3NzMyODliN2MyMDc4NGIyMDE2OTE0MDE5ODk4YzhkM2Y3ZjVmYzIifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/classify-openwiki-error.mjs#L4-L13",
+          "version": "repo-lines-v1:sha256:00807a57c8830029d99ca3906d16c1e250c59593c5ae20b9b0fc2761f73a4f5c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3ZmE2NzM1ZjViZjgxODUxZTkyYzljZjFkNWM2M2UyM2MxYjVkZmI0ZTVkOGRlNWJhZDhmN2E2ZmIzYmQxMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1MDI3OTNjZTY0OWFlNDQ4MTY5ZDI3NTQyNTkxYTZiNzEyYTU3YTYxM2U4ZWUyMTJlYjA5NzA2NzZiZGM1OTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzZjRjZDJmNzFhZWNhZTU4Y2ZkNmM5MGI4MGJkOGM0NTk2ZGVjMTllNTRmODllOWFkZWM2NjYwZjhlYmNjNTQifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/classify-openwiki-error.mjs#L68-L106",
+          "version": "repo-lines-v1:sha256:db5ba984ff675b8a482a926442e3dcac087b51bb192e14a7611dcc86a7d4b12b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiNWY1MWZiMTE1YzBmMWJiYzgxOTE3ZTlmM2UyMDQ4NjEyOWNmZDgyM2FiYzM5M2YzODFjOGE2MDk1MWQyMDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4NTE0MzFkYTAzYTA3NTdkMmJkYTZlNGIyYzdhMmM3ZGU3NmZkY2ZjNGUwZDRmOTg1MjBlYzQxZmYxMjVhZjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM1MjUyZWI1NTcwYzQ2ZTI0ZTc2MzBhMWY3OGNhYmQ3MWJjOWFiMDk0NDFhOWRmY2QyNTUxN2NlYjRkODA1MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/classify-openwiki-error.test.mjs#L44-L100",
+          "version": "repo-lines-v1:sha256:7403103f9bc265fcd2972a8dc2af8c214116b859370398d7e7888a1d0ec31f5f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjNDlmYjRmZWE1Nzg0ODlkN2IzODBiMmI1MDRmODgzMDM5ODdkNjc4OTc1ODQwYmEzZDU5MmYwNmZhMzA1MjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1ZWIzNzAyOGNkMjhlZGE4NjZkMTE0MTBjZWY4M2QzNDViYjBiMDQ3YmE1MzllNzYwNGU0ZGFkYzRkNTU5NjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMWVhMTVhMGY3YjFkNzc0MWMwOTJkZTgwMmQzOWZkYTQ0MzRlY2YwNWY5NDM1OGM2ZjM2OWNhOTExNmUyMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b5e035c07f274553aef8ae0c5b14cfe3",
+      "statement": "El informe diario es un workflow independiente programado a las 12:00 UTC, con concurrencia propia y límite de 10 minutos; se ejecuta solo en un repositorio privado con Telegram configurado y consulta metadatos de runs, jobs y una PR en lugar de logs.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml#L1-L54",
+          "version": "repo-lines-v1:sha256:b1869d800ad88e626c7e3f9a872d245f4cfe22bbdccdbedf5f132abfe2391424:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlNWQ4NDUyNjAzNGE0N2I5NjRhOTdiODMxY2FlMzNkNTMyOWQ2YmEyZjQxZGVmM2UzNDQxMzZmNzMwOGY1OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzNDBiOTQ4NzE2MzgwZTkwYjVmNmUzZTdmMTBhMDk0YjY2YzY0OWQ4OWNmODBlNTdlMGQyYjA1YzUxNWUxNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0NjQ0MjE0MzM5YzBmNTNjZDg2YTNiNTAwNGU0NWE1MzEwMTM4MTk2MjVhMmMxMzJhMTNiNzdhZjJkZjVhOTAifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml#L95-L124",
+          "version": "repo-lines-v1:sha256:958858b478c4fb9e8bf5fa6b3bc139f6c08e8249f5f388a586c1dcea203b767f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1NjhlOGQ0MDA3NTA3ZWE1NDFmZWY1YTIyNjlkNjBlYWQ3NDQwNDhjZTI2NDJlYTI5MjU0NWVlNjI4YmEyNDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4ZGM1MjU0MWFiMjgxYjkxOTVmODM3ZWJlN2ZiYTMyMmRmOTgzNTdjNDBlYTg5YzYzYmU5MDNlMWNiMWQ5OTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5NThlNTk5MmY3YTk2ODdiMzRiYTNjZTQxMTE4YmM3MzUzYjkyMThhN2U1YTg0YTg5OTQ1OGFlNzQzYTk2NDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNiYzcwZTFlM2Q3NDIwNzAyOTE4NDFjOTQzN2IzYWIyM2YzOWVhYzRhYTUxYzgzMGE2MTM1NjhmMWM2NmYxZDUifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/workflow.test.mjs#L99-L115",
+          "version": "repo-lines-v1:sha256:de69ab6382360e1bc52f4aa06d1b3d06fdc054953bb7b15b1fa337ce8ceb9444:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmYWVjNjBiYmY5YWYxMWE1NzJhMzRjYmQ5Mjg5OTlhMGE2MzE4OTEzNjU2ZTk2ZjFlYzg0N2Y4ZjRjMTFlMzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4MGQyZGQ0ZjI4OWQyNmRjNzU3YzJiNjVhMDZjMzkyMjdhNjcxN2M0YjQ4YjVhMzk3OTJjOWYxMWU0MWFlYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3MzAwZjZiN2QyZTVjNWU0YzMyNmE4MmFkYTg0YTA3NzVlODYwZTJkNzUxMDJjZDVlNzg2YjljODM2YzEwZGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8db21ca7bb224a799168d8f391d9021c",
+      "statement": "`buildDailyReport` deriva el informe de campos de metadatos permitidos, admite solo URLs HTTPS de `github.com` y filtra destacados a Markdown bajo `openwiki/`; las pruebas comprueban que campos privados y URLs no confiables no se propaguen.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/build-daily-report.mjs#L127-L136",
+          "version": "repo-lines-v1:sha256:2940382931cc2206bfa07cfd1dab2bcd83173a2feeca5dcc6e3df9523c33aeb9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMDM1OGZiYzFmYmUzNTI3YzkxYWU4MjQ2ZWJjZWI3NTRjN2FlMGNhMTBiZGNiZDBkZDM1YWRkOTZmMDJmZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0YjlhNDlmY2EyNjQzYzg4ZTNlZGJiYTg3MDg0ZWUyZTFhNjk4YWNhYWE3Y2VlZDVkYmVmOGExMmFjOTgyOWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0MDA1MjRmZDJjOWUwNzVhNzQ2YjM3MTc0M2EwMjFmNDY0ODlkNjYwYTMxNjA1YjkzNTA2MjcyODZjM2M2OGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQyYjRmYzIwODgzMjE5NGI5ZjdmMWE3NzhiZDE3MTAxNzZkMDViYjZmOTMwN2YwZjI0ZjVjNGIwODlkYmQ0OTgifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/build-daily-report.mjs#L326-L367",
+          "version": "repo-lines-v1:sha256:8227767f26c58aca0cd92f1d22888b6e1f0f2a12419a84bffb6c440ccf4a5304:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhMGUxNDQxYTJjYTczYjU4NGM3YjFjODM4MGJkOTdlYTIzYmM3NWQ2M2Q4MjA3OWQ1MWRlNmVhY2VjNWVkOGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlNDJkMGJlYjdhMDRmNWU3YmMwYjZjY2Y2YzFiM2YyNWYyZmQwNGQzYTE1YWMwODEyYjRkNDBiMWJhNTdmNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0ZGRjMjJiNjU5NjM4NmQzNzY4OWI1ZjQ5NDM5YzM2NjQyMTA5ODk5MTRhODU1ZTAxYjQyN2ZhZDJmNjZmMWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4NDgyMmUyZWI4ODE5YTJkZjFkNDM4OTg4Mjg4Njg5ZDQ4YzYyY2IwZjg1ZTkyYzBmYzE2ZjA0MGFkZTA4YWYifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/scripts/build-daily-report.mjs#L370-L416",
+          "version": "repo-lines-v1:sha256:4dacd3719064e35b32c5df3acea85508f63621a59cb9ede7053f2997e141617e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5N2FjZGU4NzYwNTliN2JmNGQyMjM2ZTFkM2M3MWUxZmM2MmYxMjMxZTUxZDQxNDU2MWQyOTE0ODFlZTE1M2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyYzZmMWRjOGIxNjZjOGQxY2UwNDY2ZjZjZmE5MWZjZGFhZmM0MzAyNTZjM2RmN2IyYjMzZDE4OTYxYmZhMGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzNjNjY2ZmZjY3M2I2NTFiZTIxMTc3YjJiMDRhOTc1NDEwN2ZmZDFlYWFjYzE1ZDNjMWI0MzAyNjNmOTU5YzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4MzY3NjdhY2EzMGI4MmU5ZDYxYTA2NzQ3OTM2MDY5Y2EwZDI4NzUzZGRiMTQ0ZGFhODk2ZTg2NTYyNDRlNmIifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/build-daily-report.test.mjs#L146-L186",
+          "version": "repo-lines-v1:sha256:cdc1953223d4018e21cb58ba2415b6a83ca0dbb91a78d0749da8b7ea8f5e5d4d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4NWFlODhlODBkYjk4Mjc3MTI1NWZjNmU4MWI0ZjFjZWY0NmYwY2MxNmJiOTMyZDM1MjkxOWVkNzU1OWQ3MGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkMTAxMjAzZTU1YzFhZjk3NzI5MmJkMDNmNGUyN2YwMGE4YTgxYzViNTliZTRiYmQwYWZiNWI2OGU2NDEzMzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3ZTNhOGQzM2JlMmYyMzY2YTM1NjAxNDM5YjljZTMzMWNkMjIyNjNmMGU3OGE5Y2JmNTVkMzViYjI3ZWM0YjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ea0736e46a654defb99e49f5d64fd8ef",
+      "statement": "La suite de la plantilla se expone como `node --test tests/*.test.mjs`, por lo que valida contratos locales de scripts y workflows pero no acredita la disponibilidad de integraciones remotas.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/package.json#L6-L11",
+          "version": "repo-lines-v1:sha256:e04119df3a66ffac73ef71f39b135b8eba89b423d7c40e172be38a17c6c23b53:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWY2MDE1NTQxMjJlZmU4NTVkNTZlMTBjYzliYWYyMDMxY2EzZjRhYjExY2RiYTIyZjFlYmM1ZDM5YTc1NTgyNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ1Y2QyZmI0ZjNkZjg4NDUxNTI1NWIzOTUyM2YyZjhiNTQ3MmJlZWE5ZjU2NmZmY2EyMDRkYjgwMjU2MTA0MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2QwODViYjNmY2U1ZDkzNTc4ODZkNGNlY2IzMTBkYjM4YTMzOTcxNDBjNzRhNmNkMWExZWFmN2Y1MGYzNzk4NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODhjN2Y5ZGMxZGU0YzA5NGU2ZTU2OGQxYThmODBmZDk1NTkyMmM0MGI1ZjM1Yjc5NDM1YzRlNzViZjgwYmUyZiJ9"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/oauth-state.test.mjs#L28-L83",
+          "version": "repo-lines-v1:sha256:2fdce48caaa7e27fa75fa4f9771f4ee4fea30174967c142a7f902601d221c37e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4ZGE0MjhhNmJmMGM0MmJlY2Y3NDZhMTY2OTc2MGQ2OTNlNjRiMTQ1ZTdhMDUyOGJhZmU5Y2JlNGFlNDk1NTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhNmI5MTY3NGNjOWFhODY4Y2NiNDJkOGY2NWZjOTgzNDAxNWU3ZTg2ODc0MGUwNmRhYzNhN2MwZGM4N2JkYWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/workflow.test.mjs#L14-L115",
+          "version": "repo-lines-v1:sha256:76d7792d17ed78800964178ab4fad680cea067f54b6a70b78e593f5b7f9e273e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2OGE4MDZlNDMxMzc3YWI3MDMzNmEzNTk5MDRkY2I1MjM5YWFlOGRjMzUwMGVhYjNiYzdlNmRhYjBkY2ViZGNkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxOWIwMjc4ZTc4NTc4OTkyMmEyMWI0ZmZkZDhhMWE5M2U5ZjM1YWJmODkyMmJiMGJkNDc5M2FiMjk1YWU4NWE0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NzMwMGY2YjdkMmU1YzVlNGMzMjZhODJhZGE4NGEwNzc1ZTg2MGUyZDc1MTAyY2Q1ZTc4NmI5YzgzNmMxMGRjIn0"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.4.3",
+    "at": "2026-09-06T11:56:49.315Z"
+  }
+}
