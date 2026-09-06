@@ -1,10 +1,37 @@
 # Proxy CORS de Anthropic
 
-Puente de **desarrollo** que permite usar Anthropic desde el navegador: el
-navegador bloquea las llamadas directas a `api.anthropic.com` por política CORS.
-En móvil no se usa — la app llama a Anthropic directamente — y la web publicada
-no lo incluye. No es un backend de producto: no tiene base de datos, ni sesiones,
-ni almacén de claves.
+Puente de **desarrollo**, y ya **opcional**: la app no lo necesita en ninguna
+plataforma.
+
+Existía porque el navegador bloqueaba las llamadas directas a
+`api.anthropic.com` por política CORS. Desde que la app declara la cabecera
+`anthropic-dangerous-direct-browser-access`, Anthropic devuelve permisos CORS y
+el navegador habla con la API igual que el móvil, igual que ya hacía con OpenAI
+y Google. Este proxy solo entra en juego si alguien configura
+`EXPO_PUBLIC_API_BASE_URL` a propósito.
+
+## No se despliega, y está cerrado con llave
+
+No es un backend de producto: no tiene base de datos, ni sesiones, ni almacén de
+claves. Y ahora que la app no lo necesita, exponerlo no compensaría ningún
+riesgo: sería un intermediario compartido por el que viajarían las claves BYOK
+de otras personas.
+
+El límite no es una advertencia, se comprueba:
+
+- **Se niega a arrancar** escuchando fuera de la máquina. `ANTHROPIC_PROXY_HOST`
+  con una dirección que no sea local termina el proceso con código 2.
+- **Rechaza con 403** cualquier petición cuyo cliente sea demostrablemente
+  remoto, se lance como se lance el proceso — `uvicorn --host 0.0.0.0`, un
+  contenedor o un túnel.
+- **Un guard rail en CI** (`npm run check:anthropic-proxy`) falla si aparece
+  infraestructura de despliegue apuntando al proxy: un Dockerfile a su lado, un
+  workflow que lo arranque como servicio, o su host declarado como destino de
+  red en el inventario de datos.
+
+Si algún día hiciera falta un puente compartido de verdad, necesita un ticket
+que autorice la excepción de backend, igual que se hizo con
+`apps/feedback-worker`.
 
 La implementación real está en `apps/anthropic_proxy/cors-proxy.py`.
 `apps/mobile/cors-proxy.py` es un symlink a ese fichero.
