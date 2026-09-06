@@ -94,6 +94,19 @@ jobs:
           echo "previous_sha=$previous_sha" >> "$GITHUB_OUTPUT"
           git switch --force-create openwiki/update origin/main
 
+      - name: Materialize linked agent instructions for OpenWiki
+        if: steps.preflight.outcome == 'success'
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -L AGENTS.md ] || [ "$(readlink AGENTS.md)" != "CLAUDE.md" ]; then
+            echo "::error title=Unexpected agent instruction topology::AGENTS.md must link to CLAUDE.md."
+            exit 1
+          fi
+          unlink AGENTS.md
+          cp --preserve=mode CLAUDE.md AGENTS.md
+
       - name: Restore encrypted OpenWiki OAuth state
         id: oauth
         if: steps.preflight.outcome == 'success'
@@ -191,9 +204,11 @@ jobs:
             fi
           fi
 
-          echo "auth_status=$auth_status" >> "$GITHUB_OUTPUT"
-          echo "failure_category=$failure_category" >> "$GITHUB_OUTPUT"
-          echo "result=$result" >> "$GITHUB_OUTPUT"
+          {
+            echo "auth_status=$auth_status"
+            echo "failure_category=$failure_category"
+            echo "result=$result"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Mark OpenAI OAuth failure
         if: steps.openwiki.outputs.auth_status == 'error'
@@ -453,9 +468,9 @@ jobs:
           set -euo pipefail
           git config user.name "openwiki-bot"
           git config user.email "openwiki-bot@users.noreply.github.com"
-          # OpenWiki 0.3.3 rewrites CLAUDE.md as a pointer to AGENTS.md. In
-          # Gymnasia AGENTS.md is already a symlink to CLAUDE.md, so preserve
-          # the reviewed instructions and publish generated wiki files only.
+          # OpenWiki manages AGENTS.md and CLAUDE.md as distinct files. Gymnasia
+          # keeps AGENTS.md as a symlink to canonical CLAUDE.md, so restore the
+          # reviewed topology and publish generated wiki files only.
           git restore --source=origin/main -- AGENTS.md CLAUDE.md
           git add -A -- openwiki .openwikiignore
           if git diff --cached --quiet; then

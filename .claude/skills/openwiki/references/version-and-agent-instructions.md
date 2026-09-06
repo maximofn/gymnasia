@@ -17,7 +17,25 @@ OpenWiki 0.3.3 prepara dos fragmentos distintos suponiendo que `AGENTS.md` y `CL
 
 Al escribir a través del enlace simbólico de Gymnasia, ambas operaciones afectan a `CLAUDE.md`. En la ejecución del 25 de agosto de 2026 quedó una referencia circular, texto cortado y dos delimitadores finales. El check `prompt-policy` bloqueó la PR antes de la fusión. Volvió a reproducirse con OpenWiki 0.4.3 el 30 de agosto de 2026: `openwiki code --update` insertó un segundo delimitador final y texto cortado antes de abortar afirmando que había dejado el fichero sin cambios. Si aparece ese mensaje, comprueba siempre `git diff -- CLAUDE.md`, restaura solo la edición parcial del comando y ejecuta `check-agent-instructions.mjs`; no reintentes sobre el mismo checkout.
 
-El runner privado evita recurrencias restaurando `AGENTS.md` y `CLAUDE.md` desde `origin/main` antes de preparar el commit y añade al índice solo `openwiki/` y `.openwikiignore`. Esta protección afecta exclusivamente al runner; las PR normales sí pueden actualizar aprendizajes en `CLAUDE.md`.
+El runner privado materializa temporalmente `AGENTS.md` como una copia regular de
+`CLAUDE.md` antes de ejecutar OpenWiki. Después restaura ambos desde
+`origin/main` antes de preparar el commit y añade al índice solo `openwiki/` y
+`.openwikiignore`. Esta protección afecta exclusivamente al runner; las PR
+normales sí pueden actualizar aprendizajes en `CLAUDE.md`.
+
+## Migración a 0.4
+
+OpenWiki 0.4 añade Claims con evidencia versionada, OKF 0.2 y una cola durable
+por páginas. La primera ejecución crea `openwiki/.claims/` y cambios amplios de
+front matter. El fichero `openwiki/.run.json` es un checkpoint transitorio:
+puede existir durante una ejecución interrumpida, pero debe desaparecer tras
+una finalización correcta. Revisa estos artefactos como documentación generada
+y mantén fuera de la PR las instrucciones materializadas.
+
+La instalación global de 0.4.3 puede mostrar un aviso `ERESOLVE overriding peer
+dependency` porque `deepagents@1.12.0` declara LangSmith `^0.7.1` mientras
+OpenWiki usa `^0.8.3`. El aviso por sí solo no implica que la instalación haya
+fallado: comprueba el banner de versión y ejecuta una actualización desechable.
 
 ## Protocolo de actualización
 
