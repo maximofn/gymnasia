@@ -1947,7 +1947,7 @@
         {
           "id": "GYM-227",
           "title": "Corregir la clonación superficial y la firma de cambios de series compuestas",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Clonar en profundidad las mini-series al duplicar ejercicios y rutinas, y detectar como cambio de plantilla la edición de tipo, tempo y mini-series.",
           "dependsOn": [],
           "related": [
