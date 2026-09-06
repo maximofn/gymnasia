@@ -901,10 +901,15 @@ function parseJsonWithoutThrow(raw: string | null): {
   }
 }
 
-const ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE =
-  "Anthropic en navegador necesita un proxy HTTP por CORS. " +
-  "Configura EXPO_PUBLIC_API_BASE_URL apuntando a tu proxy, o usa OpenAI/Google en web, " +
-  "o abre la app en el movil.";
+// El navegador ya no necesita ningún proxy para Anthropic: la app declara
+// `anthropic-dangerous-direct-browser-access` y llama a la API directamente,
+// igual que a OpenAI y Google. Este mensaje solo aparece cuando alguien
+// configuró un proxy a propósito y ese proxy no responde, así que dice cómo
+// salir del paso en vez de pedir que se monte uno.
+const ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE =
+  "El proxy configurado en EXPO_PUBLIC_API_BASE_URL no responde. " +
+  "Comprueba que sigue levantado, o quita esa variable para que la app hable " +
+  "con Anthropic directamente.";
 const ANTHROPIC_TRUNCATED_STREAM_MESSAGE =
   "La respuesta de Anthropic se cortó antes de completarse. Vuelve a intentarlo.";
 const FOOD_ESTIMATOR_SYSTEM_PROMPT =
@@ -1976,9 +1981,9 @@ async function fetchAnthropicModelsViaWebProxy(
   } catch (err) {
     const rawMessage = err instanceof Error ? err.message.trim() : "";
     if (rawMessage.toLowerCase().includes("failed to fetch")) {
-      throw new Error(ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE);
+      throw new Error(ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE);
     }
-    throw new Error(rawMessage || ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE);
+    throw new Error(rawMessage || ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE);
   }
 }
 
@@ -2120,7 +2125,7 @@ async function callAnthropicViaWebProxy(
   } catch (err) {
     const rawMessage = err instanceof Error ? err.message : "No se pudo conectar con Anthropic.";
     if (rawMessage.toLowerCase().includes("failed to fetch")) {
-      throw new Error(ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE);
+      throw new Error(ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE);
     }
     throw new Error(rawMessage);
   }
@@ -3170,7 +3175,7 @@ async function callProviderChatAPIWithTools(
             ...body,
           },
           streamHandlers,
-          ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE,
+          ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE,
           "Proxy Anthropic error",
         );
       }
@@ -3551,7 +3556,7 @@ async function callFoodEstimatorAPI(
             ...body,
           },
           streamHandlers,
-          ANTHROPIC_WEB_PROXY_REQUIRED_MESSAGE,
+          ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE,
           "Proxy Anthropic error",
         );
       }

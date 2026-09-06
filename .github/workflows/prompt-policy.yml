@@ -83,6 +83,14 @@ jobs:
         id: data_inventory_tests
         run: npm run test:data-inventory
 
+      - name: Verify the Anthropic proxy stays a local tool
+        id: anthropic_proxy
+        run: npm run check:anthropic-proxy
+
+      - name: Run Anthropic proxy guard rail tests
+        id: anthropic_proxy_tests
+        run: npm run test:anthropic-proxy
+
       - name: Verify generated privacy policy
         id: legal
         run: npm run check:legal
@@ -125,6 +133,8 @@ jobs:
             echo "| Health safety deterministic tests | ${{ steps.health_safety_tests.outcome }} |"
             echo "| Published data inventory | ${{ steps.data_inventory.outcome }} |"
             echo "| Data inventory tests | ${{ steps.data_inventory_tests.outcome }} |"
+            echo "| Anthropic proxy stays local | ${{ steps.anthropic_proxy.outcome }} |"
+            echo "| Anthropic proxy guard rail tests | ${{ steps.anthropic_proxy_tests.outcome }} |"
             echo "| Generated privacy policy | ${{ steps.legal.outcome }} |"
             echo "| Privacy policy tests | ${{ steps.legal_tests.outcome }} |"
             echo "| Bundled prompt parity | ${{ steps.snapshot.outcome }} |"

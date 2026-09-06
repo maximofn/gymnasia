@@ -5,7 +5,7 @@ la clave nunca sale, y nunca hay un exito falso — o respuesta valida, o error
 explicito, pero nunca un 500 ni una lista que aparente estar completa.
 """
 
-from hypothesis import HealthCheck, given, settings
+from hypothesis import HealthCheck, assume, given, settings
 from hypothesis import strategies as st
 
 from conftest import json_response
@@ -71,6 +71,10 @@ def test_la_clave_nunca_viaja_en_el_cuerpo_hacia_anthropic(client, fake_upstream
 )
 @settings(max_examples=200, deadline=None)
 def test_redact_borra_cualquier_secreto_lo_bastante_largo(proxy, secreto, antes, despues):
+    # Un secreto que ademas es un trozo del propio marcador es un caso
+    # degenerado y no una fuga: la redaccion si lo borro, y lo que queda es el
+    # marcador. Lo encontro hypothesis con «redacta», dentro de «redactado».
+    assume(secreto not in proxy.REDACTED)
     texto = f"{antes}{secreto}{despues}"
 
     limpio = proxy.redact(texto, secreto)

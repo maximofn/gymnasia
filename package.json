@@ -34,6 +34,8 @@
     "test:production-release": "node --test scripts/production-release/*.test.mjs",
     "check:data-inventory": "node scripts/data-inventory/check.mjs --check",
     "test:data-inventory": "node --test scripts/data-inventory/*.test.mjs",
+    "check:anthropic-proxy": "node scripts/anthropic-proxy/check.mjs",
+    "test:anthropic-proxy": "node --test scripts/anthropic-proxy/*.test.mjs",
     "sync:legal": "node scripts/legal/generate.mjs --write",
     "check:legal": "node scripts/legal/generate.mjs --check",
     "test:legal": "node --test scripts/legal/*.test.mjs",

@@ -5,11 +5,19 @@ description: Levantar, parar y gestionar el proxy CORS local para usar modelos d
 
 # Anthropic CORS Proxy
 
-Proxy local ligero que permite usar la API de Anthropic desde el navegador, esquivando las restricciones CORS del browser.
+Proxy local ligero, hoy **opcional**: la app ya no lo necesita en ninguna plataforma.
 
-## Por que es necesario
+## Ya no hace falta para usar Anthropic en el navegador
 
-El navegador bloquea las llamadas directas a `api.anthropic.com` por politica CORS. OpenAI y Google funcionan directamente desde el browser, pero Anthropic no. Este proxy se interpone entre la app web y la API de Anthropic, reenviando las peticiones desde localhost.
+**Antes de levantarlo, comprueba si de verdad lo necesitas: casi nunca.** La app declara la cabecera `anthropic-dangerous-direct-browser-access`, y con ella Anthropic devuelve permisos CORS —también en las respuestas de streaming—, así que el navegador la llama directamente igual que a OpenAI y Google.
+
+Si alguien reporta un error de CORS con Anthropic en web, **lo que falta es esa cabecera, no este proxy**. Levantarlo taparia el sintoma y dejaria el fallo real sin arreglar.
+
+El proxy conserva su sitio para depurar la propia pasarela: reproducir su contrato, sus codigos de estado o su paginacion. Se activa solo si se configura `EXPO_PUBLIC_API_BASE_URL` a proposito.
+
+## No se despliega
+
+Es una herramienta de escritorio y esta cerrado con llave, porque la app no lo necesita y por el viajarian claves BYOK ajenas: se niega a arrancar escuchando fuera de la maquina, rechaza con 403 a cualquier cliente remoto, y `npm run check:anthropic-proxy` falla en CI si aparece infraestructura de despliegue apuntando a el. Ver GYM-180 (ticket para cerrar el proxy de Anthropic como herramienta de desarrollo).
 
 ## Arquitectura
 

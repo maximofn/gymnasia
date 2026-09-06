@@ -105,10 +105,17 @@ Run from repo root unless noted.
   `npm --workspace apps/mobile run web`
 - If local environment blocks opening ports, validate web bundling without serving:
   `cd apps/mobile && npx expo export --platform web --dev`
-- **CORS proxy for Anthropic (browser testing)**:
-  - Browser CORS policy blocks direct calls to the Anthropic API.
-  - A lightweight proxy is available at `apps/mobile/cors-proxy.py`.
-  - The real implementation lives in `apps/anthropic_proxy/cors-proxy.py`; `apps/mobile/cors-proxy.py` is a symlink to that file.
+- **CORS proxy for Anthropic — opcional, y ya no hace falta**:
+  - La app declara `anthropic-dangerous-direct-browser-access`, así que Anthropic
+    devuelve cabeceras CORS y el navegador la llama directamente, igual que a
+    OpenAI y Google. **No levantes el proxy para probar Anthropic en web.**
+  - El proxy sigue existiendo para depurar la propia pasarela, y solo se usa si
+    configuras `EXPO_PUBLIC_API_BASE_URL` a propósito.
+  - **No se despliega.** Se niega a escuchar fuera de `127.0.0.1`, rechaza con 403
+    a cualquier cliente remoto, y `npm run check:anthropic-proxy` falla en CI si
+    aparece infraestructura de despliegue apuntando a él. Ver GYM-180 (ticket para
+    cerrar el proxy de Anthropic como herramienta de desarrollo).
+  - La implementación está en `apps/anthropic_proxy/cors-proxy.py`; `apps/mobile/cors-proxy.py` es un symlink a ese fichero.
   - Start it with the project virtualenv interpreter:
     `apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py`
   - If the virtualenv is missing, create it once from the declared dependencies:
@@ -120,17 +127,18 @@ Run from repo root unless noted.
     symlink, so `sys.path[0]` is `apps/mobile/`, not the proxy directory. A
     sibling-module import would crash on startup while passing green in the
     tests, which load it by its real path.
-  - It runs on `http://127.0.0.1:8000`; set `EXPO_PUBLIC_API_BASE_URL` to that
-    URL when you want Anthropic in the browser. Production web builds leave this
-    variable empty by default because no proxy is bundled.
+  - Escucha en `http://127.0.0.1:8000`. La variable `EXPO_PUBLIC_API_BASE_URL`
+    está vacía por defecto y así debe quedarse: apuntarla al proxy solo tiene
+    sentido para depurar el propio proxy.
   - Quick health check:
     `curl -sS http://127.0.0.1:8000/health`
   - The `/chat/providers/anthropic/messages` endpoint supports SSE streaming, so browser debugging can mirror the live Anthropic chat flow used by the mobile app.
   - Proxies `/chat/providers/anthropic/verify`, `/chat/providers/anthropic/messages`, and `/chat/providers/anthropic/models`.
-  - OpenAI and Google providers work directly in browser without the proxy.
 - Important caveats for this project:
   - SecureStore is not available in browser with the same guarantees as native.
-  - Direct Anthropic chat from browser requires the CORS proxy above. OpenAI/Google can be used directly.
+  - Los tres proveedores funcionan en el navegador sin intermediarios. Si ves un
+    error de CORS con Anthropic, lo que falta es la cabecera de acceso directo,
+    no un proxy.
 
 ## Tablero de seguimiento — Deploy Runbook (`arquitectura-agente/`)
 - Qué es: espejo manual de los tickets de Linear en <https://gymnasia-sable.vercel.app/>.

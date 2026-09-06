@@ -16,6 +16,7 @@ el arranque documentado mientras las pruebas (que cargan por ruta real) pasarian
 en verde.
 """
 
+import ipaddress
 import json
 import os
 import re
@@ -172,6 +173,51 @@ def upstream_body(request: ProxyRequestBase) -> bytes:
 # --------------------------------------------------------------------------
 
 app = FastAPI(title="CORS Proxy")
+
+
+# --------------------------------------------------------------------------
+# Cerrojo: esto es una herramienta de escritorio, no un servicio
+# --------------------------------------------------------------------------
+#
+# La app ya no necesita este proxy: desde que declara
+# `anthropic-dangerous-direct-browser-access`, el navegador habla con Anthropic
+# igual que el movil. Exponerlo dejaria de ser un riesgo asumido a cambio de
+# algo y pasaria a ser un riesgo a cambio de nada, porque por el viajarian las
+# claves BYOK de terceros.
+#
+# Por eso el limite se comprueba en ejecucion y no solo en el arranque: da igual
+# como se lance —`uvicorn --host 0.0.0.0`, un contenedor, un tunel—, una
+# peticion que venga de fuera de la maquina se rechaza.
+
+
+def is_loopback_client(host: str | None) -> bool:
+    """Decide si un cliente esta en la misma maquina.
+
+    Solo se rechaza lo que se puede demostrar remoto. Un host ausente o que no
+    es una IP (el `testclient` de Starlette, un socket unix) se acepta: el
+    cerrojo protege de una exposicion real, no de los arneses de prueba.
+    """
+    if not host:
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return True
+
+
+@app.middleware("http")
+async def only_loopback(request, call_next):
+    client = request.client
+    if not is_loopback_client(client.host if client else None):
+        return JSONResponse(
+            error_payload(
+                "forbidden",
+                "Este proxy es una herramienta de desarrollo local y solo atiende a "
+                "127.0.0.1. No debe desplegarse: la app llama a Anthropic directamente.",
+            ),
+            status_code=403,
+        )
+    return await call_next(request)
 
 
 @app.middleware("http")
@@ -529,7 +575,18 @@ if __name__ == "__main__":
     import uvicorn
 
     port = int(os.environ.get("ANTHROPIC_PROXY_PORT", "8000"))
+    host = os.environ.get("ANTHROPIC_PROXY_HOST", "127.0.0.1")
+    # Se falla al arrancar, no se corrige en silencio: quien pide escuchar fuera
+    # de la maquina esta intentando desplegar esto, y tiene que enterarse.
+    if not is_loopback_client(host):
+        print(
+            f"!! ANTHROPIC_PROXY_HOST={host} no es una direccion local.\n"
+            "   Este proxy es una herramienta de desarrollo y no se despliega: "
+            "la app llama a Anthropic directamente desde el navegador.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
     if ANTHROPIC_API != "https://api.anthropic.com":
         print(f"!! Upstream sobreescrito: {ANTHROPIC_API}")
-    print(f"CORS proxy running on http://127.0.0.1:{port}")
-    uvicorn.run(app, host="127.0.0.1", port=port)
+    print(f"CORS proxy running on http://{host}:{port}")
+    uvicorn.run(app, host=host, port=port)

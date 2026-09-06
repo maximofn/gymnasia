@@ -47,9 +47,13 @@ Sin levantar servidor (util en entornos sin puertos):
 cd apps/mobile && npx expo export --platform web --dev
 ```
 
-## Proxy CORS para Anthropic (obligatorio en desarrollo local)
+## Proxy CORS para Anthropic (ya NO hace falta)
 
-Al desarrollar en local con el navegador, es necesario levantar el proxy CORS para que el chat con Anthropic funcione. Sin el proxy, las llamadas a `api.anthropic.com` fallan por CORS.
+**No levantes el proxy para probar Anthropic en el navegador.** La app declara la cabecera `anthropic-dangerous-direct-browser-access`, así que Anthropic devuelve permisos CORS y el navegador la llama directamente, igual que a OpenAI y Google. Los tres proveedores funcionan sin intermediarios.
+
+El proxy sigue existiendo para depurar la propia pasarela, y solo entra en juego si configuras `EXPO_PUBLIC_API_BASE_URL` a propósito. No se despliega: se niega a escuchar fuera de `127.0.0.1` y rechaza a cualquier cliente remoto. Ver GYM-180 (ticket para cerrar el proxy de Anthropic como herramienta de desarrollo).
+
+Si ves un error de CORS con Anthropic en el navegador, lo que falta es esa cabecera, no un proxy.
 
 Toda la informacion de como arrancar, configurar y depurar el proxy esta en la skill `.claude/skills/anthropic-cors-proxy/SKILL.md`. Consultala siempre que necesites levantar o solucionar problemas con el proxy.
 
