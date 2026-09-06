@@ -478,6 +478,28 @@ salida: hay que leer la última línea**, que en un recorrido correcto es
 `Entrenamiento usability e2e completed successfully`. Si algún día entra en CI,
 esto hay que arreglarlo antes o el job pasará siempre.
 
+### El chat nunca escribe letra a letra, y con temas de salud no escribe hasta el final
+- Gotcha: el síntoma es "el streaming no funciona", y encima **intermitente**: con unas
+  preguntas el texto aparece escalonado y con otras sale entero de golpe. Lleva derecho a
+  buscar el fallo en el transporte —`stream: true`, el XHR, los deltas del proveedor— y ahí
+  todo está correcto. Verificado el 6 de septiembre de 2026 en un móvil real con
+  claude-sonnet-5.
+- La causa es el filtro sanitario, y son **dos** comportamientos distintos, ambos a propósito
+  (`createHealthSafeStreamGate` en `apps/mobile/agent/healthSafety.ts`):
+  1. El texto solo se revela hasta el **último punto o salto de línea completo**
+     (`lastCompleteSegmentBoundary`), porque el clasificador no puede juzgar media frase. Es
+     decir: se pinta por frases, nunca token a token. Con un modelo rápido y frases cortas
+     parece instantáneo aunque esté funcionando.
+  2. Si la **pregunta del usuario** se clasifica con nivel distinto de `none`, se activa
+     `fullBuffer` y no se muestra **nada** hasta que la respuesta está completa, para no
+     enseñar media recomendación que luego haya que bloquear. Como esta app va de
+     entrenamiento y nutrición, es un caso frecuente, no una rareza.
+- Para distinguirlo sin tocar código: pide un texto largo **ajeno a la salud** (por ejemplo,
+  la historia de la bicicleta). Si ese llega escalonado, el transporte está bien y lo que se
+  vio era el modo de salud.
+- Cambiar esto es tocar el filtro sanitario, que se gobierna aparte: ver la regla de
+  `policy/health-safety/` al principio de este documento.
+
 ### Clearing `localStorage` does NOT reset the app on web — it also persists to `.dev-store.json`
 - Gotcha: on web + `__DEV__`, `App.tsx` (`loadDevStoreFile` / `saveDevStoreFile`) mirrors the store to `apps/mobile/.dev-store.json` through a Metro middleware (`metro.config.js`, `/dev-store` endpoint) so data survives dev-server restarts. On boot it reads that file back, so wiping `localStorage` leaves the app fully populated. The file is served per dev server, not per origin, so `localhost:8081` and `127.0.0.1:8081` restore the *same* data even though their `localStorage` is separate.
 - Fix: to test a clean install on web, empty the file too (`printf '{}' > apps/mobile/.dev-store.json`) and make sure no tab still has the app running — a live instance re-persists its in-memory state on the way out, silently undoing the wipe.
