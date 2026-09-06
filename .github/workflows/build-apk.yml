@@ -251,6 +251,7 @@ jobs:
           '
 
       - name: Create durable draft before EAS
+        id: draft
         if: needs.select-transaction.outputs.action == 'build' && needs.select-transaction.outputs.mode == 'new'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -292,6 +293,16 @@ jobs:
             /tmp/production-policy-snapshot.json \
             /tmp/production-policy-bundle.tar.gz \
             --repo "$GITHUB_REPOSITORY" --clobber
+          # `select-transaction` calcula el release_id antes de que este borrador
+          # exista, asi que en una version nueva llega vacio y la subida del APK
+          # acaba en un 404 con el binario ya compilado. Se resuelve aqui.
+          # No sirve `releases/tags/<tag>`: ese endpoint no encuentra borradores.
+          RELEASE_ID="$(gh api --paginate "/repos/${GITHUB_REPOSITORY}/releases" \
+            --jq "[.[] | select(.tag_name == \"${TAG}\")] | first | .id // empty")"
+          test -n "$RELEASE_ID" || {
+            echo "::error::No se pudo resolver el id del borrador ${TAG}."; exit 1;
+          }
+          echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
 
       - name: Refresh durable source evidence
         if: needs.select-transaction.outputs.action == 'build' && needs.select-transaction.outputs.mode != 'new'
@@ -501,7 +512,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.select-transaction.outputs.tag }}
-          RELEASE_ID: ${{ needs.select-transaction.outputs.release_id }}
+          RELEASE_ID: ${{ needs.select-transaction.outputs.release_id || steps.draft.outputs.release_id }}
         run: |
           gh release upload "$TAG" \
             /tmp/android-release-transaction.json \
@@ -528,7 +539,7 @@ jobs:
         if: needs.select-transaction.outputs.action == 'build'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_ID: ${{ needs.select-transaction.outputs.release_id }}
+          RELEASE_ID: ${{ needs.select-transaction.outputs.release_id || steps.draft.outputs.release_id }}
           SOURCE_COMMIT: ${{ needs.select-transaction.outputs.source_commit }}
         shell: bash
         run: |
