@@ -36,6 +36,17 @@ describe("contrato de series con App.tsx", () => {
   it("App.tsx consume el módulo extraído", () => {
     expect(appSource).toContain('from "./training/seriesContract"');
     expect(appSource).toContain('from "./training/seriesPresentation"');
+    expect(appSource).toContain('from "./training/workoutTemplateOperations"');
+  });
+
+  it("App.tsx no vuelve a implementar copias ni firmas de series", () => {
+    expect(appSource).not.toContain("function cloneWorkoutTemplate(");
+    expect(appSource).not.toContain("function buildTemplateSeriesSignature(");
+    expect(appSource).not.toContain("sub_series: source.sub_series?.map");
+    expect(appSource).toContain("cloneWorkoutTemplateSnapshot(");
+    expect(appSource).toContain("duplicateWorkoutTemplate(");
+    expect(appSource).toContain("duplicateWorkoutExercise(");
+    expect(appSource).toContain("duplicateExerciseSeries(");
   });
 
   it("solo la importación exige estructura; el arranque siempre repara", () => {

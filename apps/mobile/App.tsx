@@ -177,6 +177,18 @@ import {
   SERIES_TYPE_META,
 } from "./training/seriesPresentation";
 import {
+  buildTemplateSeriesSignature,
+  changeExerciseSeriesType,
+  cloneWorkoutTemplateSnapshot,
+  createSeriesAfter,
+  duplicateExerciseSeries,
+  duplicateWorkoutExercise,
+  duplicateWorkoutTemplate,
+  type RoutineIconName,
+  type TrainingCategory,
+  type WorkoutTemplate,
+} from "./training/workoutTemplateOperations";
+import {
   catalogRef,
   linkedCatalog,
   unresolvedCatalog,
@@ -399,47 +411,6 @@ Notifications.setNotificationHandler({
 
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
 type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "data" | "traces";
-
-type RoutineIconName =
-  | "activity"
-  | "heart"
-  | "zap"
-  | "target"
-  | "wind"
-  | "shield"
-  | "compass"
-  | "crosshair"
-  | "award"
-  | "star"
-  | "sun"
-  | "moon"
-  | "sliders"
-  | "trending-up";
-
-type WorkoutTemplate = {
-  id: string;
-  /**
-   * Versión del esquema de series con que se normalizó esta rutina. Vive aquí y
-   * no en la raíz del almacén porque `validateLocalStoreTree` rechaza cualquier
-   * clave raíz desconocida; dentro de la rutina el portero tolera claves nuevas.
-   */
-  series_schema_version?: number;
-  name: string;
-  category?: TrainingCategory;
-  icon?: RoutineIconName;
-  duration_minutes?: string;
-  exercises: Array<{
-    id: string;
-    name?: string;
-    image_uri?: string | null;
-    sets: number[];
-    series?: ExerciseSeries[];
-    muscle?: string;
-    load_kg?: number | null;
-    rest_seconds?: number | null;
-    catalog_link?: CatalogLink;
-  }>;
-};
 type WorkoutSessionStatus = "running" | "paused";
 type WorkoutSession = {
   id: string;
@@ -636,8 +607,7 @@ type FoodEstimatorImage = {
 };
 type DietItemMenuState = { meal_id: string; item_id: string } | null;
 type DietEditingItemState = { meal_id: string; item_id: string } | null;
-type TrainingFilter = "all" | "strength" | "hypertrophy" | "cardio" | "flexibility";
-type TrainingCategory = Exclude<TrainingFilter, "all">;
+type TrainingFilter = "all" | TrainingCategory;
 type TrainingTemplateScreenMode = "detail" | "edit";
 type TrainingStatsPeriodKey = "3m" | "6m" | "12m" | "all";
 type TrainingStatsMetricKey = "volume" | "reps" | "duration";
@@ -4343,31 +4313,6 @@ function totalSeriesCount(template: WorkoutTemplate): number {
     if (seriesCount > 0) return acc + seriesCount;
     return acc + exercise.sets.length;
   }, 0);
-}
-
-function cloneWorkoutTemplate(template: WorkoutTemplate): WorkoutTemplate {
-  return {
-    ...template,
-    exercises: template.exercises.map((exercise) => ({
-      ...exercise,
-      sets: [...exercise.sets],
-      series: (exercise.series ?? []).map((seriesItem) => ({ ...seriesItem })),
-    })),
-  };
-}
-
-function buildTemplateSeriesSignature(template: WorkoutTemplate): string {
-  return JSON.stringify(
-    template.exercises.map((exercise) => ({
-      id: exercise.id,
-      series: (exercise.series ?? []).map((seriesItem) => ({
-        id: seriesItem.id,
-        reps: seriesItem.reps.trim(),
-        weight_kg: seriesItem.weight_kg.trim(),
-        rest_seconds: seriesItem.rest_seconds.trim(),
-      })),
-    })),
-  );
 }
 
 function estimateTrainingCalories(minutes: number, category: TrainingCategory): number {
@@ -8326,7 +8271,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         (template) => template.id === hydratedSession.template_id,
       ) ?? null;
       workoutTemplateBeforeSessionRef.current = snapshotTemplate
-        ?? (fallbackTemplate ? cloneWorkoutTemplate(fallbackTemplate) : null);
+        ?? (fallbackTemplate ? cloneWorkoutTemplateSnapshot(fallbackTemplate) : null);
     }
     setUserPrefs(parsedPrefs);
     setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
@@ -11401,16 +11346,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             if (exercise.id !== exerciseId) return exercise;
             const existingSeries = exercise.series ?? [];
             const lastSeries = existingSeries[existingSeries.length - 1];
-            const nextSeries = [
-              ...existingSeries,
-              {
-                id: uid("set"),
-                type: lastSeries?.type,
-                reps: lastSeries?.reps || "10",
-                weight_kg: lastSeries?.weight_kg || "",
-                rest_seconds: lastSeries?.rest_seconds || "",
-              },
-            ];
+            const nextSeries = [...existingSeries, createSeriesAfter(lastSeries, uid)];
             return {
               ...exercise,
               series: nextSeries,
@@ -11434,16 +11370,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             if (exercise.id !== exerciseId) return exercise;
             const existingSeries = exercise.series ?? [];
             const lastSeries = existingSeries[existingSeries.length - 1];
-            const nextSeries = [
-              ...existingSeries,
-              {
-                id: uid("set"),
-                type: lastSeries?.type,
-                reps: lastSeries?.reps || "10",
-                weight_kg: lastSeries?.weight_kg || "",
-                rest_seconds: lastSeries?.rest_seconds || "",
-              },
-            ];
+            const nextSeries = [...existingSeries, createSeriesAfter(lastSeries, uid)];
             return {
               ...exercise,
               series: nextSeries,
@@ -11579,11 +11506,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             const sourceIndex = existingSeries.findIndex((s) => s.id === seriesId);
             if (sourceIndex < 0) return exercise;
             const source = existingSeries[sourceIndex];
-            const clone = {
-              ...source,
-              id: uid("set"),
-              sub_series: source.sub_series?.map((ss) => ({ ...ss, id: uid("sub") })),
-            };
+            const clone = duplicateExerciseSeries(source, uid);
             const nextSeries = [
               ...existingSeries.slice(0, sourceIndex + 1),
               clone,
@@ -11600,28 +11523,25 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }));
   }
 
-  function changeSeriesType(exerciseId: string, seriesId: string, newType: SeriesType) {
-    if (!activeTrainingTemplateId) return;
+  function changeSeriesTypeInTemplate(
+    templateId: string,
+    exerciseId: string,
+    seriesId: string,
+    newType: SeriesType,
+  ) {
     setStore((prev) => ({
       ...prev,
       templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
+        if (template.id !== templateId) return template;
         return {
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
-            const nextSeries = (exercise.series ?? []).map((s) => {
-              if (s.id !== seriesId) return s;
-              const isCompound = isCompoundSeriesType(newType);
-              const wasCompound = isCompoundSeriesType(s.type ?? "normal");
-              return {
-                ...s,
-                type: newType,
-                sub_series: isCompound && !wasCompound
-                  ? [{ id: uid("sub"), reps: s.reps || "10", weight_kg: s.weight_kg || "", rest_seconds: newType === "dropset" ? "0" : "" }]
-                  : isCompound ? s.sub_series : undefined,
-              };
-            });
+            const nextSeries = (exercise.series ?? []).map((series) =>
+              series.id === seriesId
+                ? changeExerciseSeriesType(series, newType, uid)
+                : series,
+            );
             return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
           }),
         };
@@ -11729,13 +11649,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         if (sourceIndex < 0) return template;
         const source = template.exercises[sourceIndex];
         const clone = {
-          ...source,
-          id: uid("exercise"),
+          ...duplicateWorkoutExercise(source, uid),
           name: `${source.name ?? "Ejercicio"} (copia)`,
-          series: (source.series ?? []).map((seriesItem) => ({
-            ...seriesItem,
-            id: uid("set"),
-          })),
         };
         const next = [...template.exercises];
         next.splice(sourceIndex + 1, 0, clone);
@@ -11799,17 +11714,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (!source) return prev;
       const sourceIndex = prev.templates.findIndex((template) => template.id === templateId);
       const clone: WorkoutTemplate = {
-        ...source,
-        id: uid("tpl"),
+        ...duplicateWorkoutTemplate(source, uid),
         name: `${source.name} (copia)`,
-        exercises: source.exercises.map((exercise) => ({
-          ...exercise,
-          id: uid("exercise"),
-          series: (exercise.series ?? []).map((seriesItem) => ({
-            ...seriesItem,
-            id: uid("set"),
-          })),
-        })),
       };
       const next = [...prev.templates];
       next.splice(sourceIndex + 1, 0, clone);
@@ -11901,7 +11807,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setWorkoutCompletionModal({
       summary,
       has_template_changes: hasTemplateChanges,
-      original_template: originalTemplate ? cloneWorkoutTemplate(originalTemplate) : null,
+      original_template: originalTemplate ? cloneWorkoutTemplateSnapshot(originalTemplate) : null,
     });
     setActiveWorkoutSession(null);
     setConfirmDiscardSession(false);
@@ -11925,7 +11831,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       return;
     }
 
-    workoutTemplateBeforeSessionRef.current = cloneWorkoutTemplate(template);
+    workoutTemplateBeforeSessionRef.current = cloneWorkoutTemplateSnapshot(template);
 
     const firstPointer = pointers[0];
     const session: WorkoutSession = {
@@ -12352,7 +12258,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setWorkoutCompletionModal(null);
       return;
     }
-    const restored = cloneWorkoutTemplate(originalTemplate);
+    const restored = cloneWorkoutTemplateSnapshot(originalTemplate);
     setStore((prev) => ({
       ...prev,
       templates: prev.templates.map((template) =>
@@ -15203,6 +15109,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                     seriesId: seriesState.series.id,
                                     source: "session",
                                   })}
+                                  testID={`training-session-series-type-${sessionExercise.exercise.id}-${seriesState.series.id}`}
                                   style={{
                                     width: 32,
                                     height: 24,
@@ -16863,6 +16770,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                       seriesId: seriesItem.id,
                                       source: "editor",
                                     })}
+                                    testID={`training-editor-series-type-${exercise.id}-${seriesItem.id}`}
                                     style={{
                                       width: 32,
                                       height: 24,
@@ -16984,6 +16892,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   />
                                   <Pressable
                                     onPress={() => setActiveSeriesMenuId(isSeriesMenuOpen ? null : seriesMenuKey)}
+                                    testID={`training-editor-series-menu-${exercise.id}-${seriesItem.id}`}
                                     hitSlop={8}
                                     style={{ width: 16, alignItems: "center", justifyContent: "center", gap: 2 }}
                                   >
@@ -17038,6 +16947,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                         setActiveSeriesMenuId(null);
                                         duplicateSeriesInExercise(exercise.id, seriesItem.id);
                                       }}
+                                      testID={`training-editor-series-duplicate-${exercise.id}-${seriesItem.id}`}
                                       style={{
                                         minHeight: 40,
                                         paddingHorizontal: 12,
@@ -17164,6 +17074,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                             <Pressable
                               onPress={() => addSeriesToExercise(exercise.id)}
+                              testID={`training-editor-series-add-${exercise.id}`}
                               style={{
                                 marginTop: 6,
                                 minHeight: 36,
@@ -17303,6 +17214,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                 <Pressable
                   onPress={saveTrainingTemplateChanges}
+                  testID="training-editor-save"
                   style={{
                     marginTop: 6,
                     minHeight: 46,
@@ -24820,7 +24732,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     lineHeight: 22,
                   }}
                 >
-                  Has modificado reps y peso en algunas series. ¿Aplicar esos cambios a la rutina futura?
+                  Has modificado la configuración de algunas series. ¿Aplicar esos cambios a la rutina futura?
                 </Text>
 
                 <Pressable
@@ -25526,16 +25438,20 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   <Pressable
                     key={st}
                     onPress={() => {
-                      if (isCompoundSeriesType(st)) {
-                        changeSeriesType(seriesTypePickerTarget.exerciseId, seriesTypePickerTarget.seriesId, st);
-                      } else {
-                        const fn = seriesTypePickerTarget.source === "session"
-                          ? updateExerciseSeriesFieldInActiveSession
-                          : updateExerciseSeriesFieldInActiveTemplate;
-                        fn(seriesTypePickerTarget.exerciseId, seriesTypePickerTarget.seriesId, "type", st);
+                      const templateId = seriesTypePickerTarget.source === "session"
+                        ? activeWorkoutSession?.template_id
+                        : activeTrainingTemplateId;
+                      if (templateId) {
+                        changeSeriesTypeInTemplate(
+                          templateId,
+                          seriesTypePickerTarget.exerciseId,
+                          seriesTypePickerTarget.seriesId,
+                          st,
+                        );
                       }
                       setSeriesTypePickerTarget(null);
                     }}
+                    testID={`training-series-type-option-${st}`}
                     style={{
                       minHeight: 44,
                       paddingHorizontal: 12,
