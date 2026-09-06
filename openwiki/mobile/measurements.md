@@ -8,15 +8,13 @@ type: concepto
 title: Mediciones
 description: Esquema canónico y ciclo de vida de las mediciones, incluidos la validación, los upserts, la grasa corporal derivada y los gráficos, los consumidores entre dominios, el comportamiento de las copias de seguridad, los fallos y las pruebas.
 summary: Canonical measurement schema and lifecycle, including validation, upserts, derived body fat and charts, cross-domain consumers, backup behavior, failures, and tests.
-tags: [mobile, measurements, body-fat, charts, agent-tools, diet]
-sources:
-  - apps/mobile/App.tsx
-  - apps/mobile/agent/toolDefinitions.ts
-  - apps/mobile/agent/toolExecutor.ts
-  - apps/mobile/agent/toolDefinitions.test.ts
-  - apps/mobile/agent/toolExecutor.test.ts
-  - apps/mobile/package.json
-  - apps/mobile/vitest.config.mts
+tags:
+  - mobile
+  - measurements
+  - body-fat
+  - charts
+  - agent-tools
+  - diet
 related:
   - ./local-state-and-backup.md
   - ./diet-and-food-estimation.md

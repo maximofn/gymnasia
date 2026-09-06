@@ -1,3 +1,4 @@
 # Archivos
 
-- [Arquitectura actual de ejecución](overview.md) - Mapa basado en las fuentes de la ejecución de Expo con prioridad local de Gymnasia, los servicios de desarrollo opcionales, las dependencias externas y los límites de confianza.
+- [Arquitectura actual de ejecución](overview.md)
+- [Entrega y verificación de política del agente](policy-delivery.md) - Frontera de confianza para construir, firmar, promover, integrar y seleccionar el bundle de prompt y salud-seguridad del agente por entorno y canal. Explica la verificación pública, caché, anti-rollback y degradación segura en móvil.
