@@ -96,6 +96,33 @@ test("preserves reviewed repository instructions when publishing docs", async ()
   );
 });
 
+test("publishes durable page progress before propagating OpenWiki failures", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+  const commitStep = workflow.indexOf("- name: Commit generated documentation");
+  const failureStep = workflow.indexOf("- name: Fail unsuccessful update");
+
+  assert.ok(commitStep >= 0);
+  assert.ok(failureStep > commitStep);
+  assert.match(
+    workflow,
+    /if: steps\.openwiki\.outcome == 'success' && steps\.encrypt_oauth\.outcome == 'success'/u,
+  );
+  assert.doesNotMatch(
+    workflow,
+    /if: steps\.openwiki\.outputs\.result == 'success' && steps\.encrypt_oauth\.outcome == 'success'/u,
+  );
+  assert.match(workflow, /rm -f -- openwiki\/\.run\.json/u);
+  assert.match(
+    workflow,
+    /docs: preserve partial OpenWiki progress/u,
+  );
+  assert.match(workflow, /Resultado: \$OPENWIKI_RESULT/u);
+  assert.match(
+    workflow,
+    /steps\.openwiki\.outputs\.result == 'failure'.*run: exit 1/su,
+  );
+});
+
 test("builds the Telegram report from sanitized metadata", async () => {
   const workflow = await readFile(reportWorkflowUrl, "utf8");
 

@@ -8,7 +8,7 @@ Lee esta referencia al actualizar OpenWiki, revisar una PR que cambie instruccio
 
 El fragmento administrado por OpenWiki debe contener exactamente un delimitador inicial y uno final, en ese orden. No escribas los literales completos de esos delimitadores en otra parte de `CLAUDE.md`: OpenWiki los contaría como duplicados.
 
-## Incompatibilidad observada en 0.3.3 y 0.4.3
+## Incompatibilidad observada en 0.3.3, 0.4.3 y 0.5.0
 
 OpenWiki 0.3.3 prepara dos fragmentos distintos suponiendo que `AGENTS.md` y `CLAUDE.md` son archivos independientes:
 
@@ -16,6 +16,12 @@ OpenWiki 0.3.3 prepara dos fragmentos distintos suponiendo que `AGENTS.md` y `CL
 - `CLAUDE.md` recibe una referencia textual a `AGENTS.md`.
 
 Al escribir a través del enlace simbólico de Gymnasia, ambas operaciones afectan a `CLAUDE.md`. En la ejecución del 25 de agosto de 2026 quedó una referencia circular, texto cortado y dos delimitadores finales. El check `prompt-policy` bloqueó la PR antes de la fusión. Volvió a reproducirse con OpenWiki 0.4.3 el 30 de agosto de 2026: `openwiki code --update` insertó un segundo delimitador final y texto cortado antes de abortar afirmando que había dejado el fichero sin cambios. Si aparece ese mensaje, comprueba siempre `git diff -- CLAUDE.md`, restaura solo la edición parcial del comando y ejecuta `check-agent-instructions.mjs`; no reintentes sobre el mismo checkout.
+
+OpenWiki 0.5.0 sigue preparando y escribiendo `AGENTS.md` y `CLAUDE.md` como dos
+archivos distintos. La ejecución real del 7 de septiembre de 2026 completó la
+migración solo después de aplicar la materialización temporal del runner. No
+retires esa protección hasta que upstream reconozca explícitamente el enlace
+simbólico y una prueba desechable confirme que conserva su topología.
 
 El runner privado materializa temporalmente `AGENTS.md` como una copia regular de
 `CLAUDE.md` antes de ejecutar OpenWiki. Después restaura ambos desde
@@ -37,12 +43,33 @@ dependency` porque `deepagents@1.12.0` declara LangSmith `^0.7.1` mientras
 OpenWiki usa `^0.8.3`. El aviso por sí solo no implica que la instalación haya
 fallado: comprueba el banner de versión y ejecuta una actualización desechable.
 
+## Migración a 0.5
+
+OpenWiki 0.5 añade `openwiki/.page-manifest.json`, un ledger durable que vincula
+cada página completa con su Markdown, Claims, origen y productor. Es un
+artefacto público generado que debe entrar en la PR. `openwiki/.run.json` sigue
+siendo transitorio y debe eliminarse antes del commit. La primera ejecución
+verificada en Gymnasia creó el esquema 1 con 22 páginas.
+
+Una ejecución fallida puede dejar páginas completas y recuperables. El runner de
+Gymnasia restaura primero las instrucciones, elimina `.run.json`, publica el
+progreso durable en `openwiki/update` con el resultado de OpenWiki en la PR y
+solo después propaga el fallo. No vuelvas a condicionar el commit a
+`result == success`: se perdería la principal mejora de 0.5. Para que una
+ejecución posterior reanude ese progreso desde `main`, la PR parcial debe
+revisarse y fusionarse antes.
+
+El aviso `ERESOLVE` anterior persiste en 0.5.0: la instalación verificada resolvió
+LangSmith 0.8.12 para OpenWiki mientras `deepagents@1.12.0` sigue declarando el
+peer `^0.7.1`. Trátalo como aviso mientras instalación, tests y ejecución real
+terminen correctamente.
+
 ## Protocolo de actualización
 
 1. Obtén la versión local desde el banner de `openwiki --help` o con `npm ls -g --depth=0`; `openwiki --version` no existe y trataría el argumento como una opción inválida.
 2. Consulta la versión estable y las notas oficiales. No uses `latest` en el runner: actualiza el pin exacto de la plantilla y del repositorio privado.
 3. Ejecuta la nueva versión en un checkout desechable basado en `main`, nunca sobre trabajo local sin guardar.
-4. Compara el árbol generado, la rama `openwiki/update` y cualquier cambio en archivos de instrucciones.
+4. Compara el árbol generado, la rama `openwiki/update`, el manifiesto por página, el estado transitorio y cualquier cambio en archivos de instrucciones.
 5. Ejecuta el validador de esta skill y los tests de la plantilla.
 6. Si la versión propone una instrucción legítima, adáptala manualmente al archivo canónico, preséntala en una PR normal y conserva el enlace simbólico. No retires la protección del runner solo porque upstream cambió su plantilla.
 7. Valida el runner con OAuth y tracing normales; confirma Code Brain, Personal Brain, cifrado posterior y paths de la PR.
