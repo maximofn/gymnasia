@@ -302,6 +302,16 @@ async function verifyLegacyMigration(browser, baseUrl) {
         },
       }),
     },
+    {
+      name: "con finalización heredada pendiente",
+      expectedPendingKind: "partial",
+      session: legacySession({
+        pending_resolution: {
+          kind: "finish",
+          requested_at: "2026-09-07T08:01:13.000Z",
+        },
+      }),
+    },
   ];
 
   for (const fixture of fixtures) {
@@ -330,7 +340,7 @@ async function verifyLegacyMigration(browser, baseUrl) {
     assert.equal(migrated.rest_seconds_total, fixture.session.rest_seconds_total);
     assert.equal(
       migrated.pending_resolution?.kind,
-      fixture.session.pending_resolution?.kind,
+      fixture.expectedPendingKind ?? fixture.session.pending_resolution?.kind,
     );
 
     await page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
@@ -358,7 +368,7 @@ async function verifyLegacyMigration(browser, baseUrl) {
     }
     await context.close();
   }
-  logStep("Fixtures heredados activos, pausados, descansando y pendientes migrados de forma idempotente");
+  logStep("Fixtures heredados y resoluciones pendientes migrados de forma idempotente");
 }
 
 async function verifyCompoundExecution(browser, baseUrl) {
@@ -419,6 +429,7 @@ async function verifyCompoundExecution(browser, baseUrl) {
     "el resumen compuesto no se guardó",
   );
   const summary = store.workoutHistory.find((item) => item.calculation_version === 2);
+  assert.equal(summary.completion_status, "completed");
   assert.equal(summary.completed_effort_count, 10);
   assert.equal(summary.total_effort_count, 10);
   assert.equal(summary.total_reps, 75);
@@ -432,6 +443,7 @@ async function verifyCompoundExecution(browser, baseUrl) {
   assert.equal(summary.can_recalculate, false);
   const legacy = store.workoutHistory.find((item) => item.id === "legacy_summary");
   assert.equal(legacy.calculation_version, 1);
+  assert.equal(legacy.completion_status, "partial");
   assert.equal(legacy.total_volume_kg, 800);
   assert.equal(legacy.total_reps, 8);
   assert.equal(legacy.effort_breakdown, null);
@@ -439,10 +451,14 @@ async function verifyCompoundExecution(browser, baseUrl) {
   await clickTestId(page, "training-complete-close");
   await clickTestId(page, "training-template-open-tpl_compound");
   await page.getByTestId("training-stats-effort-breakdown").waitFor({ timeout: STEP_TIMEOUT_MS });
+  await page.getByTestId(`training-history-status-${summary.id}`)
+    .getByText("Completo", { exact: true })
+    .waitFor({ timeout: STEP_TIMEOUT_MS });
   const legacyWarning = page.getByTestId("training-stats-legacy-warning");
-  await legacyWarning.waitFor({ timeout: STEP_TIMEOUT_MS });
-  await page.getByText("Desglose disponible para 1 de 2 entrenamientos.", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
-  await legacyWarning.scrollIntoViewIfNeeded({ timeout: STEP_TIMEOUT_MS });
+  assert.equal(await legacyWarning.count(), 0, "el parcial heredado entró en las estadísticas");
+  await page.getByTestId("training-history-status-legacy_summary")
+    .getByText("Parcial", { exact: true })
+    .waitFor({ timeout: STEP_TIMEOUT_MS });
   await page.screenshot({
     path: process.env.TRAIN_COMPOUND_E2E_SCREENSHOT ?? "/tmp/gym-175-compound-stats.png",
     fullPage: true,
