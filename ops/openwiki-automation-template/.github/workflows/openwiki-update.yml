@@ -461,9 +461,11 @@ jobs:
 
       - name: Commit generated documentation
         id: commit
-        if: steps.openwiki.outputs.result == 'success' && steps.encrypt_oauth.outcome == 'success'
+        if: steps.openwiki.outcome == 'success' && steps.encrypt_oauth.outcome == 'success'
         working-directory: target
         shell: bash
+        env:
+          OPENWIKI_RESULT: ${{ steps.openwiki.outputs.result }}
         run: |
           set -euo pipefail
           git config user.name "openwiki-bot"
@@ -472,13 +474,21 @@ jobs:
           # keeps AGENTS.md as a symlink to canonical CLAUDE.md, so restore the
           # reviewed topology and publish generated wiki files only.
           git restore --source=origin/main -- AGENTS.md CLAUDE.md
+          # OpenWiki 0.5 can leave durable, completed pages after a failed run.
+          # Publish that progress, but never its transient active-run checkpoint.
+          rm -f -- openwiki/.run.json
           git add -A -- openwiki .openwikiignore
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m "docs: update OpenWiki"
+          if [ "$OPENWIKI_RESULT" = "success" ]; then
+            git commit -m "docs: update OpenWiki"
+          else
+            git commit -m "docs: preserve partial OpenWiki progress"
+          fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "result=$OPENWIKI_RESULT" >> "$GITHUB_OUTPUT"
 
       - name: Push fixed branch and create or update pull request
         id: pull_request
@@ -487,6 +497,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GYMNASIA_REPO_TOKEN }}
+          OPENWIKI_RESULT: ${{ steps.commit.outputs.result }}
           PREVIOUS_SHA: ${{ steps.branch.outputs.previous_sha }}
         run: |
           set -euo pipefail
@@ -506,9 +517,11 @@ jobs:
             pr_url="$(
               gh pr create --repo maximofn/gymnasia --base main --head openwiki/update \
                 --title "docs: update OpenWiki" \
-                --body "Actualización diaria generada por el runner privado de OpenWiki."
+                --body "Actualización diaria generada por el runner privado de OpenWiki. Resultado: $OPENWIKI_RESULT."
             )"
           fi
+          gh pr edit "$pr_url" \
+            --body "Actualización diaria generada por el runner privado de OpenWiki. Resultado: $OPENWIKI_RESULT. Una ejecución fallida puede conservar páginas terminadas para reanudarlas después de fusionar esta PR."
           echo "url=$pr_url" >> "$GITHUB_OUTPUT"
           echo "OpenWiki PR: $pr_url"
 

@@ -30,6 +30,8 @@ que no puede generar cargos accidentales al agotar la cuota gratuita.
   - restaura exclusivamente el OAuth de OpenWiki desde un artefacto cifrado;
   - actualiza el Code Brain de Gymnasia con la suscripción de ChatGPT;
   - reutiliza siempre la rama `openwiki/update` y crea o actualiza una única PR;
+  - si OpenWiki falla después de completar páginas, publica ese progreso
+    durable sin `.run.json` y después marca la ejecución como fallida;
   - actualiza opcionalmente Personal Brain desde Linear, maximofn.com y Tavily;
   - cifra de nuevo el OAuth rotado y el estado privado antes de persistirlos;
   - restaura `AGENTS.md` y `CLAUDE.md` desde `main` antes del commit, de modo que
@@ -114,24 +116,24 @@ activos. Todos los secretos y la variable de las tablas anteriores están
 configurados; `OPENWIKI_OAUTH_SEED` se eliminó después de verificar la
 restauración desde artefacto.
 
-Versión `0.4.3` verificada el 29 de agosto de 2026:
+Versión `0.5.0` verificada el 7 de septiembre de 2026:
 
-- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/33243237559)
+- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34117514822)
   terminó correctamente con Code Brain, LangSmith, Personal Brain, renovación
-  cifrada y publicación documental;
+  cifrada y publicación documental en 44 minutos y 58 segundos;
 - los artefactos cifrados `openwiki-oauth-state` y
-  `openwiki-personal-state` se renovaron desde esa misma ejecución;
-- la rama fija creó la [PR de documentación #102](https://github.com/maximofn/gymnasia/pull/102)
-  con 21 archivos permitidos, 6 Claims y todos los checks en verde; no incluyó
+  `openwiki-personal-state` se renovaron desde esa misma ejecución y caducan el
+  7 de octubre de 2026;
+- la rama fija creó la [PR de documentación #188](https://github.com/maximofn/gymnasia/pull/188)
+  con 50 archivos permitidos, 20 Claims y todos los checks en verde; añadió
+  `openwiki/.page-manifest.json` con esquema 1 y 22 páginas, sin incluir
   `CLAUDE.md`, `AGENTS.md` ni el estado transitorio `.run.json`;
-- como OpenWiki `0.4.3` todavía no admite que `AGENTS.md` sea un enlace a
+- como OpenWiki `0.5.0` todavía no admite que `AGENTS.md` sea un enlace a
   `CLAUDE.md`, el runner materializa temporalmente ambos archivos, ejecuta la
   actualización y restaura las instrucciones exactas de `main` antes de publicar;
-- la exportación estática del visualizador se verificó con 29 páginas y 105
-  enlaces;
 - la plantilla pública y el repositorio privado quedaron sincronizados en el
-  commit privado `48f532b`; sus [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/33243203597)
-  y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/33244043739)
+  commit privado `354f662`; sus [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34117417781)
+  y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34121672371)
   terminaron correctamente.
 
 ### Permiso de PR
