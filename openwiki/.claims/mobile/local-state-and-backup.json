@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:b9deca1c69d943aec076589537f5531cec67978187c4c726c5c22477dfe989a3",
+  "claims": [
+    {
+      "id": "claim_428a8313744146638faca998dc695bce",
+      "statement": "El agregado `LocalStore` se guarda bajo `gymnasia.mobile.local.v3`; la validación acepta contenedores raíz ausentes para migración, pero rechaza campos raíz desconocidos, proveedores no admitidos y formas incompatibles antes de una escritura gestionada por recuperación.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L676-L709",
+          "version": "repo-lines-v1:sha256:bc9af8f8f61898967eb3716ec2fd47435181a0b5feb2c19a5892bf598efb5c9e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkZDI4MjkyMDNlMDg3YTY1MzQ1YzJhZTE3ZmQwYTc1M2U3MTliY2NmYjIxZWI1NWI3ZTk1MWNiOTMxZDllNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhMmIzMWJjMWUxMzBjMjBlNzdjZDlkY2RiYjcwOTcxODYxOWRhYjY3YWU4OGZlMmQwZDU3NThiYTZiOTViODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjllY2ZkNWQ1MGM4ZGFhMTk1NGU3NDkyY2U5YmU0NmQ3NTk5NjcwZDg5YWYwMTI5ZjZjOWQ0Y2JlMjNjZWUzZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L288-L372",
+          "version": "repo-lines-v1:sha256:45624b68782023436770b1dd5553423c83bfb7dfb47084d973d054a374175b40:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjNTQ1ZjdjOTQ3NzgwNGM5OWM0MWY0ZWMwMzE1OGY2Njk5NDM1NDYxMDE3YmRjY2RiM2ZkNmE5NDc2ODQxMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1NWQ5NDJmNDk1MTU3Zjg5ZDkxOTE1YjY5N2Q0NDEzZjU5ZGM3OTExNjFhYTMwODU1OTdiZWUzNGMwZjVhZDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c85ee79066824b8d81382b7927f1b5b2",
+      "statement": "`LocalStoreRecoveryRepository` serializa inspecciones y commits, conserva snapshots SHA-256 válidos, pone en cuarentena lecturas o commits ambiguos y bloquea nuevas escrituras hasta restaurar, resolver o descartar la recuperación.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8165-L8332",
+          "version": "repo-lines-v1:sha256:9a06f18475fd6ae9b8bcf42012d82a25684494172137b903c8ab0078404d1675:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZWJjODAxOGVhMTczOTI2YjNiMmY0NmQyZjU5Njg0MGFlOGRkYWFkODk5YWI1ZGJiMGIyZWMzNDBmNjY1ZTkyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyNTI2OGVmY2YwMDUxYzJlOWUwZjFiODljY2Y1YTg1ZWU2YTY3OTIzM2RhMGQ3ZWQ1YzE3NmJiOTY0YmFhYWNiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3ZmJmZmVkMDZkNDNjZTkxYmQ0NWQyNzY2YzAxZGEwODE0MzUxZmExYWI2MjllYTNiYTk3MmEwNTQxOTBmNmQ2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwNWUwOTM3NmIyMWY2NTFlMjVkNGU5MDVmODYxZjExZTY4MmQ3N2EwNTgxYWM4Y2VjMTcyNWRiODFhYzVjZmUxIn0"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L378-L430",
+          "version": "repo-lines-v1:sha256:7b00a6bb727ebae3815055d35d15d019ed3473624ace54dd49e1cffaf9598216:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZWJiZTBkYjhlZDQ0ZmUzMjY5ZWRiNmM1ZGMzYzNkYWZmMDIzZDRlMWRjM2Y0ZjE1Mzc1N2NkMzU3YmY0ZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiNzZhODgwYTE0NGQzMTAwNDBjZjU1ZWYzYzc4MzMxYjMyNWIzMjU4MGU5MTRmMDZhOTRlN2UxMDIyMjhmODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0NDNiMTQ0MDI5YTBjYjQ4MGFmZWRiNjQ3ZmExOTJhMzU3ZjgwZGJiYmE2YTNlNjc4Nzk2M2NlM2Q1NzMxOGYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L480-L757",
+          "version": "repo-lines-v1:sha256:dac1e453b176f8ee2f7d38b81d261ce93b612f19f6cb792ed5dde9afc12f6c88:eyJzZWxlY3RlZExpbmVDb3VudCI6Mjc4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI5MjJkZjZjNzg0ZTkxNzEzNTVkZjg3NTk5Y2JhM2NmMzY0MzhhZTBlODhjNTBlMWRhZDhhNzdmNWIwYWVkYTlkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlY2UyNTVkY2VjZGRjZDk1MDg0YTk3YTk5NDY3NTc3ZWQzZjkxYTg5ZDEzNzQyMmIxNTIxZjU2Y2VjM2MwNzIxIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_58e7c179727942d1b666f386564a0a93",
+      "statement": "La hidratación mantiene `isHydrated` en falso y presenta recuperación cuando la inspección es corrupta o recuperable; si la normalización falla, también crea cuarentena en vez de activar los efectos de persistencia.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8165-L8230",
+          "version": "repo-lines-v1:sha256:aeb6aadcf9a20ac223201c6e00bbf11ec4025ae6f10d0df58d6fa3606df726ad:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlYmM4MDE4ZWExNzM5MjZiM2IyZjQ2ZDJmNTk2ODQwYWU4ZGRhYWQ4OTlhYjVkYmIwYjJlYzM0MGY2NjVlOTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmYmZmZWQwNmQ0M2NlOTFiZDQ1ZDI3NjZjMDFkYTA4MTQzNTFmYTFhYjYyOWVhM2JhOTcyYTA1NDE5MGY2ZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4MzJiMDgyYThhNjJjNTZjYTY3ZDI5M2Y1ZjkzN2RlYmRlMTFlODg0YWNiYjVhYjdlYTFjZmFmNzgxMGExMjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b9f902734bb948e6bac7d7930944cd42",
+      "statement": "Las fotos de mediciones se normalizan a JPEG, se reducen a un borde máximo de 2048 px, se despojan de metadatos y se limitan a 5 MiB; en nativo se guardan en un directorio propio con nombre SHA-256 y en web no obtienen una URI persistente propia.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/measurementMedia.ts#L151-L168",
+          "version": "repo-lines-v1:sha256:d73232a344d90341bf4107330437edd02f743a2f9a85db9203735a9d33955712:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxMTg1Zjg0MzUyYjVlZDI3ZjJkMDU2ZjMzMjhhN2VlNWM2YjZlODU5YTM5NGU5MmNlMWI3NWU3OWUyODE1YjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhZjBjODFiMTE4MjBjY2M1Y2U3YmVhNTExNDE4ODdjOTAyMjU3NjJhZWYwYzMwNzhkNDMxODcyMmUxMWZiMzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlYjFkZDNlYzdjMGUyNTdiNjU3YTE4YWVhNjNmMTIyMWMyODI1N2M0M2EzNTRmM2E5OWZlYWM1N2M2Y2ViYjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzZjUxODI3N2Q2OTQ3NTFiNGZhMzM5NDU2NDQyN2E4ZjZmMTgxMTM0NGVlZDMwOTUzNjg5YzFkYjQxM2YwZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/measurementMedia.ts#L59-L143",
+          "version": "repo-lines-v1:sha256:c5b384b835e349bdb6c2242be03b12fc7f17f231207afe8e976d4c454b77934e:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2ZWUwODhjOWZhNDNhZGU0YmE0YTg0YzY2ZjRkZDY4ODNmYTA0N2U1ODllZDkyMDczN2E0ZjY5MGRkNTM1NjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwYjNlYTE1MWM3ZjZmNjI4YjEyN2NmNzg1ZmUzNDFiYjI4MTcyMjc0MGQzMWVmY2ZiNzU2NzVjODEwZmQ3NGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNkZjI5YTI3MjE4NGNmZDVjNTE2M2I3MzU0Y2RiNzcwMTc5ZGQ2OTZlYmM5ZGM5YTk5MmZlZWZjMjcxY2U3M2EifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/measurementMedia.ts#L8-L17",
+          "version": "repo-lines-v1:sha256:593bb2a09c2226bf78f38726c5750e28f91221b81859b81643385ed7c1069886:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyOWJlZGVjMjQ5YmRmZGM3YmRjOGJkZDY3ZDk3NDdkZjUzMDMzZGNiYmViZGZjMGFiMGZiNTU2YzgxZjc0ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5ZTY4NGJlMDAxNTRkNGVjMWI4YzE3ZDJlZjM1NGY3MmE0YmEwYmVhZGRjNDZhMzBmOGJkMzAwNjRjZThmNDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRiNWZkYTU4YTE4ZThjZTgyYjcxZWQ5OTk4MTAzMmNiMTIzOTU4ZDhjZDA5Njk0NTU0NmViNjU1NmI3ZWQwZDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_21094abe3d564320afef4a21ce4d1ade",
+      "statement": "El backup actual es un ZIP `.gymnasia` de esquema 2 con `manifest.json` y JPEG opcionales; conserva compatibilidad de importación con el JSON de esquema 1.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9834-L9883",
+          "version": "repo-lines-v1:sha256:743ef4ab7b12e0671063ab7444bd7811d7f208022d4c09b56f5351918d61776b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NDY3Mzg4ZTk1MjY4YzA0MDMxMzFiYmI2ZTcwNmFlZDZkNTQ3NjE4NDRmYzIzMDZiZTU1MWM4MjM2MmE5ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYjU4MmViMTk2ZDM5M2E3MWJlOWZiNjdjZWNiMzM2MzBiYzdjODBlM2E5NjUxZjA1NTBhYTBiNTIyYjg4NGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxOWQ4NDRmMzE0ZTRlZjUzMjk2MDUxNTNiOWU1Mjk5MGEwNzgzNzE2YjcwMWYxZDdhOTU1MTMxMDBjOTA1YWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliZWY2ODYxMGZjNDk0ODc0ZGVlNzlmNTdhMWQ4NWY5NGE5ODE1N2JlMDhmMzk1NTI2Y2MwZDk5YmM5YmZlMDgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9945-L9974",
+          "version": "repo-lines-v1:sha256:4af5c962aef3bac7ba3f0275740000bdc6e73e37114c42009758be853634747b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyMjdlOWQyYmZlYjY0NmZlYWIxYmU2MDA1NmYyMjUyMzVjOWY5MmRlNDcxN2FmMjU0N2I3ZmEwZDRmM2Y2ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4YTdlN2NjY2M0NWNiZDk3Njk4MDhiZjYwOGEwOTNjOGRlZDQ4YzE5YWIzYzkyNTZhMmY5NjRmNzI1N2RiZjcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L1-L17",
+          "version": "repo-lines-v1:sha256:08d3f677172e50745fc8537cbad112ddf5b59f48395a7d14830284ce2f4d1782:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlNmQ0OGFkM2FkOWE1ZjFkZjQyZTgxMDM0MmI4YWYxMWEzMjdhODAxYzgyZjQzMzUwNmJhZDliMjQ4ODY4MWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkOWJlNDU5MDBjMDdlZTU3ZWY3YmRkYTJiOTI3NTA1NmVmYjI3M2EwNzU0Njg3Yjg1MjAyODMwMjBlOWM5ODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYzFlMDczMzMyYjJjOThjZjc4NGU4NjA3ZjU3MWUyOTVkNzExOTIzYTc3MzcxODFiZDk4OWNkNWI2NmQ4ZGEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L35-L42",
+          "version": "repo-lines-v1:sha256:132f61e3baaff17b388d87077bf6b9402f631ea2135ef0d1b227ba537643e315:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjJhNjgzZmQyM2E5YTg3ZmJjODVjYjUwN2RlOWMwNDc5NjEwY2YxZjU5YzEzN2UzMTk0ODk3MDQxMTMxMTE2OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWExZDFhNjMzOTAyMjljNzk4MzQ3ZTgzYTA0MDU0NDFjOTQwMDAzNTI4NGFkMTY4YzFiZjZjZGYxZDcwYTM3MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDcwNjM2NGI2ZDQ2YzUxMGUzNzU4N2ExODBlODZhYWNlZTg2MzNkMzNmNjM0MzgzZmQ2YmM3MDYwOTkwNzEyMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjBiOGY0MzM4ZTlmZTAxOWVmMDg1NWYxMWYwNmZjNzY5YTI1MWE1ZjJmMTgwOGFjNmNjZmY1YzRkN2UxNzhhZSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L70-L82",
+          "version": "repo-lines-v1:sha256:9c8547b9f5cf82d4ad9460fa4aa299587adcb0aa29e5d8c9fe6da5e29994501b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2YTIxZDRlM2E1Njg2MjIyZjY4YTFiNTk2YTliYWU5YTk0MDM3ZDdhMjZkMjE4ZTlkOTFmZDg4MTRhNjYxYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc4NDNmYmYwZTVkODY1ZmU0NjBhYTFlMjBlYmRlN2EwYmU4Y2UyODc5YzQzYjhiNjZjYjlmOGQ5OWM1MTdkMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1MmZkYTE3NTJkODE5ZGRkMDgxZjg2NzA3M2M4NDA0ZjNkZDRiMWNhMjY4ZGMwZjhkNTk0Yjg2NWVlYWE1YWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ffcb52da6b584ca09ee62ec29ef5c52e",
+      "statement": "La exportación anula las `photo_uri` del manifiesto, deduplica medios por SHA-256 y registra omisiones; aplica límites de 500 fotos, 5 MiB por archivo, 200 MiB de medios, 2 MiB de manifiesto y 220 MiB de paquete.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L161-L226",
+          "version": "repo-lines-v1:sha256:efe4b1942cdde4bbf067a29eae6b1fbdffb3c83e2fd492c16b62fc5ee4b43b73:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZmEwNmFmNmM4YjU2NmVkNzkyMDJiNTJkNzE0Y2U2NGMxYWViMTJjZjg4ZmVmYjc5NDg4ZWVjOTM4NTUwM2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3NjEwZGQzMzhlYzQ3MDVjZDU3Yzk4ZmZlYTAwNzIwZTZkZDIzNjQzNDJkMzgxYmMzZWM2ZmMwMWViMTRjMDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0OWQwMDA1OGEwYjEwNzRmMzFlYTBmOWNjNGM0YTllNDVhZGVjYTg2MmM3MDhhMTdlN2RiNWY2NDQ2NDcxYjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2ZTMxMDJmNzFhYWZiZGQwMGM3OWNlNDg3MWZmM2ZjZGRiMmVjY2I1OWU4NGQyNDRlNWM5YTQ4MzFkYzJlNWEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L229-L256",
+          "version": "repo-lines-v1:sha256:97badeeb6edd0c65c7f140df69eaf2c8b0b04a482b8919ce6bcc76ab5ade648c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4YzllZmQ0OWEwZjQxZDAyMTVmM2QxYzJhYWM3NTgxY2M5YjVjNzc4MDhmZTNmMjFiMDBhZjRjODA1ZTg5NzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2YzY5MjY3YTViY2E0Y2MwZGZhMDRjNjliNDgwMDgyMTBhMDE4M2JhNjUxNmFmZDljOTk0MDM4MzA1YmMxMzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlZWM1NWQzODY1ZjdjODVmODliYWJkN2YzNjY4YzQ0NDJiYzJkYmY4ZTAyYTliOTA0YjZlZWVkMmY4ZjU4MWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyNWRkMDliNTg5NWQ3ZjVkNGVhNjY5ZjNiYWYzMDVjNTllODMwNTJhMTRiNmU0N2Y4ZTk5NDI2ZDVlOWRlNGEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L9-L13",
+          "version": "repo-lines-v1:sha256:5f13ac6a7c40d0709f7772f67b6a5677e80c1273a32cf901dd79ded6b524caec:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmIzZmFlOGYyZjliODUzNWYzNGExZTQyZDVjNGI2YjM1MWRiMDg2ZGJjMTQ5MDJlOWI3YzQzZGRjYzE2MzI3YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjg4YWVlMmE5ODlmY2E3MjRlMjAzMTY0NzM4YjBmZjYzZjNiZWY5YjBhMzgyODNhZjJkMTFkYjg4OTRmODhlOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWJhYjU1Mjc5M2JjZTRjNDJkZGYyZTEzNDQyYWJmN2Q2ZTAzZGY4M2QyYmFjOGJhZDJlZDU4MjZjYjUwNTNmZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTc1NDFkMjhhNWMwOTViZmM4YzY4ZjI4ZGYwNTRhNTc1NjU5YTRhZjBjNmY4YjNlNTE1NzhlZmUzYzUxOGZlMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_37ec59ad577f43669ca5127e78165da4",
+      "statement": "La importación v2 valida el manifiesto, rutas internas, enlaces, tamaños y hashes de fotos; una foto no verificable no elimina su medición numérica y en web no se restaura como URI persistente.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9999-L10077",
+          "version": "repo-lines-v1:sha256:11278c76a05aaa00e0dd99244de6255fac7d83891efe52672be9ac249667a5dd:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwMTYzNmY2NWZiYTc5MDk3NzVkY2JjYTY0NGY0MGViZGU3OWRmMDdjNzM2MmNhMTY5NmNhNzQzZDVhNzQ2YTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ5ZDVlYmIwZmFhZjZmZmIwMGQ2NTQzN2E4NjZjNTFkYjcxNTIwM2EwYjczZGQxNThhNTE2MzlhMjYzM2Q4ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxZmRhYzdhMjg1NzQxMzllYTFkOWMyY2U3NzAyNWJiOGMwODRlMWMyNGI0YjY0ZmQ1MjM3NWYwM2NiZGU1YTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L259-L381",
+          "version": "repo-lines-v1:sha256:20fa4449b6c3c0f9179d1b76dc9ba2e1fd63a59947993965443fa702fc3fed02:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI5NzdhMDhhMDRkMTQ2YjY3YjIwZDY3YjYzNjVlODk0MTUyY2UyZjFhOTNmZDkwNGU0MzRlZWY4NjlkZjY4YWUyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjZDc5ZWYzOTZiNTExZTZkZjc1NWJhNmI2ZGZmODdhMjNjMTEyNDg1YThlNmE2MDYyM2JmNmViOTcxODJjNTEwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzODQ5OTUyYzgwNjEzNmEwM2JjZDBkODViZTAzN2RiM2ZlZWQwOGFjZDAyNGQ5YWYzNDczZTBmMmIxYmJkYTY2In0"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L418-L441",
+          "version": "repo-lines-v1:sha256:7bac30dfe717f28327dae58ce5a6f0882f2a17955cb9e1efa1ab2165382171c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwZTIwYmNiODBmNGM0ODdhNDE0YmM3OTY0NDE4YzQ4M2E4NmViYzg5YTMxOWY1ZmU2NzEzYjE3MWE3M2UyODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5M2IxN2IxMWM3MzY1ZTllYWY0NDA5ZWU0YjU3ZjE0NThlMzE3YWE2MjhhNjM3NmEyMWE2NTgzMWJkYTEzNmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzZmE4MjQ0MWZkNjczZmNiN2FmNzYyMTIzNzgxN2FhZTA4OTQyYjE2Mzg1ODM2OTVjNWM3OWY5ODRjZjMxYWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3N2E2NWY3ZThiYTdmZTk5OGFhNjI4MDc5YjRkZTQzYmU0ZmVjYzhmZDUzMTZjZmMxOTA1YWYzNTQyMTM4OWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eab1ac430e754c838fe8c8b1115636c4",
+      "statement": "Al restaurar, la aplicación conserva las claves BYOK y el `workspace_id` local de Anthropic, confirma primero el repositorio de proveedores, normaliza preferencias y reemplaza alimentos y memoria; cierra la sesión activa, por lo que la restauración no es atómica entre las particiones locales.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L10079-L10156",
+          "version": "repo-lines-v1:sha256:c4e6a9293a445f70c3ee38c890395614a159453a0a27658e64786e99f75025ef:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiNDE2MGJjN2I0NDg1MGNiODdmYjQzNGE0MWIyYzhiZTAxZTZiYTEwY2I2YjhjZmEwMWVhOGU2NGYxODY2ZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxYmUxMzA4OTVkNWFlZmVlODdhMjE4MmFiZDJiMGRmNGM0MmFiNTVlYzY4ZWZhODVjNzA5MjJlZTRjZTM3M2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkOWM1MTIyYTgxZmU2ZTE5M2VlNTAzODUzMmU0OTliMmVkZDgxMmIxYTEzZDE1MDM1ZTA1YzJiMTE5ZTBhMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjMTcxYzEyNWVjODI1M2U2YmQyYmQxNjAzMjI0MjgwY2Y4NjMwNzQwYTg4NTI4NDQwZTZiZDI3MWMzODc0MWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7ccc7ac6efb8420fba15235e30f5e9e1",
+      "statement": "El borrado de actividad reescribe el agregado y snapshot vaciados y elimina sesión, borradores, cuarentena, operaciones del agente y fotos propias; el borrado total elimina las particiones inventariadas y secretos, salvo la caché pública firmada anti-retroceso.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13270-L13347",
+          "version": "repo-lines-v1:sha256:88e30766e3b7d3cda917179565aabbb40f7ee921804b381ed934e934012f21ca:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3YWFkZWQ3YzYxMGQ2NjA1ZTVkNzdiNmUzNDUyOWNhOGEyOWM4ZTI4OTQ0YTE1MmFmNmIwNDBjNjdmNmI4OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxN2FmMTEwMWM5N2I3YzJmNTI1NDA3ODJlNjM0Y2M0NDQwZjBlOTcwMzQxZTUyZjk3NTIzMTFkNzhiN2Q3ZDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyMmQ5YzdmYmE3MWVjYjAzNmZlOGVlZDAxNTZiYjdjYTNhZWU2MGViMzNiZTAzMjE3OGNlM2JmODg1ODgyZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3YzE3MmNhZjM0N2FmMDdhYjc2NTBjMDU0N2E4NzcyOWNiOTAwYjk1MDhjNmRjMjkxMDBjOGExZTgxZGUwM2YifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13348-L13476",
+          "version": "repo-lines-v1:sha256:8279c51b57ddfe3b5de4ef16e61bef7a431195a396d8f52eb855f7aea1ce0303:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmOTg4OTJmODQ5NDRmMjU2NjAyNWU2N2FkZGM1MzRmZDdlNWY2YmI0ODU2MzlhYjdhNGU1YWFiOTZiYjZiYjBjIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxZWZjMTQ5ZWFjOTIxNDcyNTliZDQ3ZDEwM2MwODYzYWQzMDE2Y2IwNjE5MTVkYTg5MmY3ZDVhZWQ2MWM0OTkwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyZTU2YTJhMTQwOGE2YTI1MDJjYzYwNGI4MTczMTAxNDNmYWJhMDFmODBmNjljMTFlYjUyOWVjN2U5MDdjMmFmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiMTRjODEwZTkxOTVlZjVlZjFiZTVmNzc3OTM1MDY1ZTBkOTBhNzMzODRjYjI5OTQwZDQyYjI1YzViZTJhZDE4In0"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L32-L79",
+          "version": "repo-lines-v1:sha256:464cf0cea09c18a948ebaa2ba596fae907d581b9220a07e0b5d75090be97e57e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjYzZmYWI4ODczMjdlYWMwNGExNWY4YzQxZDA0NGI2YWEzZjczMzRmMjM1ZDMyNjA2NzQzMjUwMzUxMGUzN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZGM3NmQxMmU1MzA0ZDMwNzllZGI1Zjg5MDAwN2VhMDVmMjI2ZTRkOTNiNjk1Njg0NjBjYWZhZjgwMDc0NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MzUxNmE4NDZiYjc1Zjg3N2ZiMDM0NzQ0YmJmYzU5ZTQ5OWJiNGEyODA3ZjRiOTA0ZDVmOGI1ODdlOThmNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkZWYwZWYyOTQ5OTA0YzlkODY4NGFkZmY4OGYyNWM5MzE2OGM2ZjJkZWQ3MGY4NGRkM2E2Y2YwZGJkZGUyY2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3018cde106914dafae3b29611dbfcc03",
+      "statement": "El motor de borrado ejecuta cada tarea con borrado y verificación sujetos a un timeout predeterminado de cinco segundos, continúa tras fallos y devuelve un informe completo o incompleto que permite reintento.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.test.ts#L22-L114",
+          "version": "repo-lines-v1:sha256:8f79cf7ea4569ec5e997d8ec262ddfa8f64c93a16fc0c467baf06d247f695959:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwNDZmM2Y0ZTM4OTA5ODhkZGRjM2UwYTRiZmNkNzI0NTVkYmRlZmFkNzUzMTkzNGRkZDFmOGE2NzM1Y2Y5YzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwMTM5NjE3NDE3MmZkN2I2ZmVhYzE1MTc5MTlkYjUxZjZiMzFkNjAwZWYzMzEzYzliYWQyYzU1ZTJkZTUxZjQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L23-L30",
+          "version": "repo-lines-v1:sha256:4f9a9c46f2dd847a194f1081bb05eb4d7d8d2a317a3e3107fe7f9b94b9fb1b23:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjZmOGJjYTk0ZTg2YjY5MDUxNDA3ZTA4OTJkM2UwNWZkMTM3NWVkOTFjZjZlOGU5ZjVhYmJhOWQwOTJjZjY4NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQ4ODA5NTM4ZjI0NmZiOWI0ZmQ4M2ZmNGYzY2MxYTM2NTE3NDZmZDMyNzI0NDg4MmU1OTZjNDNhMDBkZjdjNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDA0MjExNTNjMmJlMmFjZDcwNzBjNDQzNjA3Mjc5MDcyMDk0NGQ5N2I1ZGExMzAxZmUwYzc5YmNkNjI2YTlkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTRjODZlN2M1ZWFmYzliNDY5MGVkMDhjNjc2MjAyYTg4ZGI3NjNiOTEwNzY1MmIwMmMyMTdmMzEwMjk4MjZhMCJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L81-L168",
+          "version": "repo-lines-v1:sha256:e5a4811785e38388b6b34581dfbee00036ede76f7166e28ce27e2c21d2365839:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiZjdiOWE1ZTI3ZWRiYTY1OWY5YzlmZjQ0NTcxMjZiNzI0MDQzY2U5NDNmZmI1MmUyNjhiNTQyNTAzOTI2OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjZGYzMmRiZWE0ZmM5NjE2YWM0YWZiN2FkMGRhZDNkOWUxMGNiYjMwZWM2MmNjODUzYjA2ZjY2YTc1YWIyMDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_726ff2c6106b4b83b4933358620036ed",
+      "statement": "Las pruebas de recuperación, borrado, formato de backup y medios cubren respectivamente cuarentena y snapshots, verificación y manifiestos de privacidad, compatibilidad/validación de paquetes y el puente SHA-256.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.test.ts#L73-L222",
+          "version": "repo-lines-v1:sha256:78471448d48a6767329e2939be56ff614a2dc18a6a820f10bbdff505315c09e1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZmIzMTQzMGMzNzAyMDFiNTU5Y2NiZTBiMDBmODRhYWE2NjM2NTU4ZTkyYmViMjc3Y2Q3YmI3MDEwMzMwNDVjIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIn0"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/measurementMedia.test.ts#L30-L48",
+          "version": "repo-lines-v1:sha256:ef6d52f19316c73d8ba5654b3b5eb3eb1f7f5d4faa19283f017d3f5879fee4d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0OGI0YTQ2NTFkODUyYjBiYWJiMTE2NWI3MGE2M2E5NWZlN2Y2NDY0MWQ0NGIxN2EyYWVjM2ViNGVjNDY3OGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0MWQ0ZGYyM2YxOGIxOGYwZmFkMWQwNTQwNjdkNTc4MDljMWMzYTZjNmIzZTg4MWVlZDdhYTRhZTRmZTA0NTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.test.ts#L85-L193",
+          "version": "repo-lines-v1:sha256:9e8db29e313aa9c7905a5fd5af58f112e6e44ab89bc5332f48e2270f2a344ecd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiMmM3MGFjNDcyMjRhOTgwY2EzMWJkNDc0MmJjNjU2OTZjOWMxZTYwNDk2MDdlODZlMWJkNjNiOTk5NTZjMWE2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJjMjI3Yjk3OWUwYmUyYTNkZWI2OTRlZjg4NThiYzdkM2M3NDY1YTA5NTI0ZWM3YjlhNjNkMmFiMTBhNTg2YjM3In0"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.test.ts#L117-L184",
+          "version": "repo-lines-v1:sha256:97cf769d112ce841046d4e0891b03f0041d34218b017f9b95c7f1eb6a293c7c8:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyYTliNzFiMTZiNjdkYmQwZGZmMTI4OWE5YjRkYTNjNDFiNWVmNWRjMTc5ZmRhMGJkNDVkNDc1NDY4M2QxYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-07T11:37:28.236Z"
+  }
+}

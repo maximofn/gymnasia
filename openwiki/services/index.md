@@ -1,5 +1,5 @@
 # Archivos
 
-- [Proxy CORS de Anthropic para navegador](anthropic-proxy.md) - Puente de desarrollo de FastAPI para el descubrimiento de modelos de Anthropic, la verificación de credenciales, los mensajes síncronos y el tráfico transmitido de la API de Messages.
-- [Panel de arquitectura](architecture-board.md) - Espejo estático de Linear que abarca el contrato de datos del panel, la canalización de renderizado, la hoja de ruta, los filtros, el grafo de dependencias, la validación y el despliegue en Vercel.
-- [Worker de feedback e incidencias verificables](feedback-worker.md) - Worker de Cloudflare que recibe feedback confirmado por la app, lo valida y sanea, y crea incidencias verificables en GitHub. Mantiene la excepción remota acotada mediante idempotencia, limitación de abuso y retención de denuncias.
+- [Proxy Anthropic de depuración local](anthropic-proxy.md) - Utilidad FastAPI opcional para depurar una pasarela local de Anthropic desde el navegador. La aplicación usa Anthropic directamente en web y el proxy no se despliega ni es necesario salvo que se configure explícitamente la pasarela.
+- [Tablero de arquitectura y seguimiento](architecture-board.md) - El sitio estático `arquitectura-agente/` refleja manualmente tickets de Linear mediante un único JSON, con vistas de épicas, estado y dependencias. No forma parte del runtime actual de Gymnasia ni sincroniza datos del producto.
+- [Worker de feedback e incidencias verificables](feedback-worker.md) - Worker opcional de Cloudflare que recibe feedback confirmado, aplica controles de validación, privacidad y abuso, y crea incidencias en GitHub con una referencia comprobable por el cliente. La aplicación sigue funcionando cuando el canal no está configurado o falla.

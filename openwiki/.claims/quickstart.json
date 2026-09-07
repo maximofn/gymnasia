@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:327e9c6aee347fda66167403a94adaeceb44d4f586707979da312fcc2b383750",
+  "pageVersion": "sha256:916ae0a40325c2369eaf020bb95652aae5edf9f670e9a8118d61a5f9e9996adf",
   "claims": [
     {
       "id": "claim_546dc48f876c41c98cff85c957a00442",
@@ -196,7 +196,7 @@
         },
         {
           "resource": "repo://package.json#L42-L70",
-          "version": "repo-lines-v1:sha256:1ba1637c1cf9ab3a3f5766e7a2d690aba2d22bce9f97736361f41c1e41fd5e40:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1Y2JkZGQyNjhlMTM4NjkwMjYwYWFlNDAwNTMyMzY0MTgyY2E0ZGE2YWZkNjlhMTgwMTU4MGVmNGFmYmNjNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
+          "version": "repo-lines-v1:sha256:da2dbff4f3c56d937c8037d25c60e4f07ac371e90a05c7cfa39ce8bea5e6a88b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1Y2JkZGQyNjhlMTM4NjkwMjYwYWFlNDAwNTMyMzY0MTgyY2E0ZGE2YWZkNjlhMTgwMTU4MGVmNGFmYmNjNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
         }
       ]
     },
@@ -227,10 +227,76 @@
           "version": "repo-lines-v1:sha256:bcd580852eddf5cfe76d58aafaf39232c52ed7c72f3727afd910672345ba7514:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MmFjZmU1NDM3ODJhNDU5Y2I4NTEyZTE5MDllNzU4NWU3Mzc1MDdjZDBmNTAwYjUxNTYxODY1ZWI3Y2Q2OTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmZmFmNzAwY2Y0NmE4ZDdhMDM1ZmRiNDFhNGJhODhiMDVmNzhjODQzMTlhM2VjNzEyMTAwNmIxZTZlZWM0NzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxNmUwMGZiOGIzMzA1ODQwNmY5MTYzZDIzZDc0NTMzYjlhM2Q1Njg0NDgxOGU5NWZmZDM0MmRjMTI0YzFiYjYifQ"
         }
       ]
+    },
+    {
+      "id": "claim_cf87d05682164ac582baf40c8ab35470",
+      "statement": "El repositorio usa workspaces npm; `npm ci` instala de forma reproducible el lockfile y `npm run dev:mobile` delega en el script `start` del workspace móvil.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L61-L65",
+          "version": "repo-lines-v1:sha256:47f3f43aefedfd0c5e68f774ca2c16f3e5ae2c11b530263a4221e914de2930c5:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTczYmEyNjc2YzMzZGE1MjMyNTFkNWNjZjUzNjViODFhMGEwMjMyZWU3MGI3OTFlNmJjMTNmYTIyNTFhMGQ4MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFjNmYwZmEzMGQ0ZmFjYjM5OTkxYTQ2NThhOTE2MmM3ZTZkNWQ5NGI2M2U0YjViYjhmN2NhNzhjMGIyODM3NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGRlN2JkZGU4Mjc4N2U4NTRlMmE5MDQ1NmNjYTQxMDM3MDZkNmYzNWI5M2I3YjQ1N2M0ZTdhNjFjNTkxMjMzOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjk4OWRlMDBmNjkyMzY4ZDI0NGVmOTQ3Nzk5ZmE4NmFmZDcwOGM0MTczNTQ2OTBiZGFhODE4ZmE4NGRmMThiMyJ9"
+        },
+        {
+          "resource": "repo://package.json#L2-L8",
+          "version": "repo-lines-v1:sha256:752790d7fc45c2fb858f69f1181644a0a93f2303a16fcf7c392c187b924c79e2:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWM0Y2FkYjhjYjM2MmViMDFlMDYxYTQyMjk4MzA4N2Q3ODEyOTIyZDYxNDg3YzIxOTFhNzE4ZDFjNzY3NjI4NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzRkNmI1YjJlODk4ZDk1OGE4NWRkMmJjMDA2OTUzYmU1NTViNDc0NjY1NTZmZmM0ZTIxMzQyYTBiOTExZDUyNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjEsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTZmYjA4ZmRhMWFjYjk1N2I2MTE2YmQzNzgxMWExZmU0MWEwMTYxMWMwNjMxZWRiZjc4NmQ2ODg5YTI3YTU1YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDY2ODhkZjg0Zjg0NWE0ZWFkM2FlYmJiMGQyNjQ2NTY1NzIwNDcxMmNmZjM3MDdiZjFlZGFmYWRiMzc1MGIzZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_10963529ea1a4710a944dfac63d9e1ef",
+      "statement": "Para Expo Go físico, el runbook usa `npm --workspace apps/mobile run start -- --tunnel --clear`; el segundo `--` garantiza que los flags lleguen al script del workspace.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L67-L84",
+          "version": "repo-lines-v1:sha256:e9134351120d25f1346c8f3a172c16bf51dffdcb7b249fddc993521867c28027:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4ZTQxMWY3NTE0YjZmNzY2MjNmYzBhYTgyZGM4ZDk3M2NkOGQ0Y2I5OWUxYzBhYTA1YWZiZTc5NzY4OTg0YjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyODZkYjRjNzI1YjA3NTE5YjRmYjQ3YjA5MWFhZjI2MDBiZDk0ZGUyMmYyZTk3NDc0NTUzMGMzZjBjZGU3ODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRmNjUzMGU0ODI2OWI1OGYyMmNmNWNmOGY1OWI5NjgwNDE5MWRiN2U3N2I3ZmNmMWViZTZkYzczMmViNzhkMmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkOTk3MzQzODA0MjQyNDJjMDNmNGFmZTNmZWM4OTNjMzVlNGJlOTY3ODhhOTUwNWU2N2Y1YWM3MzJiMzU2NGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_15e09fd48ddb44ec828fb8b0a069de63",
+      "statement": "Los comandos raíz separan pruebas deterministas, E2E web específicas y checks especializados: `npm test` ejecuta la suite determinista y el dev store, mientras las E2E de agente, catálogos, entrenamiento, dieta y recuperación son scripts distintos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/package.json#L14-L21",
+          "version": "repo-lines-v1:sha256:ff295ec390330257375e24e5a83399f0a03f8e2fd9d4c97f8a6278ee63775cb4:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmNlYTdhZWZiMzcyMzY4NWI0NWFkMmZmNzFkMTI3MTQzYmRkNjBhYjgzMmI4MTMwYjI0MTgzMDMzYTkwM2IwNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDg3MzJiODYzOTM4NjMyMDk0YTNmNmViYzU1M2NkMjU1Y2UxN2E3YTkzNWViZjNjNWVmYTMwZjhlZjIxODA3MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWY5NjFhNmU1Y2E3NDkwYzlmN2M4NjlkZTQyZjk0ZTc3ZDFlMzM0ODY4MmIzOTNmYjkxOGYyZTFhMGMyYWE3NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGMwYzFmZWRkZWI5ODZiOGRlNjJiZmM3M2JiNjQ5Mjk2Y2E5ZGRkMTMyOTk2ZTkwYzEwMGRiNzliZjc4OWEyMyJ9"
+        },
+        {
+          "resource": "repo://package.json#L42-L71",
+          "version": "repo-lines-v1:sha256:da2dbff4f3c56d937c8037d25c60e4f07ac371e90a05c7cfa39ce8bea5e6a88b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1Y2JkZGQyNjhlMTM4NjkwMjYwYWFlNDAwNTMyMzY0MTgyY2E0ZGE2YWZkNjlhMTgwMTU4MGVmNGFmYmNjNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_90f091277982442182570acb78766087",
+      "statement": "`arquitectura-agente/` es un espejo manual de tickets de Linear, implementado como sitio estático sin build ni backend y actualizado manualmente desde `data/board.json`.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L143-L149",
+          "version": "repo-lines-v1:sha256:132cf9b6496294b6a2a91644e4fcd67def5959b2e507b2730a1c2ce35bb59db8:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDgzMTE0ZjY5ODkwZjA0NjA4MGRmNTE1OTU1MWNlNDc5YjRhODRlZGZjNmNhYTEyZDI4MzAxMmJmOGY0NzYwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjYwNDdjNjUzZTljYWRmNzBlOGFmOTZmZmJlOThmY2I5YmYxNTg0MmYwZTEwZTZhNjQ5NDU1YTRkM2JkZWQ5YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzc4NDNlYWUxNzVmZDMzODVhYWRiNDIyNmQ4MDgwMzVlY2YxMjVhNWI1ZGYxYTdhY2UxNjFjNjhkNThhMGJhYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDZmYjdjZjMyNGQyNzlkYWJjMTMwMGJkNThmNzk2YzNkZDlhODdhZmRiOThiOWE4MWZjNDI4ODY3OGI0OGJmYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4f7b9cf0d2024e0b8d0b0909f49fb25e",
+      "statement": "El Worker de feedback es opcional y su endpoint está vacío en desarrollo; Staging y Production usan el endpoint configurado, mientras un override `FEEDBACK_API_BASE_URL` queda restringido al propósito de desarrollo.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L42-L54",
+          "version": "repo-lines-v1:sha256:4d75c9be8e9a83b14797d566243863f4c342866cd933bff2e11793a1edaa7938:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0NmZkMzdjYTdjZTUzNmZiNGE0NDFmMTM2Yjk3Y2M2NDM5Nzg0MDk3M2E4ZWJkOTlkYmQ3YzE5YzFhMDNmMzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3Y2IyMDdkODg4N2I4NWIwYzIxMjg1ZGQ3MGZkNjM2MjE1MDliMzMyMDQ4ZTEyMGE1NDMwZjY5MmVkNjNiZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0YjFlMDBlYTNhN2RiMzliMDVlZjQ0ZDliZjZjMWY4N2E5NTAzYjkzYjgwNDMyZjJhNWQ1NGQ3YmY1MzFkYzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlYTUzMzVlZTM2MGVjNjk5ZDI2N2ZiODA1NjA3MjkzYzBkMzU3NjlmMDdjZjhkNWM0OTBiOTI3Yjc2Yzg3YjgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/app.config.ts#L151-L154",
+          "version": "repo-lines-v1:sha256:8a7060bb775c20651fefd362fe19c3c41b151b68d6a8f35a1d13a7d02dc5ce84:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M1YjdlNDU2ZjUzNjVkMzE1YTYxMzA1Zjg2YWI1YzM2ZTMxMzkyNDg0MGYzYWQ0ZjU4MjM4ZjMxNDdlMjllYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWYwY2RiOTcyYTdiZmI3ZWQyNDZmOWZmNjcyMzg1ZTU1ZjQ5NjhmYzExMDQzZGM1YjY4NGQ1MWRmYTMxZGJjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWQ2Mjg2YjJiZTZhZjM3MGRlMzJiZTlkNmMzYTFmZmUzMDFiNzA5MTM3NDI5Y2M0MDY1M2I0OTBjZTk3MjAyZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDFiMTBlOWUxNTUwNmRkY2M3MzIwY2VjMWFmOWMwOGIxNWQzZGZjMmRmNTljZjg1MWE2MDNkODJlZjczZDAwYyJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/app.config.ts#L35-L65",
+          "version": "repo-lines-v1:sha256:3ff57f461dbf5408fa9b943f1b1136df9913ab9f2ab16379ca3b8a609efe5de9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhMzhlZTljYzczYzlmMWYyYzhmOGM1NmQwMGJkMDBkZTViMDczNjlmMTJlMDgwYWJiZDc5YzhjNDM3NTZjMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwMWQ5ZTBhMGViYTAzYzg0OWYzYmYxN2I2ZDJhNzRkNDEwY2VlZmJiYWMxOWYzNjdmZGE0YmE3ZTk4ODZhM2YifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.4.3",
-    "at": "2026-09-06T10:32:53.606Z"
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-07T11:37:28.236Z"
   }
 }

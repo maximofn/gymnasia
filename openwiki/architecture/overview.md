@@ -1,11 +1,14 @@
 ---
-type: "Referencia"
-title: "Arquitectura actual de ejecución"
-openwiki_generated: true
+type: arquitectura de producto
+title: Arquitectura local-first
+description: Gymnasia es un cliente Expo local-first para móvil y web, con estado personal en el dispositivo. Esta página delimita los catálogos, proveedores BYOK y el único servicio remoto opcional para no convertirlos en un backend de producto.
+tags: [local-first, mobile, web, byok, privacy]
 verified:
-  - by: openwiki/0.4.3
-    at: 2026-09-06T10:32:53.606Z
+  - by: openwiki/0.5.0
+    at: 2026-09-07T11:37:28.236Z
 sources:
+  - id: openwiki-source-8037e2358a2c4f9b2c722a11
+    resource: repo://AGENTS.md
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
   - id: openwiki-source-00f3917787dfe248860adc3b
@@ -30,6 +33,8 @@ sources:
     resource: repo://apps/mobile/catalogs/runtime.ts
   - id: openwiki-source-38c56531000e6ccc59045ff7
     resource: repo://apps/mobile/catalogs/sources.ts
+  - id: openwiki-source-7a047b00a95eb325eb147887
+    resource: repo://apps/mobile/environment.ts
   - id: openwiki-source-12bdb95b5f863aab1ff9964a
     resource: repo://apps/mobile/index.js
   - id: openwiki-source-e86fe7b76c693666bc2cb828
@@ -40,93 +45,101 @@ sources:
     resource: repo://apps/mobile/vercel.json
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.4.3", at: "2026-09-06T10:32:53.606Z" }
+  - id: openwiki-source-23775c3de52f3ab95a13cb8b
+    resource: repo://README.md
+generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
 ---
 
+# Arquitectura local-first
 
-# Arquitectura actual de ejecución
+Gymnasia tiene una única superficie de producto: `apps/mobile`. `index.js` registra el mismo `App` de Expo para Android, iOS y web. Entrenamientos, dieta, medidas, conversaciones y preferencias no dependen de una cuenta ni de una API de Gymnasia: se crean y se conservan localmente. La red puede enriquecer una función concreta, pero no confirma ni autoriza las mutaciones de esos dominios.
 
-Gymnasia se ejecuta principalmente como un único cliente Expo en `apps/mobile`. `index.js` registra `App` mediante `registerRootComponent`, y el mismo árbol se usa en Android, iOS y web con `react-native-web`. El producto es **local-first**: entrenamientos, dieta, medidas, conversaciones, preferencias y configuración residen en el dispositivo o navegador; las dependencias de red enriquecen funciones concretas, pero no son una API de producto que confirme las mutaciones locales.
-
-La topología actual sí tiene dos excepciones remotas deliberadas: el Worker de feedback, que custodia la credencial de GitHub para crear incidencias, y la distribución de política firmada para las variantes Staging y Production. Ninguna de ellas almacena ni sincroniza el estado de entrenamiento del usuario. El tablero `arquitectura-agente/` también es un sitio estático independiente y no participa en la ejecución de `App`.
+La excepción autorizada es `apps/feedback-worker`: recibe voluntariamente propuestas e informes y crea *issues* en GitHub sin exponer el token de escritura al cliente. Si no está configurado o falla, la aplicación sigue siendo utilizable. La distribución de política firmada y los catálogos son entradas remotas verificadas o cacheables, no servicios que sincronicen datos personales. El sitio `arquitectura-agente/` es un tablero estático independiente y no forma parte del runtime de `App`.
 
 ```mermaid
 flowchart TD
-    Person["Usuario"] --> Client["Cliente Expo apps/mobile"]
-    Client --> Local["AsyncStorage y SecureStore"]
+    User["Usuario"] --> Client["Cliente Expo local"]
+    Client --> State["Estado local AsyncStorage"]
+    Client --> Secrets["Credenciales SecureStore nativo"]
     Client --> Catalogs["Catálogos GitHub Raw"]
     Client --> Policy["Política firmada por canal"]
-    Client --> Providers["Proveedores BYOK"]
-    Providers --> OpenAI["OpenAI"]
-    Providers --> Anthropic["Anthropic directo"]
-    Providers --> Google["Google"]
-    Client --> Feedback["Worker de feedback opcional"]
+    Client --> BYOK["Proveedores BYOK"]
+    BYOK --> OpenAI["OpenAI"]
+    BYOK --> Anthropic["Anthropic directo"]
+    BYOK --> Google["Google"]
+    Client -. "envío voluntario" .-> Feedback["Worker de feedback opcional"]
     Feedback --> GitHub["GitHub Issues privado"]
-    Client -. "solo si se configura" .-> Proxy["Proxy Anthropic loopback"]
+    Client -. "depuración web opt in" .-> Proxy["Proxy Anthropic loopback"]
     Proxy --> Anthropic
 ```
 
-*Figura 1. El cliente conserva el estado; catálogo, política, proveedores y feedback son salidas independientes. Anthropic se llama directamente por defecto, incluso desde web; el proxy es opt-in y local.*
+*Figura 1. El límite local-first: el cliente posee el estado; catálogos, política, proveedores y feedback son salidas o entradas remotas independientes.*
 
-## Componentes ejecutables y límites de responsabilidad
+## Límites y responsabilidades
 
-| Componente | Responsabilidad actual | No es |
+| Límite | Responsabilidad | No debe convertirse en |
 |---|---|---|
-| `apps/mobile` | Shell Expo, dominios de entrenamiento y dieta, agente, persistencia local, backups y adaptadores de red. | Un cliente de una API o cuenta central de Gymnasia. |
-| Política del agente | En Local usa el snapshot integrado; en Staging/Production resuelve, descarga y verifica un paquete firmado apropiado para el canal. | Un prompt remoto sin verificación ni una fuente de datos del usuario. |
-| Catálogos `alimentos/`, `productos_comerciales/`, `recetas/`, `ejercicios/` | Datos de referencia e imágenes publicados desde GitHub Raw y cacheados localmente tras validación. | Estado personal o política del agente. |
-| `apps/feedback-worker` | Endpoint opcional que valida feedback y crea/redacta incidencias en un repositorio privado de GitHub. | Autenticación, sincronización o backend general de la aplicación. |
-| `apps/anthropic_proxy` | Herramienta de desarrollo local opcional para reenviar Anthropic cuando se configura explícitamente. | Infraestructura desplegable o ruta necesaria para Anthropic en web. |
+| `apps/mobile` | Shell Expo, dominios de entrenamiento y dieta, agente, persistencia, backup y adaptadores de red. | Cliente de una API central, identidad de Gymnasia o sincronización implícita. |
+| Política del agente | Snapshot integrado en `Local`; en `Staging` y `Production`, resolución y verificación de un artefacto firmado para el canal. | Prompt remoto libre ni almacén de datos del usuario. |
+| Catálogos | Referencias de alimentos, productos, recetas y ejercicios publicadas como JSON; se validan y cachean en el cliente. | Estado personal o fuente de autoridad sobre los registros del usuario. |
+| Proveedores de IA | OpenAI, Anthropic y Google reciben una clave que aporta el usuario y el contexto necesario para su petición. | Backend o cuenta compartida de Gymnasia. |
+| `apps/feedback-worker` | Valida feedback e informes y custodia la credencial para crear *issues* privados. | Autenticación, base de datos de producto o sincronización. |
+| `apps/anthropic_proxy` | Pasarela local opt-in para depurar Anthropic desde web. | Infraestructura desplegada o ruta de producción. |
 
-Los documentos o directorios históricos que describan una API central, cuentas, Postgres/Supabase o sincronización no describen esta topología salvo que el código de ejecución los introduzca expresamente. La fuente de verdad para cambios operativos es la configuración y las pruebas actuales.
+No se deben inferir una base de datos, cuentas centralizadas o una API de producto a partir de documentos históricos. Un cambio que haga que guardar actividad, dieta o conversaciones requiera una respuesta de red rompe este límite y requiere diseñar explícitamente identidad, sincronización, conflictos, recuperación y borrado.
 
-## Arranque, variantes y almacenamiento
+## Arranque, dominios y aislamiento por variante
 
-La configuración exige `APP_ENV` y construye tres variantes: `development`, `staging` y `production`. Cada una aporta identificador de aplicación, namespace de almacenamiento y canal de política; solo desarrollo puede usar `DEV_PROVIDER_MODE`, cuyo valor por defecto es `fake`, mientras que Staging y Production usan `byok`. Las claves de almacenamiento se derivan del namespace de la variante, de modo que una instalación no debe mezclar datos de otro canal.
+`app.config.ts` exige `APP_ENV` y compila `development`, `staging` o `production`. La variante fija nombre, identificador de aplicación, canal de política y *namespace* de almacenamiento. Desarrollo usa el canal `Local` y, salvo que se pida `DEV_PROVIDER_MODE=byok`, proveedores falsos deterministas; Staging y Production usan BYOK. El runtime vuelve a validar que la configuración pública no mezcle versión, entorno, canal, namespace y modo de proveedor.
 
-`App` mantiene un `LocalStore` con plantillas, historial, dieta, medidas, hilos y mensajes, además de claves de proveedor y la selección de proveedor. El almacenamiento general usa `AsyncStorage`; el repositorio de recuperación mantiene copia válida y cuarentena para el store principal. La configuración de proveedores se separa hacia `expo-secure-store` cuando está disponible y se elimina de la serialización general. En web, donde no se garantiza ese almacén seguro, las credenciales BYOK tienen la protección del almacenamiento local del navegador, no la de un secreto de servidor.
+Las claves de `AsyncStorage` y de SecureStore se derivan de la variante. Development y Staging se prefijan para no mezclar instalaciones; producción conserva las claves de producción y excluye los prefijos no productivos. Por ello, una migración de claves o de backup debe respetar el ámbito activo, no enumerar o borrar indiscriminadamente el almacenamiento del dispositivo.
 
-La app ofrece borrado verificable de familias de datos locales y puede incluir SecureStore, fotos de progreso y notificaciones en las plataformas que los soportan. Un espejo de archivo `/dev-store` existe exclusivamente para el preview web de desarrollo cuando `EXPO_PUBLIC_DEV_STORE_MIRROR=1`; no pertenece a la aplicación publicada ni conserva claves BYOK.
+`LocalStore` reúne plantillas, historial de entrenamiento, dieta, medidas, hilos y mensajes, además de selección de proveedor. El repositorio de recuperación mantiene la copia principal, un último snapshot válido y una cuarentena; durante la hidratación puede normalizar datos reparables, pero detiene la carga para recuperar o tratar datos corruptos. El borrado local elimina y verifica las familias administradas, incluidas las copias de recuperación y las sesiones dependientes.
 
-La exportación web es estática: `build:web` ejecuta `expo export --platform web` y Vercel publica `dist`. Las diferencias nativas son explícitas en `app.json`, que configura SecureStore, notificaciones, audio y permisos Android; no se debe asumir que la web tenga capacidades equivalentes.
+## Persistencia, secretos y privacidad
 
-## Política firmada y ciclo de una conversación
+El estado general se serializa en `AsyncStorage`. Las claves API no deben ir en esa serialización: en nativo, la configuración de proveedores usa `expo-secure-store` cuando está disponible y la app informa de un fallo de ese almacén sin perder el estado principal. En web la configuración de proveedor se guarda con el almacenamiento local disponible en el navegador; no tiene la garantía de un secreto del servidor ni la protección equivalente a SecureStore nativo.
 
-El agente adquiere un *lease* de política al cruzar límites como nueva conversación o turno. En el canal `Local`, el lease es el prompt y la política sanitaria integrados. En `Staging` y `Production`, el runtime consulta GitHub Deployments para el canal, acepta únicamente deployments exitosos con una estructura y URLs de release esperadas, descarga bundle y firma, comprueba el hash anunciado y verifica la firma, el entorno, canal y herramientas declaradas contra raíces públicas integradas. El resultado se guarda en AsyncStorage y el selector puede degradar a caché o snapshot integrado conforme a sus reglas, en vez de aceptar contenido remoto sin verificar.
+Una exportación `.gymnasia` es una copia local iniciada por la persona usuaria. Incluye datos seleccionados y fotos de progreso normalizadas, pero excluye claves API y cachés remotas; conversaciones y demás datos sensibles del backup no se cifran automáticamente. Importar, exportar o añadir una nueva categoría de datos debe conservar esa distinción y el borrado verificable.
 
-El lease congela conjuntamente el prompt, la política sanitaria combinada, la procedencia y el contexto de activación. El flujo de chat usa esa misma selección para clasificar texto de entrada y salida y para adjuntar `policy_context` a los mensajes; por tanto, una modificación de política debe conservar los contratos de política sanitaria y herramientas, no limitarse a cambiar texto de prompt.
+El espejo `/dev-store` solo se habilita en preview web de desarrollo con `EXPO_PUBLIC_DEV_STORE_MIRROR=1`. Es una comodidad local, no un mecanismo de persistencia publicado, y no escribe claves BYOK. La exportación web es estática mediante `expo export --platform web`; `app.json` declara plugins y permisos nativos, así que no se debe asumir que la web tenga las mismas capacidades de notificación, audio o almacén seguro.
 
-## Catálogos y llamadas directas de IA
+## Catálogos: referencias remotas recuperables
 
-Los cuatro catálogos remotos se descargan como `all.json` desde GitHub Raw. Antes de usar una respuesta se valida contra el esquema de la fuente y, al persistirla, se guarda un sobre con versión, procedencia y hash de contenido. Al iniciar se puede usar la caché válida —marcada como fresca, cacheada o obsoleta— y un fallo de red conserva el último snapshot en vez de borrar datos. Los alimentos personales son un origen separado, `local://device`, almacenado localmente.
+Los catálogos remotos de `alimentos/`, `productos_comerciales/`, `recetas/` y `ejercicios/` se obtienen desde `all.json` en GitHub Raw. Cada definición aporta URL, procedencia, clave de caché y parser. Antes de aceptar una descarga se comprueba el esquema; el sobre persistido incluye versión, fuente, fecha, ETag, procedencia y hash SHA-256 del contenido ya validado.
 
-Los proveedores de IA son BYOK: el cliente envía la clave elegida directamente a OpenAI, Anthropic o Google para sus APIs de modelos y generación. No crean una identidad ni una cuenta de Gymnasia. Para Anthropic, la aplicación añade `anthropic-dangerous-direct-browser-access` en web, lo que permite la llamada directa desde el navegador; OpenAI y Google también se consumen directamente. La ruta de Open Food Facts es otra llamada de referencia para productos y no una persistencia del producto.
+Al arrancar puede utilizarse una caché válida marcada como `cached` o `stale`. Al refrescar, un HTTP inválido, JSON malformado, esquema inválido o fallo de red conserva el snapshot anterior y señala el fallo en vez de borrar los datos disponibles. Los alimentos personales son otro origen, `local://device`, y no se envían ni se sustituyen por GitHub Raw. Este diseño permite uso offline sin convertir el catálogo en una dependencia de arranque.
 
-### Corrección: el proxy Anthropic ya no es obligatorio
+## Política y llamadas de IA
 
-`EXPO_PUBLIC_API_BASE_URL` está vacío por defecto. Solo si una persona lo define en web se construyen URLs para el proxy; sin esa configuración, la aplicación llama a Anthropic directamente. El proxy escucha por defecto en `127.0.0.1`, rechaza clientes demostrablemente remotos y rechaza arrancar con un host no loopback. Aunque permite CORS para poder servir a un navegador local, no debe desplegarse ni usarse como depósito de claves: recibe una clave BYOK en el cuerpo, la convierte en cabecera upstream y procura no reenviarla en el cuerpo ni filtrarla en errores.
+El agente obtiene un *lease* de política al iniciar una conversación o un turno. En `Local` usa el snapshot integrado. En los canales remotos, el runtime resuelve una activación, descarga el bundle y su firma, comprueba hash, firma Ed25519, entorno, canal y contrato de herramientas contra raíces públicas integradas. Puede recurrir a caché o snapshot integrado según el resultado de verificación, pero no debe aceptar contenido remoto no autenticado.
 
-El proxy conserva rutas de salud, verificación, modelos y mensajes para el caso opt-in. Sus límites de cuerpo, timeouts y conversión de fallos hacen visible un upstream inaccesible; para SSE, inyecta un evento de error si la transmisión se corta sin `message_stop`. Esto es útil para depurar el puente, pero no cambia que la ruta normal web y móvil sea directa.
+El *lease* congela prompt, política sanitaria combinada, procedencia y contexto de activación para ese uso. El flujo de chat usa esa selección al clasificar entrada y salida y adjunta `policy_context`; modificar la entrega de política exige preservar también los contratos sanitarios y de herramientas.
 
-## Feedback: excepción remota con datos mínimos
+Los proveedores son BYOK y se consumen desde el cliente. En particular, Anthropic usa en web la cabecera `anthropic-dangerous-direct-browser-access`, por lo que la clave del usuario y el contenido de la solicitud son visibles dentro de la frontera del navegador y se transmiten al proveedor. OpenAI y Google también se llaman directamente. Esta es una decisión de privacidad: BYOK no transforma una clave de navegador en un secreto de servidor ni crea identidad de Gymnasia.
 
-La URL de feedback se configura por variante: desarrollo queda deshabilitado por defecto; Staging y Production usan el endpoint HTTPS del Worker, salvo override de desarrollo válido. Si falta o es inválida, la app degrada esa función a `unavailable` sin impedir el arranque ni la operación local.
+`EXPO_PUBLIC_API_BASE_URL` está vacío por defecto. Solo una configuración explícita en web redirige Anthropic al proxy local. El proxy escucha en loopback, rechaza clientes remotos y no debe desplegarse; adapta el cuerpo con la clave BYOK a la cabecera upstream y limita los errores que devuelve. Sus rutas de salud, verificación, modelos y mensajes son útiles para depurarlo, no una dependencia de la aplicación publicada.
 
-El Worker solo acepta `POST /feedback/issues`, aplica CORS a orígenes permitidos, puede deshabilitarse con `FEEDBACK_ENABLED=false`, valida el esquema y reserva una clave de idempotencia antes de crear la issue. Limita la tasa por un identificador de IP pseudonimizado con HMAC; un reintento de una creación ya completada devuelve la misma incidencia en lugar de duplicarla. El token de GitHub solo existe en el entorno del Worker. Una tarea horaria redacta en GitHub los informes que superan 30 días y poda contadores de límite de tasa; D1 mantiene la información necesaria para esas operaciones.
+## Feedback: la única integración remota opcional
 
-## Invariantes y consecuencias para cambios
+La URL de feedback queda vacía por defecto en desarrollo y se configura para Staging y Production; un override solo sirve para desarrollo. El resolver rechaza URLs inválidas, credenciales embebidas, query o fragmento, y solo permite HTTP loopback en desarrollo. Si falta o falla la validación, devuelve `unavailable` sin impedir el arranque.
 
-1. **La autoridad del estado de producto es local.** No introduzca una dependencia de servidor como si fuera requisito para guardar entrenamiento, dieta o conversaciones sin diseñar expresamente sincronización, identidad y recuperación.
-2. **Las variantes aíslan estado y comportamiento.** Las claves persistentes y seguras están prefijadas por namespace; los artefactos y metadatos de política deben corresponder al entorno y canal compilados.
-3. **La política remota es contenido privilegiado, pero verificable.** Mantenga hash, firmas Ed25519, raíces públicas, restricción de URLs, anti-rollback y contrato de herramientas al modificar la entrega; no sustituya este flujo por descargar un prompt libre.
-4. **Los catálogos son recuperables y no autoritativos.** Respete validación, hash y fallback de caché. Un error de GitHub Raw no debe borrar ni reinterpretar registros personales existentes.
-5. **BYOK sigue siendo una frontera de privacidad.** La clave y el contexto enviado al proveedor salen del cliente; en web no se convierten mágicamente en secretos de servidor.
-6. **El proxy no es parte de producción.** No revierta la llamada directa de Anthropic ni configure un proxy por defecto; cualquier proxy compartido requeriría una nueva excepción de backend con controles propios.
-7. **Feedback debe continuar siendo opcional e idempotente.** Cambiar su contrato exige mantener la custodia del token en el Worker, validación, límites de tasa, deduplicación y retención/redacción.
+El Worker expone salud y acepta únicamente `POST /feedback/issues`. Puede apagarse con `FEEDBACK_ENABLED=false`, aplica CORS a orígenes configurados, valida el payload y limita la tasa con un identificador de IP pseudonimizado mediante HMAC. Reserva una clave de idempotencia antes de crear la issue: un reintento ya completado devuelve la misma issue y una reserva en curso solicita reintento, evitando duplicados. El token y el repositorio de GitHub viven exclusivamente en el entorno del Worker.
+
+La tarea programada redacta informes que superan 30 días y poda contadores de límite de tasa. D1 conserva solo lo necesario para idempotencia, límites y ese ciclo de retención. No amplíe este Worker hacia perfiles, sesiones, telemetría de producto o copias de los dominios locales sin una excepción de arquitectura explícita y sus controles de privacidad.
+
+## Invariantes para cambios seguros
+
+1. **El dispositivo es la autoridad del producto.** Las funciones principales deben operar sin red y recuperar estado localmente.
+2. **Las variantes aíslan estado y comportamiento.** Toda clave persistente o segura nueva debe usar el ámbito de `runtimeEnvironment`.
+3. **Lo remoto se valida antes de usarse.** Mantenga esquema, hash, firma, procedencia y fallback al cambiar catálogos o política.
+4. **Los secretos tienen una frontera distinta del resto del estado.** No serialice claves BYOK en `LocalStore`, backups, trazas ni el espejo de desarrollo; comunique la menor garantía de web.
+5. **El contexto de IA sale del cliente.** Documente y minimice qué se transmite a cada proveedor; no presente BYOK como confidencialidad de servidor.
+6. **Feedback sigue siendo opcional e idempotente.** Mantenga custodia del token, validación, límites, deduplicación y retención.
 
 ## Validación enfocada
 
-Antes de cambiar esta topología, ejecute al menos:
+Antes de cambiar estos límites, ejecute al menos:
 
 ```bash
 npm --workspace apps/mobile exec tsc --noEmit
@@ -139,8 +152,4 @@ npm --workspace apps/mobile run build:web
 npm --workspace apps/feedback-worker run test
 ```
 
-Las pruebas deterministas móviles cubren contratos del agente, selección y verificación de política, persistencia de proveedores y runtime de catálogos. Las pruebas del Worker cubren creación de incidencias, esquema, saneado, límites y deduplicación sin credenciales reales. Para un cambio del proxy ejecute también `npm run test:proxy`; para catálogo, `npm run check:catalogs` y `npm run test:catalogs`; y para flujos visibles del cliente, el E2E específico (`npm run test:agent:e2e`, recuperación de storage o navegación que corresponda).
-
-## Planes históricos frente a ejecución actual
-
-No confundir mecanismos existentes con planes: el tablero de arquitectura es un espejo manual estático; los proveedores falsos solo son un modo de desarrollo; el espejo `/dev-store` solo existe en preview web opt-in; y el proxy de Anthropic queda disponible para depurar una configuración explícita, pero ya no resuelve una limitación obligatoria de CORS. Ninguno implica un backend de producto, cuentas centralizadas ni sincronización de datos personales.
+Para catálogos, añada `npm run check:catalogs`, `npm run test:catalogs` y `npm run test:catalogs:e2e`; para el proxy, `npm run test:proxy`. Los scripts de raíz incluyen pruebas deterministas de la app y del espejo de desarrollo, pruebas de contratos de catálogos y política, compilación web y E2E específicos como agente, recuperación de almacenamiento y flujos de entrenamiento o dieta. La suite del Worker usa un entorno y base de datos falsos, por lo que verifica creación, rechazo, límites, deduplicación y retención sin token ni red reales.

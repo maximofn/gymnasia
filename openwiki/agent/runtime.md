@@ -5,19 +5,20 @@ okf:
   status: grounded
   scope: apps/mobile/agent and chat orchestration in apps/mobile/App.tsx
 type: entorno de ejecución
-title: Entorno de ejecución del agente
-description: Contrato del chat móvil para leases de política inmutables, streaming y herramientas con efectos deduplicados. Describe el circuito verificable de feedback y los límites de estado y reintento que deben preservarse.
+title: Runtime del agente y herramientas
+description: Cómo el chat móvil fija la política de un turno, transmite al proveedor y ejecuta herramientas locales con validación, commit explícito e idempotencia persistente. Incluye los límites de privacidad, degradación y confirmación de efectos.
 summary: Contratos de chat, política, herramientas, persistencia y reintentos del agente móvil.
 tags: [agent, chat, tools, runtime, mobile, policy, idempotency, feedback]
 related:
   - ./provider-streaming.md
   - ./provider-configuration.md
-  - ../mobile/local-state-and-backup.md
+  - ../architecture/policy-delivery.md
   - ../mobile/diet-and-food-estimation.md
-  - ../mobile/measurements.md
+  - ../mobile/training.md
+  - ../services/feedback-worker.md
 verified:
-  - by: openwiki/0.4.3
-    at: 2026-09-06T10:32:53.606Z
+  - by: openwiki/0.5.0
+    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
@@ -29,6 +30,12 @@ sources:
     resource: repo://apps/mobile/agent/feedbackIssues.ts
   - id: openwiki-source-7c7e6958947eb5cdbed74d47
     resource: repo://apps/mobile/agent/feedbackPipeline.test.ts
+  - id: openwiki-source-c8058179f2f675901a8caa09
+    resource: repo://apps/mobile/agent/healthSafety.ts
+  - id: openwiki-source-1120d27174dc5514893a227c
+    resource: repo://apps/mobile/agent/personalData.contract.test.ts
+  - id: openwiki-source-f0c2a422cec47f5791d6713d
+    resource: repo://apps/mobile/agent/personalData.ts
   - id: openwiki-source-c65a19b98fa314cba98ace44
     resource: repo://apps/mobile/agent/providerPipeline.test.ts
   - id: openwiki-source-6b9b666faa646a8fd83706ea
@@ -37,6 +44,8 @@ sources:
     resource: repo://apps/mobile/agent/providerToolLoop.ts
   - id: openwiki-source-ce025f2f0f394ccba9235558
     resource: repo://apps/mobile/agent/toolDefinitions.ts
+  - id: openwiki-source-165cffcff462003cd11223e2
+    resource: repo://apps/mobile/agent/toolExecutor.test.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
     resource: repo://apps/mobile/agent/toolExecutor.ts
   - id: openwiki-source-d8ad30beb46f5e7dc1ced4cf
@@ -45,20 +54,20 @@ sources:
     resource: repo://apps/mobile/agent/toolOperationLedger.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.4.3", at: "2026-09-06T10:32:53.606Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
 ---
 
-# Entorno de ejecución del agente
+# Runtime del agente y herramientas
 
-El agente se ejecuta en el proceso de la aplicación móvil. `App.tsx::sendMessage` coordina el chat principal: adquiere una política para el límite de conversación, aplica el filtro sanitario, persiste un borrador del asistente y transmite la solicitud al proveedor. `callProviderChatAPIWithTools` adapta el mismo contrato de herramientas a OpenAI, Anthropic y Google; el bucle del proveedor vuelve a llamar al ejecutor local hasta obtener un turno sin herramientas. No trate texto de chat, argumentos de herramientas ni respuestas de red como evidencia fiable por sí mismos.
+El agente se ejecuta en el proceso de la aplicación móvil. `sendMessage` en `apps/mobile/App.tsx` es el orquestador del chat: fija la política del turno, decide si la entrada puede llegar a un proveedor, mantiene el borrador visible durante el streaming y delega las llamadas de herramientas al ejecutor local. `callProviderChatAPIWithTools` adapta ese contrato a OpenAI, Anthropic y Google.
 
-La selección de proveedor y credenciales BYOK se documentan en [Configuración del proveedor](./provider-configuration.md). Los formatos de streaming se detallan en [Streaming del proveedor](./provider-streaming.md). El endpoint de incidencias y su retención son responsabilidad del [Worker de feedback](../services/feedback-worker.md), no del chat.
+La configuración de credenciales y proveedor se trata en [Configuración del proveedor](./provider-configuration.md), y los dialectos SSE en [Streaming del proveedor](./provider-streaming.md). Este documento se centra en el contrato de ejecución: el proveedor produce texto y peticiones de tools, pero la aplicación conserva la autoridad sobre la política, los datos locales, los efectos y su confirmación.
 
-## Lease de política: unidad inmutable de una petición
+## Turno de chat: política, streaming y recuperación
 
-Antes de enviar el primer turno de una conversación o un turno posterior, las superficies de chat adquieren `AgentPolicyLease` con el límite `new-conversation` o `turn`. El lease une en un mismo objeto inmutable el prompt, la política sanitaria, la atribución (`PolicyContext`) y el estado de ejecución de la política. En canal `Local` procede del bundle; en otros canales se resuelve mediante la política firmada. La política sanitaria firmada se combina con la política sanitaria integrada y se rechaza si no cumple el contrato móvil.
+Antes de cada envío, `sendMessage` requiere un hilo activo, texto no vacío, un proveedor activo y una API key no vacía. Determina el límite `new-conversation` o `turn` según si ya existe un mensaje de usuario y adquiere un `AgentPolicyLease`. El lease es la unidad inmutable de la petición: reúne el prompt, la política sanitaria, `PolicyContext` y el estado de política. En el canal `Local` procede del bundle; en otros canales se resuelve desde una política firmada y se rechaza si la combinación con la política sanitaria integrada no cumple el contrato móvil.
 
-El chat principal conserva el `policy_context` del lease en el mensaje de respuesta —incluida una intervención sanitaria— y usa el mismo lease para clasificar la entrada, vigilar la respuesta en streaming y construir el prompt. El prompt enviado procede de `policyLease.prompt`; la ruta ya no lee ni anexa memoria personal local, por lo que no hay una sobrescritura local de prompt en esta petición.
+El prompt de la petición procede exclusivamente de `policyLease.prompt`. La memoria personal local **no** se lee ni se concatena al prompt. Esos datos solo se exponen al modelo mediante las tools de lectura específicas; incluso un campo llamado `debug` es un dato ordinario, no una instrucción privilegiada. La traza del envío registra metadatos y longitud del prompt, no su contenido.
 
 ```mermaid
 sequenceDiagram
@@ -67,90 +76,99 @@ sequenceDiagram
     participant Lease as Política
     participant Safety as Seguridad sanitaria
     participant Provider as Proveedor
-    participant Tools as Herramientas locales
+    participant Tooling as Herramientas locales
     User->>Chat: Envía entrada
     Chat->>Lease: Adquiere lease por límite
-    Lease-->>Chat: Prompt, guardrail y contexto inmutables
+    Lease-->>Chat: Prompt, guardrail y contexto
     Chat->>Safety: Clasifica entrada
     alt Riesgo bloqueante
         Safety-->>Chat: Respuesta local
-    else Permitido
-        Chat->>Provider: Prompt, historial y herramientas
-        Provider->>Tools: Llamada de herramienta
-        Tools-->>Provider: Resultado correlacionado
-        Provider-->>Chat: Texto final
-        Chat->>Safety: Filtra texto transmitido
+    else Turno permitido
+        Chat->>Provider: Prompt, historial y catálogo
+        loop Hasta diez rondas
+            Provider->>Tooling: Llamada de herramienta
+            Tooling-->>Provider: Resultado correlacionado
+        end
+        Provider-->>Chat: Texto y razonamiento
+        Chat->>Safety: Filtra la salida transmitida
     end
 ```
 
-*El lease fija la política que gobierna una petición completa; el proveedor solo se contacta cuando el filtro de entrada lo permite.*
+*El lease y el filtro sanitario gobiernan todo el turno; una llamada del proveedor nunca autoriza por sí misma un efecto local.*
 
-## Ciclo del chat y estados observables
+La clasificación sanitaria bloquea directamente los riesgos `high` y `critical`, persiste el mensaje del usuario junto a una respuesta local y evita el proveedor. Para riesgo `elevated`, puede solicitar consentimiento antes de consultar el evaluador del proveedor; sin consentimiento conserva la decisión determinista. Un borrador del asistente se crea solo después de superar ese punto, con `is_streaming`, contexto de política y origen/modelo para reporte. El historial excluye mensajes locales de divulgación y se limita a los últimos 20 mensajes.
 
-`sendMessage` no inicia nada sin hilo activo, entrada no vacía, proveedor activo y clave no vacía. Tras adquirir el lease y superar el bloqueo sanitario, agrega el mensaje del usuario y un borrador del asistente marcado `is_streaming`, limita el historial a los últimos 20 mensajes no locales de divulgación y agrupa las actualizaciones visibles del borrador cada 40 ms. El contenido final pasa por el filtro sanitario de streaming: una intervención sustituye la respuesta del modelo y se identifica como tal; de lo contrario se materializan contenido y razonamiento y se desactiva `is_streaming`.
+Los deltas actualizan el borrador, agrupados cada 40 ms. Un `HealthSafeStreamGate` inspecciona el agregado antes de hacerlo visible. Al finalizar, una intervención sanitaria reemplaza el texto del modelo, elimina el razonamiento y marca el origen; de otro modo se materializan contenido y razonamiento y se desactiva `is_streaming`.
 
-Un fallo final convierte el mismo borrador en `technical_error` con el prefijo `Error de proveedor:` y limpia `sendingChat`. La llamada completa al proveedor se intenta como máximo tres veces; solo los errores de red, timeout, sobrecarga y códigos transitorios incluidos en el patrón de reintento vuelven a intentarse, con esperas de 2 s y 4 s. Cada intento reinicia el borrador y el guard de streaming. Esta política no hace que la red sea exactamente una vez: los efectos se protegen aparte mediante el ledger.
+La llamada completa puede intentarse hasta tres veces. Solo errores de red, timeout, sobrecarga y los códigos transitorios contemplados por el patrón se reintentan, esperando 2 y 4 segundos; cada nuevo intento reinicia el borrador y el guard de streaming. Un fallo no recuperable o el agotamiento convierte el mismo borrador en `technical_error` con el prefijo `Error de proveedor:` y siempre libera `sendingChat`. Este reintento de transporte no es una garantía de exactamente una vez: las escrituras se protegen independientemente.
 
-Las superficies de estimación de comida y el asistente de alimentos personales también adquieren un lease y adjuntan su contexto a sus mensajes; no son copias históricas de la política del chat principal.
+## Proveedor y bucle de herramientas
 
-## Proveedores, parser y continuación de herramientas
+El adaptador separa los mensajes de sistema de la conversación y pasa el prompt por `composeAiSystemPrompt`, que incorpora la divulgación local de IA. Anuncia `CHAT_TOOLS`, una proyección por proveedor del catálogo canónico `AGENT_TOOL_DEFINITIONS`; así definición, efecto y esquema no se duplican por adaptador.
 
-`callProviderChatAPIWithTools` separa mensajes de sistema y mensajes conversacionales, compone el prompt de transparencia local y anuncia `CHAT_TOOLS`, derivado del catálogo único `AGENT_TOOL_DEFINITIONS`. Los parsers SSE reconstruyen texto, razonamiento y llamadas desde fragmentos de red. En Anthropic, la ausencia de `message_stop` marca el turno como truncado; los eventos de error de los tres proveedores se propagan como error controlado.
+Los parsers SSE reconstruyen contenido, razonamiento y llamadas de tools desde fragmentos de red. Los eventos de error se propagan como errores controlados. Para Anthropic, la falta de `message_stop` significa que el stream quedó truncado, por lo que no debe presentarse como una respuesta completa. OpenAI exige un `responseId` para continuar una ronda que contiene una llamada; una respuesta final sin contenido produce un error explícito en vez de una recuperación inventada.
 
-Los tres bucles comparten `MAX_TOOL_ROUNDS = 10`, ejecutan las llamadas de un turno **secuencialmente** y mantienen una ocurrencia por la pareja nombre/argumentos canónicos. Cada proveedor devuelve el resultado con su correlación nativa: `function_call_output` y `call_id` en OpenAI, `tool_result` y `tool_use_id` en Anthropic, y `functionResponse` en Google. OpenAI exige `responseId` antes de continuar. Al alcanzar el máximo, el bucle devuelve el último turno; si este no contiene texto, el adaptador termina con error de contenido, no con una recuperación implícita.
+Cada proveedor usa un bucle con `MAX_TOOL_ROUNDS = 10`. Las llamadas de una ronda se ejecutan secuencialmente y la ocurrencia se cuenta por pareja de nombre y argumentos canónicos. El resultado vuelve al protocolo de origen: `function_call_output` con `call_id` en OpenAI, `tool_result` con `tool_use_id` en Anthropic y `functionResponse` en Google. Los argumentos JSON malformados de OpenAI se degradan a `{}`; los manejadores de dominio, no el parser, son la frontera que decide si el resultado puede causar una escritura.
 
-Los argumentos malformados de OpenAI y Google se degradan a `{}` en el parser. Aunque existe `validateToolInput`, la ruta de producción delega en los validadores y manejadores específicos del dominio; un cambio que quiera aplicar esa validación genérica debe definir el resultado que verá el modelo y probar la incompatibilidad resultante.
+## Autorización, validación y commit local
 
-## Herramientas: efectos, commit y deduplicación
+Cada tool tiene un efecto declarado: `read`, `local_write` o `external_write`. Antes de ejecutar, `executeGuardedTool` busca ese efecto y clasifica tanto la entrada del turno como `nombre + argumentos`. Una tool desconocida o incompatible con el modo sanitario devuelve un error estructurado y no llega al ejecutor. Con riesgo elevado solo se permiten lecturas; con riesgo alto o crítico no se permiten tools.
 
-Cada herramienta canónica declara un efecto: `read`, `local_write` o `external_write`. `executeGuardedTool` clasifica también el nombre y los argumentos con la política sanitaria: una herramienta desconocida o no permitida no llega al efecto. Las lecturas no se deduplican. Las escrituras pasan por el coordinador global `ToolOperationCoordinator`; el ejecutor detallado solo las considera comprometidas si el manejador llama a `markEffectCommitted`.
+El ejecutor detallado despacha únicamente los manejadores registrados. Convierte una tool desconocida en una respuesta controlada y captura excepciones para no abortar todo el turno: informa un fallo y diferencia `failed_before_commit` de un efecto que ya se había comprometido. Las escrituras validan sus estructuras de dominio antes de mutar. Por ejemplo, una medición inválida, una referencia de catálogo ausente o ambigua, o una rutina parcialmente irresoluble no se persisten.
 
-La identidad de una operación se calcula con SHA-256 sobre versión, `executionId` del mensaje, proveedor, nombre, argumentos JSON canónicos y ocurrencia. El identificador del proveedor no participa, de modo que una repetición del proveedor con los mismos argumentos puede recuperar el mismo resultado, mientras que dos llamadas iguales del mismo turno tienen ocurrencias distintas. El coordinador une ejecuciones simultáneas, devuelve resultados comprometidos desde memoria y consulta un ledger persistente antes de ejecutar un efecto. Una colisión de identidad falla cerrada y una lectura del ledger que falla impide ejecutar la escritura.
+`ToolExecutionContext` separa la instantánea de lectura (`store`) de `commitStore`, que persiste la mutación durable. Un manejador debe llamar a `markEffectCommitted` solo después del punto irreversible. El resultado se clasifica como `committed` únicamente si se hizo esa llamada; validación fallida y errores previos quedan como `no_effect` o `failed_before_commit` y se pueden volver a intentar. Las escrituras que crean entidades derivan identificadores estables de `operationId`, lo que añade una defensa de dominio ante una repetición.
 
-El ledger se almacena en AsyncStorage, conserva como máximo 256 entradas y caduca operaciones a los siete días. Solo registra resultados `committed`: una validación sin efecto o un fallo antes de `markEffectCommitted` puede volver a ejecutarse. Si la persistencia posterior del ledger falla, el efecto ya comprometido se devuelve y se deja traza, por lo que la deduplicación tras reinicio deja de estar garantizada. Al borrar todos los datos, la aplicación también borra y verifica el ledger; una operación que termina después de `clear()` no lo repuebla.
+La memoria personal tiene una frontera de forma propia: `sanitizePersonalDataFields` acepta únicamente arrays de objetos con una `key` utilizable, convierte números y booleanos a texto y descarta entradas inválidas. Es total e idempotente y conserva literalmente la clave —sin recortarla, deduplicarla ni normalizarla— porque las tools de lectura comparan claves por igualdad exacta. El saneador no es una autorización ni un mecanismo de privacidad del prompt: esa separación se mantiene porque la memoria no se concatena al prompt.
+
+## Idempotencia de escrituras
+
+Las lecturas no se deduplican. Para `local_write` y `external_write`, `ToolOperationCoordinator` calcula una identidad SHA-256 sobre versión, `executionId` del mensaje, proveedor, nombre, argumentos JSON canónicos y ocurrencia. El `providerCallId` no participa: un reintento del proveedor con el mismo turno puede recuperar el mismo resultado, mientras que dos llamadas idénticas del mismo turno conservan ocurrencias distintas.
 
 ```mermaid
 flowchart TD
-    Call["Llamada con executionId, argumentos y ocurrencia"] --> Guard["Guard sanitario y clasificación de efecto"]
-    Guard -->|Lectura| Execute["Ejecutar manejador"]
-    Guard -->|Escritura| Identity["Identidad canónica SHA-256"]
-    Identity --> Lookup["Memoria y ledger persistente"]
-    Lookup -->|Repetición| Replay["Devolver salida previa"]
-    Lookup -->|Colisión| Reject["Rechazar identidad insegura"]
-    Lookup -->|Ausente| Execute
-    Execute -->|Commit marcado| Record["Registrar salida"]
-    Execute -->|Sin commit| Return["Devolver sin registrar"]
-    Record --> Return
+    Call["Llamada con ejecución y ocurrencia"] --> Guard["Guard y efecto declarado"]
+    Guard -->|Lectura| Run["Ejecutar manejador"]
+    Guard -->|Escritura| Identity["Identidad SHA-256 canónica"]
+    Identity --> Check["Memoria y ledger persistente"]
+    Check -->|Repetición| Replay["Devolver salida anterior"]
+    Check -->|Colisión| Reject["Rechazar operación"]
+    Check -->|Ausente| Run
+    Run -->|Commit marcado| Record["Registrar salida"]
+    Run -->|Sin commit| Return["Devolver sin registrar"]
     Replay --> Return
+    Record --> Return
 ```
 
-*Solo una escritura que ha señalado su commit entra en el ledger y puede reproducirse sin repetir el efecto.*
+*Solo una escritura que confirma el commit entra en el ledger y puede reproducirse sin repetir su efecto.*
 
-Los manejadores viven en `toolExecutor.ts` y acceden a memoria personal, mediciones, dieta, catálogos, rutinas y feedback mediante dependencias inyectadas. `ToolExecutionContext` separa una instantánea de lectura del `store` de `commitStore`, que realiza la mutación durable; por ello, un manejador nuevo debe decidir explícitamente qué fuente es autorizada y cuándo marca el commit. El ejecutor convierte excepciones del manejador en un resultado para el modelo: si el efecto ya se comprometió conserva el estado `committed`; si no, devuelve `failed_before_commit` para que un reintento sea posible.
+El coordinador une ejecuciones simultáneas con la misma identidad, consulta primero el ledger y mantiene en memoria resultados comprometidos. Una colisión de huella falla cerrada. Si no puede leer el ledger, propaga el fallo antes de ejecutar la escritura; así prioriza no duplicar un efecto frente a disponibilidad. Si el registro posterior falla, devuelve el efecto ya comprometido y deja traza: la operación no se revierte, pero la deduplicación tras reinicio deja de estar garantizada.
 
-## Feedback verificable
+`ToolOperationLedgerRepository` persiste el ledger en AsyncStorage, conserva un máximo de 256 entradas y expira cada una a los siete días. Solo guarda resultados `committed`; no memoriza validaciones fallidas ni errores anteriores al commit. Un ledger corrupto se reinicia vacío con traza. El borrado total de datos incluye `toolOperationCoordinator.clear()` y verifica la clave de AsyncStorage; un contador de generación evita que una operación que termine después del borrado vuelva a poblarlo.
 
-`create_feature_issue` es una escritura externa, no una llamada directa a GitHub. Su definición exige que el modelo muestre y obtenga aprobación del título y resumen antes de invocarla, no copie citas literales ni datos personales y no afirme éxito sin número de referencia. El manejador sanea el borrador y pasa el resultado discriminado de `submitFeedbackIssue` a `describeOutcomeForModel`; solo la variante `created` comunica una incidencia registrada.
+## Feedback como escritura externa verificable
 
-El cliente `createFeedbackIssueClient` hace `POST /feedback/issues` con exactamente cinco campos: versión de esquema, tipo, título, resumen y `idempotency_key`. La clave es estable para el borrador saneado. El cliente tiene timeout de 15 s y traduce transportes, timeout, 4xx, 429, 503 y 5xx a resultados explícitos. Incluso un 2xx es error si no contiene un número positivo y una URL `https://github.com/` verificables. Así, una respuesta no verificable o un fallo del canal no puede convertirse en una confirmación falsa para el modelo.
+`create_feature_issue` es `external_write`, no una llamada directa del modelo a GitHub. La definición exige mostrar al usuario el título y resumen exactos, esperar su aprobación, no copiar citas literales ni datos personales y no afirmar éxito sin referencia. El manejador sanea el borrador, invoca `submitFeedbackIssue` y solo marca el commit si el resultado discriminado es `created`.
 
-El formateador de denuncias sanea caracteres de control y patrones de secretos en el dispositivo, limita el contenido y genera solo la vista previa que el usuario denuncia: motivo, detalles opcionales, pregunta anterior, respuesta denunciada y metadatos técnicos. No acepta el hilo completo ni el razonamiento como superficie de envío. El Worker vuelve a validar, decide repositorio y etiquetas y deduplica del lado servidor; consulte su página para límites de abuso, retención y operación.
+El cliente hace `POST /feedback/issues` con exactamente cinco campos: versión de esquema, tipo, título, resumen y `idempotency_key`, estable para el borrador saneado. Tiene timeout de 15 s y mapea transporte, timeout, 4xx, 429, 503 y 5xx a resultados explícitos. Incluso un 2xx se considera error si no contiene un número positivo y una URL `https://github.com/` verificables. Por ello, un canal fallido o una respuesta malformada no puede transformarse en una confirmación falsa para el modelo.
 
-## Límites seguros para cambios
+Las denuncias de respuestas IA también se forman y saneaban en el dispositivo como una vista previa limitada: motivo, detalles opcionales, pregunta previa, respuesta denunciada y metadatos técnicos. No admiten el hilo completo ni el razonamiento como superficie de envío. La recepción, retención, deduplicación de servidor y controles de abuso corresponden al [Worker de feedback](../services/feedback-worker.md).
 
-1. **Política:** mantenga prompt, guardrail y `PolicyContext` procedentes del mismo `AgentPolicyLease` durante una petición. No introduzca fuentes locales de texto privilegiado en `sendMessage`.
-2. **Herramientas:** añada definición, efecto y manejador juntos; `CHAT_TOOLS` se deriva del catálogo. Para una escritura, coloque `markEffectCommitted` inmediatamente después del punto irreversible y propague `operationId` a identificadores durables si el dominio lo necesita.
-3. **Reintentos:** no suponga que los tres intentos del chat o una repetición de proveedor son únicos. Preserve `executionId`, argumentos canónicos y ocurrencia cuando cambie los adaptadores o bucles.
-4. **Persistencia:** no convierta un resultado sin efecto o fallido antes del commit en una entrada del ledger. Mantenga sus límites de 7 días y 256 entradas, y conecte cualquier borrado total a `toolOperationCoordinator.clear()`.
-5. **Feedback:** conserve el esquema cerrado, el saneado previo y la confirmación basada en referencia verificable. No envíe conversaciones ni razonamiento y no añada claves o destinos decididos por el cliente.
+## Guía para extender el runtime
+
+1. **Política:** use un único `AgentPolicyLease` para prompt, guardrail y `PolicyContext` durante un turno. No añada texto local privilegiado en `sendMessage`.
+2. **Nueva tool:** añada definición, esquema, efecto y manejador juntos. `CHAT_TOOLS` se deriva del catálogo y las pruebas comprueban que catálogo y ejecutor declaren exactamente los mismos nombres.
+3. **Escritura:** valide todo antes de mutar, use `commitStore` cuando requiera durabilidad y llame a `markEffectCommitted` inmediatamente después del efecto irreversible. Propague `operationId` a IDs durables cuando una repetición de dominio pueda crear duplicados.
+4. **Reintentos:** preserve `executionId`, argumentos canónicos y ocurrencia al cambiar parsers o adaptadores. No use el identificador de llamada del proveedor como identidad persistente.
+5. **Privacidad y feedback:** no convierta memoria personal en prompt, no envíe conversaciones o razonamiento en reportes, y no comunique una incidencia como creada sin su referencia verificable.
 
 ## Pruebas focalizadas
 
-Ejecute estas pruebas desde la raíz al tocar estas fronteras:
+Ejecute estas pruebas desde la raíz al modificar estas fronteras:
 
 ```bash
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/toolOperationLedger.test.ts
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/providerPipeline.test.ts apps/mobile/agent/feedbackPipeline.test.ts apps/mobile/agent/feedbackClient.test.ts apps/mobile/agent/feedbackIssues.test.ts
+npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/personalData.test.ts apps/mobile/agent/personalData.contract.test.ts
+npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/providerPipeline.test.ts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts
+npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/feedbackPipeline.test.ts apps/mobile/agent/feedbackClient.test.ts apps/mobile/agent/feedbackIssues.test.ts
 ```
 
-`agentPolicyRuntime.test.ts` prueba que un lease firmado congela prompt, guardrail y atribución del mismo bundle. `toolOperationLedger.test.ts` cubre identidad canónica, replay tras reinicio, unión concurrente, no registro antes de commit, límites, corrupción, fallo de lectura y borrado durante una operación. `providerPipeline.test.ts` recorre fixtures SSE fragmentadas para los tres proveedores y prueba correlación, orden y truncamiento de Anthropic. `feedbackPipeline.test.ts` recorre parser, bucle, ejecutor y cliente HTTP para demostrar que el modelo solo recibe éxito con una referencia verificable; las pruebas de cliente y dominio cubren mapeo HTTP, saneado e idempotencia.
+Las pruebas de lease cubren inmutabilidad y selección de política. Las de bucle y pipeline reproducen SSE fragmentado y verifican las correlaciones nativas, truncamiento de Anthropic y continuación de los tres proveedores. Las de definiciones y ejecutor mantienen alineados catálogo, esquema y manejadores, y prueban que no se confirma una escritura sin persistencia. Las del ledger cubren identidad canónica, replay tras reinicio, unión concurrente, colisiones, fallos de lectura, límites y borrado durante una operación. Las de datos personales prueban higiene de forma e imposibilidad de inyectar memoria en el prompt; las de feedback prueban que no existe éxito sin referencia verificable.

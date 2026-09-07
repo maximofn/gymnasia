@@ -3,14 +3,14 @@ okf:
   version: 1
   kind: code-wiki
   status: grounded
-  scope: High-level repository entrypoint and task router
+  scope: Punto de entrada del repositorio y mapa de tareas
 type: guía de inicio
-title: Inicio rápido de Gymnasia
-description: Mapa de tareas para orientarse en la aplicación Expo local-first, su política firmada, el agente, los catálogos y las excepciones remotas opcionales. Indica los puntos de entrada y la validación proporcional antes de cambiar cada frontera.
+title: Inicio rápido y mapa de cambios
+description: Orientación para arrancar Gymnasia, elegir el dominio responsable y seleccionar una validación proporcional. Distingue el cliente Expo local-first de catálogos, proveedores y servicios opcionales.
 tags: [quickstart, architecture, mobile, agent, operations]
 verified:
-  - by: openwiki/0.4.3
-    at: 2026-09-06T10:32:53.606Z
+  - by: openwiki/0.5.0
+    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-8037e2358a2c4f9b2c722a11
     resource: repo://AGENTS.md
@@ -42,34 +42,41 @@ sources:
     resource: repo://README.md
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-generated: { by: "openwiki/0.4.3", at: "2026-09-06T10:32:53.606Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
 ---
 
-# Inicio rápido de Gymnasia
+# Inicio rápido y mapa de cambios
 
-Gymnasia es una aplicación Expo React Native cuyo producto vive en `apps/mobile` y se ejecuta en Android, iOS y web. El estado de entrenamiento, dieta, mediciones, conversaciones, preferencias y configuración BYOK pertenece al cliente: no hay cuentas, API de producto ni sincronización central obligatoria. La red complementa funciones concretas; si un servicio opcional falla, no debe impedir que el producto local funcione.
+Gymnasia tiene una única superficie de producto: el cliente Expo de `apps/mobile`, que se ejecuta en Android, iOS y web. Entrenamiento, dieta, mediciones, conversaciones, preferencias y configuración BYOK pertenecen al dispositivo o navegador: no hay cuentas, API de producto ni sincronización central obligatoria. La red puede enriquecer una función concreta, pero su ausencia no debe impedir usar los dominios locales.
 
-Empiece por [Arquitectura actual de ejecución](architecture/overview.md) y use este documento como mapa. El código y sus pruebas son la fuente de verdad cuando contradigan la wiki o documentos de planificación.
+Empiece por [Arquitectura local-first](architecture/overview.md) para conocer los límites y use esta página para encaminar una tarea. El código ejecutable, sus contratos y sus pruebas prevalecen sobre esta wiki y sobre propuestas o tableros de planificación.
 
-## Arranque y comprobación base
+## Arranque local
 
-El monorepo usa workspaces npm y CI instala el lockfile con npm. Desde la raíz:
+El repositorio usa workspaces npm. Para una instalación reproducible, CI usa el lockfile con `npm ci`; para trabajar localmente puede usar `npm install`.
 
 ```bash
 npm ci
 npm run dev:mobile
 ```
 
-Para escoger un destino explícito:
+La entrada de Expo es `apps/mobile/index.js`, que registra `App`. Los scripts del workspace fijan `APP_ENV=development` para los destinos ordinarios:
 
 ```bash
 npm --workspace apps/mobile run web
 npm --workspace apps/mobile run android
 npm --workspace apps/mobile run ios
 npm --workspace apps/mobile run build:web
+npm --workspace apps/mobile exec tsc --noEmit
 ```
 
-`apps/mobile/package.json` fija `index.js` como entrada y `index.js` registra `App` con Expo. Los scripts de desarrollo fijan `APP_ENV=development`; la configuración de Expo exige un entorno válido y separa `development`, `staging` y `production`, incluidos identificador de aplicación, namespace de almacenamiento y canal de política. La exportación web genera `apps/mobile/dist`; es una comprobación de empaquetado web, no una prueba de permisos, SecureStore, notificaciones, alarmas ni comportamiento nativo.
+`APP_ENV` es obligatorio y `app.config.ts` separa `development`, `staging` y `production` por nombre, identificador de aplicación, espacio de nombres de almacenamiento y canal de política. Development usa por defecto el proveedor `fake` y admite `DEV_PROVIDER_MODE=byok`; Staging y Production usan BYOK. No mezcle datos o expectativas de una variante con otra.
+
+Para Expo Go físico a través de un túnel, use el separador de argumentos del workspace:
+
+```bash
+npm --workspace apps/mobile run start -- --tunnel --clear
+```
 
 ```mermaid
 flowchart TD
@@ -77,49 +84,53 @@ flowchart TD
     Client --> Local["Estado local y backup manual"]
     Client --> Agent["Agente y herramientas locales"]
     Client --> Catalogs["Catálogos GitHub Raw y caché"]
-    Agent --> Policy["Lease de política firmado"]
+    Agent --> Policy["Política firmada por canal"]
     Agent --> Providers["Proveedores BYOK directos"]
-    Client --> Feedback["Worker de feedback opcional"]
-    Feedback --> GitHub["Incidencias privadas"]
-    Client -. "solo si se configura" .-> Proxy["Proxy Anthropic loopback"]
+    Client -. "envío voluntario" .-> Feedback["Worker de feedback opcional"]
+    Feedback --> GitHub["GitHub Issues privado"]
+    Client -. "depuración web opt in" .-> Proxy["Proxy Anthropic loopback"]
 ```
 
-*El cliente conserva el estado del producto. Política, catálogos, proveedores, feedback y el proxy son fronteras independientes, no un backend central.*
+*El cliente es la autoridad de los datos del producto; las flechas remotas son integraciones independientes, no un backend central.*
 
-## Elegir la página responsable
+## Mapa de tareas
 
-| Si la tarea consiste en… | Lea primero | Puntos de cambio y validación inicial |
+Elija primero el dominio que posee el contrato, no el archivo que parezca más cercano. La última columna da la primera señal de validación; amplíela cuando una tarea cruce otra frontera.
+
+| Si va a modificar… | Lea primero | Primeros controles |
 | --- | --- | --- |
-| Entender límites, variantes, dependencias remotas o introducir un componente | [Arquitectura actual de ejecución](architecture/overview.md) | Preservar que `apps/mobile` sea local-first y que toda nueva dependencia remota sea opcional. Ejecutar `npm test`, tipado y la comprobación del componente afectado. |
-| Cambiar navegación, shell, ajustes o comportamiento común de la interfaz | [Shell de aplicación móvil y web](mobile/application-shell.md) | `apps/mobile/App.tsx`; usar la E2E de la superficie afectada y `npm --workspace apps/mobile run build:web`. |
-| Cambiar persistencia, hidratación, secretos BYOK, borrado, importación o backup | [Estado local y copia de seguridad](mobile/local-state-and-backup.md) | Mantener la separación AsyncStorage/SecureStore, el saneamiento y la recuperación. Ejecutar `npm test`, tipado y la E2E de recuperación o borrado pertinente. |
-| Cambiar rutinas, sesiones, series, descansos, avisos o historial | [Entrenamiento](mobile/training.md) | Validar el contrato del dominio y `npm run test:train:e2e`; los cambios nativos requieren además dispositivo o build nativa. |
-| Cambiar comidas, objetivos, alimentos personales, productos o estimación | [Dieta y estimación de alimentos](mobile/diet-and-food-estimation.md) | Mantener separado el estado personal de los catálogos; usar las pruebas del agente si interviene una tool y la E2E de dieta correspondiente. |
-| Cambiar medidas, fotos de progreso, gráficos o herramientas que las escriben | [Mediciones](mobile/measurements.md) | Revisar normalización, backup y borrado; ejecutar pruebas de tool y el recorrido visible afectado. |
-| Cambiar el ciclo de chat, herramientas, reintentos o deduplicación de efectos | [Entorno de ejecución del agente](agent/runtime.md) | Preservar el lease inmutable, el límite de tools y el ledger de escrituras. Ejecutar las pruebas Vitest focalizadas y `npm test`. |
-| Cambiar proveedor, modelo, clave, verificación o transporte SSE | [Configuración de proveedores](agent/provider-configuration.md) y [Streaming de proveedores](agent/provider-streaming.md) | La configuración es BYOK y no debe convertir claves web en secretos de servidor. Ejecutar tipado, `npm test` y `npm run test:agent:e2e` cuando cambie el flujo visible. |
-| Cambiar prompt, salud-seguridad, firma, activación, caché o degradación de política | [Entrega y verificación de política](architecture/policy-delivery.md) | Es una frontera privilegiada: explicar el cambio y esperar aprobación explícita antes de promover. Ejecutar `npm run check:health-safety`, `npm run policy:bundle:check`, `npm run check:policy-trust` y `npm run test:prompt-policy`. |
-| Añadir fichas, imágenes, schemas o agregados de alimentos, productos, recetas o ejercicios | [Catálogos locales y artefactos generados](content/repositories.md) | Editar fichas y recursos, no los agregados a mano. Ejecutar `npm run sync:catalogs`, `npm run check:catalogs`, `npm run test:catalogs` y, para consumo móvil, `npm run test:catalogs:e2e`. |
-| Cambiar el proxy de Anthropic | [Proxy CORS de Anthropic](services/anthropic-proxy.md) | Es una herramienta loopback de desarrollo y opt-in. Ejecutar `npm run test:proxy` y `npm run check:anthropic-proxy`; no convertirlo en infraestructura desplegada. |
-| Cambiar propuestas, denuncias o creación de incidencias | [Worker de feedback](services/feedback-worker.md) | Conservar esquema cerrado, saneamiento, idempotencia y éxito verificable. Ejecutar `npm --workspace apps/feedback-worker run test` y la prueba de contrato móvil. |
-| Cambiar CI, EAS, permisos Android, release o pruebas | [Compilación, publicación y validación](operations/build-release-and-testing.md) | Seleccionar la puerta más específica. Un E2E web no prueba Android/iOS; una release exige sus controles y verificación de artefacto. |
-| Interpretar la automatización privada de esta wiki | [Evidencia de ejecución de OpenWiki](operations/runtime-behavior.md) | Es automatización documental separada del runtime del producto; validar la plantilla con `npm --workspace ops/openwiki-automation-template test`. |
+| Límites local-first, variantes, persistencia general o una nueva dependencia remota | [Arquitectura local-first](architecture/overview.md) | `npm test`, typecheck y el check del límite afectado. No haga que guardar datos personales dependa de red. |
+| Arranque, shell, navegación, configuración Expo o comportamiento por plataforma | [Shell de aplicación, plataformas y navegación](mobile/application-shell.md) | typecheck, `build:web` y la E2E de shell/flujo afectado; pruebe nativo si toca capacidades nativas. |
+| Almacenes locales, recuperación, secretos BYOK, borrado o importación/exportación | [Estado local, recuperación, borrado y copias](mobile/local-state-and-backup.md) | `npm test`, `npm run test:storage-recovery:e2e` o `npm run test:data-deletion:e2e` según corresponda. |
+| Plantillas, series, sesiones, descansos o alertas de entrenamiento | [Plantillas, series y ejecución de entrenamientos](mobile/training.md) | La E2E concreta: `npm run test:train:e2e`, `test:train:series:e2e`, `test:train:series-operations:e2e` o `test:train:compound:e2e`. |
+| Dieta, objetivos, alimentos personales, búsqueda o estimación asistida | [Dieta y estimación de alimentos](mobile/diet-and-food-estimation.md) | `npm run test:diet:e2e`; añada pruebas del agente si una tool lee o escribe el dominio. |
+| Mediciones, fotos de progreso, gráficos o su backup | [Mediciones, fotos de progreso y respaldo](mobile/measurements.md) | Pruebas de dominio y de backup/borrado que cubran los datos cambiados. |
+| Chat, policy lease, tools, confirmación, reintentos o idempotencia | [Runtime del agente y herramientas](agent/runtime.md) | Vitest focalizado de `apps/mobile/agent/`, `npm test` y `npm run test:agent:e2e` si cambia el recorrido visible. |
+| Claves, proveedores, modelos, conectividad o SSE | [Configuración BYOK de proveedores](agent/provider-configuration.md) y [Transporte, streaming y compatibilidad de modelos](agent/provider-streaming.md) | typecheck, pruebas deterministas del adaptador y E2E de agente cuando cambie el flujo del usuario. |
+| Prompt, reglas sanitarias, firma, activación o fallback de política | [Entrega y activación de políticas firmadas](architecture/policy-delivery.md) y [Gobernanza de prompts y política sanitaria](operations/prompt-policy-governance.md) | `npm run check:health-safety`, `npm run test:health-safety`, `npm run check:prompt-policy`, `npm run test:prompt-policy`, `npm run policy:bundle:check` y `npm run check:policy-trust`. |
+| Fichas, imágenes, schemas o agregados de alimentos, productos, recetas o ejercicios | [Catálogos nutricionales y de ejercicios](content/repositories.md) y [Generación y validación de imágenes de catálogo](content/image-generation.md) | `npm run sync:catalogs`, `npm run check:catalogs`, `npm run test:catalogs` y `npm run test:catalogs:e2e`. |
+| Permisos Android, alarmas, plugins Expo, build o release | [Permisos Android y fiabilidad de avisos](operations/android-permissions.md) y [Build, release y estrategia de validación](operations/build-release-and-testing.md) | `npm run check:android-permissions`, `npm run test:android-permissions`, controles de privacidad y build/prueba nativa. |
+| Texto legal, datos tratados, hosts remotos o borrado publicable | [Build, release y estrategia de validación](operations/build-release-and-testing.md) | `npm run check:data-inventory`, `npm run test:data-inventory`, `npm run check:legal`, `npm run test:legal` y la E2E aplicable. |
+| Proxy CORS de Anthropic | [Proxy Anthropic de depuración local](services/anthropic-proxy.md) | `npm run test:proxy` y `npm run check:anthropic-proxy`; no lo despliegue. |
+| Propuestas o denuncias que crean incidencias | [Worker de feedback e incidencias](services/feedback-worker.md) | `npm --workspace apps/feedback-worker run test` y pruebas de contrato cliente afectadas. |
+| VivaGym, comprobación o retirada de actualizaciones | [Integraciones VivaGym y actualizaciones](integrations/vivagym-and-updates.md) | Pruebas del adaptador y degradación cuando la integración no responda. |
+| El espejo de tickets, épicas o dependencias | [Tablero de arquitectura y seguimiento](services/architecture-board.md) | `npm run test:board` y `npm run test:board:e2e`; es un sitio estático separado. |
 
-## Fronteras que no deben confundirse
+## Fronteras que deben conservarse
 
-### Política firmada y agente
+### Estado local, contenido remoto y agente
 
-El agente se ejecuta en la aplicación. Antes de un límite de conversación adquiere un `AgentPolicyLease`: en desarrollo usa la política integrada; Staging y Production verifican el bundle y activación firmados contra raíces públicas incluidas en la build, y pueden degradar a caché o snapshot verificado. Prompt, guardrail sanitario y `PolicyContext` deben proceder del mismo lease durante una petición. Consulte [Entorno de ejecución del agente](agent/runtime.md) para el chat, las tools y su ledger; consulte [Entrega y verificación de política](architecture/policy-delivery.md) para la cadena de firma, selección y promoción.
+`App` integra dominios locales. El almacenamiento general y las copias son responsabilidad del cliente; una copia manual no es sincronización ni recuperación desde un servidor. Las claves API BYOK tienen una frontera distinta del estado general: en nativo se usa el almacenamiento seguro disponible; en web no adquieren garantías de secreto de servidor.
 
-No trate una edición en `prompts/` o `policy/health-safety/` como documentación: cambia lo que el agente puede recomendar o ejecutar. Describa el impacto en lenguaje natural y espere aprobación explícita del mantenedor antes de promoción o merge.
+Los catálogos de `alimentos/`, `productos_comerciales/`, `recetas/` y `ejercicios/` son contenido de referencia. Se editan fichas JSON e imágenes; `all.json`, índices y schemas móviles se generan. La app valida el agregado remoto y retiene una copia local aceptada, de modo que un fallo de GitHub Raw, red o schema no borra datos personales ni convierte el arranque en dependiente de la descarga.
 
-### Datos móviles y catálogos
+El agente también se ejecuta en el cliente. Para cada límite de conversación adquiere un `AgentPolicyLease` inmutable: el canal `Local` usa el snapshot integrado y los canales remotos verifican política firmada contra raíces públicas incluidas en la build. Prompt, guardrail sanitario y `PolicyContext` deben proceder del mismo lease durante el turno. Las tools leen o escriben el estado local bajo validación y commit explícito; una respuesta del proveedor no autoriza por sí sola un efecto.
 
-`LocalStore` y los almacenes auxiliares pertenecen al dispositivo o navegador. Los backups son manuales y no implican recuperación desde un servidor. Los cuatro catálogos versionados son contenido de referencia remoto: la aplicación valida `all.json`, conserva caché local y no debe borrar datos personales si la actualización remota falla. Sus fichas JSON e imágenes son fuentes editables; agregados, índices y schemas generados son salidas deterministas.
+Editar `prompts/` o `policy/health-safety/` no es una modificación documental. Cambia lo que el agente puede recomendar o hacer: explique en lenguaje natural el efecto para la persona usuaria y espere la aprobación explícita del mantenedor antes de promoción o merge. Los checks verifican consistencia técnica, pero no sustituyen esa autorización.
 
-### Proveedores y servicios opcionales
+### Proveedores, proxy y feedback son opcionales
 
-OpenAI, Anthropic y Google usan claves BYOK y se invocan desde el cliente. Anthropic funciona directamente también en web mediante la cabecera de acceso directo; el proxy solo se usa si se define expresamente `EXPO_PUBLIC_API_BASE_URL`. Para depurarlo localmente:
+OpenAI, Anthropic y Google se llaman desde el cliente con claves BYOK. Anthropic también funciona directamente en web mediante su cabecera de acceso directo. `EXPO_PUBLIC_API_BASE_URL` está vacío por defecto: solo una configuración explícita redirige Anthropic al proxy local de depuración.
 
 ```bash
 uv sync --project apps/anthropic_proxy --extra dev
@@ -127,22 +138,26 @@ apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py
 curl -sS http://127.0.0.1:8000/health
 ```
 
-El único servicio remoto autorizado es `apps/feedback-worker`, que custodia una credencial de GitHub para crear incidencias. Es opcional: sin endpoint, con el interruptor apagado o ante un error, la aplicación comunica que el envío no está disponible y sigue operando. No agregue una base de datos, autenticación o backend adicional sin una autorización explícita.
+El proxy escucha en loopback, rechaza clientes remotos y no se despliega. No lo levante para probar normalmente Anthropic en navegador; úselo solo para diagnosticar la pasarela.
+
+`apps/feedback-worker` es la excepción remota autorizada: custodia el token de GitHub para crear incidencias privadas a partir de feedback voluntario. Su contrato valida y sanea el payload, reserva una clave de idempotencia antes de crear la incidencia y solo comunica éxito con una referencia verificable. Si el endpoint no está configurado, el worker está apagado o la solicitud falla, el envío queda indisponible y la aplicación sigue funcionando. No convierta este Worker en autenticación, base de datos o sincronización de producto.
 
 ## Validación proporcional
 
-Use la señal más estrecha que cubra el cambio y amplíela cuando cruce una frontera:
+Ejecute primero el control específico de la tabla y luego la base que corresponda:
 
 ```bash
-# Base para código móvil transversal
+# Base habitual para cambios TypeScript de la app
 npm test
 npm --workspace apps/mobile exec tsc --noEmit
 npm --workspace apps/mobile run build:web
 
-# E2E web controladas
+# E2E web controladas, seleccione las que cubran el cambio
 npm run test:agent:e2e
 npm run test:catalogs:e2e
 npm run test:train:e2e
+npm run test:diet:e2e
+npm run test:storage-recovery:e2e
 
 # Fronteras especializadas
 npm run test:proxy
@@ -151,10 +166,12 @@ npm run check:catalogs
 npm run check:android-permissions
 ```
 
-Las pruebas deterministas no requieren claves ni red. Las E2E interceptan dependencias y prueban una proyección web; no demuestran SecureStore nativo, permisos fusionados, instalación, alarmas ni ejecución en segundo plano. Para cambios de plugins Expo, permisos, recursos nativos, notificaciones o distribución, siga [Compilación, publicación y validación](operations/build-release-and-testing.md) y añada build nativa y comprobación en dispositivo.
+`npm test` reúne la suite determinista y los controles del espejo de desarrollo; no implica que se hayan ejecutado todas las E2E ni pruebas de cada workspace. La exportación `build:web` genera `apps/mobile/dist` y es una buena señal de empaquetado web. Las E2E usan navegador y dependencias controladas: prueban una proyección web, no la disponibilidad de proveedores reales ni el hardware.
 
-## Componentes actuales frente a planes históricos
+Por tanto, pruebas deterministas y exportación web **no** demuestran SecureStore nativo, permisos fusionados, instalación, notificaciones, alarmas, audio o ejecución en segundo plano. Un cambio de plugin Expo, permiso, recurso nativo, notificación o distribución requiere el guard rail aplicable y una build/prueba nativa representativa, preferiblemente en dispositivo. La guía de release explica los gates de candidato y la verificación del artefacto; tampoco una build verde sustituye la comprobación manual de las capacidades críticas.
 
-Son componentes actuales: el cliente Expo, la política firmada por canal, los catálogos publicados, las llamadas BYOK directas, el Worker de feedback opcional, el proxy loopback de desarrollo y el tablero estático de `arquitectura-agente/`. El tablero no participa en `App`; el proxy no se despliega; y los proveedores falsos o el espejo web de desarrollo no son servicios de producción.
+## Ejecutable frente a planificación histórica
 
-Documentos que describan una API central, cuentas, Postgres, Supabase o sincronización sin que exista código ejecutable correspondiente son planes históricos, no arquitectura desplegada. No los use como base para añadir una dependencia obligatoria al producto.
+Son componentes actuales: `apps/mobile`, sus catálogos publicados y cacheables, la política firmada, las llamadas BYOK directas, el Worker de feedback opcional y el proxy loopback de depuración. El sitio de `arquitectura-agente/` también existe y tiene pruebas, pero es un tablero estático de seguimiento: no lo importa `App` ni participa en el runtime del producto.
+
+Los tickets de Linear, el tablero, roadmaps y documentos que hablen de una API central, cuentas, Postgres, Supabase o sincronización sin código ejecutable correspondiente son planes, seguimiento o historia, no topología desplegada. No los use como justificación para introducir una dependencia obligatoria de backend.

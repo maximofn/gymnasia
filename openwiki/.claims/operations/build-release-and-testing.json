@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:e1c8c37a7ea80fccc945c740f1fb19f8c3560294bb0c88b417b01fe5f75b9e19",
+  "pageVersion": "sha256:6604b87495786c216cb381be8a455aa5bdf4bf3d08d9465c486faf8d3def5024",
   "claims": [
     {
       "id": "claim_b6ce0be648324cb693c61680ef4a75d1",
@@ -197,10 +197,100 @@
           "version": "repo-lines-v1:sha256:68502773c296334b09e90b1bc2296e24c22f8dcfb45d3d4acf8cef5631d1c714:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwMjQwNDE3YjM0MTAxOTQ3ZWMyYjhiZjdkOWRiZTI5MzkyZDNjODY2ZDJhOTkzOGRhMDBmYzNlNTVkNmZkMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNjMxMzJhNmQyZjY3ZGFjYWYxNzQyYzBkOTE5ZjFkZTc2MmY5YWZlYTA0MmMwMjM5MjEyOGM3YzU4MGViMGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1ODIwMWFjNTVmM2Q1YmE0YzFhYTU2OWRmZWZjNTJkMmMzZmE5YzUxZjZmMzg5YzdhYTQwYTFhYTMzYTc5YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhMDJmZDI4NzYxNjM4MjFmNzAyYmNkZmVhNGNlZTFhMzFlNTM3YjVkMDA5ZjBhOTk5OWNiY2Y1NzMzNmRmZWQifQ"
         }
       ]
+    },
+    {
+      "id": "claim_2b4f58c532ec45d3ad12aa93a259e107",
+      "statement": "El repositorio organiza la validación de la app móvil como scripts npm de workspace: `npm test` encadena la suite determinista y la del dev store, mientras que typecheck, E2E, privacidad, catálogos, permisos e inventario de datos tienen entradas separadas.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/package.json#L5-L21",
+          "version": "repo-lines-v1:sha256:baa7270cc11da230de44d45d5956aa49a1d5155c41a811de0e67de5ce32c8e31:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0ODMzZDU5NDljMDNhNDBjYTk1MjQ5MTYxMGE2NjU5NjQ0YjNhYTQ2NjM2MmY3OTkwMjBkYmYxOTgxNTQ3ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4NzMyYjg2MzkzODYzMjA5NGEzZjZlYmM1NTNjZDI1NWNlMTdhN2E5MzVlYmYzYzVlZmEzMGY4ZWYyMTgwNzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjNmFkN2E3NWZmNzc4YTc0N2M4M2E0MjljNTc0YjFmMTgyMmZlZTFiNmUyYWUyMjNkYzZiNTk0MTc4ZjJhZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjMGMxZmVkZGViOTg2YjhkZTYyYmZjNzNiYjY0OTI5NmNhOWRkZDEzMjk5NmU5MGMxMDBkYjc5YmY3ODlhMjMifQ"
+        },
+        {
+          "resource": "repo://package.json#L7-L71",
+          "version": "repo-lines-v1:sha256:5e3aaaf4e0cf23c9bb2c83445840c12a1a5fa791169cc2a1bf6f6189bf0b66ae:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0ODMzZDU5NDljMDNhNDBjYTk1MjQ5MTYxMGE2NjU5NjQ0YjNhYTQ2NjM2MmY3OTkwMjBkYmYxOTgxNTQ3ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmNGYwOGY4OWRhN2VjYTZlNmY4ODAxOTZhZmUwNzMwNGQ4YzYyNjZjNDRlNDZjYzQ2ZDBiNDdmODQ2YmEwNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a89def7bef4d4cf0aa53d69025331c0c",
+      "statement": "La comprobación de inventario de datos contrasta claves de almacenamiento, hosts HTTPS y el impacto de permisos declarado contra fuentes TypeScript no-test; además falla si no encuentra archivos que escanear, evitando un resultado verde sin cobertura.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/data-inventory/inventory.mjs#L139-L243",
+          "version": "repo-lines-v1:sha256:17f71dfb34ff75baf2d67a2404cb749c6cef375b7b13d78b91454ec49a4e5c7a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwNmY3MDU2NDE3ODZhN2FhMGUyNWE1MTg2MzkzYzIwNjA0YjlkNzczNzRhMTY5ODE2Y2RiYWM5Zjg1ZjJjNzJlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJkNmQ3ZDA3MGI2MDAwMzM4MzFmNjE2YzAyNTU1NjdmODE1MWZiNTUzYjVlMWJhOWZmZjc3Mjg2MzNkYmY2MWVmIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkM2Y2MzIxZDcxYWY0MjQ5OWU4MmE0NWJmZmI3YWY3Mzk5OTRkOWVhMThlODUyZTMzYWQ2OWRjODZmYjY2MGRhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiNDNjZjg0NzM3NGFkOTc2N2YzY2E2Nzg2NzdkNzc3ZjlkODkzZDJmZDFiNjUwMThhN2M4M2ZkZDFkZjMxMzkxIn0"
+        },
+        {
+          "resource": "repo://scripts/data-inventory/inventory.mjs#L22-L33",
+          "version": "repo-lines-v1:sha256:cadc456ada3a503641b7415b2735b3e3e3ea8a56a6ed79236c664cfa6435a9c3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5NGIxNzYwMmMzYmI1ZmRjMWM3ZTFhMzEzY2U3NzQ1MWRlMWEwYTFhNmYwYTdmMzI1NmY1ODZhMjk2ZjBkMjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3ZGMyODc2ZWNlMTIyNDliNjY4NTE4OGY1MmRkOGM2ZGM0ZTY3YzA1NmU3OGM4NDVkYmUwZDI0OGY1M2YwYTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViMDAzZmUxNTk3MjU4YjJhYjQzOGQ3ODk1Njc3YjA4MGRiZDZjYjY3ZTJiYTc5YjEyMWQ5MDk2MTNhMmU5ZjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1MzU1Y2VmODIxMzI3YmE2MzIwNDBhMzI5NDY5N2JjNmViNDRjNDUyY2I1NmUyMDhhMmQxNzRkYjExYzhlZDUifQ"
+        },
+        {
+          "resource": "repo://scripts/data-inventory/inventory.mjs#L255-L274",
+          "version": "repo-lines-v1:sha256:0f30ab2d0676c4fc0086ade606065ebc0cb0b97694a1547b7bda88953672f128:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwZTZmODAwZDJkZmU2ZThmYTVkN2I5NzhmM2FjM2VhODZmYzEwNTYxMThiNDFiMTBmMDZiMDVlNzEyNWZmZjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_045ec8a1ee99456b888a40d153452021",
+      "statement": "Las E2E de privacidad validan una exportación web en contextos de navegador limpios, sin cookies, almacenamiento ni claves, y comparan las páginas publicadas con los metadatos y copia legal generados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/privacy-policy.e2e.mjs#L119-L177",
+          "version": "repo-lines-v1:sha256:8335750cefc26177a535658275b80349f11325641df0c14626952edcaa512eca:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkMDY2NzE3M2Y5NTdmMjJlZmRkY2YzZjFiYTZiMDI1OTBlODNjMTc5OThlNjllMDJjNzg3ZjMzYzBkMjNjMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlZjY5MDA3YTdlNzVjY2RiMmMxOWVmYTlkOTVjNDNiZjc4N2YzM2EyYjljODI2NWM0YTVjZTY0MmZlNmRiZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4YTkxNzU5NzJmZTE1ZTJhOTY0MWFiMTMxZjU3MWU2YzdjYWJjYTA2ODM3NjJlYmE1ZjIzNTNlNDgzYzNkNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlMzUyMWEwYmVkM2YxMzg3ODZmOTAwOTVjM2JmOTYzY2I0ZDQxMmYyYzIwZmY4NzEzNTY4NjY0YTNhNTY5MDAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/privacy-policy.e2e.mjs#L4-L12",
+          "version": "repo-lines-v1:sha256:797c1ad72b44edc866b9bd5a23b29a82410d5fda0146de364458885bc62f5459:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGQ5NTIyM2EyMmFiZjNlNTJmMGM1NWUwNjU4MTBlYTNiYzJhM2VmZTVkNTgxZTBmN2FhMmYzNmYzYzMyMTUxZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGE2M2ViNDQzNDIwMTQ4MDVjYmU2MWQ5OTRlNzcwYzYzZTMzMDc5YzBiNGE5ZThhYTExMWJhYjU0OGJjMmZkZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTg2ZjlmMTAwMWIwNjFkYWM3NDBiNWJhNTA5ZmU3Y2YxZDQ4ZTZlYWE2YmQ0NzkyNjIzMjZjYmM0ZWMxODRkYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWEyYTBhZTI2NTEzZjE3OWFlZDhiMzQwNTZjYzJlZmRiNWM1ZTI3NjVjODAzZDFkYjkwYjdiYzc5MjRhZTk5OSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/privacy-policy.e2e.mjs#L69-L75",
+          "version": "repo-lines-v1:sha256:717fe8cb0184448e1c0d6b1ac6fd3349566d19fbd411ecb449d505e8cb791b6d:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjY1Yjc3MzIyZTNmZTJlODFmNjQwMzc0OGRmOWVkMjdjYTMyY2YwOWJjMDVmMGMxNDRiMGYyYTAzOTM1Y2M4ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzM5MWIyMGE1YzEzZjc1NzVmMzdiYWMwMWRmZWEzOWZiZWQ4NzU1OGEzMjZiMjk5MDlhMTQzZWQ3M2FkMTBjMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzc2YWNhNzQ1ZTM2NmUxODI3MjY5NzhmMDM5YzA0YzA5N2RhNTE0NmEwYjE3MDAxMDMzMTBlMmVkMGRiYTRhNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a85faf26d67b49bdbf8502ea9d995c85",
+      "statement": "El workflow de release Android valida el candidato exacto antes de configurar EAS, crea o recupera una transacción durable, y solo publica el APK tras verificar en cuarentena el artefacto y la cadena de evidencias del draft.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L253-L305",
+          "version": "repo-lines-v1:sha256:0c2cefde89415fb736640651dd4010e2d911c44028283dda588a72a10c921f81:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYmU1YzY1NTUzYTk0YjNjMDQzYmYyNDFlNjgyNmI5NGM2OTQzNGFmMmE1OTk5OTE5NTE3YWQ1ZGIzNWFmNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2YzA5MThkY2EyYzUwZWQ1YmI0NjQ0ZTNlNDhjMzVhMTJmYjA2ZDY5MWJhYzQ2NzllOWE1NTYwNTBhNjMzNzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiN2RhNGIxOGY4ODIzZjRkNjI0NmNkYjhjOTU1MTcwYjMzZGU5MmFhZDM2YTQzZmYwYmUzNWVjZjcyOGY3ZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5YWM3NDE1NzE4MzFkNDg2ODg1YTYzYWEyY2JiYTY5ZDYxMmYyZGIxYTUxYzdmYWYyMDhmMTQzNDJjMDg5MGIifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L316-L449",
+          "version": "repo-lines-v1:sha256:6abc16def63dfd23094c1fe0320f98f5a05198d4ac5f7f2d12bf7926289cfb87:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmOGJiNzkzYThmNWM0MmYwN2QwODAwMTM5NWZkZGI5YWVjMWIyZWMyZjU5ZjJhZDVhYjY3NjYyNzVlOGJhMDI0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI1Njc0ZTdjYmE4ZTY1N2I3ZDZlYThhNzhkOTA0M2RkZDNjZDYxN2JkNWRmMjJjNWE1ZGIwODlkYmY4NDYyYTdkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxNjg1YjUyYWNkNmQ1OGUzMDVlNzg5ZDhmZDE1M2M3NzFlZjgzYmZmZTBlMGI1MWE5NjBiOGUwZjc2ZGEyNDBmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzOGY4ZmEyOWEyODVlYjBkYWY1ZWM4NDVkN2ZkZTEyM2ExOWVhNzEyMDY1YWZkZDdiYmMzOWYxN2Q1NWM4MWNmIn0"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L451-L574",
+          "version": "repo-lines-v1:sha256:bfcd9fb3cb5483535fc072ba4d88d84d6121719d374c9f47a0a7532f5291e320:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZDQ5ZGQ3NDczMzBhY2ZkZTg0MDQxYWE0YzAyYWIyMDc5MGZmZmNmZmI0NDQ2MTM2ZmQ0MDgzOWQyMDg2ZGJiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0NzgwOWIyOTAzOWUzN2E4OWNmN2IyMzM5NzRkMDI3MjJmOWI5MDExNjdiOWE1OTMwNTUyNjVjOTE4NzM5NjU1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYmY3NWNhYTQzMWM3MGE5NjM3ZTBhNWNhNmY2MDMyNDMyMTdkMWFlMWJiMzkzZjA4ZDEzMzI2YmFmYzRiZGY3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzMzRmYWYyYmJlMDAxMmVkYzU2ZjZjNzE3MDYwM2NmZjAwMmM2OGQ1OWJhNzM4NjIzMDVjMzkwODlkMmMwMzE4In0"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L89-L143",
+          "version": "repo-lines-v1:sha256:e01f0305295d750b95936f3c35acbddc97978072af45a665d64c184a9029d1cf:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhMTBmMjQ5NWVlYmU2ZmQ1MTE4ZDcxNzBhNmM4ZDljMWI1YmFhOTViOWI4YmZjZWRjZWUyMTU4MTAyMTcyMTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkMzJhYzIwODBhMTM0NWM2NDY4ZDBlMGUwOWE0OTMyMDE1MTc2NzQzZjkyYTUyNTM1NWNmZGZkNTg5N2NmZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYTBmZWRhNzQ2MTdlMjExNTk3MDY1OTJhMjUyYmYzMWYzNjJiMjcwMThmOGVkMjVlMzBkZWYxYzcxNWVkOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxMzkwNDUyMGY3Njc5YTQ5NmZmMGVlZjc2NWE1MWUzNmNjZTM0MjI1NTBiYjM4YTRmOTBkMDk4MWI5ZjQ0OGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b3149cb1a84b460e98b37da824e48a7c",
+      "statement": "El verificador de fuente Production ejecuta una lista ordenada de gates que incluye políticas, permisos, inventario de datos, legal, tests, tipos, export Android y E2E; si los gates modifican el checkout, marca el candidato como no publicable.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/production-release/production-release.mjs#L22-L45",
+          "version": "repo-lines-v1:sha256:db3a488babb189a4aeeb1a40ff3119d9a68ac6d8c3c953f052e073c475393b6e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYTdlZDQ5NTg5OTEzNWMxYjc0Zjc5YjU3YjY0YWQwM2I1MDIwZTU2YzU5YWQzYjg1YTI3NTQ0NTIwMmMxZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1OWMwOTA2MDI0YmRiZjMxOWI3Y2MzYjU5NWVjZjVkYTI1NGI2YzQ0YjY2ZWY1ZmYzNGMzZTZlZWZkMTMyOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmIxNWM2ZjkxMjg0MTBiMTFmNDNkZDg1MGM5NTE0ZmIxNzNhYTBhNzhjMWI1NTUzODljZjEzZWJmMjA2MDIifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/verify-source.mjs#L117-L135",
+          "version": "repo-lines-v1:sha256:7854661062e761fa07cafeffc05f45ac3e4aec4a6a9eaf7373a1965ecc2a653d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhOTg4NjVjY2M0YWM2ZDZkNzBlMGVlYzM5Zjg1YmIzNDk2MWUzNGFkNjFmYzJhODg2NmUxYTNiZDA5ZmFkNzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3NmIxNjgyZjNiMWY4MmJiMzNlZTMyM2NlOTE0NTBmNjgzMGM1ZDE1NDQ2MDhkZjA2NTI3ZDhmYWIyYmIxNTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjZTgyNWE0YTY1OGNhNDU1MDRiYWI0Mjg0NGE1NmZmYmMxZTVhMmZmYzNlMzBkYmFkMDYzYWJkNmE2M2Y2NzgifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/verify-source.mjs#L216-L245",
+          "version": "repo-lines-v1:sha256:b39c9a38fb9f931995552edd7cb4738fabf7d842e69393f06e02ba452cf82205:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiNTc3NzJiYjJlMDNmMmI5YmIyNjViMTY0NGQ2ZGU0MWE1NmE2ZGNjMGY4MTg2N2Q1ODE3YTJlMzJhOTgxZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyMTRhM2M5ZDYyN2NhY2RiOGIwMmI2MDcyZmMwNjFiZmJmZDYyOWM0NTg3ZWVhNzVmYjNhZGU5OWI4MDdlZjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlYjZlMTAxMDVhY2MzNTVmODRiODRlMDFhYjk2MzBmODgyMWE2YjY2ZTkxYjU2MWY4YWE0OTAzYzFlNGE3NTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkOTJlZGQ1ZTU5Y2ZhN2U4MjU3OGIxMzA5NDdmZDY5NmRkMjU3ZmUwZTY4N2QzODVkNDE3NTQwNTQwNTA4MGIifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.4.3",
-    "at": "2026-09-06T10:32:53.606Z"
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-07T11:37:28.236Z"
   }
 }

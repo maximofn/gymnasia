@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # Archivos
 
-- [Inicio rápido de Gymnasia](quickstart.md) - Mapa de tareas para orientarse en la aplicación Expo local-first, su política firmada, el agente, los catálogos y las excepciones remotas opcionales. Indica los puntos de entrada y la validación proporcional antes de cambiar cada frontera.
+- [Inicio rápido y mapa de cambios](quickstart.md) - Orientación para arrancar Gymnasia, elegir el dominio responsable y seleccionar una validación proporcional. Distingue el cliente Expo local-first de catálogos, proveedores y servicios opcionales.
 
 # Directorios
 

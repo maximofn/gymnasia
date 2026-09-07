@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:63b3859fa12038f18ba712e87857cfd665bb2d8d90f77da3ad72890ed7a7e08f",
+  "claims": [
+    {
+      "id": "claim_1d4d762ab7864a9e8244128e8ce1357f",
+      "statement": "VivaGym está retirada del runtime: el contrato rechaza su interfaz, protocolo MyVitale, host, rutas de autenticación/QR y dependencia `react-native-qrcode-svg`, por lo que no existe un flujo activo que lea o transmita sus credenciales.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/vivagymRemoval.contract.test.ts#L41-L60",
+          "version": "repo-lines-v1:sha256:ec6e810465447a9edafcc29ce3208ac908bdbad95009b30fff6011b771dfd092:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyOWYyZjFmYzk0OGM4ODRlYmExZWYzNWFjYTUxOGU1NjdhY2NmNTdjYjUxNzYwN2I1M2EyYzg1M2MyYjZlZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5ZjBlNmNlNDkwZTY1MGY5YWUzMTlkYmZmODg5NjZkMjcxNzMxZDdhZTVmMWEwMmExZjA0MWI1ZDk5OTQ4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiMDFlZmUwNzhmMDJiYjQxOThkOTUyZTViYzhmNjZmZjU3YWU4OTQ1NjE1N2YyZmU1Y2UxMzcyOGU4MzExOTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/package.json#L23-L54",
+          "version": "repo-lines-v1:sha256:938374636673b9869b821d0bccba27df24286f6e96c7177efe380818f35d0297:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhM2I0NjlkOWUwOTc1NzIyNDY2NjczNGM5ZWY3YjI1NGQ4ODUzNGY1ZDViYjcwOTg5NjA4MDVjNTUzZGMzMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxZGNjNzdlMzhhNGRiNGEwMWZjYjFhZjA4MDQxNWQ4ZWVlYTVkOTljYzlkYTJhNmUzZjA0NjAxMTRkYmE5MDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhOWQ3YTZmMGMxNzAwMzQyYWIxYTQyNTY4ZjIzZGEyZTgyNDc1ZWJmMWQ4NTcxNTMxMjI5OTIxZjdlMWQ1YTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_000fa38da15a4d069462c9feb4cfe71a",
+      "statement": "Las únicas credenciales históricas de VivaGym son `vivagym.email` y `vivagym.password`; se preservan durante el uso normal, mientras que el borrado total las elimina y verifica, y el borrado parcial de actividad las conserva.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13395-L13430",
+          "version": "repo-lines-v1:sha256:35fb0fca88a122058fbd7a45ee9d08cb4cf3b17e39da7ed02c7b24c816d2ef27:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3MDg5ZmUwNmUxMjI5MDQ1ZWY4YzBlZGEwMzdlMmQwMjI3ZDNjOThiZmI4YWZmYTJjMWE0NWJkNzBkOTEzZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YjA0NDkxNDY5NzIyZTgzNjNhOTRlNDA0NDUzOGUwMTNhMmEyMTdlMzZiMWU1NjhiYTYwYWNiN2I0YzhmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5NGM3MGNiMmM2MGM4ZGI2ZGZiNWEyNDQ2MzI1NjVjOWI3Yjk3YTI4Y2Q2NjliMGVmOGU5ZDZmYjQwYWNkNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwZGRkZWZkMjlhNWQ2NDk1NzY0MWJjMDZiZjA0OTI3NGIzODA5NDA2YTQ4NzdmM2RhNDdkNTA2NzU5YzMwZDgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/legacySecureStorage.ts#L1-L9",
+          "version": "repo-lines-v1:sha256:2d49f15776998fa7bdabb81258f087379ee725b9348b4409dab20a163438f2ce:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFjYTFjYjQ3YjIyODg4OTM4ZDMwZjcwNjlkYjJjMmVkZDViM2ZiOTIyZTAwZjZhNDA4YjcyYmJhNjc2NmI0MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmNkYzc2ZDEyZTUzMDRkMzA3OWVkYjVmODkwMDA3ZWEwNWYyMjZlNGQ5M2I2OTU2ODQ2MGNhZmFmODAwNzQ0YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L68-L79",
+          "version": "repo-lines-v1:sha256:1ca5147d9a8629a32736f159ec364c119f27af86991fc1afe033bfa8556f020a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkYWQ4ODdiOTE3ZGVhMGRhMjM1N2U5Y2I2ZTA0NzYyZTg2YWYwZDE4Mjk4YmNlMGU1MDJjYTRkYTEyNzJhN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZGM3NmQxMmU1MzA0ZDMwNzllZGI1Zjg5MDAwN2VhMDVmMjI2ZTRkOTNiNjk1Njg0NjBjYWZhZjgwMDc0NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlNzg0ZGJkMzM0NzcxODgyMGU4ZDNlYmZlZjc4YjQ0MDA3NDdkNmY0NjNmZmJlNDlkNjk3ZTQ5YjE4NTRkZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkZWYwZWYyOTQ5OTA0YzlkODY4NGFkZmY4OGYyNWM5MzE2OGM2ZjJkZWQ3MGY4NGRkM2E2Y2YwZGJkZGUyY2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_88b79793c25441ba8e10e311ba42eb22",
+      "statement": "Las claves de almacenamiento seguro se delimitan por variante: Production usa la clave base y Development/Staging aplican un namespace, por lo que las credenciales heredadas no se confunden entre esos ámbitos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/environment.ts#L83-L103",
+          "version": "repo-lines-v1:sha256:988e124af04f80529bb2bbc1480b565d87977cf3011c8145581ce7f2dc858c2a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4ZWQwMjQwY2E2MmMwZjU1ZTQzZmM0MjliNDg1NDgzM2VhYzQzYzYzYzI0YzAzNTk3ZmMyNTcxMzQxNzI5ZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRjOGI5MGIzZDA4YzI2M2UxYWMyOWY2Y2ZmNTkxMWIxZDM2NDMzZGYwOTAyZjA5ZWNhOWM3NzBlZDJlMGQ1OTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyOWViODRhZDdmYjYyODE1ZTEwZWI5NDU2ZjYzNjFiMjA5OWJmNGZlZGZmYzg5MDc1ZjQ4MTk4OTI4YTQ4MDMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/runtimeEnvironment.ts#L11-L26",
+          "version": "repo-lines-v1:sha256:6229a006f4fd51657ed2879ab68b97ac7e4ab7090d598dc7df71226b81dea19e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwMmM2OTZjNWY5YWE1ODhhNjc1ZTBiODE2OTY2YzA2OGI1NWQ4NGEzOTNkYWVlZGZjNmIxZTY1YzAwZTM5M2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2ZmQyY2M3ZTdkMTc5NjNjOGFhZjkyNmY1Njg2MzdiNDk2OGY1OGY2ZjU5NDYwNTI5NTkzYjViNTUzYWI0YTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2Yzk3OTgxOThkMTc3YTUzN2M4ZTUyYzQyNWE0MjZhMjE2YjhjYjFhZWRhMzZmODE2NTU0ZGZkNDEwNGZiYjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9fea1b4c6de4897baf43c13bcac1988",
+      "statement": "El cliente no tiene actualizador de APK: el contrato prohíbe el servicio, estado, UI y consulta `/releases/latest`, y la antigua marca `gymnasia.mobile.lastUpdateCheck` solo se limpia como dato heredado.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L1708-L1717",
+          "version": "repo-lines-v1:sha256:5e4f5041fa2a62e54f2e0862b9bf52c3790f99e2241cace3ac32a49e397ed7e7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzMmQ0YWFmYWQxMTFhYmM2NjRmZmZiYWFkMGYwZjEyM2Y0Njg3NTM1ZWUyODM4M2MxY2MzZjg0YjBiODBmZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlOTc2MGEzYWZlMDFhYWNmNzNkMTVhNGMzMTZiYmIyMDYwODk3NjZkYjllYWRmZDdiYWIzNDhjMmNjYzVjMTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1ZTkyYjNjNTE4MGZiNDFjNzI0MDkwYzdmZTYwY2FjYmQxYmY0Y2I0Y2VjZDQ3NGVkZmMxMjM2Mzc0ZTg1NGQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L779-L789",
+          "version": "repo-lines-v1:sha256:33fc35a3c56d45bf2556e3b64088aace0b1b1fb7f8420e994d6a183692008b86:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhOTc5NTk3MDRlNmFmYjZkMjMxOGYwOGM1ZGNhMTQyOWM3ZWYyMThmYzQwZjlhYTcwYjQzZmQ4MTY5YmJhYTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMmQyYzBkNmRjNWU3NGQ5MmZhMTRiOTFkYmVhMjY0MDkwYmViMzVmZGI5MTg4ZDliMzQxMTgxZGNlOWY0Y2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4YjNlNTkyMmQwNmFlNTM2Nzk1ZmMxYzExYWEwMTVjYzhmYmJkZWZiMWY2NWMyMDQ5ZWMzNjVjYWM2OWNiNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0ODAzNDFiYzYwNGE1NzIxN2E1MTJlZGRmNTM3YjA2NThkMzVjNTM5NDVkNDRiNjVmZGI4OTNmMTAyY2YzOGIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/updateRemoval.contract.test.ts#L11-L51",
+          "version": "repo-lines-v1:sha256:e924fa6b0cbad18d291424f26f7d897375cb1c5e9f6ccb43d68b27831cddd45b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4NTQ2NzIwZmJkMjkzMjUwNzNkMDUxZWU3N2Q5YzE0MTI5ZjljOGFhYjA2MmNhYTk3ZDRiNGU3ZGY1ZWEwYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0YTJmMmFjYjY5NGM5ZjVhOWFhN2Q3MDA4NzgwMjNmZTlhYWIzMmJlMjE4ZGEwNjE4YTU4NGM5YzNhZjViNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0NTdhNDM4YmY4OTEwYTNlNTVhODg5NTY1OWU2ODhjYjAyZWE2ZDMzOWQzMDhjZTM2NzAzOGFlNzNlMmY3OTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4bf1f5bf7ea34c8eba188c9595bd5af4",
+      "statement": "Android bloquea `REQUEST_INSTALL_PACKAGES` y las pruebas verifican que no se declare y que permanezca bloqueado, evitando que la configuración o una dependencia reintroduzca la capacidad de instalar paquetes externos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/app.json#L26-L44",
+          "version": "repo-lines-v1:sha256:13d70e8b72790f4a8b2a668af905b8d05d810d6358dcbd1bee7563f06ce78019:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1NDlkYmQ3YWI3MDE5NTExMjBmZmM2NWQ0NDljZGRjMDcwZmNhYzg5NjliNjAxMmEzOTU1ZmM0MjE0ZDljZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0MjIzOWIxYmQ4MmI4NWVkNTBjMThhYmU2YjhlOTk3ODc1NWRhYzZmZDgwNDA5MjRjOGE4ODBjNTJmMDY1ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhZjNmNzVkNDI3MTBkNTUyYjQzOWNjYzM3NTM4YTFiODBhZDY0ZWEzOGYwZGM1MmNiNzAzNTYyYWU0ZDYyYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjYWU0NmY1ODgxODEzNmFmOWJjNDYwYzgwOGMyNjVhY2E0M2VmNGM5NjQ4ZDY4ZjlmMGI5MGViYzE2Y2JiZTgifQ"
+        },
+        {
+          "resource": "repo://scripts/android-permissions/permissions.test.mjs#L43-L49",
+          "version": "repo-lines-v1:sha256:e3c90eb0b7d11a506301467df875da6fbba7cce3317ccd8abc38c8bee02b1aa4:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTIyZmY2NmU1YzU3MWE5OTA1MTNkMDUzOWJkNzE3MjljZWMzZDhmMGNhNGNmODI3N2I4OWNiNDdmMTU1NmJiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjZmNWI0MGIxNTg0NTdkMTc4NjRmMjE3OTA3ODZkZDVhMmVjZGI2NGI2NmE2NTFmNzg4ZDRlMjVjZDMzMDNkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTJhNDY4NWNkN2Y0MjFiOGU4MWUzOTQxNzU2YTMwYThjNzZjY2NjZmQyNzgyOTdjYmFiOWUyMjc5ODdhZjE0OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTJlMTVhZGI2NTExZjhlMjQ1YzBhMjhiMTYwNDI0MmM3ODFiOWVkZGM2NTQ3OTEwNzA5NDFlNWVjN2E0ZWI0YiJ9"
+        },
+        {
+          "resource": "repo://scripts/android-permissions/policy.json#L11-L26",
+          "version": "repo-lines-v1:sha256:6b1d6539c950ef7d7655373280ad1b7133fdfa4fb404a90be6e6c25b0c9f8e2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwZDc3OTIyZDZiZDkwOGUxYTUzZDIwYmMxNThhZDFiYzQ2YjExMWE2Y2M5OTFiY2RiNjMzN2M3YmQ1YzUxY2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmMjExOWRkMTg3NDU2Yzg1YWJhNmE4ZTYzMDFiZDkyZjU5NjFhYjNlMzgwYmEwMmM2ZWEwYTAyNzljZGY2Y2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5ODJiMmE3NTg3YTkxMGUyMmUxMTE2NjgzN2EzOTYwYzUzZmM0YWM1Zjk4ODY1NWE4ZmZlNmM5MWNkNmZlMGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxNjE5MDg3OTIzNGQ5NTEzMjIwYjc0NDVkMTk2ZTQ4MjFlZWQwMjQ4YWU4OTVkNmViZGExNDYyNDFiYzljNzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7e7d0a95106845829cebec0af7ab86bd",
+      "statement": "La publicación de APK es externa al cliente: el workflow usa el perfil EAS `production-apk`, verifica el APK en cuarentena junto con evidencia de fuente y política, y solo después publica una release de GitHub con `gymnasia.apk`.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L119-L134",
+          "version": "repo-lines-v1:sha256:c490488afe347ca411fc0697a98453be7c6e3581fb0f760c73a251cfdc5d853a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlMjIxYmMyOGFlODEwZmQzMjQ0NzlkM2IxMjJkMzE5NTEyMTE2YWFmZWIwZTI5YWRkZWNkNjdkZDAwYTVhOGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhYWJhZWEwODAyNDNhZWM0NDU1OTc3ZTE2YjkzZmY0OTliZjJkZmM4MmFhNDJkNjgyYTUyZDE1ZGI1NTk3ZDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1NjE2YzQ5YjYwYzZiNWY3MzhjODVmM2ZhMTY1ZDk1YmYxYjEwNDcwMDg0MzFhMDQyOTdmNWNiYzNiNjExODMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmZWNjOWVlZGQ3OTY1ZDFkNzBmNzMyNmIyMDA5ZWFkZGMyOWU4OTg1OWQ3NDhkMGE4NWNjOGZmNDdjNTk1ODYifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L451-L574",
+          "version": "repo-lines-v1:sha256:bfcd9fb3cb5483535fc072ba4d88d84d6121719d374c9f47a0a7532f5291e320:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZDQ5ZGQ3NDczMzBhY2ZkZTg0MDQxYWE0YzAyYWIyMDc5MGZmZmNmZmI0NDQ2MTM2ZmQ0MDgzOWQyMDg2ZGJiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0NzgwOWIyOTAzOWUzN2E4OWNmN2IyMzM5NzRkMDI3MjJmOWI5MDExNjdiOWE1OTMwNTUyNjVjOTE4NzM5NjU1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYmY3NWNhYTQzMWM3MGE5NjM3ZTBhNWNhNmY2MDMyNDMyMTdkMWFlMWJiMzkzZjA4ZDEzMzI2YmFmYzRiZGY3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzMzRmYWYyYmJlMDAxMmVkYzU2ZjZjNzE3MDYwM2NmZjAwMmM2OGQ1OWJhNzM4NjIzMDVjMzkwODlkMmMwMzE4In0"
+        },
+        {
+          "resource": "repo://apps/mobile/eas.json#L26-L37",
+          "version": "repo-lines-v1:sha256:84ff6a3336829a7b6ffe91229e72edb79de5ac4523043863aca400c05ca02041:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhYjE1YjMwMDY2NDNhYmJlZTE5YTEwZmQ0ZjY1NzU4YzI1NzhkMzQ4NTMwYjlhNTA1ZmI0YTAyOWZlN2EwOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyYTc2NzE1YTkzYTAxMmRiMTk1MmViY2NhOWZmMDNiMzk3NGRjOGYxZmVlNWU1YTI5OWZkOWJjZDI3MmZhMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlMmY0N2E5YjMyZjFlOTU0YzQ2NGU2NDcxYzNlNGM5MzM0ZDM4ZjNhY2E3ZDZkZDQ4MDE1ODEwMWY1NWM2MGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e01f8fb5c0e042058e3baea23c833ae1",
+      "statement": "Los E2E de Development y Production comprueban de forma observable que no aparecen las superficies retiradas ni se realizan solicitudes a MyVitale o a la API de GitHub Releases.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/development-provider.e2e.mjs#L127-L153",
+          "version": "repo-lines-v1:sha256:14f29a7279efe33fb5cacd69313643c8970657faffc33db468d973e57f504a9f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjODk1NDc1YzAyNjE4MjdiYTc0NmVmZmU3ZTkxZjcyNmFiMjU5ZjA1NWI3ODZiOTk4ZjUwYTE3MDMwYzVmMDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmMmIzYzFiNzM3M2MzNThkMDY0ZDQ1ZWMwMGM0ODFlZjU4OWYxYjdkYmU1ZDE1ZjM1NjBjODlkOTIxNzY4ZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmYjYzZmQ4YzVhYWIzZTBlYzNlYmExZDg4ODczYmY4NjJlMDJiODUzOWI3MTU0MTRmNzczZTc4MmZjNDhiN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4YzZmZjBhMTEyYjg5NTE3NWE3ZGEzZWYwYTYwNTBlMWIxOTliMDUyYTZjZDFjZTM2NGVjMDBkZWQ0YzRmZDkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/development-provider.e2e.mjs#L67-L88",
+          "version": "repo-lines-v1:sha256:3c443c190ff6ae4bec477c84f78f5d74c771302f02b03fbd26dec3f3aff238a1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhZDg1NDYyNzVjNDE1YmM0ODczMWI1YjA0ZTc0NTA4NzIxMjcxZGExZTZjODNiYzRhMTczY2M3NGQ2N2IyMmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0YTRmZmM4ODJhZTgyMjM3MTE3NzIxNDlhY2Q5Y2UxMGI5NDkxNTIyMTNmY2E1NzFlNjU2NDc2NjMwZWY4MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIyZTI1MDczOWU5NzMyM2EwOTkzZDVkYzc4NTQ2YmY5ZTAwMDk3ZTRiODhmODQ3MjU1ODc3NGU2NTg4YjNiYzQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/update-removal.e2e.mjs#L75-L128",
+          "version": "repo-lines-v1:sha256:d12010f8f110526d605070da2631c581c8f9282f4be4dd0dbbd1641b173fad09:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkMDY2NzE3M2Y5NTdmMjJlZmRkY2YzZjFiYTZiMDI1OTBlODNjMTc5OThlNjllMDJjNzg3ZjMzYzBkMjNjMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkOWFlMmRlMTdmMDIwZmVhMzdjMTBjNGU3NmM2ZmRlYWVjNWI3YzBmZWYxNGNjMTliNzMwOTJiNDAyOWMwMzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzNDFhYjRiOWM2MWQyMjc2ZGZmZTEwYmM0NWMwYmY5YzQxNTVjMGRiZGJhOTY2M2VkMzJkZjBkNTFlYmMyM2QifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-07T11:37:28.236Z"
+  }
+}

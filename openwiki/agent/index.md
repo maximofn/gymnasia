@@ -1,5 +1,5 @@
 # Archivos
 
-- [Configuración y transporte de proveedores](provider-configuration.md) - Configuración BYOK, persistencia, verificación, descubrimiento de modelos y transporte de OpenAI, Anthropic y Google. Anthropic usa acceso directo en web por defecto; el proxy local es una alternativa opt-in.
-- [Streaming de proveedores y continuación de herramientas](provider-streaming.md) - Encuadre SSE, selección de transporte, contratos de turnos analizados, correlación, errores, pruebas y superficies de extensión para OpenAI, Anthropic y Google.
-- [Entorno de ejecución del agente](runtime.md) - Contrato del chat móvil para leases de política inmutables, streaming y herramientas con efectos deduplicados. Describe el circuito verificable de feedback y los límites de estado y reintento que deben preservarse.
+- [Configuración BYOK de proveedores](provider-configuration.md) - Contrato de configuración, almacenamiento y comprobación de credenciales BYOK de OpenAI, Google y Anthropic en la aplicación móvil. Explica el aislamiento de secretos, las diferencias entre web y nativo y el proxy Anthropic opcional.
+- [Transporte, streaming y compatibilidad de modelos](provider-streaming.md) - Explica cómo el cliente móvil transmite y analiza SSE de OpenAI, Anthropic y Google, conserva la correlación para herramientas y decide entre acceso directo y el proxy local opcional de Anthropic.
+- [Runtime del agente y herramientas](runtime.md) - Cómo el chat móvil fija la política de un turno, transmite al proveedor y ejecuta herramientas locales con validación, commit explícito e idempotencia persistente. Incluye los límites de privacidad, degradación y confirmación de efectos.

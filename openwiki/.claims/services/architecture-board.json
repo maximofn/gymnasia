@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4d5c4d6f4fe52258d247b3e542362a75776194fdf6ccebeb1e676de2b132d62f",
+  "claims": [
+    {
+      "id": "claim_88c860a79f05477a88045b0ffe08a84d",
+      "statement": "`arquitectura-agente/` es un sitio estático que carga `data/board.json` como espejo manual de Linear, sin API, token, backend, cron ni base de datos en su ejecución; Linear es la autoridad cuando existe discrepancia.",
+      "evidence": [
+        {
+          "resource": "repo://arquitectura-agente/README.md#L1-L12",
+          "version": "repo-lines-v1:sha256:c62b31fa5340b833c45630b408997a4345ceca4625ef7bea7ac80f85bd67c780:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyMTJhMmY5NWQyYzY0OWNkZDAxNWRkODdiYmFmYzcyYjViZDk0YjVhMDAyMGI3YWQ0ODk4Mzc4Y2FjZjI2OGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMjRiYmJkMTZjMmI1MDQzZTgzYTlkMGQ2NWU2YWQyOTI2ZjIyOTNhZTFkMmE0OTkyZDQwZmQyMjA4YWQxNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkYTIyOTJhMjg4MjlhN2U0ZWFkMzQxMTdjYmU3N2MyMGM1YmQ1ZjY0Zjk3OTAzYmIxNjdiNTBjMTI5NmQzMjYifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/data/board.json#L2-L12",
+          "version": "repo-lines-v1:sha256:85d7fe0f2421405102d4091d4ca510a17a83dfb56ba7760a5d745535f0d0f848:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiYjUwMTM2MTU2YTFmZjg5ODI0MjVjNzAzNzBiYWIzOTg3NDE0YzQ4ZDQ4ZmYzZmIyMWFiNGM1ZmVlYTBjOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoxLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYzY0NmRmYmJkYjhlNGU5OGNkYzBlOTdkYzg3NzA2OGNjYmFlZmQyYTU1OTIyZDU4NzZjMjM1MWZlZGMyM2UifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/script.js#L921-L932",
+          "version": "repo-lines-v1:sha256:96f5856a21a7ea1ccd2c6f5bfcb854cf7700f1326e3b6f6166a2928e729d616d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhY2U1ZmViZjc2MjJjZGVmZmRiYTg0MDFkZWNkMWQ4MDI5MjU4NzIzM2ZkNTk3MjEzNTFhZmY2MzYxZTliNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1ODYyYjA3MDc0Y2ZkNDQ0ODI3MTg1ZTNlMjA5ODZjNmRjOWU2YWRjMjA4ZTkzYzM5MDM0NWVkMzVmOTM3ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyMzRhYjRkMjBjMmEwNmRiODk0ZmY3ZGE5NGVlOGEwNTM5ZGMzZDJjMDMxNTJjMTlmNTQ1MzMxMzk3MjRiNzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c71acd5b72954acc9d608db68d736912",
+      "statement": "El tablero es una superficie estática independiente: su entrada carga únicamente `script.js` y este JSON, mientras que la entrada móvil registra `App` con Expo; por ello el tablero no es una ruta del cliente móvil.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/index.js",
+          "version": "repo-file-v1:sha256:3c87f11c5dfcdcf20361d011834a570d10c3142549ad1eba90053f9c9430d65f"
+        },
+        {
+          "resource": "repo://arquitectura-agente/index.html#L1-L87",
+          "version": "repo-lines-v1:sha256:20d97efbd18f0cd910ac1ef92fe7479a38c823f8164ae1204c9e48e13da4bf83:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkMGI2ZjVlMzA5ZGY4ZmNlODgxNWY5MDhkZDY4MjFiMDQ5NmNmNDNjZDlmYjRmZjdlYTljMGNlNzQ3NzA4MjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzZWQ4MWNkMTZkZjg4ZDY5MjE2NjQ2ZDhkYWRhNzYzNGIzM2E2OTg2ZTljMjNhNzI2MzFkMTkzM2I2MzVhNTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e9adbdc10d9349e4a68b66c8815feb98",
+      "statement": "`board.json` centraliza metadatos, catálogos de estados y líneas base, grupos y tickets, y fases de `recommendedOrder`; las pruebas exigen IDs y referencias válidas, un grafo de dependencias acíclico y cobertura única y ordenada de tickets abiertos de épicas en la hoja de ruta.",
+      "evidence": [
+        {
+          "resource": "repo://arquitectura-agente/data/board.json#L1-L61",
+          "version": "repo-lines-v1:sha256:74067d073d16eba1596fcc164a01fc5593706ec42d9d44a9d57b1a623bb17459:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4YzljYWY5Yjk0MGYwOWRiMDU3NjZmY2NiNmNkYjE3NGZiMTc5ZDZjZjMxZGZjNDI5ZTA3MTUyMGY3ZjliOTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjljNjJmYzkzZjk3NGVkZWI3YzcxNWY5ZTY5ZmViYWJmM2U4MjJmMTA5YWIxYzE1ZmZkNzVkYjM0NjVmZmZkNDEifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/tests/board-data.test.mjs#L33-L223",
+          "version": "repo-lines-v1:sha256:4887c9d75f79b4def8cebad70eb1b9a04406798f89dbb2a4d92eccdacfd617a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTkxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1ZjY1NTZiY2E2ZGY1Y2IzNTFhZGE3MzJhMzQ1N2Q4OWExNzU3ZWEzYjk2ZmM5ZDlmZWQ5YmE2NjFmYzI2Zjg3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyMTFlNzliY2NmNDk0MWEwYWJlZDE5MjJhZTIyMjJjMDhkOTYwZDM4NWFlYzZiYzY1YWE3NmYzN2JhMWU1MmE1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_ddb002f34ef543bc839388eb21ef89b4",
+      "statement": "La inicialización obtiene el JSON, crea índices en memoria para tickets, bloqueos y relaciones, renderiza todas las proyecciones y solo después marca `body[data-ready=\"true\"]`; ante un error de carga muestra el error y no usa un fallback.",
+      "evidence": [
+        {
+          "resource": "repo://arquitectura-agente/script.js#L118-L151",
+          "version": "repo-lines-v1:sha256:24a30788b66e8c946b343d9d268b35a15778e3f569465d74adb9880dcc7293dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhYzc3Y2Q3MjZhMWFhMjM5NTQ1NThjYWQ1NzgyNTlkNjE4NWU5MzQ1MmQ0YjE2ODljYzAzZDFiZjI4YjQwN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3MTNjZDU2Y2Q5Y2ZlZTc5YmU0YmUzOTY1OGU2YjZhNTA2MDcxMGUwNDliOTA5NzgwNTlkZjJmNzc2NTIyZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiMzQ1ZjgyYzcxZWE5ZWY1NDJkNTFmNThhY2NlMjhlODAwNWM2YzFkOTgyN2JlMWZjMzZlYjZlMmM5YTY3NDAifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/script.js#L921-L959",
+          "version": "repo-lines-v1:sha256:9a58ba6d92b4a8b25d17c603e224435046200bb7285e5c0ba7e49fc400bad897:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhY2U1ZmViZjc2MjJjZGVmZmRiYTg0MDFkZWNkMWQ4MDI5MjU4NzIzM2ZkNTk3MjEzNTFhZmY2MzYxZTliNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1ODYyYjA3MDc0Y2ZkNDQ0ODI3MTg1ZTNlMjA5ODZjNmRjOWU2YWRjMjA4ZTkzYzM5MDM0NWVkMzVmOTM3ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5ZmFjNWEzMDM5YmJhZDI4N2FjODE1ZDUzM2NmM2FiZDRiNDIxNzkyMGNiZTJjOTNiYjM0YTZlMzAwMDMxNDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2451ba57debc49aaadef223d5bf222e7",
+      "statement": "La interfaz ofrece vistas hash de épicas, estado y dependencias sobre los mismos datos; búsqueda y filtros de estado se combinan con AND para épicas y estado, mientras que el grafo no usa esos filtros.",
+      "evidence": [
+        {
+          "resource": "repo://arquitectura-agente/script.js#L153-L164",
+          "version": "repo-lines-v1:sha256:3ebcfc58b88f708a0c104b812ea10305481a113d7f4341b7e7f4a281717905c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwZGU2OGEyYTJlZmI3NzY4NjRlMWJlZjNhMDc3Y2VjZDJlNGJmM2MwZjY1NzdmN2YzOTU5ZjkzODBhZDcyMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzNjQ3Y2RjYjcyZWM1M2IzZGYxNDA3NWIwZmViNGVhZjc0YWRjYTgyNDlkZGJlYWU4Y2M1OGI5OGU3NjM3ZTEifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/script.js#L442-L558",
+          "version": "repo-lines-v1:sha256:6c53e9eeccf7a7da2a60138c9e20e563a216aeeaaa735dd641aa155e91fa4939:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlYWJlMTMzOWVkMmFkOTFhZWEzOTdjY2U3YjA4NWUyMjk0YzNkNjkxOWRhNTc1ZjY4NWRkZTQzYWUyMGEyNDJhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhZGVhZWFjM2ZmZTZkYWZlMWIxNjEwZTZiNjVkM2Y3ODk4ZDdhZmNiOTM2YzViMDIyYmNhOTZkMzAyNmFiNTVjIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwOTBkNjE0ZTQ4ODcxNDM0NDFhNWE5NDQ5M2RiM2QzNGViZjE2YWMwOTA5NTQ2Yjk2YzEyNmI2NDk2NzcyMjZlIn0"
+        },
+        {
+          "resource": "repo://arquitectura-agente/script.js#L876-L917",
+          "version": "repo-lines-v1:sha256:472054fc61d940dbc3be99641f9844c5950d4baedb5b8c4f1d4c0a9027fe62d2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3NDYzYTQ2YWZlYzExODhmY2YwNzQzNzIyMWUyZTc5ZGMwY2QwNzU1MGZlYzFiNGNiYWQzOTUzYmY0MDcyMjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1ODYyYjA3MDc0Y2ZkNDQ0ODI3MTg1ZTNlMjA5ODZjNmRjOWU2YWRjMjA4ZTkzYzM5MDM0NWVkMzVmOTM3ODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1ede77dddace48babdbbeed7b88346ad",
+      "statement": "La hoja de ruta excluye tickets `done` y `canceled`, elimina fases vacías y renumera las restantes; su contracción es la única preferencia persistida, mediante `gymnasia.board.roadmapCollapsed`, y falla de almacenamiento no bloquea la página.",
+      "evidence": [
+        {
+          "resource": "repo://arquitectura-agente/script.js#L177-L283",
+          "version": "repo-lines-v1:sha256:c1c8b0fb42d987bf8f089b39ec9ddd8873f5f052f215e045892dc4267c1c2f89:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZjdjNzA1MTNiMGQ0MmNhZmIxZWZhNDdiN2IwMjhkY2UxYjVkMmZkNDZlZTg2ZTFiOTA0MDg4YTIxMThmMmY1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2YjAxOTcyOGU5ZjNmNWEyNWMxYmUzNDM0NjY2ZDc2MjIyNTQ3ZDFkMGZlYWFlYTEyN2NmYTQ1M2FhY2UzOTczIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlOTNmYmFkNGEwYWFiYjczNzYyZWFiYmEwOWJjYTk4OTU3ZmRlOGI3Zjg5Nzg5ZWQ1ZmJlOWQ4NTNmNzNiZGYzIn0"
+        },
+        {
+          "resource": "repo://arquitectura-agente/script.js#L22-L42",
+          "version": "repo-lines-v1:sha256:f272aa89f99c6580fb0cd3b2d8ec53c11d7df53532f7bcc743200976a429be1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjBjNWRkZTc1NmNhZjI3NWRhMDFkZTUzZWI0ODE2YTkwNTk0MWY5MmE5NDllNzlhMGZhYjMzMGQ0MWQxMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg2MGJmMzNhOGRkMjM4MmJhNGRjN2FmOWYwM2QyODcwYTJmZjJiY2RiZGJkZDIzODFhOTZjODU3M2YxZjNjYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlNDE4MDM5MzA3YjQwYmE5ZDU4NTFiZTQ2ZTkyYmE5M2JkNmYzMjFkN2U4MTA5MjZmYmQ2YTBlMGFmYTRkYTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e647892695074c9d809bf7d8df6b5b20",
+      "statement": "El grafo dibuja cada dependencia desde bloqueador a bloqueado y deduplica relaciones informativas simétricas; sus niveles siguen el camino de prerrequisitos más largo y el guard de recursión evita que un ciclo bloquee el renderizado, sin sustituir la validación de aciclicidad.",
+      "evidence": [
+        {
+          "resource": "repo://arquitectura-agente/script.js#L604-L658",
+          "version": "repo-lines-v1:sha256:4fbec6ddb21ce944b973d89fe5e95cb6ae07dae3f054a774d5d179c57f6fe10d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwZWZmMzllYzYxZDNhZjUxNzg1YzczNTFhNzk5MmIzNDUwNGU5MDQ4MWMyMWMzMmI4MDY5Mjk5MjhmMjQyN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkMjAwMGI2YTI2ZGViMDNmZjlhMGMxYjk4NmFmOTliYmU2MjAwYTNlM2UzN2UzYmE2N2MzZTNhNDM2MmRhMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwYzY1MzhkMjdlMmFjMjhjMDFlMmFhNTBkOWI1ODRjMjE2ODYzMGI5YzJhZDc3NjZmMmM0NTUwY2Y5YmVjMjIifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/script.js#L660-L849",
+          "version": "repo-lines-v1:sha256:90e8a34920386d55d01d571af2dfe94b789f312c45732c2d785ca59ba7869b62:eyJzZWxlY3RlZExpbmVDb3VudCI6MTkwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhM2E3YThmNmM4YzVmMWRkODA5ZWNhYzNmNTNiZDcyMDk2ZjJjZDczZjllYTBmZGNjMjhmNDY4NmE3ODdhMzZiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmOWI2YjVjYmEyOGY2OTUxYWZkODlmZTBmMTUyZjAzMTg1YWU1OTNkMzNhMDNjYjc2NDVjNWNlNGEyNTkzZmExIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkYzFlNjk3MjNkZTExNjk5ZWJmNGE4YjFiM2RmYTQ4MTdiZTJhZTVmMDM4ODE5ODMyMTAwNzMzZmQzZTNmMDY3In0"
+        },
+        {
+          "resource": "repo://arquitectura-agente/tests/board-data.test.mjs#L110-L130",
+          "version": "repo-lines-v1:sha256:b1e5776535f0e45a391dc9fe6074093ba159ae742b258302b66c588e0e3babcd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMzgyMzdkYTg0ZThmNmRjNzc3ODJhYTg5ZGYwYzYxZWUwYmY0ZGY4ODUxNzI3MmQ4ZGNlM2NhYzk1ZmJkMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMWVhMTVhMGY3YjFkNzc0MWMwOTJkZTgwMmQzOWZkYTQ0MzRlY2YwNWY5NDM1OGM2ZjM2OWNhOTExNmUyMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkNjM0MzRkYjNhZjBmNjAzY2JlOTg3NGFjMmZiNTJhODU4ZTcxYjliOGE2ZjExZjQwYmY0ZWRiN2M3YjVlZjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_30d6371016d04c0793a0b19196994079",
+      "statement": "El comando `linear.py board` compara el espejo contra Linear; `--apply` solo sincroniza estados y `meta.updated`, reporta títulos, altas y bajas para edición manual, y mapea `In Review` a `in_progress`.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/linear-tickets/scripts/linear.py#L510-L638",
+          "version": "repo-lines-v1:sha256:8a7c939159699c60f165718e1bb231c137e3b5895a0fac6b0c94ac541aabfc1a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MThjMmNkMWYyNmJiMmNlYzk5YjU2MDgyMTQ0YTI1NGZhYWE3Nzg5MjI4OGNmOWMxMGM2YWM5NjRmZGFjMzI1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiNmUyNzljZDdiOTYzMzhhMDc2MWQ1NTUzNGQ1YTI5OTE3ZTQ3ODljZWZhYWFjYWNhY2I4ZjRhMTFkYTA2YjNmIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyYWJjNTNjZTMyN2RlMzg5NWJjMjIzMmMwMDhmMzIwZTUxOTQyZDliYmY3YjJjNTFhZWYwZjUwZjA0ZmQ5Mjc0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4MDRkMTlmODZmNjlmNjdjNDNjYjhhOWRjYmNkMDI2NzYwYTAyNzliZGEzZWNhZGM0OTA2OTllZTY4MmJmY2M4In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_eb855041d44441aa81e2f084cbb1a729",
+      "statement": "`npm run test:board` ejecuta validación de datos con `node --test`, mientras que la E2E inicia un servidor HTTP local y usa Playwright para comprobar renderizado, interacción del tablero y contención móvil; ninguna de estas pruebas valida el runtime Expo.",
+      "evidence": [
+        {
+          "resource": "repo://arquitectura-agente/tests/board-data.test.mjs#L1-L223",
+          "version": "repo-lines-v1:sha256:b3d202f5d35fb40a929107e4d8fb2355b54db9f51d85390759842f1fa337ab0d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlYWYyMmNmMDczMjU5MmMyNDcxNDFjYmU2MWVmYTExMDEyNjEyZjVhMzEyMmI5YWY5YmJhZjUyZjU3MjRkMTk0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://arquitectura-agente/tests/board.e2e.mjs#L1-L356",
+          "version": "repo-lines-v1:sha256:dea41e0cb447c3cb6a7561fb09a0f43c3a7eef2a687c7b5aaf59bf4e1db42682:eyJzZWxlY3RlZExpbmVDb3VudCI6MzU2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlYWYyMmNmMDczMjU5MmMyNDcxNDFjYmU2MWVmYTExMDEyNjEyZjVhMzEyMmI5YWY5YmJhZjUyZjU3MjRkMTk0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://package.json#L68-L71",
+          "version": "repo-lines-v1:sha256:82ac82e56c21df453a2d027c58aa390e172c0c97016f8645c7b1f9a7209187d3:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjc0NDRjM2M1MDQ4ODc5YWZlYjNkNWMwMDUyMzhlNDhhNDllN2VmNmUxMmJlMGFkZGRkMjUxNjNkMjAzYmY1MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTlkZGNiNzQzZWFmMTk0NWE3ZjRhZjczNmE3NTE2Njg3M2JhZjUyY2YyNzE4NzZkMzU2ZDA2OTVkZjM5NmE3MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTI4OTJiZDQ2MzNkOWY2NDk5NWU1MDJkY2U2YjdhMzk2N2RmMzZjMzZkY2RhMjE1OGZmN2JiZmU1MWUzYjc3NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTkxMmU2NGU4ODg3MmJlZGNkMTc3MGJkYWQ2M2RiMGI1NDBkZjBkMDExMDJhZjEwZGFlYTAyYzAxN2EwZmU1YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_350f61b0bde34c8181b5a22a58b359c1",
+      "statement": "Vercel sirve `arquitectura-agente/` sin paso de build, con URL limpias y sin barra final; el despliegue documentado es manual mediante la CLI de Vercel.",
+      "evidence": [
+        {
+          "resource": "repo://arquitectura-agente/README.md#L129-L144",
+          "version": "repo-lines-v1:sha256:cf95749f00aa13daa703d65e8a7f9a97b3ace9cd2a1ff04c72ecc47c8ec60031:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NGNlODJjZjZjYjc5OGNlMDU4NzliMjZlMzk3MjJkZjU1NjA2ZmEwNzBmNmRmNjg1NTg5OTk2ZGNjNWQ3YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmMjkzMjljNjYwNWRjOGM1MmRiYzI5M2M0OGMxMDFlNmY0YjU1MzhlNWM0ZTE4YTIyNzZiMTg4MGU1ZGFjMzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5MjFhODA5ZDI4NWQ1OTM0NDIxNDk0OTlmMDY5YTNjMzUzZThkNDk2OGQ2ZTJhNmEzNjNhOGQ5MjE2MmE3YjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/vercel.json#L1-L4",
+          "version": "repo-lines-v1:sha256:f91c66a44fb4186c4d6be9ae89d68c058f5c7abe811b20f60159302b96029c09:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTZmYjA4ZmRhMWFjYjk1N2I2MTE2YmQzNzgxMWExZmU0MWEwMTYxMWMwNjMxZWRiZjc4NmQ2ODg5YTI3YTU1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-07T11:37:28.236Z"
+  }
+}
