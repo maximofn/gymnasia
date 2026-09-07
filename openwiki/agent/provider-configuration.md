@@ -4,22 +4,20 @@ okf:
   kind: code-wiki
   status: grounded
   requirement: RQ-01
-  scope: Canonical AI provider configuration across settings UI, persistence, selection, verification, discovery, and consumers
+  scope: Configuración BYOK, persistencia y verificación de proveedores de IA móviles
 type: concepto
-title: Configuración y transporte de proveedores
-description: Configuración BYOK, persistencia, verificación, descubrimiento de modelos y transporte de OpenAI, Anthropic y Google. Anthropic usa acceso directo en web por defecto; el proxy local es una alternativa opt-in.
-summary: RQ-01-complete lifecycle for OpenAI, Anthropic, and Google configuration, selection, credentials, models, verification, routing, failures, tests, and extensions.
-tags: [agent, configuration, providers, credentials, models, transport]
+title: Configuración BYOK de proveedores
+description: Contrato de configuración, almacenamiento y comprobación de credenciales BYOK de OpenAI, Google y Anthropic en la aplicación móvil. Explica el aislamiento de secretos, las diferencias entre web y nativo y el proxy Anthropic opcional.
+summary: Ciclo de vida de credenciales, modelos, verificación, descubrimiento y transporte por plataforma.
+tags: [agent, configuration, providers, credentials, byok, mobile]
 related:
   - ./runtime.md
   - ./provider-streaming.md
   - ../mobile/local-state-and-backup.md
-  - ../mobile/diet-and-food-estimation.md
   - ../services/anthropic-proxy.md
-  - ../operations/build-release-and-testing.md
 verified:
-  - by: openwiki/0.4.3
-    at: 2026-09-06T10:32:53.606Z
+  - by: openwiki/0.5.0
+    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-88e87a6a49f8c4bba044cff2
     resource: repo://apps/anthropic_proxy/README.md
@@ -33,8 +31,12 @@ sources:
     resource: repo://apps/mobile/agent/providerConfigurationPersistence.test.ts
   - id: openwiki-source-98e300a08b181f278443549a
     resource: repo://apps/mobile/agent/providerConfigurationPersistence.ts
+  - id: openwiki-source-150caf6747c75c64a081007d
+    resource: repo://apps/mobile/agent/providerCredentials.ts
   - id: openwiki-source-0bfe6194a595817dd215a286
     resource: repo://apps/mobile/agent/providerTransport.contract.test.ts
+  - id: openwiki-source-c5c28138a849ad0b9daed017
+    resource: repo://apps/mobile/agent/providerTransport.test.ts
   - id: openwiki-source-cc29928f3ae5e1998f27d57a
     resource: repo://apps/mobile/agent/providerTransport.ts
   - id: openwiki-source-e5f74ffc1b3b8c00fd4c6086
@@ -43,36 +45,44 @@ sources:
     resource: repo://apps/mobile/agent/providerVerification.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.4.3", at: "2026-09-06T10:32:53.606Z" }
+  - id: openwiki-source-7a047b00a95eb325eb147887
+    resource: repo://apps/mobile/environment.ts
+generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
 ---
 
-# Configuración y transporte de proveedores
+# Configuración BYOK de proveedores
 
-La aplicación móvil configura credenciales aportadas por la persona usuaria (BYOK) para `openai`, `anthropic` y `google`. Esta página describe el límite entre la configuración guardada, los borradores de Ajustes y las solicitudes de red. El streaming y los bucles de herramientas se detallan en [Streaming de proveedores](./provider-streaming.md); la ejecución de herramientas, en [Entorno de ejecución del agente](./runtime.md).
+La aplicación móvil admite credenciales aportadas por la persona usuaria (**BYOK**) para `openai`, `anthropic` y `google`. No incorpora una clave real de desarrollo ni necesita un backend propio para operar: OpenAI y Google se llaman directamente y Anthropic también se llama directamente de forma predeterminada. Las claves no se incluyen en las copias de seguridad ni en el agregado general de estado. La configuración de proveedores es una partición de persistencia separada y la única excepción de transporte es un proxy Anthropic **opt-in** para web.
 
-> **Anthropic en web es directo por defecto.** La aplicación añade la cabecera `anthropic-dangerous-direct-browser-access`, con la que Anthropic habilita CORS. El proxy local no es un requisito del navegador ni un backend de producto: únicamente se elige si se configura expresamente `EXPO_PUBLIC_API_BASE_URL`.
+Esta página cubre el contrato de configuración hasta la solicitud de proveedor. El streaming, los formatos de mensajes y las continuaciones de herramientas se describen en [Streaming de proveedores](./provider-streaming.md); el uso de las credenciales por el chat y las herramientas locales, en [Entorno de ejecución del agente](./runtime.md).
 
-## Modelo canónico y normalización
+## Modelo canónico, borradores e invariantes
 
-`ProviderConfiguration` reúne `provider`, `is_active`, `api_key`, `model`, `workspace_id?` y `reasoning_effort?`; `ProviderDraft` contiene los campos editables sin el indicador activo. `PROVIDERS` fija el orden canónico: OpenAI, Anthropic y Google. La normalización siempre devuelve una entrada por cada uno y conserva exactamente un `is_active`: si faltan activos elige OpenAI y, si hay varios, conserva el primero en ese orden.
+`ProviderConfiguration` contiene `provider`, `is_active`, `api_key`, `model`, `workspace_id?` y `reasoning_effort?`; `ProviderDraft` omite la selección activa para que la interfaz pueda editar sin publicar cambios. `PROVIDERS` establece el orden canónico `openai`, `anthropic`, `google`. `normalizeProviderConfigurations` siempre produce esos tres registros y exactamente uno activo: conserva el primero activo en ese orden o activa OpenAI si no había ninguno.
 
-Los valores iniciales son `gpt-5.6-luna`, `claude-sonnet-5` y `gemini-3.8-flash`. Las claves y el Workspace ID se recortan. Un modelo vacío recibe el valor predeterminado; los modelos personalizados no vacíos se conservan. La migración reemplaza el antiguo valor OpenAI `gpt-4o-mini` y los valores Google retirados (`gemini-1.5-flash`, `gemini-3-flash-preview`, `gemini-3.6-flash`) por los predeterminados actuales.
+Los modelos iniciales son `gpt-5.6-luna`, `claude-sonnet-5` y `gemini-3.8-flash`. La normalización recorta claves, Workspace ID y modelos; un modelo vacío usa el valor inicial y uno personalizado no vacío se conserva. Como migración, sustituye `gpt-4o-mini` y los valores Google retirados `gemini-1.5-flash`, `gemini-3-flash-preview` y `gemini-3.6-flash`.
 
-Para Anthropic, `workspace_id` solo se conserva para ese proveedor. Al guardar desde la interfaz, un Workspace ID no vacío debe empezar por `wrkspc_`; los errores que indiquen que Anthropic lo exige se traducen a una instrucción para completar ese campo. La clave nunca forma parte de una URL: OpenAI usa `Authorization: Bearer`, Anthropic `x-api-key` y Google `x-goog-api-key`.
+`workspace_id` solo tiene significado para Anthropic y `reasoning_effort` solo para OpenAI. Antes de guardar desde la interfaz, un Workspace ID Anthropic no vacío debe comenzar por `wrkspc_`; los errores de Anthropic que indican que falta se traducen a una instrucción accionable. Las claves se mandan en cabeceras directas —`Authorization: Bearer`, `x-api-key` y `x-goog-api-key`—, no en URL.
 
-### Esfuerzo de razonamiento de OpenAI
+### Razonamiento según el modelo
 
-La política de `getSupportedOpenAIReasoningEfforts` depende del prefijo del modelo. `gpt-5.4-pro` admite `medium`, `high`, `xhigh`; `gpt-5-pro`, solo `high`; las familias 5.4, 5.3 y 5.2 admiten desde `none` hasta `xhigh`; 5.1 excluye `xhigh`; otros `gpt-5` admiten `minimal` a `high`; y los modelos `o...` admiten `low` a `high`. Los demás no reciben esfuerzo (`null`).
+OpenAI admite esfuerzos distintos según el prefijo del modelo: `gpt-5.4-pro` admite `medium`, `high`, `xhigh`; `gpt-5-pro`, solo `high`; las familias 5.4, 5.3 y 5.2 admiten `none` a `xhigh`; 5.1 no admite `xhigh`; otros `gpt-5` admiten `minimal` a `high`; y los modelos `o...`, `low` a `high`. Los demás devuelven `null`. Si el valor guardado ya no es compatible al cambiar el modelo, se reemplaza por `medium` cuando se admite o por la primera alternativa.
 
-`normalizeOpenAIReasoningEffort` conserva una elección compatible, o usa `medium` si se admite, o la primera alternativa. Por ello, cambiar el modelo puede reajustar un esfuerzo incompatible antes de persistirlo. La configuración de razonamiento de Anthropic depende de la generación del modelo y se construye en el transporte, no en el formulario.
+El razonamiento Anthropic se decide al construir el transporte, no en el formulario: los modelos de las familias heredadas Claude 3 y 4.5 reciben `thinking: {type: "enabled", budget_tokens}`, mientras que los demás —también un modelo desconocido— reciben `thinking: {type: "adaptive", display: "summarized"}`. Esta elección deliberadamente favorece el protocolo moderno para no exigir una actualización de la aplicación por cada modelo nuevo.
 
-## Persistencia y ciclo de vida
+## Persistencia, secretos y recuperación
 
-El estado de la aplicación conserva las configuraciones hidratadas para los consumidores, pero el `ProviderConfigurationRepository` es la autoridad duradera. Guarda snapshots versionados en un diario con `committed` y `pending`; todas las entradas pasan por la normalización. En web, el diario completo —incluidas las credenciales— vive en su clave dedicada de AsyncStorage. En nativo, el diario canónico vive en SecureStore y AsyncStorage recibe un espejo con todas las `api_key` vacías.
+`ProviderConfigurationRepository` es la autoridad durable. Cada snapshot normalizado tiene revisión y se almacena en un diario de esquema 1 con `committed` y `pending`. El repositorio serializa sus operaciones: escribe el candidato pendiente, comprueba que la operación continúa vigente y lo convierte en commit final. Si una escritura falla o el candidato queda obsoleto, intenta restaurar el commit anterior. Durante la hidratación, un `pending` superviviente jamás se promociona por inferencia; se recupera `committed`, y un diario con solo `pending` se descarta y migra desde los valores heredados.
 
-La escritura es una secuencia de dos fases: escribe un candidato `pending`, comprueba que la operación sigue vigente y lo promueve a `committed`. El repositorio serializa operaciones concurrentes. Si falla una escritura o el candidato queda obsoleto, intenta restaurar el último commit. Al arrancar, un `pending` nunca se promueve por intuición: se restaura `committed`; un diario con solo `pending` se descarta y se inicia desde el estado heredado. Esto evita publicar una rotación parcial de credenciales.
+| Plataforma | Diario de proveedores | Consecuencia para secretos |
+|---|---|---|
+| Web | AsyncStorage, en la clave dedicada del repositorio | El diario contiene las credenciales; la interfaz advierte de la menor protección disponible en navegador. |
+| iOS/Android con SecureStore | SecureStore es el diario canónico; AsyncStorage recibe un espejo saneado | El espejo y el `LocalStore` tienen `api_key: ""`; las claves solo están en SecureStore. |
+| Nativo sin SecureStore disponible | No se crea repositorio | La sesión puede usar la última configuración legible, pero no se permite guardar una nueva y la anterior permanece activa. |
 
-Durante la hidratación, la aplicación combina el agregado histórico con las claves individuales seguras, crea o lee el repositorio y deriva `chatProvider` del elemento activo confirmado. Si SecureStore no está disponible en nativo, no se crea repositorio: se puede usar la configuración legible de esa sesión, pero un nuevo guardado falla y la configuración anterior sigue activa. Las exportaciones e importaciones eliminan las claves: al importar se conservan las credenciales y el Workspace ID actualmente guardados en vez de aceptar secretos del archivo.
+El agregado general se serializa mediante `stripProviderApiKeys`, por lo que nunca se convierte en otra fuente de secretos, ni siquiera en web. La hidratación combina el agregado histórico saneado con secretos heredados, crea o recupera el repositorio, y deriva `chatProvider` del elemento activo confirmado. Tras migrar correctamente al diario actual, se eliminan las claves individuales heredadas.
+
+Las copias de seguridad excluyen las claves BYOK. Durante una importación se sanean los proveedores del archivo y se conservan la `api_key` y el `workspace_id` Anthropic existentes del dispositivo; por tanto, restaurar un backup no puede inyectar ni sustituir credenciales. Véase [Estado local y copia de seguridad](../mobile/local-state-and-backup.md) para el alcance completo de exportación e importación.
 
 ```mermaid
 stateDiagram-v2
@@ -88,55 +98,65 @@ stateDiagram-v2
     Confirmado --> Borrador: editar
 ```
 
-*El candidato no se publica para los consumidores hasta que el commit termina; una clave vacía elimina la configuración sin hacer una llamada de verificación.*
+*El candidato solo se publica a los consumidores después del commit; borrar una clave no hace una llamada de verificación.*
 
-La IU mantiene revisiones independientes de borrador, guardado y descubrimiento. Editar aumenta la revisión de borrador e invalida las respuestas anteriores; comenzar un guardado o descubrimiento crea un token que incluye esas revisiones. Las respuestas que ya no coinciden no actualizan estado ni persisten datos. El estado visual de conexión es efímero: una clave hidratada aparece como pendiente de comprobación, no como conectada, y no bloquea las solicitudes posteriores.
+## Guardado, selección y respuestas obsoletas
 
-## Guardar, seleccionar y usar una configuración
+Guardar una clave no vacía normaliza el borrador, comprueba la conexión y solo persiste si la comprobación tiene `ok: true`. Un rechazo deja intacto el registro confirmado y conserva el borrador para corregirlo. Una clave vacía persiste la eliminación sin red. Guardar un candidato con clave lo activa; una eliminación no lo activa. La confirmación de borrado enmascara la clave **persistida**, no el texto temporal que pudiera haber en el borrador.
 
-Al guardar una clave no vacía, la aplicación normaliza el borrador, verifica la conexión y solo entonces confirma el candidato. Un resultado de verificación con `ok: false` conserva el registro confirmado y el borrador para corregirlo. Una clave vacía omite la red y confirma la eliminación. La eliminación desde el diálogo toma y enmascara la clave **persistida**, no el contenido temporal del borrador.
+La selección explícita de proveedor también se persiste en el repositorio antes de actualizar `store.keys` y `chatProvider`. Así, un error de almacenamiento no cambia silenciosamente el proveedor que usa el chat.
 
-Un candidato con clave se confirma como activo; al guardar una eliminación no se activa. `applyProviderCandidate` vuelve a imponer el único activo, y solo después del commit la interfaz actualiza `store.keys` y `chatProvider`. Por tanto, un error de almacenamiento no cambia silenciosamente el proveedor usado por el chat.
-
-Las superficies que eligen por prioridad omiten las claves vacías y normalizan el modelo antes de llamar a un proveedor. `resolveFoodEstimatorProvider` usa la prioridad Google → OpenAI → Anthropic. El modo de proveedor falso crea credenciales y resultados de fixture locales, y las superficies de conversación cortocircuitan antes de cualquier red; no incorpora una clave real de desarrollo.
+La interfaz mantiene revisiones independientes de borrador, guardado y descubrimiento. Editar un borrador incrementa su revisión y hace inválidos los resultados pendientes; iniciar otra operación emite un token con las revisiones pertinentes y la revisión global de configuración. Una respuesta que ya no coincide con el token no actualiza interfaz ni persistencia. Una clave hidratada aparece como «pendiente de comprobar» en esa sesión: el indicador visual no es una promesa de conectividad y no impide que los consumidores la utilicen.
 
 ## Verificación y catálogo de modelos
 
-`verifyProviderConfiguration` tiene un timeout de 15 segundos a través de `fetchProviderConfiguration`; un timeout se convierte en un error legible. Sin clave devuelve una advertencia sin red. En modo fixture devuelve éxito sin llamar a `fetch`.
+`verifyProviderConfiguration` usa `fetchProviderConfiguration`, que aborta a los 15 segundos y traduce el abort a un error legible. Sin clave devuelve una advertencia sin tocar la red. En modo fixture devuelve éxito local y tampoco hace red.
 
-| Proveedor | Verificación directa | Resultado relevante |
+| Proveedor | Solicitud de verificación directa | Semántica |
 |---|---|---|
-| OpenAI | `GET https://api.openai.com/v1/models` | Cualquier 2xx confirma la conexión. |
-| Anthropic | `POST https://api.anthropic.com/v1/messages` con `max_tokens: 1` | Un 404 confirma la clave pero advierte que el modelo no está disponible; otros no-2xx son errores. |
-| Google | `GET https://generativelanguage.googleapis.com/v1beta/models/{model}` | Cualquier 2xx confirma la conexión. |
+| OpenAI | `GET https://api.openai.com/v1/models` | Cualquier respuesta 2xx confirma la conexión. |
+| Anthropic | `POST https://api.anthropic.com/v1/messages` con `max_tokens: 1` | Un 404 confirma la clave pero advierte que el modelo no está disponible; otro no-2xx rechaza. |
+| Google | `GET https://generativelanguage.googleapis.com/v1beta/models/{model}` | Cualquier respuesta 2xx confirma la conexión. |
 
-Si se ha optado por el proxy de Anthropic, la verificación se envía a `/chat/providers/anthropic/verify` y el proxy recibe `api_key`, `model` y, opcionalmente, `workspace_id` en JSON. Un `{ok:false}` es un error; un mensaje que indique «modelo no disponible» sigue siendo un éxito con advertencia. La advertencia permite guardar la clave, pero no garantiza que las conversaciones con ese modelo funcionen.
+Si se ha seleccionado proxy, Anthropic verifica contra `/chat/providers/anthropic/verify`, enviando `api_key`, `model` y opcionalmente `workspace_id` en JSON al proxy. Un `{ok: false}` es rechazo; «modelo no disponible» permite guardar con advertencia. Esa advertencia valida la clave, no garantiza que el chat funcione con ese modelo.
 
-El desplegable de modelos es una ayuda, no una lista de permitidos: solo se abre con clave de borrador y el campo de modelo sigue siendo editable. OpenAI consulta `/v1/models`; Google consulta `/v1beta/models`, elimina el prefijo `models/`, deduplica, ordena y excluye modelos que declaran métodos de generación pero no `generateContent`.
+El selector es una ayuda y no una lista de permitidos: requiere una clave de borrador para cargar opciones, pero el campo de modelo sigue siendo editable. OpenAI consulta `/v1/models`. Google consulta `/v1beta/models`, elimina `models/`, deduplica y ordena, y solo conserva los modelos que admiten `generateContent` cuando declaran métodos de generación.
 
-El catálogo Anthropic es paginado. Tanto el acceso directo como el proxy usan el lector compartido, que deduplica opciones, pide páginas con `limit=100` y detiene un recorrido en 20 páginas. Si falla la primera página, el descubrimiento falla; si falla una posterior, entrega lo reunido marcado como parcial. Un cursor ausente o repetido, una página sin modelos nuevos o el límite de páginas marca el catálogo como truncado. La interfaz muestra la advertencia para que una lista incompleta no parezca exhaustiva.
+Anthropic comparte un recolector paginado en acceso directo y proxy. Solicita `limit=100`, deduplica IDs y se detiene como máximo a las 20 páginas. Si falla la primera página, falla el descubrimiento; si falla una posterior, devuelve lo ya obtenido marcado como parcial. Un cursor ausente o repetido, una página que no aporta modelos o alcanzar el máximo marca el catálogo como truncado. La interfaz muestra la advertencia para que un catálogo incompleto no parezca exhaustivo.
 
-## Transporte de Anthropic: directo primero, proxy opt-in
+## Transporte y diferencias de plataforma
 
-`resolveWebApiBaseUrl` toma `EXPO_PUBLIC_API_BASE_URL`, lo recorta y elimina barras finales; el valor predeterminado es vacío. `shouldUseAnthropicWebProxy` solo devuelve verdadero en web y con esa base no vacía. En cualquier otro caso —incluido navegador sin base configurada— el transporte de Anthropic va directamente a `https://api.anthropic.com`.
+OpenAI y Google usan acceso directo en web y nativo. Anthropic también usa acceso directo por defecto: en navegador añade `anthropic-dangerous-direct-browser-access: true`, que permite a la página leer la respuesta CORS; nativo no manda esa cabecera. La clave sigue siendo BYOK y reside en el navegador de quien la aportó; quien use esta modalidad debe entender su exposición habitual a las herramientas y al entorno del navegador.
+
+`EXPO_PUBLIC_API_BASE_URL` es la única selección del proxy. `resolveWebApiBaseUrl` recorta el valor y elimina barras finales. `shouldUseAnthropicWebProxy` solo es verdadero cuando la plataforma es web y esa base no está vacía; no hay fallback automático al proxy después de un fallo directo.
 
 ```mermaid
 flowchart TD
     Start["Solicitud Anthropic"] --> Web{"Web con base configurada"}
     Web -->|"sí"| Proxy["Proxy local opcional"]
     Proxy --> Api["Anthropic Messages API"]
-    Web -->|"no"| Directo["API directa con cabecera de acceso web"]
+    Web -->|"no"| Directo["API directa con cabecera web"]
     Directo --> Api
 ```
 
-*La elección del proxy depende exclusivamente de una base configurada; no es una alternativa automática tras un fallo directo.*
+*El proxy solo entra por configuración explícita en web, no como backend requerido por la aplicación.*
 
-Las solicitudes directas Anthropic incluyen `x-api-key`, `anthropic-version`, el Workspace ID si existe y, en web, `anthropic-dangerous-direct-browser-access: true`. La cabecera permite que el navegador lea la respuesta CORS. Las solicitudes nativas no envían esa cabecera. OpenAI y Google usan acceso directo en ambas plataformas.
+Con base configurada, las operaciones Anthropic de modelos, verificación y mensajes usan `/chat/providers/anthropic/models`, `/verify` y `/messages`. El proxy recibe la clave en JSON y la convierte en `x-api-key` para el upstream en lugar de reenviarla en el cuerpo. Es un servicio local de desarrollo, no un backend de producto; tiene límites de confianza y operación propios, descritos en [Proxy CORS de Anthropic para navegador](../services/anthropic-proxy.md).
 
-Cuando se ha configurado una base, las operaciones Anthropic de modelos, verificación y mensajes van a las rutas `/chat/providers/anthropic/models`, `/verify` y `/messages` del proxy. El proxy de `apps/anthropic_proxy` es deliberadamente local y de desarrollo: rechaza arrancar fuera de una dirección local y rechaza clientes remotos. Convierte las credenciales recibidas en el cuerpo a las cabeceras upstream, no las reenvía en el cuerpo, y aplica 15 segundos a modelos/verificación y 120 segundos a mensajes. Consulte [Proxy de Anthropic](../services/anthropic-proxy.md) para su contrato y restricciones operativas.
+## Consumidores, modo fixture y cambios seguros
 
-## Pruebas y cambios seguros
+Los resolutores de las superficies omiten configuraciones sin clave y normalizan el modelo antes de llamar al proveedor. El estimador de alimentos usa prioridad Google → OpenAI → Anthropic. El modo `fake` solo puede elegirse para `APP_ENV=development` mediante `DEV_PROVIDER_MODE`; sin valor, desarrollo usa `fake`, mientras staging y producción usan BYOK. Las superficies de conversación cortocircuitan antes de la red, generan resultados deterministas locales y no incorporan una clave real de desarrollo.
 
-Las pruebas unitarias de configuración verifican la normalización de modelos antiguos, el único proveedor activo, la compatibilidad de razonamiento y la invalidación de tokens de guardado y descubrimiento, incluidas propiedades con `fast-check`. Las pruebas del repositorio cubren diario web y nativo, espejo nativo sin secretos, rollback de la escritura final, descartado de `pending` y actualizaciones concurrentes. Las de verificación cubren cabeceras sin claves en URL, 401, el 404 advertido de Anthropic, el contrato opcional del proxy, timeout y modo fixture. El contrato de transporte además exige que las superficies de conversación no alcancen la red en modo falso y que Google nunca coloque la clave en la URL.
+Al añadir un proveedor o alterar este contrato, cambie de forma coordinada:
 
-Al añadir un proveedor o modificar su configuración, cambie de forma conjunta el tipo `Provider`, `PROVIDERS`, valores predeterminados y normalizadores, el repositorio y su saneamiento, las rutas de descubrimiento/verificación y los resolutores de consumidores. Decida explícitamente si puede usarse acceso directo web y, si se añade un intermediario, documente su límite de confianza. Amplíe las pruebas de normalización, persistencia, concurrencia, verificación, catálogo y ambas rutas de plataforma; no convierta el proxy Anthropic en una dependencia por defecto.
+1. La unión `Provider`, `PROVIDERS`, valores iniciales y normalizadores, incluido el único activo.
+2. El repositorio, saneamiento del agregado y reglas de migración/importación para que los secretos sigan fuera de backups.
+3. Verificación, descubrimiento y consumidores con su autenticación fuera de URL.
+4. La decisión explícita de acceso directo web o intermediario y el límite de confianza del intermediario.
+5. Pruebas de normalización, tokens obsoletos, diario y rollback, verificación, catálogos y rutas web/nativa.
+
+Las pruebas focalizadas son `providerConfiguration.test.ts`, `providerConfigurationPersistence.test.ts`, `providerCredentials.test.ts`, `providerVerification.test.ts`, `providerTransport.test.ts` y `providerTransport.contract.test.ts`. Desde la raíz:
+
+```bash
+npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/providerConfiguration.test.ts apps/mobile/agent/providerConfigurationPersistence.test.ts apps/mobile/agent/providerCredentials.test.ts apps/mobile/agent/providerVerification.test.ts apps/mobile/agent/providerTransport.test.ts apps/mobile/agent/providerTransport.contract.test.ts
+```

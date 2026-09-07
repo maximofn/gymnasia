@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:63b921903daabfcf22c5a8260e90004a243288392dbeb373c795658d7cddf4fa",
+  "pageVersion": "sha256:d0c5b4517786cec19af844a16667c44d4e52ff4689a56279f662c21fdcba1d71",
   "claims": [
     {
       "id": "claim_bc663f1e35e24138a802a690498f6187",
@@ -245,10 +245,86 @@
           "version": "repo-lines-v1:sha256:07c6245bcc5f150b54461eb95337c94ac51b8b7c93d71f8e3e343a39bb0dd015:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjZTIzY2FkZGY3Yjg3MWIxOWNhMTc4MDlkZTYzOGZkMjYxYzNlODI1OWYxZTBmYmE0OTQ3ZDI0MmU4ZWU1NWU2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwM2EzY2UxMjU4NDQ3NmEyOTE5MTQzZThhMzg3YTc0YmY0YzA1NzNjYmNlMzMxMzRmNGU5MjAwMDA1ZTczYzc1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIn0"
         }
       ]
+    },
+    {
+      "id": "claim_25b35b5ee9ce4cc6a50a77b156bb3f07",
+      "statement": "En `sendMessage`, los datos personales locales no se leen al construir el prompt: el mensaje de sistema usa exclusivamente `systemPromptSelection.content`, mientras que la memoria se expone mediante tools específicas y su saneador conserva claves literales para las lecturas por igualdad exacta.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9299-L9323",
+          "version": "repo-lines-v1:sha256:bea5548943b9a4d11f16bee6bd52b289f610a89039b7a58973d9fff59d5ffc37:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1NDk1MzM0ZjExYjk2YWRiYWYxYzU1ZTMxZGRjYmNiZGE3ZDUyMTMxNDBlYTJkNjQ4YjFmZTNhMDc4MzIyYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5NmRlOGE2M2NjNWRjYjQxZWFlZTQ0MzI1ZDNjOTkxMzU0YzdiYWQ0N2RiZDU1NjczYjVkZTNjNGM3ZWE4ZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1OTBhMzM4NTUzNjMxMmYyNmE5MTdkMDQyMWJlODIxZmI5YTU0MzIzOTcxNTI1NzVhOWRkNTliOWZkOWU3NWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMmI1Yzk5NWRlZDIwZTMwMGZjYWQ1NTMxODkwMTViOGU0OGY2OGUyNTA2M2IzOTcxYTBhMTY3NzlkYjBmNTMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/personalData.contract.test.ts#L18-L44",
+          "version": "repo-lines-v1:sha256:6900fa63cedfa7e709467df893afb3e0299bd9c3ec32a501d2f6864bb4c46e30:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1NzIzNmRiZjAyYTkyMTFlZGIyYmJhMjZmZjY5ZTViNDFkNmY1MTkyNjk5MGU2YmZiN2NhN2YyN2ZkNjgzZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyMDhiNzZjYTIzMjFhYWMwZTgzNDc1ZmE4OWMwNTYxMzdmZWJjMWVhZTU4NDg0ZTQyNTg5NTMzYzVjMThiODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBiNDVkYzNjMmU2ODJjMmM2MDI4ZTYwN2ZlMmFjNTcyNTc1ZDI0YmM0OTgyN2M4MDJiYjFjNDk3MGQ2MjIyNTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/personalData.ts#L34-L63",
+          "version": "repo-lines-v1:sha256:66eb11dd933e4e8ed63b64040536256062e8f29671d99bf58b7d0a9f4d2d59a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5ZjFiZmNiZGUyMzdhMTIxNDEyMDUyNDRhOWNhNDAzM2I4OGVkYzAwNTlmNmQ1YzAzM2U0MTcxMmRhYTEyMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwMGU2NTY0ZmUxZjE1NjUzODQ2MmNiM2U0ZDhhNGM1MDFhZjAyNDBiMGY4MzU5OWMzM2Q3ZjU3ZGMzYzBjYzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_41d96f8f94854bb5a0947eec3af96eab",
+      "statement": "El ejecutor detallado convierte excepciones de manejadores en resultados controlados y solo clasifica una operación como `committed` cuando el manejador marca explícitamente el efecto después de su persistencia; las validaciones y fallos antes de ese punto permanecen reintentables.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.test.ts#L258-L270",
+          "version": "repo-lines-v1:sha256:0cd381a476d1d0b28781e89c12f33c22776579535a9008567691656807753afc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3ODY0NGY5MTI5NjVmZTQ1MzUxZTZjZTEzMzMxNmU2MjRiYmIxNzE5MmYxZjIyMDAwMjYwMDgyNjk1MWIwYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2ZDM5MjQzNjdhMzUxYjU5OGU5NmJiZTZkOGE5NDljYzE2NGZkNmU3NDFiOGI4NDkzZTkzY2EwOWJiZGU5OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmZWIwZmY5ZWEyZmZjYWZhNzkzN2U0NDg3MGFlMjU4NmI5ZTkzYzk4MThlMmFlMDZjZmEwZDZmODYyZWZiMjcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L250-L281",
+          "version": "repo-lines-v1:sha256:11929c2b34a78006d53228d420cc032ad565481210ffa08a3b794e629dfbb0c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlMWI3YjI5NDk5N2U5NzdlMDEyMzJmNjgwODQzMTI3ZDAxZjJlMDJkMTEwYmY5ODk1ZWI4ZDQzNTY4MzI4MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1MzU4ZTMwOGQ5NmYwYTNlMGI2ZjdiNWY3NzhmZGNkZGY4Y2U4N2VlZWQ2NTRmZjgxOWE4MjdkMzRiNDBjYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiZjE1NDIzMjYyZjc1OGFlZDRiNzE3ZDY4MmNjZTg5ZTQyMDQ2ODY2MmUyMzRhOTg4NWRjZTRmMTQ0ZmQwMTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlYjY1M2EyYzA1OWExZGZlODAxNGMwOWViZmVlNjY3NTA2NmNjOTJiZWQyZGI0YzdiZjllMjg5M2ExODdiZGMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L759-L806",
+          "version": "repo-lines-v1:sha256:54ac6c79bcd999d45772c82055ca33ce2901663b01a610a96308f87fcb0fb558:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlMmI1NzVjZGJiNTdkMzM2ODQzYjU1M2YwZTRjM2E3NDNiNTY3MWU3NTkzZmMzMDIwNGM2YTRjZTgyOGU3N2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkMmY0MjUzZDNlYTdlOTBiMzE5NjZiMjlmY2JmNzA5Y2YwMzQxYmNlNmZlMDY2YTE5NjdiYWJjNTBkZjhlYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.test.ts#L136-L152",
+          "version": "repo-lines-v1:sha256:5f48dfcd616bfaf9a0f9d8a41f858cf01d1dfda015be8490062613fb816e95be:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5MzA4YzQ0MGViMDQxYTI0MjRmMzgyOGNlODQ5OGI2MmQ0OWE3MTE2OTU1N2I2ZTA1ZWYxYzQ5MzA1YWMzN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2OTQ1NDRlNzJjZTFmNTA3MTBkZGUzNDEzNjgxNWNjYTFhODc5ZGNmNjZmNTc1MTZmZTcxZmI4NWE5Y2U2MjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4ZDc3MzQyNjdjZDQ5YzMxMzNlZWFhMDk5M2MyNGM3M2FmZWUxNWQ0ODQyNmY2NDI0YzBmNmM5MWE3MDYxZDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7f91ca6bdfdf4b3589c60f98aa2a9178",
+      "statement": "El guard de herramientas clasifica la entrada original y los argumentos serializados; bloquea nombres desconocidos y aplica el modo sanitario por efecto, permitiendo solo lecturas ante riesgo elevado y ninguna herramienta ante riesgo alto o crítico.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L2988-L3058",
+          "version": "repo-lines-v1:sha256:03db2375e4f78cfaad5eab3a2526fda14f58ab626436fcf86230e68aac313ede:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmZjI4OWI5Yjg0ZjdjNmMxNzQ5OWY1ODhiYjkxMmYzNjg5ODdiOWQxYjgwMGUxYjM5YTNkY2JkZjJiZWUxZTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwMzA3MGRkNjVkMGUyZWFhYTdjMjRiM2FkYzQ0ZjBiODY3MjI3MmJjMTI0Y2ZiMTVlNTVkYjMwMWFlNTg0N2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0YmU2ZWJiYThkNGQxNzY5NDlkODBjNDk4MGRkMzE2OTgwYTlkNjQ4NjJhNTAyMjE3MGVhMGJiN2U3OGQ4YTcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.ts#L155-L175",
+          "version": "repo-lines-v1:sha256:42d466e172671f1424152c29541690544aec77c7c0a967ca2286037919d89a8a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlODdmZjY3OGVkMjE4MmU2Zjk4NDIxNjIyOGM1NTAxYWIxZDM5ODZhMGIzYzMxNDVlNWZkYWMyNDRlNjIxZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2NTRhMDM5ODc1Y2RiMjg4NmZkZGIxYmVkOWVkNDQwOGY2NzA1OGYyYWQ3OTQ0OWEyYTMyMmM3MTA2MzY4ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzY2Y5N2VlZTQ1ZTAzZDZkOWJkMGJlZTg1ZTg5ZjA0ODUzZWRkMzBjYTVlYjAwMDVmNDQxMjg5ZTU4MTYxYjQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolDefinitions.ts#L47-L67",
+          "version": "repo-lines-v1:sha256:f60c7d12e95d9acca9f54ca800eaa5f685e2bae4e80555a834f008172b5123a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5NDZkMjQ5NDQ1MDBkMThmYWJmNmMzNmU5Njk1ZjQ0OWUxMDk2MDBjYjQyYjk5NzgwMTJmMzBhZTViMWZmYjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmYzAzZjkyMGEyZTc3ZGYyOTViNzExMTdmZjlmOTBlOGEwN2NkNTk4MWM5ZDRlOGY5MjFjMzgxNDk2NWI3ZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjZmYxMTlmMzQ5ZDRjNTlkMDU3MTljMzFmYmZlNDc0YjQ3YzM2NDMzNDZkYjhiZjZhNGI2ODU4OThjZWIwZjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c52a26718294508a48da69d1146eee0",
+      "statement": "El cliente de feedback aplica un timeout de 15 segundos y considera malformada una respuesta 2xx sin referencia verificable, por lo que el manejador `create_feature_issue` solo confirma el efecto cuando el resultado es `created`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/feedbackClient.ts#L24-L76",
+          "version": "repo-lines-v1:sha256:3f3f543e1ee0892ef7914dc0891007b01ddb7b02805b80100a91ea44d207407d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmNTdiN2RiZjZjYzc0MjU4NjQ3Nzg3ODhkMTcyODAxZmQwN2EyYTkwMTIxMDZmOTkwNDhkM2U3ZTJkZjBkNzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/feedbackClient.ts#L80-L115",
+          "version": "repo-lines-v1:sha256:57475ad8679ae6d8e0ed8c04927ea14c1c569b9792ac20702a08f719fa7056f5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzN2EyMWZkYTRhNjNlODBiOWJkMjhmNTczMDk0MTFmOTdmMjFiZGU5N2FlZWVkNjJlN2NiMTA4N2Q0OGZjNDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVjMzVlNWU5YjllYTMwNjg0NTY5ZDI0NWUyMTU4NDA0YTJlZDZhMGJlMDYzMzM2MjI5Mjk1YTU0MDkxZmM1NmYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L729-L738",
+          "version": "repo-lines-v1:sha256:9e17f99a7cb94a9a2541a797f5874199d49ce925b93d8382c45e95dc55949b3c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1NDU1Yzk1ZjlhZTM4ZmRiNDdmNTM0OGY2ZjE4M2I4YjRlMjdiZTA5MzI5YjdhYmJkODNjZTBlNjk4YzE4MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViYjVlYzRiMjYwYTY3YjRkM2JlYjc3NTg1NTNjY2MyNzJlYmFiOWM3Y2QxZGE1NDc0MTFiMWE1ZjEzYTk2NzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmMjYyMzhhMjA5MTViNmQ5ZTk4NDViZGMxNjk2NzUyMWM2OWU5YzhmYjQ5OTlmZDQ0ZGViNzRjN2NjNmU1NDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmZmM4NzM5NzE2NTZiZDA0Yzk4NWM5ZDk2MDA4NjMzN2Y1YWZhMzgzOGE4NzkyOTIyYTM4ZmRkOWU4YzkwNTQifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.4.3",
-    "at": "2026-09-06T10:32:53.606Z"
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-07T11:37:28.236Z"
   }
 }

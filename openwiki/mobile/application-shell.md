@@ -1,227 +1,152 @@
 ---
-type: concepto
-title: Shell de aplicaciones móviles y web
-description: Composición en tiempo de ejecución, navegación adaptativa, puerta de hidratación, derivaciones de Inicio, enrutamiento de configuración, comportamiento del botón Atrás de Android y validación del shell para apps/mobile.
-tags: [mobile, web, application-shell, navigation, hydration]
+type: arquitectura de shell móvil
+title: Shell de aplicación, plataformas y navegación
+description: El shell Expo de Gymnasia arranca App.tsx, hidrata almacenamiento local con recuperación explícita y presenta la navegación React Native/Web adaptada a cada plataforma. También describe la configuración por variante y el comportamiento observable de avisos de descanso, permisos y degradaciones.
+tags: [mobile, application-shell, expo, navigation, hydration, react-native]
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-07T11:37:28.236Z
+sources:
+  - id: openwiki-source-a6ba9053969a3e00cd971742
+    resource: repo://apps/mobile/app.config.ts
+  - id: openwiki-source-3de323c9f3752d72d82de839
+    resource: repo://apps/mobile/app.json
+  - id: openwiki-source-929e8e1df23628a3f3848ff8
+    resource: repo://apps/mobile/App.tsx
+  - id: openwiki-source-7a047b00a95eb325eb147887
+    resource: repo://apps/mobile/environment.ts
+  - id: openwiki-source-12bdb95b5f863aab1ff9964a
+    resource: repo://apps/mobile/index.js
+  - id: openwiki-source-d84b62e4a597047843fbd320
+    resource: repo://apps/mobile/LocalStoreRecoveryScreen.tsx
+  - id: openwiki-source-1d477406340582311e84da48
+    resource: repo://apps/mobile/runtimeEnvironment.ts
+  - id: openwiki-source-566414ee4d2c02f464360b14
+    resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
+generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
 ---
 
-# Shell de aplicaciones móviles y web
+# Shell de aplicación, plataformas y navegación
 
-El shell de la aplicación se implementa directamente en `apps/mobile/App.tsx::App`. No es un framework de enrutamiento: `App` controla la pestaña de nivel superior seleccionada, el estado de dominio, los indicadores de pantallas anidadas, las superposiciones, la hidratación, los efectos de persistencia y casi toda la renderización de pantallas en un único componente. `apps/mobile/index.js` es el único punto de arranque de JavaScript y llama a `registerRootComponent(App)`.
+`apps/mobile/index.js` registra `App` con `registerRootComponent`. El componente exportado no es un enrutador URL: remonta `GymnasiaApp` al aumentar una generación después de un borrado local, mientras `GymnasiaApp` concentra el estado de navegación, hidratación, integración de dominios y renderizado global. Por tanto, `App.tsx` es la superficie de integración del cliente local-first, no una capa de servicio ni el lugar para definir toda la UI de entrenamiento, dieta, medidas o agente.
 
-Esta página describe el shell compartido y los límites de enrutamiento. El comportamiento de dominio se explica en [Entrenamiento](training.md), [Dieta y estimación de alimentos](diet-and-food-estimation.md), [Mediciones](measurements.md) y [Tiempo de ejecución del agente](../agent/runtime.md); los detalles de persistencia se explican en [Estado local y copia de seguridad](local-state-and-backup.md).
+Los contratos de cada dominio están en [Entrenamiento](training.md), [Dieta y estimación de alimentos](diet-and-food-estimation.md), [Mediciones](measurements.md) y [Estado local y copia de seguridad](local-state-and-backup.md). Esta página explica los límites que deben mantenerse al cambiar su composición.
 
-## Estados del shell y puntos de entrada
+## Arranque, hidratación y elección de shell
 
-El tipo exacto de ruta de nivel superior es:
+Al montar, `GymnasiaApp` parte de `createInitialStore()`, `tab: "home"`, `loading: true` e `isHydrated: false`; inmediatamente ejecuta `runLocalStoreHydration`. Esta rutina inspecciona primero el agregado local y, si es válido o reparable, normaliza el almacén, hidrata la configuración de proveedores y las claves según la plataforma, confirma la representación canónica y luego carga el estado secundario —sesión activa, instantáneas/borradores de sesión, preferencias, salud de alarmas y consentimiento— antes de publicar el estado React.
+
+```mermaid
+flowchart TD
+    Entry["index.js"] --> Root["registerRootComponent App"]
+    Root --> Runtime["App monta GymnasiaApp"]
+    Runtime --> Inspect["Inspeccionar LocalStore"]
+    Inspect --> Damaged{"Almacenamiento recuperable o corrupto"}
+    Damaged -->|"sí"| Recovery["Shell de recuperación"]
+    Damaged -->|"no"| Hydrate["Normalizar e hidratar proveedores y estado secundario"]
+    Hydrate --> Checked{"Arranque completado"}
+    Checked -->|"error no recuperable"| Failure["Pantalla de fallo y reintento"]
+    Checked -->|"sí"| Ready["isHydrated true y loading false"]
+    Ready --> Platform{"Web con ancho de 960 o más"}
+    Platform -->|"sí"| Desktop["DesktopSidebar"]
+    Platform -->|"no"| Compact["Pestañas horizontales"]
+    Desktop --> Domain["Contenido del dominio seleccionado"]
+    Compact --> Domain
+```
+
+*El flujo distingue la recuperación protectora de la hidratación normal y elige únicamente la presentación de navegación después de que el shell sea utilizable.*
+
+La interfaz ordinaria sigue mostrando encabezado y navegación mientras `loading` sustituye el cuerpo por un `ActivityIndicator`. En cambio, las salidas de recuperación y de fallo de arranque sustituyen por completo el shell ordinario. `isHydrated` es la barrera separada para los efectos que escriben el agregado: no se debe retirar sin otra protección contra sobrescribir valores iniciales antes de que termine la lectura.
+
+Tras la hidratación se cargan catálogos y alimentos personales de forma asíncrona; sus fallos se registran en consola y no bloquean el shell. La migración de fotos de medidas también se degrada específicamente en web: si encuentra fotos heredadas, informa que el navegador no puede garantizar su disponibilidad tras cerrarse y recomienda exportar una copia.
+
+## Recuperación antes que sobrescritura
+
+La inspección del almacén puede devolver un resultado `recoverable` o `corrupt`. En ambos casos, `GymnasiaApp` conserva `isHydrated: false`, deja de cargar y monta `LocalStoreRecoveryScreen`; no continúa hacia las pantallas de dominio ni intenta normalizar/escribir encima del payload problemático. La pantalla ofrece:
+
+- **Recuperar última copia**, solo si hay una instantánea verificada; restaura la instantánea y vuelve a ejecutar la hidratación.
+- **Guardar copia dañada**, disponible cuando existe el payload original; advierte que la exportación puede incluir datos de salud, conversaciones y, en web, claves de IA.
+- **Volver a intentarlo**, para volver a inspeccionar después de una reparación externa.
+- **Descartar estos datos y empezar de cero**, detrás de una confirmación. Reinicia el agregado afectado y elimina la sesión y sus instantáneas/borrador dependientes, pero conserva preferencias, memoria personal y configuraciones válidas de proveedores.
+
+Los detalles técnicos de la pantalla muestran rutas y códigos de incidencias, no valores del usuario. Si la hidratación lanza fuera de esas rutas recuperables, se monta `LocalStoreStartupFailureScreen`: comunica que el arranque se detuvo para no guardar encima y solo permite reintentar. Este cambio de shell es una garantía operativa importante: un error de lectura no debe presentarse como una aplicación vacía lista para persistir.
+
+La prueba de navegador `storage-recovery.e2e.mjs` cubre que el JSON roto queda intacto y exportable, que los detalles no filtran un valor privado, que reintento y restauración eliminan la cuarentena solo después de recuperar datos válidos y que el descarte preserva las particiones ajenas al agregado. Consulte [Estado local y copia de seguridad](local-state-and-backup.md) para formatos, cuarentena e invariantes de almacenamiento.
+
+## Navegación controlada por estado
+
+La ruta principal es una unión interna, no una URL ni una pila:
 
 ```ts
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
 ```
 
-`App` comienza con `tab === "home"`, `loading === true`, `isHydrated === false` y un `LocalStore` procedente de `createInitialStore()`. `tabLabel` asigna las claves a `Home`, `Rutinas`, `Dieta`, `Medidas`, `Chat` y `Configuración`. No hay ninguna tabla de rutas URL, pila de navegación ni asignación de enlaces profundos a pantallas en el árbol de React; la navegación consiste en asignar estado mediante `setTab`, además de indicadores anidados como `activeTrainingTemplateId`, `activeTrainingTemplateMode`, `activeWorkoutSession`, `settingsTab` y valores booleanos/objetos de modales.
+Los controles cambian `tab` con `setTab`; las pantallas secundarias se expresan con estado local, por ejemplo la plantilla y modo de entrenamiento activo, una sesión activa, el selector de fecha de dieta, modales y `SettingsTabKey`. La navegación no se restaura como una ruta al reiniciar: una instancia normal comienza en Inicio, excepto la instancia remontada para informar un borrado incompleto, que abre Configuración.
+
+| Pestaña | Papel del shell | Límite de dominio |
+|---|---|---|
+| `home` | Proyecta resúmenes y acciones a partir de entrenamiento, dieta y medidas; no tiene un registro persistente propio. | [Entrenamiento](training.md), [Dieta y estimación de alimentos](diet-and-food-estimation.md), [Mediciones](measurements.md) |
+| `training` | Elige lista, detalle, edición o sesión activa y ajusta el título contextual. | [Entrenamiento](training.md) |
+| `diet` | Aloja la fecha, encabezado contraíble y superposiciones de edición, copia y estimación. | [Dieta y estimación de alimentos](diet-and-food-estimation.md) |
+| `measures` | Aloja filtros de panel, entrada, historial y fotos. | [Mediciones](measurements.md) |
+| `chat` | Mantiene hilo, mensajes, entrada y estados de envío; el proveedor y su política quedan en módulos del agente. | Tiempo de ejecución y configuración del agente |
+| `settings` | Enruta secciones de configuración e integra proveedores, memoria, datos, notificaciones y trazas. | [Estado local y copia de seguridad](local-state-and-backup.md) |
+
+Añadir una pestaña exige actualizar la unión, las dos superficies de navegación, etiquetas, renderizado y pruebas: no hay un registro de rutas único que lo haga automáticamente. Extraer una pantalla de este componente grande debe preservar los `testID`, la barrera de hidratación, la propiedad local del estado y la política de regreso de Android.
+
+### Presentación adaptable, no dos navegadores
+
+`isDesktopWeb` solo es verdadero para `Platform.OS === "web"` y ancho de viewport de al menos 960 píxeles. En ese caso se monta `DesktopSidebar`, de 246 píxeles, con los seis destinos y selectores `desktop-nav-${key}`; el contenido tiene `maxWidth: 1440`. En web estrecha y en **todas** las plataformas nativas se muestra una banda horizontal con los mismos destinos y `nav-tab-${key}`. Cambiar el ancho solo intercambia el control visual, por lo que conserva `tab` y el estado anidado en memoria.
+
+No se debe inferir que una tableta nativa obtiene la barra lateral: el criterio exige web y el manifiesto Expo fija la orientación general en vertical, aunque iOS declara soporte de tabletas. `tabLabel` usa `Gymnasia Coach` para chat; en la banda compacta `mobileTabLabel` lo acorta a `Coach` y Configuración se muestra como icono conservando su etiqueta de accesibilidad.
+
+## Regreso de Android y capas efímeras
+
+En Android, un efecto instala un listener de `BackHandler`. Su prioridad es una política explícita y debe actualizarse al añadir una capa interactiva:
 
 ```mermaid
 flowchart TD
-    Entry["apps/mobile/index.js"] --> Register["registerRootComponent con App"]
-    Register --> Init["App crea el estado inicial"]
-    Init --> Hydrate["hydrate lee y normaliza los registros locales"]
-    Hydrate --> Ready{"loading es false"}
-    Ready -->|"no está listo"| Spinner["ActivityIndicator"]
-    Ready -->|"listo"| Shell["Shell adaptativo de la aplicación"]
-    Shell --> Tabs["Selección de TabKey"]
-    Tabs --> Home["Inicio"]
-    Tabs --> Training["Entrenamiento"]
-    Tabs --> Diet["Dieta"]
-    Tabs --> Measures["Medidas"]
-    Tabs --> Chat["Chat"]
-    Tabs --> Settings["Configuración"]
+    Back["Atrás físico"] --> Overlay{"Modal o desplegable abierto"}
+    Overlay -->|"sí"| Close["Cerrar primera capa coincidente"]
+    Overlay -->|"no"| Template{"Plantilla de entrenamiento abierta"}
+    Template -->|"editor sucio"| Draft["Confirmar descarte del borrador"]
+    Template -->|"editor limpio"| Detail["Volver al detalle"]
+    Template -->|"detalle"| List["Volver a la lista"]
+    Template -->|"no"| Session{"Sesión activa"}
+    Session -->|"sí"| Confirm["Pedir confirmar descarte"]
+    Session -->|"no"| Tab{"Pestaña distinta de Inicio"}
+    Tab -->|"sí"| Home["Ir a Inicio"]
+    Tab -->|"no"| Native["Devolver false a Android"]
 ```
 
-*Figura 1. Arranque, puerta de hidratación y enrutamiento de nivel superior basado en estado en `apps/mobile/index.js` y `apps/mobile/App.tsx::App`.*
+*La política consume Atrás por capas antes de delegar en la actividad nativa desde Inicio.*
 
-El encabezado y los controles de pestañas se renderizan antes de la rama de contenido de `loading`, pero el cuerpo se sustituye por un `ActivityIndicator` centrado hasta que finaliza la hidratación. Los efectos que conservan los registros controlados por el shell están protegidos por separado mediante `isHydrated`; esta distinción evita que se escriban los valores predeterminados iniciales mientras las lecturas están en curso.
+Las capas incluyen, entre otras, conflictos y borrados de entrenamiento, confirmación de borrado de datos, finalización o descarte de sesión, estimación de alimentos, selectores de fecha, formularios, modales de proveedor y desplegables. Se cierra solo la primera coincidencia. Durante un borrado de datos, Atrás queda consumido en vez de abandonar la operación. Una sesión activa nunca se cierra silenciosamente: abre su confirmación de descarte. El listener se vuelve a registrar después de cada render para capturar el estado actual; una superposición nueva no adquiere esta semántica hasta que se incorpora expresamente y con la prioridad visual correcta.
 
-## Navegación adaptativa
+## Notificaciones, alarmas y degradaciones observables
 
-`App` calcula:
+El shell instala un `Notifications.setNotificationHandler` a nivel de módulo. Para una notificación de fin de descanso en primer plano, muestra banner y reproduce sonido salvo que detecte que acaba de sonar la alerta interna equivalente; incluso el duplicado queda en lista y se traza. Al iniciar una sesión, intenta preparar audio y solicitar permiso de notificaciones. En Android crea el canal local `rest_end_alert` con importancia máxima, sonido, vibración y visibilidad pública; los errores se trazan, sin bloquear el entrenamiento.
 
-```ts
-const isDesktopWeb = Platform.OS === "web" && viewportWidth >= 960;
-```
+Mientras un descanso está activo, al pasar la app a segundo plano agenda una notificación de fecha y antes cancela las previamente programadas. El payload conserva `expectedAt`; listeners de recepción y pulsación registran evidencia de entrega y calculan retraso. Si el temporizador termina, la alerta en la app solo se suprime con evidencia de entrega; si no la hay, puede actuar como respaldo dentro de una ventana relevante. Así, la programación es una ayuda local observable, no una garantía de que Android haya despertado o entregado la alarma a tiempo.
 
-En la web, a partir de 960 píxeles CSS, `DesktopSidebar` renderiza una columna de navegación fija de 246 píxeles y el contenedor de contenido se limita a `maxWidth: 1440`. Por debajo de ese umbral, y en plataformas nativas independientemente del ancho, el shell utiliza la franja horizontal de pestañas del encabezado.
+`app.json` declara los permisos Android `FOREGROUND_SERVICE`, `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea `USE_EXACT_ALARM` junto con permisos no requeridos. La preferencia almacenada de notificaciones controla si se agenda, sonido, vibración y sonido seleccionado; no concede permisos del sistema. La pantalla de configuración puede abrir `REQUEST_SCHEDULE_EXACT_ALARM` en Android, por lo que el usuario y el sistema operativo siguen siendo la autoridad para alarmas exactas. Véase [Validación de permisos Android publicables](../operations/android-permissions.md) para la política de entrega y [Entrenamiento](training.md) para la semántica funcional de descansos.
 
-Ambos controles exponen los mismos seis valores de `TabKey` y llaman al mismo establecedor de estado `setTab`:
+## Configuración Expo, variantes y aislamiento
 
-| Superficie | Símbolo/selector de prueba | Comportamiento |
-|---|---|---|
-| Web de escritorio | `DesktopSidebar`; `desktop-nav-${key}` | Icono más `tabLabel(key)`, borde/fondo activo, barra lateral de 246 píxeles |
-| Web móvil/estrecha | asignación en línea en `App`; `nav-tab-${key}` | Seis botones del mismo ancho; configuración solo muestra un icono, pero conserva `accessibilityLabel` |
+`app.config.ts` requiere `APP_ENV` y rechaza valores fuera de `development`, `staging` y `production`. Deriva nombre, application ID, canal de política, espacio de nombres de almacenamiento y modo de proveedor para inyectarlos en `expo.extra`; desarrollo usa `fake` por defecto y admite `DEV_PROVIDER_MODE=byok`, mientras staging y producción son BYOK. También inyecta candidato y SHA-256 de la política integrada y un endpoint de incidencias: desarrollo queda sin endpoint salvo override, staging y producción usan el endpoint HTTPS definido.
 
-Se trata de un cambio de presentación, no de dos enrutadores. Redimensionar la interfaz a uno u otro lado de los 960 píxeles conserva `tab` y todo el estado anidado en memoria porque solo cambia el control de navegación. El manifiesto de la aplicación sigue declarando orientación vertical para plataformas nativas (`apps/mobile/app.json::expo.orientation`), y la actividad generada de Android también tiene `android:screenOrientation="portrait"`.
+En ejecución, `runtimeEnvironment.ts` valida que `Constants.expoConfig.extra` sea coherente, incluyendo versión de configuración, canal, espacio de nombres, modo de proveedor y metadatos de política. Una configuración ausente, híbrida o con metadatos inválidos lanza en vez de elegir valores parciales. Las claves de almacenamiento no productivas se prefijan por espacio de nombres; producción conserva las claves canónicas y excluye prefijos de desarrollo/staging. Esto permite instalar variantes sin que compartan el estado local.
 
-El helper de Playwright `clickNavTab` de `apps/mobile/scripts/train-usability.e2e.mjs` reconoce ambos selectores, lo que constituye el contrato ejecutable más claro para la navegación adaptativa. De forma predeterminada, ese flujo utiliza un viewport de 390 píxeles, pero admite `TRAIN_E2E_VIEWPORT_WIDTH`; los anchos iguales o superiores a 960 reciben un viewport de 900 píxeles de alto y ejercitan el selector de escritorio.
+`app.json` aporta iconos, splash, estilo claro, plugins de SecureStore, AV, fuentes y notificaciones con cinco recursos de sonido; la web usa Metro. Los perfiles EAS asocian development, staging y production con el `APP_ENV` correspondiente, y los perfiles staging/production-apk construyen APK Android cuando se solicita.
 
-## Composición de pantallas
+## Validación enfocada
 
-Después de las ramas de hidratación/carga y del esqueleto global opcional, el shell envuelve el contenido en `KeyboardAvoidingView`. Chat tiene una rama específica para desplazamiento/entrada; las demás pestañas comparten el `Animated.ScrollView` principal. Dieta conecta su evento de desplazamiento animado y compensa un encabezado contraíble medido por separado. Configuración añade una barra de subpestañas con desplazamiento horizontal encima del contenido compartido. Entrenamiento puede ocultar el encabezado genérico mientras una pantalla de plantilla o una sesión activa proporciona su propio contexto.
-
-| `TabKey` | Responsabilidad del shell | Enrutamiento/estado anidado |
-|---|---|---|
-| `home` | Derivar tarjetas del panel, entrenamiento destacado, saludo, finalización semanal, racha y resúmenes de mediciones y dieta | La acción principal continúa una sesión activa, inicia una plantilla destacada ejecutable o crea una rutina |
-| `training` | Elegir la presentación de lista, detalle, edición o sesión activa y el título contextual | `activeTrainingTemplateId`, `activeTrainingTemplateMode`, `activeWorkoutSession`; consulta [Entrenamiento](training.md) |
-| `diet` | Controlar la fecha seleccionada, el encabezado contraíble y las superposiciones de edición/copia/estimación | Indicadores de dieta y estimación; consulta [Dieta y estimación de alimentos](diet-and-food-estimation.md) |
-| `measures` | Controlar los desplegables de período/métrica del panel, la pantalla de entrada, la expansión del historial y la superposición de fotos | Indicadores de medición; consulta [Mediciones](measurements.md) |
-| `chat` | Controlar la selección del hilo, los mensajes, la entrada, la expansión del razonamiento, el desplazamiento con el teclado y la explicación de BYOK | Ciclo de vida del agente respaldado por el proveedor; consulta [Tiempo de ejecución del agente](../agent/runtime.md) |
-| `settings` | Enrutar entre 12 secciones de configuración y alojar los controles de restablecimiento/proveedor | `SettingsTabKey`, registros de detalle, desplegables de proveedor y estado de copia de seguridad |
-
-`headerTitle` se deriva en lugar de conservarse. Entrenamiento resuelve `Sesión Activa`, `Editar Rutina`, `Detalle Rutina` o `Mis Rutinas`; todas las demás pantallas que no son Inicio utilizan `tabLabel(tab)`. Inicio renderiza `Gymnasia` directamente.
-
-## Derivaciones y acciones de Inicio
-
-Inicio es un modelo de lectura sobre el estado controlado por otros dominios. No tiene un registro duradero independiente.
-
-- `homeFeaturedTemplate` prefiere la plantilla de `activeWorkoutSession`; de lo contrario, selecciona la primera plantilla aceptada por `templateHasRunnableSeries`, recurriendo a la primera plantilla o a `null`.
-- `homeFeaturedExercises` muestra como máximo tres ejercicios. Combina los datos almacenados de los ejercicios con `findRepoExerciseMatch`, metadatos inferidos de músculo/categoría e imágenes del repositorio, al tiempo que conserva los URI de imágenes personalizadas ajenas al repositorio.
-- `calculateWorkoutStreak` convierte los valores válidos de `WorkoutSessionSummary.finished_at` en claves de día local, comienza hoy si se completó o ayer en caso contrario y cuenta hacia atrás los días completados consecutivos. Varios entrenamientos en un mismo día cuentan una sola vez; las fechas no válidas se ignoran.
-- `buildHomeWeekProgress` crea entradas de lunes a domingo con las etiquetas `L`, `M`, `X`, `J`, `V`, `S`, `D`, marca la finalización a partir del mismo conjunto de claves de día local e identifica el día actual.
-- `homeWeekCompletedCount` cuenta las entradas completadas en esa proyección de siete días.
-- La etiqueta de la acción principal es `Continuar entrenamiento` cuando existe una sesión, `Iniciar entrenamiento` cuando la plantilla destacada es ejecutable y `Crear rutina` en los demás casos.
-- El cambio de peso es la diferencia redondeada entre las mediciones de peso utilizables más reciente y anterior; si el historial es insuficiente, se renderiza `Sin histórico`.
-
-Dado que las claves de fecha se basan en la conversión local de `Date`, las rachas y la ubicación semanal pueden cambiar cuando las marcas de tiempo persistentes se consultan después de cambiar de zona horaria. Este es el comportamiento actual, no una invariante UTC.
-
-## Control de la configuración
-
-`SettingsTabKey` es una segunda unión de rutas basada en estado. `SETTINGS_TAB_OPTIONS` define su orden visible y sus etiquetas:
-
-1. `diet` — Dieta
-2. `provider` — Proveedor IA
-3. `memory` — Memoria
-4. `training` — Entreno
-5. `foods` — Alimentos
-6. `products` — Productos comerciales
-7. `personalFoods` — Alimentos personales
-8. `measures` — Medidas
-9. `preferences` — Preferencias
-10. `notifications` — Notificaciones
-11. `data` — Datos (copia de seguridad y borrado local)
-12. `traces` — Trazas
-
-La barra mide los anchos del viewport y del contenido, y mantiene `settingsTabsCanScrollLeft` y `settingsTabsCanScrollRight`; al pulsar las flechas, se desplaza 160 píxeles. Seleccionar una sección también borra los detalles seleccionados de ejercicio/alimento/alimento personal y cierra el formulario de alimentos personales y el chat de IA. Entrar en `memory` llama de forma diferida a `loadMemoryFields`.
-
-Configuración es una superficie de integración, no un límite de servicio independiente. Los registros de proveedor siguen formando parte del estado controlado por el shell, Memoria y los alimentos personales utilizan almacenes independientes, y la copia de seguridad tiene su propio estado asíncrono de interfaz. Consulta [Configuración del proveedor](../agent/provider-configuration.md), [Estado local y copia de seguridad](local-state-and-backup.md) e [Integración retirada de VivaGym y distribución de APK](../integrations/vivagym-and-updates.md).
-
-### Control compartido de Memoria
-
-La pantalla de configuración de Memoria y las herramientas del agente controlan conjuntamente el mismo registro `gymnasia.mobile.personal_data.v1` de `{ key, description, value }[]`. Al entrar en la sección Memoria, se llama de forma diferida a `loadMemoryFields` una vez por cada `App` montada; las ediciones de campos modifican primero el valor `memoryFields` de la pantalla, mientras que desenfocar/confirmar, añadir y eliminar llaman a `savePersonalData`. La función `save_personal_data` del agente sustituye ese mismo array almacenado, y sus lectores de lista/descripción/valor cargan la clave directamente. No existe ninguna suscripción que propague las escrituras del agente a un valor `memoryFields` ya cargado, por lo que la vista de configuración abierta puede quedar obsoleta y una confirmación posterior en la interfaz puede sobrescribir una actualización del agente. A la inversa, las escrituras de la interfaz son visibles de inmediato para la siguiente lectura del agente porque esos lectores cargan el almacenamiento en lugar del estado de la pantalla.
-
-La exportación de la copia de seguridad también carga este registro directamente. Una importación confirmada escribe el valor `personalData` importado de forma directa y usa `[]` de manera predeterminada si el valor no existe o no es un array, pero no actualiza ni invalida `memoryFields`/`memoryLoaded`. Si Memoria ya se había cargado, su copia visible en memoria puede conservar el estado anterior a la importación y posteriormente sobrescribir el registro importado. El borrado parcial conserva ambas copias; el total elimina el registro duradero y remonta toda la aplicación para invalidar la instantánea de React. El contrato completo de almacenamiento e importación se encuentra en [Estado local y copia de seguridad](local-state-and-backup.md#copropiedad-en-memoria).
-
-### Semántica del borrado local
-
-Configuración → Datos reúne copia de seguridad y dos acciones destructivas. El alcance
-parcial presenta una confirmación que enumera lo que borra y conserva. El alcance total
-añade una segunda barrera: el botón permanece inactivo hasta que el usuario escribe
-exactamente `BORRAR`. Mientras hay una conversación, estimación de comida, copia de
-seguridad o borrado en curso, las acciones destructivas se deshabilitan.
-
-`buildDataDeletionTasks` convierte el manifiesto del alcance en operaciones de borrado y
-lectura posterior; `runLocalDataDeletion` ejecuta todos los destinos con timeout y
-devuelve un informe completo o incompleto. El éxito remonta `GymnasiaApp` y vuelve a
-Inicio con una confirmación. Un fallo remonta la app directamente en Configuración →
-Datos, muestra cada destino pendiente y ofrece reintentar el mismo alcance. El botón
-Atrás de Android cierra la confirmación si no se está borrando y queda consumido durante
-el borrado para impedir abandonar una operación activa. Consulta la matriz exacta y los
-límites externos en [Estado local y copia de seguridad](local-state-and-backup.md#atomicidad-restablecimiento-y-comportamiento-ante-fallos).
-
-### Control de la configuración de notificaciones
-
-Configuración → Notificaciones edita `userPrefs.notifications`, no el estado de entrenamiento. Los cuatro campos exactos son `enabled`, `sound`, `vibrate` y `soundKey`; los valores predeterminados y los efectos en tiempo de ejecución se documentan en [Entrenamiento](training.md#preferencias-de-notificación-y-efectos-exactos), mientras que el comportamiento de persistencia/importación/restablecimiento se documenta en [Estado local y copia de seguridad](local-state-and-backup.md#propiedad-de-las-notificaciones). La fila de alarmas exactas de Android abre la configuración del sistema operativo y no es una preferencia almacenada.
-
-### Panel de trazas y límite de privacidad
-
-`TracePanel` solo se monta para la sección Trazas y llama a `getTraces`, que carga de forma diferida el búfer a nivel de módulo desde `gymnasia_debug_traces`. Actualizar repite esa API de lectura, pero, una vez cargada, devuelve el búfer actual en memoria en lugar de volver a leer AsyncStorage. El panel da formato a todas las entradas con plataforma, hora de generación, marcas de tiempo ISO, etiquetas, mensajes y `data` serializado como JSON. **Copiar trazas** escribe ese volcado completo en texto sin formato en el portapapeles del sistema e ignora los errores de copia; no censura, comparte, sube ni crea un archivo. Después de la copia, la conservación y el acceso al portapapeles quedan bajo el control del sistema operativo y de otras aplicaciones.
-
-**Borrar** espera a `clearTraces`, vacía el búfer del módulo, elimina la clave de AsyncStorage y después borra el estado del panel; los errores de eliminación del almacenamiento se silencian dentro de `clearTraces`, por lo que la interfaz puede aparecer vacía sin confirmación duradera. El borrado parcial y la copia de seguridad no borran, exportan ni importan trazas; el borrado total añade una lectura de verificación tanto de la clave como del búfer y declara el alcance incompleto si persisten. Los productores de trazas incluyen el ciclo de vida de la aplicación, la programación/cancelación de descansos, la entrega/pulsación de notificaciones, las acciones de permisos/configuración y los errores; se permite cualquier `data`, por lo que quienes realizan las llamadas no deben introducir allí credenciales ni contenido personal. Consulta [Estado local y copia de seguridad](local-state-and-backup.md#carga-copia-borrado-y-privacidad-de-las-trazas).
-
-## Ciclo de vida del botón Atrás de Android
-
-`App` registra `BackHandler.addEventListener("hardwareBackPress", ...)` en Android. El controlador consume las pulsaciones de Atrás siguiendo un orden de prioridad estricto:
-
-```mermaid
-flowchart TD
-    Back["Botón Atrás físico de Android"] --> Overlay{"Superposición o desplegable conocido abierto"}
-    Overlay -->|"sí"| Close["Cerrar la primera capa coincidente"]
-    Overlay -->|"no"| Template{"Pantalla de plantilla de entrenamiento abierta"}
-    Template -->|"edición"| Detail["Cambiar del modo de edición al detalle"]
-    Template -->|"detalle"| List["Borrar activeTrainingTemplateId"]
-    Template -->|"no"| Session{"Existe una sesión de entrenamiento activa"}
-    Session -->|"sí"| Confirm["Abrir la confirmación de descarte"]
-    Session -->|"no"| NonHome{"La pestaña no es Inicio"}
-    NonHome -->|"sí"| GoHome["Establecer la pestaña en Inicio"]
-    NonHome -->|"no"| Android["Devolver false a Android"]
-```
-
-*Figura 2. Orden en el código fuente de la política del botón Atrás físico de Android en `App`.*
-
-La capa 1 comprueba las superposiciones conocidas en el orden del código fuente: finalización del entrenamiento, confirmación de descarte, estimador de alimentos, información sobre grasa corporal, formulario de ejercicio personalizado, selector de ejercicios, chat de IA/formulario de alimentos personales, entrada de mediciones, explicación de BYOK, eliminación del proveedor, selectores de copia/fecha de dieta, historial de mediciones y, por último, desplegables de proveedor/modelo/panel/entrenamiento. Solo se cierra el primer estado coincidente.
-
-La capa 2 retrocede de la edición de entrenamiento al detalle y, después, del detalle a la lista. La capa 3 nunca cierra silenciosamente un entrenamiento activo; abre la confirmación de descarte. La capa 4 envía cualquier pestaña distinta de Inicio a Inicio. Solo al pulsar Atrás desde Inicio sin ninguna capa gestionada se devuelve `false`, lo que permite el comportamiento de la actividad de Android. `apps/mobile/android/app/src/main/java/com/maximofn/gymnasia/MainActivity.kt::invokeDefaultOnBackPressed` mueve las actividades raíz a segundo plano en Android R y versiones anteriores cuando es posible, y delega en el comportamiento de la plataforma en Android S y versiones posteriores.
-
-El efecto no tiene un array de dependencias, por lo que React elimina y vuelve a registrar el listener después de cada renderización. Esto mantiene actualizado el cierre léxico, pero añade una rotación de suscripciones evitable. Además, la política es una lista explícita: una superposición nueva no reconoce el botón Atrás hasta que se añade con la prioridad correcta.
-
-## Hidratación y preparación del shell
-
-El efecto `hydrate`, que solo se ejecuta durante el montaje, realiza la transición crítica de inicio del shell:
-
-1. marcar la carga y borrar el error visible;
-2. detectar la disponibilidad de SecureStore y borrar los datos heredados;
-3. leer simultáneamente el almacén principal, las claves seguras del proveedor, la sesión activa, la instantánea de la plantilla anterior a la sesión y las preferencias del usuario;
-4. si el almacén principal no está presente durante el desarrollo web, leer opcionalmente el espejo de archivos de desarrollo;
-5. normalizar el almacén, combinar las claves de API seguras y normalizar la sesión de entrenamiento activa con respecto a las plantillas;
-6. volver a escribir el estado local normalizado/censurado y las claves seguras;
-7. confirmar `store`, la sesión/instantánea, las preferencias y las selecciones de gráficos;
-8. en `finally`, establecer `loading` en false e `isHydrated` en true, incluso después de un fallo capturado.
-
-Tras quedar preparado, los efectos cargan repositorios remotos de ejercicios/alimentos/productos/recetas, los alimentos personales y los metadatos de copia de seguridad, inicializan los borradores del proveedor, crean un hilo de chat nuevo para el inicio y habilitan los efectos de persistencia. La rama `catch` muestra `No se pudo cargar almacenamiento local.` o el mensaje lanzado, pero el shell abandona de todos modos el indicador de carga y renderiza con cualquier estado inicial que haya sobrevivido. Esto favorece la disponibilidad frente a un fallo de inicio definitivo y puede hacer que un inicio con el almacén dañado parezca una aplicación vacía/predeterminada.
-
-### Invariantes de preparación
-
-- `loading === true` impide renderizar el cuerpo de dominio, mientras que `isHydrated === false` impide los efectos de escritura duradera.
-- Ningún efecto de persistencia del almacén principal, las preferencias, los alimentos personales o la sesión activa puede eliminar su protección `isHydrated` sin sustituir la protección contra sobrescrituras durante el inicio.
-- El indicador `ignore` evita que una `App` desmontada confirme el estado de hidratación.
-- Una sesión hidratada solo se acepta a través de `normalizeWorkoutSession(..., mergedStore.templates)`.
-- El estado de navegación está en memoria y no se restaura como ruta; cada inicio comienza en Inicio.
-
-## Validación y cobertura de pruebas
-
-El shell no dispone de un conjunto específico de pruebas unitarias/de componentes de React. `apps/mobile/vitest.config.mts` solo incluye `agent/**/*.test.ts`, por lo que `TabKey`, las derivaciones de fechas de Inicio, el cambio adaptativo, el enrutamiento de configuración, la interfaz de hidratación y la prioridad del botón Atrás de Android no se prueban directamente mediante pruebas unitarias.
-
-La cobertura ejecutable existente es indirecta:
-
-- `apps/mobile/scripts/train-usability.e2e.mjs` navega mediante `nav-tab-*` o `desktop-nav-*`, abre `Configuración` → `Datos`, confirma «Borrar actividad y conversaciones», espera la verificación de éxito, comprueba el estado de entrenamiento vacío y cubre los flujos anidados de navegación/sesión de entrenamiento.
-- `apps/mobile/scripts/agent-chat.e2e.mjs` inicializa `gymnasia.mobile.local.v3`, abre `nav-tab-chat` en un viewport de 390 por 844 y valida la renderización del chat, además de un recorrido de ida y vuelta simulado entre proveedor y herramienta.
-- `.github/workflows/agent-tests.yml` comprueba los tipos de `apps/mobile` y ejecuta pruebas deterministas del agente, pero no invoca ninguno de los scripts de Playwright.
-
-Validación recomendada para cambios en el shell:
+No hay una suite de componentes dedicada a todo `App.tsx`; valide de forma proporcional los límites modificados:
 
 ```bash
 npm --workspace apps/mobile exec tsc --noEmit
 npm --workspace apps/mobile run build:web
-npm run test:train:e2e
-npm run test:agent:e2e
+npm --workspace apps/mobile run test:storage-recovery:e2e
 ```
 
-Para cambios adaptativos, ejecuta las pruebas E2E de entrenamiento una vez por debajo de 960 píxeles y otra vez con `TRAIN_E2E_VIEWPORT_WIDTH=960` o más. El botón Atrás de Android, la adaptación del teclado nativo, las superposiciones de notificaciones y la hidratación tras reiniciar el proceso requieren una prueba en un dispositivo/emulador nativo, ya que Playwright en el navegador no puede validar `BackHandler` ni el comportamiento de las actividades de Android.
-
-## Riesgos y reglas de extensión
-
-- **Acoplamiento entre estado y enrutador:** añadir un destino de nivel superior requiere actualizar `TabKey`, `tabLabel`, `DesktopSidebar`, la asignación de navegación estrecha, las ramas de renderización de encabezado/cuerpo, las suposiciones del esqueleto de carga y las pruebas. No existe ningún registro de rutas impuesto por el compilador más allá de la unión y las asignaciones.
-- **Desviación de la prioridad de superposiciones:** las superposiciones/desplegables nuevos deben añadirse al controlador del botón Atrás de Android en el orden z previsto y cerrarse explícitamente cuando desaparezca su pestaña/registro principal.
-- **Incompatibilidad adaptativa:** el umbral de escritorio solo existe para la web. No asumas que una tableta ancha recibe `DesktopSidebar`; la configuración nativa actual se mantiene en vertical y utiliza la navegación estrecha.
-- **Ambigüedad ante fallos de hidratación:** los errores de inicio se renderizan junto al estado inicial/predeterminado después de `finally`. Las acciones destructivas deben deshabilitarse o contextualizarse claramente si pasa a ser necesario distinguir entre «vacío» y «no se pudo cargar».
-- **Inicio abarca varios dominios:** cambiar las marcas de tiempo de entrenamiento, el orden de las mediciones, la normalización de plantillas, las reglas de imágenes del repositorio o los objetivos de dieta puede alterar Inicio sin editar su rama de renderización.
-- **El restablecimiento es parcial:** conserva la distinción entre restablecer `LocalStore` y borrar todos los almacenes independientes/sensibles.
-- **Radio de impacto del componente grande:** `App.tsx` ocupa más de un megabyte y controla dominios no relacionados. Extraer una pantalla debe conservar el control del estado por parte del shell, las protecciones de hidratación, los identificadores de prueba, la semántica del botón Atrás de Android y los límites de prioridad local, en lugar de introducir una supuesta capa de servidor/enrutador.
+Para un cambio de navegación, use además `apps/mobile/scripts/train-usability.e2e.mjs` en web compacta y con `TRAIN_E2E_VIEWPORT_WIDTH=960` o superior para ejercer ambos selectores. Para permisos, configuración Expo, notificaciones, `BackHandler`, sonido o alarmas, la exportación web no basta: ejecute el control de permisos aplicable y pruebe una compilación nativa en un dispositivo/emulador, verificando concesión/denegación y comportamiento en segundo plano.

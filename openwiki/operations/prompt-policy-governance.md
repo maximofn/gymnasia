@@ -1,97 +1,152 @@
 ---
-type: gobierno de política
-title: Gobierno de cambios sensibles y política de prompt
-description: Política declarativa, autorización de pull requests y controles de CI que protegen las rutas sensibles de Gymnasia, incluida la fuente remota del prompt del agente.
-tags: [security, policy, ci, github-actions, prompt]
+type: guía de gobernanza de políticas
+title: Gobernanza de prompts y política sanitaria
+description: Explica cómo se validan, firman y promocionan las instrucciones del agente y la política sanitaria, y qué aprobación humana es obligatoria antes de fusionarlas o activarlas.
+tags: [security, policy, prompt, health-safety, signed-policy, github-actions]
 openwiki:
   roles: [operations, workflow]
   change_kinds: [security-policy, ci, generated-artifacts]
-  source_paths: [.github/prompt-policy.json, scripts/prompt-policy/policy.mjs, scripts/prompt-policy/generate.mjs, scripts/prompt-policy/reconcile-owner-authorization.mjs, .github/workflows/prompt-policy.yml, .github/workflows/owner-authorization.yml]
-  symbols: [loadPolicy, validatePolicy, renderCodeowners, createRuleset, assertWorkflowPolicy, evaluateAuthorization]
-  test_paths: [scripts/prompt-policy/policy.test.mjs]
-  invariants: [La política declarativa es la fuente de verdad de las rutas sensibles y de los checks requeridos., Una PR externa que modifica una ruta sensible solo queda autorizada con una aprobación vigente del propietario para el SHA actual.]
-  validation_commands: [npm run check:prompt-policy, npm run test:prompt-policy]
+  source_paths: [.github/prompt-policy.json, scripts/health-safety, scripts/policy-promotion, scripts/prompt-policy, .github/workflows/promote-policy.yml]
+  validation_commands: [npm run check:health-safety, npm run test:health-safety, npm run policy:bundle:check, npm run test:prompt-policy]
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-07T11:37:28.236Z
+sources:
+  - id: openwiki-source-3badd8a08db3c41b38b437ed
+    resource: repo://.github/prompt-policy.json
+  - id: openwiki-source-41cda0ace3fa591e5a98d40a
+    resource: repo://.github/workflows/owner-authorization.yml
+  - id: openwiki-source-0820b15716e58461fe98c290
+    resource: repo://.github/workflows/promote-policy.yml
+  - id: openwiki-source-8037e2358a2c4f9b2c722a11
+    resource: repo://AGENTS.md
+  - id: openwiki-source-8b741701f8108bee557e6f1d
+    resource: repo://policy/health-safety/manifest.json
+  - id: openwiki-source-602fdf716e72233c1c36c709
+    resource: repo://policy/signing/bundle.config.json
+  - id: openwiki-source-61e696ba1387a574d3f42c7f
+    resource: repo://scripts/health-safety/check.mjs
+  - id: openwiki-source-171441732a73f3f1dd2fdcde
+    resource: repo://scripts/health-safety/policy.mjs
+  - id: openwiki-source-7ed64eca70bf77df500e0252
+    resource: repo://scripts/health-safety/policy.test.mjs
+  - id: openwiki-source-e2eb1c483ea51be5dbdb8cd7
+    resource: repo://scripts/health-safety/sync.mjs
+  - id: openwiki-source-998a40a0ef9b779eac1dd944
+    resource: repo://scripts/policy-promotion/bundle.mjs
+  - id: openwiki-source-501264d892006294197d0b9b
+    resource: repo://scripts/policy-promotion/policy-audit.mjs
+  - id: openwiki-source-be753912f4c59051b89efc97
+    resource: repo://scripts/policy-promotion/policy-contract.test.mjs
+  - id: openwiki-source-d89cdda8746df6dbfedfcf69
+    resource: repo://scripts/policy-promotion/sign-policy.mjs
+  - id: openwiki-source-4b65cd3ef4936bf82d57892b
+    resource: repo://scripts/policy-promotion/signing.mjs
+  - id: openwiki-source-6a1824e771a5dbdf61c860d4
+    resource: repo://scripts/policy-promotion/signing.test.mjs
+  - id: openwiki-source-cf7c9acb7f23cfca2b8f4fcd
+    resource: repo://scripts/prompt-policy/policy.mjs
+generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
 ---
 
-# Gobierno de cambios sensibles y política de prompt
+# Gobernanza de prompts y política sanitaria
 
-Consulta esta página al modificar la política del prompt, GitHub Actions, `apps/mobile`, instrucciones para agentes, la automatización de OpenWiki, los manifiestos npm o cualquier otra ruta sensible. Es un control del repositorio, no parte del entorno de ejecución local-first de la aplicación: protege, entre otras cosas, la fuente remota `prompts/AGENTS.md` que el [entorno de ejecución del agente](../agent/runtime.md) carga como texto privilegiado.
+Las instrucciones que el modelo lee no se tratan como texto de aplicación ordinario. El prompt canónico `prompts/AGENTS.md`, la política declarativa de `policy/health-safety/`, las herramientas requeridas y la configuración de firma forman una superficie de seguridad. Esta página explica el mecanismo **vigente** para cambiarla, revisar su contenido, crear un bundle firmado y hacerlo disponible en los canales de política. Para el consumo del bundle en el cliente, véase [Entrega y activación de políticas firmadas](../architecture/policy-delivery.md); para el uso del lease en un turno de chat, [Runtime del agente](../agent/runtime.md).
 
-## Fuente de verdad y superficie generada
+## Regla humana no eludible
 
-`.github/prompt-policy.json` es la fuente declarativa. Define `schemaVersion`, la rama `main`, el propietario, los nombres de checks requeridos y cada frontera sensible con su tipo (`directory` o `file`). `scripts/prompt-policy/policy.mjs::loadPolicy` la lee y `validatePolicy` exige el propietario, la rama, los checks y las fronteras obligatorias antes de usarla.
+**Si un cambio toca `prompts/` o `policy/health-safety/`, hay que detenerse, avisar en lenguaje natural y obtener aprobación explícita del mantenedor antes de promoverlo o fusionarlo.** El aviso debe explicar, sin limitarse al diff:
 
-La política produce dos artefactos que no se editan manualmente:
+- qué podía o no podía hacer el agente antes;
+- qué podrá o dejará de poder hacer después;
+- qué consecuencia práctica puede tener para la persona usuaria.
 
-| Origen | Relación | Destino | Contrato |
-| --- | --- | --- | --- |
-| `.github/prompt-policy.json` | `renderCodeowners` genera | `.github/CODEOWNERS` | Cada ruta sensible queda asignada al `codeowner` de la política. |
-| `.github/prompt-policy.json` | `createRuleset` y `renderRuleset` generan | `.github/rulesets/protect-main.json` | Protege la rama por defecto contra borrado y avance no rápido, exige resolución de hilos y requiere `prompt-policy` y `gymnasia/owner-authorization`. |
-| Política y workflows | `assertWorkflowPolicy` verifica | workflows de `.github` y de la plantilla de OpenWiki | Las acciones se fijan por SHA, las PR no leen secretos ni tienen permisos de escritura y el único `pull_request_target` permitido es el de autorización. |
+Una aprobación genérica sobre otro asunto no sirve. No se debe iniciar `promote-policy.yml`, fusionar la PR ni mover el cambio a otra rama para evitar esta puerta hasta recibir esa aprobación explícita. El requisito aplica tanto a una edición directa del prompt como a una regla sanitaria que se inyecta en él; los checks deterministas y una firma válida aportan evidencia técnica, pero no sustituyen la decisión humana.
+
+## Fuentes canónicas y salidas derivadas
+
+La política sanitaria se compone de un manifiesto versionado, reglas, casos, esquemas JSON, una evaluación LLM únicamente informativa y `runtime.json`. El manifiesto fija categorías y reglas publicables obligatorias, la versión de la release y que el cierre requiera revisión profesional. Una regla `approved` exige esa revisión profesional; las reglas `provisional` también se publican para proteger al usuario, mientras que los borradores no se incorporan al prompt.
+
+`scripts/health-safety/sync.mjs` genera de forma determinista el bloque delimitado por `<!-- HEALTH-SAFETY:START -->` y `<!-- HEALTH-SAFETY:END -->` en `prompts/AGENTS.md`, además del snapshot de runtime de la app. Por tanto, no se edita ese bloque a mano. El prompt completo se convierte asimismo en el snapshot que consume la aplicación; si cualquiera de las salidas ya no corresponde a su fuente, las comprobaciones fallan en vez de aceptar deriva.
+
+El bundle firmado toma como entradas el prompt normalizado, `policy/health-safety/runtime.json` y `policy/signing/bundle.config.json`. Esta última declara versión, criticidad, protocolo mínimo y las tools requeridas. La construcción rechaza una tool requerida que no figure en `AGENT_TOOL_DEFINITIONS`, de modo que no se puede promocionar una política que el cliente no anuncie.
 
 ```mermaid
 flowchart TD
-    Policy["prompt-policy.json"] --> Validate["loadPolicy y validatePolicy"]
-    Validate --> Codeowners["CODEOWNERS generado"]
-    Validate --> Ruleset["ruleset protect-main generado"]
-    Validate --> WorkflowChecks["controles de workflows"]
-    PullRequest["metadatos de pull request"] --> Authorization["evaluateAuthorization"]
-    Validate --> Authorization
-    Authorization --> Status["estado de autorización del propietario"]
-    WorkflowChecks --> PolicyStatus["estado prompt-policy"]
-    PolicyStatus --> Ruleset
-    Status --> Ruleset
-    Ruleset --> Main["main protegido"]
+    Health["Reglas y runtime sanitarios"] --> Sync["Sincronización determinista"]
+    Prompt["prompts/AGENTS.md"] --> Sync
+    Sync --> Snapshots["Snapshots de la aplicación"]
+    Prompt --> Bundle["Bundle canónico"]
+    Health --> Bundle
+    Config["Configuración del bundle"] --> Bundle
+    Tools["Catálogo de tools móviles"] --> Bundle
+    Bundle --> Sign["Firma y activación"]
+    Sign --> Staging["Release y deployment Staging"]
+    Staging --> Production["Deployment Production"]
+    Production --> Client["Snapshot de build y cliente"]
 ```
 
-*La política declarativa genera los límites de propiedad y de rama; la autorización evalúa solo metadatos de la PR y ambos estados forman parte de la protección de `main`.*
+*Las fuentes controlan tanto los snapshots locales como el candidato firmado; Staging precede a Production.*
 
-La sincronización es intencional y estrecha:
+## Puertas locales y de PR
+
+`npm run check:health-safety` valida esquemas y referencias, IDs únicos, cobertura de categorías, fuentes y revisión de reglas publicadas, equivalencia de reglas publicadas con el runtime, casos/fixtures/tools y el bloque gestionado. También rechaza patrones de exfiltración en política o prompt y exige que los informes LLM sean no autorizantes. Después compara el prompt y runtime con los snapshots móviles y ejecuta los casos seguros contra fixtures sin red, secretos ni evaluación LLM autorizadora.
+
+La fuente declarativa `.github/prompt-policy.json` separa dos ámbitos:
+
+- **Rutas sensibles:** requieren la autorización de propietario cuando una PR externa las modifica. Incluyen Actions, instrucciones de repositorio, aplicación móvil, `policy/`, `prompts/` y los scripts que aplican estos controles.
+- **Rutas de promoción:** son `prompts/` y `policy/health-safety/`. Además de ser sensibles, obligan al estado `gymnasia/policy-promotion` para el SHA exacto.
+
+El generador de política deriva `CODEOWNERS` y el payload versionado del ruleset de `main`; `npm run sync:prompt-policy` materializa esas salidas y `npm run check:prompt-policy` detecta deriva y revisa las restricciones de workflows. El ruleset requiere los estados `prompt-policy`, `gymnasia/owner-authorization` y `gymnasia/policy-promotion`, resolución de conversaciones y PR; bloquea borrado y avance no rápido. No exige una revisión CODEOWNERS por sí misma: para rutas sensibles, la autorización efectiva se publica como estado.
+
+`owner-authorization.yml` usa `pull_request_target` exclusivamente para reconciliar metadatos con el SHA base confiable. Tiene permisos de solo lectura sobre contenido, PR y deployments, y escritura solo de estados; no hace checkout ni ejecuta el head de una PR, no instala dependencias y no recibe secretos. Para una PR sensible, el autor configurado queda autorizado si coinciden su login e ID numérico; una PR externa queda `pending` hasta que la última revisión decisiva del propietario para el SHA actual sea `APPROVED`. Una aprobación de un commit anterior, una solicitud posterior de cambios o una revisión desestimada no autoriza el head. Las PR sin rutas sensibles pasan este check, pero el merge sigue siendo manual.
+
+El check `gymnasia/policy-promotion` queda `success` automáticamente si la PR no cambia rutas de promoción. Si las cambia, queda `pending` hasta que exista para el mismo SHA un deployment exitoso `gymnasia-policy` en `Production`. Esta señal técnica no elimina la regla humana anterior: la promoción debe partir de una explicación y aprobación explícitas.
+
+## Firma, publicación y promoción
+
+La firma usa JSON canónico, SHA-256 y Ed25519. Las raíces públicas autorizadas se versionan en `policy/signing/trusted-roots.json`; el certificado del firmante tiene propósito `gymnasia-policy`, está firmado por una raíz y tiene vigencia delimitada. Las claves privadas no se guardan en el repositorio: los comandos de firma las leen localmente desde Bitwarden CLI. `npm run policy:bundle:sign` construye y firma los inputs actuales; `npm run policy:bundle:check` verifica firma y que el bundle aún coincide con sus fuentes.
+
+Una activación firmada vincula bundle, digest, canal (`Staging` o `Production`), criticidad, acción y secuencia positiva. El verificador rechaza JSON no canónico, tamaños o codificación inválidos, firmas/certificados/raíces inválidos, canal o digest incoherentes, tools desconocidas y un protocolo mínimo que el cliente no soporte. Así, tener una release o conocer una URL no basta para que un paquete sea aceptable.
+
+La entrada operativa es `npm run policy:promote -- --operation staging|production|rollback ...`. La operación necesita un motivo de un catálogo cerrado. Para Staging exige exactamente una PR abierta a `main` que haya pasado `prompt-policy` y `gymnasia/owner-authorization`, salvo el bootstrap único y explícito desde el `main` protegido. El workflow vuelve a ejecutar `npm run check:health-safety` sobre el commit candidato sin secretos, verifica artefactos mediante código confiable de `main` y publica una release prerelease inmutable con bundle, firma, informe sanitario y evidencia de promoción.
+
+Production descarga ese candidato inmutable y vuelve a ejecutar la puerta sanitaria y la verificación contra el código fuente exacto. Para una activación normal exige que sea el candidato más reciente de Staging, que no sea ya el activo y que su secuencia supere todas las de Production. Las operaciones se serializan por canal; una política crítica usa el entorno protegido `Production Critical`. Solo tras publicar el deployment exitoso de Production se escribe el estado `gymnasia/policy-promotion` del commit fuente.
+
+Un rollback es también una nueva activación firmada: el destino debe ser un bundle histórico distinto del activo que haya tenido éxito en Staging y Production. Conserva una secuencia nueva y declara `fromBundleId`, por lo que restaurar contenido anterior no rebaja la monotonía anti-rollback.
+
+## Auditoría y fallos operativos
+
+Al terminar —incluso si la validación o publicación falla— el workflow ejecuta `audit-and-notify`. Registra un deployment distinto con task `gymnasia-policy-audit`, resultado, motivo, actor, commit, candidato y activación cuando sean válidos. El payload se limita a metadatos operativos: no debe contener el prompt, mensajes, claves, entradas, salidas ni datos de salud. La alerta de Telegram es idempotente; si falta configuración o falla el envío, queda reflejado en auditoría y no cambia por sí solo el resultado de política.
+
+No existe bypass documentado del ruleset. Si un check falla, se debe reparar o reejecutar la PR, conservar el SHA y registrar el incidente y los comandos ejecutados; no se corrige con un push directo a `main`. Tras un cambio de gobierno, compruebe también en GitHub que el ruleset remoto y los emisores de estados son los esperados: el JSON versionado describe la configuración deseada, no acredita por sí solo su aplicación remota.
+
+## Procedimiento de cambio vigente
+
+1. Determine si el cambio toca `prompts/` o `policy/health-safety/`. Si es así, comunique el impacto en lenguaje natural y espere aprobación explícita antes de fusionar o promover.
+2. Modifique la fuente canónica. Para reglas sanitarias, mantenga los esquemas, referencias, casos y runtime consistentes; no edite el bloque gestionado ni snapshots a mano.
+3. Si cambia la política sanitaria, ejecute `npm run sync:health-safety`, que también sincroniza el prompt móvil. Si cambia la política de rutas o workflows, ejecute `npm run sync:prompt-policy` y revise las salidas generadas.
+4. Ejecute las puertas focalizadas:
 
 ```bash
-npm run sync:prompt-policy
+npm run check:health-safety
+npm run test:health-safety
+npm run check:chat-prompt
 npm run check:prompt-policy
+npm run test:prompt-policy
+npm run policy:bundle:check
+npm run check:policy-trust
 ```
 
-`sync:prompt-policy` ejecuta `scripts/prompt-policy/generate.mjs --write` y reescribe únicamente `CODEOWNERS` y el ruleset. `check:prompt-policy` usa `--check`: detecta deriva de esos archivos y también llama a `assertWorkflowPolicy`. Si cambia el esquema, una ruta o los checks, actualiza primero la fuente declarativa, regenera los artefactos y confirma la validación; no corrijas una salida generada a mano.
+5. Abra una PR y espere los estados obligatorios. La promoción a Staging/Production es una operación manual separada del merge y necesita la aprobación humana ya descrita, además de sus environments y firmas.
+6. Para producir una build firmada, deje que el flujo de release prepare el snapshot desde el deployment de Production; no sustituya ese paso por copiar un prompt local. Véase [Build, release y estrategia de validación](build-release-and-testing.md).
 
-## Autorización de una pull request
+## Cobertura de pruebas y extensión segura
 
-`.github/workflows/owner-authorization.yml` usa `pull_request_target`, programación cada cinco minutos y ejecución manual. Comprueba el SHA base de confianza, nunca el head de la PR, y ejecuta `scripts/prompt-policy/reconcile-owner-authorization.mjs`. El script consulta mediante la API de GitHub el autor, el SHA head, los archivos y las revisiones; después `evaluateAuthorization` publica el estado configurado por `checks.ownerAuthorization`.
+Las pruebas de `scripts/health-safety` cubren validación de política, revisión profesional de reglas aprobadas, exfiltración, deriva del bloque gestionado, referencias, tools y fixtures, corpus determinista e invariantes de generación. Las pruebas de promoción y firma ejercitan bundles/activaciones canónicos, alteraciones, certificados no autorizados o fuera de vigencia, incompatibilidad de canal/protocolo/tools, rollback y los contratos del workflow, incluida la separación entre Staging y Production.
 
-| Caso | Estado publicado | Invariante |
-| --- | --- | --- |
-| La PR no toca una ruta sensible | `success` | El merge sigue siendo manual; este check no aprueba ni fusiona. |
-| El autor es el propietario configurado y toca rutas sensibles | `success` | La identidad se comprueba por `login` **e** ID numérico. |
-| Autor externo con rutas sensibles y sin aprobación vigente | `pending` | No queda autorizado hasta una revisión del propietario. |
-| Autor externo con `APPROVED` del propietario para el SHA head actual | `success` | Una aprobación de un SHA anterior no cuenta. |
-| La última revisión decisiva del propietario para ese SHA es `CHANGES_REQUESTED` o `DISMISSED` | `pending` | La última decisión decisiva prevalece; los comentarios no cambian el resultado. |
+Al ampliar esta superficie, trate como cambio coordinado cualquier ajuste de esquema, regla, runtime, tool requerida, fuente del bundle o workflow. Añada casos y pruebas que demuestren el nuevo invariante, conserve la generación determinista y no convierta una evaluación LLM, un informe o una notificación en una autorización. La aprobación humana, la firma verificable y los checks de PR cubren capas distintas y deben mantenerse independientes.
 
-El workflow tiene solo `contents: read`, `pull-requests: read` y `statuses: write`. El validador rechaza que un workflow de PR lea secretos o tenga permisos de escritura, y rechaza que el workflow privilegiado ejecute checkout de código no confiable. No añadas checkout del head, `npm ci`, secretos ni lógica procedente de una PR a `owner-authorization.yml`: cambiaría su límite de confianza.
+## Contexto histórico
 
-## Receta de cambio
-
-1. Localiza si la ruta debe ser sensible en `.github/prompt-policy.json::sensitivePaths`. Mantén rutas relativas; los directorios terminan en `/` y los archivos no.
-2. Si cambia la política, conserva `schemaVersion: 1`, `defaultBranch: "main"`, el propietario y el catálogo de checks que `validatePolicy` exige, salvo que el código y las pruebas de la política cambien de forma coordinada.
-3. Ejecuta `npm run sync:prompt-policy`; revisa el diff de `.github/CODEOWNERS` y `.github/rulesets/protect-main.json` como salidas derivadas.
-4. Ejecuta `npm run check:prompt-policy` y `npm run test:prompt-policy`. La segunda batería cubre clasificación de rutas, descendientes, falsos prefijos, autorización por autor/revisión/SHA, determinismo de artefactos y restricciones de workflows.
-5. Si cambias `prompts/AGENTS.md`, además sigue la receta de [entorno de ejecución del agente](../agent/runtime.md): sincroniza y verifica el snapshot integrado con `npm run sync:chat-prompt` y `npm run check:chat-prompt`. La protección de la ruta no prueba la paridad ni el comportamiento del prompt.
-6. Para un cambio que alcance `apps/mobile` o el prompt integrado, añade los controles del agente que correspondan en [compilación, publicación y pruebas](build-release-and-testing.md); `check:prompt-policy` solo verifica gobierno y configuración.
-
-## Límites y riesgos
-
-- La protección efectiva del ruleset se aplica en GitHub; el JSON versionado es su payload generado, no una prueba de que la configuración remota esté aplicada. Tras un cambio de política, comprueba el ruleset y los estados reales en GitHub.
-- `CODEOWNERS` se genera, pero el ruleset no exige `require_code_owner_review`; la autorización efectiva de cambios sensibles procede del estado `gymnasia/owner-authorization` y su evaluación del SHA.
-- El check de autorización no fusiona PR, no concede permisos de contenido y no lee secretos. Evita convertirlo en un ejecutor de pruebas: esa separación reduce el riesgo de `pull_request_target`.
-- La política cubre todo `apps/mobile/` porque el shell contiene la composición y el cargador del prompt. No infieras que una ruta aparentemente ajena al prompt es pública sin actualizar la política y sus pruebas.
-- La página de gobierno existente `docs/security/prompt-policy-governance.md` aporta el procedimiento humano de emergencia y seguridad de la cuenta; este documento es la guía técnica navegable y basada en código. Ante discrepancia, la política, los scripts y las pruebas ejecutables prevalecen.
-
-## Validación proporcional
-
-| Alcance | Comando mínimo | Cuándo ampliar |
-| --- | --- | --- |
-| Cambio en la política, generador, artefactos o workflow de gobierno | `npm run check:prompt-policy && npm run test:prompt-policy` | Añade `npm test` y TypeScript si la modificación también alcanza `apps/mobile` o el prompt integrado. |
-| Solo `prompts/AGENTS.md` | `npm run check:chat-prompt` | Añade `npm test` si cambia contratos/herramientas o pruebas del agente. |
-| Cambio de seguridad que afecta a los controles obligatorios | `npm run check:prompt-policy && npm run test:prompt-policy` | En CI se ejecutan además snapshot del prompt, batería determinista, OpenWiki y TypeScript; no son necesarios para una iteración exclusiva de la política. |
-
-Las comprobaciones amplias y la configuración de CI se detallan en [compilación, publicación y pruebas](build-release-and-testing.md).
+Los despliegues y bundles antiguos son evidencia histórica o candidatos explícitos de rollback, no fuentes alternativas desde las que copiar instrucciones al cliente. Los comentarios de incidentes, simulacros y procedimientos anteriores no sustituyen el flujo vigente descrito aquí. Para un cambio presente de prompt o salud, siempre prevalecen la explicación en lenguaje natural, la aprobación explícita, las fuentes canónicas y las comprobaciones ejecutables actuales.

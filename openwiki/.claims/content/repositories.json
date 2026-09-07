@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:29b14c3f3871cbb0bc1ed35ad8c216ea90cd885ab86f51d2aae2cdaa331c4134",
+  "pageVersion": "sha256:9e5557f29535fd186d99f6d88416933a64f7a6bf913badba42efa33a3da36e1c",
   "claims": [
     {
       "id": "claim_9a1401aed8cd41a9939bba88412e46ae",
@@ -186,7 +186,7 @@
       "evidence": [
         {
           "resource": "repo://apps/mobile/scripts/catalogs.e2e.mjs#L344-L468",
-          "version": "repo-lines-v1:sha256:5c43689cb6e4d79a633cb2406b79e97978fa435d0e0eac575bc9474b304091da:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjYTUzYmEzNTA5NjY3NmM1MjQwY2MwODQ0ODNmZTAzNTYxN2Y5NGYwOTBjMmEwOWEyODY3YzA0MGFhMzYxOWU4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI1N2IzODdjMzQzZWFhYTVhMTgwMWVhNzMwODM4YWRiMTJjZWIxN2FjZWM2ZmMzMTkzM2MzNzFkOGMxY2E2ZjYyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0MzJiZTAzNzNkMWI4Y2Q1ODFmZWZlMDg1NjA3ZTI1Y2MwZjZkNmJmYzg4YjJkOWYwNWEwYTdmY2IxMjg0Yjc2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlOGM2ZmYwYTExMmI4OTUxNzVhN2RhM2VmMGE2MDUwZTFiMTk5YjA1MmE2Y2QxY2UzNjRlYzAwZGVkNGM0ZmQ5In0"
+          "version": "repo-lines-v1:sha256:ef56aaf66bbeb77249b447b881eee6c9a89bcc5a93206e4246119aedde896554:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjYTUzYmEzNTA5NjY3NmM1MjQwY2MwODQ0ODNmZTAzNTYxN2Y5NGYwOTBjMmEwOWEyODY3YzA0MGFhMzYxOWU4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI1N2IzODdjMzQzZWFhYTVhMTgwMWVhNzMwODM4YWRiMTJjZWIxN2FjZWM2ZmMzMTkzM2MzNzFkOGMxY2E2ZjYyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI0MzJiZTAzNzNkMWI4Y2Q1ODFmZWZlMDg1NjA3ZTI1Y2MwZjZkNmJmYzg4YjJkOWYwNWEwYTdmY2IxMjg0Yjc2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlOGM2ZmYwYTExMmI4OTUxNzVhN2RhM2VmMGE2MDUwZTFiMTk5YjA1MmE2Y2QxY2UzNjRlYzAwZGVkNGM0ZmQ5In0"
         }
       ]
     },
@@ -199,10 +199,48 @@
           "version": "repo-lines-v1:sha256:480ae60a5f49c27e964bfaac0d4c7707e174052e8999d95bf337f3cb23c7d079:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkYjcyYWRhNzY0MDc3MjZjNjk5NDM1ODJjODBlOTg4NzMyOGNkYzE0MDlhYWY5ZjNlYjA2MDk2NjFjMTc0N2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5ODBiNzUzMjE5ZDZjN2Q2YTFjMTdlZWIwZTk1MTEyZGE3YjEyZjRjZjBlOGFiM2MxYTIzNjZjNDcwY2U0NWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5Zjg4NWExZDUyMWVmYTEwMjVmYjAzMWEyNjU5MjUxNmEyNjAwZTRkZGJjODQ5MzZiODVjMGFlNDBlMmNmNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_56e239cad11744968aa72336f64530b1",
+      "statement": "El registro de fuentes de la app define cuatro catálogos remotos publicados desde GitHub Raw y una fuente separada de alimentos personales que es local, privada y no tiene URL remota.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/catalogs/sources.ts#L13-L21",
+          "version": "repo-lines-v1:sha256:6e34c90896cf0217d3124f0f2bbba31131ac7b782fbcc65c57ae8215f453aaad:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWMxODA2MjU2NTNmNWU1YTYzOTNmM2M1Mjg1OGM5NDMzOGMzMzZlMjhiYWFiNDhlNWE1ZTNhNjQ0ZDgyNDY4MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmU0NGMwMjZiNDA4OTMxODc5OTExMWJlOWFjNzAzZjdlZTk0ZmZiN2M0ZGM1NjliNDYxMGNhYWJkNWExMzhkZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODBhZmM3YTg0YTVkZTIwOWE3ODgwMzY5NzljMzA3NjBiMDk3MWE5M2M2N2RmNjcxZWUyOWUzZTQ3YTVmMjM3NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDkzOTU3MDNjY2VlMWI0MzE5MzI4YmE0NmRmOWVkOGM3OTJjNmU5Mjg5ODBlMmM3YzdhZjFjNzEyYTI4ODFhNiJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/catalogs/sources.ts#L60-L122",
+          "version": "repo-lines-v1:sha256:290fb0d1203fbdbc23ae6dc4c11b81d0a84687fc035ccd2ffd1cf3eaa2909fed:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzNTQ2ODhlMTY3OWI3MDc3MzY2MWFiNTUyOTAxNjJhZWNlZmE2ZjVlYTU5OTE3NzVjNzI1NDhhMjZhMWE5OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NGVlOGE4ZDFhYTg0NTM5MWJjNjc5ZWI3MGNlN2Y0NmEzY2Q2ZmIyZDE2ZmNjYTY3ZmExNzhmNGY4YzFlMGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxM2QwOTg1NzE2NTQ2YzgwNGRhNTYzZDUzMDVlOTRiNDNiM2JlZjAyYTRkMTc3YmYxYTIzMDc0ZGI2MDliNWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9759621c5956498e9c166a1f9bb16246",
+      "statement": "Durante la carga local-first, la app lee las cachés y refresca en paralelo los tres catálogos nutricionales, mientras que ejercicios se procesa de forma independiente; invalida la generación de ejecución para impedir que una escritura de caché tardía sobreviva a una eliminación de datos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8549-L8562",
+          "version": "repo-lines-v1:sha256:1cbcc8cf87dce770f4c400a260ebebd72cab0e342deb1011e97b1a6510fca34d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlYmIyMjdjZWY3ODBhYzRmZmM0ZTA2MDIzYTUwN2FiYmQwMmNmMTgyMGM5ODEwZjlkODc3OWFmZjgyMzAyMDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlMTJiNjExODk0M2UzMGMwMDY4MzNlNzgxNjMwYTUzYjMyZjQxN2VmNWY5Nzk1YzNmMTJmMzMwODAyNGM1ZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMmY5MzgyNjYxZjZlYmMyMjg4Y2YwNjBmZjJlNmNkOWM4OTQwYTM1YjkzMDA5MTI4ZWI0ZjMxZjVlYWRkYTAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8589-L8633",
+          "version": "repo-lines-v1:sha256:f678238e97c5a0e00bee309ed9262dae1a7ebbde8b4888c40d7dcd0ee54cea1c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5NjZmYmZhODg5OThkYTc0NjU2YzUwMTk0OTU2YzI1ZjA4NDk0NTc2NjBjMDA5ZmU2M2QxZTlmYTlkYzkzMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjU2ZGJjOTZhZGFlODM2NGM4ZjJhODcxMDAxNWViMDJhMWMwNjRiNGFmOWRhMGE2ZjkwODU0ZjFhMTQ2MjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxMDc3YjFiN2I5YmQwZDY0NzExM2MzMjkwYTVmOGRmNmVjZjJiMGJkN2Q1NzY3ZGM2ZTJjNzhlNTRmZmY3YzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlhZTExMWJhZjUwNjNkY2E0YTUzNGZlYzBjZDhhYWJlZWI3NDAzNjVlZjgzMWUyNGEwMGI1NjU3N2Y2NTdhZjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1eaa4a60cc1a4f84b7eae6e568eb293d",
+      "statement": "El E2E de catálogos también verifica que, tras renombrar un ejercicio servido por el catálogo, la plantilla persistida conserva el enlace al mismo `itemId` y actualiza el nombre mostrado.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/catalogs.e2e.mjs#L363-L373",
+          "version": "repo-lines-v1:sha256:2f1a27d290522cdbbc47c0d550aefedf05ded4dd6fad18c9d172abd6a9bf6036:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjNzY4Zjk0ZThlY2YxMTZkOWRjN2ZjYjc3MjY5MzFiYjRmY2EzYjdjYTk3YTkwZjNhMTBkMWQ4NzIxZTVjZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmYWRmZWQyM2YyNjRhZTUzMWY4MTIzM2E4NTA4NTA2MTA0Yjk0MmViY2Q3MTUxMTAwZmNiOGEzNDFiYTY5OTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3ZTgwZmQwZjhiNTUwOWM5N2ZiZTgxOWY1OGU4ODI5ZGUyYWM5ODZmMzFjMjQ5MDZhNzAwOTEzN2ZiMDU0YWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk5N2M2MzI2YjlmMTYwN2U4ZWQyMGY0ZDQ3OWQ2ZmI1ZmU3MDYxZGVhYTgwNTIwNGQyYzExZjAyMzIyMTVkYzgifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.4.3",
-    "at": "2026-09-06T10:32:53.606Z"
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-07T11:37:28.236Z"
   }
 }

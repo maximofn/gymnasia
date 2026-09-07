@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:3bd9ca7555d5952d3586b356cac9f7d60f1e3e6a76d982dd4f83bed880118954",
+  "claims": [
+    {
+      "id": "claim_aca396b7cc1e477696babb6c28b70e97",
+      "statement": "`apps/mobile/index.js` registra `App` con Expo; el componente `App` remonta `GymnasiaApp` mediante una clave de generación después de un restablecimiento del runtime, por lo que `GymnasiaApp` concentra la integración del shell.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L26306-L26322",
+          "version": "repo-lines-v1:sha256:225360c09ae3bcaa1399894a0a1488be089b295949ec507d32827e9464e766d2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NTcxMjhiMjU2NzBhMDE1OTY1NDliYzRkNmM2YmI2Y2QyMmNhM2I4Mjk1NjZiMTRlZWJjZmUyMWQwNDY4ZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/index.js#L1-L5",
+          "version": "repo-lines-v1:sha256:3c87f11c5dfcdcf20361d011834a570d10c3142549ad1eba90053f9c9430d65f:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM0NTk1MGY2OGRiOTY5MmM2MTMxMjgyZDliOGU2YjBhZWYzZjg4YTdjYmE4MTU3ZDYxNTRhZjg2MjVlMjRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTUwMTVhNmY5ZjE5NWExMmJkZmZiZDQyY2VhMjYyMzFmN2UxZDZlMWNlNWIxNGYwYWNkMmNiMWRmYWQwMWU4YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_681571567bc44039b8afb200579279c0",
+      "statement": "El arranque inspecciona el almacenamiento local antes de hidratarlo; ante un resultado recuperable o corrupto mantiene la hidratación desactivada y sustituye el shell por la pantalla de recuperación, mientras un error no recuperable muestra una pantalla de fallo con reintento para no continuar escribiendo sobre datos no comprobados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13615-L13647",
+          "version": "repo-lines-v1:sha256:e0a2e875ebeea66e5cc3ec539474e70af0b8e1abc21408287a0e7a63d9797193:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4ZWNjYTBkNWZjNDAwNDkzZTY2NjI2ZTUzZTkwODM4MWIxMDVmNmMzOTNjMWYxNDY4OGQ4OGQ2ZTk1NjNiZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0ZTQyMDhjZDZmZmI4YzRhMzU0N2IyZjU0YWRhMTk5NzhjM2YzNjVlNzhmOTUwMmVmNTE0NWNkZDJhYTg1NDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMzAyZmI5NDExYzU4NGVlMGUwMDA3MDlhNzYzMDYzNTk0M2RmOGExYzM4MjYzMGFkNjI1Mzk4YTAyNGJjOTQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8165-L8190",
+          "version": "repo-lines-v1:sha256:b26e81d3c67f2a874e06f27759527e2ed636dd9e4dee2a6f4b7377c697c66860:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlYmM4MDE4ZWExNzM5MjZiM2IyZjQ2ZDJmNTk2ODQwYWU4ZGRhYWQ4OTlhYjVkYmIwYjJlYzM0MGY2NjVlOTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmODQ3YmIyMWNiMjkyZGQwOWY3ZmE2ZTdjYWM0YThjMTRkOTdkMzg5NjMzYjNkMTUyMGVhMTRiNWIxZGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmYmZmZWQwNmQ0M2NlOTFiZDQ1ZDI3NjZjMDFkYTA4MTQzNTFmYTFhYjYyOWVhM2JhOTcyYTA1NDE5MGY2ZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwZWQzNzZiZTk2YWZiOGMzOGJmZGU1MDliYjM5OWI1MTI2ZmNhMmNiZTE3MTQ5N2NlMDg0Y2IyMzBmY2Q0YmQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8511-L8525",
+          "version": "repo-lines-v1:sha256:38ce65a9857199354a8624c37a07a0ad605c9eeea02e5c502aa425ca46460f0c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5NjZmYmZhODg5OThkYTc0NjU2YzUwMTk0OTU2YzI1ZjA4NDk0NTc2NjBjMDA5ZmU2M2QxZTlmYTlkYzkzMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkYzUyZjA4YjM5YjA4YjAxYzhkMzA4YmY4ODBiMGJlZjAyZmQxZGZjYzlkOWFhOTNhNGQxYjVmNGQ1OGI2Y2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1MDU1YjJiZTIyZjMwMmE5NDNjYWI2MTg5NDk5MDk5MTZkNjE4NmEyNmI0NWQ1NDAyYjRhZDE1Y2QxNTNlNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxN2JjOGFhNjNiYzNiNDEwYzIyMjYwZDU0NzdiYTFjZGYwM2E3ZmZjMTcyYmMzM2NkMGRhZWE4MzdjZDYzOTIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/LocalStoreRecoveryScreen.tsx#L190-L269",
+          "version": "repo-lines-v1:sha256:4d308724b29630f6aa440e18f69af3c11c79a146325dcdb152e4bf3d2767fa0e:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlNmM1NzE1OTc4OTJiNWZiZjYwMzBmYTJmODVkMzkwZDgxZDE1ZmUwNGY2NmFlNDJhMDYwMjdiNTZjZjE0ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1NzU1NGY0NjAxZTMwYjU3NDZmYzg0OWQ1NDM2ZmU5OTM1YjE2ZDFkZDhiYmM0ZTJmMWU1NDA5ZmFhM2VhYjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2M2Y4MDBjOWYzZGVjY2FmODE2NzgxYzJlNDYwZWI5ZTdiYmQ0NzI3Y2E0ZDY1ZGE5MDllYzU0YjkyMDgzMmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmZTlhMThjYzRkOGFiNWFiNzk4ZDc2ZjcxYjQ3ZmVlOGExMzU3NDdkZjY4ZjI4Y2ZiNWU5YzBiNTNhZmU3Y2QifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/LocalStoreRecoveryScreen.tsx#L380-L456",
+          "version": "repo-lines-v1:sha256:1188c6e30db47419a435d81a4380ba1687013e2448b715daf3b3e05568cf3cef:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiNjViM2I3MjUzOTBjYzQyYzM3MjI4YWMzOWM0OWQ5MWU4MmEyYTMwN2M0NjI0ZDVhNmQwMTBhMTBlMmQxZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2MzQ3ZjY3N2E2MzMzZGRkODYzZTIxYjcwZDRhYzgyOGM0N2Y1MDVlYzY2MzNlNTRhNTk5MjNhNDZkMWI4NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdiOGI2MDBhNWI0NDhiMWU0ZDAyZGYwOTc0NmVkM2NhMzE3MmY3NWM0YWFiYjAxZGRlMDgwZTM2Y2FiMDc0YjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b9dea51de4524bb7ac79da547632194c",
+      "statement": "La recuperación permite restaurar una instantánea, exportar el payload dañando, reintentar o descartar el agregado afectado; el descarte elimina también la sesión y sus registros dependientes pero conserva configuraciones de proveedor vigentes, y la prueba E2E cubre preservación de particiones independientes.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13567-L13613",
+          "version": "repo-lines-v1:sha256:1e7c3e55eb50be0932cb37453e43b39c715757f507506b433eb19e2ba64c8ad4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhMjcyYWRmNzIyZGYwZDQzZTZmNDQwNWUyYTg2OWU5MDQ3M2RhYWY1Mzc0ZGJlZTBmMDQwZjU0YWQ4M2UwMzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhM2E1MWViY2VmNGUyY2E5YzhmZmJlMDRhMDY2ZmYwZTU5N2E2MDgyZWQyNzYxMTE5M2Y4ZDA0MzMzZTk2MzAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/LocalStoreRecoveryScreen.tsx#L235-L305",
+          "version": "repo-lines-v1:sha256:7eeea311298694afc752630bc17d32322c764302c701e31c2cbd14516bfe23bf:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlNTIwYzJjZmZjMDhlYTUzMjNhYjgwN2Q0MDczN2RiNjE5ZWVkOTkyY2FlN2E5N2EwNzNiZjUyNTgzMjljNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhNDE0MzY3NjZiMmY4YzRmZDcwNzZlOWE3YmUyZmIzYzI0NTcyODIyOGJjYjlkYzNhNzZmNTFhNWE0MGMxZDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM1NWIxZjE5MGQyZTNiNzY1NmFjYmY3YzhjNmY1NDgzMjExNjRiOGQ4NmQ0ZDI0YmI3NWE3ODNmYTE3ZjhlZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmNmI4YmFjOGI0ZGExOGY1YzExNjQwM2Y4YTU5MzQ1MDRiNTNhZmFjMTRlNGZkNmJkZGI5YTk3N2UwODhjOTMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/storage-recovery.e2e.mjs#L177-L287",
+          "version": "repo-lines-v1:sha256:af78471b259c99fee03ec54cfb3d57bcafe5e1cc4fab1a33e81facc5142ac87b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTExLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NTYzMWYxZDQ0NWFhMWU0YmQzYWNlOTY2ZTZlYmJhNWMyNWI3MWI2MWU2MmYwZDUwZmIzZmNhZDU0Njg2Y2U5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyYmEwNTJlMjY0OWY1N2Q2OWZjOWZhYTU5OTE0MmU5NDI3ZjUxNDNmODc3ZGFlYmZhODRkZGE0NzM0ZmM3MDgzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5NTVhOTFkZGFmZTNhY2E1ZjdlYmY2ODRmNTdiOTExOTQyN2UyOWVjYTUwZGUwOWUxZjhmZWIxZTgwNjllYzhlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3MmJiYjBmZmQzZjMxNGFhNzY3ODIwZjBhYjYwYzc1MWZmNmUyMTc2YWE4YWQ1MzZjODMwNWNiNDY3ZWY0ZDc4In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_4aa8f5112fa34447a7eeeed91aa3f4ca",
+      "statement": "La navegación principal no usa rutas URL: `TabKey` y el estado React seleccionan seis dominios, y el estado de navegación comienza en Inicio salvo que un borrado incompleto remonte el runtime directamente en Configuración.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L439-L440",
+          "version": "repo-lines-v1:sha256:bd3cfa8775c018b29e4123312b5a33d280daa32dd27ba269a1a421ef8db130cc:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWFkNjA4YjJkYzUzZGViMjAyMzBmNmQzODhkMmU0MDFkNDQ1MjQyYmIyOWUwNzgzYjRiZTNkYTY0ZjU2ZWRkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzVjYTQyMjFlNWIyMmY4ZTIxODE4MGYwZTE5NzdiZjNhZTcxNmNhNzJmNzg1MTgyM2I0MzkwYzY1ZWQ4OTA4ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTM4M2FjMTk5OGFkODgyODg0NWM3MGVkZmY5ZDI1ZmNjNzg5NTdmNTUzMGE3OTgzOGQ1MTg0YTFlMTcwZmU0MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmRkYmU5MTBkNDlkZWYxOTcwM2IwMWMzNmI0ZDY3ZDA0NTUzZjc2OGVmMDQyY2E5ZjgyMjUwNmE3ODViMjZiZCJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L6364-L6381",
+          "version": "repo-lines-v1:sha256:87b1f678366675811730891db1433df3877824c9be2117392e181b3e98fca4aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3YTI5NDA4ODVlOTBiOTM2OWU0ZGIwNTBmMTczOThkNzY4ZWVjZmNiZWZlY2E4ZWQ3MmVkNjY5NzA0MTZmY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZGIwN2YwNDI0OGViYjY3MWIzYmI1ODFlNjVlYTZkYjUzODE1NTllNTNlZWVlMjM0MjM1NDE3NWE1MjkzNzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1Y2RjNDNiM2I0NmNjMTFiNDAxYmZiZWJmNmJmYTY1MDJmY2M1ODNlYmI5OGUxZjM2MmZjNmFjMWNhNTliMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlZDc1M2M5MDJjMTc4NzhmYWE4Y2Y1ZTgyZDU1NTUzM2Q4YmYxOTRkOTk4OTJhZTUyYTJjOGJkYjBkZGQ3NTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c2bbda265007474bae4ae4812546028e",
+      "statement": "La web con viewport de al menos 960 píxeles muestra `DesktopSidebar`; web estrecha y todas las plataformas nativas muestran la banda horizontal. Ambas superficies cambian el mismo `tab` y exponen selectores de prueba distintos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13650-L13666",
+          "version": "repo-lines-v1:sha256:29159e9e1f56c2ab6c0b15c153aa93badb531be64f66f863faa648bc0757cc3f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3MjE2ZThlOWMwYTFhNjhkMDZjMmZiYWE1ZmQyMTM5NDgyYjhlZmQwYTE5MzE1YjkxNWU2Y2NlODQ5ZDg5ZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1YTljZGVmOGFiMTU1YjEyNjdiZTcwOGRlYmQwMDVlNWIwNjIyOTI5NTJmOWQ0YmZhYmJiMmFkNDI0YTUxNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkYjNlN2NkMGMzYTYyMzA0NzY2ODE2MWQxMDRlOTlkODYyMDljYTNlNzc1NGEyNWIxMTlhNDkwNzg3ODA0MjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmODRmMGI5ZDY4MjQ4NDZiZjM0ZTYzNGNlOTY0MDBkZjc3YzY5OTM5ZDQyYWVmZDIyZjAzOTJlNTU0Yjg3YzIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L13764-L13818",
+          "version": "repo-lines-v1:sha256:bb14ae5b1a05f3f3736db9b4daec976210e60e33d6d341fdcabf7b5d0e526e8d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2MTZkMjAwOTA0MjYzN2RjMWI0YzlmOWI4MjE5OWEzNmM2NjAwZGM2ZjhmNTZhYTBjZjE4NzAwZDkxZjhjMjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzYzc3OGZiMjk4YzU2MDVkZDgyYTExZGZhZmJhZmY0NjczYTQ4ODEyZWNjZWM4N2E1Mjg5MTcxNDExNzVjZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjOGY5YThhMDU4NjA0YjUxYjE0OThiZjlhZjZjMDI0MmY1ODg1NjAwMTIxYzM4ZGMyZTg4OWYxMDY3MDMzMzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFmOWFhZWQ1ZWIwMjMwM2E3MjM5NTg4YWUzZmRjNzc4ZGZkYWRiOTA0M2UxYzE4Njg5OTMwZWRkNWZiNWEwZWMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4731-L4790",
+          "version": "repo-lines-v1:sha256:90595b8e25e66d09cfccdafa3e8ea6af2d0affb941aafebe9d6f6d7dc37b3594:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiZDA3Nzg1ZThkMjI0YmVjOWQyZjNmOTgyNGNiY2JiZTRmYzE2YTU2YjhjYmYxYmM2NzI0ODc3MWVjYzM3ZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4MzA4YzQ5NmY4Mzg1MzNhMWEwMTM3ZmZlMThlMjQ2Yjc0NzZjOTBhMWJjOTZlNjQzZjY1MjY4MmZiZjQzZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkYzQwZDZiYTNlZTUyYWVhOTcyYmFhZjdjZjViZGI5YjhlNDBhNjA3NGJlNjFjZDdkNjEyNjAxMWNiNjM0NGEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L6364-L6368",
+          "version": "repo-lines-v1:sha256:8e939841448bcb84bc165d33f775d0061e90590ff74309ddfd2a14b900ff40bd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTdhMjk0MDg4NWU5MGI5MzY5ZTRkYjA1MGYxNzM5OGQ3NjhlZWNmY2JlZmVjYThlZDcyZWQ2Njk3MDQxNmZjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTVlZjAxYmMwOGRiYzNiNjNlNGU3NWVhM2QyNmE1Yjk0MTg5MTg3N2UyN2FkODkxMzI5Yzg0MTFkN2Q4ZGM0ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTVjZGM0M2IzYjQ2Y2MxMWI0MDFiZmJlYmY2YmZhNjUwMmZjYzU4M2ViYjk4ZTFmMzYyZmM2YWMxY2E1OWIwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmZlZTM2YTEzZTJjMTIzNzBiMmM1ZmE1ZjNmYTA5MGM2ZTQwZGFhNjk5ZDE2MGVlYzk0MDE3ZmU1NDY1NGU3MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_29145d14adb9413c8a8bf2ccfef7adc5",
+      "statement": "El controlador Android de `BackHandler` consume Atrás por prioridad: cierra primero capas y desplegables, retrocede pantallas de plantilla, solicita confirmar el descarte de una sesión activa, vuelve a Inicio desde otra pestaña y solo delega en Android cuando no queda una capa gestionada.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L7657-L7710",
+          "version": "repo-lines-v1:sha256:461d8dd31d827149c4cb6580917b9b8dd0bdc20a46a1d8cfb10fa7fbb3c0af6e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmM2Y1NjhhY2QxZDM1M2E0YzdjM2I5N2ExNmJjMTdjMTk1NmJlZTNhYTM1OGZmMTg0NTZjNmM1OTE4ZjU3NjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhYmUwY2UyY2VlNTQyNTBlN2IwYjk3YjJkOGY4OTVmNzkwZjk2OGU2MzI1MWQ1NWFlYmUxYWM2MGVhOThlN2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4NmRhYWVmYWE2Yzg4NWE3YzdkMWY2MzYzMjdjMDUxOWQyMzU3ZTQyNWZmY2NkMmM0ZWUyMWU1N2E3MWY5ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNiNjI0ZWEyNDY4MzUzMDE5OTYwNmUyMjk5Yzk2YzM0ZTUzMGNkZDYzNWM0NTQ0OThlMmIwNmRmM2YxZWIzYTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_de97650fb4f542c8ae52dab0457daee6",
+      "statement": "Las notificaciones de descanso son locales: el shell solicita permiso y crea un canal Android al iniciar audio de sesión, agenda una notificación al pasar a segundo plano durante un descanso y usa evidencia de entrega para decidir si suprime la alerta interna de respaldo.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L7757-L7852",
+          "version": "repo-lines-v1:sha256:3f6029feba6f6c8069a6db2ddb31acead5f850247aeba8e2ffd4439d44c293fa:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlODk5OGI2ODZhZmU5ODI0YzEzMzM0YjkyNTQ2OGQ3ZTJhYjg3M2YyOTc0ZmE2MTAyZWFmYWI2ZTdkYzljZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkYzUyZjA4YjM5YjA4YjAxYzhkMzA4YmY4ODBiMGJlZjAyZmQxZGZjYzlkOWFhOTNhNGQxYjVmNGQ1OGI2Y2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3YWNhNDg2ZTc4NmVlN2Y1Y2E0MjY4YzlkZGNlZWQ1MWYwOGRkYTA1YjcyNDRhMzE2NTcwNzljMDg5ZTVjNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzOGVhODg1NjhkN2RkMDdlM2NjMWZjN2FiYWQ2NjY1ZmI0NWM0NGE2YjVhZTUzYTk1ZGE2YTQ5NWY2MmE1ZWIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L7854-L7887",
+          "version": "repo-lines-v1:sha256:9c66baff5de5a5e7ec79599e70884adec4c3d8606f8d8367f2963abc3107fa49:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhMmNjODNkYmMwZjU0MDlhMjc2ZWY5ZGVkNWI1OGI2ODExYmRmNDJiODdiNGU4ODA5MjgxMjQ1M2ZiYWNmZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkYzUyZjA4YjM5YjA4YjAxYzhkMzA4YmY4ODBiMGJlZjAyZmQxZGZjYzlkOWFhOTNhNGQxYjVmNGQ1OGI2Y2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2NjE3YzU5NWQxYzc0NjA2MDlmMGMyZGMxMDVlNDg1MmU0OWIwMWY4OWI2NTQzNDhhYWU1YWVmYjE0ODVmYzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmZTdkMmQ3ZDA4Y2YyMzY1NzAwMGNhYTA1N2I4NWNiNjRjMTEyYTAxNWU1ZjExODZmMWRjMmQ2Mjk4YTc5NTgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8879-L8928",
+          "version": "repo-lines-v1:sha256:cb8d3c061854dd043866efc42d988838791398ccb0a0aca64a86a1bc34b942e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmYTQzMWUwMTdhZmI4MWUxOTI2YzE2NjQ2ODcyY2FkOGQxOWMyYjI4NTkyNWJiNzQ5N2MyZWNhZDk3NTQ3ODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjMzczZWRhMzgwM2IyMDFlOTU4YTIxMTJiMWRhMzllODRkYzhiZTBmMmIwZGVmZjlmOWI3MWNhYWNlMTUzNjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3MzA1YjQxYmYwNmRhYjRmNzAwMTBhY2NjNTAyNjQwMTcyZDdlZDBlNmJlNGFjMjVmMzgyZjBjNmYxZDU3N2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwZGEyOWQwYjI1OTZkZGI2ZDRiMDZjM2IxNzk5MjM2ODc0NWYzZTI4MjFmODJjOTI3N2U1YjUxZmE1NDM1OTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8990-L9027",
+          "version": "repo-lines-v1:sha256:9156fc74bb512540be6dc94e34d6279603dcc127039a629c97d2c02ed1915d5b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3YzliMjk1MTljYzU4MzczNmVmMmM4OTI2ODA3MjQ0MTMzODg3ZmM2MzZmNzNiZTgyMzZiZWQyZGNkMWZiODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiOWRkZWNhZDE4YTEwYzcxNTY2OTJkOTk5ZDlkNjA0YzlhMDRkZWYyYmMxMmQzNmE5MGQ0ODdlM2M5MWQzYjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3ZDRkODRjNTA1ZDdhNzkwYmYwZTQwMzY0ZjMwYzU2NmE4N2Q2ZjYyYzU3OTAyYTI1ZGZlNDk1OWI4YzIyMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0NDU4MjJkOTU0MTYxMWQ0OWY1YjQyMjVlOWQwMTE5Y2RmZmE0YWMwODUyMGIwZDZlOTFlNDY0ZDNlMTgyZmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3d1014c75d444a1f83a44b620a1f0266",
+      "statement": "La configuración Expo exige `APP_ENV` y construye variantes development, staging y production con identificadores, canales, espacios de nombres y modo de proveedor; el runtime valida que los extras públicos sean coherentes y usa el espacio de nombres para aislar las claves de almacenamiento no productivas.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/app.config.ts#L101-L155",
+          "version": "repo-lines-v1:sha256:24757949c83ceba44ec586c3e266bd7da0fa8cc9606aa6abdf7efd1c6ea37b1e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmY2IxZDYyNDc3OGM5MTcxMGM0N2U0ZjFhZTgwNTA4MWJmODBjY2EwZTY3N2ZmYjBjYTYwZWVkZDM1MTk3MzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3NTk3N2Q3YTFiMWVmZjBjYThjZDBlZGI5NGNlZThmYTFjNWY3MjM1YWJmODQxNWFhYzU0MzE4Y2FhYWViNDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkOTE1MTZlMjQzMDdhMTBkNTc4MjQ2NmQ2NTRlZmU1OGZjYjlmMmRhZTYyNzJmYmQwMmEwYjA5NjY1MTJiMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/app.config.ts#L7-L33",
+          "version": "repo-lines-v1:sha256:51ad0d24216475d59ff1e311d4c68d407f76669f43353b2bd2993e2d95891de6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyOGU3MTA2YzBmYTg4MzQ4MjVkNTJhZmI5YjM2OTM0ZmE2NTQyNzNjNzFmMjE2ZmJjNzAwNjQxNGM3ODU5NGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxZmQyZTFmM2Y5YjZiNzUyYWY1YjNlMzM4MDc5MWNhM2E1MzA4YjljNTJlZGE2OTA2MWJmNDE2MDllMmUwYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzM2RkMWYzZDVmMTc0MDM2ZjZiMTQ3NzYxYTFmZWFkYjM1ZDg3YzIxMGQxY2E3OTU3NDc4YjFkNDFhMmExMWMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/environment.ts#L53-L141",
+          "version": "repo-lines-v1:sha256:7dc608652dfca6f8dec7173d3629e76b91ec38f6acc6ec3f6abfff0cc46abcea:eyJzZWxlY3RlZExpbmVDb3VudCI6ODksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhOGExMWRjODUzZGJkNTcxNDIwOGM2Y2M1ZDUyMDM1MDViOWM4OWZjNjRkMDY0ZjA3NzRhY2YyNGVjNzU3NTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzRjYWJjMmYwNjcxMmNiMWU2MTc1Y2QxODE1M2I4MmRjZjMzMGZkOGQwYjZiZWZmMDM5ZTQxOWIzOTBlZmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhMzhlZTljYzczYzlmMWYyYzhmOGM1NmQwMGJkMDBkZTViMDczNjlmMTJlMDgwYWJiZDc5YzhjNDM3NTZjMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExN2YyOGFlZWJiNmMyYzMwODZlM2VhMDYxM2EwNjE3NDJiYWE0MmY2ZmJmMjU4ZDQ1YTk3MDJlMGU5ZjQ3ZGEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/runtimeEnvironment.ts#L1-L27",
+          "version": "repo-lines-v1:sha256:f58d26507df080522dfdf1099a2a04a24fa648fb6fecb61c13bc15943ea1406e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlMTUxOWFmNmQxYWZhMjA0MTMxNmU4NzlhYmJiYWJlMWUyYmI0NTY3OWMxYjQzZGIzOTgzOGU0MTQwYTY2MzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_16894285dbb84b518a8339e3896b882d",
+      "statement": "La configuración Android declara permisos para servicio en primer plano, bloqueo de pantalla, vibración, reinicio y alarmas exactas programables, bloquea `USE_EXACT_ALARM` y configura el plugin de notificaciones con recursos de sonido empaquetados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L22747-L22747",
+          "version": "repo-lines-v1:sha256:226d7931a6fddee4da0b199cb3b186ed32e7f9949a4905c347c372fb2251cab5:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjI2ZDc5MzFhNmZkZGVlNGRhMGIxOTljYjNiMTg2ZWQzMmU3Zjk5NDlhNDkwNWMzNDdjMzcyZmIyMjUxY2FiNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjI2ZDc5MzFhNmZkZGVlNGRhMGIxOTljYjNiMTg2ZWQzMmU3Zjk5NDlhNDkwNWMzNDdjMzcyZmIyMjUxY2FiNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWFlZDE5OGJhZjdkODZiYjhhZjY0MDQ5MmFkNTViNDA1ZDczYjc3NThhNmIwODZkMzU2YzNkMTdlMGU0NTEzZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWZiZmNhMzVlYWIzYjVlYzFhMWI0ZjQyMjJlM2VjMDcyZmU2MjNlYjU3ZDkyY2JhMDE0MWY0ZTA2YzA4OTJjNiJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/app.json#L26-L44",
+          "version": "repo-lines-v1:sha256:13d70e8b72790f4a8b2a668af905b8d05d810d6358dcbd1bee7563f06ce78019:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1NDlkYmQ3YWI3MDE5NTExMjBmZmM2NWQ0NDljZGRjMDcwZmNhYzg5NjliNjAxMmEzOTU1ZmM0MjE0ZDljZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0MjIzOWIxYmQ4MmI4NWVkNTBjMThhYmU2YjhlOTk3ODc1NWRhYzZmZDgwNDA5MjRjOGE4ODBjNTJmMDY1ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhZjNmNzVkNDI3MTBkNTUyYjQzOWNjYzM3NTM4YTFiODBhZDY0ZWEzOGYwZGM1MmNiNzAzNTYyYWU0ZDYyYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjYWU0NmY1ODgxODEzNmFmOWJjNDYwYzgwOGMyNjVhY2E0M2VmNGM5NjQ4ZDY4ZjlmMGI5MGViYzE2Y2JiZTgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/app.json#L54-L75",
+          "version": "repo-lines-v1:sha256:414c8d63ab361356c3df77eb06e039ecb1867b51c3478ea1bd072b0f4c33b5c2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxYzVjMjU4YjY0YjYxZjJkODEwZmY3NzJjNDliYWEwNzhmYjUxNGNmNmZkODMxZDgxZTQ2ZmMxOGIwNzhlYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxZDRjNjYwZjJhM2QzNjRiNzFjNmVmOWY4NmEyNjEzYTlkZjVkNmQ5YTZmMzgyZTE4MGM4ZmRmY2E4Nzc2ZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmNzM5YTA2YzFjYmIxMjQ0ZTMzNjNkMzhiY2Y5ZmE1MGNlODRmZWQzOTljMjE5M2EzYzdmMDhkNTk5MThiMmEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-07T11:37:28.236Z"
+  }
+}
