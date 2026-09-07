@@ -16,6 +16,8 @@ const SERVER_BOOT_TIMEOUT_MS = 120000;
 const STEP_TIMEOUT_MS = 30000;
 const DEVELOPMENT_NAMESPACE = "gymnasia.development";
 const STORE_KEY = `${DEVELOPMENT_NAMESPACE}:gymnasia.mobile.local.v3`;
+const SESSION_KEY = `${DEVELOPMENT_NAMESPACE}:gymnasia.mobile.training.session.v1`;
+const SESSION_DRAFT_KEY = `${DEVELOPMENT_NAMESPACE}:gymnasia.mobile.training.session_template_draft.v1`;
 const mobileRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 
 function logStep(message) {
@@ -225,6 +227,19 @@ async function waitForStore(page, predicate, message) {
   throw new Error(message);
 }
 
+async function waitForSessionDraft(page, predicate, message) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < STEP_TIMEOUT_MS) {
+    const raw = await page.evaluate((key) => localStorage.getItem(key), SESSION_DRAFT_KEY);
+    if (raw) {
+      const draft = JSON.parse(raw);
+      if (predicate(draft)) return draft;
+    }
+    await sleep(100);
+  }
+  throw new Error(message);
+}
+
 function findTemplate(store, id) {
   const template = store.templates.find((item) => item.id === id);
   assert.ok(template, `no existe la rutina ${id}`);
@@ -236,6 +251,24 @@ async function run(page, baseUrl) {
   await waitForAppReady(page);
   await openTrainingTab(page);
   logStep("Rutina avanzada cargada");
+
+  await clickTestId(page, "training-template-menu-tpl_ops");
+  await clickTestId(page, "training-template-edit-tpl_ops");
+  await page.getByTestId("training-editor-name").fill("Borrador que se descarta");
+  assert.equal(
+    findTemplate(await readStore(page), "tpl_ops").name,
+    "Rutina de operaciones avanzadas",
+    "escribir en el editor modificó la rutina canónica",
+  );
+  await clickTestId(page, "training-editor-cancel");
+  await page.getByTestId("training-editor-discard-modal").waitFor({ timeout: STEP_TIMEOUT_MS });
+  await clickTestId(page, "training-editor-keep-editing");
+  await page.getByTestId("training-editor-name").waitFor({ timeout: STEP_TIMEOUT_MS });
+  await clickTestId(page, "training-editor-cancel");
+  await clickTestId(page, "training-editor-confirm-discard");
+  assert.equal(findTemplate(await readStore(page), "tpl_ops").name, "Rutina de operaciones avanzadas");
+  logStep("Cancelar y volver atrás preservan la rutina canónica");
+  await clickTestId(page, "training-detail-back");
 
   await clickTestId(page, "training-template-menu-tpl_ops");
   await clickTestId(page, "training-template-clone-tpl_ops");
@@ -260,51 +293,37 @@ async function run(page, baseUrl) {
   await clickTestId(page, "training-template-edit-tpl_ops");
   await clickTestId(page, "training-editor-series-menu-exercise_press-set_superset");
   await clickTestId(page, "training-editor-series-duplicate-exercise_press-set_superset");
+  await clickTestId(page, "training-editor-series-add-exercise_press");
+  await clickTestId(page, "training-exercise-menu-exercise_press");
+  await clickTestId(page, "training-exercise-clone-exercise_press");
+  assert.equal(
+    findTemplate(await readStore(page), "tpl_ops").exercises.length,
+    2,
+    "el borrador del editor modificó la rutina canónica antes de guardar",
+  );
+  await clickTestId(page, "training-editor-save");
   store = await waitForStore(
     page,
-    (candidate) => findTemplate(candidate, "tpl_ops").exercises[0].series.length === 2,
-    "la serie no se duplicó",
+    (candidate) => findTemplate(candidate, "tpl_ops").exercises.length === 3
+      && findTemplate(candidate, "tpl_ops").exercises[0].series.length === 3,
+    "el borrador completo no se guardó",
   );
   let originalTemplate = findTemplate(store, "tpl_ops");
   const sourceSeries = originalTemplate.exercises[0].series[0];
   const seriesClone = originalTemplate.exercises[0].series[1];
   assert.notEqual(seriesClone.id, sourceSeries.id);
   assert.notEqual(seriesClone.sub_series[0].id, sourceSeries.sub_series[0].id);
-  assert.deepEqual(
-    { ...seriesClone, id: sourceSeries.id, sub_series: seriesClone.sub_series.map((item, index) => ({ ...item, id: sourceSeries.sub_series[index].id })) },
-    sourceSeries,
-  );
-  logStep("Serie compuesta duplicada con mini-series nuevas");
-
-  await clickTestId(page, "training-editor-series-add-exercise_press");
-  store = await waitForStore(
-    page,
-    (candidate) => findTemplate(candidate, "tpl_ops").exercises[0].series.length === 3,
-    "la nueva serie compuesta no se añadió",
-  );
-  originalTemplate = findTemplate(store, "tpl_ops");
   const addedSeries = originalTemplate.exercises[0].series[2];
   assert.equal(addedSeries.type, "superset");
   assert.equal(addedSeries.sub_series.length, 1);
   assert.notEqual(addedSeries.sub_series[0].id, seriesClone.sub_series[0].id);
-  logStep("Nueva serie compuesta creada con su configuración completa");
-
-  await clickTestId(page, "training-exercise-menu-exercise_press");
-  await clickTestId(page, "training-exercise-clone-exercise_press");
-  store = await waitForStore(
-    page,
-    (candidate) => findTemplate(candidate, "tpl_ops").exercises.length === 3,
-    "el ejercicio no se duplicó",
-  );
-  originalTemplate = findTemplate(store, "tpl_ops");
   const exerciseClone = originalTemplate.exercises[1];
   assert.notEqual(exerciseClone.id, "exercise_press");
   assert.notEqual(exerciseClone.series[0].id, "set_superset");
   assert.notEqual(exerciseClone.series[0].sub_series[0].id, "sub_fly");
   assert.equal(exerciseClone.series[0].sub_series[0].exercise_id, "exercise_fly");
-  logStep("Ejercicio duplicado sin reutilizar identidades anidadas");
+  logStep("Borrador guardado de una vez sin reutilizar identidades anidadas");
 
-  await clickTestId(page, "training-editor-save");
   await clickTestId(page, "training-detail-back");
   await clickTestId(page, "training-template-inline-start-tpl_ops");
   await page.getByText("Sesión activa", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
@@ -312,24 +331,26 @@ async function run(page, baseUrl) {
   const templateBeforeSessionChange = structuredClone(findTemplate(await readStore(page), "tpl_ops"));
   await clickTestId(page, "training-session-series-type-exercise_press-set_superset");
   await clickTestId(page, "training-series-type-option-dropset");
-  store = await waitForStore(
+  const sessionDraft = await waitForSessionDraft(
     page,
-    (candidate) => findTemplate(candidate, "tpl_ops").exercises[0].series[0].type === "dropset",
-    "el cambio a tipo compuesto durante la sesión no se guardó",
+    (candidate) => candidate.draft.exercises[0].series[0].type === "dropset",
+    "el cambio a tipo compuesto no llegó al borrador de sesión",
+  );
+  store = await readStore(page);
+  assert.equal(
+    findTemplate(store, "tpl_ops").exercises[0].series[0].type,
+    "superset",
+    "la sesión modificó la rutina canónica antes de la decisión final",
   );
   assert.deepEqual(
-    findTemplate(store, "tpl_ops").exercises[0].series[0].sub_series,
+    sessionDraft.draft.exercises[0].series[0].sub_series,
     templateBeforeSessionChange.exercises[0].series[0].sub_series,
     "el cambio de tipo alteró las mini-series conservadas",
   );
   logStep("Tipo compuesto cambiado durante la sesión");
 
   await clickTestId(page, "training-session-finish");
-  await page.getByText("Cambios detectados", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
-  await page.getByText(
-    "Has modificado la configuración de algunas series. ¿Aplicar esos cambios a la rutina futura?",
-    { exact: true },
-  ).waitFor({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText("Cambios de rutina detectados", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
   assert.equal(await page.getByTestId("training-complete-apply-changes").count(), 1);
   assert.equal(await page.getByTestId("training-complete-revert-changes").count(), 1);
   const screenshotPath = process.env.TRAIN_SERIES_OPERATIONS_E2E_SCREENSHOT?.trim();
@@ -339,10 +360,140 @@ async function run(page, baseUrl) {
   store = await waitForStore(
     page,
     (candidate) => findTemplate(candidate, "tpl_ops").exercises[0].series[0].type === "superset",
-    "la instantánea previa a la sesión no se restauró",
+    "la rutina canónica cambió al elegir mantenerla",
   );
   assert.deepEqual(findTemplate(store, "tpl_ops"), templateBeforeSessionChange);
   logStep("Cambios detectados y rutina original restaurada");
+
+  await clickTestId(page, "training-complete-close");
+  await clickTestId(page, "training-template-inline-start-tpl_ops");
+  await page.getByText("Sesión activa", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
+  await clickTestId(page, "training-session-series-type-exercise_press-set_superset");
+  await clickTestId(page, "training-series-type-option-dropset");
+  await clickTestId(page, "training-session-finish");
+  await clickTestId(page, "training-complete-apply-changes");
+  store = await waitForStore(
+    page,
+    (candidate) => findTemplate(candidate, "tpl_ops").exercises[0].series[0].type === "dropset",
+    "la versión de la sesión no se aplicó tras confirmarla",
+  );
+  logStep("Cambios de sesión conservados solo tras confirmación explícita");
+
+  await clickTestId(page, "training-complete-close");
+  await clickTestId(page, "training-template-inline-start-tpl_ops");
+  await page.getByText("Sesión activa", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
+  await clickTestId(page, "training-session-series-type-exercise_press-set_superset");
+  await clickTestId(page, "training-series-type-option-superset");
+  await clickTestId(page, "training-session-discard");
+  await clickTestId(page, "training-session-discard");
+  await page.getByTestId("training-complete-revert-changes").waitFor({ timeout: STEP_TIMEOUT_MS });
+  await clickTestId(page, "training-complete-revert-changes");
+  store = await readStore(page);
+  assert.equal(
+    findTemplate(store, "tpl_ops").exercises[0].series[0].type,
+    "dropset",
+    "descartar la sesión cambió la rutina sin permiso",
+  );
+  logStep("Descartar una sesión preserva la versión canónica elegida");
+
+  await clickTestId(page, "training-template-inline-start-tpl_ops");
+  await clickTestId(page, "training-session-series-type-exercise_press-set_superset");
+  await clickTestId(page, "training-series-type-option-superset");
+  await waitForSessionDraft(
+    page,
+    (candidate) => candidate.draft.exercises[0].series[0].type === "superset",
+    "el borrador no se persistió antes de recargar",
+  );
+  await page.waitForFunction(
+    (key) => localStorage.getItem(key) !== null,
+    SESSION_KEY,
+    { timeout: STEP_TIMEOUT_MS },
+  );
+  await page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await waitForAppReady(page);
+  await openTrainingTab(page);
+  await page.getByText("Sesión activa", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
+  const recoveredDraft = await waitForSessionDraft(
+    page,
+    (candidate) => candidate.draft.exercises[0].series[0].type === "superset",
+    "el borrador no sobrevivió al reinicio",
+  );
+  assert.equal(recoveredDraft.draft_revision > 0, true);
+  await clickTestId(page, "training-session-finish");
+  await page.getByTestId("training-complete-revert-changes").waitFor({ timeout: STEP_TIMEOUT_MS });
+  await page.waitForFunction(
+    (key) => {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw).pending_resolution?.kind === "finish" : false;
+    },
+    SESSION_KEY,
+    { timeout: STEP_TIMEOUT_MS },
+  );
+  await page.evaluate(({ storeKey, templateId }) => {
+    const raw = localStorage.getItem(storeKey);
+    if (!raw) throw new Error("No existe el almacén para simular el cambio concurrente");
+    const current = JSON.parse(raw);
+    current.templates = current.templates.map((template) =>
+      template.id === templateId
+        ? { ...template, name: "Rutina cambiada fuera de la sesión" }
+        : template);
+    localStorage.setItem(storeKey, JSON.stringify(current));
+  }, { storeKey: STORE_KEY, templateId: "tpl_ops" });
+  await page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await waitForAppReady(page);
+  await page.getByTestId("training-complete-revert-changes").waitFor({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText("La rutina también cambió fuera de la sesión", { exact: true })
+    .waitFor({ timeout: STEP_TIMEOUT_MS });
+  await clickTestId(page, "training-complete-revert-changes");
+  store = await readStore(page);
+  assert.equal(findTemplate(store, "tpl_ops").exercises[0].series[0].type, "dropset");
+  assert.equal(findTemplate(store, "tpl_ops").name, "Rutina cambiada fuera de la sesión");
+  assert.equal(
+    new Set(store.workoutHistory.map((summary) => summary.id)).size,
+    store.workoutHistory.length,
+    "un reintento de resolución duplicó el historial",
+  );
+  logStep("Borrador, decisión pendiente y cambio concurrente recuperados tras reiniciar");
+
+  await clickTestId(page, "training-complete-close");
+  await openTrainingTab(page);
+  const templateCountBeforeCreation = (await readStore(page)).templates.length;
+  await clickTestId(page, "training-create");
+  assert.equal(
+    (await readStore(page)).templates.length,
+    templateCountBeforeCreation,
+    "crear abrió y persistió una rutina vacía",
+  );
+  await clickTestId(page, "training-editor-save");
+  assert.equal(
+    (await readStore(page)).templates.length,
+    templateCountBeforeCreation,
+    "guardar aceptó una rutina sin series ejecutables",
+  );
+  await clickTestId(page, "training-editor-cancel");
+  await clickTestId(page, "training-editor-confirm-discard");
+  assert.equal(
+    (await readStore(page)).templates.length,
+    templateCountBeforeCreation,
+    "cancelar creó una rutina fantasma",
+  );
+
+  await clickTestId(page, "training-create");
+  await page.getByTestId("training-editor-name").fill("Rutina transaccional");
+  await clickTestId(page, "training-editor-add-exercise-bottom");
+  await clickTestId(page, "training-exercise-custom-open");
+  await page.getByTestId("training-exercise-custom-name").fill("Ejercicio transaccional");
+  await clickTestId(page, "training-exercise-custom-save");
+  await clickTestId(page, "training-editor-save");
+  store = await waitForStore(
+    page,
+    (candidate) => candidate.templates.some((template) =>
+      template.name === "Rutina transaccional"
+      && template.exercises.some((exercise) => exercise.name === "Ejercicio transaccional")),
+    "la nueva rutina válida no se guardó",
+  );
+  assert.equal(store.templates.length, templateCountBeforeCreation + 1);
+  logStep("Crear cancela sin residuos y guarda solo un borrador válido");
 }
 
 async function main() {
@@ -354,8 +505,7 @@ async function main() {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     await context.addInitScript(
       ({ key, value }) => {
-        localStorage.clear();
-        localStorage.setItem(key, value);
+        if (localStorage.getItem(key) === null) localStorage.setItem(key, value);
       },
       { key: STORE_KEY, value: JSON.stringify(seededStore()) },
     );

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { catalogRef, linkedCatalog, unresolvedCatalog } from "../catalogs/types";
 import {
+  buildWorkoutTemplateRevision,
   buildTemplateSeriesSignature,
   changeExerciseSeriesType,
   cloneWorkoutTemplateSnapshot,
@@ -8,6 +9,7 @@ import {
   duplicateExerciseSeries,
   duplicateWorkoutExercise,
   duplicateWorkoutTemplate,
+  diffWorkoutTemplates,
   type WorkoutTemplate,
 } from "./workoutTemplateOperations";
 
@@ -222,5 +224,40 @@ describe("operaciones de plantillas con series avanzadas", () => {
     const whitespaceOnly = cloneWorkoutTemplateSnapshot(baseline);
     whitespaceOnly.exercises[0].series![0].reps = " 8 ";
     expect(buildTemplateSeriesSignature(whitespaceOnly)).toBe(baselineSignature);
+  });
+
+  it("detecta cambios funcionales completos sin conflictos por campos derivados", () => {
+    const baseline = fixture();
+    const revision = buildWorkoutTemplateRevision(baseline);
+    const functionalMutations: Array<(template: WorkoutTemplate) => void> = [
+      (template) => { template.name = "Otra rutina"; },
+      (template) => { template.category = "strength"; },
+      (template) => { template.icon = "star"; },
+      (template) => { template.duration_minutes = "60"; },
+      (template) => { template.exercises.reverse(); },
+      (template) => { template.exercises[0].name = "Otro ejercicio"; },
+      (template) => { template.exercises[0].image_uri = "exercise.png"; },
+      (template) => { template.exercises[0].muscle = "chest"; },
+      (template) => { template.exercises[0].catalog_link = unresolvedCatalog("not_found"); },
+      (template) => { template.exercises[0].series![0].reps = "20"; },
+    ];
+    for (const mutate of functionalMutations) {
+      const changed = cloneWorkoutTemplateSnapshot(baseline);
+      mutate(changed);
+      expect(buildWorkoutTemplateRevision(changed)).not.toBe(revision);
+      expect(diffWorkoutTemplates(baseline, changed).hasChanges).toBe(true);
+    }
+
+    const derivedOnly = cloneWorkoutTemplateSnapshot(baseline);
+    derivedOnly.series_schema_version = 999;
+    derivedOnly.exercises[0].sets = [99, 98];
+    derivedOnly.exercises[0].load_kg = 999;
+    derivedOnly.exercises[0].rest_seconds = 999;
+    expect(buildWorkoutTemplateRevision(derivedOnly)).toBe(revision);
+    expect(diffWorkoutTemplates(baseline, derivedOnly)).toEqual({
+      hasChanges: false,
+      changes: [],
+      summaries: [],
+    });
   });
 });
