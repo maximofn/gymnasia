@@ -52,6 +52,40 @@
   ],
   "groups": [
     {
+      "id": "GYM-228",
+      "kind": "epic",
+      "title": "Recuperar la respuesta inmediata de la app (épica de rendimiento)",
+      "state": "todo",
+      "summary": "Prioridad absoluta para medir la regresión que retrasa varios segundos las pulsaciones, localizar su causa y recuperar una interfaz fluida sin perder datos ni desactivar protecciones.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-229",
+          "title": "Diagnosticar la latencia de varios segundos al pulsar botones",
+          "state": "todo",
+          "summary": "Reproducir y perfilar la lentitud en una build de Producción, bisecar las versiones recientes y pedir al mantenedor comprobaciones guiadas y seguras hasta demostrar la causa raíz.",
+          "dependsOn": [],
+          "related": [
+            "GYM-160",
+            "GYM-202"
+          ]
+        },
+        {
+          "id": "GYM-230",
+          "title": "Corregir la regresión de rendimiento de la interfaz",
+          "state": "todo",
+          "summary": "Eliminar el trabajo bloqueante identificado, conservar la integridad y seguridad del estado local y añadir un presupuesto reproducible que impida recuperar pausas de varios segundos.",
+          "dependsOn": [
+            "GYM-229"
+          ],
+          "related": [
+            "GYM-160",
+            "GYM-202"
+          ]
+        }
+      ]
+    },
+    {
       "id": "GYM-187",
       "kind": "epic",
       "title": "Publicar Gymnasia en Google Play",
@@ -2932,8 +2966,17 @@
   ],
   "recommendedOrder": [
     {
+      "id": "rendimiento-interactivo",
+      "title": "Prioridad absoluta: recuperar la respuesta inmediata de la app",
+      "why": "GYM-229 (ticket para diagnosticar la latencia de varios segundos al pulsar botones) mide el problema en Producción, acota la primera versión afectada y guía las comprobaciones del mantenedor sin poner sus datos en riesgo. Solo con esa evidencia empieza GYM-230 (ticket para corregir la regresión de rendimiento de la interfaz), que elimina la causa y deja una barrera contra recaídas. Ningún otro trabajo del roadmap debe adelantarse a esta secuencia.",
+      "tickets": [
+        "GYM-229",
+        "GYM-230"
+      ]
+    },
+    {
       "id": "publicar-google-play",
-      "title": "Máxima prioridad: publicar Gymnasia en Google Play",
+      "title": "Publicar Gymnasia en Google Play",
       "why": "La publicación desbloquea el contenido sobre una app que el público puede instalar. Primero se crea la suite sanitaria y se formalizan los entornos para que toda promoción reutilice su puerta determinista; después se completa la barrera sanitaria y se limpian el build, el cumplimiento, la marca y la cuenta. Finalmente se importa la clave actual de EAS, se prepara ficha y acceso, se genera un único AAB trazable y se promociona por tracks hasta España y el resto de territorios elegibles.",
       "tickets": [
         "GYM-150",
