@@ -21,6 +21,7 @@ const SNAPSHOT_KEY = scopedKey("gymnasia.mobile.local.last_good.v1");
 const QUARANTINE_KEY = scopedKey("gymnasia.mobile.local.quarantine.v1");
 const SESSION_KEY = scopedKey("gymnasia.mobile.training.session.v1");
 const SESSION_SNAPSHOT_KEY = scopedKey("gymnasia.mobile.training.session_template_snapshot.v1");
+const SESSION_DRAFT_KEY = scopedKey("gymnasia.mobile.training.session_template_draft.v1");
 const PERSONAL_DATA_KEY = scopedKey("gymnasia.mobile.personal_data.v1");
 const USER_PREFS_KEY = scopedKey("gymnasia.mobile.user_prefs.v1");
 const mobileRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -258,6 +259,7 @@ async function run() {
         [STORE_KEY]: "broken",
         [SESSION_KEY]: JSON.stringify({ id: "active" }),
         [SESSION_SNAPSHOT_KEY]: JSON.stringify({ id: "template" }),
+        [SESSION_DRAFT_KEY]: JSON.stringify({ id: "draft" }),
         [PERSONAL_DATA_KEY]: personalData,
         [USER_PREFS_KEY]: preferences,
       });
@@ -268,6 +270,7 @@ async function run() {
       assert.deepEqual(resetStore.templates, []);
       assert.equal(await readLocalStorage(page, SESSION_KEY), null);
       assert.equal(await readLocalStorage(page, SESSION_SNAPSHOT_KEY), null);
+      assert.equal(await readLocalStorage(page, SESSION_DRAFT_KEY), null);
       assert.equal(await readLocalStorage(page, PERSONAL_DATA_KEY), personalData);
       assert.deepEqual(JSON.parse(await readLocalStorage(page, USER_PREFS_KEY)), {
         schemaVersion: 1,

@@ -24,6 +24,7 @@ const keys = {
   quarantine: scopedKey("gymnasia.mobile.local.quarantine.v1"),
   session: scopedKey("gymnasia.mobile.training.session.v1"),
   sessionTemplate: scopedKey("gymnasia.mobile.training.session_template_snapshot.v1"),
+  sessionTemplateDraft: scopedKey("gymnasia.mobile.training.session_template_draft.v1"),
   personalData: scopedKey("gymnasia.mobile.personal_data.v1"),
   personalFoods: scopedKey("gymnasia.mobile.personal_foods.v1"),
   preferences: scopedKey("gymnasia.mobile.user_prefs.v1"),
@@ -247,6 +248,10 @@ async function run() {
         recoveryKeys.sessionTemplate,
         JSON.stringify({ marker: `session-template-${staleMarker}` }),
       );
+      localStorage.setItem(
+        recoveryKeys.sessionTemplateDraft,
+        JSON.stringify({ marker: `session-template-draft-${staleMarker}` }),
+      );
     }, { recoveryKeys: keys, staleMarker: marker });
 
     log("Comprobando el borrado parcial y sus preservaciones");
@@ -277,6 +282,7 @@ async function run() {
     assert.equal(partial[keys.quarantine], undefined);
     assert.equal(partial[keys.session], undefined);
     assert.equal(partial[keys.sessionTemplate], undefined);
+    assert.equal(partial[keys.sessionTemplateDraft], undefined);
     assert.doesNotMatch(devStore, new RegExp(marker));
     assert.equal(JSON.parse(partial[keys.store]).dietSettings.daily_calories, "2200");
     assert.equal(JSON.parse(partial[keys.preferences]).chartPeriod, "6m");

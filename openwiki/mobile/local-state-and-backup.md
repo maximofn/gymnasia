@@ -64,6 +64,7 @@ El agregado no constituye todo el modelo de persistencia. A continuación se enu
 | AsyncStorage `gymnasia.mobile.provider_configuration.v1` | Diario versionado `committed`/`pending`; completo en web y sin `api_key` en su espejo nativo | No | Fuente canónica en web; en móvil refleja el diario seguro para inspección y recuperación sin duplicar secretos. |
 | AsyncStorage `gymnasia.mobile.training.session.v1` | `WorkoutSession` activo | No | Se normaliza durante la hidratación; se establece mientras está activo y se elimina cuando está ausente o se restablece por una importación. |
 | AsyncStorage `gymnasia.mobile.training.session_template_snapshot.v1` | Instantánea de `WorkoutTemplate` anterior a la sesión | No | Solo se lee si se hidrata una sesión; se escribe con una sesión y se elimina cuando esta se cierra. |
+| AsyncStorage `gymnasia.mobile.training.session_template_draft.v1` | Borrador versionado de `WorkoutTemplate` durante la sesión | No | Se escribe solo al cambiar la rutina de la sesión y se elimina después de persistir la decisión final. |
 | AsyncStorage `gymnasia.mobile.chat.system_prompt.v1` | Último prompt del sistema obtenido de forma remota | No | Alternativa de caché; los errores se ignoran deliberadamente. |
 | AsyncStorage `gymnasia.mobile.personal_data.v1` | `PersonalDataField[]`, cada uno con `{key, description, value}` | Sí | La configuración y las herramientas del agente lo cargan y guardan por separado. El JSON ausente o no válido se lee como `[]`. |
 | AsyncStorage `gymnasia.mobile.user_prefs.v1` | `UserPreferences` | Sí | Se combina superficialmente sobre los valores predeterminados durante la hidratación; se persiste por separado. Contiene el periodo y la métrica del gráfico, así como la configuración de notificaciones. |
@@ -126,7 +127,7 @@ Después de la hidratación:
 1. Cualquier cambio en `store` se serializa mediante `serializeStoreForAsyncStorage`, escribe el agregado saneado y llama a `saveDevStoreFile` con la misma versión saneada. Los secretos no se persisten mediante este efecto.
 2. Los cambios de proveedor pasan por `ProviderConfigurationRepository`: se encolan, escriben un candidato `pending` y solo publican `committed` si la operación sigue vigente.
 3. `userPrefs`, `personalFoods` y `activeWorkoutSession` tienen efectos independientes y, por tanto, puntos de confirmación independientes.
-4. La eliminación de una sesión también elimina su instantánea de plantilla. Los fallos al escribir la instantánea se ignoran; los fallos de la sesión muestran un error global.
+4. La eliminación de una sesión también elimina su instantánea base y su borrador. El progreso y el borrador usan colas ordenadas; una resolución confirma primero el agregado canónico y limpia después las tres claves de trabajo.
 5. Las cachés de repositorios, la caché del prompt del sistema, los datos personales, los metadatos de copia de seguridad y las trazas se escriben mediante sus propias funciones, no mediante el efecto principal de persistencia.
 6. Las marcas heredadas del actualizador y de la antigua migración de grasa corporal se eliminan durante la hidratación y no se vuelven a escribir.
 
@@ -210,7 +211,7 @@ Las trazas se excluyen de la copia de seguridad/importación y del borrado parci
 
 `appVersion` procede de la configuración de Expo, con `0.0.0` como valor alternativo; es un metadato, no una comprobación de compatibilidad de importación. `schemaVersion` es el control de compatibilidad. El analizador acepta versiones de esquema inferiores o iguales a `BACKUP_SCHEMA_VERSION`, rechaza las versiones futuras y solo comprueba la identidad del sobre, la versión numérica y la presencia de `data.store`. No existen funciones explícitas de migración por versión.
 
-Los datos excluidos son importantes desde el punto de vista semántico: claves de API de proveedores, credenciales heredadas de integraciones retiradas, entrenamiento activo e instantánea anterior a la sesión, cachés remotas, caché de prompts, trazas, metadatos de copias de seguridad y marcas heredadas de funciones retiradas. Una cadena `photo_uri` dentro de una medición se incluye porque las mediciones residen en `store`, pero los bytes de la imagen referenciada **no** se copian en el JSON. Por tanto, un dispositivo restaurado puede contener URI `file:` o `content:` inservibles.
+Los datos excluidos son importantes desde el punto de vista semántico: claves de API de proveedores, credenciales heredadas de integraciones retiradas, entrenamiento activo, instantánea anterior y borrador de la sesión, cachés remotas, caché de prompts, trazas, metadatos de copias de seguridad y marcas heredadas de funciones retiradas. Una cadena `photo_uri` dentro de una medición se incluye porque las mediciones residen en `store`, pero los bytes de la imagen referenciada **no** se copian en el JSON. Por tanto, un dispositivo restaurado puede contener URI `file:` o `content:` inservibles.
 
 ### Secuencias de exportación e importación
 
@@ -267,7 +268,7 @@ sequenceDiagram
 
 La selección acepta JSON, texto sin formato o cualquier tipo MIME; lee el archivo, analiza el JSON, valida superficialmente el sobre y lo almacena en `pendingImport`. La selección por sí sola no modifica ninguna partición duradera. Después, la confirmación normaliza `data.store`, superpone las claves y workspace actuales del último commit local, confirma primero esa configuración mediante el repositorio, asigna valores predeterminados a las preferencias ausentes, actualiza el estado de React, espera directamente la escritura de datos personales y llama a `setActiveWorkoutSession(null)`.
 
-La importación no elimina directamente el almacenamiento de la sesión. Después de que React publique la sesión nula, el efecto protegido de la sesión elimina tanto `gymnasia.mobile.training.session.v1` como `gymnasia.mobile.training.session_template_snapshot.v1`; por tanto, la importación finaliza cualquier entrenamiento activo y elimina ambas claves excluidas, en lugar de intentar normalizarlas respecto a las plantillas importadas. Las demás particiones modificadas son persistidas por efectos independientes, de modo que la finalización no constituye una confirmación duradera atómica. La Memoria importada tampoco se copia en `memoryFields`, por lo que se mantiene la salvedad sobre la copropiedad descrita anteriormente.
+La importación no elimina directamente el almacenamiento de la sesión. Después de que React publique la sesión nula, el efecto protegido de la sesión elimina `gymnasia.mobile.training.session.v1`, `gymnasia.mobile.training.session_template_snapshot.v1` y `gymnasia.mobile.training.session_template_draft.v1`; por tanto, la importación finaliza cualquier entrenamiento activo y elimina las claves de trabajo en curso excluidas, en lugar de intentar normalizarlas respecto a las plantillas importadas. Las demás particiones modificadas son persistidas por efectos independientes, de modo que la finalización no constituye una confirmación duradera atómica. La Memoria importada tampoco se copia en `memoryFields`, por lo que se mantiene la salvedad sobre la copropiedad descrita anteriormente.
 
 ## Atomicidad, restablecimiento y comportamiento ante fallos
 
@@ -288,7 +289,7 @@ La gestión de datos se apoya en un manifiesto explícito (`LOCAL_DATA_MANIFEST`
 - «Borrar actividad y conversaciones» reescribe el agregado principal con rutinas,
   historial, dieta, medidas y chats vacíos, pero conserva `dietSettings`, la selección y
   configuración de proveedores y sus claves; dentro de la misma cola de recuperación
-  elimina la sesión y su instantánea, descarta la cuarentena y crea un snapshot íntegro
+  elimina la sesión, su instantánea y su borrador, descarta la cuarentena y crea un snapshot íntegro
   del estado ya vaciado. Las particiones independientes de Memoria, alimentos personales,
   preferencias, cachés, diagnósticos, consentimientos y metadatos se conservan.
 - «Borrar todos mis datos» elimina en exclusiva el agregado, su snapshot, la cuarentena y

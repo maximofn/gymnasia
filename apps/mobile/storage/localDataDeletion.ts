@@ -37,6 +37,7 @@ export const LOCAL_DATA_MANIFEST = [
   { key: "gymnasia.mobile.local.quarantine.v1", activity: "delete", full: "delete" },
   { key: "gymnasia.mobile.training.session.v1", activity: "delete", full: "delete" },
   { key: "gymnasia.mobile.training.session_template_snapshot.v1", activity: "delete", full: "delete" },
+  { key: "gymnasia.mobile.training.session_template_draft.v1", activity: "delete", full: "delete" },
   { key: "gymnasia.mobile.personal_data.v1", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.personal_foods.v1", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.user_prefs.v1", activity: "preserve", full: "delete" },

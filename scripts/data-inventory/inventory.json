@@ -110,6 +110,16 @@
       "fullDeletion": "delete"
     },
     {
+      "key": "gymnasia.mobile.training.session_template_draft.v1",
+      "backend": "async-storage",
+      "personal": true,
+      "dataCategory": "health-fitness",
+      "purpose": "Borrador versionado de la plantilla utilizado durante una sesión activa. Mantiene los cambios aislados hasta que el usuario decide conservarlos o descartarlos.",
+      "clearedBy": "activity-and-full-deletion",
+      "activityDeletion": "delete",
+      "fullDeletion": "delete"
+    },
+    {
       "key": "gymnasia.mobile.personal_data.v1",
       "backend": "async-storage",
       "personal": true,

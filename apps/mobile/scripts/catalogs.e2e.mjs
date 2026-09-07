@@ -354,6 +354,7 @@ try {
   await expectProviderCatalogTools(page, "fresh");
   await expectExerciseConsumer(page, "Rutina Catálogos E2E", true);
   await page.getByText(fixtureExerciseName, { exact: true }).last().click();
+  await page.getByTestId("training-editor-save").click();
   await page.waitForFunction((key) => {
     const store = JSON.parse(localStorage.getItem(key) ?? "{}");
     return store.templates?.[0]?.exercises?.[0]?.catalog_link?.ref?.itemId === "sentadilla-catalogo-e2e";

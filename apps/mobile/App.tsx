@@ -177,10 +177,11 @@ import {
   SERIES_TYPE_META,
 } from "./training/seriesPresentation";
 import {
-  buildTemplateSeriesSignature,
+  buildWorkoutTemplateRevision,
   changeExerciseSeriesType,
   cloneWorkoutTemplateSnapshot,
   createSeriesAfter,
+  diffWorkoutTemplates,
   duplicateExerciseSeries,
   duplicateWorkoutExercise,
   duplicateWorkoutTemplate,
@@ -188,6 +189,20 @@ import {
   type TrainingCategory,
   type WorkoutTemplate,
 } from "./training/workoutTemplateOperations";
+import {
+  createWorkoutSessionTemplateDraftRecord,
+  createWorkoutTemplateDraft,
+  isWorkoutTemplateDraftDirty,
+  parseWorkoutSessionTemplateDraftRecord,
+  resolveWorkoutTemplateCommit,
+  updateWorkoutSessionTemplateDraft,
+  validateWorkoutTemplateDraft,
+  withWorkoutSessionTemplateDraft,
+  workoutTemplateDraftReducer,
+  type WorkoutSessionTemplateDraftRecord,
+  type WorkoutTemplateCommitResolution,
+  type WorkoutTemplateDraftState,
+} from "./training/workoutTemplateTransactions";
 import {
   catalogRef,
   linkedCatalog,
@@ -428,6 +443,10 @@ type WorkoutSession = {
   rest_seconds_left: number;
   rest_seconds_total: number;
   status: WorkoutSessionStatus;
+  pending_resolution?: {
+    kind: "finish" | "discard";
+    requested_at: string;
+  };
 };
 type WorkoutSessionSummary = {
   id: string;
@@ -442,9 +461,12 @@ type WorkoutSessionSummary = {
   total_reps: number;
 };
 type WorkoutCompletionModalState = {
-  summary: WorkoutSessionSummary;
+  kind: "finish" | "discard";
+  summary: WorkoutSessionSummary | null;
   has_template_changes: boolean;
   original_template: WorkoutTemplate | null;
+  draft_template: WorkoutTemplate | null;
+  canonical_conflict: boolean;
 };
 type DietItem = {
   id: string;
@@ -663,6 +685,7 @@ const LOCAL_STORE_LAST_GOOD_KEY = scopedStorageKey("gymnasia.mobile.local.last_g
 const LOCAL_STORE_QUARANTINE_KEY = scopedStorageKey("gymnasia.mobile.local.quarantine.v1");
 const SESSION_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.training.session.v1");
 const SESSION_TEMPLATE_SNAPSHOT_KEY = scopedStorageKey("gymnasia.mobile.training.session_template_snapshot.v1");
+const SESSION_TEMPLATE_DRAFT_KEY = scopedStorageKey("gymnasia.mobile.training.session_template_draft.v1");
 const PERSONAL_DATA_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.personal_data.v1");
 const USER_PREFS_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.user_prefs.v1");
 const TOOL_OPERATION_LEDGER_STORAGE_KEY = scopedStorageKey(
@@ -4550,6 +4573,14 @@ function normalizeWorkoutSession(
     : completedKeys.length;
   const status = maybe.status === "paused" ? "paused" : "running";
   const isResting = Boolean(maybe.is_resting) && restSecondsLeft > 0;
+  const pendingResolution = maybe.pending_resolution
+    && (maybe.pending_resolution.kind === "finish" || maybe.pending_resolution.kind === "discard")
+    && typeof maybe.pending_resolution.requested_at === "string"
+    ? {
+        kind: maybe.pending_resolution.kind,
+        requested_at: maybe.pending_resolution.requested_at,
+      }
+    : undefined;
   return {
     id: typeof maybe.id === "string" && maybe.id ? maybe.id : uid("session"),
     template_id: template.id,
@@ -4569,6 +4600,7 @@ function normalizeWorkoutSession(
     rest_seconds_left: restSecondsLeft,
     rest_seconds_total: restSecondsTotal,
     status,
+    ...(pendingResolution ? { pending_resolution: pendingResolution } : {}),
   };
 }
 
@@ -6395,13 +6427,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     });
   }, [dietSettingsDraftDirty, store.dietSettings]);
   const toolStoreCommitQueueRef = useRef<Promise<void>>(Promise.resolve());
-  const commitToolStoreMutation = useCallback(
-    async (updater: (previous: ToolStore) => ToolStore): Promise<void> => {
+  const commitLocalStoreMutation = useCallback(
+    async (updater: (previous: LocalStore) => LocalStore): Promise<void> => {
       const run = toolStoreCommitQueueRef.current.then(async () => {
         const previous = storeRef.current;
-        const next = updater(
-          previous as unknown as ToolStore,
-        ) as unknown as LocalStore;
+        const next = updater(previous);
         if (next === previous) return;
         await localStoreRecoveryRepository.commit(
           JSON.stringify(serializeStoreForAsyncStorage(next)),
@@ -6409,13 +6439,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         storeRef.current = next;
         setStore((current) => {
           if (current === previous) return next;
-          return updater(current as unknown as ToolStore) as unknown as LocalStore;
+          return updater(current);
         });
       });
       toolStoreCommitQueueRef.current = run.catch(() => undefined);
       await run;
     },
     [],
+  );
+  const commitToolStoreMutation = useCallback(
+    (updater: (previous: ToolStore) => ToolStore): Promise<void> =>
+      commitLocalStoreMutation((previous) =>
+        updater(previous as unknown as ToolStore) as unknown as LocalStore),
+    [commitLocalStoreMutation],
   );
   const providerConfigurationRepositoryRef = useRef<ProviderConfigurationRepository | null>(null);
   const providerConfigurationRevisionRef = useRef(0);
@@ -6697,6 +6733,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [activeTrainingTemplateId, setActiveTrainingTemplateId] = useState<string | null>(null);
   const [activeTrainingTemplateMode, setActiveTrainingTemplateMode] =
     useState<TrainingTemplateScreenMode>("detail");
+  const [trainingTemplateDraft, setTrainingTemplateDraft] =
+    useState<WorkoutTemplateDraftState | null>(null);
+  const [trainingTemplateSaveBusy, setTrainingTemplateSaveBusy] = useState(false);
+  const [confirmDiscardTemplateDraft, setConfirmDiscardTemplateDraft] = useState(false);
+  const [trainingTemplateConflict, setTrainingTemplateConflict] = useState<{
+    current: WorkoutTemplate;
+    draft: WorkoutTemplate;
+  } | null>(null);
   const [trainingDetailMuscleFilter, setTrainingDetailMuscleFilter] = useState("all");
   const [trainingStatsPeriod, setTrainingStatsPeriod] = useState<TrainingStatsPeriodKey>("3m");
   const [trainingStatsPeriodDropdownOpen, setTrainingStatsPeriodDropdownOpen] = useState(false);
@@ -6714,6 +6758,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
   const [exerciseDetailIndex, setExerciseDetailIndex] = useState<number | null>(null);
   const [activeWorkoutSession, setActiveWorkoutSession] = useState<WorkoutSession | null>(null);
+  const workoutSessionPersistQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const [workoutSessionTemplateDraft, setWorkoutSessionTemplateDraft] =
+    useState<WorkoutSessionTemplateDraftRecord | null>(null);
+  const workoutSessionDraftPersistQueueRef = useRef<Promise<void>>(Promise.resolve());
   const [lastWorkoutSessionSummary, setLastWorkoutSessionSummary] =
     useState<WorkoutSessionSummary | null>(null);
   const [workoutCompletionModal, setWorkoutCompletionModal] =
@@ -6743,6 +6791,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const notifSettingsRef = useRef<NotificationSettings>({ enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" });
   const providerSettingsInitializedRef = useRef(false);
   const exerciseIssueDebounceRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const pendingTrainingExerciseFeedbackRef = useRef<Array<{
+    owner: "editor" | "session";
+    ownerId: string;
+    title: string;
+    summary: string;
+  }>>([]);
   const exerciseIssueSentRef = useRef<Set<string>>(new Set());
 
   const today = todayISO();
@@ -7241,9 +7295,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       return matchesSearch && matchesFilter;
     });
   }, [store.templates, trainingFilter, trainingSearch]);
-  const activeTrainingTemplate = useMemo(
-    () => store.templates.find((template) => template.id === activeTrainingTemplateId) ?? null,
-    [activeTrainingTemplateId, store.templates],
+  const activeTrainingTemplate = useMemo(() => {
+    if (
+      activeTrainingTemplateMode === "edit"
+      && trainingTemplateDraft?.draft.id === activeTrainingTemplateId
+    ) return trainingTemplateDraft.draft;
+    return store.templates.find((template) => template.id === activeTrainingTemplateId) ?? null;
+  }, [activeTrainingTemplateId, activeTrainingTemplateMode, store.templates, trainingTemplateDraft]);
+  const trainingTemplateDraftDirty = useMemo(
+    () => !!trainingTemplateDraft && isWorkoutTemplateDraftDirty(trainingTemplateDraft),
+    [trainingTemplateDraft],
+  );
+  const trainingTemplateDraftValidation = useMemo(
+    () => trainingTemplateDraft
+      ? validateWorkoutTemplateDraft(trainingTemplateDraft.draft)
+      : null,
+    [trainingTemplateDraft],
   );
   const activeTrainingCategory = useMemo(
     () => (activeTrainingTemplate ? resolveTrainingCategory(activeTrainingTemplate) : null),
@@ -7424,8 +7491,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   );
   const activeSessionTemplate = useMemo(() => {
     if (!activeWorkoutSession) return null;
+    if (workoutSessionTemplateDraft?.session_id === activeWorkoutSession.id) {
+      return workoutSessionTemplateDraft.draft;
+    }
     return store.templates.find((template) => template.id === activeWorkoutSession.template_id) ?? null;
-  }, [activeWorkoutSession, store.templates]);
+  }, [activeWorkoutSession, store.templates, workoutSessionTemplateDraft]);
   const activeSessionPointers = useMemo(
     () => (activeSessionTemplate ? listTemplateSeriesPointers(activeSessionTemplate) : []),
     [activeSessionTemplate],
@@ -7561,11 +7631,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (Platform.OS !== "android") return;
     const handler = BackHandler.addEventListener("hardwareBackPress", () => {
       // Layer 1: close any open modal / overlay
+      if (trainingTemplateConflict) { setTrainingTemplateConflict(null); return true; }
+      if (confirmDiscardTemplateDraft) { setConfirmDiscardTemplateDraft(false); return true; }
       if (dataDeletionScope) {
         if (!dataDeletionBusy) closeDataDeletion();
         return true;
       }
-      if (workoutCompletionModal) { setWorkoutCompletionModal(null); return true; }
+      if (workoutCompletionModal) { closeWorkoutCompletionModal(); return true; }
       if (confirmDiscardSession) { setConfirmDiscardSession(false); return true; }
       if (pendingFoodResolution) { setPendingFoodResolution(null); return true; }
       if (foodEstimatorModalOpen) { setFoodEstimatorModalOpen(false); return true; }
@@ -7597,7 +7669,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       // Layer 2: training template screen → close it
       if (activeTrainingTemplateId) {
         if (activeTrainingTemplateMode === "edit") {
-          setActiveTrainingTemplateMode("detail");
+          if (trainingTemplateDraftDirty) setConfirmDiscardTemplateDraft(true);
+          else closeTrainingTemplateEditor();
           return true;
         }
         setActiveTrainingTemplateId(null);
@@ -7947,7 +8020,20 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       clearTimeout(globalScreenLoadTimeoutRef.current);
       globalScreenLoadTimeoutRef.current = null;
     };
-  }, [isHydrated, tab]);
+  }, [
+    activeTrainingTemplateId,
+    activeTrainingTemplateMode,
+    activeWorkoutSession,
+    confirmDiscardSession,
+    confirmDiscardTemplateDraft,
+    dataDeletionBusy,
+    dataDeletionScope,
+    isHydrated,
+    tab,
+    trainingTemplateConflict,
+    trainingTemplateDraftDirty,
+    workoutCompletionModal,
+  ]);
 
   useEffect(() => {
     if (trainingEditorLoadTimeoutRef.current) {
@@ -7982,18 +8068,33 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   useEffect(() => {
     if (!activeTrainingTemplateId) return;
     if (store.templates.some((template) => template.id === activeTrainingTemplateId)) return;
+    if (
+      activeTrainingTemplateMode === "edit"
+      && trainingTemplateDraft?.mode === "create"
+      && trainingTemplateDraft.draft.id === activeTrainingTemplateId
+    ) return;
     setActiveTrainingTemplateId(null);
     setActiveTrainingTemplateMode("detail");
     setTrainingDetailMuscleFilter("all");
     setTrainingStatsPeriod("3m");
     setTrainingStatsMetric("volume");
-  }, [activeTrainingTemplateId, store.templates]);
+  }, [activeTrainingTemplateId, activeTrainingTemplateMode, store.templates, trainingTemplateDraft]);
 
   useEffect(() => {
     if (!trainingMenuTemplateId) return;
     if (store.templates.some((template) => template.id === trainingMenuTemplateId)) return;
     setTrainingMenuTemplateId(null);
   }, [store.templates, trainingMenuTemplateId]);
+
+  useEffect(() => {
+    if (!trainingTemplateDraft || trainingTemplateDraft.mode !== "edit") return;
+    const current = store.templates.find((template) => template.id === trainingTemplateDraft.draft.id);
+    if (!current) return;
+    if (buildWorkoutTemplateRevision(current) === trainingTemplateDraft.baseRevision) return;
+    setTrainingTemplateDraft((previous) => previous
+      ? workoutTemplateDraftReducer(previous, { type: "rebase", current })
+      : previous);
+  }, [store.templates, trainingTemplateDraft]);
 
   useEffect(() => {
     if (trainingDetailMuscleFilter === "all") return;
@@ -8207,36 +8308,107 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       nonFatalError ??= "Los datos principales están a salvo, pero no se pudo completar una limpieza interna.";
     }
 
-    const [sessionRead, sessionSnapshotRead, prefsRead, alarmRead, consentRead] = await Promise.all([
+    const [sessionRead, sessionSnapshotRead, sessionDraftRead, prefsRead, alarmRead, consentRead] = await Promise.all([
       readStorageWithoutThrow(SESSION_STORAGE_KEY),
       readStorageWithoutThrow(SESSION_TEMPLATE_SNAPSHOT_KEY),
+      readStorageWithoutThrow(SESSION_TEMPLATE_DRAFT_KEY),
       readStorageWithoutThrow(USER_PREFS_STORAGE_KEY),
       readStorageWithoutThrow(ALARM_HEALTH_STORAGE_KEY),
       readStorageWithoutThrow(HEALTH_SAFETY_CONSENT_KEY),
     ]);
     const sessionParsed = parseJsonWithoutThrow(sessionRead.raw);
     const sessionSnapshotParsed = parseJsonWithoutThrow(sessionSnapshotRead.raw);
+    const sessionDraftParsed = parseJsonWithoutThrow(sessionDraftRead.raw);
     const alarmParsed = parseJsonWithoutThrow(alarmRead.raw);
     const consentParsed = parseJsonWithoutThrow(consentRead.raw);
     let secondaryFailure = [
       sessionRead,
       sessionSnapshotRead,
+      sessionDraftRead,
       prefsRead,
       alarmRead,
       consentRead,
     ].some((entry) => entry.failed) || [
       sessionParsed,
       sessionSnapshotParsed,
+      sessionDraftParsed,
       alarmParsed,
       consentParsed,
     ].some((entry) => entry.failed);
+    let hydratedStore = mergedStore;
     let hydratedSession: WorkoutSession | null = null;
-    if (!sessionParsed.failed) {
-      try {
-        hydratedSession = normalizeWorkoutSession(sessionParsed.value, mergedStore.templates);
-      } catch {
-        secondaryFailure = true;
+    let hydratedSessionDraft: WorkoutSessionTemplateDraftRecord | null = null;
+    let hydratedSessionBase: WorkoutTemplate | null = null;
+    const rawSession = !sessionParsed.failed && sessionParsed.value && typeof sessionParsed.value === "object"
+      ? sessionParsed.value as Partial<WorkoutSession>
+      : null;
+    try {
+      const normalizeSessionTemplate = (rawTemplate: unknown): WorkoutTemplate | null => {
+        if (!rawTemplate || typeof rawTemplate !== "object" || Array.isArray(rawTemplate)) return null;
+        const candidate = rawTemplate as WorkoutTemplate;
+        if (typeof candidate.id !== "string" || !Array.isArray(candidate.exercises)) return null;
+        try {
+          return cloneWorkoutTemplateSnapshot(candidate);
+        } catch {
+          return null;
+        }
+      };
+      hydratedSessionBase = normalizeSessionTemplate(sessionSnapshotParsed.value);
+      const parsedDraft = parseWorkoutSessionTemplateDraftRecord(sessionDraftParsed.value);
+      if (
+        parsedDraft
+        && rawSession?.id === parsedDraft.session_id
+        && rawSession.template_id === parsedDraft.template_id
+      ) {
+        const normalizedDraft = normalizeSessionTemplate(parsedDraft.draft);
+        hydratedSessionDraft = normalizedDraft
+          ? { ...parsedDraft, draft: normalizedDraft }
+          : null;
       }
+
+      if (rawSession?.id && rawSession.template_id && !hydratedSessionDraft) {
+        const currentTemplate = mergedStore.templates.find(
+          (template) => template.id === rawSession.template_id,
+        ) ?? null;
+        const baseTemplate = hydratedSessionBase ?? currentTemplate;
+        if (baseTemplate && currentTemplate) {
+          const legacyDraft = createWorkoutSessionTemplateDraftRecord(rawSession.id, baseTemplate);
+          hydratedSessionDraft = updateWorkoutSessionTemplateDraft(
+            legacyDraft,
+            () => currentTemplate,
+          );
+          if (
+            hydratedSessionBase
+            && buildWorkoutTemplateRevision(currentTemplate) !== buildWorkoutTemplateRevision(hydratedSessionBase)
+          ) {
+            hydratedStore = {
+              ...mergedStore,
+              templates: mergedStore.templates.map((template) =>
+                template.id === hydratedSessionBase?.id
+                  ? cloneWorkoutTemplateSnapshot(hydratedSessionBase)
+                  : template),
+            };
+            await localStoreRecoveryRepository.commit(
+              JSON.stringify(serializeStoreForAsyncStorage(hydratedStore)),
+            );
+            await saveDevStoreFile(hydratedStore);
+          }
+        }
+      }
+
+      const runtimeTemplates = withWorkoutSessionTemplateDraft(
+        hydratedStore.templates,
+        hydratedSessionDraft,
+      );
+      hydratedSession = normalizeWorkoutSession(sessionParsed.value, runtimeTemplates);
+    } catch {
+      secondaryFailure = true;
+    }
+    if (rawSession && !hydratedSessionBase) {
+      nonFatalError ??= "No se encontró la copia base de la sesión; revisa la rutina antes de decidir si conservas el borrador.";
+    }
+    if (rawSession && (!hydratedSession || !hydratedSessionDraft)) {
+      secondaryFailure = true;
     }
     if (secondaryFailure) {
       nonFatalError ??= "Algunos ajustes secundarios no pudieron cargarse; los datos principales no se han sobrescrito.";
@@ -8258,20 +8430,41 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       });
     }
     setSecureStoreAvailable(secureAvailable);
-    setStore(mergedStore);
+    setStore(hydratedStore);
     setActiveWorkoutSession(hydratedSession);
+    setWorkoutSessionTemplateDraft(hydratedSession ? hydratedSessionDraft : null);
     workoutTemplateBeforeSessionRef.current = null;
     if (hydratedSession) {
-      const snapshotTemplate = sessionSnapshotParsed.value
-        && typeof sessionSnapshotParsed.value === "object"
-        && !Array.isArray(sessionSnapshotParsed.value)
-        ? sessionSnapshotParsed.value as WorkoutTemplate
-        : null;
-      const fallbackTemplate = mergedStore.templates.find(
+      const fallbackTemplate = hydratedStore.templates.find(
         (template) => template.id === hydratedSession.template_id,
       ) ?? null;
-      workoutTemplateBeforeSessionRef.current = snapshotTemplate
-        ?? (fallbackTemplate ? cloneWorkoutTemplateSnapshot(fallbackTemplate) : null);
+      workoutTemplateBeforeSessionRef.current = hydratedSessionBase
+        ?? (fallbackTemplate ? cloneWorkoutTemplateSnapshot(fallbackTemplate) : null)
+        ?? (hydratedSessionDraft
+          ? cloneWorkoutTemplateSnapshot(hydratedSessionDraft.draft)
+          : null);
+      if (hydratedSession.pending_resolution && hydratedSessionDraft) {
+        const baseTemplate = workoutTemplateBeforeSessionRef.current;
+        const currentTemplate = hydratedStore.templates.find(
+          (template) => template.id === hydratedSession.template_id,
+        ) ?? null;
+        setWorkoutCompletionModal({
+          kind: hydratedSession.pending_resolution.kind,
+          summary: hydratedSession.pending_resolution.kind === "finish"
+            ? workoutSessionSummary(
+                hydratedSession,
+                hydratedSessionDraft.draft,
+                hydratedSession.pending_resolution.requested_at,
+              )
+            : null,
+          has_template_changes: !!baseTemplate
+            && diffWorkoutTemplates(baseTemplate, hydratedSessionDraft.draft).hasChanges,
+          original_template: baseTemplate ? cloneWorkoutTemplateSnapshot(baseTemplate) : null,
+          draft_template: cloneWorkoutTemplateSnapshot(hydratedSessionDraft.draft),
+          canonical_conflict: !currentTemplate
+            || buildWorkoutTemplateRevision(currentTemplate) !== hydratedSessionDraft.base_revision,
+        });
+      }
     }
     setUserPrefs(parsedPrefs);
     setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
@@ -8530,36 +8723,64 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;
-    if (!activeWorkoutSession) {
-      AsyncStorage.removeItem(SESSION_STORAGE_KEY).catch(() => {
-        setError("No se pudo limpiar la sesión de entrenamiento.");
-      });
-      AsyncStorage.removeItem(SESSION_TEMPLATE_SNAPSHOT_KEY).catch(() => {});
-      return;
-    }
-    AsyncStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(activeWorkoutSession)).catch(() => {
-      setError("No se pudo guardar la sesión de entrenamiento.");
+    const session = activeWorkoutSession;
+    const snapshot = workoutTemplateBeforeSessionRef.current
+      ? cloneWorkoutTemplateSnapshot(workoutTemplateBeforeSessionRef.current)
+      : null;
+    const persist = workoutSessionPersistQueueRef.current.then(async () => {
+      if (!session) {
+        await AsyncStorage.multiRemove([
+          SESSION_STORAGE_KEY,
+          SESSION_TEMPLATE_SNAPSHOT_KEY,
+          SESSION_TEMPLATE_DRAFT_KEY,
+        ]);
+        return;
+      }
+      await AsyncStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+      if (snapshot) {
+        await AsyncStorage.setItem(SESSION_TEMPLATE_SNAPSHOT_KEY, JSON.stringify(snapshot));
+      }
     });
-    if (workoutTemplateBeforeSessionRef.current) {
-      AsyncStorage.setItem(
-        SESSION_TEMPLATE_SNAPSHOT_KEY,
-        JSON.stringify(workoutTemplateBeforeSessionRef.current),
-      ).catch(() => {});
-    }
+    workoutSessionPersistQueueRef.current = persist.catch(() => undefined);
+    persist.catch(() => setError(
+      session
+        ? "No se pudo guardar la sesión de entrenamiento."
+        : "No se pudo limpiar la sesión de entrenamiento.",
+    ));
   }, [activeWorkoutSession, isHydrated]);
 
   useEffect(() => {
-    if (!activeWorkoutSession) return;
-    const normalized = normalizeWorkoutSession(activeWorkoutSession, store.templates);
+    if (!isHydrated || dataDeletionBusyRef.current) return;
+    const record = workoutSessionTemplateDraft;
+    const persist = workoutSessionDraftPersistQueueRef.current.then(async () => {
+      if (!record) {
+        await AsyncStorage.removeItem(SESSION_TEMPLATE_DRAFT_KEY);
+        return;
+      }
+      await AsyncStorage.setItem(SESSION_TEMPLATE_DRAFT_KEY, JSON.stringify(record));
+    });
+    workoutSessionDraftPersistQueueRef.current = persist.catch(() => undefined);
+    persist.catch(() => setError("No se pudo guardar el borrador de la sesión."));
+  }, [isHydrated, workoutSessionTemplateDraft]);
+
+  useEffect(() => {
+    if (!isHydrated || !activeWorkoutSession) return;
+    const runtimeTemplates = withWorkoutSessionTemplateDraft(
+      store.templates,
+      workoutSessionTemplateDraft,
+    );
+    const normalized = normalizeWorkoutSession(activeWorkoutSession, runtimeTemplates);
     if (!normalized) {
       setActiveWorkoutSession(null);
+      setWorkoutSessionTemplateDraft(null);
+      workoutTemplateBeforeSessionRef.current = null;
       setError("La sesión activa ya no es válida. Se ha cerrado automáticamente.");
       return;
     }
     if (JSON.stringify(normalized) !== JSON.stringify(activeWorkoutSession)) {
       setActiveWorkoutSession(normalized);
     }
-  }, [activeWorkoutSession, store.templates]);
+  }, [activeWorkoutSession, isHydrated, store.templates, workoutSessionTemplateDraft]);
 
   useEffect(() => {
     if (!activeWorkoutSession || activeWorkoutSession.status !== "running") return;
@@ -9904,6 +10125,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       // El snapshot de sesión activa no se incluye en el backup; cerramos cualquier
       // sesión en curso para no dejar un estado inconsistente con los datos nuevos.
       setActiveWorkoutSession(null);
+      setWorkoutSessionTemplateDraft(null);
+      workoutTemplateBeforeSessionRef.current = null;
 
       sweepOrphanedMeasurementPhotos(mergedStore.measurements.map((measurement) => measurement.photo_uri));
       const warnings: string[] = [];
@@ -10664,7 +10887,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     let referencedPhotoUris: Array<string | null> = [];
     let mutationError: string | null = null;
     try {
-      await commitToolStoreMutation((previous) => {
+      await commitLocalStoreMutation((previous) => {
         const result = deleteMeasurementById(previous.measurements, id);
         if (!result.ok) {
           mutationError = formatMeasurementIssues(result.issues);
@@ -10749,7 +10972,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       let mutationError: string | null = null;
       let previousPhotoUris: Array<string | null> = [];
       let referencedPhotoUris: Array<string | null> = [];
-      await commitToolStoreMutation((previous) => {
+      await commitLocalStoreMutation((previous) => {
         const result = editingMeasurementId
           ? replaceMeasurementById(previous.measurements, {
               id: editingMeasurementId,
@@ -10973,6 +11196,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setActiveTrainingTemplateMode("edit");
     setTrainingDetailMuscleFilter("all");
     const template = store.templates.find((item) => item.id === templateId);
+    if (!template) return;
+    setTrainingTemplateDraft(createWorkoutTemplateDraft(template, "edit"));
     setExpandedExerciseId(template?.exercises[0]?.id ?? null);
     setActiveExerciseMenuId(null);
     setError(null);
@@ -10990,39 +11215,110 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setError(null);
   }
 
+  function discardPendingTrainingFeedback(owner: "editor" | "session", ownerId: string) {
+    pendingTrainingExerciseFeedbackRef.current = pendingTrainingExerciseFeedbackRef.current.filter(
+      (proposal) => proposal.owner !== owner || proposal.ownerId !== ownerId,
+    );
+  }
+
+  function flushPendingTrainingFeedback(owner: "editor" | "session", ownerId: string) {
+    const proposals = pendingTrainingExerciseFeedbackRef.current.filter(
+      (proposal) => proposal.owner === owner && proposal.ownerId === ownerId,
+    );
+    discardPendingTrainingFeedback(owner, ownerId);
+    for (const proposal of proposals) {
+      const key = proposal.title.trim().toLowerCase();
+      if (!key || exerciseIssueSentRef.current.has(key)) continue;
+      exerciseIssueSentRef.current.add(key);
+      feedbackProposalStore.propose({
+        kind: "exercise",
+        title: proposal.title,
+        summary: proposal.summary,
+      });
+    }
+  }
+
   function closeTrainingTemplateEditor() {
+    const wasCreation = trainingTemplateDraft?.mode === "create";
+    for (const timer of Object.values(exerciseIssueDebounceRef.current)) clearTimeout(timer);
+    exerciseIssueDebounceRef.current = {};
+    if (trainingTemplateDraft) {
+      discardPendingTrainingFeedback("editor", trainingTemplateDraft.draft.id);
+    }
+    setTrainingTemplateDraft(null);
+    setConfirmDiscardTemplateDraft(false);
+    setTrainingTemplateConflict(null);
     setActiveTrainingTemplateMode("detail");
+    if (wasCreation) setActiveTrainingTemplateId(null);
     setTrainingMenuTemplateId(null);
     setExpandedExerciseId(null);
     setActiveExerciseMenuId(null);
     setError(null);
   }
 
+  function requestCloseTrainingTemplateEditor() {
+    if (trainingTemplateDraftDirty) {
+      setConfirmDiscardTemplateDraft(true);
+      return;
+    }
+    closeTrainingTemplateEditor();
+  }
+
   function updateActiveTrainingTemplate(
     updater: (template: WorkoutTemplate) => WorkoutTemplate,
   ) {
-    if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return updater(template);
-      }),
-    }));
+    if (!activeTrainingTemplateId || !trainingTemplateDraft) return;
+    setTrainingTemplateDraft((previous) => {
+      if (!previous || previous.draft.id !== activeTrainingTemplateId) return previous;
+      return workoutTemplateDraftReducer(previous, {
+        type: "replace_draft",
+        draft: updater(previous.draft),
+      });
+    });
   }
 
-  function updateExerciseSeriesFieldInTemplate(
-    templateId: string,
+  function updateActiveWorkoutSessionTemplate(
+    updater: (template: WorkoutTemplate) => WorkoutTemplate,
+  ) {
+    setWorkoutSessionTemplateDraft((previous) => {
+      if (!previous || previous.session_id !== activeWorkoutSession?.id) return previous;
+      const next = updateWorkoutSessionTemplateDraft(previous, updater);
+      if (next === previous) return previous;
+      const pointers = listTemplateSeriesPointers(next.draft);
+      const validKeys = new Set(pointers.map(pointerKey));
+      setActiveWorkoutSession((session) => {
+        if (!session || session.id !== next.session_id) return session;
+        const completedKeys = session.completed_series_keys.filter((key) => validKeys.has(key));
+        const current = pointers.find(
+          (pointer) => pointer.exerciseIndex === session.current_exercise_index
+            && pointer.seriesIndex === session.current_series_index,
+        );
+        const fallback = current ?? pointers.find(
+          (pointer) => !completedKeys.includes(pointerKey(pointer)),
+        ) ?? pointers[0];
+        return {
+          ...session,
+          total_series_count: pointers.length,
+          completed_series_keys: completedKeys,
+          completed_series_count: completedKeys.length,
+          ...(fallback ? {
+            current_exercise_index: fallback.exerciseIndex,
+            current_series_index: fallback.seriesIndex,
+          } : {}),
+        };
+      });
+      return next;
+    });
+  }
+
+  function updateExerciseSeriesField(
+    template: WorkoutTemplate,
     exerciseId: string,
     seriesId: string,
     field: "reps" | "weight_kg" | "rest_seconds" | "type" | "tempo_contraction" | "tempo_pause" | "tempo_relaxation",
     value: string,
-  ) {
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== templateId) return template;
-        return {
+  ): WorkoutTemplate {
+    return {
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
@@ -11045,8 +11341,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             };
           }),
         };
-      }),
-    }));
   }
 
   function updateActiveTrainingName(name: string) {
@@ -11100,16 +11394,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         (r) => r.name.toLowerCase() === key,
       );
       if (!repoMatch) {
-        exerciseIssueSentRef.current.add(key);
         const exercise = activeTrainingTemplate?.exercises.find((e) => e.id === exerciseId);
-        feedbackProposalStore.propose({
-          kind: "exercise",
-          title: trimmed,
-          summary: formatExerciseSummary({
-            name: trimmed,
-            muscle_group: exercise?.muscle ?? "",
-          }),
-        });
+        if (activeTrainingTemplateId) {
+          pendingTrainingExerciseFeedbackRef.current.push({
+            owner: "editor",
+            ownerId: activeTrainingTemplateId,
+            title: trimmed,
+            summary: formatExerciseSummary({
+              name: trimmed,
+              muscle_group: exercise?.muscle ?? "",
+            }),
+          });
+        }
       }
     }, 2000);
   }
@@ -11121,7 +11417,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     value: string,
   ) {
     if (!activeTrainingTemplateId) return;
-    updateExerciseSeriesFieldInTemplate(activeTrainingTemplateId, exerciseId, seriesId, field, value);
+    updateActiveTrainingTemplate((template) =>
+      updateExerciseSeriesField(template, exerciseId, seriesId, field, value));
   }
 
   function updateExerciseSeriesFieldInActiveSession(
@@ -11130,8 +11427,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     field: "reps" | "weight_kg" | "rest_seconds" | "type" | "tempo_contraction" | "tempo_pause" | "tempo_relaxation",
     value: string,
   ) {
-    if (!activeWorkoutSession) return;
-    updateExerciseSeriesFieldInTemplate(activeWorkoutSession.template_id, exerciseId, seriesId, field, value);
+    updateActiveWorkoutSessionTemplate((template) =>
+      updateExerciseSeriesField(template, exerciseId, seriesId, field, value));
   }
 
   function createTrainingTemplate() {
@@ -11153,14 +11450,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       exercises: [],
     };
 
-    setStore((prev) => ({
-      ...prev,
-      templates: [...prev.templates, template],
-    }));
+    setTrainingTemplateDraft(createWorkoutTemplateDraft(template, "create"));
     setTrainingMenuTemplateId(null);
     setTrainingSearch("");
     setTrainingFilter("all");
-    openTrainingTemplateEditor(templateId);
+    setActiveTrainingTemplateId(templateId);
+    setActiveTrainingTemplateMode("edit");
+    setExpandedExerciseId(null);
+    setActiveExerciseMenuId(null);
+    setError(null);
   }
 
   function openExercisePicker() {
@@ -11183,28 +11481,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       rest_seconds: isLoadFocusedCategory ? "120" : "75",
     };
 
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return {
-          ...template,
-          exercises: [
-            ...template.exercises,
-            {
-              id: exerciseId,
-              name: entry.name,
-              image_uri: imageUri,
-              sets: seriesToLegacySets([firstSeries]),
-              series: [firstSeries],
-              muscle: entry.muscle_group,
-              load_kg: isLoadFocusedCategory ? 20 : null,
-              rest_seconds: isLoadFocusedCategory ? 120 : 75,
-              catalog_link: linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
-            },
-          ],
-        };
-      }),
+    updateActiveTrainingTemplate((template) => ({
+      ...template,
+      exercises: [
+        ...template.exercises,
+        {
+          id: exerciseId,
+          name: entry.name,
+          image_uri: imageUri,
+          sets: seriesToLegacySets([firstSeries]),
+          series: [firstSeries],
+          muscle: entry.muscle_group,
+          load_kg: isLoadFocusedCategory ? 20 : null,
+          rest_seconds: isLoadFocusedCategory ? 120 : 75,
+          catalog_link: linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
+        },
+      ],
     }));
     setExpandedExerciseId(exerciseId);
     setActiveExerciseMenuId(null);
@@ -11234,28 +11526,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       rest_seconds: isLoadFocusedCategory ? "120" : "75",
     };
 
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return {
-          ...template,
-          exercises: [
-            ...template.exercises,
-            {
-              id: exerciseId,
-              name: exerciseName,
-              image_uri: null,
-              sets: seriesToLegacySets([firstSeries]),
-              series: [firstSeries],
-              muscle: inferExerciseMuscle(exerciseName, category),
-              load_kg: isLoadFocusedCategory ? 20 : null,
-              rest_seconds: isLoadFocusedCategory ? 120 : 75,
-              catalog_link: unresolvedCatalog("manual"),
-            },
-          ],
-        };
-      }),
+    updateActiveTrainingTemplate((template) => ({
+      ...template,
+      exercises: [
+        ...template.exercises,
+        {
+          id: exerciseId,
+          name: exerciseName,
+          image_uri: null,
+          sets: seriesToLegacySets([firstSeries]),
+          series: [firstSeries],
+          muscle: inferExerciseMuscle(exerciseName, category),
+          load_kg: isLoadFocusedCategory ? 20 : null,
+          rest_seconds: isLoadFocusedCategory ? 120 : 75,
+          catalog_link: unresolvedCatalog("manual"),
+        },
+      ],
     }));
     setExpandedExerciseId(exerciseId);
     setActiveExerciseMenuId(null);
@@ -11291,28 +11577,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     };
 
     if (activeWorkoutSession) {
-      const templateId = activeWorkoutSession.template_id;
-      let updatedTemplate: WorkoutTemplate | null = null;
-      setStore((prev) => ({
-        ...prev,
-        templates: prev.templates.map((t) => {
-          if (t.id !== templateId) return t;
-          const updated = { ...t, exercises: [...t.exercises, newExercise] };
-          updatedTemplate = updated;
-          return updated;
-        }),
+      updateActiveWorkoutSessionTemplate((template) => ({
+        ...template,
+        exercises: [...template.exercises, newExercise],
       }));
-      if (updatedTemplate) {
-        const pointers = listTemplateSeriesPointers(updatedTemplate);
-        setActiveWorkoutSession({ ...activeWorkoutSession, total_series_count: pointers.length });
-      }
     } else if (activeTrainingTemplateId) {
-      setStore((prev) => ({
-        ...prev,
-        templates: prev.templates.map((template) => {
-          if (template.id !== activeTrainingTemplateId) return template;
-          return { ...template, exercises: [...template.exercises, newExercise] };
-        }),
+      updateActiveTrainingTemplate((template) => ({
+        ...template,
+        exercises: [...template.exercises, newExercise],
       }));
     }
 
@@ -11322,9 +11594,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setExercisePickerOpen(false);
     setError(null);
 
-    // Encolar es síncrono y sin red: nada sale hasta que el usuario confirma.
-    feedbackProposalStore.propose({
-      kind: "exercise",
+    const feedbackOwner = activeWorkoutSession ? "session" : "editor";
+    const feedbackOwnerId = activeWorkoutSession?.id ?? activeTrainingTemplateId;
+    if (feedbackOwnerId) pendingTrainingExerciseFeedbackRef.current.push({
+      owner: feedbackOwner,
+      ownerId: feedbackOwnerId,
       title: draft.name.trim(),
       summary: formatExerciseSummary({
         name: draft.name.trim(),
@@ -11336,11 +11610,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   function addSeriesToExercise(exerciseId: string) {
     if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return {
+    updateActiveTrainingTemplate((template) => ({
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
@@ -11353,18 +11623,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               sets: seriesToLegacySets(nextSeries),
             };
           }),
-        };
-      }),
-    }));
+        }));
   }
 
   function addSeriesToExerciseInActiveSession(exerciseId: string) {
     if (!activeWorkoutSession) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeWorkoutSession.template_id) return template;
-        return {
+    updateActiveWorkoutSessionTemplate((template) => ({
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
@@ -11377,31 +11641,20 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               sets: seriesToLegacySets(nextSeries),
             };
           }),
-        };
-      }),
-    }));
-    setActiveWorkoutSession((prev) => {
-      if (!prev) return prev;
-      return { ...prev, total_series_count: prev.total_series_count + 1 };
-    });
+        }));
   }
 
   function removeSeriesFromExerciseInActiveSession(exerciseId: string, seriesId: string) {
     if (!activeWorkoutSession) return;
-    const templateId = activeWorkoutSession.template_id;
-    const template = store.templates.find((t) => t.id === templateId);
+    const template = workoutSessionTemplateDraft?.draft;
     if (!template) return;
     const exercise = template.exercises.find((e) => e.id === exerciseId);
     if (!exercise) return;
     if ((exercise.series ?? []).length <= 1) return;
 
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((t) => {
-        if (t.id !== templateId) return t;
-        return {
-          ...t,
-          exercises: t.exercises.map((ex) => {
+    updateActiveWorkoutSessionTemplate((current) => ({
+          ...current,
+          exercises: current.exercises.map((ex) => {
             if (ex.id !== exerciseId) return ex;
             const series = ex.series ?? [];
             if (series.length <= 1) return ex;
@@ -11412,23 +11665,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               sets: seriesToLegacySets(nextSeries),
             };
           }),
-        };
-      }),
-    }));
-
-    // Completion is tracked by `${exerciseId}:${seriesId}` keys (index-independent),
-    // so drop the removed series' key and recompute counts from what remains.
-    const removedKey = `${exerciseId}:${seriesId}`;
-    setActiveWorkoutSession((prev) => {
-      if (!prev) return prev;
-      const completedSeriesKeys = prev.completed_series_keys.filter((k) => k !== removedKey);
-      return {
-        ...prev,
-        completed_series_keys: completedSeriesKeys,
-        completed_series_count: completedSeriesKeys.length,
-        total_series_count: Math.max(0, prev.total_series_count - 1),
-      };
-    });
+        }));
   }
 
   function moveSeriesInActiveSession(
@@ -11437,16 +11674,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     direction: "up" | "down",
   ) {
     if (!activeWorkoutSession) return;
-    const templateId = activeWorkoutSession.template_id;
     // Reordering only swaps positions within an exercise. Completion keys are
     // index-independent (`exerciseId:seriesId`), so session counts stay valid.
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((t) => {
-        if (t.id !== templateId) return t;
-        return {
-          ...t,
-          exercises: t.exercises.map((ex) => {
+    updateActiveWorkoutSessionTemplate((template) => ({
+          ...template,
+          exercises: template.exercises.map((ex) => {
             if (ex.id !== exerciseId) return ex;
             const series = ex.series ?? [];
             const index = series.findIndex((s) => s.id === seriesId);
@@ -11463,18 +11695,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               sets: seriesToLegacySets(nextSeries),
             };
           }),
-        };
-      }),
-    }));
+        }));
   }
 
   function removeSeriesFromExercise(exerciseId: string, seriesId: string) {
     if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return {
+    updateActiveTrainingTemplate((template) => ({
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
@@ -11487,18 +11713,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               sets: seriesToLegacySets(nextSeries),
             };
           }),
-        };
-      }),
-    }));
+        }));
   }
 
   function duplicateSeriesInExercise(exerciseId: string, seriesId: string) {
     if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return {
+    updateActiveTrainingTemplate((template) => ({
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
@@ -11518,22 +11738,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               sets: seriesToLegacySets(nextSeries),
             };
           }),
-        };
-      }),
-    }));
+        }));
   }
 
   function changeSeriesTypeInTemplate(
-    templateId: string,
+    source: "editor" | "session",
     exerciseId: string,
     seriesId: string,
     newType: SeriesType,
   ) {
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== templateId) return template;
-        return {
+    const update = (template: WorkoutTemplate): WorkoutTemplate => ({
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
@@ -11544,18 +11758,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             );
             return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
           }),
-        };
-      }),
-    }));
+        });
+    if (source === "session") updateActiveWorkoutSessionTemplate(update);
+    else updateActiveTrainingTemplate(update);
   }
 
   function addSubSeriesToSeries(exerciseId: string, seriesId: string) {
     if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return {
+    updateActiveTrainingTemplate((template) => ({
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
@@ -11577,18 +11787,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             });
             return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
           }),
-        };
-      }),
-    }));
+        }));
   }
 
   function removeSubSeriesFromSeries(exerciseId: string, seriesId: string, subSeriesId: string) {
     if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return {
+    updateActiveTrainingTemplate((template) => ({
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
@@ -11598,9 +11802,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             });
             return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
           }),
-        };
-      }),
-    }));
+        }));
   }
 
   function updateSubSeriesField(
@@ -11611,11 +11813,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     value: string | CatalogLink,
   ) {
     if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return {
+    updateActiveTrainingTemplate((template) => ({
           ...template,
           exercises: template.exercises.map((exercise) => {
             if (exercise.id !== exerciseId) return exercise;
@@ -11634,17 +11832,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             });
             return { ...exercise, series: nextSeries, sets: seriesToLegacySets(nextSeries) };
           }),
-        };
-      }),
-    }));
+        }));
   }
 
   function cloneExerciseInActiveTemplate(exerciseId: string) {
     if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
+    updateActiveTrainingTemplate((template) => {
         const sourceIndex = template.exercises.findIndex((exercise) => exercise.id === exerciseId);
         if (sourceIndex < 0) return template;
         const source = template.exercises[sourceIndex];
@@ -11658,17 +11851,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           ...template,
           exercises: next,
         };
-      }),
-    }));
+      });
     setActiveExerciseMenuId(null);
   }
 
   function moveExerciseUpInActiveTemplate(exerciseId: string) {
     if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
+    updateActiveTrainingTemplate((template) => {
         const index = template.exercises.findIndex((exercise) => exercise.id === exerciseId);
         if (index <= 0) return template;
         const next = [...template.exercises];
@@ -11679,23 +11868,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           ...template,
           exercises: next,
         };
-      }),
-    }));
+      });
     setActiveExerciseMenuId(null);
   }
 
   function deleteExerciseInActiveTemplate(exerciseId: string) {
     if (!activeTrainingTemplateId) return;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) => {
-        if (template.id !== activeTrainingTemplateId) return template;
-        return {
+    updateActiveTrainingTemplate((template) => ({
           ...template,
           exercises: template.exercises.filter((exercise) => exercise.id !== exerciseId),
-        };
-      }),
-    }));
+        }));
     if (expandedExerciseId === exerciseId) {
       const nextExercise = activeTrainingTemplate?.exercises.find((item) => item.id !== exerciseId) ?? null;
       setExpandedExerciseId(nextExercise?.id ?? null);
@@ -11703,9 +11885,83 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setActiveExerciseMenuId(null);
   }
 
-  function saveTrainingTemplateChanges() {
+  async function saveTrainingTemplateChanges(overwriteConflict = false) {
+    const transaction = trainingTemplateDraft;
+    if (!transaction || trainingTemplateSaveBusy) return;
+    const validation = validateWorkoutTemplateDraft(transaction.draft);
+    if (!validation.valid) {
+      setError(
+        !validation.name
+          ? "Ponle un nombre a la rutina antes de guardarla."
+          : !validation.exercise
+            ? "Añade al menos un ejercicio antes de guardarla."
+            : "Añade al menos una serie antes de guardarla.",
+      );
+      return;
+    }
+
+    setTrainingTemplateSaveBusy(true);
+    const resolutionBox: { current: WorkoutTemplateCommitResolution | null } = { current: null };
+    try {
+      await commitLocalStoreMutation((previous) => {
+        const current = previous.templates.find(
+          (template) => template.id === transaction.draft.id,
+        ) as WorkoutTemplate | undefined;
+        const resolution = resolveWorkoutTemplateCommit(
+          transaction,
+          current ?? null,
+          overwriteConflict,
+        );
+        resolutionBox.current = resolution;
+        if (resolution.status !== "applied") return previous;
+        const saved = resolution.template;
+        const existingIndex = previous.templates.findIndex((template) => template.id === saved.id);
+        const templates = existingIndex < 0
+          ? [...previous.templates, saved]
+          : previous.templates.map((template) => template.id === saved.id ? saved : template);
+        return { ...previous, templates };
+      });
+
+      const resolution = resolutionBox.current;
+      if (!resolution) throw new Error("No se pudo resolver la edición.");
+      if (resolution.status === "conflict") {
+        setTrainingTemplateConflict({
+          current: cloneWorkoutTemplateSnapshot(resolution.current),
+          draft: cloneWorkoutTemplateSnapshot(resolution.draft),
+        });
+        setError("La rutina cambió fuera de este editor. Elige qué versión conservar.");
+        return;
+      }
+      if (resolution.status === "missing") {
+        setError("La rutina se eliminó mientras la estabas editando.");
+        return;
+      }
+
+      flushPendingTrainingFeedback("editor", transaction.draft.id);
+      setTrainingTemplateDraft(null);
+      setTrainingTemplateConflict(null);
+      setActiveTrainingTemplateId(transaction.draft.id);
+      setActiveTrainingTemplateMode("detail");
+      setExpandedExerciseId(null);
+      setActiveExerciseMenuId(null);
+      setError(null);
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error
+          ? `No se han guardado los cambios. ${saveError.message}`
+          : "No se han guardado los cambios.",
+      );
+    } finally {
+      setTrainingTemplateSaveBusy(false);
+    }
+  }
+
+  function loadCurrentTrainingTemplateAfterConflict() {
+    const current = trainingTemplateConflict?.current;
+    if (!current) return;
+    setTrainingTemplateDraft(createWorkoutTemplateDraft(current, "edit"));
+    setTrainingTemplateConflict(null);
     setError(null);
-    closeTrainingTemplateEditor();
   }
 
   function cloneTrainingTemplate(templateId: string) {
@@ -11759,7 +12015,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   function resolveSessionRuntime(session: WorkoutSession) {
-    const template = store.templates.find((item) => item.id === session.template_id);
+    const template = workoutSessionTemplateDraft?.session_id === session.id
+      ? workoutSessionTemplateDraft.draft
+      : store.templates.find((item) => item.id === session.template_id);
     if (!template) return null;
     const pointers = listTemplateSeriesPointers(template);
     if (pointers.length === 0) return null;
@@ -11777,21 +12035,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     };
   }
 
-  function finishWorkoutSession(session: WorkoutSession) {
-    const currentTemplate =
-      store.templates.find((item) => item.id === session.template_id) ?? null;
-    const originalTemplate = workoutTemplateBeforeSessionRef.current;
-    const hasTemplateChanges = !!(
-      currentTemplate &&
-      originalTemplate &&
-      buildTemplateSeriesSignature(currentTemplate) !== buildTemplateSeriesSignature(originalTemplate)
-    );
-    const sessionPerformance = summarizeWorkoutSessionPerformance(session, currentTemplate);
-    const summary: WorkoutSessionSummary = {
-      id: uid("session_summary"),
+  function workoutSessionSummary(
+    session: WorkoutSession,
+    template: WorkoutTemplate | null,
+    finishedAt: string,
+  ): WorkoutSessionSummary {
+    const sessionPerformance = summarizeWorkoutSessionPerformance(session, template);
+    return {
+      id: `session_summary_${session.id}`,
       template_id: session.template_id,
       template_name: session.template_name,
-      finished_at: new Date().toISOString(),
+      finished_at: finishedAt,
       elapsed_seconds: session.elapsed_seconds,
       completed_series_count: session.completed_series_count,
       total_series_count: session.total_series_count,
@@ -11799,20 +12053,140 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       total_volume_kg: sessionPerformance.totalVolumeKg,
       total_reps: sessionPerformance.totalReps,
     };
-    setStore((prev) => ({
-      ...prev,
-      workoutHistory: [summary, ...prev.workoutHistory].slice(0, MAX_WORKOUT_HISTORY_ITEMS),
-    }));
-    setLastWorkoutSessionSummary(summary);
-    setWorkoutCompletionModal({
-      summary,
+  }
+
+  async function finalizeWorkoutSessionResolution(
+    keepSessionVersion: boolean,
+    forceConflict = false,
+    explicitModal = workoutCompletionModal,
+    explicitSession = activeWorkoutSession,
+  ) {
+    const modal = explicitModal;
+    const session = explicitSession;
+    const draftRecord = workoutSessionTemplateDraft;
+    if (!modal || !session || !draftRecord || draftRecord.session_id !== session.id) return;
+
+    try {
+      let conflictDetected = false;
+      await commitLocalStoreMutation((previous) => {
+        const current = previous.templates.find(
+          (template) => template.id === session.template_id,
+        ) as WorkoutTemplate | undefined;
+        if (
+          keepSessionVersion
+          && !forceConflict
+          && (
+            !current
+            || buildWorkoutTemplateRevision(current) !== draftRecord.base_revision
+          )
+        ) {
+          conflictDetected = true;
+          return previous;
+        }
+
+        let templates = previous.templates;
+        if (keepSessionVersion) {
+          const saved = cloneWorkoutTemplateSnapshot(draftRecord.draft);
+          templates = current
+            ? previous.templates.map((template) => template.id === saved.id ? saved : template)
+            : [...previous.templates, saved];
+        }
+        const workoutHistory = modal.summary
+          && !previous.workoutHistory.some((summary) => summary.id === modal.summary?.id)
+          ? [modal.summary, ...previous.workoutHistory].slice(0, MAX_WORKOUT_HISTORY_ITEMS)
+          : previous.workoutHistory;
+        if (templates === previous.templates && workoutHistory === previous.workoutHistory) return previous;
+        return { ...previous, templates, workoutHistory };
+      });
+
+      if (conflictDetected) {
+        setWorkoutCompletionModal({ ...modal, canonical_conflict: true });
+        setError("La rutina cambió fuera de esta sesión. Elige qué versión conservar.");
+        return;
+      }
+
+      await Promise.all([
+        workoutSessionPersistQueueRef.current,
+        workoutSessionDraftPersistQueueRef.current,
+      ]);
+      await AsyncStorage.multiRemove([
+        SESSION_STORAGE_KEY,
+        SESSION_TEMPLATE_SNAPSHOT_KEY,
+        SESSION_TEMPLATE_DRAFT_KEY,
+      ]);
+      if (keepSessionVersion) flushPendingTrainingFeedback("session", session.id);
+      else discardPendingTrainingFeedback("session", session.id);
+      setActiveWorkoutSession(null);
+      setWorkoutSessionTemplateDraft(null);
+      setConfirmDiscardSession(false);
+      workoutTemplateBeforeSessionRef.current = null;
+      if (modal.summary) {
+        setLastWorkoutSessionSummary(modal.summary);
+        setWorkoutCompletionModal({
+          ...modal,
+          has_template_changes: false,
+          original_template: null,
+          draft_template: null,
+          canonical_conflict: false,
+        });
+        setError(null);
+      } else {
+        setLastWorkoutSessionSummary(null);
+        setWorkoutCompletionModal(null);
+        setError("Entrenamiento descartado.");
+      }
+    } catch (resolutionError) {
+      setError(
+        resolutionError instanceof Error
+          ? `No se pudo guardar la decisión. ${resolutionError.message}`
+          : "No se pudo guardar la decisión.",
+      );
+    }
+  }
+
+  function requestWorkoutSessionResolution(
+    session: WorkoutSession,
+    kind: "finish" | "discard",
+  ) {
+    const draftRecord = workoutSessionTemplateDraft;
+    const originalTemplate = workoutTemplateBeforeSessionRef.current;
+    if (!draftRecord || draftRecord.session_id !== session.id || !originalTemplate) {
+      setError("No se pudo recuperar el borrador de la sesión. La sesión sigue abierta.");
+      return;
+    }
+    const requestedAt = session.pending_resolution?.requested_at ?? new Date().toISOString();
+    const pendingSession: WorkoutSession = {
+      ...session,
+      status: "paused",
+      pending_resolution: { kind, requested_at: requestedAt },
+    };
+    const hasTemplateChanges = diffWorkoutTemplates(originalTemplate, draftRecord.draft).hasChanges;
+    const currentTemplate = storeRef.current.templates.find(
+      (template) => template.id === session.template_id,
+    ) ?? null;
+    const canonicalConflict = !currentTemplate
+      || buildWorkoutTemplateRevision(currentTemplate) !== draftRecord.base_revision;
+    const modal: WorkoutCompletionModalState = {
+      kind,
+      summary: kind === "finish"
+        ? workoutSessionSummary(pendingSession, draftRecord.draft, requestedAt)
+        : null,
       has_template_changes: hasTemplateChanges,
-      original_template: originalTemplate ? cloneWorkoutTemplateSnapshot(originalTemplate) : null,
-    });
-    setActiveWorkoutSession(null);
+      original_template: cloneWorkoutTemplateSnapshot(originalTemplate),
+      draft_template: cloneWorkoutTemplateSnapshot(draftRecord.draft),
+      canonical_conflict: canonicalConflict,
+    };
+    setActiveWorkoutSession(pendingSession);
+    setWorkoutCompletionModal(modal);
     setConfirmDiscardSession(false);
-    workoutTemplateBeforeSessionRef.current = null;
     setError(null);
+    if (!hasTemplateChanges) {
+      void finalizeWorkoutSessionResolution(false, false, modal, pendingSession);
+    }
+  }
+
+  function finishWorkoutSession(session: WorkoutSession) {
+    requestWorkoutSessionResolution(session, "finish");
   }
 
   function startTrainingSession(templateId: string) {
@@ -11851,6 +12225,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       rest_seconds_total: 0,
       status: "running",
     };
+    setWorkoutSessionTemplateDraft(createWorkoutSessionTemplateDraftRecord(session.id, template));
     setActiveWorkoutSession(session);
     setActiveTrainingTemplateId(null);
     setActiveTrainingTemplateMode("detail");
@@ -12063,25 +12438,20 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   function moveExerciseInSession(exerciseId: string, direction: "up" | "down") {
     if (!activeWorkoutSession) return;
-    const templateId = activeWorkoutSession.template_id;
-    const template = store.templates.find((t) => t.id === templateId);
+    const template = workoutSessionTemplateDraft?.draft;
     if (!template) return;
     const index = template.exercises.findIndex((e) => e.id === exerciseId);
     if (index < 0) return;
     const targetIndex = direction === "up" ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= template.exercises.length) return;
 
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((t) => {
-        if (t.id !== templateId) return t;
-        const next = [...t.exercises];
+    updateActiveWorkoutSessionTemplate((current) => {
+        const next = [...current.exercises];
         const tmp = next[index];
         next[index] = next[targetIndex];
         next[targetIndex] = tmp;
-        return { ...t, exercises: next };
-      }),
-    }));
+        return { ...current, exercises: next };
+      });
 
     const currentIdx = activeWorkoutSession.current_exercise_index;
     let newIdx = currentIdx;
@@ -12097,7 +12467,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   function addExerciseToSession(entry: ExerciseRepoEntry) {
     if (!activeWorkoutSession) return;
-    const templateId = activeWorkoutSession.template_id;
     const category = activeWorkoutSession.category ?? "strength";
     const isLoadFocused = category === "strength" || category === "hypertrophy";
     const exerciseId = uid("exercise");
@@ -12109,93 +12478,37 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       rest_seconds: isLoadFocused ? "120" : "75",
     };
 
-    let updatedTemplate: WorkoutTemplate | null = null;
-    setStore((prev) => {
-      const next = {
-        ...prev,
-        templates: prev.templates.map((t) => {
-          if (t.id !== templateId) return t;
-          const updated = {
-            ...t,
-            exercises: [
-              ...t.exercises,
-              {
-                id: exerciseId,
-                name: entry.name,
-                image_uri: imageUri,
-                sets: seriesToLegacySets([firstSeries]),
-                series: [firstSeries],
-                muscle: entry.muscle_group,
-                load_kg: isLoadFocused ? 20 : null,
-                rest_seconds: isLoadFocused ? 120 : 75,
-                catalog_link: linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
-              },
-            ],
-          };
-          updatedTemplate = updated;
-          return updated;
-        }),
-      };
-      return next;
-    });
-
-    if (updatedTemplate) {
-      const pointers = listTemplateSeriesPointers(updatedTemplate);
-      setActiveWorkoutSession({
-        ...activeWorkoutSession,
-        total_series_count: pointers.length,
-      });
-    }
+    updateActiveWorkoutSessionTemplate((template) => ({
+      ...template,
+      exercises: [
+        ...template.exercises,
+        {
+          id: exerciseId,
+          name: entry.name,
+          image_uri: imageUri,
+          sets: seriesToLegacySets([firstSeries]),
+          series: [firstSeries],
+          muscle: entry.muscle_group,
+          load_kg: isLoadFocused ? 20 : null,
+          rest_seconds: isLoadFocused ? 120 : 75,
+          catalog_link: linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
+        },
+      ],
+    }));
     setExercisePickerOpen(false);
     setError(null);
   }
 
   function removeExerciseFromSession(exerciseId: string) {
     if (!activeWorkoutSession) return;
-    const templateId = activeWorkoutSession.template_id;
-    const template = store.templates.find((t) => t.id === templateId);
+    const template = workoutSessionTemplateDraft?.draft;
     if (!template) return;
     if (template.exercises.length <= 1) return;
 
-    let updatedTemplate: WorkoutTemplate | null = null;
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((t) => {
-        if (t.id !== templateId) return t;
-        const updated = {
-          ...t,
-          exercises: t.exercises.filter((e) => e.id !== exerciseId),
-        };
-        updatedTemplate = updated;
-        return updated;
-      }),
+    updateActiveWorkoutSessionTemplate((current) => ({
+      ...current,
+      exercises: current.exercises.filter((exercise) => exercise.id !== exerciseId),
     }));
-
-    if (updatedTemplate) {
-      const pointers = listTemplateSeriesPointers(updatedTemplate);
-      const validKeys = new Set(pointers.map(pointerKey));
-      const completedKeys = activeWorkoutSession.completed_series_keys.filter((k) => validKeys.has(k));
-      const currentValid = pointers.some(
-        (p) =>
-          p.exerciseIndex === activeWorkoutSession.current_exercise_index &&
-          p.seriesIndex === activeWorkoutSession.current_series_index,
-      );
-      const nextPointer = currentValid
-        ? null
-        : pointers.find((p) => !completedKeys.includes(pointerKey(p))) ?? pointers[0];
-      setActiveWorkoutSession({
-        ...activeWorkoutSession,
-        total_series_count: pointers.length,
-        completed_series_keys: completedKeys,
-        completed_series_count: completedKeys.length,
-        ...(nextPointer
-          ? {
-              current_exercise_index: nextPointer.exerciseIndex,
-              current_series_index: nextPointer.seriesIndex,
-            }
-          : {}),
-      });
-    }
     setError(null);
   }
 
@@ -12241,31 +12554,21 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setError("Pulsa \"Abandonar\" de nuevo para confirmar.");
       return;
     }
-    setActiveWorkoutSession(null);
-    setLastWorkoutSessionSummary(null);
-    setConfirmDiscardSession(false);
-    workoutTemplateBeforeSessionRef.current = null;
-    setError("Entrenamiento descartado.");
+    requestWorkoutSessionResolution(activeWorkoutSession, "discard");
   }
 
   function closeWorkoutCompletionModal() {
     setWorkoutCompletionModal(null);
+    setActiveWorkoutSession((session) => {
+      if (!session?.pending_resolution) return session;
+      const { pending_resolution: _pendingResolution, ...runningSession } = session;
+      return { ...runningSession, status: "running" };
+    });
+    setError(null);
   }
 
   function revertWorkoutTemplateChangesAfterSession() {
-    const originalTemplate = workoutCompletionModal?.original_template;
-    if (!originalTemplate) {
-      setWorkoutCompletionModal(null);
-      return;
-    }
-    const restored = cloneWorkoutTemplateSnapshot(originalTemplate);
-    setStore((prev) => ({
-      ...prev,
-      templates: prev.templates.map((template) =>
-        template.id === restored.id ? restored : template,
-      ),
-    }));
-    setWorkoutCompletionModal(null);
+    void finalizeWorkoutSessionResolution(false);
   }
 
   function createThread() {
@@ -12941,6 +13244,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ["gymnasia.mobile.local.quarantine.v1", "Datos en cuarentena"],
       ["gymnasia.mobile.training.session.v1", "Sesión de entrenamiento activa"],
       ["gymnasia.mobile.training.session_template_snapshot.v1", "Copia de la rutina activa"],
+      ["gymnasia.mobile.training.session_template_draft.v1", "Borrador de la rutina en sesión"],
       ["gymnasia.mobile.personal_data.v1", "Memoria del coach"],
       ["gymnasia.mobile.personal_foods.v1", "Alimentos personales"],
       ["gymnasia.mobile.user_prefs.v1", "Preferencias"],
@@ -12989,6 +13293,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const dependentSessionKeys = [
       SESSION_STORAGE_KEY,
       SESSION_TEMPLATE_SNAPSHOT_KEY,
+      SESSION_TEMPLATE_DRAFT_KEY,
     ];
     const managedStoreKeys = new Set([
       STORAGE_KEY,
@@ -13006,12 +13311,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           dependentSessionKeys,
         ),
         verify: async () => {
-          const [primary, snapshotRaw, quarantine, session, sessionTemplate] = await Promise.all([
+          const [primary, snapshotRaw, quarantine, session, sessionTemplate, sessionDraft] = await Promise.all([
             AsyncStorage.getItem(STORAGE_KEY),
             AsyncStorage.getItem(LOCAL_STORE_LAST_GOOD_KEY),
             AsyncStorage.getItem(LOCAL_STORE_QUARANTINE_KEY),
             AsyncStorage.getItem(SESSION_STORAGE_KEY),
             AsyncStorage.getItem(SESSION_TEMPLATE_SNAPSHOT_KEY),
+            AsyncStorage.getItem(SESSION_TEMPLATE_DRAFT_KEY),
           ]);
           let snapshotPayload: unknown = null;
           try {
@@ -13021,7 +13327,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             && snapshotPayload === serializedActivityStore
             && quarantine === null
             && session === null
-            && sessionTemplate === null;
+            && sessionTemplate === null
+            && sessionDraft === null;
         },
       });
       if (Platform.OS === "web" && __DEV__ && isDevStoreMirrorEnabled()) {
@@ -13305,6 +13612,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       await localStoreRecoveryRepository.discardAffected(initialRaw, [
         SESSION_STORAGE_KEY,
         SESSION_TEMPLATE_SNAPSHOT_KEY,
+        SESSION_TEMPLATE_DRAFT_KEY,
       ]);
       await saveDevStoreFile(initialStore);
       await runLocalStoreHydration();
@@ -16297,7 +16605,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               <View style={{ gap: 12, paddingBottom: 110 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                   <Pressable
-                    onPress={closeTrainingTemplateEditor}
+                    onPress={requestCloseTrainingTemplateEditor}
+                    testID="training-editor-cancel"
                     style={{
                       minHeight: 36,
                       paddingHorizontal: 2,
@@ -16305,17 +16614,20 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     }}
                   >
                     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "600" }}>
-                      ← Detalles
+                      Cancelar
                     </Text>
                   </Pressable>
                   <Pressable
-                    onPress={saveTrainingTemplateChanges}
+                    onPress={() => void saveTrainingTemplateChanges()}
+                    disabled={!trainingTemplateDraftValidation?.valid || trainingTemplateSaveBusy}
                     style={{
                       minHeight: 46,
                       borderRadius: 14,
                       borderWidth: 1,
                       borderColor: "rgba(203,255,26,0.75)",
-                      backgroundColor: mobileTheme.color.brandPrimary,
+                      backgroundColor: trainingTemplateDraftValidation?.valid
+                        ? mobileTheme.color.brandPrimary
+                        : "#303641",
                       paddingHorizontal: 18,
                       flexDirection: "row",
                       alignItems: "center",
@@ -16323,12 +16635,33 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       gap: 8,
                     }}
                   >
-                    <Feather name="check" size={14} color="#06090D" />
-                    <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>Guardar</Text>
+                    <Feather name="check" size={14} color={trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3"} />
+                    <Text style={{ color: trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3", fontSize: 16, fontWeight: "800" }}>
+                      {trainingTemplateSaveBusy ? "Guardando…" : "Guardar"}
+                    </Text>
                   </Pressable>
                 </View>
 
+                {trainingTemplateDraftDirty ? (
+                  <View
+                    testID="training-editor-dirty-banner"
+                    style={{
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      borderColor: "rgba(203,255,26,0.28)",
+                      backgroundColor: "rgba(203,255,26,0.08)",
+                      paddingHorizontal: 12,
+                      paddingVertical: 9,
+                    }}
+                  >
+                    <Text style={{ color: "#DDFE70", fontSize: 13, fontWeight: "700" }}>
+                      Cambios sin guardar. La rutina original sigue intacta.
+                    </Text>
+                  </View>
+                ) : null}
+
                 <TextInput
+                  testID="training-editor-name"
                   value={activeTrainingTemplate.name}
                   onChangeText={updateActiveTrainingName}
                   placeholder="Nombre de rutina"
@@ -16481,9 +16814,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 </View>
 
                 <PrimaryButton
-                  label="Empezar rutina"
+                  label={trainingTemplateDraftDirty ? "Guarda para empezar" : "Empezar rutina"}
                   onPress={() => startTrainingSession(activeTrainingTemplate.id)}
-                  disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
+                  disabled={trainingTemplateDraftDirty || !templateHasRunnableSeries(activeTrainingTemplate)}
                   icon={<Feather name="play" size={14} color="#06090D" />}
                   testID="training-editor-start-session"
                 />
@@ -17213,7 +17546,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 </Pressable>
 
                 <Pressable
-                  onPress={saveTrainingTemplateChanges}
+                  onPress={() => void saveTrainingTemplateChanges()}
+                  disabled={!trainingTemplateDraftValidation?.valid || trainingTemplateSaveBusy}
                   testID="training-editor-save"
                   style={{
                     marginTop: 6,
@@ -17221,16 +17555,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     borderRadius: 14,
                     borderWidth: 1,
                     borderColor: "rgba(203,255,26,0.75)",
-                    backgroundColor: mobileTheme.color.brandPrimary,
+                    backgroundColor: trainingTemplateDraftValidation?.valid
+                      ? mobileTheme.color.brandPrimary
+                      : "#303641",
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 8,
                   }}
                 >
-                  <Feather name="check" size={14} color="#06090D" />
-                  <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>
-                    Guardar cambios
+                  <Feather name="check" size={14} color={trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3"} />
+                  <Text style={{ color: trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3", fontSize: 16, fontWeight: "800" }}>
+                    {trainingTemplateSaveBusy ? "Guardando…" : "Guardar cambios"}
                   </Text>
                 </Pressable>
               </View>
@@ -17433,6 +17769,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                     <Pressable
                       onPress={createTrainingTemplate}
+                      testID="training-create-first"
                       style={{
                         marginTop: 30,
                         minHeight: 58,
@@ -23105,6 +23442,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         >
           <Pressable
             onPress={createTrainingTemplate}
+            testID="training-create"
             style={{
               minHeight: 56,
               borderRadius: mobileTheme.radius.pill,
@@ -24638,6 +24976,81 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         </View>
       ) : null}
 
+      {confirmDiscardTemplateDraft ? (
+        <View
+          testID="training-editor-discard-modal"
+          style={{
+            position: "absolute", top: 0, right: 0, bottom: 0, left: 0,
+            backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20,
+            alignItems: "center", justifyContent: "center", zIndex: 620, elevation: 62,
+          }}
+        >
+          <View style={{ width: "100%", maxWidth: 370, borderRadius: 24, borderWidth: 1, borderColor: "#252B35", backgroundColor: "#141820", padding: 20, gap: 14 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 24, fontWeight: "800" }}>
+              ¿Descartar cambios?
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 15, lineHeight: 21 }}>
+              El borrador no se ha guardado. La rutina original no se modificará.
+            </Text>
+            <Pressable
+              testID="training-editor-keep-editing"
+              onPress={() => setConfirmDiscardTemplateDraft(false)}
+              style={{ minHeight: 50, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}
+            >
+              <Text style={{ color: "#06090D", fontSize: 17, fontWeight: "800" }}>Seguir editando</Text>
+            </Pressable>
+            <Pressable
+              testID="training-editor-confirm-discard"
+              onPress={closeTrainingTemplateEditor}
+              style={{ minHeight: 48, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,77,79,0.55)", backgroundColor: "rgba(255,77,79,0.12)", alignItems: "center", justifyContent: "center" }}
+            >
+              <Text style={{ color: "#FF8A8A", fontSize: 16, fontWeight: "800" }}>Descartar cambios</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
+      {trainingTemplateConflict ? (
+        <View
+          testID="training-editor-conflict-modal"
+          style={{
+            position: "absolute", top: 0, right: 0, bottom: 0, left: 0,
+            backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20,
+            alignItems: "center", justifyContent: "center", zIndex: 621, elevation: 63,
+          }}
+        >
+          <View style={{ width: "100%", maxWidth: 390, borderRadius: 24, borderWidth: 1, borderColor: "#3B424E", backgroundColor: "#141820", padding: 20, gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 24, fontWeight: "800" }}>
+              La rutina cambió fuera del editor
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 15, lineHeight: 21 }}>
+              Hay una versión más reciente. Elige qué contenido quieres conservar; no sobrescribiremos nada sin tu permiso.
+            </Text>
+            <Pressable
+              testID="training-editor-conflict-load-current"
+              onPress={loadCurrentTrainingTemplateAfterConflict}
+              style={{ minHeight: 50, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}
+            >
+              <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>Cargar versión actual</Text>
+            </Pressable>
+            <Pressable
+              testID="training-editor-conflict-overwrite"
+              onPress={() => void saveTrainingTemplateChanges(true)}
+              style={{ minHeight: 48, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", backgroundColor: "#1B1F27", alignItems: "center", justifyContent: "center" }}
+            >
+              <Text style={{ color: "#E7EBF3", fontSize: 16, fontWeight: "800" }}>Guardar mis cambios</Text>
+            </Pressable>
+            <Pressable
+              testID="training-editor-conflict-continue"
+              onPress={() => setTrainingTemplateConflict(null)}
+              style={{ minHeight: 42, alignItems: "center", justifyContent: "center" }}
+            >
+              <Text style={{ color: "#A6AFBC", fontSize: 15, fontWeight: "700" }}>Seguir editando</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
       {workoutCompletionModal ? (
         <View
           style={{
@@ -24679,13 +25092,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 justifyContent: "center",
               }}
             >
-              <Ionicons name="trophy-outline" size={30} color="#00D06E" />
+              <Ionicons
+                name={workoutCompletionModal.kind === "finish" ? "trophy-outline" : "exit-outline"}
+                size={30}
+                color="#00D06E"
+              />
             </View>
 
             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
-              ¡Sesión completada!
+              {workoutCompletionModal.kind === "finish" ? "¡Sesión completada!" : "Abandonar sesión"}
             </Text>
 
+            {workoutCompletionModal.summary ? (
             <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between", gap: 8 }}>
               <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
                 <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800" }}>
@@ -24707,6 +25125,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 <Text style={{ color: "#8B94A3", fontSize: 14, fontWeight: "600" }}>Calorías</Text>
               </View>
             </View>
+            ) : null}
 
             <View
               style={{
@@ -24721,7 +25140,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <Ionicons name="sync-outline" size={20} color="#F5C542" />
                   <Text style={{ color: "#F5C542", fontSize: 20, fontWeight: "700" }}>
-                    Cambios detectados
+                    {workoutCompletionModal.canonical_conflict
+                      ? "La rutina también cambió fuera de la sesión"
+                      : "Cambios de rutina detectados"}
                   </Text>
                 </View>
                 <Text
@@ -24732,11 +25153,24 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     lineHeight: 22,
                   }}
                 >
-                  Has modificado la configuración de algunas series. ¿Aplicar esos cambios a la rutina futura?
+                  {workoutCompletionModal.canonical_conflict
+                    ? "Hay dos versiones distintas. Elige expresamente cuál debe quedar como rutina futura."
+                    : "La sesión tiene cambios que todavía no afectan a tu rutina. Elige qué versión quieres conservar."}
                 </Text>
 
+                {workoutCompletionModal.original_template && workoutCompletionModal.draft_template
+                  ? diffWorkoutTemplates(
+                      workoutCompletionModal.original_template,
+                      workoutCompletionModal.draft_template,
+                    ).summaries.slice(0, 3).map((summary) => (
+                      <Text key={summary} style={{ width: "100%", color: "#D7DDE7", fontSize: 13 }}>
+                        • {summary}
+                      </Text>
+                    ))
+                  : null}
+
                 <Pressable
-                  onPress={closeWorkoutCompletionModal}
+                  onPress={() => void finalizeWorkoutSessionResolution(true, workoutCompletionModal.canonical_conflict)}
                   testID="training-complete-apply-changes"
                   style={{
                     width: "100%",
@@ -24751,7 +25185,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 >
                   <Feather name="check" size={16} color="#06090D" />
                   <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>
-                    Sí, actualizar rutina
+                    {workoutCompletionModal.kind === "finish"
+                      ? "Conservar cambios"
+                      : "Abandonar y conservar cambios"}
                   </Text>
                 </Pressable>
 
@@ -24770,7 +25206,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   }}
                 >
                   <Text style={{ color: "#E5EAF3", fontSize: 22, fontWeight: "700" }}>
-                    No, mantener la original
+                    {workoutCompletionModal.kind === "finish"
+                      ? "Mantener rutina actual"
+                      : "Abandonar y mantener rutina"}
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  onPress={closeWorkoutCompletionModal}
+                  testID="training-resolution-continue"
+                  style={{ minHeight: 42, alignItems: "center", justifyContent: "center" }}
+                >
+                  <Text style={{ color: "#A6AFBC", fontSize: 15, fontWeight: "700" }}>
+                    Seguir entrenando
                   </Text>
                 </Pressable>
               </>
@@ -24787,7 +25235,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   Buen trabajo. La sesión quedó registrada correctamente.
                 </Text>
                 <Pressable
-                  onPress={closeWorkoutCompletionModal}
+                  onPress={() => {
+                    if (activeWorkoutSession) {
+                      void finalizeWorkoutSessionResolution(false);
+                    } else {
+                      closeWorkoutCompletionModal();
+                    }
+                  }}
                   testID="training-complete-close"
                   style={{
                     width: "100%",
@@ -24798,12 +25252,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     justifyContent: "center",
                   }}
                 >
-                  <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>Cerrar</Text>
+                  <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>
+                    {activeWorkoutSession ? "Finalizar" : "Cerrar"}
+                  </Text>
                 </Pressable>
               </>
             )}
           </View>
-          <ConfettiCannon
+          {workoutCompletionModal.kind === "finish" ? <ConfettiCannon
             count={120}
             origin={{ x: -10, y: 0 }}
             autoStart
@@ -24811,7 +25267,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             explosionSpeed={400}
             fallSpeed={2800}
             colors={["#CBFF1A", "#00D06E", "#4ECDC4", "#FFE66D", "#FF6B6B", "#FFFFFF"]}
-          />
+          /> : null}
         </View>
       ) : null}
 
@@ -25146,6 +25602,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               ) : null}
 
               <Pressable
+                testID="training-exercise-custom-open"
                 onPress={() => {
                   setCustomExerciseDraft(EMPTY_CUSTOM_EXERCISE_DRAFT);
                   setCustomExerciseFormOpen(true);
@@ -25206,6 +25663,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 <View style={{ gap: 6 }}>
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Nombre *</Text>
                   <TextInput
+                    testID="training-exercise-custom-name"
                     value={customExerciseDraft.name}
                     onChangeText={(v) => setCustomExerciseDraft((d) => ({ ...d, name: v }))}
                     placeholder="Ej: Flexiones, Sentadilla búlgara..."
@@ -25374,6 +25832,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                 {/* Guardar */}
                 <Pressable
+                  testID="training-exercise-custom-save"
                   onPress={addCustomExerciseFromForm}
                   disabled={!customExerciseDraft.name.trim()}
                   style={{
@@ -25429,7 +25888,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               {ALL_SERIES_TYPES.map((st) => {
                 const meta = SERIES_TYPE_META[st];
                 const isSelected = (() => {
-                  const tpl = store.templates.find((t) => t.exercises.some((e) => e.id === seriesTypePickerTarget.exerciseId));
+                  const tpl = seriesTypePickerTarget.source === "session"
+                    ? workoutSessionTemplateDraft?.draft
+                    : trainingTemplateDraft?.draft;
                   const ex = tpl?.exercises.find((e) => e.id === seriesTypePickerTarget.exerciseId);
                   const s = ex?.series?.find((s) => s.id === seriesTypePickerTarget.seriesId);
                   return (s?.type ?? "normal") === st;
@@ -25438,17 +25899,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   <Pressable
                     key={st}
                     onPress={() => {
-                      const templateId = seriesTypePickerTarget.source === "session"
-                        ? activeWorkoutSession?.template_id
-                        : activeTrainingTemplateId;
-                      if (templateId) {
-                        changeSeriesTypeInTemplate(
-                          templateId,
-                          seriesTypePickerTarget.exerciseId,
-                          seriesTypePickerTarget.seriesId,
-                          st,
-                        );
-                      }
+                      changeSeriesTypeInTemplate(
+                        seriesTypePickerTarget.source,
+                        seriesTypePickerTarget.exerciseId,
+                        seriesTypePickerTarget.seriesId,
+                        st,
+                      );
                       setSeriesTypePickerTarget(null);
                     }}
                     testID={`training-series-type-option-${st}`}
