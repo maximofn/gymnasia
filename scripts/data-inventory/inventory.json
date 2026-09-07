@@ -44,7 +44,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Estado principal: rutinas, historial de entrenamiento, dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
+      "purpose": "Estado principal: rutinas, historial agregado de entrenamiento con totales, versión de cálculo y desglose disponible de esfuerzos principales y mini-series, dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "rewrite",
       "fullDeletion": "delete"
@@ -94,7 +94,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness",
-      "purpose": "Sesión de entrenamiento en curso: plantilla, ejercicio y serie actuales, tiempos y descanso.",
+      "purpose": "Sesión de entrenamiento en curso: plantilla, esfuerzo principal o mini-serie actual, claves de esfuerzos completados, tiempos y descanso.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "delete",
       "fullDeletion": "delete"

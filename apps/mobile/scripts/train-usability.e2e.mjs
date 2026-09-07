@@ -257,7 +257,7 @@ async function runTrainUsabilityE2E(page, baseUrl) {
   await clickByTestIdPrefix(page, "training-template-start-");
   await expectBodyContains(page, "Sesión activa");
   await clickByTestIdPrefix(page, "training-session-complete-series");
-  await expectBodyContains(page, "1/4 series");
+  await expectBodyContains(page, "1/4 esfuerzos");
 
   logStep("Completing session");
   if ((await page.locator('[data-testid="training-session-skip-rest"]').count()) > 0) {

@@ -204,6 +204,18 @@ import {
   type WorkoutTemplateDraftState,
 } from "./training/workoutTemplateTransactions";
 import {
+  WORKOUT_EXECUTION_SCHEMA_VERSION,
+  WORKOUT_SUMMARY_CALCULATION_VERSION,
+  expandLegacyCompletedSeriesKeys,
+  listWorkoutExecutionUnits,
+  parseWorkoutRestSeconds,
+  primaryWorkoutExecutionKey,
+  resolveWorkoutExecutionCurrentKey,
+  resolveWorkoutExecutionRest,
+  summarizeWorkoutExecution,
+  type WorkoutEffortBreakdown,
+} from "./training/workoutExecution";
+import {
   catalogRef,
   linkedCatalog,
   unresolvedCatalog,
@@ -433,11 +445,11 @@ type WorkoutSession = {
   template_name: string;
   category: TrainingCategory;
   started_at: string;
-  current_exercise_index: number;
-  current_series_index: number;
-  completed_series_keys: string[];
-  completed_series_count: number;
-  total_series_count: number;
+  execution_schema_version: typeof WORKOUT_EXECUTION_SCHEMA_VERSION;
+  current_unit_key: string;
+  completed_unit_keys: string[];
+  completed_effort_count: number;
+  total_effort_count: number;
   elapsed_seconds: number;
   is_resting: boolean;
   rest_seconds_left: number;
@@ -454,8 +466,11 @@ type WorkoutSessionSummary = {
   template_name: string;
   finished_at: string;
   elapsed_seconds: number;
-  completed_series_count: number;
-  total_series_count: number;
+  calculation_version: 1 | typeof WORKOUT_SUMMARY_CALCULATION_VERSION;
+  can_recalculate: boolean;
+  completed_effort_count: number;
+  total_effort_count: number;
+  effort_breakdown: WorkoutEffortBreakdown | null;
   estimated_calories: number;
   total_volume_kg: number;
   total_reps: number;
@@ -653,15 +668,6 @@ type AlarmHealth = {
   lastObservedAt: number | null;
   lateStreak: number;
 };
-type TemplateSeriesPointer = {
-  exerciseIndex: number;
-  seriesIndex: number;
-  exerciseId: string;
-  seriesId: string;
-  exerciseName: string;
-  series: ExerciseSeries;
-};
-
 type Dashboard = {
   calories: number;
   weight: number | null;
@@ -3853,35 +3859,7 @@ function resolveTrainingCategory(template: WorkoutTemplate): TrainingCategory {
 }
 
 function parseRestSecondsInput(rawValue: string): number {
-  const normalized = rawValue.trim().toLowerCase();
-  if (!normalized) return 0;
-
-  if (normalized.includes(":")) {
-    const [minutesRaw, secondsRaw] = normalized.split(":");
-    const minutes = Number(minutesRaw);
-    const seconds = Number(secondsRaw);
-    if (Number.isFinite(minutes) && Number.isFinite(seconds)) {
-      return Math.max(0, Math.round(minutes * 60 + seconds));
-    }
-  }
-
-  if (normalized.endsWith("m")) {
-    const parsed = Number(normalized.slice(0, -1));
-    if (Number.isFinite(parsed) && parsed > 0) {
-      return Math.round(parsed * 60);
-    }
-  }
-
-  if (normalized.endsWith("s")) {
-    const parsed = Number(normalized.slice(0, -1));
-    if (Number.isFinite(parsed) && parsed > 0) {
-      return Math.round(parsed);
-    }
-  }
-
-  const numeric = Number(normalized.replace(/[^\d.]/g, ""));
-  if (!Number.isFinite(numeric) || numeric <= 0) return 0;
-  return Math.round(numeric);
+  return parseWorkoutRestSeconds(rawValue);
 }
 
 function extractFirstPositiveInt(rawValue: string): number | null {
@@ -3956,8 +3934,38 @@ function normalizeMeasuredAt(rawValue: unknown): string {
 }
 
 function normalizeWorkoutSessionSummary(rawValue: unknown, index: number): WorkoutSessionSummary {
-  const maybe =
-    rawValue && typeof rawValue === "object" ? (rawValue as Partial<WorkoutSessionSummary>) : {};
+  const maybe = rawValue && typeof rawValue === "object"
+    ? rawValue as Partial<WorkoutSessionSummary> & {
+        completed_series_count?: unknown;
+        total_series_count?: unknown;
+      }
+    : {};
+  const calculationVersion = maybe.calculation_version === WORKOUT_SUMMARY_CALCULATION_VERSION
+    ? WORKOUT_SUMMARY_CALCULATION_VERSION
+    : 1;
+  const rawBreakdown = maybe.effort_breakdown;
+  const effortBreakdown = calculationVersion === WORKOUT_SUMMARY_CALCULATION_VERSION
+    && rawBreakdown
+    && typeof rawBreakdown === "object"
+    ? {
+        completed_primary: Math.max(
+          0,
+          Math.round(normalizeDietNonNegativeNumber(rawBreakdown.completed_primary)),
+        ),
+        completed_sub_series: Math.max(
+          0,
+          Math.round(normalizeDietNonNegativeNumber(rawBreakdown.completed_sub_series)),
+        ),
+        total_primary: Math.max(
+          0,
+          Math.round(normalizeDietNonNegativeNumber(rawBreakdown.total_primary)),
+        ),
+        total_sub_series: Math.max(
+          0,
+          Math.round(normalizeDietNonNegativeNumber(rawBreakdown.total_sub_series)),
+        ),
+      }
+    : null;
   return {
     id:
       typeof maybe.id === "string" && maybe.id ? maybe.id : uid(`session_summary_${index}`),
@@ -3971,14 +3979,23 @@ function normalizeWorkoutSessionSummary(rawValue: unknown, index: number): Worko
         : "Rutina",
     finished_at: normalizeMeasuredAt(maybe.finished_at),
     elapsed_seconds: Math.max(0, Math.round(normalizeDietNonNegativeNumber(maybe.elapsed_seconds))),
-    completed_series_count: Math.max(
+    calculation_version: calculationVersion,
+    can_recalculate:
+      calculationVersion === WORKOUT_SUMMARY_CALCULATION_VERSION
+      && maybe.can_recalculate === true,
+    completed_effort_count: Math.max(
       0,
-      Math.round(normalizeDietNonNegativeNumber(maybe.completed_series_count)),
+      Math.round(normalizeDietNonNegativeNumber(
+        maybe.completed_effort_count ?? maybe.completed_series_count,
+      )),
     ),
-    total_series_count: Math.max(
+    total_effort_count: Math.max(
       0,
-      Math.round(normalizeDietNonNegativeNumber(maybe.total_series_count)),
+      Math.round(normalizeDietNonNegativeNumber(
+        maybe.total_effort_count ?? maybe.total_series_count,
+      )),
     ),
+    effort_breakdown: effortBreakdown,
     estimated_calories: Math.max(
       0,
       Math.round(normalizeDietNonNegativeNumber(maybe.estimated_calories)),
@@ -4447,34 +4464,6 @@ function formatHomeExerciseVolume(series: ExerciseSeries[]): string {
   return `${series.length} x ${repsLabel} reps${weightLabel ? ` • ${weightLabel} kg` : ""}`;
 }
 
-function summarizeWorkoutSessionPerformance(
-  session: WorkoutSession,
-  template: WorkoutTemplate | null,
-): { totalVolumeKg: number; totalReps: number } {
-  if (!template) {
-    return { totalVolumeKg: 0, totalReps: 0 };
-  }
-
-  const completedKeys = new Set(session.completed_series_keys);
-  let totalVolumeKg = 0;
-  let totalReps = 0;
-
-  template.exercises.forEach((exercise) => {
-    (exercise.series ?? []).forEach((seriesItem) => {
-      if (!completedKeys.has(`${exercise.id}:${seriesItem.id}`)) return;
-      const reps = Math.max(0, Math.round(parseNonNegativeNumberInput(seriesItem.reps) ?? 0));
-      const weightKg = Math.max(0, parseNonNegativeNumberInput(seriesItem.weight_kg) ?? 0);
-      totalReps += reps;
-      totalVolumeKg += reps * weightKg;
-    });
-  });
-
-  return {
-    totalVolumeKg: Math.round(totalVolumeKg * 10) / 10,
-    totalReps,
-  };
-}
-
 function resolveTrainingStatsPeriodStart(period: TrainingStatsPeriodKey): number | null {
   if (period === "all") return null;
   const cutoff = new Date();
@@ -4506,28 +4495,7 @@ function formatTrainingStatsMetricValue(metric: TrainingStatsMetricKey, value: n
 }
 
 function templateHasRunnableSeries(template: WorkoutTemplate): boolean {
-  return template.exercises.some((exercise) => (exercise.series ?? []).length > 0);
-}
-
-function listTemplateSeriesPointers(template: WorkoutTemplate): TemplateSeriesPointer[] {
-  const pointers: TemplateSeriesPointer[] = [];
-  template.exercises.forEach((exercise, exerciseIndex) => {
-    (exercise.series ?? []).forEach((series, seriesIndex) => {
-      pointers.push({
-        exerciseIndex,
-        seriesIndex,
-        exerciseId: exercise.id,
-        seriesId: series.id,
-        exerciseName: exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`,
-        series,
-      });
-    });
-  });
-  return pointers;
-}
-
-function pointerKey(pointer: TemplateSeriesPointer): string {
-  return `${pointer.exerciseId}:${pointer.seriesId}`;
+  return listWorkoutExecutionUnits(template).length > 0;
 }
 
 function normalizeWorkoutSession(
@@ -4535,29 +4503,50 @@ function normalizeWorkoutSession(
   templates: WorkoutTemplate[],
 ): WorkoutSession | null {
   if (!rawValue || typeof rawValue !== "object") return null;
-  const maybe = rawValue as Partial<WorkoutSession>;
+  const maybe = rawValue as Partial<WorkoutSession> & {
+    current_exercise_index?: unknown;
+    current_series_index?: unknown;
+    completed_series_keys?: unknown;
+    completed_series_count?: unknown;
+    total_series_count?: unknown;
+  };
   if (!maybe.template_id || typeof maybe.template_id !== "string") return null;
 
   const template = templates.find((item) => item.id === maybe.template_id);
   if (!template || !templateHasRunnableSeries(template)) return null;
 
-  const pointers = listTemplateSeriesPointers(template);
-  if (pointers.length === 0) return null;
+  const units = listWorkoutExecutionUnits(template);
+  if (units.length === 0) return null;
 
-  const requestedExerciseIndex = Number(maybe.current_exercise_index);
-  const requestedSeriesIndex = Number(maybe.current_series_index);
-  const currentIndex = pointers.findIndex(
-    (item) =>
-      item.exerciseIndex === requestedExerciseIndex &&
-      item.seriesIndex === requestedSeriesIndex,
-  );
-  const fallbackPointer = pointers[Math.max(0, currentIndex)];
-  const knownKeys = new Set(pointers.map((item) => pointerKey(item)));
-  const completedKeys = Array.isArray(maybe.completed_series_keys)
-    ? maybe.completed_series_keys
-        .filter((item): item is string => typeof item === "string")
-        .filter((item) => knownKeys.has(item))
-    : [];
+  const knownKeys = new Set(units.map((unit) => unit.key));
+  const usesExecutionUnits = maybe.execution_schema_version === WORKOUT_EXECUTION_SCHEMA_VERSION;
+  const completedUnitKeys = usesExecutionUnits
+    ? [...new Set(
+        (Array.isArray(maybe.completed_unit_keys) ? maybe.completed_unit_keys : [])
+          .filter((item): item is string => typeof item === "string")
+          .filter((item) => knownKeys.has(item)),
+      )]
+    : expandLegacyCompletedSeriesKeys(
+        units,
+        (Array.isArray(maybe.completed_series_keys) ? maybe.completed_series_keys : [])
+          .filter((item): item is string => typeof item === "string"),
+      );
+  const requestedLegacyUnit = usesExecutionUnits
+    ? null
+    : units.find(
+        (unit) =>
+          unit.kind === "primary"
+          && unit.exerciseIndex === Number(maybe.current_exercise_index)
+          && unit.seriesIndex === Number(maybe.current_series_index),
+      ) ?? null;
+  const requestedKey = usesExecutionUnits && typeof maybe.current_unit_key === "string"
+    ? maybe.current_unit_key
+    : requestedLegacyUnit?.key ?? units[0].key;
+  const currentUnitKey = resolveWorkoutExecutionCurrentKey(
+    units,
+    requestedKey,
+    completedUnitKeys,
+  ) ?? units[0].key;
   const elapsedSeconds = Number.isFinite(Number(maybe.elapsed_seconds))
     ? Math.max(0, Math.round(Number(maybe.elapsed_seconds)))
     : 0;
@@ -4567,10 +4556,6 @@ function normalizeWorkoutSession(
   const restSecondsTotal = Number.isFinite(Number(maybe.rest_seconds_total))
     ? Math.max(0, Math.round(Number(maybe.rest_seconds_total)))
     : restSecondsLeft;
-  const completedCountRaw = Number(maybe.completed_series_count);
-  const completedCount = Number.isFinite(completedCountRaw)
-    ? Math.max(0, Math.min(pointers.length, Math.round(completedCountRaw)))
-    : completedKeys.length;
   const status = maybe.status === "paused" ? "paused" : "running";
   const isResting = Boolean(maybe.is_resting) && restSecondsLeft > 0;
   const pendingResolution = maybe.pending_resolution
@@ -4590,11 +4575,11 @@ function normalizeWorkoutSession(
       typeof maybe.started_at === "string" && maybe.started_at
         ? maybe.started_at
         : new Date().toISOString(),
-    current_exercise_index: fallbackPointer.exerciseIndex,
-    current_series_index: fallbackPointer.seriesIndex,
-    completed_series_keys: completedKeys,
-    completed_series_count: completedCount,
-    total_series_count: pointers.length,
+    execution_schema_version: WORKOUT_EXECUTION_SCHEMA_VERSION,
+    current_unit_key: currentUnitKey,
+    completed_unit_keys: completedUnitKeys,
+    completed_effort_count: completedUnitKeys.length,
+    total_effort_count: units.length,
     elapsed_seconds: elapsedSeconds,
     is_resting: isResting,
     rest_seconds_left: restSecondsLeft,
@@ -7459,6 +7444,31 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       (summary) => new Date(summary.finished_at).getTime() >= cutoff,
     );
   }, [activeTrainingHistory, trainingStatsPeriod]);
+  const activeTrainingLegacySummaryCount = useMemo(
+    () => activeTrainingFilteredHistory.filter((summary) => summary.calculation_version === 1).length,
+    [activeTrainingFilteredHistory],
+  );
+  const activeTrainingEffortDetail = useMemo(() => {
+    const detailedSummaries = activeTrainingFilteredHistory.filter(
+      (summary) => summary.effort_breakdown !== null,
+    );
+    const breakdown = detailedSummaries.reduce<WorkoutEffortBreakdown>(
+      (acc, summary) => ({
+        completed_primary: acc.completed_primary + (summary.effort_breakdown?.completed_primary ?? 0),
+        completed_sub_series:
+          acc.completed_sub_series + (summary.effort_breakdown?.completed_sub_series ?? 0),
+        total_primary: acc.total_primary + (summary.effort_breakdown?.total_primary ?? 0),
+        total_sub_series: acc.total_sub_series + (summary.effort_breakdown?.total_sub_series ?? 0),
+      }),
+      {
+        completed_primary: 0,
+        completed_sub_series: 0,
+        total_primary: 0,
+        total_sub_series: 0,
+      },
+    );
+    return { detailedCount: detailedSummaries.length, breakdown };
+  }, [activeTrainingFilteredHistory]);
   const activeTrainingChartBars = useMemo(() => {
     const points = activeTrainingFilteredHistory.map((summary) => {
       const metricValue =
@@ -7496,29 +7506,28 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
     return store.templates.find((template) => template.id === activeWorkoutSession.template_id) ?? null;
   }, [activeWorkoutSession, store.templates, workoutSessionTemplateDraft]);
-  const activeSessionPointers = useMemo(
-    () => (activeSessionTemplate ? listTemplateSeriesPointers(activeSessionTemplate) : []),
+  const activeSessionUnits = useMemo(
+    () => (activeSessionTemplate ? listWorkoutExecutionUnits(activeSessionTemplate) : []),
     [activeSessionTemplate],
   );
-  const activeSessionCurrentPointerIndex = useMemo(() => {
+  const activeSessionCurrentUnitIndex = useMemo(() => {
     if (!activeWorkoutSession) return -1;
-    return activeSessionPointers.findIndex(
-      (item) =>
-        item.exerciseIndex === activeWorkoutSession.current_exercise_index &&
-        item.seriesIndex === activeWorkoutSession.current_series_index,
-    );
-  }, [activeWorkoutSession, activeSessionPointers]);
-  const activeSessionCurrentPointer = useMemo(() => {
-    if (activeSessionPointers.length === 0) return null;
-    if (activeSessionCurrentPointerIndex < 0) return activeSessionPointers[0];
-    return activeSessionPointers[activeSessionCurrentPointerIndex];
-  }, [activeSessionCurrentPointerIndex, activeSessionPointers]);
+    return activeSessionUnits.findIndex((unit) => unit.key === activeWorkoutSession.current_unit_key);
+  }, [activeWorkoutSession, activeSessionUnits]);
+  const activeSessionCurrentUnit = useMemo(() => {
+    if (activeSessionUnits.length === 0) return null;
+    if (activeSessionCurrentUnitIndex < 0) return activeSessionUnits[0];
+    return activeSessionUnits[activeSessionCurrentUnitIndex];
+  }, [activeSessionCurrentUnitIndex, activeSessionUnits]);
   const activeSessionProgressRatio = useMemo(() => {
     if (!activeWorkoutSession) return 0;
-    if (activeWorkoutSession.total_series_count <= 0) return 0;
+    if (activeWorkoutSession.total_effort_count <= 0) return 0;
     return Math.max(
       0,
-      Math.min(1, activeWorkoutSession.completed_series_count / activeWorkoutSession.total_series_count),
+      Math.min(
+        1,
+        activeWorkoutSession.completed_effort_count / activeWorkoutSession.total_effort_count,
+      ),
     );
   }, [activeWorkoutSession]);
   const activeSessionCategoryMeta = useMemo(
@@ -7530,30 +7539,42 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     [activeSessionProgressRatio],
   );
   const activeSessionCompletedKeySet = useMemo(
-    () => new Set(activeWorkoutSession?.completed_series_keys ?? []),
-    [activeWorkoutSession?.completed_series_keys],
+    () => new Set(activeWorkoutSession?.completed_unit_keys ?? []),
+    [activeWorkoutSession?.completed_unit_keys],
   );
   const activeSessionExercises = useMemo(() => {
     if (!activeWorkoutSession || !activeSessionTemplate) return [];
     return activeSessionTemplate.exercises.map((exercise, exerciseIndex) => {
       const seriesStates = (exercise.series ?? []).map((series, seriesIndex) => {
-        const key = `${exercise.id}:${series.id}`;
+        const key = primaryWorkoutExecutionKey(exercise.id, series.id);
+        const subSeriesStates = activeSessionUnits
+          .filter((candidate) => candidate.blockKey === key && candidate.kind === "sub_series")
+          .map((subUnit) => ({
+            key: subUnit.key,
+            unit: subUnit,
+            subSeries: subUnit.subSeries!,
+            subSeriesIndex: subUnit.subSeriesIndex!,
+            isCompleted: activeSessionCompletedKeySet.has(subUnit.key),
+            isCurrent: activeSessionCurrentUnit?.key === subUnit.key,
+          }));
         const isCompleted = activeSessionCompletedKeySet.has(key);
-        const isCurrent =
-          activeSessionCurrentPointer?.exerciseId === exercise.id &&
-          activeSessionCurrentPointer?.seriesId === series.id;
+        const isCurrent = activeSessionCurrentUnit?.key === key;
         return {
           key,
           series,
           seriesIndex,
+          subSeriesStates,
           isCompleted,
           isCurrent,
         };
       });
-      const completedSeriesCount = seriesStates.filter((item) => item.isCompleted).length;
-      const totalSeriesCount = seriesStates.length;
-      const isCurrentExercise = activeSessionCurrentPointer?.exerciseId === exercise.id;
-      const isCompletedExercise = totalSeriesCount > 0 && completedSeriesCount === totalSeriesCount;
+      const exerciseUnits = activeSessionUnits.filter((unit) => unit.exerciseId === exercise.id);
+      const completedEffortCount = exerciseUnits.filter((unit) =>
+        activeSessionCompletedKeySet.has(unit.key)
+      ).length;
+      const totalEffortCount = exerciseUnits.length;
+      const isCurrentExercise = activeSessionCurrentUnit?.exerciseId === exercise.id;
+      const isCompletedExercise = totalEffortCount > 0 && completedEffortCount === totalEffortCount;
       const muscle =
         exercise.muscle?.trim() ||
         inferExerciseMuscle(exercise.name ?? "", activeWorkoutSession.category);
@@ -7561,8 +7582,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         exercise,
         exerciseIndex,
         seriesStates,
-        completedSeriesCount,
-        totalSeriesCount,
+        completedEffortCount,
+        totalEffortCount,
         isCurrentExercise,
         isCompletedExercise,
         muscle,
@@ -7570,8 +7591,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     });
   }, [
     activeSessionCompletedKeySet,
-    activeSessionCurrentPointer?.exerciseId,
-    activeSessionCurrentPointer?.seriesId,
+    activeSessionCurrentUnit?.exerciseId,
+    activeSessionCurrentUnit?.key,
+    activeSessionUnits,
     activeSessionTemplate,
     activeWorkoutSession,
   ]);
@@ -7579,11 +7601,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (activeWorkoutSession?.is_resting) {
       return activeWorkoutSession.rest_seconds_total ?? 0;
     }
-    return parseRestSecondsInput(activeSessionCurrentPointer?.series.rest_seconds ?? "");
+    if (!activeSessionCurrentUnit) return 0;
+    return resolveWorkoutExecutionRest(
+      activeSessionCurrentUnit,
+      activeSessionUnits[activeSessionCurrentUnitIndex + 1] ?? null,
+    );
   }, [
+    activeSessionCurrentUnit,
+    activeSessionCurrentUnitIndex,
+    activeSessionUnits,
     activeWorkoutSession?.is_resting,
     activeWorkoutSession?.rest_seconds_total,
-    activeSessionCurrentPointer?.series.rest_seconds,
   ]);
   const activeSessionRestProgressRatio = useMemo(() => {
     if (!activeWorkoutSession?.is_resting) return 0;
@@ -9000,17 +9028,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   useEffect(() => {
     if (!activeWorkoutSession?.is_resting) return;
-    const template = store.templates.find((t) => t.id === activeWorkoutSession.template_id);
-    const exercise = template?.exercises[activeWorkoutSession.current_exercise_index];
-    const exerciseName = exercise?.name?.trim() || `Ejercicio ${activeWorkoutSession.current_exercise_index + 1}`;
-    const seriesNumber = activeWorkoutSession.current_series_index + 1;
-    restNotifBodyRef.current = `${exerciseName} · ¡A por la serie ${seriesNumber}!`;
+    if (!activeSessionCurrentUnit) return;
+    const effortLabel = activeSessionCurrentUnit.kind === "sub_series"
+      ? `mini-serie ${(activeSessionCurrentUnit.subSeriesIndex ?? 0) + 1}`
+      : `serie ${activeSessionCurrentUnit.seriesIndex + 1}`;
+    restNotifBodyRef.current = `${activeSessionCurrentUnit.exerciseName} · ¡A por la ${effortLabel}!`;
   }, [
     activeWorkoutSession?.is_resting,
-    activeWorkoutSession?.current_exercise_index,
-    activeWorkoutSession?.current_series_index,
-    activeWorkoutSession?.template_id,
-    store.templates,
+    activeSessionCurrentUnit,
   ]);
 
   useEffect(() => {
@@ -11284,27 +11309,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (!previous || previous.session_id !== activeWorkoutSession?.id) return previous;
       const next = updateWorkoutSessionTemplateDraft(previous, updater);
       if (next === previous) return previous;
-      const pointers = listTemplateSeriesPointers(next.draft);
-      const validKeys = new Set(pointers.map(pointerKey));
+      const units = listWorkoutExecutionUnits(next.draft);
+      const validKeys = new Set(units.map((unit) => unit.key));
       setActiveWorkoutSession((session) => {
         if (!session || session.id !== next.session_id) return session;
-        const completedKeys = session.completed_series_keys.filter((key) => validKeys.has(key));
-        const current = pointers.find(
-          (pointer) => pointer.exerciseIndex === session.current_exercise_index
-            && pointer.seriesIndex === session.current_series_index,
+        const completedKeys = session.completed_unit_keys.filter((key) => validKeys.has(key));
+        const currentUnitKey = resolveWorkoutExecutionCurrentKey(
+          units,
+          session.current_unit_key,
+          completedKeys,
         );
-        const fallback = current ?? pointers.find(
-          (pointer) => !completedKeys.includes(pointerKey(pointer)),
-        ) ?? pointers[0];
         return {
           ...session,
-          total_series_count: pointers.length,
-          completed_series_keys: completedKeys,
-          completed_series_count: completedKeys.length,
-          ...(fallback ? {
-            current_exercise_index: fallback.exerciseIndex,
-            current_series_index: fallback.seriesIndex,
-          } : {}),
+          total_effort_count: units.length,
+          completed_unit_keys: completedKeys,
+          completed_effort_count: completedKeys.length,
+          ...(currentUnitKey ? { current_unit_key: currentUnitKey } : {}),
         };
       });
       return next;
@@ -12019,19 +12039,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ? workoutSessionTemplateDraft.draft
       : store.templates.find((item) => item.id === session.template_id);
     if (!template) return null;
-    const pointers = listTemplateSeriesPointers(template);
-    if (pointers.length === 0) return null;
-    const currentIndex = pointers.findIndex(
-      (item) =>
-        item.exerciseIndex === session.current_exercise_index &&
-        item.seriesIndex === session.current_series_index,
-    );
+    const units = listWorkoutExecutionUnits(template);
+    if (units.length === 0) return null;
+    const currentIndex = units.findIndex((unit) => unit.key === session.current_unit_key);
     const safeIndex = currentIndex >= 0 ? currentIndex : 0;
     return {
       template,
-      pointers,
+      units,
       currentIndex: safeIndex,
-      currentPointer: pointers[safeIndex],
+      currentUnit: units[safeIndex],
     };
   }
 
@@ -12040,15 +12056,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     template: WorkoutTemplate | null,
     finishedAt: string,
   ): WorkoutSessionSummary {
-    const sessionPerformance = summarizeWorkoutSessionPerformance(session, template);
+    const executionUnits = template ? listWorkoutExecutionUnits(template) : [];
+    const sessionPerformance = summarizeWorkoutExecution(
+      executionUnits,
+      session.completed_unit_keys,
+    );
     return {
       id: `session_summary_${session.id}`,
       template_id: session.template_id,
       template_name: session.template_name,
       finished_at: finishedAt,
       elapsed_seconds: session.elapsed_seconds,
-      completed_series_count: session.completed_series_count,
-      total_series_count: session.total_series_count,
+      calculation_version: WORKOUT_SUMMARY_CALCULATION_VERSION,
+      can_recalculate: false,
+      completed_effort_count: sessionPerformance.completedEffortCount,
+      total_effort_count: sessionPerformance.totalEffortCount,
+      effort_breakdown: sessionPerformance.effortBreakdown,
       estimated_calories: estimateWorkoutCalories(session),
       total_volume_kg: sessionPerformance.totalVolumeKg,
       total_reps: sessionPerformance.totalReps,
@@ -12199,26 +12222,26 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setError("No se encontró la rutina seleccionada.");
       return;
     }
-    const pointers = listTemplateSeriesPointers(template);
-    if (pointers.length === 0) {
+    const units = listWorkoutExecutionUnits(template);
+    if (units.length === 0) {
       setError("Añade al menos una serie en la rutina antes de iniciar el entrenamiento.");
       return;
     }
 
     workoutTemplateBeforeSessionRef.current = cloneWorkoutTemplateSnapshot(template);
 
-    const firstPointer = pointers[0];
+    const firstUnit = units[0];
     const session: WorkoutSession = {
       id: uid("session"),
       template_id: template.id,
       template_name: template.name,
       category: resolveTrainingCategory(template),
       started_at: new Date().toISOString(),
-      current_exercise_index: firstPointer.exerciseIndex,
-      current_series_index: firstPointer.seriesIndex,
-      completed_series_keys: [],
-      completed_series_count: 0,
-      total_series_count: pointers.length,
+      execution_schema_version: WORKOUT_EXECUTION_SCHEMA_VERSION,
+      current_unit_key: firstUnit.key,
+      completed_unit_keys: [],
+      completed_effort_count: 0,
+      total_effort_count: units.length,
       elapsed_seconds: 0,
       is_resting: false,
       rest_seconds_left: 0,
@@ -12248,12 +12271,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setError("No se pudo actualizar la sesión activa.");
       return;
     }
-    const nextIndex = Math.max(0, Math.min(runtime.pointers.length - 1, runtime.currentIndex + step));
-    const nextPointer = runtime.pointers[nextIndex];
+    const nextIndex = Math.max(0, Math.min(runtime.units.length - 1, runtime.currentIndex + step));
+    const nextUnit = runtime.units[nextIndex];
     setActiveWorkoutSession({
       ...activeWorkoutSession,
-      current_exercise_index: nextPointer.exerciseIndex,
-      current_series_index: nextPointer.seriesIndex,
+      current_unit_key: nextUnit.key,
       is_resting: false,
       rest_seconds_left: 0,
     });
@@ -12269,18 +12291,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setError("No se pudo actualizar la sesión activa.");
       return;
     }
-    const nextPointer =
-      runtime.pointers.find(
+    const nextUnit =
+      runtime.units.find(
         (item) =>
           item.exerciseId === exerciseId &&
-          !activeWorkoutSession.completed_series_keys.includes(pointerKey(item)),
-      ) ?? runtime.pointers.find((item) => item.exerciseId === exerciseId);
-    if (!nextPointer) return;
+          !activeWorkoutSession.completed_unit_keys.includes(item.key),
+      ) ?? runtime.units.find((item) => item.exerciseId === exerciseId);
+    if (!nextUnit) return;
 
     setActiveWorkoutSession({
       ...activeWorkoutSession,
-      current_exercise_index: nextPointer.exerciseIndex,
-      current_series_index: nextPointer.seriesIndex,
+      current_unit_key: nextUnit.key,
       is_resting: false,
       rest_seconds_left: 0,
     });
@@ -12296,39 +12317,32 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setError("No se pudo avanzar en la sesión. Revisa la rutina.");
       return;
     }
-    const currentPointer = runtime.currentPointer;
-    const currentKey = pointerKey(currentPointer);
-    const alreadyCompleted = activeWorkoutSession.completed_series_keys.includes(currentKey);
-    const completedSeriesKeys = alreadyCompleted
-      ? activeWorkoutSession.completed_series_keys
-      : [...activeWorkoutSession.completed_series_keys, currentKey];
-    const completedSeriesCount = alreadyCompleted
-      ? activeWorkoutSession.completed_series_count
-      : Math.min(
-          activeWorkoutSession.total_series_count,
-          activeWorkoutSession.completed_series_count + 1,
-        );
+    const currentUnit = runtime.currentUnit;
+    const currentKey = currentUnit.key;
+    const completedUnitKeys = activeWorkoutSession.completed_unit_keys.includes(currentKey)
+      ? activeWorkoutSession.completed_unit_keys
+      : [...activeWorkoutSession.completed_unit_keys, currentKey];
+    const nextUnit = runtime.units
+      .slice(runtime.currentIndex + 1)
+      .find((unit) => !completedUnitKeys.includes(unit.key))
+      ?? runtime.units.find((unit) => !completedUnitKeys.includes(unit.key));
 
-    const nextIndex = runtime.currentIndex + 1;
-    if (nextIndex >= runtime.pointers.length) {
+    if (!nextUnit) {
       finishWorkoutSession({
         ...activeWorkoutSession,
-        completed_series_keys: completedSeriesKeys,
-        completed_series_count: completedSeriesCount,
-        current_exercise_index: currentPointer.exerciseIndex,
-        current_series_index: currentPointer.seriesIndex,
+        completed_unit_keys: completedUnitKeys,
+        completed_effort_count: completedUnitKeys.length,
+        current_unit_key: currentKey,
       });
       return;
     }
 
-    const restSeconds = parseRestSecondsInput(currentPointer.series.rest_seconds);
-    const nextPointer = runtime.pointers[nextIndex];
+    const restSeconds = resolveWorkoutExecutionRest(currentUnit, nextUnit);
     setActiveWorkoutSession({
       ...activeWorkoutSession,
-      completed_series_keys: completedSeriesKeys,
-      completed_series_count: completedSeriesCount,
-      current_exercise_index: nextPointer.exerciseIndex,
-      current_series_index: nextPointer.seriesIndex,
+      completed_unit_keys: completedUnitKeys,
+      completed_effort_count: completedUnitKeys.length,
+      current_unit_key: nextUnit.key,
       is_resting: restSeconds > 0,
       rest_seconds_left: restSeconds,
       rest_seconds_total: restSeconds,
@@ -12337,7 +12351,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setError(null);
   }
 
-  function markSessionSeriesAsDone(exerciseId: string, seriesId: string) {
+  function markSessionUnitAsDone(unitKey: string) {
     if (!activeWorkoutSession) return;
     const session = activeWorkoutSession;
     const runtime = resolveSessionRuntime(session);
@@ -12345,53 +12359,40 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setError("No se pudo actualizar la sesión activa.");
       return;
     }
-    const targetPointer = runtime.pointers.find(
-      (item) => item.exerciseId === exerciseId && item.seriesId === seriesId,
-    );
-    if (!targetPointer) return;
+    const targetUnit = runtime.units.find((item) => item.key === unitKey);
+    if (!targetUnit || session.completed_unit_keys.includes(unitKey)) return;
 
-    const targetKey = pointerKey(targetPointer);
-    if (session.completed_series_keys.includes(targetKey)) return;
-
-    const restSeconds = parseRestSecondsInput(targetPointer.series.rest_seconds);
-    manualRestSkipRef.current = session.is_resting && restSeconds <= 0;
-
-    const completedSeriesKeys = [...session.completed_series_keys, targetKey];
-    const completedSeriesCount = Math.min(
-      session.total_series_count,
-      completedSeriesKeys.length,
-    );
-
-    if (completedSeriesCount >= session.total_series_count) {
+    const completedUnitKeys = [...session.completed_unit_keys, unitKey];
+    if (completedUnitKeys.length >= session.total_effort_count) {
       finishWorkoutSession({
         ...session,
-        completed_series_keys: completedSeriesKeys,
-        completed_series_count: completedSeriesCount,
-        current_exercise_index: targetPointer.exerciseIndex,
-        current_series_index: targetPointer.seriesIndex,
-        is_resting: restSeconds > 0,
-        rest_seconds_left: restSeconds,
-        rest_seconds_total: restSeconds,
+        completed_unit_keys: completedUnitKeys,
+        completed_effort_count: completedUnitKeys.length,
+        current_unit_key: unitKey,
+        is_resting: false,
+        rest_seconds_left: 0,
+        rest_seconds_total: 0,
       });
       return;
     }
 
-    const currentKey = pointerKey(runtime.currentPointer);
-    const nextPointer =
-      !completedSeriesKeys.includes(currentKey)
-        ? runtime.currentPointer
-        : runtime.pointers
+    const currentKey = runtime.currentUnit.key;
+    const nextUnit =
+      !completedUnitKeys.includes(currentKey)
+        ? runtime.currentUnit
+        : runtime.units
             .slice(runtime.currentIndex + 1)
-            .find((item) => !completedSeriesKeys.includes(pointerKey(item))) ??
-          runtime.pointers.find((item) => !completedSeriesKeys.includes(pointerKey(item)));
-    if (!nextPointer) return;
+            .find((item) => !completedUnitKeys.includes(item.key)) ??
+          runtime.units.find((item) => !completedUnitKeys.includes(item.key));
+    if (!nextUnit) return;
+    const restSeconds = resolveWorkoutExecutionRest(targetUnit, nextUnit);
+    manualRestSkipRef.current = session.is_resting && restSeconds <= 0;
 
     setActiveWorkoutSession({
       ...session,
-      completed_series_keys: completedSeriesKeys,
-      completed_series_count: completedSeriesCount,
-      current_exercise_index: nextPointer.exerciseIndex,
-      current_series_index: nextPointer.seriesIndex,
+      completed_unit_keys: completedUnitKeys,
+      completed_effort_count: completedUnitKeys.length,
+      current_unit_key: nextUnit.key,
       is_resting: restSeconds > 0,
       rest_seconds_left: restSeconds,
       rest_seconds_total: restSeconds,
@@ -12400,35 +12401,29 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setError(null);
   }
 
-  function markSessionSeriesAsNotDone(exerciseId: string, seriesId: string) {
+  function markSessionUnitAsNotDone(unitKey: string) {
     if (!activeWorkoutSession) return;
     const runtime = resolveSessionRuntime(activeWorkoutSession);
     if (!runtime) {
       setError("No se pudo actualizar la sesión activa.");
       return;
     }
-    const targetPointer = runtime.pointers.find(
-      (item) => item.exerciseId === exerciseId && item.seriesId === seriesId,
-    );
-    if (!targetPointer) return;
-
-    const targetKey = pointerKey(targetPointer);
-    if (!activeWorkoutSession.completed_series_keys.includes(targetKey)) return;
+    const targetUnit = runtime.units.find((item) => item.key === unitKey);
+    if (!targetUnit || !activeWorkoutSession.completed_unit_keys.includes(unitKey)) return;
 
     if (activeWorkoutSession.is_resting) {
       manualRestSkipRef.current = true;
       void cancelRestEndNotification();
     }
 
-    const completedSeriesKeys = activeWorkoutSession.completed_series_keys.filter(
-      (key) => key !== targetKey,
+    const completedUnitKeys = activeWorkoutSession.completed_unit_keys.filter(
+      (key) => key !== unitKey,
     );
     setActiveWorkoutSession({
       ...activeWorkoutSession,
-      completed_series_keys: completedSeriesKeys,
-      completed_series_count: completedSeriesKeys.length,
-      current_exercise_index: targetPointer.exerciseIndex,
-      current_series_index: targetPointer.seriesIndex,
+      completed_unit_keys: completedUnitKeys,
+      completed_effort_count: completedUnitKeys.length,
+      current_unit_key: targetUnit.key,
       is_resting: false,
       rest_seconds_left: 0,
     });
@@ -12453,16 +12448,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         return { ...current, exercises: next };
       });
 
-    const currentIdx = activeWorkoutSession.current_exercise_index;
-    let newIdx = currentIdx;
-    if (currentIdx === index) newIdx = targetIndex;
-    else if (currentIdx === targetIndex) newIdx = index;
-    if (newIdx !== currentIdx) {
-      setActiveWorkoutSession({
-        ...activeWorkoutSession,
-        current_exercise_index: newIdx,
-      });
-    }
   }
 
   function addExerciseToSession(entry: ExerciseRepoEntry) {
@@ -15130,7 +15115,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                     <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
-                      {activeWorkoutSession.completed_series_count}/{activeWorkoutSession.total_series_count} series
+                      {activeWorkoutSession.completed_effort_count}/{activeWorkoutSession.total_effort_count} esfuerzos
                     </Text>
                     <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
                       {activeSessionProgressPercent}%
@@ -15276,8 +15261,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                 fontSize: 14,
                               }}
                             >
-                              {sessionExercise.muscle} • {sessionExercise.completedSeriesCount}/
-                              {sessionExercise.totalSeriesCount} series
+                              {sessionExercise.muscle} • {sessionExercise.completedEffortCount}/
+                              {sessionExercise.totalEffortCount} esfuerzos
                             </Text>
                           </View>
                           <View style={{ flexDirection: "column", alignItems: "center", gap: 2, marginLeft: 4 }}>
@@ -15334,7 +15319,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                 Peso (kg)
                               </Text>
                               <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
-                                Descanso (s)
+                                Fin bloque
                               </Text>
                             </View>
 
@@ -15343,8 +15328,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               const isSeriesMenuOpen = activeSeriesMenuId === seriesMenuKey;
                               const canMoveUp = seriesState.seriesIndex > 0;
                               const canMoveDown =
-                                seriesState.seriesIndex < sessionExercise.totalSeriesCount - 1;
-                              const canDeleteSeries = sessionExercise.totalSeriesCount > 1;
+                                seriesState.seriesIndex < sessionExercise.seriesStates.length - 1;
+                              const canDeleteSeries = sessionExercise.seriesStates.length > 1;
                               return (
                               <View
                                 key={seriesState.key}
@@ -15356,13 +15341,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   borderRadius: 10,
                                   backgroundColor: seriesState.isCompleted
                                     ? "rgba(203,255,26,0.16)"
+                                    : seriesState.isCurrent
+                                      ? "rgba(203,255,26,0.08)"
                                     : (seriesState.series.type ?? "normal") === "warmup"
                                       ? "rgba(255,74,74,0.06)"
                                       : "transparent",
-                                  borderWidth: seriesState.isCompleted ? 1 : 0,
-                                  borderColor: seriesState.isCompleted
-                                    ? "rgba(203,255,26,0.6)"
-                                    : "transparent",
+                                  borderWidth: seriesState.isCompleted || seriesState.isCurrent ? 1 : 0,
+                                  borderColor: seriesState.isCurrent
+                                    ? "rgba(203,255,26,0.82)"
+                                    : seriesState.isCompleted
+                                      ? "rgba(203,255,26,0.6)"
+                                      : "transparent",
                                   flexDirection: "row",
                                   alignItems: "center",
                                   paddingHorizontal: 10,
@@ -15372,16 +15361,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   onPress={(event) => {
                                     event.stopPropagation();
                                     if (seriesState.isCompleted) {
-                                      markSessionSeriesAsNotDone(
-                                        sessionExercise.exercise.id,
-                                        seriesState.series.id,
-                                      );
+                                      markSessionUnitAsNotDone(seriesState.key);
                                       return;
                                     }
-                                    markSessionSeriesAsDone(
-                                      sessionExercise.exercise.id,
-                                      seriesState.series.id,
-                                    );
+                                    markSessionUnitAsDone(seriesState.key);
                                   }}
                                   disabled={false}
                                   testID={`training-session-complete-series-${seriesState.key}`}
@@ -15553,16 +15536,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   onPress={(event) => {
                                     event.stopPropagation();
                                     if (seriesState.isCompleted) {
-                                      markSessionSeriesAsNotDone(
-                                        sessionExercise.exercise.id,
-                                        seriesState.series.id,
-                                      );
+                                      markSessionUnitAsNotDone(seriesState.key);
                                       return;
                                     }
-                                    markSessionSeriesAsDone(
-                                      sessionExercise.exercise.id,
-                                      seriesState.series.id,
-                                    );
+                                    markSessionUnitAsDone(seriesState.key);
                                   }}
                                   disabled={false}
                                   style={{
@@ -15611,6 +15588,96 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   ))}
                                 </Pressable>
                               </View>
+                              {seriesState.subSeriesStates.length > 0 ? (
+                                <View
+                                  testID={`training-session-sub-series-${seriesState.key}`}
+                                  style={{
+                                    marginTop: 5,
+                                    marginLeft: 26,
+                                    borderLeftWidth: 2,
+                                    borderLeftColor: "rgba(203,255,26,0.28)",
+                                    paddingLeft: 8,
+                                    gap: 5,
+                                  }}
+                                >
+                                  {seriesState.subSeriesStates.map((subState) => {
+                                    const pauseSeconds = parseRestSecondsInput(subState.subSeries.rest_seconds);
+                                    const subLabel = subState.unit.seriesType === "superset"
+                                      ? subState.unit.exerciseName
+                                      : `Mini-serie ${subState.subSeriesIndex + 1}`;
+                                    return (
+                                      <Pressable
+                                        key={subState.key}
+                                        testID={`training-session-complete-sub-series-${subState.key}`}
+                                        accessibilityRole="checkbox"
+                                        accessibilityState={{ checked: subState.isCompleted }}
+                                        accessibilityLabel={`${subLabel}, ${subState.subSeries.reps || "0"} repeticiones`}
+                                        onPress={(event) => {
+                                          event.stopPropagation();
+                                          if (subState.isCompleted) {
+                                            markSessionUnitAsNotDone(subState.key);
+                                          } else {
+                                            markSessionUnitAsDone(subState.key);
+                                          }
+                                        }}
+                                        style={{
+                                          minHeight: 48,
+                                          borderRadius: 10,
+                                          borderWidth: 1,
+                                          borderColor: subState.isCurrent
+                                            ? "rgba(203,255,26,0.82)"
+                                            : subState.isCompleted
+                                              ? "rgba(0,198,107,0.48)"
+                                              : "rgba(255,255,255,0.07)",
+                                          backgroundColor: subState.isCurrent
+                                            ? "rgba(203,255,26,0.08)"
+                                            : subState.isCompleted
+                                              ? "rgba(0,198,107,0.1)"
+                                              : "#141922",
+                                          paddingHorizontal: 9,
+                                          paddingVertical: 6,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <View
+                                          style={{
+                                            width: 22,
+                                            height: 22,
+                                            borderRadius: 999,
+                                            backgroundColor: subState.isCompleted ? "#0AAE63" : "#2A3240",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                          }}
+                                        >
+                                          <Text style={{ color: subState.isCompleted ? "#FFFFFF" : "#9AA4B4", fontSize: 11, fontWeight: "800" }}>
+                                            {subState.isCompleted ? "✓" : subState.subSeriesIndex + 1}
+                                          </Text>
+                                        </View>
+                                        <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+                                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                                            <Text
+                                              numberOfLines={1}
+                                              style={{ flex: 1, color: subState.isCurrent ? mobileTheme.color.brandPrimary : "#D6DCE6", fontSize: 13, fontWeight: "700" }}
+                                            >
+                                              {subLabel}
+                                            </Text>
+                                            {subState.isCurrent ? (
+                                              <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 10, fontWeight: "800" }}>
+                                                AHORA
+                                              </Text>
+                                            ) : null}
+                                          </View>
+                                          <Text style={{ color: "#8C95A4", fontSize: 11 }}>
+                                            {subState.subSeries.reps || "0"} reps · {subState.subSeries.weight_kg || "0"} kg · {pauseSeconds > 0 ? `Pausa antes ${formatClock(pauseSeconds)}` : "Sin pausa previa"}
+                                          </Text>
+                                        </View>
+                                      </Pressable>
+                                    );
+                                  })}
+                                </View>
+                              ) : null}
                               {isSeriesMenuOpen && (
                                 <>
                                 <Pressable
@@ -15753,7 +15820,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               </Text>
                             </Pressable>
 
-                            {activeWorkoutSession.is_resting ? (
+                            {activeWorkoutSession.is_resting && sessionExercise.isCurrentExercise ? (
                               <View
                                 style={{
                                   borderRadius: 12,
@@ -15774,7 +15841,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   }}
                                 >
                                   <Text style={{ color: "#76A9FF", fontSize: 14, fontWeight: "700" }}>
-                                    Descanso {formatClock(activeWorkoutSession.rest_seconds_left)}/
+                                    {activeSessionCurrentUnit?.kind === "sub_series"
+                                      ? `Pausa antes de ${activeSessionCurrentUnit.exerciseName}`
+                                      : "Descanso tras el bloque"}{" "}
+                                    {formatClock(activeWorkoutSession.rest_seconds_left)}/
                                     {formatClock(activeSessionRestTargetSeconds)}
                                   </Text>
                                   <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
@@ -16324,6 +16394,57 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       </ScrollView>
                     )}
                   </View>
+
+                  {activeTrainingEffortDetail.detailedCount > 0 ? (
+                    <View
+                      testID="training-stats-effort-breakdown"
+                      style={{
+                        borderRadius: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.18)",
+                        backgroundColor: "rgba(203,255,26,0.06)",
+                        paddingHorizontal: 12,
+                        paddingVertical: 10,
+                        gap: 3,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "800" }}>
+                        Desglose de esfuerzos completados
+                      </Text>
+                      <Text style={{ color: "#D7DEE8", fontSize: 13, lineHeight: 18 }}>
+                        {activeTrainingEffortDetail.breakdown.completed_primary} principales ·{" "}
+                        {activeTrainingEffortDetail.breakdown.completed_sub_series} mini-series
+                      </Text>
+                      {activeTrainingEffortDetail.detailedCount < activeTrainingFilteredHistory.length ? (
+                        <Text style={{ color: "#8B94A3", fontSize: 11, lineHeight: 16 }}>
+                          Desglose disponible para {activeTrainingEffortDetail.detailedCount} de{" "}
+                          {activeTrainingFilteredHistory.length} entrenamientos.
+                        </Text>
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {activeTrainingLegacySummaryCount > 0 ? (
+                    <View
+                      testID="training-stats-legacy-warning"
+                      style={{
+                        borderRadius: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(245,197,66,0.28)",
+                        backgroundColor: "rgba(245,197,66,0.08)",
+                        paddingHorizontal: 12,
+                        paddingVertical: 10,
+                        flexDirection: "row",
+                        alignItems: "flex-start",
+                        gap: 8,
+                      }}
+                    >
+                      <Feather name="info" size={14} color="#F5C542" style={{ marginTop: 2 }} />
+                      <Text style={{ flex: 1, color: "#D5C889", fontSize: 12, lineHeight: 18 }}>
+                        Algunos entrenamientos se calcularon antes de incluir las mini-series. Conservamos sus totales originales porque no hay detalle suficiente para recalcularlos.
+                      </Text>
+                    </View>
+                  ) : null}
 
                 </ChartCard>
 
@@ -17052,7 +17173,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   textAlign: "center",
                                 }}
                               >
-                                Descanso (s)
+                                Fin bloque
                               </Text>
                               <View style={{ width: 16 }} />
                             </View>
@@ -17329,7 +17450,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                         color="#7D8798"
                                       />
                                       <Text style={{ color: "#7D8798", fontSize: 11, fontWeight: "600" }}>
-                                        {(seriesItem.sub_series ?? []).length} mini-series
+                                        {(seriesItem.sub_series ?? []).length} mini-series · pausa antes
                                       </Text>
                                     </Pressable>
                                     {expandedCompoundSeriesId === seriesItem.id && (
@@ -17374,7 +17495,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                               <TextInput
                                                 value={sub.rest_seconds}
                                                 onChangeText={(v) => updateSubSeriesField(exercise.id, seriesItem.id, sub.id, "rest_seconds", v)}
-                                                placeholder="desc"
+                                                placeholder="Pausa"
                                                 placeholderTextColor="#7D8798"
                                                 keyboardType="number-pad"
                                                 style={{ flex: 1, color: "#8C95A4", fontSize: 12, fontWeight: "600", textAlign: "center", paddingVertical: 0 }}
@@ -17590,8 +17711,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       {lastWorkoutSessionSummary.template_name}
                     </Text>
                     <Text style={{ color: "#8B94A3", fontSize: 13 }}>
-                      {lastWorkoutSessionSummary.completed_series_count}/
-                      {lastWorkoutSessionSummary.total_series_count} series ·{" "}
+                      {lastWorkoutSessionSummary.completed_effort_count}/
+                      {lastWorkoutSessionSummary.total_effort_count} esfuerzos ·{" "}
                       {formatClock(lastWorkoutSessionSummary.elapsed_seconds)}
                     </Text>
                     <Pressable
@@ -25104,6 +25225,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             </Text>
 
             {workoutCompletionModal.summary ? (
+            <View style={{ width: "100%", gap: 9 }}>
             <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between", gap: 8 }}>
               <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
                 <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800" }}>
@@ -25113,10 +25235,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               </View>
               <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
                 <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 22, fontWeight: "800" }}>
-                  {workoutCompletionModal.summary.completed_series_count}/
-                  {workoutCompletionModal.summary.total_series_count}
+                  {workoutCompletionModal.summary.completed_effort_count}/
+                  {workoutCompletionModal.summary.total_effort_count}
                 </Text>
-                <Text style={{ color: "#8B94A3", fontSize: 14, fontWeight: "600" }}>Series</Text>
+                <Text style={{ color: "#8B94A3", fontSize: 14, fontWeight: "600" }}>Esfuerzos</Text>
               </View>
               <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
                 <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800" }}>
@@ -25124,6 +25246,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 </Text>
                 <Text style={{ color: "#8B94A3", fontSize: 14, fontWeight: "600" }}>Calorías</Text>
               </View>
+            </View>
+            {workoutCompletionModal.summary.effort_breakdown ? (
+              <Text
+                testID="training-complete-effort-breakdown"
+                style={{ color: "#9CA6B5", fontSize: 12, textAlign: "center" }}
+              >
+                {workoutCompletionModal.summary.effort_breakdown.completed_primary} principales ·{" "}
+                {workoutCompletionModal.summary.effort_breakdown.completed_sub_series} mini-series
+              </Text>
+            ) : null}
             </View>
             ) : null}
 
@@ -25958,7 +26090,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         const currentExercise = activeSessionExercises.find((e) => e.isCurrentExercise);
         const currentExerciseName = currentExercise?.exercise.name || "Ejercicio";
         const currentMuscle = currentExercise?.muscle || "";
-        const seriesLabel = `${activeWorkoutSession.completed_series_count}/${activeWorkoutSession.total_series_count}`;
+        const effortLabel = `${activeWorkoutSession.completed_effort_count}/${activeWorkoutSession.total_effort_count}`;
         return (
           <Pressable
             onPress={() => setTab("training")}
@@ -26009,7 +26141,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   <Text style={{ color: "#8B94A3", fontSize: 12 }}>{currentMuscle}</Text>
                 ) : null}
                 <Text style={{ color: "#8B94A3", fontSize: 12 }}>
-                  {currentMuscle ? "•" : ""} {seriesLabel} series
+                  {currentMuscle ? "•" : ""} {effortLabel} esfuerzos
                 </Text>
               </View>
               <View
