@@ -1983,7 +1983,7 @@
         {
           "id": "GYM-176",
           "title": "Evitar registrar entrenamientos parciales como completos",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Distinguir finalización parcial y recalcular el progreso desde las claves completadas.",
           "dependsOn": [
             "GYM-173"

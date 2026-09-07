@@ -216,6 +216,16 @@ import {
   type WorkoutEffortBreakdown,
 } from "./training/workoutExecution";
 import {
+  buildHomeWeekProgress,
+  calculateWorkoutStreak,
+  classifyWorkoutCompletion,
+  isCompletedWorkoutSummary,
+  normalizeWorkoutSessionSummary,
+  sortWorkoutHistoryDesc,
+  type WorkoutCompletionStatus,
+  type WorkoutSessionSummary,
+} from "./training/workoutHistory";
+import {
   catalogRef,
   linkedCatalog,
   unresolvedCatalog,
@@ -439,6 +449,7 @@ Notifications.setNotificationHandler({
 type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
 type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "data" | "traces";
 type WorkoutSessionStatus = "running" | "paused";
+type WorkoutSessionResolutionKind = WorkoutCompletionStatus | "discard";
 type WorkoutSession = {
   id: string;
   template_id: string;
@@ -456,27 +467,12 @@ type WorkoutSession = {
   rest_seconds_total: number;
   status: WorkoutSessionStatus;
   pending_resolution?: {
-    kind: "finish" | "discard";
+    kind: WorkoutSessionResolutionKind;
     requested_at: string;
   };
 };
-type WorkoutSessionSummary = {
-  id: string;
-  template_id: string;
-  template_name: string;
-  finished_at: string;
-  elapsed_seconds: number;
-  calculation_version: 1 | typeof WORKOUT_SUMMARY_CALCULATION_VERSION;
-  can_recalculate: boolean;
-  completed_effort_count: number;
-  total_effort_count: number;
-  effort_breakdown: WorkoutEffortBreakdown | null;
-  estimated_calories: number;
-  total_volume_kg: number;
-  total_reps: number;
-};
 type WorkoutCompletionModalState = {
-  kind: "finish" | "discard";
+  kind: WorkoutSessionResolutionKind;
   summary: WorkoutSessionSummary | null;
   has_template_changes: boolean;
   original_template: WorkoutTemplate | null;
@@ -3923,97 +3919,6 @@ function parseOptionalPositiveMetricInput(
   };
 }
 
-function normalizeMeasuredAt(rawValue: unknown): string {
-  if (typeof rawValue === "string") {
-    const parsed = new Date(rawValue);
-    if (!Number.isNaN(parsed.getTime())) {
-      return parsed.toISOString();
-    }
-  }
-  return new Date().toISOString();
-}
-
-function normalizeWorkoutSessionSummary(rawValue: unknown, index: number): WorkoutSessionSummary {
-  const maybe = rawValue && typeof rawValue === "object"
-    ? rawValue as Partial<WorkoutSessionSummary> & {
-        completed_series_count?: unknown;
-        total_series_count?: unknown;
-      }
-    : {};
-  const calculationVersion = maybe.calculation_version === WORKOUT_SUMMARY_CALCULATION_VERSION
-    ? WORKOUT_SUMMARY_CALCULATION_VERSION
-    : 1;
-  const rawBreakdown = maybe.effort_breakdown;
-  const effortBreakdown = calculationVersion === WORKOUT_SUMMARY_CALCULATION_VERSION
-    && rawBreakdown
-    && typeof rawBreakdown === "object"
-    ? {
-        completed_primary: Math.max(
-          0,
-          Math.round(normalizeDietNonNegativeNumber(rawBreakdown.completed_primary)),
-        ),
-        completed_sub_series: Math.max(
-          0,
-          Math.round(normalizeDietNonNegativeNumber(rawBreakdown.completed_sub_series)),
-        ),
-        total_primary: Math.max(
-          0,
-          Math.round(normalizeDietNonNegativeNumber(rawBreakdown.total_primary)),
-        ),
-        total_sub_series: Math.max(
-          0,
-          Math.round(normalizeDietNonNegativeNumber(rawBreakdown.total_sub_series)),
-        ),
-      }
-    : null;
-  return {
-    id:
-      typeof maybe.id === "string" && maybe.id ? maybe.id : uid(`session_summary_${index}`),
-    template_id:
-      typeof maybe.template_id === "string" && maybe.template_id.trim()
-        ? maybe.template_id.trim()
-        : "",
-    template_name:
-      typeof maybe.template_name === "string" && maybe.template_name.trim()
-        ? maybe.template_name.trim()
-        : "Rutina",
-    finished_at: normalizeMeasuredAt(maybe.finished_at),
-    elapsed_seconds: Math.max(0, Math.round(normalizeDietNonNegativeNumber(maybe.elapsed_seconds))),
-    calculation_version: calculationVersion,
-    can_recalculate:
-      calculationVersion === WORKOUT_SUMMARY_CALCULATION_VERSION
-      && maybe.can_recalculate === true,
-    completed_effort_count: Math.max(
-      0,
-      Math.round(normalizeDietNonNegativeNumber(
-        maybe.completed_effort_count ?? maybe.completed_series_count,
-      )),
-    ),
-    total_effort_count: Math.max(
-      0,
-      Math.round(normalizeDietNonNegativeNumber(
-        maybe.total_effort_count ?? maybe.total_series_count,
-      )),
-    ),
-    effort_breakdown: effortBreakdown,
-    estimated_calories: Math.max(
-      0,
-      Math.round(normalizeDietNonNegativeNumber(maybe.estimated_calories)),
-    ),
-    total_volume_kg: normalizeDietNonNegativeNumber(maybe.total_volume_kg),
-    total_reps: Math.max(0, Math.round(normalizeDietNonNegativeNumber(maybe.total_reps))),
-  };
-}
-
-
-function sortWorkoutHistoryDesc(summaries: WorkoutSessionSummary[]): WorkoutSessionSummary[] {
-  return [...summaries].sort((a, b) => {
-    const aTime = new Date(a.finished_at).getTime();
-    const bTime = new Date(b.finished_at).getTime();
-    return bTime - aTime;
-  });
-}
-
 function measurementDateFromSelection(date: Date): Date {
   const normalized = new Date(date);
   normalized.setHours(12, 0, 0, 0);
@@ -4391,72 +4296,6 @@ function formatClock(seconds: number): string {
   return `${minutes}:${`${remainder}`.padStart(2, "0")}`;
 }
 
-function startOfLocalDay(date: Date): Date {
-  const copy = new Date(date);
-  copy.setHours(0, 0, 0, 0);
-  return copy;
-}
-
-function calculateWorkoutStreak(summaries: WorkoutSessionSummary[]): number {
-  const completedDayKeys = new Set(
-    summaries
-      .map((summary) => {
-        const parsed = new Date(summary.finished_at);
-        if (Number.isNaN(parsed.getTime())) return null;
-        return isoDateFromDate(startOfLocalDay(parsed));
-      })
-      .filter((value): value is string => value !== null),
-  );
-  if (completedDayKeys.size === 0) return 0;
-
-  const cursor = startOfLocalDay(new Date());
-  if (!completedDayKeys.has(isoDateFromDate(cursor))) {
-    cursor.setDate(cursor.getDate() - 1);
-  }
-
-  let streak = 0;
-  while (completedDayKeys.has(isoDateFromDate(cursor))) {
-    streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-
-  return streak;
-}
-
-function buildHomeWeekProgress(
-  summaries: WorkoutSessionSummary[],
-): Array<{ key: string; label: string; completed: boolean; isToday: boolean }> {
-  const weekdayLabels = ["L", "M", "X", "J", "V", "S", "D"];
-  const today = startOfLocalDay(new Date());
-  const monday = new Date(today);
-  const dayIndex = today.getDay();
-  const daysSinceMonday = dayIndex === 0 ? 6 : dayIndex - 1;
-  monday.setDate(monday.getDate() - daysSinceMonday);
-
-  const completedDayKeys = new Set(
-    summaries
-      .map((summary) => {
-        const parsed = new Date(summary.finished_at);
-        if (Number.isNaN(parsed.getTime())) return null;
-        return isoDateFromDate(startOfLocalDay(parsed));
-      })
-      .filter((value): value is string => value !== null),
-  );
-  const todayKey = isoDateFromDate(today);
-
-  return weekdayLabels.map((label, index) => {
-    const current = new Date(monday);
-    current.setDate(monday.getDate() + index);
-    const key = isoDateFromDate(current);
-    return {
-      key,
-      label,
-      completed: completedDayKeys.has(key),
-      isToday: key === todayKey,
-    };
-  });
-}
-
 function formatHomeExerciseVolume(series: ExerciseSeries[]): string {
   if (series.length === 0) return "Sin series configuradas";
   const repsLabel = series.find((item) => item.reps.trim())?.reps.trim() || "--";
@@ -4480,6 +4319,16 @@ function formatTrainingStatsHistoryLabel(rawValue: string): string {
   const parsed = new Date(rawValue);
   if (Number.isNaN(parsed.getTime())) return "--";
   return parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+function formatTrainingHistoryDate(rawValue: string): string {
+  const parsed = new Date(rawValue);
+  if (Number.isNaN(parsed.getTime())) return "Fecha desconocida";
+  return parsed.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 function formatTrainingStatsMetricValue(metric: TrainingStatsMetricKey, value: number): string {
@@ -4558,12 +4407,22 @@ function normalizeWorkoutSession(
     : restSecondsLeft;
   const status = maybe.status === "paused" ? "paused" : "running";
   const isResting = Boolean(maybe.is_resting) && restSecondsLeft > 0;
-  const pendingResolution = maybe.pending_resolution
-    && (maybe.pending_resolution.kind === "finish" || maybe.pending_resolution.kind === "discard")
-    && typeof maybe.pending_resolution.requested_at === "string"
+  const rawPendingResolution = (maybe as {
+    pending_resolution?: { kind?: unknown; requested_at?: unknown };
+  }).pending_resolution;
+  const pendingResolutionKind: WorkoutSessionResolutionKind | null =
+    rawPendingResolution?.kind === "discard"
+      ? "discard"
+      : rawPendingResolution?.kind === "finish"
+        || rawPendingResolution?.kind === "completed"
+        || rawPendingResolution?.kind === "partial"
+        ? classifyWorkoutCompletion(completedUnitKeys.length, units.length)
+        : null;
+  const pendingResolution = pendingResolutionKind
+    && typeof rawPendingResolution?.requested_at === "string"
     ? {
-        kind: maybe.pending_resolution.kind,
-        requested_at: maybe.pending_resolution.requested_at,
+        kind: pendingResolutionKind,
+        requested_at: rawPendingResolution.requested_at,
       }
     : undefined;
   return {
@@ -4613,7 +4472,7 @@ function TabTitle({ children }: { children: string }) {
   );
 }
 
-function StatCard({ label, value, subtitle, subtitleColor, icon, subtitleIcon, onPress }: {
+function StatCard({ label, value, subtitle, subtitleColor, icon, subtitleIcon, onPress, testID }: {
   label: string;
   value: string;
   subtitle?: string;
@@ -4621,9 +4480,11 @@ function StatCard({ label, value, subtitle, subtitleColor, icon, subtitleIcon, o
   icon?: React.ReactNode;
   subtitleIcon?: React.ReactNode;
   onPress?: () => void;
+  testID?: string;
 }) {
   const content = (
     <View
+      testID={testID}
       style={{
         flex: 1,
         minHeight: 94,
@@ -5133,7 +4994,7 @@ function normalizeStore(
   }
   const normalizedWorkoutHistory = sortWorkoutHistoryDesc(
     (Array.isArray(raw.workoutHistory) ? raw.workoutHistory : []).map((summary, index) =>
-      normalizeWorkoutSessionSummary(summary, index),
+      normalizeWorkoutSessionSummary(summary, index, uid(`session_summary_${index}`)),
     ),
   ).slice(0, MAX_WORKOUT_HISTORY_ITEMS);
 
@@ -6731,6 +6592,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [trainingStatsPeriodDropdownOpen, setTrainingStatsPeriodDropdownOpen] = useState(false);
   const [trainingStatsMetric, setTrainingStatsMetric] = useState<TrainingStatsMetricKey>("volume");
   const [trainingStatsMetricDropdownOpen, setTrainingStatsMetricDropdownOpen] = useState(false);
+  const [showAllTrainingHistory, setShowAllTrainingHistory] = useState(false);
   const [trainingMenuTemplateId, setTrainingMenuTemplateId] = useState<string | null>(null);
   const [activeExerciseMenuId, setActiveExerciseMenuId] = useState<string | null>(null);
   const [activeSeriesMenuId, setActiveSeriesMenuId] = useState<string | null>(null);
@@ -6751,6 +6613,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     useState<WorkoutSessionSummary | null>(null);
   const [workoutCompletionModal, setWorkoutCompletionModal] =
     useState<WorkoutCompletionModalState | null>(null);
+  const [confirmPartialSessionFinish, setConfirmPartialSessionFinish] = useState(false);
   const [confirmDiscardSession, setConfirmDiscardSession] = useState(false);
   const restFinishSoundRef = useRef<Audio.Sound | null>(null);
   const restSoundCacheRef = useRef<Record<string, Audio.Sound>>({});
@@ -7437,13 +7300,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       .filter((summary) => summary.template_id === activeTrainingTemplate.id)
       .sort((a, b) => new Date(a.finished_at).getTime() - new Date(b.finished_at).getTime());
   }, [activeTrainingTemplate, store.workoutHistory]);
+  const activeTrainingCompletedHistory = useMemo(
+    () => activeTrainingHistory.filter(isCompletedWorkoutSummary),
+    [activeTrainingHistory],
+  );
   const activeTrainingFilteredHistory = useMemo(() => {
     const cutoff = resolveTrainingStatsPeriodStart(trainingStatsPeriod);
-    if (cutoff === null) return activeTrainingHistory;
-    return activeTrainingHistory.filter(
+    if (cutoff === null) return activeTrainingCompletedHistory;
+    return activeTrainingCompletedHistory.filter(
       (summary) => new Date(summary.finished_at).getTime() >= cutoff,
     );
-  }, [activeTrainingHistory, trainingStatsPeriod]);
+  }, [activeTrainingCompletedHistory, trainingStatsPeriod]);
+  const activeTrainingHistoryEntries = useMemo(() => {
+    const recentFirst = sortWorkoutHistoryDesc(activeTrainingHistory);
+    return showAllTrainingHistory ? recentFirst : recentFirst.slice(0, 4);
+  }, [activeTrainingHistory, showAllTrainingHistory]);
+  const canExpandTrainingHistory = activeTrainingHistory.length > 4;
   const activeTrainingLegacySummaryCount = useMemo(
     () => activeTrainingFilteredHistory.filter((summary) => summary.calculation_version === 1).length,
     [activeTrainingFilteredHistory],
@@ -7509,6 +7381,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const activeSessionUnits = useMemo(
     () => (activeSessionTemplate ? listWorkoutExecutionUnits(activeSessionTemplate) : []),
     [activeSessionTemplate],
+  );
+  const activeSessionPerformance = useMemo(
+    () => summarizeWorkoutExecution(
+      activeSessionUnits,
+      activeWorkoutSession?.completed_unit_keys ?? [],
+    ),
+    [activeSessionUnits, activeWorkoutSession?.completed_unit_keys],
   );
   const activeSessionCurrentUnitIndex = useMemo(() => {
     if (!activeWorkoutSession) return -1;
@@ -7665,6 +7544,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         if (!dataDeletionBusy) closeDataDeletion();
         return true;
       }
+      if (confirmPartialSessionFinish) { setConfirmPartialSessionFinish(false); return true; }
       if (workoutCompletionModal) { closeWorkoutCompletionModal(); return true; }
       if (confirmDiscardSession) { setConfirmDiscardSession(false); return true; }
       if (pendingFoodResolution) { setPendingFoodResolution(null); return true; }
@@ -7683,6 +7563,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (showBirthDatePicker) { setShowBirthDatePicker(false); return true; }
       if (showMeasurementDatePicker) { setShowMeasurementDatePicker(false); return true; }
       if (showAllMeasurementsHistory) { setShowAllMeasurementsHistory(false); return true; }
+      if (showAllTrainingHistory) { setShowAllTrainingHistory(false); return true; }
       // Close dropdowns
       if (chatProviderDropdownOpen) { setChatProviderDropdownOpen(false); return true; }
       if (foodAIProviderDropdownOpen) { setFoodAIProviderDropdownOpen(false); return true; }
@@ -8106,6 +7987,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setTrainingDetailMuscleFilter("all");
     setTrainingStatsPeriod("3m");
     setTrainingStatsMetric("volume");
+    setShowAllTrainingHistory(false);
   }, [activeTrainingTemplateId, activeTrainingTemplateMode, store.templates, trainingTemplateDraft]);
 
   useEffect(() => {
@@ -8478,7 +8360,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         ) ?? null;
         setWorkoutCompletionModal({
           kind: hydratedSession.pending_resolution.kind,
-          summary: hydratedSession.pending_resolution.kind === "finish"
+          summary: hydratedSession.pending_resolution.kind !== "discard"
             ? workoutSessionSummary(
                 hydratedSession,
                 hydratedSessionDraft.draft,
@@ -11210,6 +11092,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setTrainingDetailMuscleFilter("all");
     setTrainingStatsPeriod("3m");
     setTrainingStatsMetric("volume");
+    setShowAllTrainingHistory(false);
     setExpandedExerciseId(null);
     setActiveExerciseMenuId(null);
     setError(null);
@@ -11234,6 +11117,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setTrainingDetailMuscleFilter("all");
     setTrainingStatsPeriod("3m");
     setTrainingStatsMetric("volume");
+    setShowAllTrainingHistory(false);
     setTrainingMenuTemplateId(null);
     setExpandedExerciseId(null);
     setActiveExerciseMenuId(null);
@@ -12067,6 +11951,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       template_name: session.template_name,
       finished_at: finishedAt,
       elapsed_seconds: session.elapsed_seconds,
+      completion_status: classifyWorkoutCompletion(
+        sessionPerformance.completedEffortCount,
+        sessionPerformance.totalEffortCount,
+      ),
       calculation_version: WORKOUT_SUMMARY_CALCULATION_VERSION,
       can_recalculate: false,
       completed_effort_count: sessionPerformance.completedEffortCount,
@@ -12141,10 +12029,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       else discardPendingTrainingFeedback("session", session.id);
       setActiveWorkoutSession(null);
       setWorkoutSessionTemplateDraft(null);
+      setConfirmPartialSessionFinish(false);
       setConfirmDiscardSession(false);
       workoutTemplateBeforeSessionRef.current = null;
       if (modal.summary) {
-        setLastWorkoutSessionSummary(modal.summary);
+        if (isCompletedWorkoutSummary(modal.summary)) {
+          setLastWorkoutSessionSummary(modal.summary);
+        }
         setWorkoutCompletionModal({
           ...modal,
           has_template_changes: false,
@@ -12154,7 +12045,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
         setError(null);
       } else {
-        setLastWorkoutSessionSummary(null);
         setWorkoutCompletionModal(null);
         setError("Entrenamiento descartado.");
       }
@@ -12169,7 +12059,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   function requestWorkoutSessionResolution(
     session: WorkoutSession,
-    kind: "finish" | "discard",
+    requestedKind: WorkoutSessionResolutionKind,
   ) {
     const draftRecord = workoutSessionTemplateDraft;
     const originalTemplate = workoutTemplateBeforeSessionRef.current;
@@ -12178,6 +12068,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       return;
     }
     const requestedAt = session.pending_resolution?.requested_at ?? new Date().toISOString();
+    const candidateSummary = requestedKind === "discard"
+      ? null
+      : workoutSessionSummary(session, draftRecord.draft, requestedAt);
+    const kind: WorkoutSessionResolutionKind = candidateSummary?.completion_status ?? "discard";
+    if (requestedKind === "completed" && kind === "partial") {
+      setConfirmPartialSessionFinish(true);
+      setConfirmDiscardSession(false);
+      setError(null);
+      return;
+    }
     const pendingSession: WorkoutSession = {
       ...session,
       status: "paused",
@@ -12191,14 +12091,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       || buildWorkoutTemplateRevision(currentTemplate) !== draftRecord.base_revision;
     const modal: WorkoutCompletionModalState = {
       kind,
-      summary: kind === "finish"
-        ? workoutSessionSummary(pendingSession, draftRecord.draft, requestedAt)
-        : null,
+      summary: candidateSummary,
       has_template_changes: hasTemplateChanges,
       original_template: cloneWorkoutTemplateSnapshot(originalTemplate),
       draft_template: cloneWorkoutTemplateSnapshot(draftRecord.draft),
       canonical_conflict: canonicalConflict,
     };
+    setConfirmPartialSessionFinish(false);
     setActiveWorkoutSession(pendingSession);
     setWorkoutCompletionModal(modal);
     setConfirmDiscardSession(false);
@@ -12209,7 +12108,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   function finishWorkoutSession(session: WorkoutSession) {
-    requestWorkoutSessionResolution(session, "finish");
+    requestWorkoutSessionResolution(session, "completed");
   }
 
   function startTrainingSession(templateId: string) {
@@ -12250,11 +12149,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     };
     setWorkoutSessionTemplateDraft(createWorkoutSessionTemplateDraftRecord(session.id, template));
     setActiveWorkoutSession(session);
+    setConfirmPartialSessionFinish(false);
     setActiveTrainingTemplateId(null);
     setActiveTrainingTemplateMode("detail");
     setTrainingDetailMuscleFilter("all");
     setTrainingStatsPeriod("3m");
     setTrainingStatsMetric("volume");
+    setShowAllTrainingHistory(false);
     setTrainingMenuTemplateId(null);
     setActiveExerciseMenuId(null);
     setExpandedExerciseId(null);
@@ -12529,11 +12430,38 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   function finishActiveWorkoutSession() {
     if (!activeWorkoutSession) return;
+    const runtime = resolveSessionRuntime(activeWorkoutSession);
+    if (!runtime) {
+      setError("No se pudo comprobar el progreso. La sesión sigue abierta.");
+      return;
+    }
+    const performance = summarizeWorkoutExecution(
+      runtime.units,
+      activeWorkoutSession.completed_unit_keys,
+    );
+    if (
+      classifyWorkoutCompletion(
+        performance.completedEffortCount,
+        performance.totalEffortCount,
+      ) === "partial"
+    ) {
+      setConfirmPartialSessionFinish(true);
+      setConfirmDiscardSession(false);
+      setError(null);
+      return;
+    }
     finishWorkoutSession(activeWorkoutSession);
+  }
+
+  function savePartialWorkoutSession() {
+    if (!activeWorkoutSession) return;
+    setConfirmPartialSessionFinish(false);
+    requestWorkoutSessionResolution(activeWorkoutSession, "partial");
   }
 
   function discardWorkoutSession() {
     if (!activeWorkoutSession) return;
+    setConfirmPartialSessionFinish(false);
     if (!confirmDiscardSession) {
       setConfirmDiscardSession(true);
       setError("Pulsa \"Abandonar\" de nuevo para confirmar.");
@@ -12544,6 +12472,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   function closeWorkoutCompletionModal() {
     setWorkoutCompletionModal(null);
+    setConfirmPartialSessionFinish(false);
     setActiveWorkoutSession((session) => {
       if (!session?.pending_resolution) return session;
       const { pending_resolution: _pendingResolution, ...runningSession } = session;
@@ -14562,6 +14491,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   value={String(homeWorkoutStreak)}
                   subtitle={homeWorkoutStreak === 1 ? "día seguido" : "días seguidos"}
                   icon={<Feather name="award" size={14} color={mobileTheme.color.brandPrimary} />}
+                  testID="home-workout-streak"
                 />
               </View>
 
@@ -14579,7 +14509,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>
                     Progreso semanal
                   </Text>
-                  <Text style={{ color: "#7F8896", fontSize: 13, fontWeight: "700" }}>
+                  <Text testID="home-week-completed-count" style={{ color: "#7F8896", fontSize: 13, fontWeight: "700" }}>
                     {homeWeekCompletedCount}/7
                   </Text>
                 </View>
@@ -16319,9 +16249,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                             lineHeight: 20,
                           }}
                         >
-                          {activeTrainingHistory.length > 0
-                            ? "No hay sesiones de esta rutina en el periodo seleccionado."
-                            : "Todavía no hay ejecuciones guardadas de esta rutina."}
+                          {activeTrainingCompletedHistory.length > 0
+                            ? "No hay sesiones completadas de esta rutina en el periodo seleccionado."
+                            : activeTrainingHistory.length > 0
+                              ? "Todavía no hay sesiones completadas para mostrar estadísticas."
+                              : "Todavía no hay ejecuciones guardadas de esta rutina."}
                         </Text>
                       </View>
                     ) : (
@@ -16447,6 +16379,122 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   ) : null}
 
                 </ChartCard>
+
+                <View testID="training-history" style={{ gap: 10 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 12,
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
+                      Historial reciente
+                    </Text>
+                    {canExpandTrainingHistory ? (
+                      <Pressable
+                        testID="training-history-toggle"
+                        onPress={() => setShowAllTrainingHistory((current) => !current)}
+                      >
+                        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "800" }}>
+                          {showAllTrainingHistory ? "Ver menos" : "Ver todo"}
+                        </Text>
+                      </Pressable>
+                    ) : null}
+                  </View>
+
+                  {activeTrainingHistoryEntries.length === 0 ? (
+                    <View
+                      style={{
+                        borderRadius: 18,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.04)",
+                        backgroundColor: mobileTheme.color.bgSurface,
+                        padding: 14,
+                        gap: 6,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+                        Todavía no hay sesiones
+                      </Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 13, lineHeight: 18 }}>
+                        Las sesiones completadas y las que guardes como parciales aparecerán aquí.
+                      </Text>
+                    </View>
+                  ) : (
+                    <View style={{ gap: 10 }}>
+                      {activeTrainingHistoryEntries.map((summary) => {
+                        const isCompleted = isCompletedWorkoutSummary(summary);
+                        const statusColor = isCompleted ? mobileTheme.color.brandPrimary : "#F5C542";
+                        const statusBackground = isCompleted
+                          ? "rgba(203,255,26,0.1)"
+                          : "rgba(245,197,66,0.1)";
+                        const statusBorder = isCompleted
+                          ? "rgba(203,255,26,0.34)"
+                          : "rgba(245,197,66,0.34)";
+                        return (
+                          <View
+                            key={summary.id}
+                            testID={`training-history-${summary.id}`}
+                            style={{
+                              borderRadius: 18,
+                              borderWidth: 1,
+                              borderColor: "rgba(255,255,255,0.05)",
+                              backgroundColor: mobileTheme.color.bgSurface,
+                              padding: 14,
+                              gap: 10,
+                            }}
+                          >
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                gap: 10,
+                              }}
+                            >
+                              <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
+                                {formatTrainingHistoryDate(summary.finished_at)}
+                              </Text>
+                              <View
+                                testID={`training-history-status-${summary.id}`}
+                                style={{
+                                  minHeight: 28,
+                                  borderRadius: mobileTheme.radius.pill,
+                                  borderWidth: 1,
+                                  borderColor: statusBorder,
+                                  backgroundColor: statusBackground,
+                                  paddingHorizontal: 10,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={{ color: statusColor, fontSize: 12, fontWeight: "800" }}>
+                                  {isCompleted ? "Completo" : "Parcial"}
+                                </Text>
+                              </View>
+                            </View>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                                <Feather name="check-circle" size={14} color={statusColor} />
+                                <Text style={{ color: "#A6AFBC", fontSize: 13, fontWeight: "600" }}>
+                                  {summary.completed_effort_count}/{summary.total_effort_count} esfuerzos
+                                </Text>
+                              </View>
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                                <Feather name="clock" size={14} color="#8B94A3" />
+                                <Text style={{ color: "#A6AFBC", fontSize: 13, fontWeight: "600" }}>
+                                  {formatClock(summary.elapsed_seconds)}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  )}
+                </View>
 
                 <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
                   <View
@@ -25172,6 +25220,110 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         </View>
       ) : null}
 
+      {confirmPartialSessionFinish && activeWorkoutSession ? (
+        <View
+          testID="training-partial-finish-modal"
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: "rgba(0,0,0,0.72)",
+            paddingHorizontal: 20,
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 610,
+            elevation: 61,
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              maxWidth: 370,
+              borderRadius: 26,
+              borderWidth: 1,
+              borderColor: "rgba(245,197,66,0.24)",
+              backgroundColor: "#12151C",
+              paddingHorizontal: 20,
+              paddingTop: 22,
+              paddingBottom: 18,
+              alignItems: "center",
+              gap: 14,
+            }}
+          >
+            <View
+              style={{
+                width: 70,
+                height: 70,
+                borderRadius: 999,
+                backgroundColor: "rgba(245,197,66,0.16)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Ionicons name="alert-circle-outline" size={32} color="#F5C542" />
+            </View>
+            <Text
+              style={{
+                color: mobileTheme.color.textPrimary,
+                fontSize: 26,
+                fontWeight: "800",
+                textAlign: "center",
+              }}
+            >
+              Entrenamiento incompleto
+            </Text>
+            <Text
+              style={{
+                color: mobileTheme.color.textSecondary,
+                fontSize: 16,
+                lineHeight: 22,
+                textAlign: "center",
+              }}
+            >
+              Has completado {activeSessionPerformance.completedEffortCount} de{" "}
+              {activeSessionPerformance.totalEffortCount} esfuerzos. Puedes continuar o guardar
+              lo realizado como una sesión parcial.
+            </Text>
+            <Pressable
+              testID="training-partial-continue"
+              onPress={() => setConfirmPartialSessionFinish(false)}
+              style={{
+                width: "100%",
+                minHeight: 52,
+                borderRadius: 14,
+                backgroundColor: mobileTheme.color.brandPrimary,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#06090D", fontSize: 18, fontWeight: "800" }}>
+                Seguir entrenando
+              </Text>
+            </Pressable>
+            <Pressable
+              testID="training-partial-save"
+              onPress={savePartialWorkoutSession}
+              style={{
+                width: "100%",
+                minHeight: 50,
+                borderRadius: 14,
+                borderWidth: 1,
+                borderColor: "rgba(245,197,66,0.34)",
+                backgroundColor: "rgba(245,197,66,0.08)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#F5D66D", fontSize: 17, fontWeight: "800" }}>
+                Guardar como parcial
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
       {workoutCompletionModal ? (
         <View
           style={{
@@ -25208,20 +25360,45 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 width: 70,
                 height: 70,
                 borderRadius: 999,
-                backgroundColor: "rgba(0,198,107,0.22)",
+                backgroundColor: workoutCompletionModal.kind === "partial"
+                  ? "rgba(245,197,66,0.16)"
+                  : workoutCompletionModal.kind === "discard"
+                    ? "rgba(255,75,75,0.16)"
+                    : "rgba(0,198,107,0.22)",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <Ionicons
-                name={workoutCompletionModal.kind === "finish" ? "trophy-outline" : "exit-outline"}
+                name={workoutCompletionModal.kind === "completed"
+                  ? "trophy-outline"
+                  : workoutCompletionModal.kind === "partial"
+                    ? "save-outline"
+                    : "exit-outline"}
                 size={30}
-                color="#00D06E"
+                color={workoutCompletionModal.kind === "partial"
+                  ? "#F5C542"
+                  : workoutCompletionModal.kind === "discard"
+                    ? "#FF6B6B"
+                    : "#00D06E"}
               />
             </View>
 
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
-              {workoutCompletionModal.kind === "finish" ? "¡Sesión completada!" : "Abandonar sesión"}
+            <Text
+              style={{
+                color: mobileTheme.color.textPrimary,
+                fontSize: 28,
+                fontWeight: "800",
+                textAlign: "center",
+              }}
+            >
+              {workoutCompletionModal.kind === "completed"
+                ? "¡Sesión completada!"
+                : workoutCompletionModal.kind === "partial"
+                  ? activeWorkoutSession
+                    ? "Guardar sesión parcial"
+                    : "Sesión parcial guardada"
+                  : "Abandonar sesión"}
             </Text>
 
             {workoutCompletionModal.summary ? (
@@ -25234,7 +25411,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 <Text style={{ color: "#8B94A3", fontSize: 14, fontWeight: "600" }}>Duración</Text>
               </View>
               <View style={{ flex: 1, alignItems: "center", gap: 2 }}>
-                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 22, fontWeight: "800" }}>
+                <Text style={{ color: workoutCompletionModal.kind === "partial" ? "#F5C542" : mobileTheme.color.brandPrimary, fontSize: 22, fontWeight: "800" }}>
                   {workoutCompletionModal.summary.completed_effort_count}/
                   {workoutCompletionModal.summary.total_effort_count}
                 </Text>
@@ -25316,10 +25493,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   }}
                 >
                   <Feather name="check" size={16} color="#06090D" />
-                  <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>
-                    {workoutCompletionModal.kind === "finish"
+                  <Text
+                    style={{
+                      color: "#06090D",
+                      fontSize: workoutCompletionModal.kind === "partial" ? 17 : 22,
+                      fontWeight: "800",
+                      textAlign: "center",
+                    }}
+                  >
+                    {workoutCompletionModal.kind === "completed"
                       ? "Conservar cambios"
-                      : "Abandonar y conservar cambios"}
+                      : workoutCompletionModal.kind === "partial"
+                        ? "Guardar parcial y conservar cambios"
+                        : "Abandonar y conservar cambios"}
                   </Text>
                 </Pressable>
 
@@ -25337,10 +25523,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     justifyContent: "center",
                   }}
                 >
-                  <Text style={{ color: "#E5EAF3", fontSize: 22, fontWeight: "700" }}>
-                    {workoutCompletionModal.kind === "finish"
+                  <Text
+                    style={{
+                      color: "#E5EAF3",
+                      fontSize: workoutCompletionModal.kind === "partial" ? 17 : 22,
+                      fontWeight: "700",
+                      textAlign: "center",
+                    }}
+                  >
+                    {workoutCompletionModal.kind === "completed"
                       ? "Mantener rutina actual"
-                      : "Abandonar y mantener rutina"}
+                      : workoutCompletionModal.kind === "partial"
+                        ? "Guardar parcial y mantener rutina"
+                        : "Abandonar y mantener rutina"}
                   </Text>
                 </Pressable>
 
@@ -25364,7 +25559,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     lineHeight: 22,
                   }}
                 >
-                  Buen trabajo. La sesión quedó registrada correctamente.
+                  {workoutCompletionModal.kind === "partial"
+                    ? "Guardamos lo que has realizado sin contarlo como un entrenamiento completado."
+                    : "Buen trabajo. La sesión quedó registrada correctamente."}
                 </Text>
                 <Pressable
                   onPress={() => {
@@ -25391,7 +25588,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               </>
             )}
           </View>
-          {workoutCompletionModal.kind === "finish" ? <ConfettiCannon
+          {workoutCompletionModal.kind === "completed" ? <ConfettiCannon
             count={120}
             origin={{ x: -10, y: 0 }}
             autoStart

@@ -1,4 +1,7 @@
-/** E2E de copias, cambios y restauración de series avanzadas. */
+/**
+ * E2E de copias, cambios y restauración de series avanzadas, incluida GYM-176
+ * (ticket para evitar registrar entrenamientos parciales como completos).
+ */
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import { createServer } from "node:http";
@@ -205,6 +208,13 @@ async function openTrainingTab(page) {
   else await desktopNav.click({ timeout: STEP_TIMEOUT_MS });
 }
 
+async function openHomeTab(page) {
+  const mobileNav = page.getByTestId("nav-tab-home");
+  const desktopNav = page.getByTestId("desktop-nav-home");
+  if (await mobileNav.count()) await mobileNav.click({ timeout: STEP_TIMEOUT_MS });
+  else await desktopNav.click({ timeout: STEP_TIMEOUT_MS });
+}
+
 async function clickTestId(page, testId) {
   const locator = page.getByTestId(testId);
   await locator.scrollIntoViewIfNeeded({ timeout: STEP_TIMEOUT_MS });
@@ -349,7 +359,19 @@ async function run(page, baseUrl) {
   );
   logStep("Tipo compuesto cambiado durante la sesión");
 
+  await clickTestId(page, "training-session-complete-series-exercise_press:set_superset");
   await clickTestId(page, "training-session-finish");
+  await page.getByTestId("training-partial-finish-modal").waitFor({ timeout: STEP_TIMEOUT_MS });
+  await page.screenshot({
+    path: process.env.TRAIN_PARTIAL_WARNING_SCREENSHOT ?? "/tmp/gym-176-partial-warning.png",
+    fullPage: true,
+  });
+  assert.equal((await readStore(page)).workoutHistory.length, 0, "la advertencia guardó un parcial sin permiso");
+  await clickTestId(page, "training-partial-continue");
+  await page.getByText("Sesión activa", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
+  assert.equal((await readStore(page)).workoutHistory.length, 0, "seguir entrenando creó historial");
+  await clickTestId(page, "training-session-finish");
+  await clickTestId(page, "training-partial-save");
   await page.getByText("Cambios de rutina detectados", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
   assert.equal(await page.getByTestId("training-complete-apply-changes").count(), 1);
   assert.equal(await page.getByTestId("training-complete-revert-changes").count(), 1);
@@ -359,22 +381,49 @@ async function run(page, baseUrl) {
   await clickTestId(page, "training-complete-revert-changes");
   store = await waitForStore(
     page,
-    (candidate) => findTemplate(candidate, "tpl_ops").exercises[0].series[0].type === "superset",
+    (candidate) => findTemplate(candidate, "tpl_ops").exercises[0].series[0].type === "superset"
+      && candidate.workoutHistory.length === 1
+      && candidate.workoutHistory[0].completion_status === "partial",
     "la rutina canónica cambió al elegir mantenerla",
   );
   assert.deepEqual(findTemplate(store, "tpl_ops"), templateBeforeSessionChange);
-  logStep("Cambios detectados y rutina original restaurada");
+  assert.equal(store.workoutHistory[0].completed_effort_count, 1);
+  await page.getByText("Sesión parcial guardada", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
+  assert.equal(await page.getByText("¡Sesión completada!", { exact: true }).count(), 0);
+  logStep("Parcial confirmado, cambios detectados y rutina original restaurada");
 
   await clickTestId(page, "training-complete-close");
+  await openHomeTab(page);
+  assert.match(await page.getByTestId("home-workout-streak").innerText(), /Racha\s*0\s*días seguidos/);
+  assert.equal(await page.getByTestId("home-week-completed-count").innerText(), "0/7");
+  assert.equal(await page.getByText("Último entrenamiento completado", { exact: true }).count(), 0);
+  await openTrainingTab(page);
+  await clickTestId(page, "training-template-open-tpl_ops");
+  const partialHistoryRow = page.getByTestId(`training-history-${store.workoutHistory[0].id}`);
+  await page.getByTestId(`training-history-status-${store.workoutHistory[0].id}`)
+    .getByText("Parcial", { exact: true })
+    .waitFor({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText("Todavía no hay sesiones completadas para mostrar estadísticas.", { exact: true })
+    .waitFor({ timeout: STEP_TIMEOUT_MS });
+  await partialHistoryRow.scrollIntoViewIfNeeded({ timeout: STEP_TIMEOUT_MS });
+  await page.screenshot({
+    path: process.env.TRAIN_PARTIAL_HISTORY_SCREENSHOT ?? "/tmp/gym-176-partial-history.png",
+    fullPage: false,
+  });
+  await clickTestId(page, "training-detail-back");
+  logStep("El parcial aparece en historial y no altera Inicio ni las estadísticas");
+
   await clickTestId(page, "training-template-inline-start-tpl_ops");
   await page.getByText("Sesión activa", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
   await clickTestId(page, "training-session-series-type-exercise_press-set_superset");
   await clickTestId(page, "training-series-type-option-dropset");
   await clickTestId(page, "training-session-finish");
+  await clickTestId(page, "training-partial-save");
   await clickTestId(page, "training-complete-apply-changes");
   store = await waitForStore(
     page,
-    (candidate) => findTemplate(candidate, "tpl_ops").exercises[0].series[0].type === "dropset",
+    (candidate) => findTemplate(candidate, "tpl_ops").exercises[0].series[0].type === "dropset"
+      && candidate.workoutHistory.filter((summary) => summary.completion_status === "partial").length === 2,
     "la versión de la sesión no se aplicó tras confirmarla",
   );
   logStep("Cambios de sesión conservados solo tras confirmación explícita");
@@ -420,11 +469,12 @@ async function run(page, baseUrl) {
   );
   assert.equal(recoveredDraft.draft_revision > 0, true);
   await clickTestId(page, "training-session-finish");
+  await clickTestId(page, "training-partial-save");
   await page.getByTestId("training-complete-revert-changes").waitFor({ timeout: STEP_TIMEOUT_MS });
   await page.waitForFunction(
     (key) => {
       const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw).pending_resolution?.kind === "finish" : false;
+      return raw ? JSON.parse(raw).pending_resolution?.kind === "partial" : false;
     },
     SESSION_KEY,
     { timeout: STEP_TIMEOUT_MS },
