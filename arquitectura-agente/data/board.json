@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-06",
+    "updated": "2026-09-07",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -1957,7 +1957,7 @@
         {
           "id": "GYM-174",
           "title": "Hacer transaccional la edición de plantillas y el descarte de sesiones",
-          "state": "todo",
+          "state": "done",
           "summary": "Permitir cancelar ediciones y restaurar todos los cambios de plantilla al descartar o finalizar una sesión.",
           "dependsOn": [
             "GYM-173",
