@@ -1971,7 +1971,7 @@
         {
           "id": "GYM-175",
           "title": "Contabilizar subseries y trabajo compuesto en entrenamiento",
-          "state": "todo",
+          "state": "done",
           "summary": "Incluir dropsets, rest-pause, myo-reps y superseries en progresión, descanso, volumen e historial.",
           "dependsOn": [
             "GYM-173"
