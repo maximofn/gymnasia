@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-07",
+    "updated": "2026-09-08",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -2030,7 +2030,7 @@
         {
           "id": "GYM-177",
           "title": "Recuperar temporizadores tras reinicio y respetar la pausa en notificaciones",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Persistir el ancla de reloj y suprimir alertas de descanso cuando la sesión está pausada.",
           "dependsOn": [],
           "related": [
