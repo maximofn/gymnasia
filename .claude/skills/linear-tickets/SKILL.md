@@ -206,7 +206,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Quince cosas que cuestan tiempo si no se saben:
+Dieciséis cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -339,6 +339,18 @@ Quince cosas que cuestan tiempo si no se saben:
     grupos, tarjetas y orden tal como están. Elimina la copia sobrante conservando
     la tarjeta de la épica correcta, quita también la repetición del orden y
     ejecuta `npm run test:board` y `npm run test:board:e2e` antes de desplegar.
+
+16. **`rtk curl` no sirve para comparar el hash del tablero byte a byte.** El
+    síntoma es que Vercel muestra el estado y la fecha correctos, e incluso el
+    mismo `content-length`, pero `rtk curl URL | rtk shasum -a 256` produce un
+    digest distinto del fichero local. RTK filtra la salida de `curl` antes de
+    entregarla al siguiente proceso. Para esta verificación usa el modo crudo en
+    ambos lados del pipe:
+    ```bash
+    rtk proxy shasum -a 256 arquitectura-agente/data/board.json
+    rtk proxy curl -sS https://gymnasia-sable.vercel.app/data/board.json \
+      | rtk proxy shasum -a 256
+    ```
 
 ## Notas
 
