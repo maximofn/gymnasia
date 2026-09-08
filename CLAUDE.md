@@ -389,7 +389,7 @@ Only non-obvious gotchas that could recur are kept here.
 
 ### JS timers pause in mobile background — workout timer must use wall-clock sync
 - Gotcha: `setInterval` stops ticking when the app goes to background or the screen locks. A naive `elapsed += 1` per tick will drift or freeze.
-- Fix: store `clock_last_tick_ms` (real timestamp) on each tick and on AppState transitions. On resume, compute delta from wall clock instead of counting ticks. Applied in `syncWorkoutSessionClock(...)` in `apps/mobile/App.tsx`.
+- Fix: persist `clock_last_tick_ms` and the active rest cycle/revision inside the workout session. Reconcile elapsed time from the wall clock with `reconcileWorkoutSessionClock(...)` in `apps/mobile/training/workoutSessionClock.ts`; paused sessions never consume the gap, and gaps over 12 hours preserve the counters and pause for review.
 
 ### useRef values don't survive app restarts — persist to AsyncStorage if needed across launches
 - Gotcha: a `useRef` initialized in a component is reset to its initial value whenever the app process is killed and relaunched. Any logic that compares "state at session start" vs "state now" will silently fail if the ref was set in a previous launch.

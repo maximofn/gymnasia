@@ -94,7 +94,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness",
-      "purpose": "Sesión de entrenamiento en curso: plantilla, esfuerzo principal o mini-serie actual, claves de esfuerzos completados, tiempos y descanso.",
+      "purpose": "Sesión de entrenamiento en curso: plantilla, esfuerzo principal o mini-serie actual, claves de esfuerzos completados, tiempos, ancla del reloj y ciclo/revisión de la alerta de descanso para recuperarla sin duplicados.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "delete",
       "fullDeletion": "delete"

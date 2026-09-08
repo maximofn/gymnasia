@@ -226,6 +226,26 @@ import {
   type WorkoutSessionSummary,
 } from "./training/workoutHistory";
 import {
+  cancelWorkoutRest,
+  normalizeWorkoutClockFields,
+  pauseWorkoutClock,
+  reconcileWorkoutSessionClock,
+  resumeWorkoutClock,
+  startWorkoutRest,
+  type WorkoutClockFields,
+  type WorkoutRestAlert,
+} from "./training/workoutSessionClock";
+import {
+  activeRestNotificationPayload,
+  isRestNotificationData,
+  parseRestNotificationPayload,
+  restNotificationIdentifiers,
+  restNotificationPayloadForSession,
+  sameRestNotification,
+  shouldPlayRecoveredRestAlert,
+  type RestNotificationPayload,
+} from "./training/restNotificationContract";
+import {
   catalogRef,
   linkedCatalog,
   unresolvedCatalog,
@@ -402,46 +422,26 @@ import {
   sweepOrphanedMeasurementPhotos,
 } from "./backup/measurementMedia";
 
-// Foreground notification presentation handler. Without this, scheduled
-// notifications delivered while the app is in the foreground are silently
-// dropped (no banner, no sound). We also trace every received notification
-// so we can debug "did the native scheduler actually fire it?".
-// Instante en que sonó la alerta in-app de fin de descanso. Vive a nivel de
-// módulo porque el handler de notificaciones se registra fuera del componente y
-// no puede leer sus refs.
-let lastInAppRestAlertAt: number | null = null;
-
-export function markInAppRestAlertPlayed(at: number = Date.now()) {
-  lastInAppRestAlertAt = at;
-}
-
-/** Una notificación de descanso que llega justo detrás de la alerta in-app duplicaría el aviso. */
-function isDuplicateRestAlert(data: unknown): boolean {
-  const payload = data as { kind?: string } | null | undefined;
-  if (payload?.kind !== "rest_end") return false;
-  if (lastInAppRestAlertAt === null) return false;
-  return Date.now() - lastInAppRestAlertAt < REST_ALERT_DEDUPE_WINDOW_MS;
-}
-
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
-    const duplicate = isDuplicateRestAlert(notification.request.content.data);
+    // El handler solo se ejecuta con la app en primer plano. En ese caso el
+    // reloj de la sesión reproduce la alerta y la notificación nativa se oculta,
+    // evitando dos sonidos para el mismo descanso.
+    const isRestNotification = isRestNotificationData(notification.request.content.data);
     void pushTrace("notifReceived", "handleNotification", {
       id: notification.request.identifier,
       title: notification.request.content.title,
       body: notification.request.content.body,
       trigger: notification.request.trigger,
       appState: "foreground",
-      duplicate,
+      suppressedByWorkoutClock: isRestNotification,
     });
-    // Se sigue registrando en la bandeja para que la observación de puntualidad
-    // la vea, pero sin sonar ni interrumpir por segunda vez.
     return {
-      shouldShowAlert: !duplicate,
-      shouldPlaySound: !duplicate,
+      shouldShowAlert: !isRestNotification,
+      shouldPlaySound: !isRestNotification,
       shouldSetBadge: false,
-      shouldShowBanner: !duplicate,
-      shouldShowList: true,
+      shouldShowBanner: !isRestNotification,
+      shouldShowList: !isRestNotification,
     };
   },
 });
@@ -450,7 +450,7 @@ type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
 type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "data" | "traces";
 type WorkoutSessionStatus = "running" | "paused";
 type WorkoutSessionResolutionKind = WorkoutCompletionStatus | "discard";
-type WorkoutSession = {
+type WorkoutSession = WorkoutClockFields & {
   id: string;
   template_id: string;
   template_name: string;
@@ -726,10 +726,6 @@ const ALARM_HEALTH_STORAGE_KEY = scopedStorageKey("gymnasia.mobile.alarm_health.
 // el aviso deja de servir: con descansos de 60-120 s, un retraso de unos segundos
 // ya llega tarde. Un umbral alto clasificaba como "a tiempo" avisos inútiles.
 const ALARM_LATE_THRESHOLD_MS = 5_000;
-// Si la alerta in-app acaba de sonar, la notificación que llega detrás no debe
-// volver a sonar: en la práctica llegan con ~200 ms de diferencia.
-const REST_ALERT_DEDUPE_WINDOW_MS = 8_000;
-
 // Fabricantes cuya gestión de batería congela o mata los procesos en segundo
 // plano, impidiendo que se entreguen las alarmas programadas. No es Doze ni un
 // problema de permisos: solo se resuelve desde los ajustes del propio fabricante.
@@ -4405,7 +4401,7 @@ function normalizeWorkoutSession(
   const restSecondsTotal = Number.isFinite(Number(maybe.rest_seconds_total))
     ? Math.max(0, Math.round(Number(maybe.rest_seconds_total)))
     : restSecondsLeft;
-  const status = maybe.status === "paused" ? "paused" : "running";
+  const requestedStatus = maybe.status === "paused" ? "paused" : "running";
   const isResting = Boolean(maybe.is_resting) && restSecondsLeft > 0;
   const rawPendingResolution = (maybe as {
     pending_resolution?: { kind?: unknown; requested_at?: unknown };
@@ -4425,6 +4421,15 @@ function normalizeWorkoutSession(
         requested_at: rawPendingResolution.requested_at,
       }
     : undefined;
+  const status: WorkoutSessionStatus = pendingResolution ? "paused" : requestedStatus;
+  const clockFields = normalizeWorkoutClockFields(maybe, {
+    now: Date.now(),
+    isResting,
+    restSecondsLeft,
+    status,
+    hasPendingResolution: !!pendingResolution,
+    createRestCycleId: () => uid("rest"),
+  });
   return {
     id: typeof maybe.id === "string" && maybe.id ? maybe.id : uid("session"),
     template_id: template.id,
@@ -4444,6 +4449,7 @@ function normalizeWorkoutSession(
     rest_seconds_left: restSecondsLeft,
     rest_seconds_total: restSecondsTotal,
     status,
+    ...clockFields,
     ...(pendingResolution ? { pending_resolution: pendingResolution } : {}),
   };
 }
@@ -6605,6 +6611,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [expandedExerciseId, setExpandedExerciseId] = useState<string | null>(null);
   const [exerciseDetailIndex, setExerciseDetailIndex] = useState<number | null>(null);
   const [activeWorkoutSession, setActiveWorkoutSession] = useState<WorkoutSession | null>(null);
+  const activeWorkoutSessionRef = useRef<WorkoutSession | null>(null);
+  activeWorkoutSessionRef.current = activeWorkoutSession;
   const workoutSessionPersistQueueRef = useRef<Promise<void>>(Promise.resolve());
   const [workoutSessionTemplateDraft, setWorkoutSessionTemplateDraft] =
     useState<WorkoutSessionTemplateDraftRecord | null>(null);
@@ -6621,13 +6629,25 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const workoutTemplateBeforeSessionRef = useRef<WorkoutTemplate | null>(null);
   const globalScreenLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const trainingEditorLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const restTransitionRef = useRef<{ wasResting: boolean; restLeft: number }>({
+  const restTransitionRef = useRef<{
+    sessionId: string | null;
+    wasResting: boolean;
+    restLeft: number;
+    alarmRevision: number;
+  }>({
+    sessionId: null,
     wasResting: false,
     restLeft: 0,
+    alarmRevision: 0,
   });
   const manualRestSkipRef = useRef(false);
+  const pendingRecoveredRestAlertRef = useRef<{
+    alert: WorkoutRestAlert;
+    play: boolean;
+  } | null>(null);
   const restAlertLockRef = useRef(false);
   const audioWorkoutInitializedRef = useRef(false);
+  const restNotificationOperationRef = useRef(0);
   const restNotificationIdRef = useRef<string | null>(null);
   // Instante en que el aviso de descanso debía saltar y aquel en que se entregó
   // de verdad. La diferencia es la única medida disponible de si Android está
@@ -7638,9 +7658,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const playRestFinishedAlert = useCallback(async () => {
     if (restAlertLockRef.current) return;
     restAlertLockRef.current = true;
-    // Marca antes de reproducir: la notificación que venga detrás debe encontrar
-    // la marca puesta aunque la carga del sonido tarde.
-    markInAppRestAlertPlayed();
     const settings = notifSettingsRef.current;
 
     // Load the selected sound if not already cached
@@ -7732,14 +7749,72 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
   }, []);
 
-  const scheduleRestEndNotification = useCallback(async (seconds: number) => {
+  const clearRestEndNotifications = useCallback(async () => {
     try {
+      const [scheduled, presented] = await Promise.all([
+        Notifications.getAllScheduledNotificationsAsync(),
+        Notifications.getPresentedNotificationsAsync(),
+      ]);
+      const scheduledRestIds = restNotificationIdentifiers(scheduled.map((item) => ({
+        identifier: item.identifier,
+        data: item.content.data,
+      })));
+      const presentedRestIds = restNotificationIdentifiers(presented.map((item) => ({
+        identifier: item.request.identifier,
+        data: item.request.content.data,
+      })));
+      await Promise.all([
+        ...scheduledRestIds.map((id) => Notifications.cancelScheduledNotificationAsync(id)),
+        ...presentedRestIds.map((id) => Notifications.dismissNotificationAsync(id)),
+      ]);
+      void pushTrace("cancelNotif", "rest notifications cleared", {
+        scheduled: scheduledRestIds.length,
+        presented: presentedRestIds.length,
+      });
+    } catch (e) {
+      void pushTrace("cancelNotif", "error", { error: String(e) });
+    }
+  }, []);
+
+  const cancelRestEndNotification = useCallback(async () => {
+    const operation = restNotificationOperationRef.current + 1;
+    restNotificationOperationRef.current = operation;
+    await clearRestEndNotifications();
+    if (restNotificationOperationRef.current === operation) {
+      restNotificationIdRef.current = null;
+      restNotifExpectedAtRef.current = null;
+    }
+  }, [clearRestEndNotifications]);
+
+  const scheduleRestEndNotification = useCallback(async (session: WorkoutSession) => {
+    const operation = restNotificationOperationRef.current + 1;
+    restNotificationOperationRef.current = operation;
+    try {
+      const now = Date.now();
+      const payload = activeRestNotificationPayload(session, now);
+      await clearRestEndNotifications();
+      const currentPayload = activeRestNotificationPayload(
+        activeWorkoutSessionRef.current,
+        Date.now(),
+      );
       const settings = notifSettingsRef.current;
-      if (!settings.enabled) return;
-      const triggerDate = Date.now() + Math.max(1, seconds) * 1000;
+      if (
+        restNotificationOperationRef.current !== operation
+        || !settings.enabled
+        || !payload
+        || AppState.currentState === "active"
+        || !sameRestNotification(payload, currentPayload)
+      ) return;
+      const triggerDate = payload.expected_at_ms;
       const soundFile = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)?.file ?? "rest_finished.wav";
-      void pushTrace("scheduleNotif", "entry", { seconds, triggerIso: new Date(triggerDate).toISOString(), soundKey: settings.soundKey, soundFile });
-      await Notifications.cancelAllScheduledNotificationsAsync();
+      void pushTrace("scheduleNotif", "entry", {
+        sessionId: payload.session_id,
+        restCycleId: payload.rest_cycle_id,
+        alarmRevision: payload.rest_alarm_revision,
+        triggerIso: new Date(triggerDate).toISOString(),
+        soundKey: settings.soundKey,
+        soundFile,
+      });
       const id = await Notifications.scheduleNotificationAsync({
         content: {
           title: "¡Descanso terminado! 💪",
@@ -7748,9 +7823,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           vibrate: settings.vibrate ? [0, 300, 150, 300] : undefined,
           priority: Notifications.AndroidNotificationPriority.MAX,
           autoDismiss: true,
-          // El instante previsto viaja con la notificación para poder medir el
-          // retraso aunque el proceso se haya reiniciado y las refs estén vacías.
-          data: { kind: "rest_end", expectedAt: triggerDate },
+          data: payload,
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -7758,6 +7831,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           channelId: "rest_end_alert",
         },
       });
+      if (restNotificationOperationRef.current !== operation) {
+        await Notifications.cancelScheduledNotificationAsync(id);
+        return;
+      }
       restNotificationIdRef.current = id;
       restNotifExpectedAtRef.current = triggerDate;
       restNotifDeliveredAtRef.current = null;
@@ -7765,23 +7842,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     } catch (e) {
       void pushTrace("scheduleNotif", "error", { error: String(e) });
     }
-  }, []);
-
-  const cancelRestEndNotification = useCallback(async () => {
-    if (restNotificationIdRef.current) {
-      const idToCancel = restNotificationIdRef.current;
-      try {
-        await Notifications.cancelScheduledNotificationAsync(idToCancel);
-      } catch (e) {
-        void pushTrace("cancelNotif", "error", { id: idToCancel, error: String(e) });
-      }
-      restNotificationIdRef.current = null;
-    }
-    // Solo se olvida el instante previsto. La evidencia de entrega la limpia
-    // scheduleRestEndNotification: el efecto de flanco cancela antes de decidir
-    // si suena la alerta, y borrarla aquí dejaría al supresor otra vez ciego.
-    restNotifExpectedAtRef.current = null;
-  }, []);
+  }, [clearRestEndNotifications]);
 
   // Registra lo observado sobre la puntualidad de las alarmas. Persiste de forma
   // directa (no vía useEffect) porque estas observaciones ocurren justo cuando la
@@ -7843,24 +7904,72 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   // El listener de recepción no dispara si el sistema mató el proceso, así que su
   // silencio no prueba que la notificación no llegara. La bandeja sí: si sigue ahí,
   // se entregó. Evita declarar "perdida" una notificación que sí sonó.
-  const syncRestDeliveryFromTray = useCallback(async () => {
-    if (restNotifDeliveredAtRef.current !== null) return;
+  const syncRestDeliveryFromTray = useCallback(async (
+    expectedPayload: RestNotificationPayload,
+  ): Promise<boolean> => {
     try {
-      const presented = await Notifications.getPresentedNotificationsAsync();
-      const match = presented.find((item) => {
-        const payload = item.request.content.data as { kind?: string } | null | undefined;
-        return payload?.kind === "rest_end";
-      });
-      if (!match) return;
-      const deliveredAt = typeof match.date === "number" ? match.date : Date.now();
+      const [presented, lastResponse] = await Promise.all([
+        Notifications.getPresentedNotificationsAsync(),
+        Notifications.getLastNotificationResponseAsync(),
+      ]);
+      const match = presented.find((item) => sameRestNotification(
+        parseRestNotificationPayload(item.request.content.data),
+        expectedPayload,
+      ));
+      const responsePayload = parseRestNotificationPayload(
+        lastResponse?.notification.request.content.data,
+      );
+      const responseMatches = sameRestNotification(responsePayload, expectedPayload);
+      const responseNotification = responseMatches ? lastResponse?.notification : null;
+      const deliveredAt = match
+        ? typeof match.date === "number" ? match.date : Date.now()
+        : responseNotification
+          ? typeof responseNotification.date === "number"
+            ? responseNotification.date
+            : Date.now()
+          : null;
+
+      const stalePresentedIds = presented
+        .filter((item) => {
+          const payload = parseRestNotificationPayload(item.request.content.data);
+          return isRestNotificationData(item.request.content.data)
+            && !sameRestNotification(payload, expectedPayload);
+        })
+        .map((item) => item.request.identifier);
+      await Promise.all(stalePresentedIds.map((id) => Notifications.dismissNotificationAsync(id)));
+      if (lastResponse && isRestNotificationData(lastResponse.notification.request.content.data)) {
+        await Notifications.clearLastNotificationResponseAsync();
+      }
+
+      if (deliveredAt === null) return false;
       restNotifDeliveredAtRef.current = deliveredAt;
-      const expectedAt = restNotifExpectedAtRef.current;
-      void pushTrace("notifReceived", "found in tray", { deliveredAt, expectedAt });
-      if (expectedAt) recordAlarmObservation({ delayMs: Math.max(0, deliveredAt - expectedAt) });
+      restNotifExpectedAtRef.current = expectedPayload.expected_at_ms;
+      void pushTrace("notifReceived", "found matching delivery", {
+        deliveredAt,
+        expectedAt: expectedPayload.expected_at_ms,
+        sessionId: expectedPayload.session_id,
+        restCycleId: expectedPayload.rest_cycle_id,
+        alarmRevision: expectedPayload.rest_alarm_revision,
+      });
+      recordAlarmObservation({
+        delayMs: Math.max(0, deliveredAt - expectedPayload.expected_at_ms),
+      });
+      return true;
     } catch (e) {
       void pushTrace("notifReceived", "tray check failed", { error: String(e) });
+      return false;
     }
   }, [recordAlarmObservation]);
+
+  const persistWorkoutSessionImmediately = useCallback(async (
+    session: WorkoutSession,
+  ): Promise<void> => {
+    const persist = workoutSessionPersistQueueRef.current.then(() => (
+      AsyncStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session))
+    ));
+    workoutSessionPersistQueueRef.current = persist.catch(() => undefined);
+    await persist;
+  }, []);
 
   // Refresca las señales que Android sí deja consultar. La puntualidad de la
   // alarma exacta no está entre ellas: esa se deduce en recordAlarmObservation.
@@ -8310,7 +8419,35 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         hydratedStore.templates,
         hydratedSessionDraft,
       );
-      hydratedSession = normalizeWorkoutSession(sessionParsed.value, runtimeTemplates);
+      const normalizedSession = normalizeWorkoutSession(sessionParsed.value, runtimeTemplates);
+      if (normalizedSession) {
+        const now = Date.now();
+        const expectedPayload = restNotificationPayloadForSession(normalizedSession);
+        const wasDelivered = expectedPayload
+          ? await syncRestDeliveryFromTray(expectedPayload)
+          : false;
+        const reconciliation = reconcileWorkoutSessionClock(normalizedSession, now);
+        hydratedSession = reconciliation.session;
+        if (reconciliation.restAlert) {
+          pendingRecoveredRestAlertRef.current = {
+            alert: reconciliation.restAlert,
+            play: shouldPlayRecoveredRestAlert(
+              reconciliation.restAlert.expected_at_ms,
+              now,
+              wasDelivered,
+              REST_ALERT_FALLBACK_WINDOW_MS,
+            ),
+          };
+        }
+        if (reconciliation.autoPaused) {
+          nonFatalError = "La sesión llevaba más de 12 horas sin actualizarse. Hemos conservado sus tiempos y la hemos pausado para que puedas revisarla.";
+        }
+        if (reconciliation.clockMovedBackward) {
+          void pushTrace("workoutClock", "device clock moved backward during hydration", {
+            sessionId: normalizedSession.id,
+          });
+        }
+      }
     } catch {
       secondaryFailure = true;
     }
@@ -8341,6 +8478,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
     setSecureStoreAvailable(secureAvailable);
     setStore(hydratedStore);
+    activeWorkoutSessionRef.current = hydratedSession;
     setActiveWorkoutSession(hydratedSession);
     setWorkoutSessionTemplateDraft(hydratedSession ? hydratedSessionDraft : null);
     workoutTemplateBeforeSessionRef.current = null;
@@ -8681,6 +8819,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     );
     const normalized = normalizeWorkoutSession(activeWorkoutSession, runtimeTemplates);
     if (!normalized) {
+      activeWorkoutSessionRef.current = null;
       setActiveWorkoutSession(null);
       setWorkoutSessionTemplateDraft(null);
       workoutTemplateBeforeSessionRef.current = null;
@@ -8688,6 +8827,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       return;
     }
     if (JSON.stringify(normalized) !== JSON.stringify(activeWorkoutSession)) {
+      activeWorkoutSessionRef.current = normalized;
       setActiveWorkoutSession(normalized);
     }
   }, [activeWorkoutSession, isHydrated, store.templates, workoutSessionTemplateDraft]);
@@ -8695,37 +8835,21 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   useEffect(() => {
     if (!activeWorkoutSession || activeWorkoutSession.status !== "running") return;
     const interval = setInterval(() => {
+      if (AppState.currentState !== "active") return;
       setActiveWorkoutSession((prev) => {
         if (!prev || prev.status !== "running") return prev;
-        const nextElapsed = prev.elapsed_seconds + 1;
-        if (!prev.is_resting || prev.rest_seconds_left <= 0) {
-          return {
-            ...prev,
-            elapsed_seconds: nextElapsed,
-          };
+        const result = reconcileWorkoutSessionClock(prev, Date.now());
+        if (result.clockMovedBackward) {
+          void pushTrace("workoutClock", "device clock moved backward", {
+            sessionId: prev.id,
+          });
         }
-        const nextRest = Math.max(0, prev.rest_seconds_left - 1);
-        return {
-          ...prev,
-          elapsed_seconds: nextElapsed,
-          rest_seconds_left: nextRest,
-          is_resting: nextRest > 0,
-        };
+        return result.session;
       });
-    }, 1000);
+    }, 250);
 
     return () => clearInterval(interval);
   }, [activeWorkoutSession?.id, activeWorkoutSession?.status]);
-  const appStateLastActiveRef = useRef<string | null>(null);
-  const backgroundTimestampRef = useRef<number | null>(null);
-  const restStateLogRef = useRef({ isResting: false, restLeft: 0 });
-
-  useEffect(() => {
-    restStateLogRef.current = {
-      isResting: !!activeWorkoutSession?.is_resting,
-      restLeft: activeWorkoutSession?.rest_seconds_left ?? 0,
-    };
-  }, [activeWorkoutSession?.is_resting, activeWorkoutSession?.rest_seconds_left]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", async (nextAppState) => {
@@ -8734,89 +8858,108 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         // estaba fuera; sin esto el aviso se quedaría obsoleto en pantalla.
         void refreshNotificationDiagnostics();
       }
-      if (nextAppState === "active" && backgroundTimestampRef.current) {
-        const elapsedSeconds = Math.floor((Date.now() - backgroundTimestampRef.current) / 1000);
-        void pushTrace("appState", "foreground", { elapsedSeconds, restLeft: restStateLogRef.current.restLeft });
-        backgroundTimestampRef.current = null;
-        const restLog = restStateLogRef.current;
-        const restShouldHaveEnded =
-          restLog.isResting &&
-          restLog.restLeft > 0 &&
-          restLog.restLeft - elapsedSeconds <= 0;
-        if (!restShouldHaveEnded) {
-          void cancelRestEndNotification();
-        }
-        // Antes de decidir si suena la alerta: comprobar la bandeja, porque el
-        // listener no pudo capturar la entrega si el sistema mató el proceso.
-        if (restShouldHaveEnded) {
-          await syncRestDeliveryFromTray();
-        }
-        setActiveWorkoutSession((prev) => {
-          if (!prev || prev.status !== "running") return prev;
-          const nextElapsed = prev.elapsed_seconds + elapsedSeconds;
-          if (!prev.is_resting || prev.rest_seconds_left <= 0) {
-            return { ...prev, elapsed_seconds: nextElapsed };
-          }
-          const nextRest = Math.max(0, prev.rest_seconds_left - elapsedSeconds);
-          if (nextRest === 0) {
-            // Suprimir la alerta in-app solo con evidencia de que la notificación
-            // se entregó. Sin alarmas exactas puede no haber sonado nunca, y
-            // asumirlo dejaba al usuario sin ningún aviso.
-            const deliveredAt = restNotifDeliveredAtRef.current;
-            const expectedAt = restNotifExpectedAtRef.current;
-            const overdueMs = expectedAt ? Date.now() - expectedAt : null;
-            if (notifSettingsRef.current.enabled && deliveredAt !== null) {
-              manualRestSkipRef.current = true;
-            } else {
-              // Sin evidencia, la alerta suena como red de seguridad, pero solo si
-              // el descanso acaba de terminar: horas después sería absurda.
-              // No se registra retraso aquí: `overdueMs` mide cuánto ha tardado el
-              // usuario en volver, no cuánto tardó la notificación. Confundirlos
-              // marcaba "con retraso" a quien simplemente volvió tarde.
-              const stillRelevant = overdueMs !== null && overdueMs <= REST_ALERT_FALLBACK_WINDOW_MS;
-              manualRestSkipRef.current = !stillRelevant;
-            }
-            void pushTrace("restSkip", "decision", {
-              delivered: deliveredAt !== null,
-              expectedAt,
-              overdueMs,
+      if (nextAppState === "active") {
+        const now = Date.now();
+        const current = activeWorkoutSessionRef.current;
+        if (current) {
+          const expectedPayload = restNotificationPayloadForSession(current);
+          const wasDelivered = expectedPayload
+            ? await syncRestDeliveryFromTray(expectedPayload)
+            : false;
+          const result = reconcileWorkoutSessionClock(current, now);
+          if (result.restAlert) {
+            manualRestSkipRef.current = !shouldPlayRecoveredRestAlert(
+              result.restAlert.expected_at_ms,
+              now,
+              wasDelivered,
+              REST_ALERT_FALLBACK_WINDOW_MS,
+            );
+            void pushTrace("restAlert", "foreground recovery decision", {
+              delivered: wasDelivered,
+              expectedAt: result.restAlert.expected_at_ms,
               suppressed: manualRestSkipRef.current,
             });
           }
-          return {
-            ...prev,
-            elapsed_seconds: nextElapsed,
-            rest_seconds_left: nextRest,
-            is_resting: nextRest > 0,
-          };
-        });
+          if (result.autoPaused) {
+            setError("La sesión llevaba más de 12 horas sin actualizarse. Hemos conservado sus tiempos y la hemos pausado para que puedas revisarla.");
+          }
+          if (result.clockMovedBackward) {
+            void pushTrace("workoutClock", "device clock moved backward", {
+              sessionId: current.id,
+            });
+          }
+          try {
+            await persistWorkoutSessionImmediately(result.session);
+          } catch (persistError) {
+            setError("No se pudo guardar el reloj recuperado de la sesión.");
+            void pushTrace("workoutClock", "foreground persistence failed", {
+              sessionId: current.id,
+              error: String(persistError),
+            });
+          }
+          activeWorkoutSessionRef.current = result.session;
+          setActiveWorkoutSession(result.session);
+        }
+        await cancelRestEndNotification();
       }
       if (/inactive|background/.test(nextAppState)) {
-        backgroundTimestampRef.current = Date.now();
-        setActiveWorkoutSession((prev) => {
-          if (prev?.is_resting && prev.rest_seconds_left > 0) {
-            void pushTrace("appState", "background, scheduling", { restLeft: prev.rest_seconds_left });
-            void scheduleRestEndNotification(prev.rest_seconds_left);
+        const current = activeWorkoutSessionRef.current;
+        if (current) {
+          const result = reconcileWorkoutSessionClock(current, Date.now());
+          try {
+            await persistWorkoutSessionImmediately(result.session);
+          } catch (persistError) {
+            setError("No se pudo guardar el reloj de la sesión antes de pasar a segundo plano.");
+            void pushTrace("workoutClock", "background persistence failed", {
+              sessionId: current.id,
+              error: String(persistError),
+            });
           }
-          return prev;
-        });
+          activeWorkoutSessionRef.current = result.session;
+          setActiveWorkoutSession(result.session);
+          if (activeRestNotificationPayload(result.session, Date.now())) {
+            void pushTrace("appState", "background, scheduling", {
+              sessionId: result.session.id,
+              restLeft: result.session.rest_seconds_left,
+            });
+            void scheduleRestEndNotification(result.session);
+          } else {
+            void cancelRestEndNotification();
+          }
+        } else {
+          void cancelRestEndNotification();
+        }
       }
-      appStateLastActiveRef.current = nextAppState;
     });
 
     return () => {
       subscription.remove();
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification, recordAlarmObservation, refreshNotificationDiagnostics, syncRestDeliveryFromTray]);
+  }, [scheduleRestEndNotification, cancelRestEndNotification, persistWorkoutSessionImmediately, refreshNotificationDiagnostics, syncRestDeliveryFromTray]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
-      restTransitionRef.current = { wasResting: false, restLeft: 0 };
+      restTransitionRef.current = {
+        sessionId: null,
+        wasResting: false,
+        restLeft: 0,
+        alarmRevision: 0,
+      };
       manualRestSkipRef.current = false;
+      void cancelRestEndNotification();
       return;
     }
 
     const previous = restTransitionRef.current;
+    const activeRestChanged = activeWorkoutSession.is_resting && (
+      !previous.wasResting
+      || previous.sessionId !== activeWorkoutSession.id
+      || previous.alarmRevision !== activeWorkoutSession.rest_alarm_revision
+    );
+    if (!previous.wasResting && activeWorkoutSession.is_resting) {
+      restNotifDeliveredAtRef.current = null;
+      restNotifExpectedAtRef.current = activeWorkoutSession.rest_due_at_ms;
+    }
     const endedRestThisTick =
       previous.wasResting &&
       previous.restLeft > 0 &&
@@ -8824,23 +8967,52 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       activeWorkoutSession.rest_seconds_left === 0;
     if (endedRestThisTick) {
       void cancelRestEndNotification();
-      if (!manualRestSkipRef.current) {
-        void playRestFinishedAlert();
+      const shouldPlay = !manualRestSkipRef.current && AppState.currentState === "active";
+      if (shouldPlay) {
+        void workoutSessionPersistQueueRef.current.then(() => playRestFinishedAlert());
       }
       manualRestSkipRef.current = false;
+    } else if (
+      activeWorkoutSession.status !== "running"
+      || !activeWorkoutSession.is_resting
+      || (AppState.currentState === "active" && activeRestChanged)
+    ) {
+      void cancelRestEndNotification();
     }
 
     restTransitionRef.current = {
+      sessionId: activeWorkoutSession.id,
       wasResting: activeWorkoutSession.is_resting,
       restLeft: activeWorkoutSession.rest_seconds_left,
+      alarmRevision: activeWorkoutSession.rest_alarm_revision,
     };
   }, [
     activeWorkoutSession?.id,
     activeWorkoutSession?.is_resting,
     activeWorkoutSession?.rest_seconds_left,
+    activeWorkoutSession?.rest_alarm_revision,
+    activeWorkoutSession?.status,
     cancelRestEndNotification,
     playRestFinishedAlert,
   ]);
+
+  useEffect(() => {
+    if (!isHydrated || !pendingRecoveredRestAlertRef.current) return;
+    const pending = pendingRecoveredRestAlertRef.current;
+    pendingRecoveredRestAlertRef.current = null;
+    void pushTrace("restAlert", "cold-start recovery decision", {
+      restCycleId: pending.alert.rest_cycle_id,
+      alarmRevision: pending.alert.rest_alarm_revision,
+      expectedAt: pending.alert.expected_at_ms,
+      play: pending.play,
+    });
+    void workoutSessionPersistQueueRef.current.then(() => {
+      if (pending.play && AppState.currentState === "active") {
+        return playRestFinishedAlert();
+      }
+      return undefined;
+    });
+  }, [activeWorkoutSession?.last_handled_rest_alert, isHydrated, playRestFinishedAlert]);
 
   useEffect(() => {
     return () => {
@@ -8876,12 +9048,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     // hora pedida. `expectedAt` llega en el payload, así que sigue midiéndose
     // aunque el proceso se haya reiniciado entretanto.
     const observeDelivery = (data: unknown, deliveredAt: number) => {
-      const payload = data as { kind?: string; expectedAt?: number } | null | undefined;
-      if (payload?.kind !== "rest_end") return;
-      restNotifDeliveredAtRef.current = deliveredAt;
-      const expectedAt = Number(payload.expectedAt ?? restNotifExpectedAtRef.current ?? 0);
-      if (!expectedAt) return;
-      recordAlarmObservation({ delayMs: Math.max(0, deliveredAt - expectedAt) });
+      const payload = parseRestNotificationPayload(data);
+      if (!payload) return;
+      const currentPayload = restNotificationPayloadForSession(activeWorkoutSessionRef.current);
+      if (sameRestNotification(payload, currentPayload)) {
+        restNotifDeliveredAtRef.current = deliveredAt;
+        restNotifExpectedAtRef.current = payload.expected_at_ms;
+      }
+      recordAlarmObservation({ delayMs: Math.max(0, deliveredAt - payload.expected_at_ms) });
     };
 
     const receivedSub = Notifications.addNotificationReceivedListener((event) => {
@@ -10031,6 +10205,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       // El snapshot de sesión activa no se incluye en el backup; cerramos cualquier
       // sesión en curso para no dejar un estado inconsistente con los datos nuevos.
+      activeWorkoutSessionRef.current = null;
       setActiveWorkoutSession(null);
       setWorkoutSessionTemplateDraft(null);
       workoutTemplateBeforeSessionRef.current = null;
@@ -11203,13 +11378,21 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           session.current_unit_key,
           completedKeys,
         );
-        return {
+        const updatedSession = {
           ...session,
           total_effort_count: units.length,
           completed_unit_keys: completedKeys,
           completed_effort_count: completedKeys.length,
           ...(currentUnitKey ? { current_unit_key: currentUnitKey } : {}),
         };
+        if (
+          session.is_resting
+          && (!currentUnitKey || currentUnitKey !== session.current_unit_key)
+        ) {
+          manualRestSkipRef.current = true;
+          return cancelWorkoutRest(updatedSession, Date.now());
+        }
+        return updatedSession;
       });
       return next;
     });
@@ -11978,6 +12161,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (!modal || !session || !draftRecord || draftRecord.session_id !== session.id) return;
 
     try {
+      await cancelRestEndNotification();
       let conflictDetected = false;
       await commitLocalStoreMutation((previous) => {
         const current = previous.templates.find(
@@ -12027,6 +12211,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ]);
       if (keepSessionVersion) flushPendingTrainingFeedback("session", session.id);
       else discardPendingTrainingFeedback("session", session.id);
+      activeWorkoutSessionRef.current = null;
       setActiveWorkoutSession(null);
       setWorkoutSessionTemplateDraft(null);
       setConfirmPartialSessionFinish(false);
@@ -12061,6 +12246,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     session: WorkoutSession,
     requestedKind: WorkoutSessionResolutionKind,
   ) {
+    const now = Date.now();
+    session = reconcileWorkoutSessionClock(session, now).session;
     const draftRecord = workoutSessionTemplateDraft;
     const originalTemplate = workoutTemplateBeforeSessionRef.current;
     if (!draftRecord || draftRecord.session_id !== session.id || !originalTemplate) {
@@ -12078,9 +12265,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setError(null);
       return;
     }
+    void cancelRestEndNotification();
     const pendingSession: WorkoutSession = {
-      ...session,
-      status: "paused",
+      ...pauseWorkoutClock(session, now),
       pending_resolution: { kind, requested_at: requestedAt },
     };
     const hasTemplateChanges = diffWorkoutTemplates(originalTemplate, draftRecord.draft).hasChanges;
@@ -12098,6 +12285,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       canonical_conflict: canonicalConflict,
     };
     setConfirmPartialSessionFinish(false);
+    activeWorkoutSessionRef.current = pendingSession;
     setActiveWorkoutSession(pendingSession);
     setWorkoutCompletionModal(modal);
     setConfirmDiscardSession(false);
@@ -12130,12 +12318,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     workoutTemplateBeforeSessionRef.current = cloneWorkoutTemplateSnapshot(template);
 
     const firstUnit = units[0];
+    const startedAt = Date.now();
     const session: WorkoutSession = {
       id: uid("session"),
       template_id: template.id,
       template_name: template.name,
       category: resolveTrainingCategory(template),
-      started_at: new Date().toISOString(),
+      started_at: new Date(startedAt).toISOString(),
       execution_schema_version: WORKOUT_EXECUTION_SCHEMA_VERSION,
       current_unit_key: firstUnit.key,
       completed_unit_keys: [],
@@ -12146,8 +12335,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       rest_seconds_left: 0,
       rest_seconds_total: 0,
       status: "running",
+      ...normalizeWorkoutClockFields({}, {
+        now: startedAt,
+        isResting: false,
+        restSecondsLeft: 0,
+        status: "running",
+        hasPendingResolution: false,
+        createRestCycleId: () => uid("rest"),
+      }),
     };
     setWorkoutSessionTemplateDraft(createWorkoutSessionTemplateDraftRecord(session.id, template));
+    activeWorkoutSessionRef.current = session;
     setActiveWorkoutSession(session);
     setConfirmPartialSessionFinish(false);
     setActiveTrainingTemplateId(null);
@@ -12213,16 +12411,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   function completeCurrentSessionSeries() {
     if (!activeWorkoutSession) return;
     if (activeWorkoutSession.is_resting) return;
-    const runtime = resolveSessionRuntime(activeWorkoutSession);
+    const now = Date.now();
+    const session = reconcileWorkoutSessionClock(activeWorkoutSession, now).session;
+    const runtime = resolveSessionRuntime(session);
     if (!runtime) {
       setError("No se pudo avanzar en la sesión. Revisa la rutina.");
       return;
     }
     const currentUnit = runtime.currentUnit;
     const currentKey = currentUnit.key;
-    const completedUnitKeys = activeWorkoutSession.completed_unit_keys.includes(currentKey)
-      ? activeWorkoutSession.completed_unit_keys
-      : [...activeWorkoutSession.completed_unit_keys, currentKey];
+    const completedUnitKeys = session.completed_unit_keys.includes(currentKey)
+      ? session.completed_unit_keys
+      : [...session.completed_unit_keys, currentKey];
     const nextUnit = runtime.units
       .slice(runtime.currentIndex + 1)
       .find((unit) => !completedUnitKeys.includes(unit.key))
@@ -12230,7 +12430,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
     if (!nextUnit) {
       finishWorkoutSession({
-        ...activeWorkoutSession,
+        ...session,
         completed_unit_keys: completedUnitKeys,
         completed_effort_count: completedUnitKeys.length,
         current_unit_key: currentKey,
@@ -12239,22 +12439,25 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     const restSeconds = resolveWorkoutExecutionRest(currentUnit, nextUnit);
-    setActiveWorkoutSession({
-      ...activeWorkoutSession,
+    const nextSession: WorkoutSession = {
+      ...session,
       completed_unit_keys: completedUnitKeys,
       completed_effort_count: completedUnitKeys.length,
       current_unit_key: nextUnit.key,
-      is_resting: restSeconds > 0,
-      rest_seconds_left: restSeconds,
-      rest_seconds_total: restSeconds,
-    });
+    };
+    const sessionWithRest = restSeconds > 0
+      ? startWorkoutRest(nextSession, restSeconds, now, () => uid("rest"))
+      : cancelWorkoutRest(nextSession, now);
+    activeWorkoutSessionRef.current = sessionWithRest;
+    setActiveWorkoutSession(sessionWithRest);
     setConfirmDiscardSession(false);
     setError(null);
   }
 
   function markSessionUnitAsDone(unitKey: string) {
     if (!activeWorkoutSession) return;
-    const session = activeWorkoutSession;
+    const now = Date.now();
+    const session = reconcileWorkoutSessionClock(activeWorkoutSession, now).session;
     const runtime = resolveSessionRuntime(session);
     if (!runtime) {
       setError("No se pudo actualizar la sesión activa.");
@@ -12265,15 +12468,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
     const completedUnitKeys = [...session.completed_unit_keys, unitKey];
     if (completedUnitKeys.length >= session.total_effort_count) {
-      finishWorkoutSession({
+      manualRestSkipRef.current = session.is_resting;
+      finishWorkoutSession(cancelWorkoutRest({
         ...session,
         completed_unit_keys: completedUnitKeys,
         completed_effort_count: completedUnitKeys.length,
         current_unit_key: unitKey,
-        is_resting: false,
-        rest_seconds_left: 0,
-        rest_seconds_total: 0,
-      });
+      }, now));
       return;
     }
 
@@ -12289,15 +12490,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const restSeconds = resolveWorkoutExecutionRest(targetUnit, nextUnit);
     manualRestSkipRef.current = session.is_resting && restSeconds <= 0;
 
-    setActiveWorkoutSession({
+    const nextSession: WorkoutSession = {
       ...session,
       completed_unit_keys: completedUnitKeys,
       completed_effort_count: completedUnitKeys.length,
       current_unit_key: nextUnit.key,
-      is_resting: restSeconds > 0,
-      rest_seconds_left: restSeconds,
-      rest_seconds_total: restSeconds,
-    });
+    };
+    const sessionWithRest = restSeconds > 0
+      ? startWorkoutRest(nextSession, restSeconds, now, () => uid("rest"))
+      : cancelWorkoutRest(nextSession, now);
+    activeWorkoutSessionRef.current = sessionWithRest;
+    setActiveWorkoutSession(sessionWithRest);
     setConfirmDiscardSession(false);
     setError(null);
   }
@@ -12320,14 +12523,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const completedUnitKeys = activeWorkoutSession.completed_unit_keys.filter(
       (key) => key !== unitKey,
     );
-    setActiveWorkoutSession({
+    const sessionWithoutRest = cancelWorkoutRest({
       ...activeWorkoutSession,
       completed_unit_keys: completedUnitKeys,
       completed_effort_count: completedUnitKeys.length,
       current_unit_key: targetUnit.key,
-      is_resting: false,
-      rest_seconds_left: 0,
-    });
+    }, Date.now());
+    activeWorkoutSessionRef.current = sessionWithoutRest;
+    setActiveWorkoutSession(sessionWithoutRest);
     setConfirmDiscardSession(false);
     setError(null);
   }
@@ -12400,19 +12603,20 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   function pauseWorkoutSession() {
     if (!activeWorkoutSession) return;
-    setActiveWorkoutSession({
-      ...activeWorkoutSession,
-      status: "paused",
-    });
+    const now = Date.now();
+    const reconciled = reconcileWorkoutSessionClock(activeWorkoutSession, now).session;
+    void cancelRestEndNotification();
+    const pausedSession = pauseWorkoutClock(reconciled, now);
+    activeWorkoutSessionRef.current = pausedSession;
+    setActiveWorkoutSession(pausedSession);
     setConfirmDiscardSession(false);
   }
 
   function resumeWorkoutSession() {
     if (!activeWorkoutSession) return;
-    setActiveWorkoutSession({
-      ...activeWorkoutSession,
-      status: "running",
-    });
+    const resumedSession = resumeWorkoutClock(activeWorkoutSession, Date.now());
+    activeWorkoutSessionRef.current = resumedSession;
+    setActiveWorkoutSession(resumedSession);
     setConfirmDiscardSession(false);
   }
 
@@ -12420,11 +12624,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (!activeWorkoutSession) return;
     manualRestSkipRef.current = true;
     void cancelRestEndNotification();
-    setActiveWorkoutSession({
-      ...activeWorkoutSession,
-      is_resting: false,
-      rest_seconds_left: 0,
-    });
+    const sessionWithoutRest = cancelWorkoutRest(activeWorkoutSession, Date.now());
+    activeWorkoutSessionRef.current = sessionWithoutRest;
+    setActiveWorkoutSession(sessionWithoutRest);
     setConfirmDiscardSession(false);
   }
 
@@ -12476,7 +12678,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setActiveWorkoutSession((session) => {
       if (!session?.pending_resolution) return session;
       const { pending_resolution: _pendingResolution, ...runningSession } = session;
-      return { ...runningSession, status: "running" };
+      return resumeWorkoutClock({ ...runningSession, status: "paused" }, Date.now());
     });
     setError(null);
   }
@@ -13434,7 +13636,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     feedbackProposalStore.clear();
-    lastInAppRestAlertAt = null;
     dataDeletionBusyRef.current = false;
     setDataDeletionBusy(false);
     setDataDeletionScope(null);
