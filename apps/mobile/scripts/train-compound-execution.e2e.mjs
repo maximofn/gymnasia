@@ -1,6 +1,7 @@
 /**
- * E2E de GYM-175 (ticket para contabilizar subseries y trabajo compuesto):
- * ejecución, migración y estadísticas de series compuestas.
+ * E2E de GYM-175 (ticket para contabilizar subseries y trabajo compuesto) y
+ * GYM-177 (ticket para recuperar temporizadores tras reinicios): ejecución,
+ * migración, reloj y estadísticas de series compuestas.
  */
 import assert from "node:assert/strict";
 import { once } from "node:events";
@@ -338,6 +339,17 @@ async function verifyLegacyMigration(browser, baseUrl) {
     assert.equal(migrated.is_resting, fixture.session.is_resting);
     assert.equal(migrated.rest_seconds_left, fixture.session.rest_seconds_left);
     assert.equal(migrated.rest_seconds_total, fixture.session.rest_seconds_total);
+    assert.equal(migrated.clock_schema_version, 1);
+    assert.ok(Number.isFinite(migrated.clock_last_tick_ms));
+    if (fixture.session.is_resting) {
+      assert.ok(migrated.rest_cycle_id, "el descanso heredado no recibió identidad");
+      assert.ok(migrated.rest_alarm_revision >= 1);
+      assert.equal(
+        migrated.rest_due_at_ms === null,
+        fixture.session.status === "paused",
+        "la fecha de alarma no respeta el estado de la sesión",
+      );
+    }
     assert.equal(
       migrated.pending_resolution?.kind,
       fixture.expectedPendingKind ?? fixture.session.pending_resolution?.kind,
@@ -369,6 +381,111 @@ async function verifyLegacyMigration(browser, baseUrl) {
     await context.close();
   }
   logStep("Fixtures heredados y resoluciones pendientes migrados de forma idempotente");
+}
+
+async function verifyClockRecovery(browser, baseUrl) {
+  const baseCurrentSession = (overrides = {}) => ({
+    ...legacySession({
+      execution_schema_version: 1,
+      current_unit_key: "exercise:set_rest",
+      completed_unit_keys: ["exercise:set_drop", "exercise:set_drop:sub_drop"],
+      completed_effort_count: 2,
+      total_effort_count: 10,
+      current_exercise_index: undefined,
+      current_series_index: undefined,
+      completed_series_keys: undefined,
+      completed_series_count: undefined,
+      total_series_count: undefined,
+      pending_resolution: null,
+    }),
+    clock_schema_version: 1,
+    rest_cycle_id: null,
+    rest_alarm_revision: 0,
+    rest_due_at_ms: null,
+    last_handled_rest_alert: null,
+    ...overrides,
+  });
+
+  const cases = [
+    {
+      name: "ejecutándose",
+      session: baseCurrentSession({
+        clock_last_tick_ms: Date.now() - 90_000,
+        status: "running",
+        is_resting: false,
+        rest_seconds_left: 0,
+        rest_seconds_total: 0,
+      }),
+      verify: (value) => {
+        assert.ok(value.elapsed_seconds >= 163 && value.elapsed_seconds <= 168);
+        assert.equal(value.status, "running");
+      },
+    },
+    {
+      name: "pausada",
+      session: baseCurrentSession({
+        clock_last_tick_ms: Date.now() - 90_000,
+        status: "paused",
+        is_resting: false,
+        rest_seconds_left: 0,
+        rest_seconds_total: 0,
+      }),
+      verify: (value) => {
+        assert.equal(value.elapsed_seconds, 73);
+        assert.equal(value.status, "paused");
+      },
+    },
+    {
+      name: "con descanso",
+      session: baseCurrentSession({
+        clock_last_tick_ms: Date.now() - 90_000,
+        status: "running",
+        is_resting: true,
+        rest_seconds_left: 120,
+        rest_seconds_total: 120,
+        rest_cycle_id: "rest-recovery",
+        rest_alarm_revision: 4,
+        rest_due_at_ms: Date.now() + 30_000,
+      }),
+      verify: (value) => {
+        assert.ok(value.elapsed_seconds >= 163 && value.elapsed_seconds <= 168);
+        assert.ok(value.rest_seconds_left >= 25 && value.rest_seconds_left <= 30);
+        assert.equal(value.rest_cycle_id, "rest-recovery");
+        assert.equal(value.rest_alarm_revision, 4);
+      },
+    },
+    {
+      name: "con salto excesivo",
+      session: baseCurrentSession({
+        clock_last_tick_ms: Date.now() - (12 * 60 * 60 * 1000 + 10_000),
+        status: "running",
+        is_resting: false,
+        rest_seconds_left: 0,
+        rest_seconds_total: 0,
+      }),
+      verify: (value) => {
+        assert.equal(value.elapsed_seconds, 73);
+        assert.equal(value.status, "paused");
+      },
+    },
+  ];
+
+  for (const fixture of cases) {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await addSeed(context, fixture.session);
+    const page = await context.newPage();
+    await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+    await waitForAppReady(page);
+    const recovered = await waitForStorage(
+      page,
+      SESSION_KEY,
+      (candidate) => candidate.clock_last_tick_ms !== fixture.session.clock_last_tick_ms,
+      `el reloj de la sesión ${fixture.name} no se recuperó`,
+    );
+    fixture.verify(recovered);
+    await context.close();
+  }
+  logStep("Relojes activos, pausados, en descanso y excesivamente antiguos recuperados");
 }
 
 async function verifyCompoundExecution(browser, baseUrl) {
@@ -476,6 +593,7 @@ async function main() {
   });
   try {
     await verifyLegacyMigration(browser, server.baseUrl);
+    await verifyClockRecovery(browser, server.baseUrl);
     await verifyCompoundExecution(browser, server.baseUrl);
   } finally {
     await browser.close();
