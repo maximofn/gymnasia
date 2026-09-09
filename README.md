@@ -83,6 +83,7 @@ npm run test:health-safety  # regresiones y propiedades sanitarias sin red
 npm run policy:bundle:check # verifica bundle, certificado y firma públicos
 npm run check:policy-trust  # verifica la raíz pública integrada en la app
 npm run test:agent:e2e  # app web + Playwright + proveedores falsos
+npm run test:measurements:performance:e2e # historial máximo, recálculos y actualizaciones
 npm run test:dev-store  # saneado, esquema, atomicidad y guarda de Git
 npm run test:dev-store:e2e # middleware real de Metro sobre localhost
 ```
@@ -90,6 +91,12 @@ npm run test:dev-store:e2e # middleware real de Metro sobre localhost
 Las evals con LLM están separadas de CI y reservadas para LangSmith. Consulta
 `docs/testing/agent-testing.md` para la arquitectura, los comandos y la plantilla
 de QA manual.
+
+La E2E de rendimiento de medidas exporta su propio bundle temporal con
+`EXPO_PUBLIC_MEASUREMENT_PERF_TEST=1`. Sus contadores solo funcionan en web de
+Development y contienen números de operaciones, sin datos personales ni
+persistencia. `MEASUREMENT_E2E_OUTPUT` permite elegir el directorio de resultados;
+`MEASUREMENT_E2E_SKIP_EXPORT=1` reutiliza esa exportación al depurar la prueba.
 
 El prompt base de Gymnasia Coach vive en `prompts/AGENTS.md`, pero su bloque
 sanitario se genera desde `policy/health-safety/` y no se edita a mano. Después

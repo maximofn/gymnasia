@@ -309,7 +309,7 @@ import {
 } from "./diet/nutritionContract";
 import {
   MEASUREMENT_METRIC_KEYS,
-  buildMeasurementChartPoints,
+  buildPreparedMeasurementChartPoints,
   deleteMeasurementById,
   estimateMeasurementBodyFatPercentage,
   formatMeasurementIssues,
@@ -318,8 +318,8 @@ import {
   measurementDuplicateDates,
   normalizeMeasurements as normalizeMeasurementCollection,
   replaceMeasurementById,
-  resolveMeasurementMetricPair,
-  selectLatestMeasurementWithMetric,
+  prepareMeasurementHistory,
+  resolveMeasurementSummary,
   upsertMeasurementByDate,
   validateMeasurementDate,
   validateMeasurementMetric,
@@ -328,6 +328,7 @@ import {
   type MeasurementPatch,
   type MeasurementValues,
 } from "./measurements/measurementContract";
+import { measurementPerformanceCounters } from "./measurements/measurementPerformance";
 import { verifyProviderConfiguration } from "./agent/providerVerification";
 import {
   DEFAULT_MODELS,
@@ -6175,6 +6176,62 @@ type GymnasiaAppProps = {
   onRuntimeReset: (outcome: LocalDataDeletionOutcome) => void;
 };
 
+function buildMeasurementStatCard(
+  label: string,
+  latest: number | null,
+  previous: number | null,
+  formatValue: (value: number) => string,
+  unitLabel: string,
+  prefersDecrease: boolean,
+): {
+  label: string;
+  valueText: string;
+  changeText: string;
+  changeColor: string;
+  changeIcon: keyof typeof Feather.glyphMap;
+} {
+  if (latest === null) {
+    return {
+      label,
+      valueText: "Sin datos",
+      changeText: "Registra tu primera medición",
+      changeColor: "#6F7785",
+      changeIcon: "minus",
+    };
+  }
+
+  if (previous === null) {
+    return {
+      label,
+      valueText: formatValue(latest),
+      changeText: "Primer registro",
+      changeColor: "#19C37D",
+      changeIcon: "arrow-right",
+    };
+  }
+
+  const delta = Math.round((latest - previous) * 10) / 10;
+  if (Math.abs(delta) < 0.05) {
+    return {
+      label,
+      valueText: formatValue(latest),
+      changeText: "=",
+      changeColor: "#6F7785",
+      changeIcon: "minus",
+    };
+  }
+
+  const improved = prefersDecrease ? delta < 0 : delta > 0;
+  const signedValue = `${delta > 0 ? "+" : ""}${formatMeasurementNumber(delta)}`;
+  return {
+    label,
+    valueText: formatValue(latest),
+    changeText: `${signedValue} ${unitLabel}`,
+    changeColor: improved ? "#19C37D" : mobileTheme.color.brandPrimary,
+    changeIcon: delta < 0 ? "trending-down" : "trending-up",
+  };
+}
+
 function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   // Propuestas pendientes de alimento y ejercicio. El store vive fuera de React
   // porque lo alimentan funciones de módulo; aquí solo se observa.
@@ -6732,14 +6789,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       `${option.id} ${option.display_name ?? ""}`.toLowerCase().includes(query),
     );
   }, [googleModelFilter, googleModelOptions]);
-  const latestWeightMeasurement = useMemo(
-    () => selectLatestMeasurementWithMetric(store.measurements, "weight_kg"),
+  const measurementWork = measurementPerformanceCounters(RUNTIME_ENVIRONMENT.environment, Platform.OS);
+  const preparedMeasurements = useMemo(
+    () => prepareMeasurementHistory(store.measurements, measurementWork),
     [store.measurements],
   );
-  const latestHeightMeasurement = useMemo(
-    () => selectLatestMeasurementWithMetric(store.measurements, "height_cm"),
-    [store.measurements],
-  );
+  const { latestWeightMeasurement, latestHeightMeasurement } = preparedMeasurements;
   const measurementDateConflicts = useMemo(
     () => measurementDuplicateDates(store.measurements),
     [store.measurements],
@@ -6756,92 +6811,40 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const canExpandMeasurementHistory = store.measurements.length > 4;
   const dietSettings = store.dietSettings;
 
-  function buildMeasurementStatCard(
-    label: string,
-    latest: number | null,
-    previous: number | null,
-    formatValue: (value: number) => string,
-    unitLabel: string,
-    prefersDecrease: boolean,
-  ): {
-    label: string;
-    valueText: string;
-    changeText: string;
-    changeColor: string;
-    changeIcon: keyof typeof Feather.glyphMap;
-  } {
-    if (latest === null) {
-      return {
-        label,
-        valueText: "Sin datos",
-        changeText: "Registra tu primera medición",
-        changeColor: "#6F7785",
-        changeIcon: "minus",
-      };
-    }
 
-    if (previous === null) {
-      return {
-        label,
-        valueText: formatValue(latest),
-        changeText: "Primer registro",
-        changeColor: "#19C37D",
-        changeIcon: "arrow-right",
-      };
-    }
-
-    const delta = Math.round((latest - previous) * 10) / 10;
-    if (Math.abs(delta) < 0.05) {
-      return {
-        label,
-        valueText: formatValue(latest),
-        changeText: "=",
-        changeColor: "#6F7785",
-        changeIcon: "minus",
-      };
-    }
-
-    const improved = prefersDecrease ? delta < 0 : delta > 0;
-    const signedValue = `${delta > 0 ? "+" : ""}${formatMeasurementNumber(delta)}`;
-    return {
-      label,
-      valueText: formatValue(latest),
-      changeText: `${signedValue} ${unitLabel}`,
-      changeColor: improved ? "#19C37D" : mobileTheme.color.brandPrimary,
-      changeIcon: delta < 0 ? "trending-down" : "trending-up",
-    };
-  }
-
-  const weightMeasurementPair = resolveMeasurementMetricPair(
-    store.measurements,
-    (measurement) => measurement.weight_kg,
-  );
   const userSex: UserSex = store.dietSettings.sex ?? "male";
-  const bodyFatMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) =>
-    estimateMeasurementBodyFatPercentage(measurement, latestBodyHeightCm, userSex),
+  const measurementSummary = useMemo(
+    () => resolveMeasurementSummary(preparedMeasurements, latestBodyHeightCm, userSex, measurementWork),
+    [preparedMeasurements, latestBodyHeightCm, userSex],
   );
-  const neckMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.neck_cm);
-  const waistMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.waist_cm);
-  const chestMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.chest_cm);
-  const hipsMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.hips_cm);
-  const armMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.biceps_cm);
-  const quadMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.quadriceps_cm);
-  const calfMeasurementPair = resolveMeasurementMetricPair(store.measurements, (measurement) => measurement.calf_cm);
-  const measuresAllStatCards = [
-    buildMeasurementStatCard("Peso", weightMeasurementPair.latest, weightMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} kg`, "kg", true),
-    buildMeasurementStatCard("% Grasa", bodyFatMeasurementPair.latest, bodyFatMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)}%`, "%", true),
-    buildMeasurementStatCard("Pecho", chestMeasurementPair.latest, chestMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-    buildMeasurementStatCard("Cintura", waistMeasurementPair.latest, waistMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", true),
-    buildMeasurementStatCard("Cadera", hipsMeasurementPair.latest, hipsMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-    buildMeasurementStatCard("Brazo", armMeasurementPair.latest, armMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-    buildMeasurementStatCard("Cuello", neckMeasurementPair.latest, neckMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-    buildMeasurementStatCard("Cuádriceps", quadMeasurementPair.latest, quadMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-    buildMeasurementStatCard("Gemelo", calfMeasurementPair.latest, calfMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-  ];
-  const measuresStatCardRows: (typeof measuresAllStatCards)[] = [];
-  for (let i = 0; i < measuresAllStatCards.length; i += 3) {
-    measuresStatCardRows.push(measuresAllStatCards.slice(i, i + 3));
-  }
+  const weightMeasurementPair = measurementSummary.weight_kg;
+  const measuresAllStatCards = useMemo(() => {
+    if (measurementWork) measurementWork.cards += 1;
+    const {
+      weight_kg: weightMeasurementPair, body_fat_pct: bodyFatMeasurementPair,
+      neck_cm: neckMeasurementPair, waist_cm: waistMeasurementPair,
+      chest_cm: chestMeasurementPair, hips_cm: hipsMeasurementPair,
+      biceps_cm: armMeasurementPair, quadriceps_cm: quadMeasurementPair, calf_cm: calfMeasurementPair,
+    } = measurementSummary;
+    return [
+      buildMeasurementStatCard("Peso", weightMeasurementPair.latest, weightMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} kg`, "kg", true),
+      buildMeasurementStatCard("% Grasa", bodyFatMeasurementPair.latest, bodyFatMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)}%`, "%", true),
+      buildMeasurementStatCard("Pecho", chestMeasurementPair.latest, chestMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+      buildMeasurementStatCard("Cintura", waistMeasurementPair.latest, waistMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", true),
+      buildMeasurementStatCard("Cadera", hipsMeasurementPair.latest, hipsMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+      buildMeasurementStatCard("Brazo", armMeasurementPair.latest, armMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+      buildMeasurementStatCard("Cuello", neckMeasurementPair.latest, neckMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+      buildMeasurementStatCard("Cuádriceps", quadMeasurementPair.latest, quadMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+      buildMeasurementStatCard("Gemelo", calfMeasurementPair.latest, calfMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
+    ];
+  }, [measurementSummary]);
+  const measuresStatCardRows = useMemo(() => {
+    const rows: (typeof measuresAllStatCards)[] = [];
+    for (let i = 0; i < measuresAllStatCards.length; i += 3) {
+      rows.push(measuresAllStatCards.slice(i, i + 3));
+    }
+    return rows;
+  }, [measuresAllStatCards]);
   const measuresChartMetricMeta = MEASURES_CHART_METRIC_OPTIONS.find((o) => o.key === measuresChartMetric) ?? MEASURES_CHART_METRIC_OPTIONS[0];
 
   function extractMetricValue(m: Measurement): number | null {
@@ -6855,9 +6858,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   const measuresDashboardChartPoints = useMemo(() => {
-    const points = buildMeasurementChartPoints(store.measurements, extractMetricValue, {
+    const points = buildPreparedMeasurementChartPoints(preparedMeasurements, extractMetricValue, {
       days: measuresDashboardPeriodMeta.days,
-    }).map((point) => {
+    }, measurementWork).map((point) => {
       const date = measurementDateAtLocalNoon(point.measuredOn)!;
       return {
         ...point,
@@ -6878,13 +6881,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       isLatest: index === points.length - 1,
     }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [measuresDashboardPeriodMeta.days, store.measurements, measuresChartMetric, latestBodyHeightCm, userSex]);
+  }, [measuresDashboardPeriodMeta.days, preparedMeasurements, measuresChartMetric, latestBodyHeightCm, userSex]);
 
   const allMetricValues = useMemo(() => {
-    return buildMeasurementChartPoints(store.measurements, extractMetricValue, { days: null })
+    return buildPreparedMeasurementChartPoints(preparedMeasurements, extractMetricValue, { days: null }, measurementWork)
       .map((point) => ({ timestamp: point.timestamp, value: point.value }));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [store.measurements, measuresChartMetric, latestBodyHeightCm, userSex]);
+  }, [preparedMeasurements, measuresChartMetric, latestBodyHeightCm, userSex]);
 
   const measuresDashboardScaleLabels = useMemo(() => {
     if (measuresDashboardChartPoints.length === 0) {
@@ -19233,6 +19236,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   {row.map((card) => (
                     <StatCard
                       key={card.label}
+                      testID={`measurement-stat-${card.label}`}
                       label={card.label}
                       value={card.valueText}
                       subtitle={card.changeText}
