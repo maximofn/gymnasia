@@ -46,10 +46,21 @@ Es una comparación del algoritmo con datos sintéticos, no una medida del
 teléfono ni un presupuesto que deba bloquear CI. En renders ajenos a las medidas,
 la E2E comprueba que ninguna de esas operaciones vuelve a ejecutarse.
 
-## Comprobación nativa pendiente
+## Validación del mantenedor en Staging
 
-Antes de cerrar el ticket, el mantenedor debe validar el APK Staging corregido
-en el dispositivo original. Conservar el historial existente; no borrar datos,
+El 9 de septiembre de 2026, después de probar el APK Staging 1.38.4, el
+mantenedor confirmó: «La he probado y va fluida, ya no va lenta».
+
+La build probada es
+[39a5f508-feb4-4f7c-bc71-61b98b5703a6](https://expo.dev/accounts/maximofn/projects/gymnasia/builds/39a5f508-feb4-4f7c-bc71-61b98b5703a6),
+generada desde `c16b9303a5630f60d9b2587842abc27477d8a7bc`. Esta confirmación
+registra la fluidez percibida; no aporta tiempos por interacción ni una traza
+del perfilador. Tampoco autoriza la fusión o una build de Producción.
+
+## Medición nativa pendiente
+
+Para completar la comparación cuantitativa del plan, conservar el historial
+existente del dispositivo original; no borrar datos,
 reinstalar la versión lenta ni importar copias personales como parte de esta
 comprobación sin autorización específica y una copia recuperable.
 
@@ -70,9 +81,10 @@ las evidencias publicadas.
 | --- | --- |
 | Diez muestras por interacción, antes/después | Pendiente del dispositivo original |
 | Perfil posterior y asignaciones | Pendiente del dispositivo original |
-| Confirmación de fluidez del mantenedor | Pendiente |
+| Confirmación de fluidez del mantenedor | Correcta en Staging 1.38.4, 9 de septiembre de 2026 |
 
-La PR y el ticket permanecen abiertos hasta esa confirmación. Fusionar y lanzar
+La PR y el ticket permanecen abiertos. La confirmación de fluidez ya está
+registrada; las muestras y el perfil siguen pendientes. Fusionar y lanzar
 Producción requieren aprobación explícita independiente.
 
 ## Límites observados en las pruebas
