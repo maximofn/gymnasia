@@ -62,8 +62,8 @@
         {
           "id": "GYM-229",
           "title": "Diagnosticar la latencia de varios segundos al pulsar botones",
-          "state": "todo",
-          "summary": "Reproducir y perfilar la lentitud en una build de Producción, bisecar las versiones recientes y pedir al mantenedor comprobaciones guiadas y seguras hasta demostrar la causa raíz.",
+          "state": "done",
+          "summary": "Diagnóstico completado: la bisección y las trazas aislaron el recálculo de los resúmenes de medidas en cada render como causa de las pausas; la corrección se validó fluida en Staging y Producción 1.38.4.",
           "dependsOn": [],
           "related": [
             "GYM-160",

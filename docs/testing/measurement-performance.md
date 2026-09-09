@@ -1,4 +1,23 @@
-# Validación de GYM-230 (ticket para corregir la lentitud de la interfaz)
+# Validación de la regresión de rendimiento de la interfaz
+
+Este documento conserva la evidencia de GYM-229 (ticket para diagnosticar la
+latencia de varios segundos al pulsar botones) y GYM-230 (ticket para corregir
+la regresión de rendimiento de la interfaz).
+
+## Resultado del diagnóstico
+
+La bisección dejó Staging 1.32.0 como versión fluida y Staging 1.35.0 como
+versión lenta. Dentro de ese rango, el cambio causal fue `3902343`: el resumen
+corporal preparaba nueve métricas directamente en cada render raíz y el selector
+volvía a filtrar y ordenar el historial por cada fecha. Las trazas nativas
+registraron retrasos de entrada de hasta 6,6 segundos y pausas de recolección o
+asignación de varios segundos, coherentes con la creación masiva de temporales.
+
+Al aislar ese cálculo desapareció la lentitud en el mismo dispositivo. La
+corrección definitiva fue confirmada como fluida tanto en Staging como en
+Producción 1.38.4. Con esta evidencia se cerró también el diagnóstico; la
+paginación del catálogo de ejercicios sigue separada porque no causaba las
+pausas transversales.
 
 ## Evidencia automática
 
