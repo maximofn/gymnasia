@@ -21,6 +21,14 @@ export type SchedulableRestSession = {
   rest_due_at_ms: number | null;
 };
 
+export type RestNotificationLifecycleState = {
+  sessionId: string | null;
+  wasSchedulable: boolean;
+  alarmRevision: number;
+};
+
+export type RestNotificationLifecycleAction = "schedule" | "cancel" | "none";
+
 export function isRestNotificationData(value: unknown): boolean {
   return !!value
     && typeof value === "object"
@@ -83,6 +91,23 @@ export function activeRestNotificationPayload(
     return null;
   }
   return restNotificationPayloadForSession(session);
+}
+
+export function restNotificationLifecycleAction(
+  previous: RestNotificationLifecycleState,
+  session: SchedulableRestSession | null,
+  now: number,
+): RestNotificationLifecycleAction {
+  const payload = activeRestNotificationPayload(session, now);
+  if (!payload) return previous.wasSchedulable ? "cancel" : "none";
+  if (
+    !previous.wasSchedulable
+    || previous.sessionId !== payload.session_id
+    || previous.alarmRevision !== payload.rest_alarm_revision
+  ) {
+    return "schedule";
+  }
+  return "none";
 }
 
 export function restNotificationPayloadForSession(
