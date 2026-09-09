@@ -414,6 +414,11 @@ Only non-obvious gotchas that could recur are kept here.
 - Guard rail: `npm run check:android-permissions` fails if the permission returns via `app.json` or via a dependency's manifest. The approved list lives in `scripts/android-permissions/policy.json`.
 - **Manifest merger trap**: `expo.android.blockedPermissions` makes prebuild emit `<uses-permission android:name="…USE_EXACT_ALARM" tools:node="remove"/>`. So the **source** manifest legitimately contains the string. Absence must be verified on the **merged** manifest of the artifact — grepping the source manifest gives a false positive.
 
+### `shouldDuckAndroid: false` does not stop Gymnasia from ducking other apps
+- Gotcha: in `expo-av`, `shouldDuckAndroid` controls how **Gymnasia's own sound** reacts when another app interrupts it. It does not control what happens to a podcast or music player when Gymnasia asks for audio focus.
+- `interruptionModeAndroid: DuckOthers` requests `AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK` when a `Sound` plays. Keeping a reusable `Sound` around can leave vendor-specific Android audio focus active longer than the alert and attenuate other apps during a rest.
+- Fix: do not preload or cache the rest-alert `Sound`. Create it only when the foreground alert must play, then stop and unload that exact instance as soon as playback finishes. Background alerts stay native notifications.
+
 ### Una build parada casi nunca es la cola de Expo: mira antes la puerta de aprobación
 El plan de Expo **es de pago desde septiembre de 2026**. La cola del plan gratuito, que
 antes explicaba casi cualquier espera, ya no es la sospechosa por defecto: empezar por ahí
