@@ -48,12 +48,17 @@ function previousValues(measurements: readonly Measurement[], selector: (m: Meas
 }
 
 function assertEquivalent(measurements: Measurement[], fallbackHeight: number | null, sex: MeasurementSex) {
-  const history = prepareMeasurementHistory(measurements);
+  const work = workCounters();
+  const history = prepareMeasurementHistory(measurements, work);
   const height = previousValues(measurements, (m) => m.height_cm)[0]?.measurement ?? null;
   expect(history.latestHeightMeasurement).toBe(height);
   expect(history.latestWeightMeasurement).toBe(previousValues(measurements, (m) => m.weight_kg)[0]?.measurement ?? null);
   const effectiveHeight = height?.height_cm ?? fallbackHeight;
-  const summary = resolveMeasurementSummary(history, effectiveHeight, sex);
+  const summary = resolveMeasurementSummary(history, effectiveHeight, sex, work);
+  expect(work.sorts).toBe(1);
+  expect(work.preparationVisits).toBeLessThanOrEqual(measurements.length);
+  expect(work.summaryVisits).toBeLessThanOrEqual(measurements.length);
+  expect(work.metricEvaluations).toBeLessThanOrEqual(9 * measurements.length);
   for (const key of MEASUREMENT_SUMMARY_KEYS) {
     const selector = (m: Measurement) => key === "body_fat_pct"
       ? estimateMeasurementBodyFatPercentage(m, effectiveHeight, sex) : m[key];
@@ -146,7 +151,7 @@ describe("resumen de medidas compartido", () => {
       date.setDate(date.getDate() - index);
       return new Proxy(measurement(`${index}`, localDateKey(date), { photo_uri: "photo" }), {
         get(target, key, receiver) {
-          if (MEASUREMENT_METRIC_KEYS.includes(key as typeof MEASUREMENT_METRIC_KEYS[number])) reads += 1;
+          if (key === "measured_on" || MEASUREMENT_METRIC_KEYS.includes(key as typeof MEASUREMENT_METRIC_KEYS[number])) reads += 1;
           return Reflect.get(target, key, receiver);
         },
       });
@@ -154,13 +159,15 @@ describe("resumen de medidas compartido", () => {
     const work = workCounters();
     const sort = vi.spyOn(Array.prototype, "sort");
     const history = prepareMeasurementHistory(values, work);
+    // Exclude comparisons in the one permitted sort from the linear bound.
+    reads = 0;
     resolveMeasurementSummary(history, 180, "female", work);
     buildPreparedMeasurementChartPoints(history, (m) => m.weight_kg, { days: null }, work);
     expect(sort).toHaveBeenCalledTimes(1);
     sort.mockRestore();
     expect(work).toMatchObject({ preparations: 1, sorts: 1, preparationVisits: size, summaries: 1, summaryVisits: size, charts: 1 });
     expect(work.metricEvaluations).toBeLessThanOrEqual(9 * size);
-    expect(reads).toBeLessThanOrEqual(24 * size);
+    expect(reads).toBeLessThanOrEqual(40 * size);
   });
 
   it("mantiene equivalencia sobre historiales generados y permutados", () => {
