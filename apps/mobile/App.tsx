@@ -239,6 +239,7 @@ import {
   activeRestNotificationPayload,
   isRestNotificationData,
   parseRestNotificationPayload,
+  restNotificationLifecycleAction,
   restNotificationIdentifiers,
   restNotificationPayloadForSession,
   sameRestNotification,
@@ -6688,11 +6689,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const restTransitionRef = useRef<{
     sessionId: string | null;
     wasResting: boolean;
+    wasSchedulable: boolean;
     restLeft: number;
     alarmRevision: number;
   }>({
     sessionId: null,
     wasResting: false,
+    wasSchedulable: false,
     restLeft: 0,
     alarmRevision: 0,
   });
@@ -7809,7 +7812,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         restNotificationOperationRef.current !== operation
         || !settings.enabled
         || !payload
-        || AppState.currentState === "active"
         || !sameRestNotification(payload, currentPayload)
       ) return;
       const triggerDate = payload.expected_at_ms;
@@ -8906,8 +8908,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           }
           activeWorkoutSessionRef.current = result.session;
           setActiveWorkoutSession(result.session);
+          if (!activeRestNotificationPayload(result.session, now)) {
+            await cancelRestEndNotification();
+          }
         }
-        await cancelRestEndNotification();
       }
       if (/inactive|background/.test(nextAppState)) {
         const current = activeWorkoutSessionRef.current;
@@ -8925,11 +8929,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           activeWorkoutSessionRef.current = result.session;
           setActiveWorkoutSession(result.session);
           if (activeRestNotificationPayload(result.session, Date.now())) {
-            void pushTrace("appState", "background, scheduling", {
+            void pushTrace("appState", "background, notification already armed", {
               sessionId: result.session.id,
               restLeft: result.session.rest_seconds_left,
             });
-            void scheduleRestEndNotification(result.session);
           } else {
             void cancelRestEndNotification();
           }
@@ -8942,13 +8945,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return () => {
       subscription.remove();
     };
-  }, [scheduleRestEndNotification, cancelRestEndNotification, persistWorkoutSessionImmediately, refreshNotificationDiagnostics, syncRestDeliveryFromTray]);
+  }, [cancelRestEndNotification, persistWorkoutSessionImmediately, refreshNotificationDiagnostics, syncRestDeliveryFromTray]);
 
   useEffect(() => {
     if (!activeWorkoutSession) {
       restTransitionRef.current = {
         sessionId: null,
         wasResting: false,
+        wasSchedulable: false,
         restLeft: 0,
         alarmRevision: 0,
       };
@@ -8958,10 +8962,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     const previous = restTransitionRef.current;
-    const activeRestChanged = activeWorkoutSession.is_resting && (
-      !previous.wasResting
-      || previous.sessionId !== activeWorkoutSession.id
-      || previous.alarmRevision !== activeWorkoutSession.rest_alarm_revision
+    const notificationAction = restNotificationLifecycleAction(
+      previous,
+      activeWorkoutSession,
+      Date.now(),
     );
     if (!previous.wasResting && activeWorkoutSession.is_resting) {
       restNotifDeliveredAtRef.current = null;
@@ -8979,17 +8983,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         void workoutSessionPersistQueueRef.current.then(() => playRestFinishedAlert());
       }
       manualRestSkipRef.current = false;
-    } else if (
-      activeWorkoutSession.status !== "running"
-      || !activeWorkoutSession.is_resting
-      || (AppState.currentState === "active" && activeRestChanged)
-    ) {
+    } else if (notificationAction === "schedule") {
+      // Se arma mientras Gymnasia sigue en primer plano. Esperar al evento de
+      // segundo plano deja a Android la oportunidad de congelar el proceso antes
+      // de que termine la llamada nativa de programación.
+      void scheduleRestEndNotification(activeWorkoutSession);
+    } else if (notificationAction === "cancel") {
       void cancelRestEndNotification();
     }
 
     restTransitionRef.current = {
       sessionId: activeWorkoutSession.id,
       wasResting: activeWorkoutSession.is_resting,
+      wasSchedulable: activeRestNotificationPayload(
+        activeWorkoutSession,
+        Date.now(),
+      ) !== null,
       restLeft: activeWorkoutSession.rest_seconds_left,
       alarmRevision: activeWorkoutSession.rest_alarm_revision,
     };
@@ -9001,6 +9010,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     activeWorkoutSession?.status,
     cancelRestEndNotification,
     playRestFinishedAlert,
+    scheduleRestEndNotification,
   ]);
 
   useEffect(() => {

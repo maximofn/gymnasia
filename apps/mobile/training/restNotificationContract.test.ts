@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   activeRestNotificationPayload,
   parseRestNotificationPayload,
+  restNotificationLifecycleAction,
   restNotificationIdentifiers,
   sameRestNotification,
   shouldPlayRecoveredRestAlert,
@@ -31,6 +32,33 @@ describe("restNotificationContract", () => {
     });
     expect(activeRestNotificationPayload({ ...active, status: "paused" }, NOW)).toBeNull();
     expect(activeRestNotificationPayload({ ...active, rest_due_at_ms: NOW }, NOW)).toBeNull();
+  });
+
+  it("arma el aviso al empezar o reanudar el descanso, antes de pasar a segundo plano", () => {
+    const inactive = {
+      sessionId: null,
+      wasSchedulable: false,
+      alarmRevision: 0,
+    };
+    const armed = {
+      sessionId: active.id,
+      wasSchedulable: true,
+      alarmRevision: active.rest_alarm_revision,
+    };
+
+    expect(restNotificationLifecycleAction(inactive, active, NOW)).toBe("schedule");
+    expect(restNotificationLifecycleAction(armed, active, NOW)).toBe("none");
+    expect(restNotificationLifecycleAction(armed, { ...active, status: "paused" }, NOW)).toBe("cancel");
+    expect(restNotificationLifecycleAction(
+      { ...armed, wasSchedulable: false },
+      active,
+      NOW,
+    )).toBe("schedule");
+    expect(restNotificationLifecycleAction(
+      armed,
+      { ...active, rest_alarm_revision: active.rest_alarm_revision + 1 },
+      NOW,
+    )).toBe("schedule");
   });
 
   it("valida toda la identidad e ignora revisiones obsoletas", () => {
