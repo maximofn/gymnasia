@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-08",
+    "updated": "2026-09-09",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -74,13 +74,25 @@
           "id": "GYM-230",
           "title": "Corregir la regresión de rendimiento de la interfaz",
           "state": "todo",
-          "summary": "Eliminar el trabajo bloqueante identificado, conservar la integridad y seguridad del estado local y añadir un presupuesto reproducible que impida recuperar pausas de varios segundos.",
+          "summary": "Evitar que los nueve resúmenes de medidas se recalculen en cada render, sustituir el selector cuadrático por una derivación acotada y proteger la fluidez con pruebas de coste y QA nativa.",
           "dependsOn": [
             "GYM-229"
           ],
           "related": [
             "GYM-160",
-            "GYM-202"
+            "GYM-202",
+            "GYM-231"
+          ]
+        },
+        {
+          "id": "GYM-231",
+          "title": "Paginar y buscar globalmente el catálogo de ejercicios",
+          "state": "todo",
+          "summary": "Mostrar y descargar ejercicios por páginas con scroll infinito y buscar primero en todo el catálogo remoto, de modo que una coincidencia aparezca aunque aún no se haya cargado su página de navegación.",
+          "dependsOn": [],
+          "related": [
+            "GYM-18",
+            "GYM-230"
           ]
         }
       ]
@@ -2912,7 +2924,8 @@
           "related": [
             "GYM-15",
             "GYM-19",
-            "GYM-20"
+            "GYM-20",
+            "GYM-231"
           ]
         },
         {
@@ -2968,10 +2981,11 @@
     {
       "id": "rendimiento-interactivo",
       "title": "Prioridad absoluta: recuperar la respuesta inmediata de la app",
-      "why": "GYM-229 (ticket para diagnosticar la latencia de varios segundos al pulsar botones) mide el problema en Producción, acota la primera versión afectada y guía las comprobaciones del mantenedor sin poner sus datos en riesgo. Solo con esa evidencia empieza GYM-230 (ticket para corregir la regresión de rendimiento de la interfaz), que elimina la causa y deja una barrera contra recaídas. Ningún otro trabajo del roadmap debe adelantarse a esta secuencia.",
+      "why": "GYM-229 (ticket para diagnosticar la latencia de varios segundos al pulsar botones) ha aislado el recálculo de medidas como causa principal. GYM-230 (ticket para corregir la regresión de rendimiento de la interfaz) elimina primero ese bloqueo y deja una barrera contra recaídas. Después, GYM-231 (ticket para paginar y buscar globalmente el catálogo de ejercicios) hace escalable el selector sin confundir ese problema localizado con la regresión transversal.",
       "tickets": [
         "GYM-229",
-        "GYM-230"
+        "GYM-230",
+        "GYM-231"
       ]
     },
     {
