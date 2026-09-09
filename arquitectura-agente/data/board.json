@@ -2052,7 +2052,7 @@
         {
           "id": "GYM-178",
           "title": "Validar rutinas creadas por el agente antes de persistirlas",
-          "state": "todo",
+          "state": "done",
           "summary": "Impedir que create_routine genere plantillas inejecutables o semánticamente inválidas.",
           "dependsOn": [],
           "related": [
