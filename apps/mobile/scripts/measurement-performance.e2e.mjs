@@ -174,6 +174,19 @@ try {
   await click(page, "measurement-add");
   await page.getByTestId("measurement-weight-input").fill("77");
   const beforeAdd = await counters(page);
+  await page.evaluate((key) => {
+    const original = Storage.prototype.setItem;
+    globalThis.__restoreMeasurementTestStorage = () => { Storage.prototype.setItem = original; };
+    Storage.prototype.setItem = function (storageKey, value) {
+      if (this === localStorage && storageKey === key) throw new Error("Fallo de disco simulado");
+      return original.call(this, storageKey, value);
+    };
+  }, storeKey);
+  await click(page, "measurement-save-primary");
+  await page.getByText(/No se ha guardado la medición/).first().waitFor();
+  assert.equal((await persisted(page)).measurements[0].weight_kg, 80);
+  await expectUnchanged(page, beforeAdd, "guardado fallido");
+  await page.evaluate(() => { globalThis.__restoreMeasurementTestStorage(); delete globalThis.__restoreMeasurementTestStorage; });
   await click(page, "measurement-save-primary");
   await waitForWeight(page, 77);
   await assertCard(page, "77 kg");
