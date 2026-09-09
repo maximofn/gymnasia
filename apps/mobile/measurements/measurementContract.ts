@@ -580,25 +580,96 @@ export function deleteMeasurementById(
   );
 }
 
-function uniqueMetricValuesByDate(
+export type PreparedMeasurementHistory = {
+  readonly ordered: readonly Measurement[];
+  readonly latestWeightMeasurement: Measurement | null;
+  readonly latestHeightMeasurement: Measurement | null;
+};
+
+export const MEASUREMENT_SUMMARY_KEYS = [
+  "weight_kg", "body_fat_pct", "neck_cm", "chest_cm", "waist_cm",
+  "hips_cm", "biceps_cm", "quadriceps_cm", "calf_cm",
+] as const;
+
+export type MeasurementSummaryKey = (typeof MEASUREMENT_SUMMARY_KEYS)[number];
+export type MeasurementSummary = Record<MeasurementSummaryKey, MeasurementMetricPair>;
+
+/** Optional work counters for deterministic tests; never contain measurement values. */
+export type MeasurementWorkCounters = {
+  preparations: number;
+  sorts: number;
+  preparationVisits: number;
+  summaries: number;
+  summaryVisits: number;
+  metricEvaluations: number;
+  charts: number;
+  cards: number;
+};
+
+export function prepareMeasurementHistory(
   measurements: readonly Measurement[],
+  work?: MeasurementWorkCounters,
+): PreparedMeasurementHistory {
+  if (work) {
+    work.preparations += 1;
+    work.sorts += 1;
+  }
+  const ordered = sortMeasurementsDesc(measurements);
+  let latestWeightMeasurement: Measurement | null = null;
+  let latestHeightMeasurement: Measurement | null = null;
+  for (const measurement of ordered) {
+    if (work) work.preparationVisits += 1;
+    if (!latestWeightMeasurement && measurement.weight_kg !== null && Number.isFinite(measurement.weight_kg)) {
+      latestWeightMeasurement = measurement;
+    }
+    if (!latestHeightMeasurement && measurement.height_cm !== null && Number.isFinite(measurement.height_cm)) {
+      latestHeightMeasurement = measurement;
+    }
+  }
+  return { ordered, latestWeightMeasurement, latestHeightMeasurement };
+}
+
+export function resolveMeasurementSummary(
+  history: PreparedMeasurementHistory,
+  effectiveHeightCm: number | null,
+  sex: MeasurementSex,
+  work?: MeasurementWorkCounters,
+): MeasurementSummary {
+  if (work) work.summaries += 1;
+  const summary = Object.fromEntries(MEASUREMENT_SUMMARY_KEYS.map((key) => (
+    [key, { latest: null, previous: null }]
+  ))) as MeasurementSummary;
+  const selectedDates: Partial<Record<MeasurementSummaryKey, string>> = {};
+  for (const measurement of history.ordered) {
+    if (work) work.summaryVisits += 1;
+    for (const key of MEASUREMENT_SUMMARY_KEYS) {
+      const pair = summary[key];
+      if (pair.previous !== null || selectedDates[key] === measurement.measured_on) continue;
+      if (work) work.metricEvaluations += 1;
+      const value = key === "body_fat_pct"
+        ? estimateMeasurementBodyFatPercentage(measurement, effectiveHeightCm, sex)
+        : measurement[key];
+      if (value === null || !Number.isFinite(value)) continue;
+      selectedDates[key] = measurement.measured_on;
+      if (pair.latest === null) pair.latest = value;
+      else pair.previous = value;
+    }
+  }
+  return summary;
+}
+
+function uniqueMetricValuesByDate(
+  history: PreparedMeasurementHistory,
   selector: (measurement: Measurement) => number | null,
 ): Array<{ measurement: Measurement; value: number }> {
   const results: Array<{ measurement: Measurement; value: number }> = [];
-  let currentDate: string | null = null;
-  for (const measurement of sortMeasurementsDesc(measurements)) {
-    if (measurement.measured_on !== currentDate) {
-      currentDate = measurement.measured_on;
-      const sameDay = sortMeasurementsDesc(
-        measurements.filter((candidate) => candidate.measured_on === currentDate),
-      );
-      const candidate = sameDay
-        .map((item) => ({ measurement: item, value: selector(item) }))
-        .find((item): item is { measurement: Measurement; value: number } => (
-          item.value !== null && Number.isFinite(item.value)
-        ));
-      if (candidate) results.push(candidate);
-    }
+  let selectedDate: string | null = null;
+  for (const measurement of history.ordered) {
+    if (measurement.measured_on === selectedDate) continue;
+    const value = selector(measurement);
+    if (value === null || !Number.isFinite(value)) continue;
+    selectedDate = measurement.measured_on;
+    results.push({ measurement, value });
   }
   return results;
 }
@@ -607,7 +678,7 @@ export function resolveMeasurementMetricPair(
   measurements: readonly Measurement[],
   selector: (measurement: Measurement) => number | null,
 ): MeasurementMetricPair {
-  const values = uniqueMetricValuesByDate(measurements, selector);
+  const values = uniqueMetricValuesByDate(prepareMeasurementHistory(measurements), selector);
   return {
     latest: values[0]?.value ?? null,
     previous: values[1]?.value ?? null,
@@ -618,7 +689,7 @@ export function selectLatestMeasurementWithMetric(
   measurements: readonly Measurement[],
   field: MeasurementMetricKey,
 ): Measurement | null {
-  return uniqueMetricValuesByDate(measurements, (measurement) => measurement[field])[0]?.measurement ?? null;
+  return uniqueMetricValuesByDate(prepareMeasurementHistory(measurements), (measurement) => measurement[field])[0]?.measurement ?? null;
 }
 
 function shiftDateKey(dateKey: string, days: number): string {
@@ -632,9 +703,19 @@ export function buildMeasurementChartPoints(
   selector: (measurement: Measurement) => number | null,
   options: { days: number | null; today?: Date },
 ): MeasurementChartPoint[] {
+  return buildPreparedMeasurementChartPoints(prepareMeasurementHistory(measurements), selector, options);
+}
+
+export function buildPreparedMeasurementChartPoints(
+  history: PreparedMeasurementHistory,
+  selector: (measurement: Measurement) => number | null,
+  options: { days: number | null; today?: Date },
+  work?: MeasurementWorkCounters,
+): MeasurementChartPoint[] {
+  if (work) work.charts += 1;
   const todayKey = localDateKey(options.today ?? new Date());
   const cutoff = options.days === null ? null : shiftDateKey(todayKey, -(options.days - 1));
-  return uniqueMetricValuesByDate(measurements, selector)
+  return uniqueMetricValuesByDate(history, selector)
     .filter(({ measurement }) => cutoff === null || measurement.measured_on >= cutoff)
     .map(({ measurement, value }) => ({
       key: measurement.id,
@@ -642,7 +723,7 @@ export function buildMeasurementChartPoints(
       timestamp: measurementDateAtLocalNoon(measurement.measured_on)!.getTime(),
       value,
     }))
-    .sort((a, b) => a.measuredOn.localeCompare(b.measuredOn) || a.key.localeCompare(b.key));
+    .reverse();
 }
 
 export function estimateMeasurementBodyFatPercentage(
