@@ -1545,6 +1545,30 @@
         {"source_id":"1466","id":"elevacion-de-cadera-con-giro","action":"create","difficulty":"intermediate","view":"side view","provider":"codex-imagegen","qa":"approved"},
         {"source_id":"2802","id":"elevacion-de-piernas-con-giro","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"}
       ]
+    },
+    {
+      "number": 39,
+      "size": 17,
+      "status": "approved",
+      "records": [
+        {"source_id":"2801","id":"elevacion-de-rodillas-con-giro-en-suelo","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3231","id":"toque-de-puntas-con-ambas-manos","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1365","id":"estiramiento-de-espalda-alta","action":"create","difficulty":"beginner","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1366","id":"perro-boca-arriba","action":"create","difficulty":"beginner","view":"side view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3420","id":"v-sit-en-suelo","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0826","id":"elevacion-vertical-de-piernas-en-paralelas","action":"create","difficulty":"advanced","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2141","id":"caminata-en-eliptica","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3655","id":"zancada-caminando-con-rodilla-alta","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3666","id":"caminata-en-cinta-inclinada","action":"create","difficulty":"beginner","view":"side view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2311","id":"caminata-en-stepmill","action":"create","difficulty":"beginner","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0830","id":"fondos-en-banco-con-peso","action":"create","difficulty":"intermediate","view":"side view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"2987","id":"dominada-supina-cerrada-con-peso-en-jaula","action":"create","difficulty":"advanced","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3643","id":"sentadilla-cosaca-con-peso","action":"create","difficulty":"intermediate","view":"front 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0832","id":"crunch-con-peso","action":"create","difficulty":"intermediate","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"3670","id":"sit-up-declinado-con-peso","action":"create","difficulty":"intermediate","view":"side view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"0833","id":"elevacion-de-gemelos-burro-con-peso","action":"create","difficulty":"intermediate","view":"side view","provider":"codex-imagegen","qa":"approved"},
+        {"source_id":"1310","id":"flexion-drop-con-peso","action":"create","difficulty":"advanced","view":"side 3/4 view","provider":"codex-imagegen","qa":"approved"}
+      ]
     }
   ]
 }

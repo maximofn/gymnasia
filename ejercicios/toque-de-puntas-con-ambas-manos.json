@@ -1,0 +1,14 @@
+{
+  "id": "toque-de-puntas-con-ambas-manos",
+  "name": "Toque de puntas con ambas manos",
+  "image_male": "images/toque-de-puntas-con-ambas-manos-male.webp",
+  "image_female": "images/toque-de-puntas-con-ambas-manos-female.webp",
+  "muscle_group": "isquiotibiales",
+  "secondary_muscles": [
+    "glúteos",
+    "espalda baja"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con los pies separados a la anchura de los hombros y los brazos extendidos hacia los lados. Inclina el torso hacia delante desde la cadera, manteniendo la espalda neutra y las rodillas ligeramente flexionadas. Lleva ambas manos hacia las puntas de los pies sin forzar el recorrido. Haz una pausa breve y vuelve lentamente a la posición inicial."
+}

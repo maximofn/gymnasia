@@ -1,0 +1,14 @@
+{
+  "id": "perro-boca-arriba",
+  "name": "Perro boca arriba",
+  "image_male": "images/perro-boca-arriba-male.webp",
+  "image_female": "images/perro-boca-arriba-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "hombros",
+    "pecho"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Túmbate boca abajo con las piernas extendidas. Coloca las manos junto a las costillas inferiores, con los dedos hacia delante. Presiona el suelo y estira los brazos para elevar el torso y los muslos, manteniendo el empeine apoyado. Lleva los hombros atrás y abajo, abre el pecho y alarga el cuello sin comprimirlo. Mantén unas respiraciones y baja de nuevo con control."
+}

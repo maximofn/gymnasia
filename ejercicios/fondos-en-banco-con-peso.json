@@ -1,0 +1,14 @@
+{
+  "id": "fondos-en-banco-con-peso",
+  "name": "Fondos en banco con peso",
+  "image_male": "images/fondos-en-banco-con-peso-male.webp",
+  "image_female": "images/fondos-en-banco-con-peso-female.webp",
+  "muscle_group": "tríceps",
+  "secondary_muscles": [
+    "pecho",
+    "hombro anterior"
+  ],
+  "equipment": "banco y disco",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el borde de un banco y coloca un disco bien apoyado sobre la parte alta de los muslos. Agarra el borde con los dedos hacia delante y desplaza la cadera fuera del banco. Flexiona los codos hacia atrás para bajar el cuerpo, manteniendo la espalda cerca del banco y los hombros estables. Detente antes de perder una posición cómoda y empuja con las palmas hasta extender de nuevo los brazos."
+}

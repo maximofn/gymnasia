@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-gemelos-burro-con-peso",
+  "name": "Elevación de gemelos burro con peso",
+  "image_male": "images/elevacion-de-gemelos-burro-con-peso-male.webp",
+  "image_female": "images/elevacion-de-gemelos-burro-con-peso-female.webp",
+  "muscle_group": "gemelos",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos"
+  ],
+  "equipment": "plataforma y lastre",
+  "difficulty": "intermediate",
+  "instructions": "Apoya las puntas de los pies en el borde de una plataforma, con los talones libres. Inclina el torso desde la cadera hasta quedar casi paralelo al suelo y sujétate en un apoyo estable. Coloca un cinturón lastrado o una almohadilla con carga sobre la cadera. Baja los talones de forma controlada y elévalos todo lo posible extendiendo los tobillos. Haz una pausa arriba y repite sin rebotar."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "v-sit-en-suelo",
+  "name": "V-sit en suelo",
+  "image_male": "images/v-sit-en-suelo-male.webp",
+  "image_female": "images/v-sit-en-suelo-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Siéntate en el suelo con las piernas extendidas. Inclina ligeramente el torso hacia atrás y eleva a la vez las piernas rectas y el pecho hasta formar una V, manteniendo el abdomen activo. Extiende los brazos hacia las piernas y conserva la espalda larga. Mantén la posición unos segundos y baja el torso y las piernas de forma controlada sin dejarte caer."
+}

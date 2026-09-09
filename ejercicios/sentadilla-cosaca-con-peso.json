@@ -1,0 +1,15 @@
+{
+  "id": "sentadilla-cosaca-con-peso",
+  "name": "Sentadilla cosaca con peso",
+  "image_male": "images/sentadilla-cosaca-con-peso-male.webp",
+  "image_female": "images/sentadilla-cosaca-con-peso-female.webp",
+  "muscle_group": "glúteos",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con una separación amplia y las puntas ligeramente hacia fuera. Sostén una mancuerna vertical frente al pecho. Desplaza el peso hacia un lado, flexiona esa rodilla y lleva la cadera atrás mientras la otra pierna permanece extendida. Mantén el pecho elevado y el pie de apoyo completo sobre el suelo. Empuja con el talón para volver al centro y repite hacia el otro lado."
+}

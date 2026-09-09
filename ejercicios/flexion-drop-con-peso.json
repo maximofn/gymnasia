@@ -1,0 +1,14 @@
+{
+  "id": "flexion-drop-con-peso",
+  "name": "Flexión drop con peso",
+  "image_male": "images/flexion-drop-con-peso-male.webp",
+  "image_female": "images/flexion-drop-con-peso-female.webp",
+  "muscle_group": "pecho",
+  "secondary_muscles": [
+    "tríceps",
+    "hombro anterior"
+  ],
+  "equipment": "chaleco lastrado",
+  "difficulty": "advanced",
+  "instructions": "Colócate en plancha alta con un chaleco lastrado bien ajustado, las manos algo más abiertas que los hombros y el cuerpo alineado. Baja el pecho con control y empuja de forma explosiva hasta despegar las manos. Cámbialas rápidamente a una posición más amplia al aterrizar, amortigua con los codos y enlaza otra flexión. En el siguiente impulso vuelve a la posición estrecha y continúa alternando sin perder la alineación del tronco."
+}

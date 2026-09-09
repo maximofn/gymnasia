@@ -1,0 +1,14 @@
+{
+  "id": "dominada-supina-cerrada-con-peso-en-jaula",
+  "name": "Dominada supina cerrada con peso en jaula",
+  "image_male": "images/dominada-supina-cerrada-con-peso-en-jaula-male.webp",
+  "image_female": "images/dominada-supina-cerrada-con-peso-en-jaula-female.webp",
+  "muscle_group": "espalda",
+  "secondary_muscles": [
+    "bíceps",
+    "antebrazos"
+  ],
+  "equipment": "barra de dominadas y lastre",
+  "difficulty": "advanced",
+  "instructions": "Coloca un lastre seguro en un cinturón y agarra la barra alta de la jaula con las palmas hacia ti y las manos próximas entre sí. Cuélgate con los brazos extendidos y estabiliza los hombros. Lleva el pecho hacia la barra flexionando los codos junto al torso hasta que la barbilla la supere. Haz una pausa breve y desciende de forma controlada hasta extender los brazos sin perder la tensión corporal."
+}
