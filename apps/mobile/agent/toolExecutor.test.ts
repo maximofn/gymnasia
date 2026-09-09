@@ -355,25 +355,88 @@ describe("ejecutor de tools", () => {
     const execute = createAgentToolExecutor(createDependencies());
     const setStore = vi.fn();
     const failed = await execute("create_routine", {
-      data: JSON.stringify({
+      data: {
         name: "Pierna",
+        category: "strength",
+        icon: "activity",
         exercises: [
-          { kind: "catalog", source_id: "gymnasia_exercises", item_id: "sentadilla", series: [] },
-          { kind: "catalog", source_id: "gymnasia_exercises", item_id: "ausente", series: [] },
+          {
+            kind: "catalog",
+            source_id: "gymnasia_exercises",
+            item_id: "sentadilla",
+            series: [{ type: "normal", reps: 8 }],
+          },
+          {
+            kind: "catalog",
+            source_id: "gymnasia_exercises",
+            item_id: "ausente",
+            series: [{ type: "normal", reps: 10 }],
+          },
         ],
-      }),
+      },
     }, { exercisesRepo: exercises, setStore });
-    expect(JSON.parse(failed)).toMatchObject({ status: "not_found", written: false });
+    expect(JSON.parse(failed)).toMatchObject({
+      status: "invalid_input",
+      written: false,
+      issues: [expect.objectContaining({ code: "catalog_not_found" })],
+    });
     expect(setStore).not.toHaveBeenCalled();
 
     let store = createEmptyStore();
-    await execute("create_routine", {
-      data: JSON.stringify({
+    const created = await execute("create_routine", {
+      data: {
         name: "Pierna",
-        exercises: [{ kind: "catalog", source_id: "gymnasia_exercises", item_id: "sentadilla", series: [] }],
-      }),
+        category: "strength",
+        icon: "activity",
+        exercises: [{
+          kind: "catalog",
+          source_id: "gymnasia_exercises",
+          item_id: "sentadilla",
+          series: [{ type: "normal", reps: 10, weight_kg: 60, rest_seconds: 90 }],
+        }],
+      },
     }, { exercisesRepo: exercises, setStore: (updater) => { store = updater(store); } });
+    expect(JSON.parse(created)).toMatchObject({
+      status: "created",
+      written: true,
+      exercise_count: 1,
+      execution_unit_count: 1,
+    });
     expect(store.templates[0].exercises[0].catalog_link).toEqual(expect.objectContaining({ status: "linked" }));
+    expect(store.templates[0].exercises[0].sets).toEqual([10]);
+  });
+
+  it("devuelve todas las incidencias de una rutina inválida sin mutar ni confirmar efectos", async () => {
+    const createId = vi.fn((prefix: string) => `${prefix}_test`);
+    const commitStore = vi.fn(async (updater: (previous: ToolStore) => ToolStore) => {
+      updater(createEmptyStore());
+    });
+    const markEffectCommitted = vi.fn();
+    const execute = createDetailedAgentToolExecutor(createDependencies({ createId }));
+    const result = await execute("create_routine", {
+      data: {
+        name: "Pierna",
+        category: "strength",
+        icon: "activity",
+        exercises: [{
+          kind: "custom",
+          name: "Sentadilla",
+          series: [{ type: "tempo", reps: 0, weight_kg: -1 }],
+        }],
+      },
+    }, { commitStore, markEffectCommitted });
+
+    expect(result.status).toBe("no_effect");
+    const output = JSON.parse(result.output);
+    expect(output).toMatchObject({ status: "invalid_input", written: false });
+    expect(output.issues.map((issue: { code: string }) => issue.code)).toEqual(expect.arrayContaining([
+      "not_positive",
+      "negative",
+      "required",
+    ]));
+    expect(commitStore).not.toHaveBeenCalled();
+    expect(markEffectCommitted).not.toHaveBeenCalled();
+    expect(createId).not.toHaveBeenCalled();
   });
 
   it("no escribe ni crea ids cuando un nutriente es inválido", async () => {
@@ -489,14 +552,16 @@ describe("ejecutor de tools", () => {
   it("no confirma una escritura si la persistencia falla", async () => {
     const execute = createDetailedAgentToolExecutor(createDependencies());
     const result = await execute("create_routine", {
-      data: JSON.stringify({
+      data: {
         name: "Pierna",
+        category: "strength",
+        icon: "activity",
         exercises: [{
           kind: "custom",
           name: "Sentadilla",
-          series: [{ reps: "10", weight_kg: "60", rest_seconds: "90" }],
+          series: [{ type: "normal", reps: 10, weight_kg: 60, rest_seconds: 90 }],
         }],
-      }),
+      },
     }, {
       operationId: "b".repeat(64),
       commitStore: async () => {

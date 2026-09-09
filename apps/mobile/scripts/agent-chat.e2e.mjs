@@ -649,6 +649,8 @@ async function runAgentChatE2E(
       `${provider}-identity.sse`,
       `${provider}-measurement-tool-call.sse`,
       `${provider}-measurement-final.sse`,
+      `${provider}-routine-tool-call.sse`,
+      `${provider}-routine-final.sse`,
     ];
     const fixtureName = fixtureByRound[requestBodies.length];
     assert(fixtureName, `${provider} no esperaba una ronda ${requestBodies.length}.`);
@@ -703,6 +705,21 @@ async function runAgentChatE2E(
     measurementSchema?.properties?.data?.type,
     "object",
     `${provider} debe recibir data como objeto estructurado en write_measurement.`,
+  );
+  const routineTool = providerTools?.find((tool) => tool.name === "create_routine");
+  const routineSchema = provider === "anthropic"
+    ? routineTool?.input_schema
+    : routineTool?.parameters;
+  assert.equal(
+    routineSchema?.properties?.data?.type,
+    "object",
+    `${provider} debe recibir la rutina como objeto estructurado.`,
+  );
+  assert.equal(
+    routineSchema?.properties?.data?.properties?.exercises?.items?.properties?.series?.items
+      ?.properties?.reps?.type,
+    "integer",
+    `${provider} debe recibir las repeticiones como enteros, no como texto.`,
   );
   if (provider === "anthropic") {
     // Regresión: con `type: "enabled"` los modelos desde la generación 4.6
@@ -887,6 +904,33 @@ async function runAgentChatE2E(
       const saved = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
       const measurement = saved.measurements?.find((item) => item.measured_on === "2024-04-11");
       return measurement?.weight_kg === 75.5 && measurement?.body_fat_pct === 18.5;
+    },
+    { storeKey: STORE_KEY },
+    { timeout: STEP_TIMEOUT_MS },
+  );
+
+  logStep(`${provider}: creando una rutina tipada y comprobando su persistencia canónica`);
+  await page.locator('[data-testid="chat-input"]').fill(
+    "Crea una rutina de fuerza personalizada para probar el contrato.",
+  );
+  await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid^="chat-message-assistant-"]')
+    .filter({ hasText: "He creado la Rutina E2E con una serie ejecutable." })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  assert.equal(requestBodies.length, 7, `${provider} debe completar las dos rondas de la rutina.`);
+  const routineResultRound = JSON.stringify(requestBodies[6]);
+  assert(
+    routineResultRound.includes("status") && routineResultRound.includes("created"),
+    `${provider} debe recibir el resultado durable y tipado de create_routine.`,
+  );
+  await page.waitForFunction(
+    ({ storeKey }) => {
+      const saved = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
+      const template = saved.templates?.find((item) => item.name === "Rutina E2E");
+      return template?.series_schema_version === 1
+        && template?.duration_minutes === "45"
+        && template?.exercises?.[0]?.sets?.[0] === 10
+        && template?.exercises?.[0]?.series?.[0]?.weight_kg === "40";
     },
     { storeKey: STORE_KEY },
     { timeout: STEP_TIMEOUT_MS },

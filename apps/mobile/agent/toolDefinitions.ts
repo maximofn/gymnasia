@@ -1,8 +1,13 @@
 import type { ToolEffect } from "./healthSafety";
 import { DIET_MEAL_CATEGORIES } from "../diet/nutritionContract";
+import { SERIES_TYPES } from "../training/seriesContract";
+import {
+  ROUTINE_ICON_NAMES,
+  TRAINING_CATEGORIES,
+} from "../training/workoutTemplateOperations";
 
 export type JsonSchemaProperty = {
-  type: "string" | "number" | "object" | "array";
+  type: "string" | "number" | "integer" | "object" | "array";
   description?: string;
   enum?: string[];
   minimum?: number;
@@ -10,6 +15,7 @@ export type JsonSchemaProperty = {
   properties?: Record<string, JsonSchemaProperty>;
   required?: string[];
   items?: JsonSchemaProperty;
+  minItems?: number;
   additionalProperties?: boolean;
 };
 
@@ -17,6 +23,7 @@ export type ToolInputSchema = {
   type: "object";
   properties: Record<string, JsonSchemaProperty>;
   required?: string[];
+  additionalProperties?: boolean;
 };
 
 export type AgentToolDefinition = {
@@ -43,6 +50,79 @@ const numberProperty = (
   description,
   ...limits,
 });
+
+const integerProperty = (
+  description: string,
+  limits: { minimum?: number; maximum?: number } = {},
+): JsonSchemaProperty => ({
+  type: "integer",
+  description,
+  ...limits,
+});
+
+const routineTargetSchema: JsonSchemaProperty = {
+  type: "object",
+  description: "Ejercicio objetivo de una subserie, obligatorio en superseries.",
+  properties: {
+    kind: stringProperty("Origen del ejercicio objetivo.", ["catalog", "custom"]),
+    source_id: stringProperty("Identificador estable de la fuente de catálogo."),
+    item_id: stringProperty("Identificador estable del ejercicio en el catálogo."),
+    name: stringProperty("Nombre del ejercicio cuando kind es custom."),
+  },
+  required: ["kind"],
+  additionalProperties: false,
+};
+
+const routineSubSeriesSchema: JsonSchemaProperty = {
+  type: "object",
+  properties: {
+    reps: integerProperty("Repeticiones de la subserie.", { minimum: 1 }),
+    weight_kg: numberProperty("Peso opcional en kg.", { minimum: 0 }),
+    rest_seconds: integerProperty("Descanso opcional en segundos.", { minimum: 0 }),
+    target: routineTargetSchema,
+  },
+  required: ["reps"],
+  additionalProperties: false,
+};
+
+const routineSeriesSchema: JsonSchemaProperty = {
+  type: "object",
+  properties: {
+    type: stringProperty("Tipo de serie.", SERIES_TYPES),
+    reps: integerProperty("Repeticiones de la serie.", { minimum: 1 }),
+    weight_kg: numberProperty("Peso opcional en kg.", { minimum: 0 }),
+    rest_seconds: integerProperty("Descanso opcional en segundos.", { minimum: 0 }),
+    tempo_contraction: numberProperty("Segundos de contracción del tempo.", { minimum: 0 }),
+    tempo_pause: numberProperty("Segundos de pausa del tempo.", { minimum: 0 }),
+    tempo_relaxation: numberProperty("Segundos de relajación del tempo.", { minimum: 0 }),
+    sub_series: {
+      type: "array",
+      description: "Mini-series; son obligatorias y no vacías para los tipos compuestos.",
+      items: routineSubSeriesSchema,
+    },
+  },
+  required: ["type", "reps"],
+  additionalProperties: false,
+};
+
+const routineExerciseSchema: JsonSchemaProperty = {
+  type: "object",
+  properties: {
+    kind: stringProperty("Origen del ejercicio.", ["catalog", "custom"]),
+    source_id: stringProperty("Identificador estable de la fuente de catálogo."),
+    item_id: stringProperty("Identificador estable del ejercicio en el catálogo."),
+    name: stringProperty("Nombre cuando kind es custom."),
+    muscle: stringProperty("Músculo opcional del ejercicio personalizado."),
+    series: {
+      type: "array",
+      description: "Series ejecutables del ejercicio.",
+      minItems: 1,
+      items: routineSeriesSchema,
+    },
+  },
+  required: ["kind", "series"],
+  additionalProperties: false,
+};
 
 export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   {
@@ -268,15 +348,30 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     inputSchema: {
       type: "object",
       properties: {
-        data: stringProperty(
-          'JSON con los datos de la rutina. Campos: name (string, nombre de la rutina), category (string: "strength", "hypertrophy", "cardio" o "flexibility"), ' +
-          'icon (string: "activity", "heart", "zap", "target", "wind", "shield", "compass", "crosshair", "award", "star", "sun", "moon", "sliders" o "trending-up"), ' +
-          "exercises (array de objetos de catálogo con kind='catalog', source_id e item_id; o personalizados con kind='custom', name y muscle), " +
-          'series (array de objetos con: type (string: "normal", "warmup", "failure", "amrap", "partial", "negative", "forced", "tempo", "isometric", "dropset", "restpause", "myoreps", "cluster", "superset"), ' +
-          'reps (string, número de repeticiones), weight_kg (string, peso en kg), rest_seconds (string, descanso en segundos))). Ejemplo: {"name":"Push Day","category":"hypertrophy","icon":"zap","exercises":[{"kind":"catalog","source_id":"gymnasia_exercises","item_id":"press-banca","series":[{"type":"normal","reps":"10","weight_kg":"60","rest_seconds":"90"}]}]}',
-        ),
+        data: {
+          type: "object",
+          description: "Rutina completa que se validará de forma atómica antes de guardarse.",
+          properties: {
+            name: stringProperty("Nombre de la rutina."),
+            category: stringProperty("Categoría de entrenamiento.", TRAINING_CATEGORIES),
+            icon: stringProperty("Icono de la rutina.", ROUTINE_ICON_NAMES),
+            duration_minutes: integerProperty("Duración opcional en minutos.", {
+              minimum: 1,
+              maximum: 999,
+            }),
+            exercises: {
+              type: "array",
+              description: "Ejercicios de la rutina.",
+              minItems: 1,
+              items: routineExerciseSchema,
+            },
+          },
+          required: ["name", "category", "icon", "exercises"],
+          additionalProperties: false,
+        },
       },
       required: ["data"],
+      additionalProperties: false,
     },
   },
   {
@@ -357,7 +452,13 @@ export function validateToolInput(
 
   for (const [field, value] of Object.entries(values)) {
     const property = schema.properties[field];
-    if (!property || value === null || value === undefined) continue;
+    if (!property) {
+      if (schema.additionalProperties === false) {
+        errors.push(`El campo "${field}" no está permitido.`);
+      }
+      continue;
+    }
+    if (value === null || value === undefined) continue;
     validateSchemaProperty(field, value, property, errors);
   }
 
@@ -371,8 +472,15 @@ function validateSchemaProperty(
   errors: string[],
 ): void {
   const actualType = Array.isArray(value) ? "array" : typeof value;
-  if (actualType !== property.type) {
+  const typeMatches = property.type === "integer"
+    ? typeof value === "number" && Number.isInteger(value)
+    : actualType === property.type;
+  if (!typeMatches) {
     errors.push(`El campo "${field}" debe ser de tipo ${property.type}.`);
+    return;
+  }
+  if ((property.type === "number" || property.type === "integer") && !Number.isFinite(value)) {
+    errors.push(`El campo "${field}" debe ser un número finito.`);
     return;
   }
   if (property.enum && !property.enum.includes(value as string)) {
@@ -385,6 +493,10 @@ function validateSchemaProperty(
     errors.push(`El campo "${field}" debe ser ${property.maximum} o menor.`);
   }
   if (property.type === "array" && property.items) {
+    if (property.minItems !== undefined && (value as unknown[]).length < property.minItems) {
+      const amount = property.minItems === 1 ? "1 elemento" : `${property.minItems} elementos`;
+      errors.push(`El campo "${field}" debe incluir al menos ${amount}.`);
+    }
     (value as unknown[]).forEach((item, index) => {
       validateSchemaProperty(`${field}[${index}]`, item, property.items!, errors);
     });

@@ -1,0 +1,3 @@
+data: {"candidates":[{"content":{"role":"model","parts":[{"functionCall":{"name":"create_routine","args":{"data":{"name":"Rutina E2E","category":"strength","icon":"activity","duration_minutes":45,"exercises":[{"kind":"custom","name":"Peso muerto rumano","muscle":"Isquiotibiales","series":[{"type":"normal","reps":10,"weight_kg":40,"rest_seconds":90}]}]}}}}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":20,"candidatesTokenCount":15,"totalTokenCount":35}}
+
+data: [DONE]

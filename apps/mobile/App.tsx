@@ -177,6 +177,7 @@ import {
   SERIES_TYPE_META,
 } from "./training/seriesPresentation";
 import {
+  ROUTINE_ICON_NAMES,
   buildWorkoutTemplateRevision,
   changeExerciseSeriesType,
   cloneWorkoutTemplateSnapshot,
@@ -189,6 +190,7 @@ import {
   type TrainingCategory,
   type WorkoutTemplate,
 } from "./training/workoutTemplateOperations";
+import { formatWorkoutTemplateIssues } from "./training/workoutTemplateContract";
 import {
   createWorkoutSessionTemplateDraftRecord,
   createWorkoutTemplateDraft,
@@ -1521,22 +1523,7 @@ const TRAINING_STATS_METRIC_OPTIONS: Array<{
   { key: "reps", label: "Repeticiones", shortLabel: "reps" },
   { key: "duration", label: "Duración", shortLabel: "min" },
 ];
-const ROUTINE_ICON_OPTIONS: RoutineIconName[] = [
-  "activity",
-  "heart",
-  "zap",
-  "target",
-  "wind",
-  "shield",
-  "compass",
-  "crosshair",
-  "award",
-  "star",
-  "sun",
-  "moon",
-  "sliders",
-  "trending-up",
-];
+const ROUTINE_ICON_OPTIONS: RoutineIconName[] = [...ROUTINE_ICON_NAMES];
 const ROUTINE_ICON_BY_CATEGORY: Record<TrainingCategory, RoutineIconName[]> = {
   strength: ["activity", "shield", "crosshair", "award", "target"],
   hypertrophy: ["award", "target", "crosshair", "activity", "shield"],
@@ -11990,15 +11977,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (!transaction || trainingTemplateSaveBusy) return;
     const validation = validateWorkoutTemplateDraft(transaction.draft);
     if (!validation.valid) {
-      setError(
-        !validation.name
-          ? "Ponle un nombre a la rutina antes de guardarla."
-          : !validation.exercise
-            ? "Añade al menos un ejercicio antes de guardarla."
-            : "Añade al menos una serie antes de guardarla.",
-      );
+      setError(formatWorkoutTemplateIssues(validation.issues));
       return;
     }
+    const validatedTransaction: WorkoutTemplateDraftState = {
+      ...transaction,
+      draft: validation.value,
+    };
 
     setTrainingTemplateSaveBusy(true);
     const resolutionBox: { current: WorkoutTemplateCommitResolution | null } = { current: null };
@@ -12008,7 +11993,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           (template) => template.id === transaction.draft.id,
         ) as WorkoutTemplate | undefined;
         const resolution = resolveWorkoutTemplateCommit(
-          transaction,
+          validatedTransaction,
           current ?? null,
           overwriteConflict,
         );
@@ -17012,7 +16997,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </Pressable>
                   <Pressable
                     onPress={() => void saveTrainingTemplateChanges()}
-                    disabled={!trainingTemplateDraftValidation?.valid || trainingTemplateSaveBusy}
+                    disabled={trainingTemplateSaveBusy}
                     style={{
                       minHeight: 46,
                       borderRadius: 14,
@@ -17940,7 +17925,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                 <Pressable
                   onPress={() => void saveTrainingTemplateChanges()}
-                  disabled={!trainingTemplateDraftValidation?.valid || trainingTemplateSaveBusy}
+                  disabled={trainingTemplateSaveBusy}
                   testID="training-editor-save"
                   style={{
                     marginTop: 6,

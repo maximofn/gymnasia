@@ -1,0 +1,13 @@
+event: response.created
+data: {"type":"response.created","response":{"id":"resp_openai_routine_final"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":0,"item":{"type":"message","id":"msg_openai_routine","content":[]}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","item_id":"msg_openai_routine","output_index":0,"content_index":0,"delta":"He creado la Rutina E2E con una serie ejecutable."}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"resp_openai_routine_final","output":[{"type":"message","id":"msg_openai_routine","content":[{"type":"output_text","text":"He creado la Rutina E2E con una serie ejecutable."}]}]}}
+
+data: [DONE]

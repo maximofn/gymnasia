@@ -1,0 +1,3 @@
+data: {"candidates":[{"content":{"role":"model","parts":[{"text":"He creado la Rutina E2E con una serie ejecutable."}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":35,"candidatesTokenCount":14,"totalTokenCount":49}}
+
+data: [DONE]

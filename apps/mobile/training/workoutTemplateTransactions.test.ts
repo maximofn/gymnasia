@@ -18,6 +18,7 @@ function fixture(): WorkoutTemplate {
     id: "tpl",
     name: "Fuerza",
     category: "strength",
+    icon: "activity",
     exercises: [{
       id: "exercise",
       name: "Press",
@@ -67,14 +68,25 @@ describe("transacciones de plantillas", () => {
     expect(resolveWorkoutTemplateCommit(creation, { ...fixture(), id: "new" }).status).toBe("conflict");
   });
 
-  it("exige nombre, ejercicio y al menos una serie ejecutable", () => {
-    expect(validateWorkoutTemplateDraft(fixture()).valid).toBe(true);
-    expect(validateWorkoutTemplateDraft({ ...fixture(), name: " " }).name).toBe(false);
-    expect(validateWorkoutTemplateDraft({ ...fixture(), exercises: [] }).exercise).toBe(false);
+  it("aplica el contrato estricto antes de guardar", () => {
+    const valid = validateWorkoutTemplateDraft(fixture());
+    expect(valid.valid).toBe(true);
+    expect(valid.value).toMatchObject({ series_schema_version: 1 });
+    expect(validateWorkoutTemplateDraft({ ...fixture(), name: " " }).issues[0]).toMatchObject({
+      field: "name",
+      code: "required",
+    });
+    expect(validateWorkoutTemplateDraft({ ...fixture(), exercises: [] }).issues[0]).toMatchObject({
+      field: "exercises",
+      code: "empty_collection",
+    });
     expect(validateWorkoutTemplateDraft({
       ...fixture(),
       exercises: [{ ...fixture().exercises[0], series: [] }],
-    }).runnableSeries).toBe(false);
+    }).issues[0]).toMatchObject({
+      field: "exercises[0].series",
+      code: "empty_collection",
+    });
   });
 
   it("versiona, serializa y valida el borrador de una sesión", () => {
