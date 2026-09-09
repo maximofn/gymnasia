@@ -46,46 +46,36 @@ Es una comparación del algoritmo con datos sintéticos, no una medida del
 teléfono ni un presupuesto que deba bloquear CI. En renders ajenos a las medidas,
 la E2E comprueba que ninguna de esas operaciones vuelve a ejecutarse.
 
-## Validación del mantenedor en Staging
+## Validación del mantenedor y cierre
 
-El 9 de septiembre de 2026, después de probar el APK Staging 1.38.4, el
-mantenedor confirmó: «La he probado y va fluida, ya no va lenta».
+El 9 de septiembre de 2026 el mantenedor confirmó, después de probar el APK
+Staging 1.38.4: «La he probado y va fluida, ya no va lenta».
 
 La build probada es
 [39a5f508-feb4-4f7c-bc71-61b98b5703a6](https://expo.dev/accounts/maximofn/projects/gymnasia/builds/39a5f508-feb4-4f7c-bc71-61b98b5703a6),
-generada desde `c16b9303a5630f60d9b2587842abc27477d8a7bc`. Esta confirmación
-registra la fluidez percibida; no aporta tiempos por interacción ni una traza
-del perfilador. Tampoco autoriza la fusión o una build de Producción.
+generada desde `c16b9303a5630f60d9b2587842abc27477d8a7bc`. Después autorizó
+explícitamente fusionar la PR y generar el APK de Producción.
 
-## Medición nativa pendiente
+La [PR #195](https://github.com/maximofn/gymnasia/pull/195) quedó fusionada en
+`e837be187fc246970946c773e9f0089ce796ae8d`. La
+[release de Producción 1.38.4 (37)](https://github.com/maximofn/gymnasia/releases/tag/v1.38.4)
+publicó el APK tras superar las verificaciones de fuente y artefacto. El
+mantenedor lo descargó y confirmó: «Me la he bajado y va fluida».
 
-Para completar la comparación cuantitativa del plan, conservar el historial
-existente del dispositivo original; no borrar datos,
-reinstalar la versión lenta ni importar copias personales como parte de esta
-comprobación sin autorización específica y una copia recuperable.
+El mantenedor pidió «Cierra el ticket» después de que se le explicara que las
+mediciones detalladas seguían sin realizarse. Se acepta su validación de fluidez
+en Staging y Producción, junto con las pruebas automáticas, como criterio de
+cierre. Las diez repeticiones por interacción, la mediana, el percentil 95, el
+máximo y la traza nativa posterior previstos inicialmente **no se realizaron**;
+se retiran como requisitos para este cierre. La comparación sintética anterior
+no se presenta como evidencia del teléfono.
 
-Registrar versión/commit, modelo de teléfono, Android, tamaño del historial,
-estado de batería/ahorro y red. Repetir al menos diez veces por versión:
-
-1. Inicio → Dieta → Medidas → Inicio, con un entrenamiento activo.
-2. Marcar una serie y desplazarse por la sesión y por Medidas.
-3. Añadir, editar y borrar una medición de prueba: comprobar tarjetas y gráficos.
-
-Anotar mediana, percentil 95 y máximo desde la interacción hasta su respuesta
-visual. Conservar una traza nativa comparable que permita comprobar que el resumen
-ya no se ejecuta con cada interacción y que desaparecen las asignaciones masivas
-asociadas. No incluir contenido sanitario, mensajes, fotos ni credenciales en
-las evidencias publicadas.
-
-| Evidencia nativa | Estado |
+| Evidencia | Resultado |
 | --- | --- |
-| Diez muestras por interacción, antes/después | Pendiente del dispositivo original |
-| Perfil posterior y asignaciones | Pendiente del dispositivo original |
-| Confirmación de fluidez del mantenedor | Correcta en Staging 1.38.4, 9 de septiembre de 2026 |
-
-La PR y el ticket permanecen abiertos. La confirmación de fluidez ya está
-registrada; las muestras y el perfil siguen pendientes. Fusionar y lanzar
-Producción requieren aprobación explícita independiente.
+| Validación del mantenedor en Staging | Fluidez confirmada el 9 de septiembre de 2026 |
+| Validación del mantenedor en Producción | Fluidez confirmada el 9 de septiembre de 2026 |
+| Diez muestras por interacción y perfil nativo posterior | No realizados; cierre autorizado con validación cualitativa |
+| Pruebas automáticas y verificación del APK publicado | Correctas |
 
 ## Límites observados en las pruebas
 

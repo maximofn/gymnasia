@@ -73,15 +73,14 @@
         {
           "id": "GYM-230",
           "title": "Corregir la regresión de rendimiento de la interfaz",
-          "state": "in_progress",
-          "summary": "Evitar que los nueve resúmenes de medidas se recalculen en cada render, sustituir el selector cuadrático por una derivación acotada y proteger la fluidez con pruebas de coste y QA nativa.",
-          "dependsOn": [
-            "GYM-229"
-          ],
+          "state": "done",
+          "summary": "Corrección publicada en Producción 1.38.4: historial y resúmenes de medidas compartidos y memorizados, con pruebas de equivalencia y coste. Fluidez confirmada por el mantenedor en Staging y Producción; cierre autorizado sin mediciones nativas detalladas.",
+          "dependsOn": [],
           "related": [
             "GYM-160",
             "GYM-202",
-            "GYM-231"
+            "GYM-231",
+            "GYM-229"
           ]
         },
         {
