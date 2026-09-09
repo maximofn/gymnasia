@@ -2041,7 +2041,7 @@
         {
           "id": "GYM-177",
           "title": "Recuperar temporizadores tras reinicio y respetar la pausa en notificaciones",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Persistir el ancla de reloj y suprimir alertas de descanso cuando la sesión está pausada.",
           "dependsOn": [],
           "related": [
