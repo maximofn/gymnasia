@@ -6624,7 +6624,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [confirmPartialSessionFinish, setConfirmPartialSessionFinish] = useState(false);
   const [confirmDiscardSession, setConfirmDiscardSession] = useState(false);
   const restFinishSoundRef = useRef<Audio.Sound | null>(null);
-  const restSoundCacheRef = useRef<Record<string, Audio.Sound>>({});
   const previewSoundRef = useRef<Audio.Sound | null>(null);
   const workoutTemplateBeforeSessionRef = useRef<WorkoutTemplate | null>(null);
   const globalScreenLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -6646,7 +6645,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     play: boolean;
   } | null>(null);
   const restAlertLockRef = useRef(false);
-  const audioWorkoutInitializedRef = useRef(false);
+  const workoutNotificationsInitializedRef = useRef(false);
   const restNotificationOperationRef = useRef(0);
   const restNotificationIdRef = useRef<string | null>(null);
   // Instante en que el aviso de descanso debía saltar y aquel en que se entregó
@@ -7660,37 +7659,60 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     restAlertLockRef.current = true;
     const settings = notifSettingsRef.current;
 
-    // Load the selected sound if not already cached
-    if (settings.sound && !restSoundCacheRef.current[settings.soundKey]) {
-      try {
-        const soundOption = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey) ?? NOTIFICATION_SOUND_OPTIONS[0];
-        const { sound } = await Audio.Sound.createAsync(
-          soundOption.asset,
-          { shouldPlay: false, volume: 1 },
-        );
-        restSoundCacheRef.current[settings.soundKey] = sound;
-        restFinishSoundRef.current = sound;
-      } catch (e) {
-        void pushTrace("playAlert", "failed to load sound", { error: String(e) });
-      }
-    } else if (settings.sound && restFinishSoundRef.current !== restSoundCacheRef.current[settings.soundKey]) {
-      restFinishSoundRef.current = restSoundCacheRef.current[settings.soundKey];
-    }
-
     try {
       if (settings.vibrate) {
         Vibration.vibrate([0, 300, 150, 300]);
       }
 
       try {
-        if (settings.sound && restFinishSoundRef.current) {
-          restFinishSoundRef.current.setOnPlaybackStatusUpdate((status) => {
-            if (!status.isLoaded || !status.didJustFinish) return;
-            restFinishSoundRef.current?.setOnPlaybackStatusUpdate(null);
-            restFinishSoundRef.current?.stopAsync().catch(() => {});
+        if (settings.sound) {
+          // No se precarga ni se conserva un reproductor durante el descanso.
+          // Algunos Android mantienen el foco de audio de un Sound reutilizado y
+          // atenúan el podcast o la música hasta el siguiente aviso.
+          const staleSound = restFinishSoundRef.current;
+          restFinishSoundRef.current = null;
+          if (staleSound) {
+            staleSound.setOnPlaybackStatusUpdate(null);
+            await staleSound.unloadAsync().catch(() => {});
+          }
+          await Audio.setAudioModeAsync({
+            allowsRecordingIOS: false,
+            playsInSilentModeIOS: true,
+            shouldDuckAndroid: false,
+            interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+            interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
+            staysActiveInBackground: false,
           });
-          await restFinishSoundRef.current.setPositionAsync(0);
-          await restFinishSoundRef.current.playAsync();
+          const soundOption = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)
+            ?? NOTIFICATION_SOUND_OPTIONS[0];
+          const { sound } = await Audio.Sound.createAsync(
+            soundOption.asset,
+            { shouldPlay: false, volume: 1 },
+          );
+          restFinishSoundRef.current = sound;
+          let released = false;
+          const releaseSound = () => {
+            if (released) return;
+            released = true;
+            sound.setOnPlaybackStatusUpdate(null);
+            if (restFinishSoundRef.current === sound) {
+              restFinishSoundRef.current = null;
+            }
+            void sound.stopAsync()
+              .catch(() => {})
+              .then(() => sound.unloadAsync())
+              .catch(() => {});
+          };
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if (!status.isLoaded || !status.didJustFinish) return;
+            releaseSound();
+          });
+          try {
+            await sound.playAsync();
+          } catch (error) {
+            releaseSound();
+            throw error;
+          }
         }
       } catch (e) {
         void pushTrace("playAlert", "sound error", { error: String(e) });
@@ -7702,32 +7724,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
   }, []);
 
-  const initWorkoutAudio = useCallback(async () => {
+  const initWorkoutNotifications = useCallback(async () => {
     try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        shouldDuckAndroid: false,
-        interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-        interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
-        staysActiveInBackground: false,
-      });
-      const settings = notifSettingsRef.current;
-      const soundOption = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey) ?? NOTIFICATION_SOUND_OPTIONS[0];
-      if (!restFinishSoundRef.current) {
-        const { sound } = await Audio.Sound.createAsync(
-          soundOption.asset,
-          { shouldPlay: false, volume: 1 },
-        );
-        restFinishSoundRef.current = sound;
-        restSoundCacheRef.current[settings.soundKey] = sound;
-      }
       const notifPermission = await Notifications.requestPermissionsAsync();
       const notifGranted = isNotificationPermissionGranted(notifPermission);
       setNotifPermissionGranted(notifGranted);
       void pushTrace("notifPerm", "status", { granted: notifGranted });
       if (Platform.OS === "android") {
-        void pushTrace("initWorkoutAudio", "creating channel rest_end_alert");
+        void pushTrace("initWorkoutNotifications", "creating channel rest_end_alert");
         await Notifications.setNotificationChannelAsync("rest_end_alert", {
           name: "Descanso terminado",
           importance: Notifications.AndroidImportance.MAX,
@@ -7741,11 +7745,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
         const channelInfo = await Notifications.getNotificationChannelAsync("rest_end_alert");
         setRestChannelImportance(channelInfo?.importance ?? null);
-        void pushTrace("initWorkoutAudio", "channel", { importance: channelInfo?.importance, bypassDnd: channelInfo?.bypassDnd, visibility: channelInfo?.lockscreenVisibility });
+        void pushTrace("initWorkoutNotifications", "channel", { importance: channelInfo?.importance, bypassDnd: channelInfo?.bypassDnd, visibility: channelInfo?.lockscreenVisibility });
       }
-      audioWorkoutInitializedRef.current = true;
+      workoutNotificationsInitializedRef.current = true;
     } catch (e) {
-      void pushTrace("initWorkoutAudio", "error", { error: String(e) });
+      void pushTrace("initWorkoutNotifications", "error", { error: String(e) });
     }
   }, []);
 
@@ -9017,14 +9021,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   useEffect(() => {
     return () => {
       if (restFinishSoundRef.current) {
+        restFinishSoundRef.current.setOnPlaybackStatusUpdate(null);
         restFinishSoundRef.current.unloadAsync().catch(() => {});
         restFinishSoundRef.current = null;
       }
-      // Unload all cached sounds
-      for (const key of Object.keys(restSoundCacheRef.current)) {
-        restSoundCacheRef.current[key]?.unloadAsync().catch(() => {});
-      }
-      restSoundCacheRef.current = {};
       if (previewSoundRef.current) {
         previewSoundRef.current.unloadAsync().catch(() => {});
         previewSoundRef.current = null;
@@ -9034,12 +9034,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   useEffect(() => {
     if (!activeWorkoutSession) {
-      audioWorkoutInitializedRef.current = false;
+      workoutNotificationsInitializedRef.current = false;
       return;
     }
-    if (audioWorkoutInitializedRef.current && restFinishSoundRef.current) return;
-    void initWorkoutAudio();
-  }, [activeWorkoutSession?.id, initWorkoutAudio]);
+    if (workoutNotificationsInitializedRef.current) return;
+    void initWorkoutNotifications();
+  }, [activeWorkoutSession?.id, initWorkoutNotifications]);
 
   // Notification listeners — trace when a scheduled notification is actually
   // delivered (foreground) and when the user taps it (cold-launch or resume).
@@ -15953,6 +15953,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                             {activeWorkoutSession.is_resting && sessionExercise.isCurrentExercise ? (
                               <View
+                                testID="training-session-rest-timer"
                                 style={{
                                   borderRadius: 12,
                                   borderWidth: 1,
@@ -15969,16 +15970,25 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                     alignItems: "center",
                                     justifyContent: "space-between",
                                     gap: 10,
+                                    width: "100%",
                                   }}
                                 >
-                                  <Text style={{ color: "#76A9FF", fontSize: 14, fontWeight: "700" }}>
+                                  <Text
+                                    style={{
+                                      color: "#76A9FF",
+                                      fontSize: 14,
+                                      fontWeight: "700",
+                                      flex: 1,
+                                      minWidth: 0,
+                                    }}
+                                  >
                                     {activeSessionCurrentUnit?.kind === "sub_series"
                                       ? `Pausa antes de ${activeSessionCurrentUnit.exerciseName}`
                                       : "Descanso tras el bloque"}{" "}
                                     {formatClock(activeWorkoutSession.rest_seconds_left)}/
                                     {formatClock(activeSessionRestTargetSeconds)}
                                   </Text>
-                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 0 }}>
                                     <Pressable
                                       onPress={
                                         activeWorkoutSession.status === "running"

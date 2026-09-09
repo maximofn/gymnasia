@@ -521,6 +521,19 @@ async function verifyCompoundExecution(browser, baseUrl) {
   await waitForAppReady(page);
   await openTrainingTab(page);
   await page.getByText("3/10 esfuerzos", { exact: true }).first().waitFor({ timeout: STEP_TIMEOUT_MS });
+  const restTimerBox = await page.getByTestId("training-session-rest-timer").boundingBox();
+  const pauseButtonBox = await page.getByTestId("training-session-rest-toggle-pause").boundingBox();
+  const skipButtonBox = await page.getByTestId("training-session-skip-rest").boundingBox();
+  assert.ok(restTimerBox, "el contenedor del temporizador no está visible");
+  assert.ok(pauseButtonBox, "el botón de pausa del temporizador no está visible");
+  assert.ok(skipButtonBox, "el botón de omitir el descanso no está visible");
+  for (const [name, box] of [["pausa", pauseButtonBox], ["omitir", skipButtonBox]]) {
+    assert.ok(
+      box.x >= restTimerBox.x && box.x + box.width <= restTimerBox.x + restTimerBox.width,
+      `el botón de ${name} se sale horizontalmente del temporizador`,
+    );
+  }
+  await page.getByTestId("training-session-rest-timer").scrollIntoViewIfNeeded();
   await page.screenshot({
     path: process.env.TRAIN_COMPOUND_SESSION_SCREENSHOT ?? "/tmp/gym-175-compound-session.png",
     fullPage: true,
