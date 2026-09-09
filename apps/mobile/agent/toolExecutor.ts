@@ -10,7 +10,7 @@ import {
   validateNutritionItem,
 } from "../diet/nutritionContract";
 import type { ToolOperationExecutionOutcome } from "./toolOperationLedger";
-import { findByCatalogRef, matchExerciseCatalog, matchFoodCatalog } from "../catalogs/matching";
+import { findByCatalogRef, matchFoodCatalog } from "../catalogs/matching";
 import {
   catalogRef,
   linkedCatalog,
@@ -28,6 +28,10 @@ import {
   validateMeasurementDate,
   type Measurement,
 } from "../measurements/measurementContract";
+import type { ExerciseSeries } from "../training/seriesContract";
+import { listWorkoutExecutionUnits } from "../training/workoutExecution";
+import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
+import { prepareRoutineCreation } from "./routineCreationContract";
 
 export type { PersonalDataField };
 
@@ -54,34 +58,9 @@ export type ToolDietDay = {
   }>;
 };
 
-export type ToolExerciseSeries = {
-  id: string;
-  type?: string;
-  reps: string;
-  weight_kg: string;
-  rest_seconds: string;
-  tempo_contraction?: string;
-  tempo_pause?: string;
-  tempo_relaxation?: string;
-  sub_series?: unknown[];
-};
+export type ToolExerciseSeries = ExerciseSeries;
 
-export type ToolWorkoutTemplate = {
-  id: string;
-  name: string;
-  category?: string;
-  icon?: string;
-  duration_minutes?: string;
-  exercises: Array<{
-    id: string;
-    name?: string;
-    image_uri?: string | null;
-    sets: number[];
-    series?: ToolExerciseSeries[];
-    muscle?: string;
-    catalog_link?: CatalogLink;
-  }>;
-};
+export type ToolWorkoutTemplate = WorkoutTemplate;
 
 export type ToolStore = {
   templates: ToolWorkoutTemplate[];
@@ -591,120 +570,20 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
   if (!context.commitStore && !context.setStore) {
     return "No se pudo acceder al almacenamiento.";
   }
-  const parsed = parseObjectArgument(
+  const preparation = prepareRoutineCreation(
     args.data,
-    "El JSON de la rutina no es válido.",
-    "No se proporcionaron datos de la rutina.",
+    context.exercisesRepo ?? [],
+    dependencies,
+    context.operationId,
   );
-  if (parsed.error || !parsed.value) return parsed.error ?? "No se proporcionaron datos de la rutina.";
-  const data = parsed.value;
-  const routineName = (data.name as string) ?? "Rutina";
-  const category = (data.category as string) ?? "hypertrophy";
-  const icon = (data.icon as string) ?? "activity";
-  const exercisesData = (data.exercises as Array<Record<string, unknown>>) ?? [];
-  if (exercisesData.length === 0) return "La rutina debe tener al menos un ejercicio.";
-  const repository = context.exercisesRepo ?? [];
-  const operationSuffix = context.operationId?.slice(0, 24);
-  const resolvedExercises: Array<{
-    input: Record<string, unknown>;
-    candidate: ToolExerciseRepoEntry | null;
-    catalogLink: CatalogLink;
-    name: string;
-    muscle: string;
-  }> = [];
-  for (const exercise of exercisesData) {
-    const kind = typeof exercise.kind === "string" ? exercise.kind : "legacy";
-    if (kind === "custom") {
-      resolvedExercises.push({
-        input: exercise,
-        candidate: null,
-        catalogLink: unresolvedCatalog("manual"),
-        name: typeof exercise.name === "string" && exercise.name.trim() ? exercise.name.trim() : "Ejercicio",
-        muscle: typeof exercise.muscle === "string" ? exercise.muscle : "",
-      });
-      continue;
-    }
-    if (kind === "catalog") {
-      const sourceId = typeof exercise.source_id === "string" ? exercise.source_id : "";
-      const itemId = typeof exercise.item_id === "string" ? exercise.item_id : "";
-      const candidate = sourceId && itemId
-        ? findByCatalogRef(repository, catalogRef(sourceId as ExerciseCatalogEntry["sourceId"], itemId))
-        : null;
-      if (!candidate) {
-        return JSON.stringify({ status: "not_found", written: false, source_id: sourceId, item_id: itemId });
-      }
-      resolvedExercises.push({
-        input: exercise,
-        candidate,
-        catalogLink: linkedCatalog(catalogRef(candidate.sourceId, candidate.id), "tool"),
-        name: candidate.name,
-        muscle: candidate.muscle_group,
-      });
-      continue;
-    }
-
-    const requestedName = typeof exercise.name === "string" ? exercise.name : "";
-    const match = matchExerciseCatalog(repository, requestedName);
-    if (match.kind === "ambiguous") {
-      return JSON.stringify({
-        status: "ambiguous",
-        written: false,
-        exercise_name: requestedName,
-        candidates: match.candidates.map((candidate) => ({
-          source_id: candidate.sourceId,
-          item_id: candidate.id,
-          name: candidate.name,
-        })),
-      });
-    }
-    if (match.kind === "not_found") {
-      return JSON.stringify({ status: "not_found", written: false, exercise_name: requestedName });
-    }
-    resolvedExercises.push({
-      input: exercise,
-      candidate: match.candidate,
-      catalogLink: linkedCatalog(
-        catalogRef(match.candidate.sourceId, match.candidate.id),
-        match.kind === "exact" ? "legacy_exact" : "legacy_alias",
-      ),
-      name: match.candidate.name,
-      muscle: match.candidate.muscle_group,
+  if (!preparation.ok) {
+    return JSON.stringify({
+      status: "invalid_input",
+      written: false,
+      issues: preparation.issues,
     });
   }
-
-  const templateExercises = resolvedExercises.map((resolved, exerciseIndex) => {
-    const { input: exercise, candidate: repositoryMatch } = resolved;
-    const seriesData = (exercise.series as Array<Record<string, unknown>>) ?? [];
-    const series: ToolExerciseSeries[] = seriesData.map((item, seriesIndex) => ({
-      id: operationSuffix
-        ? `series_op_${operationSuffix}_${exerciseIndex}_${seriesIndex}`
-        : dependencies.createId("series"),
-      type: (item.type as string) ?? "normal",
-      reps: String(item.reps ?? "10"),
-      weight_kg: String(item.weight_kg ?? "0"),
-      rest_seconds: String(item.rest_seconds ?? "60"),
-    }));
-    return {
-      id: operationSuffix
-        ? `exercise_op_${operationSuffix}_${exerciseIndex}`
-        : dependencies.createId("exercise"),
-      name: resolved.name,
-      muscle: resolved.muscle,
-      image_uri: repositoryMatch ? dependencies.getExerciseImageUrl(repositoryMatch, "male") : null,
-      sets: series.map((_item, index) => index),
-      series,
-      catalog_link: resolved.catalogLink,
-    };
-  });
-  const newTemplate: ToolWorkoutTemplate = {
-    id: operationSuffix
-      ? `template_op_${operationSuffix}`
-      : dependencies.createId("template"),
-    name: routineName,
-    category,
-    icon,
-    exercises: templateExercises,
-  };
+  const newTemplate = preparation.value;
   const updateStore = (previous: ToolStore): ToolStore => {
     if (previous.templates.some((template) => template.id === newTemplate.id)) {
       return previous;
@@ -720,10 +599,14 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
     context.setStore?.(updateStore);
   }
   context.markEffectCommitted?.();
-  const exerciseSummary = templateExercises
-    .map((exercise) => `${exercise.name} (${exercise.series.length} series)`)
-    .join(", ");
-  return `Rutina "${routineName}" creada con ${templateExercises.length} ejercicios: ${exerciseSummary}.`;
+  return JSON.stringify({
+    status: "created",
+    written: true,
+    template_id: newTemplate.id,
+    name: newTemplate.name,
+    exercise_count: newTemplate.exercises.length,
+    execution_unit_count: listWorkoutExecutionUnits(newTemplate).length,
+  });
 };
 
 const createFeatureIssue: ToolHandler = async (args, _context, dependencies) => {

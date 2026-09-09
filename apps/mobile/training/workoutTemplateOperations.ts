@@ -7,23 +7,33 @@ import {
   type SubSeries,
 } from "./seriesContract";
 
-export type TrainingCategory = "strength" | "hypertrophy" | "cardio" | "flexibility";
+export const TRAINING_CATEGORIES = [
+  "strength",
+  "hypertrophy",
+  "cardio",
+  "flexibility",
+] as const;
 
-export type RoutineIconName =
-  | "activity"
-  | "heart"
-  | "zap"
-  | "target"
-  | "wind"
-  | "shield"
-  | "compass"
-  | "crosshair"
-  | "award"
-  | "star"
-  | "sun"
-  | "moon"
-  | "sliders"
-  | "trending-up";
+export type TrainingCategory = (typeof TRAINING_CATEGORIES)[number];
+
+export const ROUTINE_ICON_NAMES = [
+  "activity",
+  "heart",
+  "zap",
+  "target",
+  "wind",
+  "shield",
+  "compass",
+  "crosshair",
+  "award",
+  "star",
+  "sun",
+  "moon",
+  "sliders",
+  "trending-up",
+] as const;
+
+export type RoutineIconName = (typeof ROUTINE_ICON_NAMES)[number];
 
 export type WorkoutExercise = {
   id: string;

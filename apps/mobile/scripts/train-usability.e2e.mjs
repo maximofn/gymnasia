@@ -205,6 +205,9 @@ async function runTrainUsabilityE2E(page, baseUrl) {
   await page.locator("text=CREAR RUTINA").first().click({ timeout: STEP_TIMEOUT_MS });
   await fillInputByPlaceholder(page, "Nombre de rutina", "QA - Rutina Principal");
   await page.locator("text=Cardio").first().click({ timeout: STEP_TIMEOUT_MS });
+  logStep("Rejecting an invalid draft without persisting it");
+  await page.getByTestId("training-editor-save").click({ timeout: STEP_TIMEOUT_MS });
+  await expectBodyContains(page, "La rutina debe tener al menos un ejercicio.");
   await page.locator("text=+ Agregar ejercicio").first().click({ timeout: STEP_TIMEOUT_MS });
   await page.locator("text=Crear ejercicio personalizado").click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('input[placeholder^="Ej: Flexiones"]').fill("Intervalos Cinta QA");

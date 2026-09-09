@@ -12,7 +12,7 @@ import {
 import { AGENT_TOOL_HANDLER_NAMES } from "./toolExecutor";
 
 const TOOL_NAME_PATTERN = /^[a-z][a-z0-9_]*$/;
-const SUPPORTED_PROPERTY_TYPES = new Set(["string", "number", "object", "array"]);
+const SUPPORTED_PROPERTY_TYPES = new Set(["string", "number", "integer", "object", "array"]);
 
 describe("catálogo canónico de tools", () => {
   it("declara al menos una tool con metadatos significativos", () => {
@@ -112,6 +112,31 @@ describe("contrato schema ↔ ejecutor ↔ proveedores", () => {
       ]);
     }
   });
+
+  it("publica create_routine como un objeto numérico y estricto en los tres proveedores", () => {
+    const tool = AGENT_TOOL_DEFINITIONS.find((definition) => definition.name === "create_routine");
+    expect(tool).toBeDefined();
+    expect(tool!.inputSchema).toMatchObject({
+      additionalProperties: false,
+      properties: {
+        data: {
+          type: "object",
+          additionalProperties: false,
+          required: ["name", "category", "icon", "exercises"],
+          properties: {
+            duration_minutes: { type: "integer", minimum: 1, maximum: 999 },
+            exercises: { type: "array", minItems: 1 },
+          },
+        },
+      },
+    });
+    expect(CHAT_TOOLS.openai.find((item) => item.name === "create_routine")?.parameters)
+      .toBe(tool!.inputSchema);
+    expect(CHAT_TOOLS.anthropic.find((item) => item.name === "create_routine")?.input_schema)
+      .toBe(tool!.inputSchema);
+    expect(CHAT_TOOLS.google[0].functionDeclarations.find((item) => item.name === "create_routine")?.parameters)
+      .toBe(tool!.inputSchema);
+  });
 });
 
 describe("validateToolInput", () => {
@@ -163,6 +188,38 @@ describe("validateToolInput", () => {
     });
     expect(result.valid).toBe(false);
     expect(result.errors[0]).toContain('El campo "meal" debe ser uno de estos valores');
+  });
+
+  it("rechaza el JSON textual, arrays vacíos, decimales enteros y campos extra de create_routine", () => {
+    const createRoutine = AGENT_TOOL_DEFINITIONS.find(
+      (tool) => tool.name === "create_routine",
+    );
+    expect(createRoutine).toBeDefined();
+    expect(validateToolInput(createRoutine!.inputSchema, {
+      data: JSON.stringify({ name: "Pierna" }),
+    }).valid).toBe(false);
+
+    const result = validateToolInput(createRoutine!.inputSchema, {
+      unexpected: true,
+      data: {
+        name: "Pierna",
+        category: "strength",
+        icon: "activity",
+        exercises: [{
+          kind: "custom",
+          name: "Sentadilla",
+          series: [{ type: "normal", reps: 2.5 }],
+        }],
+      },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('El campo "unexpected" no está permitido.');
+    expect(result.errors).toContain('El campo "data.exercises[0].series[0].reps" debe ser de tipo integer.');
+
+    const empty = validateToolInput(createRoutine!.inputSchema, {
+      data: { name: "Pierna", category: "strength", icon: "activity", exercises: [] },
+    });
+    expect(empty.errors).toContain('El campo "data.exercises" debe incluir al menos 1 elemento.');
   });
 
   it("nunca lanza con schemas del catálogo y argumentos arbitrarios (property-based)", () => {

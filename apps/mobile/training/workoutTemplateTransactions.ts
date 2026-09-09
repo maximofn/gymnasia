@@ -3,6 +3,10 @@ import {
   cloneWorkoutTemplateSnapshot,
   type WorkoutTemplate,
 } from "./workoutTemplateOperations";
+import {
+  validateWorkoutTemplateForWrite,
+  type WorkoutTemplateIssue,
+} from "./workoutTemplateContract";
 
 export const WORKOUT_SESSION_TEMPLATE_DRAFT_SCHEMA_VERSION = 1 as const;
 
@@ -24,12 +28,9 @@ export type WorkoutTemplateCommitResolution =
   | { status: "conflict"; current: WorkoutTemplate; draft: WorkoutTemplate }
   | { status: "missing"; draft: WorkoutTemplate };
 
-export type WorkoutTemplateValidation = {
-  valid: boolean;
-  name: boolean;
-  exercise: boolean;
-  runnableSeries: boolean;
-};
+export type WorkoutTemplateValidation =
+  | { valid: true; value: WorkoutTemplate; issues: [] }
+  | { valid: false; value: null; issues: WorkoutTemplateIssue[] };
 
 export type WorkoutSessionTemplateDraftRecord = {
   schema_version: typeof WORKOUT_SESSION_TEMPLATE_DRAFT_SCHEMA_VERSION;
@@ -78,10 +79,10 @@ export function isWorkoutTemplateDraftDirty(state: WorkoutTemplateDraftState): b
 export function validateWorkoutTemplateDraft(
   template: WorkoutTemplate,
 ): WorkoutTemplateValidation {
-  const name = template.name.trim().length > 0;
-  const exercise = template.exercises.length > 0;
-  const runnableSeries = template.exercises.some((item) => (item.series ?? []).length > 0);
-  return { valid: name && exercise && runnableSeries, name, exercise, runnableSeries };
+  const result = validateWorkoutTemplateForWrite(template);
+  return result.ok
+    ? { valid: true, value: result.value, issues: [] }
+    : { valid: false, value: null, issues: result.issues };
 }
 
 export function resolveWorkoutTemplateCommit(
