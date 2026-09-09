@@ -1,0 +1,13 @@
+{
+  "id": "estiramiento-de-espalda-alta",
+  "name": "Estiramiento de espalda alta",
+  "image_male": "images/estiramiento-de-espalda-alta-male.webp",
+  "image_female": "images/estiramiento-de-espalda-alta-female.webp",
+  "muscle_group": "espalda alta",
+  "secondary_muscles": [
+    "hombros"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "beginner",
+  "instructions": "Ponte de pie con la espalda recta y los pies separados a la anchura de los hombros. Extiende los brazos al frente, entrelaza los dedos y orienta las palmas hacia fuera. Eleva lentamente los brazos sobre la cabeza manteniéndolos estirados. Lleva los hombros hacia abajo y separa suavemente los omóplatos hasta notar el estiramiento en la parte alta de la espalda. Mantén la posición entre 15 y 30 segundos y relaja."
+}

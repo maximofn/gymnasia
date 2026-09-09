@@ -1,0 +1,14 @@
+{
+  "id": "elevacion-de-rodillas-con-giro-en-suelo",
+  "name": "Elevación de rodillas con giro en suelo",
+  "image_male": "images/elevacion-de-rodillas-con-giro-en-suelo-male.webp",
+  "image_female": "images/elevacion-de-rodillas-con-giro-en-suelo-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos",
+    "flexores de cadera"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con las piernas extendidas y los brazos a los lados. Flexiona las rodillas y elévalas hacia el pecho. Mientras suben, gira la pelvis hacia un lado y acerca las rodillas al hombro contrario sin despegar los hombros del suelo. Haz una pausa breve, vuelve al centro y baja las piernas de forma controlada. Repite hacia el otro lado y continúa alternando."
+}

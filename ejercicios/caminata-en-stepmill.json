@@ -1,0 +1,16 @@
+{
+  "id": "caminata-en-stepmill",
+  "name": "Caminata en stepmill",
+  "image_male": "images/caminata-en-stepmill-male.webp",
+  "image_female": "images/caminata-en-stepmill-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "glúteos",
+    "gemelos"
+  ],
+  "equipment": "máquina de escaleras",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la máquina de escaleras a un nivel cómodo y sube con cuidado. Apoya las manos suavemente en los pasamanos si necesitas estabilidad. Pisa cada escalón alternando las piernas, con el tronco erguido y el abdomen activo. Mantén un ritmo controlado durante el tiempo o la distancia previstos y reduce la velocidad antes de bajar de la máquina."
+}

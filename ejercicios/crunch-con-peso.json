@@ -1,0 +1,13 @@
+{
+  "id": "crunch-con-peso",
+  "name": "Crunch con peso",
+  "image_male": "images/crunch-con-peso-male.webp",
+  "image_female": "images/crunch-con-peso-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "oblicuos"
+  ],
+  "equipment": "disco o mancuerna",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba con las rodillas flexionadas y los pies apoyados. Sujeta un disco o una mancuerna contra el pecho sin llevar el peso detrás de la cabeza. Activa el abdomen y acerca las costillas a la pelvis hasta separar los omóplatos del suelo, manteniendo la zona lumbar estable. Haz una pausa breve y baja lentamente hasta la posición inicial."
+}

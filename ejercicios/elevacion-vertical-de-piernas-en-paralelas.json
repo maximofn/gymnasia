@@ -1,0 +1,13 @@
+{
+  "id": "elevacion-vertical-de-piernas-en-paralelas",
+  "name": "Elevación vertical de piernas en paralelas",
+  "image_male": "images/elevacion-vertical-de-piernas-en-paralelas-male.webp",
+  "image_female": "images/elevacion-vertical-de-piernas-en-paralelas-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera"
+  ],
+  "equipment": "barras paralelas",
+  "difficulty": "advanced",
+  "instructions": "Sujétate sobre las barras paralelas con los brazos extendidos, los hombros estables y el cuerpo suspendido. Activa el abdomen y eleva las piernas juntas y rectas frente a ti. Continúa hasta que queden paralelas al suelo o un poco más arriba, evitando balancear el torso. Haz una pausa breve y bájalas lentamente hasta recuperar la posición inicial."
+}

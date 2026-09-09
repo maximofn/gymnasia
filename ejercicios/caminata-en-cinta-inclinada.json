@@ -1,0 +1,15 @@
+{
+  "id": "caminata-en-cinta-inclinada",
+  "name": "Caminata en cinta inclinada",
+  "image_male": "images/caminata-en-cinta-inclinada-male.webp",
+  "image_female": "images/caminata-en-cinta-inclinada-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "gemelos"
+  ],
+  "equipment": "cinta de correr",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la cinta a una velocidad cómoda y aumenta la inclinación de forma gradual. Camina con el torso erguido, la mirada al frente y los brazos acompañando el paso; usa los pasamanos solo cuando necesites estabilidad. Mantén el abdomen activo y una zancada natural durante el tiempo previsto. Para terminar, reduce poco a poco la inclinación y la velocidad antes de detenerte."
+}

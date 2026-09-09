@@ -1,0 +1,16 @@
+{
+  "id": "zancada-caminando-con-rodilla-alta",
+  "name": "Zancada caminando con rodilla alta",
+  "image_male": "images/zancada-caminando-con-rodilla-alta-male.webp",
+  "image_female": "images/zancada-caminando-con-rodilla-alta-female.webp",
+  "muscle_group": "cuádriceps",
+  "secondary_muscles": [
+    "isquiotibiales",
+    "glúteos",
+    "gemelos",
+    "cardio"
+  ],
+  "equipment": "peso corporal",
+  "difficulty": "intermediate",
+  "instructions": "Ponte de pie con los pies a la anchura de las caderas. Eleva una rodilla hacia el pecho manteniendo el equilibrio sobre la pierna contraria. Da un paso al frente y baja en zancada hasta que ambas rodillas formen aproximadamente 90 grados. Impúlsate con el pie delantero, eleva la rodilla contraria y enlaza la siguiente zancada. Continúa avanzando y alternando las piernas con el torso erguido y el abdomen activo."
+}

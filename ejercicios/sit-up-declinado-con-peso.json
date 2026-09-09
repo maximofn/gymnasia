@@ -1,0 +1,14 @@
+{
+  "id": "sit-up-declinado-con-peso",
+  "name": "Sit-up declinado con peso",
+  "image_male": "images/sit-up-declinado-con-peso-male.webp",
+  "image_female": "images/sit-up-declinado-con-peso-female.webp",
+  "muscle_group": "abdomen",
+  "secondary_muscles": [
+    "flexores de cadera",
+    "espalda baja"
+  ],
+  "equipment": "banco declinado y disco",
+  "difficulty": "intermediate",
+  "instructions": "Túmbate boca arriba en un banco declinado con los pies fijados bajo los rodillos y sujeta un disco contra el pecho. Activa el abdomen y eleva el torso de forma controlada hasta quedar casi perpendicular al suelo, sin tirar del cuello. Haz una pausa breve arriba y desciende lentamente hasta apoyar de nuevo la espalda en el banco."
+}

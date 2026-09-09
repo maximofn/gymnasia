@@ -1,0 +1,16 @@
+{
+  "id": "caminata-en-eliptica",
+  "name": "Caminata en elíptica",
+  "image_male": "images/caminata-en-eliptica-male.webp",
+  "image_female": "images/caminata-en-eliptica-female.webp",
+  "muscle_group": "cardio",
+  "secondary_muscles": [
+    "cuádriceps",
+    "isquiotibiales",
+    "glúteos",
+    "gemelos"
+  ],
+  "equipment": "máquina elíptica",
+  "difficulty": "beginner",
+  "instructions": "Ajusta la resistencia y la inclinación de la elíptica. Sube a los pedales y agarra las asas sin tensar los hombros. Empuja de forma alterna con los pies mientras acompañas el movimiento con los brazos, manteniendo el torso erguido y el abdomen activo. Conserva un ritmo uniforme durante el tiempo previsto y reduce progresivamente la intensidad antes de bajarte."
+}
