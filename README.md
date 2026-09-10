@@ -53,7 +53,12 @@ npm --workspace apps/feedback-worker run deploy   # despliegue manual
 ## Catálogos locales
 
 Cada ficha vive en su propio JSON. Los ficheros `all.json` e `index.json` son
-artefactos derivados y no se editan a mano. El generador los ordena de forma
+artefactos derivados que se conservan para clientes antiguos y no se editan a mano.
+El catálogo de ejercicios que consume la app actual se genera en
+`ejercicios/catalog-v1/`: un manifiesto, páginas de 30 fichas, fragmentos de búsqueda
+global e índices por ID. La app guarda cada artefacto por separado, activa una versión
+solo después de validar el manifiesto y su primera página, y mantiene las rutinas
+utilizables con su instantánea cuando está sin conexión. El generador los ordena de forma
 estable y se niega a publicarlos si encuentra un esquema inválido, identificadores
 duplicados, referencias inseguras, diferencias de mayúsculas, imágenes huérfanas,
 archivos dañados o una imagen que no sea WebP real. Las imágenes nutricionales

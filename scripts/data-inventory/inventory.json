@@ -220,6 +220,16 @@
       "fullDeletion": "delete"
     },
     {
+      "key": "gymnasia.mobile.exercise_catalog.v4",
+      "backend": "async-storage",
+      "personal": false,
+      "dataCategory": "public-catalog-cache",
+      "purpose": "Familia de caché paginada del catálogo público de ejercicios. Guarda por separado el manifiesto activo y anterior, páginas, fragmentos de búsqueda e índices por ID verificados mediante SHA-256; conserva como máximo dos versiones y permite resolver rutinas sin conexión.",
+      "clearedBy": "full-deletion",
+      "activityDeletion": "preserve",
+      "fullDeletion": "delete"
+    },
+    {
       "key": "gymnasia.mobile.foods_repo.v1",
       "backend": "async-storage",
       "personal": false,

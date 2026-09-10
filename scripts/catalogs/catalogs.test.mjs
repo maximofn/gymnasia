@@ -111,6 +111,19 @@ test("genera todos los agregados e índices de forma estable", async (t) => {
   assert.equal(first.artifacts.some((artifact) => artifact.path.endsWith("recetas/index.json")), false);
 });
 
+test("detecta y elimina artefactos paginados que ya no pertenecen al manifiesto", async (t) => {
+  const root = await createFixture(t);
+  const unexpected = join(root, "ejercicios", "catalog-v1", "pages", "9999.json");
+  await writeJson(unexpected, { obsolete: true });
+  const drift = await inspectCatalogs({ root });
+  assert.ok(drift.violations.some((violation) => (
+    violation.code === "GENERATED_UNEXPECTED" && violation.path.endsWith("pages/9999.json")
+  )));
+  await writeCatalogArtifacts(drift.artifacts);
+  await assert.rejects(() => readFile(unexpected), /ENOENT/);
+  assert.deepEqual((await inspectCatalogs({ root })).violations, []);
+});
+
 test("rechaza schemas incompatibles, números negativos e IDs discordantes", async (t) => {
   const root = await createFixture(t);
   await writeJson(join(root, "alimentos", "pera.json"), {
@@ -205,6 +218,38 @@ test("revierte todos los agregados si falla una sustitución", async (t) => {
   ], { domains: ["alimentos"], fileSystem: failingFileSystem }), /rename simulado/);
   assert.equal(await readFile(first, "utf8"), "anterior-1");
   assert.equal(await readFile(second, "utf8"), "anterior-2");
+});
+
+test("restaura los artefactos publicados si falla la limpieza antes del manifiesto", async (t) => {
+  const root = await mkdtemp(join(tmpdir(), "gymnasia-catalog-cleanup-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const generatedRoot = join(root, "ejercicios", "catalog-v1");
+  const page = join(generatedRoot, "pages", "0000.json");
+  const manifest = join(generatedRoot, "manifest.json");
+  const obsolete = join(generatedRoot, "pages", "9999.json");
+  await mkdir(join(generatedRoot, "pages"), { recursive: true });
+  await writeFile(page, "pagina anterior");
+  await writeFile(manifest, "manifiesto anterior");
+  await writeFile(obsolete, "sobrante");
+  const failingFileSystem = new Proxy(realFileSystem, {
+    get(target, property) {
+      if (property === "rm") {
+        return async (path, ...arguments_) => {
+          if (path === obsolete) throw new Error("limpieza simulada");
+          return target.rm(path, ...arguments_);
+        };
+      }
+      const value = Reflect.get(target, property);
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  });
+  await assert.rejects(() => writeCatalogArtifacts([
+    { domain: "ejercicios", path: page, contents: "pagina nueva" },
+    { domain: "ejercicios", path: manifest, contents: "manifiesto nuevo" },
+  ], { domains: ["ejercicios"], fileSystem: failingFileSystem }), /limpieza simulada/);
+  assert.equal(await readFile(page, "utf8"), "pagina anterior");
+  assert.equal(await readFile(manifest, "utf8"), "manifiesto anterior");
+  assert.equal(await readFile(obsolete, "utf8"), "sobrante");
 });
 
 test("las rutas arbitrarias nunca escapan del catálogo", () => {

@@ -48,6 +48,7 @@ export const LOCAL_DATA_MANIFEST = [
   { key: "gymnasia_debug_traces", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.exercises_repo.v2", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.exercises_repo.v3", activity: "preserve", full: "delete" },
+  { key: "gymnasia.mobile.exercise_catalog.v4", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.foods_repo.v1", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.foods_repo.v2", activity: "preserve", full: "delete" },
   { key: "gymnasia.mobile.products_repo.v1", activity: "preserve", full: "delete" },

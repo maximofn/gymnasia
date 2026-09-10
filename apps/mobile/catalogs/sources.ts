@@ -1,7 +1,6 @@
 import { scopedStorageKey } from "../runtimeEnvironment";
-import { parseExerciseCatalog, parseFoodCatalog } from "./schemaValidation";
+import { parseFoodCatalog } from "./schemaValidation";
 import type {
-  ExerciseCatalogEntry,
   FoodCatalogEntry,
   FoodCatalogSourceId,
   LegacyFoodSource,
@@ -81,33 +80,16 @@ export const FOOD_CATALOG_DEFINITIONS = [
   ),
 ] as const;
 
-export const EXERCISE_CATALOG_DEFINITION: CatalogDefinition<ExerciseCatalogEntry> = {
+export const EXERCISE_CATALOG_SOURCE = {
   sourceId: "gymnasia_exercises",
   label: "Ejercicios",
-  url: `${RAW_BASE_URL}/ejercicios/all.json`,
-  cacheKey: scopedStorageKey("gymnasia.mobile.exercises_repo.v3"),
-  legacyCacheKey: scopedStorageKey("gymnasia.mobile.exercises_repo.v2"),
   provenance: {
     repositoryUrl: REPOSITORY_URL,
     catalogPath: "ejercicios",
     attributionUrl: `${REPOSITORY_URL}/blob/main/ejercicios/SOURCES.md`,
     licenseLabel: "Consulta la atribución por fuente",
   },
-  parse: (value) => {
-    if (!Array.isArray(value)) return null;
-    const rawEntries = value.map((candidate) => {
-      if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return candidate;
-      const { sourceId, ...raw } = candidate as Record<string, unknown>;
-      if (sourceId !== undefined && sourceId !== "gymnasia_exercises") return null;
-      return raw;
-    });
-    if (rawEntries.some((entry) => entry === null)) return null;
-    return parseExerciseCatalog(rawEntries)?.map((entry) => ({
-      ...entry,
-      sourceId: "gymnasia_exercises",
-    })) ?? null;
-  },
-};
+} as const;
 
 export const PERSONAL_FOODS_SOURCE_DEFINITION = {
   sourceId: "user_personal_foods",
@@ -125,7 +107,7 @@ export const CATALOG_SOURCE_REGISTRY = {
   gymnasia_foods: FOOD_CATALOG_DEFINITIONS[0],
   gymnasia_products: FOOD_CATALOG_DEFINITIONS[1],
   gymnasia_recipes: FOOD_CATALOG_DEFINITIONS[2],
-  gymnasia_exercises: EXERCISE_CATALOG_DEFINITION,
+  gymnasia_exercises: EXERCISE_CATALOG_SOURCE,
   user_personal_foods: PERSONAL_FOODS_SOURCE_DEFINITION,
 } as const;
 
@@ -144,7 +126,7 @@ export function foodCatalogImageUri(entry: FoodCatalogEntry | null | undefined):
 }
 
 export function exerciseCatalogImageUri(
-  entry: RawExerciseCatalogEntry,
+  entry: Pick<RawExerciseCatalogEntry, "image_male" | "image_female">,
   gender: "male" | "female",
 ): string {
   const imagePath = gender === "female" ? entry.image_female : entry.image_male;

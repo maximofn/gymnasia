@@ -160,6 +160,48 @@ describe("ejecutor de tools", () => {
     })).resolves.toBe("El JSON de medidas no es válido.");
   });
 
+  it("busca y resuelve ejercicios mediante el catálogo paginado", async () => {
+    const execute = createAgentToolExecutor(createDependencies());
+    const searchExerciseCatalog = vi.fn(async () => exercises);
+    const searchOutput = JSON.parse(await execute("search_exercises", { query: "sentadilla" }, {
+      searchExerciseCatalog,
+      getExerciseCatalogAvailability: () => ({
+        availability: "fresh",
+        fetchedAt: "2026-09-10T10:00:00.000Z",
+        sources: [],
+        warnings: [],
+      }),
+    }));
+    expect(searchExerciseCatalog).toHaveBeenCalledWith(expect.objectContaining({ query: "sentadilla" }));
+    expect(searchOutput).toMatchObject({
+      availability: "fresh",
+      results: [{ item_id: "sentadilla" }],
+    });
+
+    let store = createEmptyStore();
+    const resolveExerciseCatalogIds = vi.fn(async () => exercises);
+    const routineOutput = JSON.parse(await execute("create_routine", {
+      data: {
+        name: "Pierna paginada",
+        category: "strength",
+        icon: "activity",
+        exercises: [{
+          kind: "catalog",
+          source_id: "gymnasia_exercises",
+          item_id: "sentadilla",
+          series: [{ type: "normal", reps: 8 }],
+        }],
+      },
+    }, {
+      exercisesRepo: [],
+      resolveExerciseCatalogIds,
+      setStore: (updater) => { store = updater(store); },
+    }));
+    expect(resolveExerciseCatalogIds).toHaveBeenCalledWith(["sentadilla"]);
+    expect(routineOutput.status).toBe("created");
+    expect(store.templates[0].exercises[0].catalog_link).toMatchObject({ status: "linked" });
+  });
+
   it("crea y completa la medición del día con entrada estructurada sin borrar lo omitido", async () => {
     let store = createEmptyStore();
     const commitStore = vi.fn(async (updater: (previous: ToolStore) => ToolStore) => {
