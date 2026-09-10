@@ -136,13 +136,22 @@ import {
   refreshCatalog,
 } from "./catalogs/runtime";
 import {
-  EXERCISE_CATALOG_DEFINITION,
+  EXERCISE_CATALOG_SOURCE,
   FOOD_CATALOG_DEFINITIONS,
   PERSONAL_FOODS_SOURCE_DEFINITION,
   exerciseCatalogImageUri,
   foodCatalogImageUri,
   normalizePersonalFood,
 } from "./catalogs/sources";
+import { ExerciseCatalogBrowser, type ExerciseCatalogBrowserMode } from "./catalogs/ExerciseCatalogBrowser";
+import {
+  createExerciseCatalogService,
+  normalizeExerciseCatalogSearch,
+  type ExerciseCatalogResult,
+  type ExerciseCatalogService,
+  type ExerciseCatalogState,
+  type ExerciseCatalogSummary,
+} from "./catalogs/exerciseCatalogRuntime";
 import {
   exerciseCatalogMatchKey,
   findByCatalogRef,
@@ -595,8 +604,11 @@ type ChatProviderCallOptions = StreamingHandlers & {
   store?: LocalStore;
   foodsRepo?: FoodRepoEntry[];
   exercisesRepo?: ExerciseRepoEntry[];
+  searchExerciseCatalog?: ToolExecutionContext["searchExerciseCatalog"];
+  resolveExerciseCatalogIds?: ToolExecutionContext["resolveExerciseCatalogIds"];
   foodCatalogAvailability?: CatalogSearchAvailability;
   exerciseCatalogAvailability?: CatalogSearchAvailability;
+  getExerciseCatalogAvailability?: ToolExecutionContext["getExerciseCatalogAvailability"];
   executionId?: string;
   healthDecision?: HealthSafetyDecision;
   healthPolicy?: HealthSafetyRuntimePolicy;
@@ -1259,6 +1271,9 @@ function createToolExecutionContext(
   foodCatalogAvailability?: CatalogSearchAvailability,
   exerciseCatalogAvailability?: CatalogSearchAvailability,
   operationId?: string,
+  searchExerciseCatalog?: ToolExecutionContext["searchExerciseCatalog"],
+  resolveExerciseCatalogIds?: ToolExecutionContext["resolveExerciseCatalogIds"],
+  getExerciseCatalogAvailability?: ToolExecutionContext["getExerciseCatalogAvailability"],
 ): ToolExecutionContext {
   return {
     setStore: setStore
@@ -1273,6 +1288,9 @@ function createToolExecutionContext(
     foodCatalogAvailability,
     exerciseCatalogAvailability,
     operationId,
+    searchExerciseCatalog,
+    resolveExerciseCatalogIds,
+    getExerciseCatalogAvailability,
   };
 }
 
@@ -1287,6 +1305,9 @@ async function executeChatTool(
   foodCatalogAvailability?: CatalogSearchAvailability,
   exerciseCatalogAvailability?: CatalogSearchAvailability,
   operationId?: string,
+  searchExerciseCatalog?: ToolExecutionContext["searchExerciseCatalog"],
+  resolveExerciseCatalogIds?: ToolExecutionContext["resolveExerciseCatalogIds"],
+  getExerciseCatalogAvailability?: ToolExecutionContext["getExerciseCatalogAvailability"],
 ) {
   return executeAgentTool(
     name,
@@ -1300,6 +1321,9 @@ async function executeChatTool(
       foodCatalogAvailability,
       exerciseCatalogAvailability,
       operationId,
+      searchExerciseCatalog,
+      resolveExerciseCatalogIds,
+      getExerciseCatalogAvailability,
     ),
   );
 }
@@ -3040,6 +3064,9 @@ async function callProviderChatAPIWithTools(
         options?.foodCatalogAvailability,
         options?.exerciseCatalogAvailability,
         operationId,
+        options?.searchExerciseCatalog,
+        options?.resolveExerciseCatalogIds,
+        options?.getExerciseCatalogAvailability,
       ),
     );
   };
@@ -6706,6 +6733,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [dataDeletionBusy, setDataDeletionBusy] = useState(false);
   const dataDeletionBusyRef = useRef(false);
   const catalogRuntimeGenerationRef = useRef(0);
+  const exerciseCatalogServiceRef = useRef<ExerciseCatalogService | null>(null);
   const [dataDeletionReport, setDataDeletionReport] =
     useState<LocalDataDeletionReport | null>(deletionOutcome?.report ?? null);
   const [dataDeletionSuccessVisible, setDataDeletionSuccessVisible] = useState(
@@ -6927,13 +6955,36 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [selectedExerciseDetail, setSelectedExerciseDetail] = useState<ExerciseRepoEntry | null>(null);
   const [exercisesRepo, setExercisesRepo] = useState<ExerciseRepoEntry[]>([]);
   const [exerciseCatalogSnapshot, setExerciseCatalogSnapshot] = useState<CatalogSnapshot<ExerciseRepoEntry>>(
-    () => initialCatalogSnapshot(EXERCISE_CATALOG_DEFINITION),
+    () => ({
+      ...EXERCISE_CATALOG_SOURCE,
+      availability: "unavailable",
+      data: [],
+      fetchedAt: null,
+      refreshing: false,
+      cachePersisted: false,
+      warning: null,
+    }),
   );
   const [exercisePickerOpen, setExercisePickerOpen] = useState(false);
+  const [exercisePickerMode, setExercisePickerMode] = useState<ExerciseCatalogBrowserMode>("select");
   const [exercisePickerSearch, setExercisePickerSearch] = useState("");
   const [customExerciseFormOpen, setCustomExerciseFormOpen] = useState(false);
   const [customExerciseDraft, setCustomExerciseDraft] = useState<CustomExerciseDraft>(EMPTY_CUSTOM_EXERCISE_DRAFT);
   const [exercisePickerMuscleFilter, setExercisePickerMuscleFilter] = useState("all");
+  const [exerciseCatalogState, setExerciseCatalogState] = useState<ExerciseCatalogState>({
+    availability: "unavailable",
+    manifest: null,
+    fetchedAt: null,
+    warning: null,
+  });
+  const [exerciseCatalogResults, setExerciseCatalogResults] = useState<ExerciseCatalogSummary[]>([]);
+  const [exerciseCatalogResult, setExerciseCatalogResult] = useState<ExerciseCatalogResult | null>(null);
+  const [exerciseCatalogReady, setExerciseCatalogReady] = useState(false);
+  const [exerciseCatalogLoading, setExerciseCatalogLoading] = useState(false);
+  const [exerciseCatalogLoadingMore, setExerciseCatalogLoadingMore] = useState(false);
+  const exerciseCatalogQueryRevisionRef = useRef(0);
+  const exerciseCatalogAbortRef = useRef<AbortController | null>(null);
+  const exerciseCatalogLoadingMoreRef = useRef(false);
   const [supersetPickerTarget, setSupersetPickerTarget] = useState<{
     exerciseId: string;
     seriesId: string;
@@ -7653,8 +7704,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     [activeTrainingPreviewExercises, trainingDetailMuscleFilter],
   );
   const exercisePickerMuscleGroups = useMemo(
-    () => Array.from(new Set(exercisesRepo.map((e) => e.muscle_group))),
-    [exercisesRepo],
+    () => exerciseCatalogState.manifest?.muscleGroups.map((group) => group.value) ?? [],
+    [exerciseCatalogState.manifest],
   );
   // Ejercicios que el usuario tiene en sus rutinas (base de datos local) pero que
   // todavía no existen en la base de datos de la app (markdowns/JSON en GitHub).
@@ -7669,7 +7720,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         if (!name) continue;
         // Si el ejercicio coincide (incluso con nombre distinto) con uno del repo,
         // no es "local"; se usa el mismo matcher tolerante que el sync de im\u00e1genes.
-        if (resolveRepoExercise(exercisesRepo, name, exercise.catalog_link)) continue;
+        if (exercise.catalog_link?.status === "linked"
+          || resolveRepoExercise(exercisesRepo, name, exercise.catalog_link)) continue;
         const key = exerciseCatalogMatchKey(name);
         if (seen.has(key)) continue;
         seen.add(key);
@@ -7679,16 +7731,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     result.sort((a, b) => a.name.localeCompare(b.name));
     return result;
   }, [store.templates, exercisesRepo]);
-  const filteredExercisePickerEntries = useMemo(() => {
-    const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const search = normalize(exercisePickerSearch.trim());
-    return exercisesRepo.filter((entry) => {
-      const matchesSearch = !search || normalize(entry.name).includes(search) || normalize(entry.muscle_group).includes(search);
-      const matchesMuscle = exercisePickerMuscleFilter === "all" || entry.muscle_group === exercisePickerMuscleFilter;
-      return matchesSearch && matchesMuscle;
-    });
-  }, [exercisesRepo, exercisePickerSearch, exercisePickerMuscleFilter]);
-
   const activeTrainingPreviewImageUri = useMemo(
     () => activeTrainingPreviewExercises.find((exercise) => exercise.imageUri)?.imageUri ?? null,
     [activeTrainingPreviewExercises],
@@ -8985,26 +9027,84 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     };
   }, []);
 
-  function applyExerciseCatalogSnapshot(
-    snapshot: CatalogSnapshot<ExerciseRepoEntry>,
-    migrateLegacy: boolean,
-  ): void {
-    setExerciseCatalogSnapshot(snapshot);
-    setExercisesRepo(snapshot.data);
-    if (snapshot.data.length === 0) return;
+  function mergeResolvedExercises(entries: ExerciseRepoEntry[], migrateLegacy = false): void {
+    if (entries.length === 0) return;
+    setExercisesRepo((previous) => {
+      const byKey = new Map(previous.map((entry) => [`${entry.sourceId}:${entry.id}`, entry]));
+      for (const entry of entries) byKey.set(`${entry.sourceId}:${entry.id}`, entry);
+      return [...byKey.values()];
+    });
     setStore((previous) => {
       const synchronized = synchronizeLinkedExercises(
         previous.templates,
-        snapshot.data,
+        entries,
         (entry) => getExerciseImageUrl(entry, "male"),
       );
       const migrated = migrateLegacy
-        ? linkLegacyExercisesFromFreshCatalog(synchronized.templates, snapshot.data)
+        ? linkLegacyExercisesFromFreshCatalog(synchronized.templates, entries)
         : { templates: synchronized.templates, changed: false };
       return synchronized.changed || migrated.changed
         ? { ...previous, templates: migrated.templates }
         : previous;
     });
+  }
+
+  function linkedExerciseIds(): string[] {
+    return storeRef.current.templates.flatMap((template) => template.exercises.flatMap((exercise) => [
+      exercise.catalog_link?.status === "linked" ? exercise.catalog_link.ref.itemId : null,
+      ...(exercise.series ?? []).flatMap((series) => (series.sub_series ?? []).map((subSeries) => (
+        subSeries.catalog_link?.status === "linked" ? subSeries.catalog_link.ref.itemId : null
+      ))),
+    ])).filter((id): id is string => !!id);
+  }
+
+  function unlinkedExerciseNames(): string[] {
+    return [...new Set(storeRef.current.templates.flatMap((template) => template.exercises.flatMap((exercise) => [
+      exercise.catalog_link?.status === "linked" ? null : exercise.name?.trim() || null,
+      ...(exercise.series ?? []).flatMap((series) => (series.sub_series ?? []).map((subSeries) => (
+        subSeries.catalog_link?.status === "linked" ? null : subSeries.exercise_name?.trim() || null
+      ))),
+    ])).filter((name): name is string => !!name))];
+  }
+
+  async function refreshRoutineExerciseLinks(): Promise<void> {
+    const service = getExerciseCatalogService();
+    const linked = [...(await service.resolveByIds(linkedExerciseIds())).values()];
+    const searched = await Promise.all(unlinkedExerciseNames().map(async (name) => {
+      const result = await service.search({ query: name, queryFields: ["name"] }, undefined, 15);
+      const entries = await Promise.all(result.items.map((item) => service.getEntry(item)));
+      return entries.filter((entry): entry is ExerciseRepoEntry => !!entry);
+    }));
+    mergeResolvedExercises([...linked, ...searched.flat()], true);
+  }
+
+  function applyExerciseCatalogState(next: ExerciseCatalogState, refreshing = false): void {
+    setExerciseCatalogState(next);
+    setExerciseCatalogSnapshot((previous) => ({
+      ...previous,
+      availability: next.availability,
+      fetchedAt: next.fetchedAt,
+      refreshing,
+      warning: next.warning,
+    }));
+  }
+
+  function getExerciseCatalogService(): ExerciseCatalogService {
+    if (!exerciseCatalogServiceRef.current) {
+      exerciseCatalogServiceRef.current = createExerciseCatalogService({
+        storage: {
+          getItem: (key) => AsyncStorage.getItem(key),
+          setItem: async (key, value) => {
+            if (dataDeletionBusyRef.current) throw new Error("Catalog runtime invalidated.");
+            await AsyncStorage.setItem(key, value);
+          },
+          removeItem: (key) => AsyncStorage.removeItem(key),
+          getAllKeys: () => AsyncStorage.getAllKeys(),
+        },
+        fetcher: (url, init) => fetch(url, init),
+      });
+    }
+    return exerciseCatalogServiceRef.current;
   }
 
   function catalogRuntimeDependencies(generation: number) {
@@ -9036,15 +9136,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   async function retryExerciseCatalog(): Promise<void> {
     const generation = catalogRuntimeGenerationRef.current;
-    const pending = { ...exerciseCatalogSnapshot, refreshing: true };
-    setExerciseCatalogSnapshot(pending);
-    const refreshed = await refreshCatalog(
-      EXERCISE_CATALOG_DEFINITION,
-      pending,
-      catalogRuntimeDependencies(generation),
-    );
+    if (exercisePickerOpen) {
+      setExerciseCatalogReady(false);
+      setExerciseCatalogLoading(true);
+    }
+    applyExerciseCatalogState(exerciseCatalogState, true);
+    const refreshed = await getExerciseCatalogService().open();
     if (catalogRuntimeGenerationRef.current !== generation) return;
-    applyExerciseCatalogSnapshot(refreshed, refreshed.availability === "fresh");
+    applyExerciseCatalogState(refreshed);
+    if (exercisePickerOpen) setExerciseCatalogReady(true);
   }
 
   useEffect(() => {
@@ -9068,19 +9168,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }).catch((catalogError) => {
       console.error("[Catalogs] nutrition runtime failed:", catalogError);
     });
-    void readCatalogCache(
-      EXERCISE_CATALOG_DEFINITION,
-      dependencies,
-    ).then(async (cached) => {
+    void getExerciseCatalogService().initialize().then(async (cached) => {
       if (cancelled || catalogRuntimeGenerationRef.current !== generation) return;
-      applyExerciseCatalogSnapshot({ ...cached, refreshing: true }, false);
-      const refreshed = await refreshCatalog(
-        EXERCISE_CATALOG_DEFINITION,
-        { ...cached, refreshing: true },
-        dependencies,
-      );
+      applyExerciseCatalogState(cached);
+      if (!cached.manifest) return;
+      const firstPage = await getExerciseCatalogService().browse();
       if (cancelled || catalogRuntimeGenerationRef.current !== generation) return;
-      applyExerciseCatalogSnapshot(refreshed, refreshed.availability === "fresh");
+      const entries = await Promise.all(firstPage.items.map((item) => getExerciseCatalogService().getEntry(item)));
+      const linkedEntries = [...(await getExerciseCatalogService().resolveCachedByIds(linkedExerciseIds())).values()];
+      mergeResolvedExercises([
+        ...entries.filter((entry): entry is ExerciseRepoEntry => !!entry),
+        ...linkedEntries,
+      ], true);
     }).catch((catalogError) => {
       console.error("[Catalogs] exercise runtime failed:", catalogError);
     });
@@ -9092,6 +9191,109 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     readBackupMeta().then((meta) => setLastBackupAt(meta.lastBackupAt));
     return () => { cancelled = true; };
   }, [isHydrated]);
+
+  useEffect(() => {
+    if (!exercisePickerOpen) {
+      exerciseCatalogAbortRef.current?.abort();
+      setExerciseCatalogReady(false);
+      return;
+    }
+    const generation = catalogRuntimeGenerationRef.current;
+    const controller = new AbortController();
+    exerciseCatalogAbortRef.current?.abort();
+    exerciseCatalogAbortRef.current = controller;
+    setExerciseCatalogLoading(true);
+    setExerciseCatalogReady(false);
+    void getExerciseCatalogService().open(controller.signal).then((next) => {
+      if (controller.signal.aborted || generation !== catalogRuntimeGenerationRef.current) return;
+      applyExerciseCatalogState(next);
+      setExerciseCatalogReady(true);
+      void refreshRoutineExerciseLinks().catch(() => {});
+    }).catch(() => {
+      if (controller.signal.aborted) return;
+      setExerciseCatalogReady(true);
+    }).finally(() => {
+      if (!controller.signal.aborted) setExerciseCatalogLoading(false);
+    });
+    return () => controller.abort();
+  }, [exercisePickerOpen]);
+
+  useEffect(() => {
+    if (!exercisePickerOpen || !exerciseCatalogReady) return;
+    const revision = exerciseCatalogQueryRevisionRef.current + 1;
+    exerciseCatalogQueryRevisionRef.current = revision;
+    const controller = new AbortController();
+    exerciseCatalogAbortRef.current?.abort();
+    exerciseCatalogAbortRef.current = controller;
+    setExerciseCatalogLoading(true);
+    setExerciseCatalogResults([]);
+    setExerciseCatalogResult(null);
+    const timer = setTimeout(() => {
+      const criteria = {
+        query: exercisePickerSearch,
+        muscleGroup: exercisePickerMuscleFilter === "all" ? "" : exercisePickerMuscleFilter,
+      };
+      const operation = exercisePickerSearch.trim() || exercisePickerMuscleFilter !== "all"
+        ? getExerciseCatalogService().search(criteria, undefined, 30, controller.signal)
+        : getExerciseCatalogService().browse(undefined, controller.signal);
+      void operation.then((result) => {
+        if (controller.signal.aborted || revision !== exerciseCatalogQueryRevisionRef.current) return;
+        setExerciseCatalogResult(result);
+        setExerciseCatalogResults(result.items);
+      }).catch(() => {
+        if (controller.signal.aborted || revision !== exerciseCatalogQueryRevisionRef.current) return;
+        const current = getExerciseCatalogService().getState();
+        setExerciseCatalogResult({
+          availability: current.availability,
+          globalCoverage: false,
+          cachedResults: false,
+          items: [],
+          nextCursor: null,
+          done: true,
+          warning: "remote_failed",
+        });
+      }).finally(() => {
+        if (!controller.signal.aborted && revision === exerciseCatalogQueryRevisionRef.current) {
+          setExerciseCatalogLoading(false);
+        }
+      });
+    }, 160);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [exerciseCatalogReady, exercisePickerMuscleFilter, exercisePickerOpen, exercisePickerSearch]);
+
+  async function loadMoreExerciseCatalogResults(): Promise<void> {
+    if (!exerciseCatalogResult?.nextCursor || exerciseCatalogLoadingMoreRef.current) return;
+    exerciseCatalogLoadingMoreRef.current = true;
+    setExerciseCatalogLoadingMore(true);
+    const revision = exerciseCatalogQueryRevisionRef.current;
+    const cursor = exerciseCatalogResult.nextCursor;
+    const signal = exerciseCatalogAbortRef.current?.signal;
+    try {
+      const criteria = {
+        query: exercisePickerSearch,
+        muscleGroup: exercisePickerMuscleFilter === "all" ? "" : exercisePickerMuscleFilter,
+      };
+      const result = exercisePickerSearch.trim() || exercisePickerMuscleFilter !== "all"
+        ? await getExerciseCatalogService().search(criteria, cursor, 30, signal)
+        : await getExerciseCatalogService().browse(cursor, signal);
+      if (revision !== exerciseCatalogQueryRevisionRef.current) return;
+      setExerciseCatalogResults((previous) => {
+        const seen = new Set(previous.map((item) => `${item.sourceId}:${item.id}`));
+        return [...previous, ...result.items.filter((item) => !seen.has(`${item.sourceId}:${item.id}`))];
+      });
+      setExerciseCatalogResult(result);
+    } catch {
+      if (revision === exerciseCatalogQueryRevisionRef.current) {
+        setExerciseCatalogResult((previous) => previous ? { ...previous, warning: "remote_failed" } : previous);
+      }
+    } finally {
+      exerciseCatalogLoadingMoreRef.current = false;
+      setExerciseCatalogLoadingMore(false);
+    }
+  }
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -9835,6 +10037,43 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             exercisesRepo,
             foodCatalogAvailability,
             exerciseCatalogAvailability,
+            searchExerciseCatalog: async (criteria) => {
+              const service = getExerciseCatalogService();
+              const nextState = await service.open();
+              applyExerciseCatalogState(nextState);
+              const result = await service.search({ ...criteria, queryFields: ["name"] }, undefined, 15);
+              const entries = await Promise.all(result.items.map((item) => service.getEntry(item)));
+              const resolved = entries.filter((entry): entry is ExerciseRepoEntry => !!entry);
+              mergeResolvedExercises(resolved);
+              return resolved;
+            },
+            resolveExerciseCatalogIds: async (ids) => {
+              const service = getExerciseCatalogService();
+              const nextState = await service.open();
+              applyExerciseCatalogState(nextState);
+              const resolved = [...(await service.resolveByIds(ids)).values()];
+              mergeResolvedExercises(resolved);
+              return resolved;
+            },
+            getExerciseCatalogAvailability: () => {
+              const current = getExerciseCatalogService().getState();
+              return {
+                availability: current.availability,
+                fetchedAt: current.fetchedAt,
+                sources: [{
+                  sourceId: "gymnasia_exercises",
+                  label: "Ejercicios",
+                  availability: current.availability,
+                  fetchedAt: current.fetchedAt,
+                  refreshing: false,
+                  cachePersisted: current.warning !== "cache_write_failed",
+                  warning: current.warning,
+                }],
+                warnings: current.warning === "remote_failed"
+                  ? ["Ejercicios: usando la cobertura disponible en el dispositivo."]
+                  : [],
+              };
+            },
             executionId: userMessage.id,
             healthDecision,
             healthPolicy: healthSelection.policy,
@@ -11918,14 +12157,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       clearTimeout(exerciseIssueDebounceRef.current[exerciseId]);
     }
     exerciseIssueDebounceRef.current[exerciseId] = setTimeout(() => {
+      void (async () => {
       const trimmed = name.trim();
       if (!trimmed) return;
       const key = trimmed.toLowerCase();
       if (exerciseIssueSentRef.current.has(key)) return;
-      const repoMatch = exercisesRepo.find(
-        (r) => r.name.toLowerCase() === key,
+      const catalogState = await getExerciseCatalogService().open();
+      if (!catalogState.manifest) return;
+      const matches = await getExerciseCatalogService().search({
+        query: trimmed,
+        queryFields: ["name"],
+      }, undefined, 15);
+      if (!matches.globalCoverage) return;
+      const exactMatch = matches.items.some(
+        (entry) => normalizeExerciseCatalogSearch(entry.name) === normalizeExerciseCatalogSearch(trimmed),
       );
-      if (!repoMatch) {
+      if (!exactMatch) {
         const exercise = activeTrainingTemplate?.exercises.find((e) => e.id === exerciseId);
         if (activeTrainingTemplateId) {
           pendingTrainingExerciseFeedbackRef.current.push({
@@ -11939,6 +12186,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           });
         }
       }
+      })().catch(() => {});
     }, 2000);
   }
 
@@ -11996,7 +12244,47 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   function openExercisePicker() {
     setExercisePickerSearch("");
     setExercisePickerMuscleFilter("all");
+    setExercisePickerMode("select");
+    setExerciseCatalogReady(false);
     setExercisePickerOpen(true);
+  }
+
+  function openExerciseCatalogInspector() {
+    setExercisePickerSearch("");
+    setExercisePickerMuscleFilter("all");
+    setExercisePickerMode("inspect");
+    setExerciseCatalogReady(false);
+    setExercisePickerOpen(true);
+  }
+
+  async function chooseExerciseCatalogEntry(summary: ExerciseCatalogSummary): Promise<void> {
+    const entry = await getExerciseCatalogService().getEntry(summary);
+    if (!entry) {
+      setError("No se pudo abrir la ficha del ejercicio. Inténtalo de nuevo.");
+      return;
+    }
+    mergeResolvedExercises([entry]);
+    if (exercisePickerMode === "inspect") {
+      setSelectedExerciseDetail(entry);
+      return;
+    }
+    if (supersetPickerTarget) {
+      updateSubSeriesField(supersetPickerTarget.exerciseId, supersetPickerTarget.seriesId, supersetPickerTarget.subSeriesId, "exercise_name", entry.name);
+      updateSubSeriesField(supersetPickerTarget.exerciseId, supersetPickerTarget.seriesId, supersetPickerTarget.subSeriesId, "exercise_id", entry.id);
+      updateSubSeriesField(
+        supersetPickerTarget.exerciseId,
+        supersetPickerTarget.seriesId,
+        supersetPickerTarget.subSeriesId,
+        "catalog_link",
+        linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
+      );
+      setSupersetPickerTarget(null);
+      setExercisePickerOpen(false);
+    } else if (activeWorkoutSession) {
+      addExerciseToSession(entry);
+    } else {
+      addExerciseFromRepo(entry);
+    }
   }
 
   function addExerciseFromRepo(entry: ExerciseRepoEntry) {
@@ -13826,6 +14114,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   function storageTargetLabel(key: string): string {
+    if (key.includes("gymnasia.mobile.exercise_catalog.v4")) {
+      return "Caché paginada de ejercicios";
+    }
     const labels: Array<[string, string]> = [
       ["gymnasia.mobile.local.v3", "Actividad, medidas y conversaciones"],
       ["gymnasia.mobile.local.last_good.v1", "Copia íntegra de recuperación"],
@@ -15655,7 +15946,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </Text>
                   <View style={{ flexDirection: "row", gap: 8 }}>
                     <Pressable
-                      onPress={() => setExercisePickerOpen(true)}
+                      onPress={openExercisePicker}
                       style={{
                         flex: 1,
                         minHeight: 44,
@@ -16544,7 +16835,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                 <View style={{ flexDirection: "row", gap: 8 }}>
                   <Pressable
-                    onPress={() => setExercisePickerOpen(true)}
+                    onPress={openExercisePicker}
                     style={{
                       flex: 1,
                       minHeight: 44,
@@ -18233,6 +18524,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                                   setSupersetPickerTarget({ exerciseId: exercise.id, seriesId: seriesItem.id, subSeriesId: sub.id });
                                                   setExercisePickerSearch("");
                                                   setExercisePickerMuscleFilter("all");
+                                                  setExercisePickerMode("select");
+                                                  setExerciseCatalogReady(false);
                                                   setExercisePickerOpen(true);
                                                 }}
                                                 style={{ flex: 1, minHeight: 26, borderRadius: 6, backgroundColor: "#202630", justifyContent: "center", paddingHorizontal: 6 }}
@@ -22383,7 +22676,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     )}
                   </View>
 
-                  {/* Exercises repository section (base de datos de la app, GitHub) */}
+                  {/* Catálogo público de ejercicios */}
                   <View
                     style={{
                       borderWidth: 1,
@@ -22395,63 +22688,36 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     }}
                   >
                     <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                      Ejercicios de la app ({exercisesRepo.length})
+                      Catálogo de ejercicios
                     </Text>
                     <CatalogStatusNotice
                       metadata={exerciseCatalogAvailability}
                       onRetry={() => { void retryExerciseCatalog(); }}
                       testID="settings-exercise-catalog-status"
                     />
-                    {exercisesRepo.length === 0 ? (
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                        No se han cargado ejercicios del repositorio.
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>
+                      {exerciseCatalogState.manifest
+                        ? `${exerciseCatalogState.manifest.itemCount.toLocaleString("es-ES")} ejercicios · ${exerciseCatalogState.manifest.pageSize} por página`
+                        : "Abre el catálogo para descargar su índice y consultar los ejercicios disponibles."}
+                    </Text>
+                    <Pressable
+                      testID="settings-open-exercise-catalog"
+                      onPress={openExerciseCatalogInspector}
+                      style={{
+                        minHeight: 48,
+                        borderRadius: mobileTheme.radius.pill,
+                        backgroundColor: mobileTheme.color.brandPrimary,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "row",
+                        gap: 8,
+                      }}
+                    >
+                      <Feather name="book-open" size={17} color="#07090D" />
+                      <Text style={{ color: "#07090D", fontSize: 15, fontWeight: "800" }}>
+                        Consultar catálogo
                       </Text>
-                    ) : (
-                      exercisesRepo.map((ex) => (
-                        <Pressable
-                          key={ex.id}
-                          onPress={() => setSelectedExerciseDetail(ex)}
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 10,
-                            paddingVertical: 4,
-                            borderBottomWidth: 1,
-                            borderBottomColor: mobileTheme.color.borderSubtle,
-                          }}
-                        >
-                          <View style={{ flexDirection: "row", gap: 2 }}>
-                            {ex.image_male ? (
-                              <Image
-                                source={{ uri: `${EXERCISES_REPO_BASE_URL}/${ex.image_male}` }}
-                                style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a" }}
-                              />
-                            ) : (
-                              <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a" }} />
-                            )}
-                            {ex.image_female ? (
-                              <Image
-                                source={{ uri: `${EXERCISES_REPO_BASE_URL}/${ex.image_female}` }}
-                                style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a" }}
-                              />
-                            ) : (
-                              <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a" }} />
-                            )}
-                          </View>
-                          <View style={{ flex: 1 }}>
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={2}>
-                              {ex.name}
-                            </Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                              {ex.equipment || ""}
-                            </Text>
-                          </View>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, flexShrink: 0, marginLeft: 6 }}>
-                            {ex.muscle_group}
-                          </Text>
-                        </Pressable>
-                      ))
-                    )}
+                    </Pressable>
                   </View>
 
                   {/* Ejercicios locales (en tus rutinas) que aún no están en la base de datos de la app */}
@@ -24384,7 +24650,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "800", fontSize: 20, flex: 1 }}>
                 {selectedExerciseDetail.name}
               </Text>
-              <Pressable onPress={() => setSelectedExerciseDetail(null)} style={{ padding: 6 }}>
+              <Pressable testID="exercise-detail-close" onPress={() => setSelectedExerciseDetail(null)} style={{ padding: 6 }}>
                 <Feather name="x" size={22} color={mobileTheme.color.textSecondary} />
               </Pressable>
             </View>
@@ -26483,201 +26749,29 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       })()}
 
       {exercisePickerOpen ? (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: "#0D1117",
-            zIndex: 700,
-            elevation: 70,
+        <ExerciseCatalogBrowser
+          mode={exercisePickerMode}
+          items={exerciseCatalogResults}
+          muscleGroups={exercisePickerMuscleGroups}
+          query={exercisePickerSearch}
+          muscleGroup={exercisePickerMuscleFilter}
+          loading={exerciseCatalogLoading}
+          loadingMore={exerciseCatalogLoadingMore}
+          result={exerciseCatalogResult}
+          onQueryChange={setExercisePickerSearch}
+          onMuscleGroupChange={setExercisePickerMuscleFilter}
+          onClose={() => {
+            setExercisePickerOpen(false);
+            setSupersetPickerTarget(null);
           }}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
-              <Pressable onPress={() => { setExercisePickerOpen(false); setSupersetPickerTarget(null); }} style={{ padding: 6 }}>
-                <Feather name="arrow-left" size={24} color={mobileTheme.color.textPrimary} />
-              </Pressable>
-              <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
-                Seleccionar ejercicio
-              </Text>
-            </View>
-
-            <View style={{ paddingHorizontal: 14, marginBottom: 8 }}>
-              <CatalogStatusNotice
-                metadata={exerciseCatalogAvailability}
-                onRetry={() => { void retryExerciseCatalog(); }}
-                testID="exercise-picker-catalog-status"
-              />
-            </View>
-
-            <View style={{ paddingHorizontal: 14, marginBottom: 8 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: "#171B23",
-                  borderRadius: 14,
-                  borderWidth: 1,
-                  borderColor: mobileTheme.color.borderSubtle,
-                  paddingHorizontal: 12,
-                  minHeight: 44,
-                  gap: 8,
-                }}
-              >
-                <Feather name="search" size={16} color="#778091" />
-                <TextInput
-                  style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 16 }}
-                  placeholder="Buscar ejercicio..."
-                  placeholderTextColor="#5A6270"
-                  value={exercisePickerSearch}
-                  onChangeText={setExercisePickerSearch}
-                  autoCapitalize="none"
-                />
-                {exercisePickerSearch ? (
-                  <Pressable onPress={() => setExercisePickerSearch("")}>
-                    <Feather name="x" size={16} color="#778091" />
-                  </Pressable>
-                ) : null}
-              </View>
-            </View>
-
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 42, marginBottom: 8, paddingHorizontal: 14 }} contentContainerStyle={{ gap: 8, alignItems: "center" }}>
-              <Pressable
-                onPress={() => setExercisePickerMuscleFilter("all")}
-                style={{
-                  paddingHorizontal: 14,
-                  paddingVertical: 7,
-                  borderRadius: mobileTheme.radius.pill,
-                  borderWidth: 1,
-                  borderColor: exercisePickerMuscleFilter === "all" ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
-                  backgroundColor: exercisePickerMuscleFilter === "all" ? "rgba(160,204,0,0.12)" : "#0D1117",
-                }}
-              >
-                <Text style={{ color: exercisePickerMuscleFilter === "all" ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
-                  Todos
-                </Text>
-              </Pressable>
-              {exercisePickerMuscleGroups.map((muscle) => {
-                const isActive = exercisePickerMuscleFilter === muscle;
-                return (
-                  <Pressable
-                    key={muscle}
-                    onPress={() => setExercisePickerMuscleFilter(isActive ? "all" : muscle)}
-                    style={{
-                      paddingHorizontal: 14,
-                      paddingVertical: 7,
-                      borderRadius: mobileTheme.radius.pill,
-                      borderWidth: 1,
-                      borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
-                      backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
-                    }}
-                  >
-                    <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600", textTransform: "capitalize" }}>
-                      {muscle}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-
-            <ScrollView style={{ flex: 1, paddingHorizontal: 14 }} contentContainerStyle={{ gap: 10, paddingBottom: 20 }}>
-              {filteredExercisePickerEntries.map((entry) => (
-                <Pressable
-                  key={entry.id}
-                  onPress={() => {
-                    if (supersetPickerTarget) {
-                      updateSubSeriesField(supersetPickerTarget.exerciseId, supersetPickerTarget.seriesId, supersetPickerTarget.subSeriesId, "exercise_name", entry.name);
-                      updateSubSeriesField(supersetPickerTarget.exerciseId, supersetPickerTarget.seriesId, supersetPickerTarget.subSeriesId, "exercise_id", entry.id);
-                      updateSubSeriesField(
-                        supersetPickerTarget.exerciseId,
-                        supersetPickerTarget.seriesId,
-                        supersetPickerTarget.subSeriesId,
-                        "catalog_link",
-                        linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
-                      );
-                      setSupersetPickerTarget(null);
-                      setExercisePickerOpen(false);
-                    } else {
-                      if (activeWorkoutSession) {
-                        addExerciseToSession(entry);
-                      } else {
-                        addExerciseFromRepo(entry);
-                      }
-                    }
-                  }}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    backgroundColor: "#171B23",
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.06)",
-                    overflow: "hidden",
-                  }}
-                >
-                  <Image
-                    source={{ uri: getExerciseImageUrl(entry, "male") }}
-                    style={{ width: 90, height: 70, backgroundColor: "#091219" }}
-                    resizeMode="cover"
-                  />
-                  <View style={{ flex: 1, paddingHorizontal: 12, paddingVertical: 10, gap: 2 }}>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                      {entry.name}
-                    </Text>
-                    <Text style={{ color: "#778091", fontSize: 13, textTransform: "capitalize" }}>
-                      {entry.muscle_group}{entry.equipment ? ` · ${entry.equipment}` : ""}
-                    </Text>
-                  </View>
-                  <Feather name="plus" size={20} color={mobileTheme.color.brandPrimary} style={{ marginRight: 14 }} />
-                </Pressable>
-              ))}
-
-              {filteredExercisePickerEntries.length === 0 && exercisesRepo.length > 0 ? (
-                <View style={{ alignItems: "center", paddingVertical: 30 }}>
-                  <Text style={{ color: "#5A6270", fontSize: 15 }}>No se encontraron ejercicios</Text>
-                </View>
-              ) : null}
-
-              {exercisesRepo.length === 0 ? (
-                <View style={{ alignItems: "center", paddingVertical: 30 }}>
-                  {exerciseCatalogSnapshot.refreshing ? (
-                    <ActivityIndicator color={mobileTheme.color.brandPrimary} size="small" />
-                  ) : <Feather name="database" size={20} color="#5A6270" />}
-                  <Text style={{ color: "#5A6270", fontSize: 14, marginTop: 8 }}>
-                    {exerciseCatalogSnapshot.refreshing ? "Actualizando ejercicios…" : "No hay ejercicios disponibles."}
-                  </Text>
-                </View>
-              ) : null}
-
-              <Pressable
-                testID="training-exercise-custom-open"
-                onPress={() => {
-                  setCustomExerciseDraft(EMPTY_CUSTOM_EXERCISE_DRAFT);
-                  setCustomExerciseFormOpen(true);
-                }}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "rgba(203,255,26,0.08)",
-                  borderRadius: 16,
-                  borderWidth: 1,
-                  borderColor: "rgba(203,255,26,0.3)",
-                  minHeight: 54,
-                  gap: 8,
-                }}
-              >
-                <Feather name="edit-3" size={18} color={mobileTheme.color.brandPrimary} />
-                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 16, fontWeight: "700" }}>
-                  Crear ejercicio personalizado
-                </Text>
-              </Pressable>
-            </ScrollView>
-          </SafeAreaView>
-        </View>
+          onRetry={() => { void retryExerciseCatalog(); }}
+          onEndReached={() => { void loadMoreExerciseCatalogResults(); }}
+          onChoose={(entry) => { void chooseExerciseCatalogEntry(entry); }}
+          onCreateCustom={() => {
+            setCustomExerciseDraft(EMPTY_CUSTOM_EXERCISE_DRAFT);
+            setCustomExerciseFormOpen(true);
+          }}
+        />
       ) : null}
 
       {customExerciseFormOpen ? (

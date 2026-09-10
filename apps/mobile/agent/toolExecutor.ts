@@ -78,8 +78,17 @@ export type ToolExecutionContext = {
   store?: ToolStore;
   foodsRepo?: ToolFoodRepoEntry[];
   exercisesRepo?: ToolExerciseRepoEntry[];
+  searchExerciseCatalog?: (criteria: {
+    query: string;
+    muscleGroup: string;
+    secondaryMuscle: string;
+    equipment: string;
+    difficulty: string;
+  }) => Promise<ToolExerciseRepoEntry[]>;
+  resolveExerciseCatalogIds?: (ids: string[]) => Promise<ToolExerciseRepoEntry[]>;
   foodCatalogAvailability?: CatalogSearchAvailability;
   exerciseCatalogAvailability?: CatalogSearchAvailability;
+  getExerciseCatalogAvailability?: () => CatalogSearchAvailability;
   operationId?: string;
   markEffectCommitted?: () => void;
 };
@@ -493,15 +502,14 @@ const searchFoods: ToolHandler = async (args, context) => {
 };
 
 const searchExercises: ToolHandler = async (args, context) => {
-  if (!context.exercisesRepo || context.exercisesRepo.length === 0) {
-    return serializeCatalogSearch(context.exerciseCatalogAvailability, []);
-  }
   const query = (args.query as string) ?? "";
   const muscleGroup = (args.muscle_group as string) ?? "";
   const secondaryMuscle = (args.secondary_muscle as string) ?? "";
   const equipment = (args.equipment as string) ?? "";
   const difficulty = (args.difficulty as string) ?? "";
-  let results = [...context.exercisesRepo];
+  let results = context.searchExerciseCatalog
+    ? await context.searchExerciseCatalog({ query, muscleGroup, secondaryMuscle, equipment, difficulty })
+    : [...(context.exercisesRepo ?? [])];
 
   if (query.trim()) {
     const needle = normalizeSearchText(query);
@@ -527,7 +535,9 @@ const searchExercises: ToolHandler = async (args, context) => {
   }
 
   results = results.slice(0, 15);
-  return serializeCatalogSearch(context.exerciseCatalogAvailability, results.map((exercise) => ({
+  return serializeCatalogSearch(
+    context.getExerciseCatalogAvailability?.() ?? context.exerciseCatalogAvailability,
+    results.map((exercise) => ({
     source_id: exercise.sourceId,
     item_id: exercise.id,
     nombre: exercise.name,
@@ -536,7 +546,8 @@ const searchExercises: ToolHandler = async (args, context) => {
     equipamiento: exercise.equipment,
     dificultad: exercise.difficulty,
     instrucciones: exercise.instructions,
-  })));
+    })),
+  );
 };
 
 const readRoutines: ToolHandler = async (_args, context) => {
@@ -570,9 +581,32 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
   if (!context.commitStore && !context.setStore) {
     return "No se pudo acceder al almacenamiento.";
   }
+  const referencedIds = new Set<string>();
+  const visit = (value: unknown): void => {
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+      return;
+    }
+    if (!value || typeof value !== "object") return;
+    const record = value as Record<string, unknown>;
+    if (record.source_id === "gymnasia_exercises" && typeof record.item_id === "string") {
+      referencedIds.add(record.item_id);
+    }
+    Object.values(record).forEach(visit);
+  };
+  visit(args.data);
+  const resolved = context.resolveExerciseCatalogIds && referencedIds.size > 0
+    ? await context.resolveExerciseCatalogIds([...referencedIds])
+    : [];
+  const repository = [...(context.exercisesRepo ?? [])];
+  const known = new Set(repository.map((entry) => `${entry.sourceId}:${entry.id}`));
+  for (const entry of resolved) {
+    const key = `${entry.sourceId}:${entry.id}`;
+    if (!known.has(key)) repository.push(entry);
+  }
   const preparation = prepareRoutineCreation(
     args.data,
-    context.exercisesRepo ?? [],
+    repository,
     dependencies,
     context.operationId,
   );

@@ -6,6 +6,11 @@ import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 import sharp from "sharp";
 
+import {
+  EXERCISE_CATALOG_DIRECTORY,
+  createExerciseCatalogArtifacts,
+} from "./exercise-pagination.mjs";
+
 const moduleDirectory = dirname(fileURLToPath(import.meta.url));
 
 // El check puede ejecutarse varias veces sobre archivos sustituidos atómicamente
@@ -282,6 +287,10 @@ async function loadDomain(root, domain, definition, validator) {
       path: join(catalogRoot, "index.json"),
       contents: `${JSON.stringify(rows.map((row) => row.stem))}\n`,
     });
+    artifacts.push(...createExerciseCatalogArtifacts(
+      catalogRoot,
+      rows.map((row) => row.value),
+    ).artifacts);
   }
 
   return { domain, definition, catalogRoot, rows, references, violations, artifacts };
@@ -426,6 +435,37 @@ async function collectArtifactDrift(root, artifacts) {
       ));
     }
   }
+  const expectedExerciseArtifacts = new Set(
+    artifacts
+      .filter((artifact) => artifact.domain === "ejercicios"
+        && artifact.path.includes(`${sep}${EXERCISE_CATALOG_DIRECTORY}${sep}`))
+      .map((artifact) => resolve(artifact.path)),
+  );
+  if (expectedExerciseArtifacts.size > 0) {
+    const generatedRoot = join(root, "ejercicios", EXERCISE_CATALOG_DIRECTORY);
+    const pending = [generatedRoot];
+    while (pending.length > 0) {
+      const directory = pending.pop();
+      let entries = [];
+      try {
+        entries = await fs.readdir(directory, { withFileTypes: true });
+      } catch (error) {
+        if (error?.code === "ENOENT") continue;
+        throw error;
+      }
+      for (const entry of entries) {
+        const path = join(directory, entry.name);
+        if (entry.isDirectory()) pending.push(path);
+        else if (entry.isFile() && entry.name.endsWith(".json") && !expectedExerciseArtifacts.has(resolve(path))) {
+          violations.push(makeViolation(
+            "GENERATED_UNEXPECTED",
+            describePath(root, path),
+            "el artefacto ya no forma parte del manifiesto generado",
+          ));
+        }
+      }
+    }
+  }
   return violations;
 }
 
@@ -486,15 +526,58 @@ async function readOptional(path, fileSystem) {
   }
 }
 
+async function listGeneratedJsonFiles(root, fileSystem) {
+  const files = [];
+  const pending = [root];
+  while (pending.length > 0) {
+    const directory = pending.pop();
+    let entries;
+    try {
+      entries = await fileSystem.readdir(directory, { withFileTypes: true });
+    } catch (error) {
+      if (error?.code === "ENOENT") continue;
+      throw error;
+    }
+    for (const entry of entries) {
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) pending.push(path);
+      else if (entry.isFile() && entry.name.endsWith(".json")) files.push(path);
+    }
+  }
+  return files.sort(compareNames);
+}
+
 export async function writeCatalogArtifacts(
   artifacts,
   { domains = [...Object.keys(CATALOG_DOMAINS), RUNTIME_SCHEMA_DOMAIN], fileSystem = fs } = {},
 ) {
   const selectedDomains = new Set(domains);
-  const selected = artifacts.filter((artifact) => selectedDomains.has(artifact.domain));
+  const selected = artifacts
+    .filter((artifact) => selectedDomains.has(artifact.domain))
+    .sort((left, right) => {
+      const leftManifest = left.path.endsWith(`${sep}${EXERCISE_CATALOG_DIRECTORY}${sep}manifest.json`);
+      const rightManifest = right.path.endsWith(`${sep}${EXERCISE_CATALOG_DIRECTORY}${sep}manifest.json`);
+      if (leftManifest !== rightManifest) return leftManifest ? 1 : -1;
+      return compareNames(left.path, right.path);
+    });
   const transactionId = `${process.pid}-${randomUUID()}`;
   const staged = [];
   const replaced = [];
+  const deleted = [];
+
+  const catalogMarker = `${sep}${EXERCISE_CATALOG_DIRECTORY}${sep}`;
+  const exerciseArtifacts = selected.filter((artifact) => artifact.path.includes(catalogMarker));
+  const expectedExercisePaths = new Set(exerciseArtifacts.map((artifact) => resolve(artifact.path)));
+  const generatedRoots = [...new Set(exerciseArtifacts.map((artifact) => {
+    const markerIndex = artifact.path.indexOf(catalogMarker);
+    return artifact.path.slice(0, markerIndex + catalogMarker.length - 1);
+  }))];
+  const obsolete = [];
+  for (const root of generatedRoots) {
+    for (const path of await listGeneratedJsonFiles(root, fileSystem)) {
+      if (!expectedExercisePaths.has(resolve(path))) obsolete.push(path);
+    }
+  }
 
   try {
     for (const artifact of selected) {
@@ -504,7 +587,19 @@ export async function writeCatalogArtifacts(
       await fileSystem.writeFile(temporaryPath, artifact.contents, { encoding: "utf8", flag: "wx" });
       staged.push({ ...artifact, temporaryPath, previous });
     }
-    for (const artifact of staged) {
+    const manifests = staged.filter((artifact) => artifact.path.endsWith(`${catalogMarker}manifest.json`));
+    const contentArtifacts = staged.filter((artifact) => !manifests.includes(artifact));
+    for (const artifact of contentArtifacts) {
+      await fileSystem.rename(artifact.temporaryPath, artifact.path);
+      replaced.push(artifact);
+    }
+    for (const path of obsolete) {
+      const previous = await readOptional(path, fileSystem);
+      if (previous === null) continue;
+      await fileSystem.rm(path);
+      deleted.push({ path, previous });
+    }
+    for (const artifact of manifests) {
       await fileSystem.rename(artifact.temporaryPath, artifact.path);
       replaced.push(artifact);
     }
@@ -519,6 +614,14 @@ export async function writeCatalogArtifacts(
           await fileSystem.writeFile(rollbackPath, artifact.previous, { flag: "wx" });
           await fileSystem.rename(rollbackPath, artifact.path);
         }
+      } catch (rollbackError) {
+        rollbackErrors.push(`${artifact.path}: ${rollbackError.message}`);
+      }
+    }
+    for (const artifact of deleted) {
+      try {
+        await fileSystem.mkdir(dirname(artifact.path), { recursive: true });
+        await fileSystem.writeFile(artifact.path, artifact.previous, { flag: "wx" });
       } catch (rollbackError) {
         rollbackErrors.push(`${artifact.path}: ${rollbackError.message}`);
       }

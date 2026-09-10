@@ -1,0 +1,831 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "sha256:c1dc29aa2193f6d09243e946004c348937adb6a76e138e3e92963b80f3eb96dc",
+  "sourceId": "gymnasia_exercises",
+  "itemCount": 1324,
+  "pageSize": 30,
+  "pageCount": 45,
+  "staleAfterSeconds": 604800,
+  "pages": [
+    {
+      "page": 0,
+      "path": "pages/0000.json",
+      "count": 30,
+      "contentHashSha256": "sha256:64c2a0119f6afed73358882ff28b53f976fd765b64cdc5781e72999e394d4c62"
+    },
+    {
+      "page": 1,
+      "path": "pages/0001.json",
+      "count": 30,
+      "contentHashSha256": "sha256:9151424b8cc256913a77712a92a4788d23904f470c50e9f5fcf4697b2a9a8992"
+    },
+    {
+      "page": 2,
+      "path": "pages/0002.json",
+      "count": 30,
+      "contentHashSha256": "sha256:65edf0d66669179d0d95b6b2129bafe14c231c5f7a1777e9d95348303f95a783"
+    },
+    {
+      "page": 3,
+      "path": "pages/0003.json",
+      "count": 30,
+      "contentHashSha256": "sha256:c167d69f505ac104c43983db87c589054d51103ee1a90d943b2c325e67aed4c8"
+    },
+    {
+      "page": 4,
+      "path": "pages/0004.json",
+      "count": 30,
+      "contentHashSha256": "sha256:6da068608219d6cf25840c7ccf329ea36a351a64c2cc622c1e93e4a57a94afb3"
+    },
+    {
+      "page": 5,
+      "path": "pages/0005.json",
+      "count": 30,
+      "contentHashSha256": "sha256:43f99d9d407bc29d3e07a31773619b2029ac6af093335cf5af8f47e71983997f"
+    },
+    {
+      "page": 6,
+      "path": "pages/0006.json",
+      "count": 30,
+      "contentHashSha256": "sha256:057cec90ef43568e0d634dffff56766ab2a24f7cf806f2118a8c002ea994bab5"
+    },
+    {
+      "page": 7,
+      "path": "pages/0007.json",
+      "count": 30,
+      "contentHashSha256": "sha256:7987f8c1898560742cebe91004575ec0e3f53d230bd1ee53a57d1bf15988b0cc"
+    },
+    {
+      "page": 8,
+      "path": "pages/0008.json",
+      "count": 30,
+      "contentHashSha256": "sha256:dbcd587b52e46a4762a56c3b4114753bc00016ed151a716e91c5d08f45b222d3"
+    },
+    {
+      "page": 9,
+      "path": "pages/0009.json",
+      "count": 30,
+      "contentHashSha256": "sha256:604568f1aee239df0fce35284ab0ca8ced34787e74ee709da18ce382719e1aa6"
+    },
+    {
+      "page": 10,
+      "path": "pages/0010.json",
+      "count": 30,
+      "contentHashSha256": "sha256:6b03ed0276a7ad2deeaacb0d5bbe8e9a9ffbfd16517a47654e6790e179bb682a"
+    },
+    {
+      "page": 11,
+      "path": "pages/0011.json",
+      "count": 30,
+      "contentHashSha256": "sha256:fe3e113abef4fb56486023262c08984bdcd84e0904a4ac31fe6ccbb7b3951385"
+    },
+    {
+      "page": 12,
+      "path": "pages/0012.json",
+      "count": 30,
+      "contentHashSha256": "sha256:ff0dcbbfc3e3610985aa372ba2ef4022b482e4e04c636d732ab87ba68fa8040a"
+    },
+    {
+      "page": 13,
+      "path": "pages/0013.json",
+      "count": 30,
+      "contentHashSha256": "sha256:afed207a4f1f0792c9a1bb9e956eb79f994244250546d4f8d9ca25de8ae50b4a"
+    },
+    {
+      "page": 14,
+      "path": "pages/0014.json",
+      "count": 30,
+      "contentHashSha256": "sha256:7601ad139a105fd3f6cc4513f03f85a2fe08580cab86671b969945c32b51d839"
+    },
+    {
+      "page": 15,
+      "path": "pages/0015.json",
+      "count": 30,
+      "contentHashSha256": "sha256:ec7392c2bbc9b86ed68be023d51cb5d8717c1b367d733177812756dc89e93f50"
+    },
+    {
+      "page": 16,
+      "path": "pages/0016.json",
+      "count": 30,
+      "contentHashSha256": "sha256:e715505a2263a69565534585134aa507e65dbe47e72a845e14d67ff4727316a6"
+    },
+    {
+      "page": 17,
+      "path": "pages/0017.json",
+      "count": 30,
+      "contentHashSha256": "sha256:60241ef6b66cca828556dab623dc71317ebece6f353ab8ab22e7b0ac239eeba9"
+    },
+    {
+      "page": 18,
+      "path": "pages/0018.json",
+      "count": 30,
+      "contentHashSha256": "sha256:b7d7b73bdf2368026bc7c2d7b23af87260172bb129e136e09cc7ae60b8205dcf"
+    },
+    {
+      "page": 19,
+      "path": "pages/0019.json",
+      "count": 30,
+      "contentHashSha256": "sha256:5e2afcdbf561345984eca08e581715c1b63f11a3aa79aa243f768f4280b0797b"
+    },
+    {
+      "page": 20,
+      "path": "pages/0020.json",
+      "count": 30,
+      "contentHashSha256": "sha256:89be414a1610d51519ccac8b4c56d0b56b7606ac530a26e43b7871f9530a021e"
+    },
+    {
+      "page": 21,
+      "path": "pages/0021.json",
+      "count": 30,
+      "contentHashSha256": "sha256:ef25ae25cf3276ab3dc547dc6aa4412fdd90c236f4de232d3cd8c90c290afb66"
+    },
+    {
+      "page": 22,
+      "path": "pages/0022.json",
+      "count": 30,
+      "contentHashSha256": "sha256:af9495e8a8a569e0d031d0f8ee0f32c76073868ce3c33ca8411f99e0a359fb19"
+    },
+    {
+      "page": 23,
+      "path": "pages/0023.json",
+      "count": 30,
+      "contentHashSha256": "sha256:ab987b4422aa0c10e114fc5b03d23afd9615b12b7490771c19271d747c8ae5ca"
+    },
+    {
+      "page": 24,
+      "path": "pages/0024.json",
+      "count": 30,
+      "contentHashSha256": "sha256:b4af8cda5035b08f36d84121dd541b9b2ac7d0bb9f00ee53c66260ad65391977"
+    },
+    {
+      "page": 25,
+      "path": "pages/0025.json",
+      "count": 30,
+      "contentHashSha256": "sha256:984942ceeb447a7b2828b25e662022f5d01e9a5c4f3cbb834a0451ea436b58d4"
+    },
+    {
+      "page": 26,
+      "path": "pages/0026.json",
+      "count": 30,
+      "contentHashSha256": "sha256:e85d37e7bb443555efac8cdc76c1ff9bff2a796d7ec62a8cd1671e76923c1832"
+    },
+    {
+      "page": 27,
+      "path": "pages/0027.json",
+      "count": 30,
+      "contentHashSha256": "sha256:88fe8730b22e4d037a7e4576b168159faa1bd8c4ef31e82fee0a7443edce7f5d"
+    },
+    {
+      "page": 28,
+      "path": "pages/0028.json",
+      "count": 30,
+      "contentHashSha256": "sha256:ad07c79c88c9cc498d4ea35d3391624e2cbe169431b66c76beef915165f4a1ba"
+    },
+    {
+      "page": 29,
+      "path": "pages/0029.json",
+      "count": 30,
+      "contentHashSha256": "sha256:b9fc98c467d949de0e04c09a7ca708192f375ff8de3dab3ef7b4fa78673233ed"
+    },
+    {
+      "page": 30,
+      "path": "pages/0030.json",
+      "count": 30,
+      "contentHashSha256": "sha256:8e9fa5a7d82f6e4fb6ea6058406562b640cc79b53a75496337cc6848725727b2"
+    },
+    {
+      "page": 31,
+      "path": "pages/0031.json",
+      "count": 30,
+      "contentHashSha256": "sha256:3cc503650e5d4a6f281d3bc2e0819cc353deb901ba5c6c1e8f39c26e44cfb052"
+    },
+    {
+      "page": 32,
+      "path": "pages/0032.json",
+      "count": 30,
+      "contentHashSha256": "sha256:a1d6e63d73ac44255643dd91db1f4f20e28ce1e8e4ff9d683ebc47d2eeed2174"
+    },
+    {
+      "page": 33,
+      "path": "pages/0033.json",
+      "count": 30,
+      "contentHashSha256": "sha256:97dd4f26a27d6ef921f103d3aea8ecd9cdcbd3230fa481a7be4b1ce2e4248d25"
+    },
+    {
+      "page": 34,
+      "path": "pages/0034.json",
+      "count": 30,
+      "contentHashSha256": "sha256:ffcfa9d0d3442ff2f3c0d67c825e9f78347516b4c55b86655aadda9c2b12fcb0"
+    },
+    {
+      "page": 35,
+      "path": "pages/0035.json",
+      "count": 30,
+      "contentHashSha256": "sha256:ea08ef2bd09313356c2b3e443152cccee43ed6972803083c112eee26728bd29a"
+    },
+    {
+      "page": 36,
+      "path": "pages/0036.json",
+      "count": 30,
+      "contentHashSha256": "sha256:65c844561df78b65e107a8f4da88fc9042487f37f7e2109d71459707cc618b9f"
+    },
+    {
+      "page": 37,
+      "path": "pages/0037.json",
+      "count": 30,
+      "contentHashSha256": "sha256:3bcd6be11120bf5c8ea735e2dab7745d372473a088d9b5529971a09edb06b59d"
+    },
+    {
+      "page": 38,
+      "path": "pages/0038.json",
+      "count": 30,
+      "contentHashSha256": "sha256:17c57525def17ffb2b450474a55aef569e87049e900d4766a4300f6153e4a10c"
+    },
+    {
+      "page": 39,
+      "path": "pages/0039.json",
+      "count": 30,
+      "contentHashSha256": "sha256:5464fd703d8ba6fda7981bd57f9e1e6f08a5edf8413e608d4ef75822fcd0cfe9"
+    },
+    {
+      "page": 40,
+      "path": "pages/0040.json",
+      "count": 30,
+      "contentHashSha256": "sha256:24744b2d561242d0dde74af1615cf9a637c05d46ef895d0b8bb25e8c3adf7ad4"
+    },
+    {
+      "page": 41,
+      "path": "pages/0041.json",
+      "count": 30,
+      "contentHashSha256": "sha256:bd29b0ec2269d0f512fa0101e5458fc70557d518805a98e48e499c41365b03ea"
+    },
+    {
+      "page": 42,
+      "path": "pages/0042.json",
+      "count": 30,
+      "contentHashSha256": "sha256:aa0130e227c01d9378c851b3e545df13f687d7d1bc2afc00dfa25c0bf3e86c6d"
+    },
+    {
+      "page": 43,
+      "path": "pages/0043.json",
+      "count": 30,
+      "contentHashSha256": "sha256:c3bd928eb0042fb017cbc12f22ee15551f36281c7be42faafa851bc3e4f86ebb"
+    },
+    {
+      "page": 44,
+      "path": "pages/0044.json",
+      "count": 4,
+      "contentHashSha256": "sha256:069f7651b9bd2603adae8462cbc73356fe6db5ca86fb14018339bcd4e66e9c68"
+    }
+  ],
+  "search": {
+    "strategy": "normalized-unigram-bigram-v1",
+    "fields": [
+      "name",
+      "muscle_group",
+      "secondary_muscles",
+      "equipment",
+      "difficulty"
+    ],
+    "documentFields": [
+      "ordinal",
+      "page",
+      "id",
+      "name",
+      "image_male",
+      "image_female",
+      "muscle_group",
+      "secondary_muscles",
+      "equipment",
+      "difficulty"
+    ],
+    "shards": [
+      {
+        "shardId": "20",
+        "path": "search/20.json",
+        "count": 1324,
+        "contentHashSha256": "sha256:feb3b262c0ba3aad9e618b75868587945eebcf0ea639516bd0e6e1043b692fad"
+      },
+      {
+        "shardId": "30",
+        "path": "search/30.json",
+        "count": 2,
+        "contentHashSha256": "sha256:5a3a607af9a25893f4cf3cb803715df3c1a4aaff3bf064b1ade4c7a6ff57cf31"
+      },
+      {
+        "shardId": "31",
+        "path": "search/31.json",
+        "count": 1,
+        "contentHashSha256": "sha256:60f06937189915b0967937d83cd26fe48392efb18851a6c94410c9654ce3cabf"
+      },
+      {
+        "shardId": "32",
+        "path": "search/32.json",
+        "count": 67,
+        "contentHashSha256": "sha256:84ab551f654000bdde99f3078544fb57c4a829f10d5d8fcf6c427fcb6f1c3d08"
+      },
+      {
+        "shardId": "33",
+        "path": "search/33.json",
+        "count": 8,
+        "contentHashSha256": "sha256:b11ce487fd86b539f5ec23ef5fcea758dc06cabc311821f0f0268792588ab672"
+      },
+      {
+        "shardId": "34",
+        "path": "search/34.json",
+        "count": 7,
+        "contentHashSha256": "sha256:f9471246d129c4eeaa0f5d857cdc34b85bb20ff659f6faeb60163288681ca42e"
+      },
+      {
+        "shardId": "35",
+        "path": "search/35.json",
+        "count": 7,
+        "contentHashSha256": "sha256:bf9010c685ae0959b2de6cfcf16f152f4fc0950a596cc77b20ab6fd347c74771"
+      },
+      {
+        "shardId": "36",
+        "path": "search/36.json",
+        "count": 1,
+        "contentHashSha256": "sha256:4205a04c20fbf5394fcbf9539d6ccca87293b43cae29bb9eea4dc943df451dcd"
+      },
+      {
+        "shardId": "38",
+        "path": "search/38.json",
+        "count": 1,
+        "contentHashSha256": "sha256:c444200d30625d3797a6e0d35dea505c5363597a1449f2df3a689e33dd0653d3"
+      },
+      {
+        "shardId": "61",
+        "path": "search/61.json",
+        "count": 1324,
+        "contentHashSha256": "sha256:7a45584616238bd771afbf49118db35ee6c8595e68ffb7790dab9dafc28c9e0d"
+      },
+      {
+        "shardId": "62",
+        "path": "search/62.json",
+        "count": 1307,
+        "contentHashSha256": "sha256:f8860255e4d875122a23943b746ab4e7290b34392f1ffed5abd8db13963dbb35"
+      },
+      {
+        "shardId": "63",
+        "path": "search/63.json",
+        "count": 1299,
+        "contentHashSha256": "sha256:ea3e765c173b9945f3ee35ce2a03447368c40520e2cf5014c793f5fcb5effd6d"
+      },
+      {
+        "shardId": "64",
+        "path": "search/64.json",
+        "count": 1299,
+        "contentHashSha256": "sha256:59d2c7cd8d4a0b3360e5985b4510fc32eb1d74b08fe10ad7d257114eb205679c"
+      },
+      {
+        "shardId": "65",
+        "path": "search/65.json",
+        "count": 1324,
+        "contentHashSha256": "sha256:de9400ada69c6bad29c8b46a74971738e5e516e04f3d63b082c458ed3432ce40"
+      },
+      {
+        "shardId": "66",
+        "path": "search/66.json",
+        "count": 312,
+        "contentHashSha256": "sha256:6309bc1905244ce793328836212c0fcc61cc0835fd0e7bf8ee06c022f1ed931c"
+      },
+      {
+        "shardId": "67",
+        "path": "search/67.json",
+        "count": 773,
+        "contentHashSha256": "sha256:a06eca285d99cb6a95a23951584f731e440abab6f9ab6b65998384c66a466593"
+      },
+      {
+        "shardId": "68",
+        "path": "search/68.json",
+        "count": 714,
+        "contentHashSha256": "sha256:83b10616feacde21c5e72d0896d161510a477d9f794e5dae1347329d749335fc"
+      },
+      {
+        "shardId": "69",
+        "path": "search/69.json",
+        "count": 1317,
+        "contentHashSha256": "sha256:808c4958bd6c918e968d99069e6749f59049e69da6f81f65836ba938cf333070"
+      },
+      {
+        "shardId": "6a",
+        "path": "search/6a.json",
+        "count": 103,
+        "contentHashSha256": "sha256:97c8b51f9cc02d0315998c12c7289dca85e5250e81cf2cb2f2e460c8e99d230a"
+      },
+      {
+        "shardId": "6b",
+        "path": "search/6b.json",
+        "count": 25,
+        "contentHashSha256": "sha256:0809e9886f5616d12220d91926991bf787a9fcb42e80f3fd8c0f6d4460387da2"
+      },
+      {
+        "shardId": "6c",
+        "path": "search/6c.json",
+        "count": 1235,
+        "contentHashSha256": "sha256:21317452cc8fadebc0f9efece04f75da903a3c3e44559df3f95ff8d200f759f7"
+      },
+      {
+        "shardId": "6d",
+        "path": "search/6d.json",
+        "count": 1270,
+        "contentHashSha256": "sha256:1bb7eaf9affa0647f80f9be6dc474b116700cd7f49f3dba034d206cea3180808"
+      },
+      {
+        "shardId": "6e",
+        "path": "search/6e.json",
+        "count": 1324,
+        "contentHashSha256": "sha256:d0ccffea4c74e7fb5a3e2eff1ce2021f4d737b59ddc26d0345ccb2e45aa24f6b"
+      },
+      {
+        "shardId": "6f",
+        "path": "search/6f.json",
+        "count": 1321,
+        "contentHashSha256": "sha256:4f597aa7b9702fb6f07d76dd3dc3af6fb259de1e56b49865bde6b1c7da0b6a6a"
+      },
+      {
+        "shardId": "70",
+        "path": "search/70.json",
+        "count": 1241,
+        "contentHashSha256": "sha256:bcbf1b0573683023eaa2fd9835cdcb4dcef7a957201aad205400070234cdc022"
+      },
+      {
+        "shardId": "71",
+        "path": "search/71.json",
+        "count": 444,
+        "contentHashSha256": "sha256:82a6fcc0ef05211bdadb2994bffd6d46fe52af3a281041a014bffbfaa4a0ca95"
+      },
+      {
+        "shardId": "72",
+        "path": "search/72.json",
+        "count": 1323,
+        "contentHashSha256": "sha256:16948f18b57b449323ee5fa6b432309730ebf5ff860e5378d7f8a5001d6537e9"
+      },
+      {
+        "shardId": "73",
+        "path": "search/73.json",
+        "count": 1324,
+        "contentHashSha256": "sha256:f6764fef9e2e0c9f52ee1f2c4120bf9f1f5ebc718ea9374d913d8cab46b9ce50"
+      },
+      {
+        "shardId": "74",
+        "path": "search/74.json",
+        "count": 1292,
+        "contentHashSha256": "sha256:00fe9bf87d7f69a4efb17b98392da89fef9102513a055d54980ef66bc9adc7ce"
+      },
+      {
+        "shardId": "75",
+        "path": "search/75.json",
+        "count": 1084,
+        "contentHashSha256": "sha256:40356d7c9b2e7bfba9938dcce4865cda5833565c6e37611a3fb3435b695569cd"
+      },
+      {
+        "shardId": "76",
+        "path": "search/76.json",
+        "count": 536,
+        "contentHashSha256": "sha256:06806f8aafd0ebb423279a05e3de66f7574af543739ee5e816c78ea80c007fcd"
+      },
+      {
+        "shardId": "77",
+        "path": "search/77.json",
+        "count": 6,
+        "contentHashSha256": "sha256:572af167561847343b7cd845cbd0c5e742f7632535f3d9d70bdcad04fa6a9edb"
+      },
+      {
+        "shardId": "78",
+        "path": "search/78.json",
+        "count": 251,
+        "contentHashSha256": "sha256:d115a587ca4118bba42dee6b18664a42170aaf2e05b109f5433e4f59b5294873"
+      },
+      {
+        "shardId": "79",
+        "path": "search/79.json",
+        "count": 309,
+        "contentHashSha256": "sha256:5fc61645fda871dce6266f0cb19adc02bb0b39087a7892d456d8cb5533f88fd3"
+      },
+      {
+        "shardId": "7a",
+        "path": "search/7a.json",
+        "count": 474,
+        "contentHashSha256": "sha256:f217c3c79d2cb67a20eb0197be165b712782fcab11b7aaf031be2d01dd6b8d12"
+      }
+    ]
+  },
+  "directory": {
+    "strategy": "first-id-byte-v1",
+    "shards": [
+      {
+        "shardId": "61",
+        "path": "by-id/61.json",
+        "count": 53,
+        "contentHashSha256": "sha256:1fcd181e06c8e360ee30825ac02b98f6873e777c15031eae000fbbd66b727ed1"
+      },
+      {
+        "shardId": "62",
+        "path": "by-id/62.json",
+        "count": 16,
+        "contentHashSha256": "sha256:40837728c181cd85e29740a7ff72a2aae7ebc26fe315b7074ea4d7778978b04b"
+      },
+      {
+        "shardId": "63",
+        "path": "by-id/63.json",
+        "count": 248,
+        "contentHashSha256": "sha256:4aa540df07f13ae916abb266b5a9d8bc6c28a55c4a03509044c7ebeeb679fe86"
+      },
+      {
+        "shardId": "64",
+        "path": "by-id/64.json",
+        "count": 35,
+        "contentHashSha256": "sha256:49e3f0aa412e6cc4b7b831303a40c301dd8e314cdc80ab7437e5cc1b5cf36c04"
+      },
+      {
+        "shardId": "65",
+        "path": "by-id/65.json",
+        "count": 272,
+        "contentHashSha256": "sha256:c52256c472f2811cee58f9f5127f49f84a9802d5cf8fde0c77f1856a56fb467b"
+      },
+      {
+        "shardId": "66",
+        "path": "by-id/66.json",
+        "count": 87,
+        "contentHashSha256": "sha256:b61d33990100f792b60216881d36f0be666fa95cfcb1842786663189fb0d3e05"
+      },
+      {
+        "shardId": "67",
+        "path": "by-id/67.json",
+        "count": 22,
+        "contentHashSha256": "sha256:27ac42ca96684e57689ee05ef2a741c342677cab030c89ec3a1c8c9b28a1e64c"
+      },
+      {
+        "shardId": "68",
+        "path": "by-id/68.json",
+        "count": 11,
+        "contentHashSha256": "sha256:3726af217f66bfd05c8b6877fe050735251e97a20e354f2fe3a0c487327eab98"
+      },
+      {
+        "shardId": "69",
+        "path": "by-id/69.json",
+        "count": 7,
+        "contentHashSha256": "sha256:c6900faf902fe8e52ceed4f2cd0f02e92ce04d011a3b0876af8223c4aeb05c3d"
+      },
+      {
+        "shardId": "6a",
+        "path": "by-id/6a.json",
+        "count": 35,
+        "contentHashSha256": "sha256:fa2ddec7938f8671183f33603ab31dc4f27d28408f4f80c95f43b2bf501d2c19"
+      },
+      {
+        "shardId": "6c",
+        "path": "by-id/6c.json",
+        "count": 5,
+        "contentHashSha256": "sha256:33bd8624bb90c1d75bca43c3c478fea0c8a96ecf78cbd41e1ba880171cf7eab0"
+      },
+      {
+        "shardId": "6d",
+        "path": "by-id/6d.json",
+        "count": 10,
+        "contentHashSha256": "sha256:9c38ce0c0accfe472e08213b47fc43d786a6c834b4bb16721b0e5b7ed08c1f5f"
+      },
+      {
+        "shardId": "6f",
+        "path": "by-id/6f.json",
+        "count": 1,
+        "contentHashSha256": "sha256:3dc8c74e3bf111c3fd330887a952ea01426a88f2223fe0f128adeb59439b2dc6"
+      },
+      {
+        "shardId": "70",
+        "path": "by-id/70.json",
+        "count": 259,
+        "contentHashSha256": "sha256:f000b22bff43e2e6d4a7495107aca7a945a36305880e4287eec0b877c289ee8e"
+      },
+      {
+        "shardId": "72",
+        "path": "by-id/72.json",
+        "count": 115,
+        "contentHashSha256": "sha256:a59f9c14d33dd6f846d05cc6fcd0d50ec7855eba594bb357937563d2eaa0026e"
+      },
+      {
+        "shardId": "73",
+        "path": "by-id/73.json",
+        "count": 113,
+        "contentHashSha256": "sha256:d5260d6dd1ff5c2462f5b242285b9d492fcfb7f639f93a8d9785c42c1e4158fa"
+      },
+      {
+        "shardId": "74",
+        "path": "by-id/74.json",
+        "count": 15,
+        "contentHashSha256": "sha256:af0f8777ac2555729ad8d643e6e76121cec898b67497d9fc1733783b315a527f"
+      },
+      {
+        "shardId": "76",
+        "path": "by-id/76.json",
+        "count": 4,
+        "contentHashSha256": "sha256:d68eaec92a5f7b65116cbd1015fc5e00b49d2a4976a8687e2a342a543fd12c54"
+      },
+      {
+        "shardId": "7a",
+        "path": "by-id/7a.json",
+        "count": 16,
+        "contentHashSha256": "sha256:a8d68ebc95b4b98f7da48bba193f17b44b419e2f722aa613a299fdda92dd9024"
+      }
+    ]
+  },
+  "muscleGroups": [
+    {
+      "value": "abdomen",
+      "normalized": "abdomen",
+      "count": 119
+    },
+    {
+      "value": "abdominales",
+      "normalized": "abdominales",
+      "count": 7
+    },
+    {
+      "value": "aductores",
+      "normalized": "aductores",
+      "count": 4
+    },
+    {
+      "value": "antebrazo",
+      "normalized": "antebrazo",
+      "count": 14
+    },
+    {
+      "value": "antebrazos",
+      "normalized": "antebrazos",
+      "count": 24
+    },
+    {
+      "value": "bíceps",
+      "normalized": "biceps",
+      "count": 157
+    },
+    {
+      "value": "cardio",
+      "normalized": "cardio",
+      "count": 16
+    },
+    {
+      "value": "cuádriceps",
+      "normalized": "cuadriceps",
+      "count": 76
+    },
+    {
+      "value": "cuerpo completo",
+      "normalized": "cuerpo completo",
+      "count": 1
+    },
+    {
+      "value": "deltoides",
+      "normalized": "deltoides",
+      "count": 2
+    },
+    {
+      "value": "deltoides posteriores",
+      "normalized": "deltoides posteriores",
+      "count": 1
+    },
+    {
+      "value": "dorsales",
+      "normalized": "dorsales",
+      "count": 36
+    },
+    {
+      "value": "elevador de la escápula",
+      "normalized": "elevador de la escapula",
+      "count": 1
+    },
+    {
+      "value": "espalda",
+      "normalized": "espalda",
+      "count": 59
+    },
+    {
+      "value": "espalda alta",
+      "normalized": "espalda alta",
+      "count": 48
+    },
+    {
+      "value": "espalda baja",
+      "normalized": "espalda baja",
+      "count": 2
+    },
+    {
+      "value": "espalda superior",
+      "normalized": "espalda superior",
+      "count": 9
+    },
+    {
+      "value": "extensores del antebrazo",
+      "normalized": "extensores del antebrazo",
+      "count": 5
+    },
+    {
+      "value": "flexores de cadera",
+      "normalized": "flexores de cadera",
+      "count": 7
+    },
+    {
+      "value": "gemelos",
+      "normalized": "gemelos",
+      "count": 54
+    },
+    {
+      "value": "glúteos",
+      "normalized": "gluteos",
+      "count": 116
+    },
+    {
+      "value": "hombro",
+      "normalized": "hombro",
+      "count": 38
+    },
+    {
+      "value": "hombro posterior",
+      "normalized": "hombro posterior",
+      "count": 16
+    },
+    {
+      "value": "hombros",
+      "normalized": "hombros",
+      "count": 104
+    },
+    {
+      "value": "isquiotibiales",
+      "normalized": "isquiotibiales",
+      "count": 59
+    },
+    {
+      "value": "manguito rotador",
+      "normalized": "manguito rotador",
+      "count": 1
+    },
+    {
+      "value": "muñecas",
+      "normalized": "munecas",
+      "count": 1
+    },
+    {
+      "value": "oblicuos",
+      "normalized": "oblicuos",
+      "count": 22
+    },
+    {
+      "value": "pecho",
+      "normalized": "pecho",
+      "count": 149
+    },
+    {
+      "value": "pecho superior",
+      "normalized": "pecho superior",
+      "count": 2
+    },
+    {
+      "value": "pierna",
+      "normalized": "pierna",
+      "count": 1
+    },
+    {
+      "value": "romboides",
+      "normalized": "romboides",
+      "count": 1
+    },
+    {
+      "value": "serrato anterior",
+      "normalized": "serrato anterior",
+      "count": 2
+    },
+    {
+      "value": "tibiales",
+      "normalized": "tibiales",
+      "count": 1
+    },
+    {
+      "value": "tobillos",
+      "normalized": "tobillos",
+      "count": 1
+    },
+    {
+      "value": "trapecio",
+      "normalized": "trapecio",
+      "count": 5
+    },
+    {
+      "value": "trapecios",
+      "normalized": "trapecios",
+      "count": 8
+    },
+    {
+      "value": "tríceps",
+      "normalized": "triceps",
+      "count": 146
+    },
+    {
+      "value": "zona lumbar",
+      "normalized": "zona lumbar",
+      "count": 9
+    }
+  ]
+}

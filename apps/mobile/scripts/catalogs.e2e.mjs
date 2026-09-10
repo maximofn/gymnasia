@@ -6,6 +6,7 @@ import { dirname, extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { chromium } from "playwright";
+import { createExerciseCatalogArtifacts } from "../../../scripts/catalogs/exercise-pagination.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const mobileRoot = join(here, "..");
@@ -16,10 +17,10 @@ const baseUrl = `http://127.0.0.1:${port}`;
 const storageKey = "gymnasia.development:gymnasia.mobile.local.v3";
 const foodsCacheKey = "gymnasia.development:gymnasia.mobile.foods_repo.v2";
 const exercisesCacheKey = "gymnasia.development:gymnasia.mobile.exercises_repo.v3";
+const exerciseCatalogCacheKey = "gymnasia.development:gymnasia.mobile.exercise_catalog.v4";
 const legacyFoodsCacheKey = "gymnasia.development:gymnasia.mobile.foods_repo.v1";
 const legacyProductsCacheKey = "gymnasia.development:gymnasia.mobile.products_repo.v1";
 const legacyRecipesCacheKey = "gymnasia.development:gymnasia.mobile.recipes_repo.v1";
-const legacyExercisesCacheKey = "gymnasia.development:gymnasia.mobile.exercises_repo.v2";
 const fixtureFoodName = "Pera Catálogo E2E";
 const fixtureExerciseName = "Sentadilla Catálogo E2E";
 const screenshotDir = process.env.CATALOG_E2E_SCREENSHOT_DIR || "";
@@ -61,6 +62,29 @@ const exerciseFixture = [{
   difficulty: "Principiante",
   instructions: "Flexiona cadera y rodillas manteniendo el torso estable.",
 }];
+
+function exerciseCatalogFixture(name = fixtureExerciseName) {
+  const entries = Array.from({ length: 30 }, (_, index) => {
+    const id = `catalog-e2e-${String(index).padStart(2, "0")}`;
+    return {
+      id,
+      name: `Movimiento E2E ${String(index).padStart(2, "0")}`,
+      image_male: `images/${id}-male.webp`,
+      image_female: `images/${id}-female.webp`,
+      muscle_group: "Espalda",
+      secondary_muscles: ["Bíceps"],
+      equipment: "Mancuernas",
+      difficulty: "Principiante",
+      instructions: `Instrucciones E2E ${index}`,
+    };
+  });
+  entries.push({ ...exerciseFixture[0], name });
+  const generated = createExerciseCatalogArtifacts("/fixture/ejercicios", entries);
+  return Object.fromEntries(generated.artifacts.map((artifact) => [
+    artifact.path.split("/catalog-v1/")[1],
+    artifact.contents,
+  ]));
+}
 
 const duplicateProductFixture = [{
   ...foodFixture[0],
@@ -147,6 +171,7 @@ function startServer() {
 
 async function installRoutes(page, networkState) {
   const imageFixture = readFileSync(join(repositoryRoot, "alimentos", "images", "manzana.webp"));
+  const exerciseImageFixture = readFileSync(join(repositoryRoot, "ejercicios", "images", "flexion-unilateral-male.webp"));
   await page.route("**/dev-store", (route) => route.fulfill({
     status: 200,
     contentType: "application/json",
@@ -165,12 +190,12 @@ async function installRoutes(page, networkState) {
     if (pathname.endsWith("/alimentos/all.json")) {
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(foodFixture) });
     }
-    if (pathname.endsWith("/ejercicios/all.json")) {
-      const exercises = exerciseFixture.map((entry) => ({
-        ...entry,
-        name: networkState.exerciseName ?? entry.name,
-      }));
-      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(exercises) });
+    if (pathname.includes("/ejercicios/catalog-v1/")) {
+      const relativePath = pathname.split("/ejercicios/catalog-v1/")[1];
+      const artifact = exerciseCatalogFixture(networkState.exerciseName)[relativePath];
+      return artifact
+        ? route.fulfill({ status: 200, contentType: "application/json", body: artifact })
+        : route.fulfill({ status: 404, body: "missing exercise catalog fixture" });
     }
     if (pathname.endsWith("/productos_comerciales/all.json")) {
       return route.fulfill({
@@ -183,7 +208,11 @@ async function installRoutes(page, networkState) {
       return route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
     }
     if (pathname.endsWith(".webp")) {
-      return route.fulfill({ status: 200, contentType: "image/webp", body: imageFixture });
+      return route.fulfill({
+        status: 200,
+        contentType: "image/webp",
+        body: pathname.includes("/ejercicios/") ? exerciseImageFixture : imageFixture,
+      });
     }
     return route.fulfill({ status: 200, contentType: "text/plain", body: "Fixture local de catálogos." });
   });
@@ -246,7 +275,7 @@ async function openExerciseConsumer(page, routineName, exerciseName = fixtureExe
   }
   await addExercise.waitFor({ state: "visible" });
   await addExercise.click();
-  const search = page.locator('input[placeholder="Buscar ejercicio..."]');
+  const search = page.getByTestId("exercise-catalog-search");
   await search.waitFor({ state: "visible" });
   await search.fill(exerciseName);
 }
@@ -266,13 +295,13 @@ async function expectCaches(page, expected, exerciseName = fixtureExerciseName) 
     await page.waitForFunction(
       ({ foodKey, exerciseKey, hasEntries, expectedExerciseName }) => {
         const foods = JSON.parse(localStorage.getItem(foodKey) ?? "null")?.data ?? [];
-        const exercises = JSON.parse(localStorage.getItem(exerciseKey) ?? "null")?.data ?? [];
+        const exerciseCatalog = JSON.parse(localStorage.getItem(exerciseKey) ?? "null");
         return hasEntries
           ? foods.some((entry) => entry.name === "Pera Catálogo E2E")
-            && exercises.some((entry) => entry.name === expectedExerciseName)
-          : foods.length === 0 && exercises.length === 0;
+            && exerciseCatalog?.active?.manifest?.itemCount > 0
+          : foods.length === 0 && exerciseCatalog === null;
       },
-      { foodKey: foodsCacheKey, exerciseKey: exercisesCacheKey, hasEntries: expected, expectedExerciseName: exerciseName },
+      { foodKey: foodsCacheKey, exerciseKey: exerciseCatalogCacheKey, hasEntries: expected, expectedExerciseName: exerciseName },
     );
   } catch (error) {
     log(`Caché observada: ${JSON.stringify(await page.evaluate(() => ({ ...localStorage })))}`);
@@ -280,14 +309,14 @@ async function expectCaches(page, expected, exerciseName = fixtureExerciseName) 
   }
 }
 
-function openAIToolCallSse(responseId, callId, name) {
+function openAIToolCallSse(responseId, callId, name, argumentsJson = "{}") {
   const itemId = `fc_${callId}`;
   return [
     `event: response.created\ndata: ${JSON.stringify({ type: "response.created", response: { id: responseId } })}`,
     `event: response.output_item.added\ndata: ${JSON.stringify({ type: "response.output_item.added", output_index: 0, item: { type: "function_call", id: itemId, call_id: callId, name, arguments: "", status: "in_progress" } })}`,
-    `event: response.function_call_arguments.done\ndata: ${JSON.stringify({ type: "response.function_call_arguments.done", item_id: itemId, output_index: 0, arguments: "{}" })}`,
-    `event: response.output_item.done\ndata: ${JSON.stringify({ type: "response.output_item.done", output_index: 0, item: { type: "function_call", id: itemId, call_id: callId, name, arguments: "{}", status: "completed" } })}`,
-    `event: response.completed\ndata: ${JSON.stringify({ type: "response.completed", response: { id: responseId, output: [{ type: "function_call", id: itemId, call_id: callId, name, arguments: "{}", status: "completed" }] } })}`,
+    `event: response.function_call_arguments.done\ndata: ${JSON.stringify({ type: "response.function_call_arguments.done", item_id: itemId, output_index: 0, arguments: argumentsJson })}`,
+    `event: response.output_item.done\ndata: ${JSON.stringify({ type: "response.output_item.done", output_index: 0, item: { type: "function_call", id: itemId, call_id: callId, name, arguments: argumentsJson, status: "completed" } })}`,
+    `event: response.completed\ndata: ${JSON.stringify({ type: "response.completed", response: { id: responseId, output: [{ type: "function_call", id: itemId, call_id: callId, name, arguments: argumentsJson, status: "completed" }] } })}`,
     "data: [DONE]",
     "",
   ].join("\n\n");
@@ -305,13 +334,28 @@ function openAIFinalSse() {
 
 async function expectProviderCatalogTools(page, expectedFoodAvailability, expectedExerciseAvailability = expectedFoodAvailability) {
   const requests = [];
+  const routineArguments = JSON.stringify({
+    data: {
+      name: "Rutina agente paginada",
+      category: "strength",
+      icon: "activity",
+      exercises: [{
+        kind: "catalog",
+        source_id: "gymnasia_exercises",
+        item_id: "sentadilla-catalogo-e2e",
+        series: [{ type: "normal", reps: 8, weight_kg: 40, rest_seconds: 90 }],
+      }],
+    },
+  });
   await page.route("**/v1/responses*", async (route) => {
     requests.push(route.request().postDataJSON());
     const body = requests.length === 1
       ? openAIToolCallSse("resp_catalog_foods", "call_catalog_foods", "search_foods")
       : requests.length === 2
-        ? openAIToolCallSse("resp_catalog_exercises", "call_catalog_exercises", "search_exercises")
-        : openAIFinalSse();
+        ? openAIToolCallSse("resp_catalog_exercises", "call_catalog_exercises", "search_exercises", JSON.stringify({ query: fixtureExerciseName }))
+        : requests.length === 3
+          ? openAIToolCallSse("resp_catalog_routine", "call_catalog_routine", "create_routine", routineArguments)
+          : openAIFinalSse();
     await route.fulfill({
       status: 200,
       headers: { "content-type": "text/event-stream; charset=utf-8", "cache-control": "no-cache" },
@@ -322,7 +366,7 @@ async function expectProviderCatalogTools(page, expectedFoodAvailability, expect
   await page.getByTestId("chat-input").fill("Consulta ambos catálogos");
   await page.getByTestId("chat-send").click();
   await page.getByText("Catálogos consultados.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
-  assert.equal(requests.length, 3);
+  assert.equal(requests.length, 4);
   for (const [requestIndex, expectedSource, expectedAvailability] of [
     [1, "gymnasia_foods", expectedFoodAvailability],
     [2, "gymnasia_exercises", expectedExerciseAvailability],
@@ -333,6 +377,18 @@ async function expectProviderCatalogTools(page, expectedFoodAvailability, expect
     assert.equal(parsed.availability, expectedAvailability);
     assert.equal(parsed.sources.some((source) => source.source_id === expectedSource), true);
     assert.equal(parsed.results.every((result) => result.source_id && result.item_id), true);
+  }
+  const routineOutput = requests[3].input?.find((item) => item.type === "function_call_output")?.output;
+  assert.equal(typeof routineOutput, "string");
+  const expectedRoutineStatus = expectedExerciseAvailability === "unavailable" ? "invalid_input" : "created";
+  assert.equal(JSON.parse(routineOutput).status, expectedRoutineStatus);
+  if (expectedRoutineStatus === "created") {
+    await page.waitForFunction((key) => (
+      JSON.parse(localStorage.getItem(key) ?? "{}").templates?.some(
+        (template) => template.name === "Rutina agente paginada"
+          && template.exercises?.[0]?.catalog_link?.ref?.itemId === "sentadilla-catalogo-e2e",
+      )
+    ), storageKey);
   }
   await page.unroute("**/v1/responses*");
 }
@@ -348,17 +404,48 @@ try {
 
   log("Verificando descarga y consumo de agregados válidos");
   await openApp(page);
-  await expectCaches(page, true);
   await expectFoodConsumer(page, true);
   await page.getByText("Actualizado ahora", { exact: true }).first().waitFor({ state: "visible" });
   await expectProviderCatalogTools(page, "fresh");
+  await expectCaches(page, true);
   await expectExerciseConsumer(page, "Rutina Catálogos E2E", true);
-  await page.getByText(fixtureExerciseName, { exact: true }).last().click();
+  const selectedCatalogRow = page.getByTestId("exercise-catalog-row-sentadilla-catalogo-e2e");
+  await selectedCatalogRow.waitFor({ state: "visible" });
+  await selectedCatalogRow.scrollIntoViewIfNeeded();
+  await page.getByTestId("exercise-catalog-search").evaluate((element) => element.blur());
+  if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "exercise-catalog-selector.png") });
+  await selectedCatalogRow.click();
   await page.getByTestId("training-editor-save").click();
   await page.waitForFunction((key) => {
     const store = JSON.parse(localStorage.getItem(key) ?? "{}");
     return store.templates?.[0]?.exercises?.[0]?.catalog_link?.ref?.itemId === "sentadilla-catalogo-e2e";
   }, storageKey);
+
+  log("Verificando scroll infinito y consulta reutilizada desde Ajustes");
+  await page.getByTestId("nav-tab-settings").click();
+  await page.getByTestId("settings-tab-training").click();
+  const openCatalog = page.getByTestId("settings-open-exercise-catalog");
+  await openCatalog.scrollIntoViewIfNeeded();
+  await openCatalog.click();
+  const catalogList = page.getByTestId("exercise-catalog-list");
+  await catalogList.waitFor({ state: "visible" });
+  await catalogList.evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  await page.getByText(fixtureExerciseName, { exact: true }).last().waitFor({ state: "visible" });
+  const catalogSearch = page.getByTestId("exercise-catalog-search");
+  await catalogSearch.fill("movimiento");
+  await catalogSearch.fill(fixtureExerciseName);
+  await page.getByRole("button", { name: "Cuádriceps" }).click();
+  await page.waitForTimeout(400);
+  const settingsCatalogRow = page.getByTestId("exercise-catalog-row-sentadilla-catalogo-e2e");
+  await settingsCatalogRow.waitFor({ state: "visible" });
+  await settingsCatalogRow.scrollIntoViewIfNeeded();
+  await catalogSearch.evaluate((element) => element.blur());
+  await page.waitForTimeout(200);
+  if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "exercise-catalog-settings.png") });
+  await settingsCatalogRow.click();
+  await page.getByText("Flexiona cadera y rodillas manteniendo el torso estable.", { exact: true }).waitFor({ state: "visible" });
+  await page.getByTestId("exercise-detail-close").click();
+  await page.getByLabel("Cerrar catálogo").click();
 
   log("Verificando que un cambio de nombre conserva el vínculo por ID");
   const renamedExercise = "Sentadilla Catálogo Renombrada";
@@ -366,6 +453,8 @@ try {
   await page.reload({ waitUntil: "domcontentloaded" });
   await page.getByTestId("nav-tab-diet").waitFor({ state: "visible" });
   await expectCaches(page, true, renamedExercise);
+  await expectExerciseConsumer(page, "Rutina Catálogos E2E", true, renamedExercise);
+  await page.getByTestId("exercise-catalog-row-sentadilla-catalogo-e2e").click();
   await page.waitForFunction(({ key, expectedName }) => {
     const exercise = JSON.parse(localStorage.getItem(key) ?? "{}").templates?.[0]?.exercises?.[0];
     return exercise?.name === expectedName
@@ -390,13 +479,13 @@ try {
     [legacyFoodsCacheKey]: JSON.stringify(foodFixture),
     [legacyProductsCacheKey]: "[]",
     [legacyRecipesCacheKey]: "[]",
-    [legacyExercisesCacheKey]: JSON.stringify(exerciseFixture),
+    [exercisesCacheKey]: JSON.stringify(exerciseFixture),
   });
   await openApp(stalePage);
-  await expectCaches(stalePage, true);
   await expectFoodConsumer(stalePage, true);
   await stalePage.getByText("Copia antigua", { exact: true }).first().waitFor({ state: "visible" });
   await expectExerciseConsumer(stalePage, "Rutina Caché Antigua E2E", true);
+  await expectCaches(stalePage, true);
   await staleContext.close();
 
   log("Verificando disponibilidad parcial cuando falla una fuente nutricional");
@@ -421,6 +510,10 @@ try {
   if (screenshotDir) await unavailableNotice.screenshot({ path: join(screenshotDir, "unavailable.png") });
   await expectProviderCatalogTools(coldPage, "unavailable");
   await expectExerciseConsumer(coldPage, "Rutina Offline E2E", false);
+  await coldPage.getByText("No se pudo cargar esta parte del catálogo.", { exact: true }).waitFor({ state: "visible" });
+  await coldPage.getByTestId("training-exercise-custom-open").waitFor({ state: "visible" });
+  await coldPage.getByTestId("exercise-catalog-search").evaluate((element) => element.blur());
+  if (screenshotDir) await coldPage.screenshot({ path: join(screenshotDir, "exercise-catalog-offline.png") });
   await coldContext.close();
 
   log("Verificando que una caché manipulada se rechaza íntegramente");

@@ -6,7 +6,7 @@ vi.mock("../runtimeEnvironment", () => ({
 
 import {
   CATALOG_SOURCE_REGISTRY,
-  EXERCISE_CATALOG_DEFINITION,
+  EXERCISE_CATALOG_SOURCE,
   FOOD_CATALOG_DEFINITIONS,
   exerciseCatalogImageUri,
 } from "./sources";
@@ -28,8 +28,8 @@ describe("registro cerrado de fuentes", () => {
   });
 
   it("enlaza los ejercicios a la atribución por fuente sin asignar una licencia global", () => {
-    expect(EXERCISE_CATALOG_DEFINITION.provenance.attributionUrl).toContain("ejercicios/SOURCES.md");
-    expect(EXERCISE_CATALOG_DEFINITION.provenance.licenseLabel).toBe("Consulta la atribución por fuente");
+    expect(EXERCISE_CATALOG_SOURCE.provenance.attributionUrl).toContain("ejercicios/SOURCES.md");
+    expect(EXERCISE_CATALOG_SOURCE.provenance.licenseLabel).toBe("Consulta la atribución por fuente");
   });
 
   it("rechaza metadatos de fuente discordantes en vez de reasignarlos silenciosamente", () => {
