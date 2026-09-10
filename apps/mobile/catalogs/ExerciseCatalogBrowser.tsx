@@ -8,6 +8,7 @@ import type { ExerciseCatalogResult, ExerciseCatalogSummary } from "./exerciseCa
 export type ExerciseCatalogBrowserMode = "select" | "inspect";
 
 type Props = {
+  testID: string;
   mode: ExerciseCatalogBrowserMode;
   items: ExerciseCatalogSummary[];
   muscleGroups: string[];
@@ -49,6 +50,7 @@ function ResultNotice({ result, hasItems }: { result: ExerciseCatalogResult | nu
 }
 
 export function ExerciseCatalogBrowser({
+  testID,
   mode,
   items,
   muscleGroups,
@@ -68,7 +70,7 @@ export function ExerciseCatalogBrowser({
   const hasRecoverableError = !!result?.warning && items.length === 0;
   return (
     <View
-      testID="exercise-catalog-browser"
+      testID={testID}
       style={{ position: "absolute", inset: 0, backgroundColor: "#0D1117", zIndex: 700, elevation: 70 }}
     >
       <SafeAreaView style={{ flex: 1 }}>

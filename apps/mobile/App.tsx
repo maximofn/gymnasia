@@ -440,6 +440,19 @@ import {
   storeImportedMeasurementPhoto,
   sweepOrphanedMeasurementPhotos,
 } from "./backup/measurementMedia";
+import {
+  TAB_DESTINATIONS,
+  compactTabLabel,
+  createHardwareBackPressCallback,
+  resolveShellBackCommand,
+  shellSurfaceTestId,
+  tabLabel,
+  usesDesktopNavigation,
+  type ShellBackCommand,
+  type ShellLayerState,
+  type ShellTemplateRoute,
+  type TabKey,
+} from "./shell/shellRegistry";
 
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
@@ -465,7 +478,6 @@ Notifications.setNotificationHandler({
   },
 });
 
-type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
 type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "data" | "traces";
 type WorkoutSessionStatus = "running" | "paused";
 type WorkoutSessionResolutionKind = WorkoutCompletionStatus | "discard";
@@ -4479,7 +4491,7 @@ function WorkoutHistoryDetail({
   const isCompleted = isCompletedWorkoutSummary(summary);
   const snapshot = summary.prescription_snapshot;
   return (
-    <View testID="training-history-detail" style={{ gap: 18, paddingBottom: 110 }}>
+    <View testID={shellSurfaceTestId("workout-history-detail")} style={{ gap: 18, paddingBottom: 110 }}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
         <Pressable
           onPress={onBack}
@@ -4862,22 +4874,6 @@ function normalizeWorkoutSession(
   };
 }
 
-function tabLabel(tab: TabKey): string {
-  const map: Record<TabKey, string> = {
-    home: "Home",
-    training: "Rutinas",
-    diet: "Dieta",
-    measures: "Medidas",
-    chat: "Gymnasia Coach",
-    settings: "Configuración",
-  };
-  return map[tab];
-}
-
-function mobileTabLabel(tab: TabKey): string {
-  return tab === "chat" ? "Coach" : tabLabel(tab);
-}
-
 function TabTitle({ children }: { children: string }) {
   return (
     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 30, fontWeight: "700" }}>
@@ -5004,15 +5000,6 @@ function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: stri
 }
 
 function DesktopSidebar({ tab, onTabChange }: { tab: TabKey; onTabChange: (tab: TabKey) => void }) {
-  const navigation: Array<{ key: TabKey; icon: string }> = [
-    { key: "home", icon: "home-outline" },
-    { key: "training", icon: "barbell-outline" },
-    { key: "diet", icon: "restaurant-outline" },
-    { key: "measures", icon: "body-outline" },
-    { key: "chat", icon: "chatbubble-ellipses-outline" },
-    { key: "settings", icon: "settings-outline" },
-  ];
-
   return (
     <View
       style={{
@@ -5043,14 +5030,14 @@ function DesktopSidebar({ tab, onTabChange }: { tab: TabKey; onTabChange: (tab: 
       </View>
 
       <View style={{ gap: 8 }}>
-        {navigation.map(({ key, icon }) => {
+        {TAB_DESTINATIONS.map(({ key, desktopIcon, desktopTestId, label }) => {
           const active = tab === key;
           return (
             <Pressable
               key={key}
               onPress={() => onTabChange(key)}
-              testID={`desktop-nav-${key}`}
-              accessibilityLabel={tabLabel(key)}
+              testID={desktopTestId}
+              accessibilityLabel={label}
               accessibilityRole="button"
               style={{
                 minHeight: 48,
@@ -5065,7 +5052,7 @@ function DesktopSidebar({ tab, onTabChange }: { tab: TabKey; onTabChange: (tab: 
               }}
             >
               <Ionicons
-                name={icon as keyof typeof Ionicons.glyphMap}
+                name={desktopIcon as keyof typeof Ionicons.glyphMap}
                 size={19}
                 color={active ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary}
               />
@@ -5076,7 +5063,7 @@ function DesktopSidebar({ tab, onTabChange }: { tab: TabKey; onTabChange: (tab: 
                   fontWeight: active ? "800" : "600",
                 }}
               >
-                {tabLabel(key)}
+                {label}
               </Text>
             </Pressable>
           );
@@ -5454,6 +5441,7 @@ type MiniChatProps = {
   healthSafetyEvaluatorConsent: Record<Provider, boolean>;
   onHealthSafetyConsentPrompt: (provider: Provider) => void;
   onReportMessage: (message: ChatMessage, messages: ChatMessage[]) => void;
+  testID?: string;
 };
 
 function MiniChat({
@@ -5469,6 +5457,7 @@ function MiniChat({
   healthSafetyEvaluatorConsent,
   onHealthSafetyConsentPrompt,
   onReportMessage,
+  testID,
 }: MiniChatProps) {
   const [mcMessages, setMcMessages] = useState<ChatMessage[]>(() => [
     createAiIdentityChatMessage("msg", "personal-food-assistant"),
@@ -5609,6 +5598,7 @@ function MiniChat({
 
   return (
     <View
+      testID={testID}
       style={{
         borderWidth: 1,
         borderColor: mobileTheme.color.borderSubtle,
@@ -6705,7 +6695,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }, []);
 
   const { width: viewportWidth } = useWindowDimensions();
-  const isDesktopWeb = Platform.OS === "web" && viewportWidth >= 960;
+  const isDesktopWeb = usesDesktopNavigation(Platform.OS, viewportWidth);
   const [tab, setTab] = useState<TabKey>(
     deletionOutcome?.report.status === "incomplete" ? "settings" : "home",
   );
@@ -8030,75 +8020,141 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return () => cancelAnimationFrame(frame);
   }, [selectedWorkoutHistoryId, tab, trainingHistoryScreenOpen]);
 
-  // Android hardware back button: navigate back through UI layers instead of closing
+  const shellLayerState = {
+    "training-template-conflict": trainingTemplateConflict !== null,
+    "training-template-discard": confirmDiscardTemplateDraft,
+    "backup-import-confirmation": pendingImport !== null,
+    "data-deletion": dataDeletionScope !== null,
+    "training-partial-finish": confirmPartialSessionFinish,
+    "workout-completion": workoutCompletionModal !== null,
+    "workout-discard-confirmation": confirmDiscardSession,
+    "food-catalog-ambiguity": pendingFoodResolution !== null,
+    "food-estimator": foodEstimatorModalOpen,
+    "body-fat-info": bodyFatInfoModalOpen,
+    "custom-exercise-form": customExerciseFormOpen,
+    "exercise-picker": exercisePickerOpen,
+    "personal-food-ai-chat": personalFoodAIChatOpen,
+    "personal-food-form": personalFoodFormVisible,
+    "exercise-catalog-detail": selectedExerciseDetail !== null,
+    "measurement-photo": expandedPhotoUri !== null,
+    "measurement-entry": measurementEntryScreenOpen,
+    "byok-explanation": showByokExplain,
+    "provider-delete": providerDeleteModal !== null,
+    "diet-copy-confirmation": dietCopyModal !== null,
+    "diet-copy-date-picker": dietCopyPickCategory !== null,
+    "diet-date-picker": showDietDatePicker,
+    "birth-date-picker": showBirthDatePicker,
+    "measurement-date-picker": showMeasurementDatePicker,
+    "measurements-history-expanded": showAllMeasurementsHistory,
+    "training-history-expanded": showAllTrainingHistory,
+    "workout-history-detail": selectedWorkoutHistoryId !== null,
+    "training-history": trainingHistoryScreenOpen,
+    "training-exercise-detail": exerciseDetailIndex !== null,
+    "series-type-picker": seriesTypePickerTarget !== null,
+    "chat-provider-dropdown": chatProviderDropdownOpen,
+    "food-provider-dropdown": foodAIProviderDropdownOpen,
+    "anthropic-model-dropdown": anthropicModelDropdownOpen,
+    "openai-model-dropdown": openAIModelDropdownOpen,
+    "google-model-dropdown": googleModelDropdownOpen,
+    "measures-period-dropdown": measuresDashboardPeriodDropdownOpen,
+    "measures-metric-dropdown": measuresChartMetricDropdownOpen,
+    "training-period-dropdown": trainingStatsPeriodDropdownOpen,
+    "training-metric-dropdown": trainingStatsMetricDropdownOpen,
+    "diet-item-menu": dietItemMenu !== null,
+    "training-template-menu": trainingMenuTemplateId !== null,
+    "training-exercise-menu": activeExerciseMenuId !== null,
+    "training-series-menu": activeSeriesMenuId !== null,
+    "settings-food-detail": selectedFoodDetail !== null,
+    "settings-product-detail": selectedProductDetail !== null,
+    "settings-personal-food-detail": selectedPersonalFoodDetail !== null,
+    "diet-meal-editor": dietMealEditorCategory !== null,
+  } satisfies ShellLayerState;
+  const shellTrainingTemplateRoute: ShellTemplateRoute = !activeTrainingTemplateId
+    ? "closed"
+    : activeTrainingTemplateMode === "edit"
+      ? trainingTemplateDraftDirty
+        ? "edit-dirty"
+        : "edit-clean"
+      : "detail";
+  const shellBackHandlers = {
+    "training-template-conflict": () => { setTrainingTemplateConflict(null); return true; },
+    "training-template-discard": () => { setConfirmDiscardTemplateDraft(false); return true; },
+    "backup-import-confirmation": () => { setPendingImport(null); return true; },
+    "data-deletion": () => { if (!dataDeletionBusyRef.current) closeDataDeletion(); return true; },
+    "training-partial-finish": () => { setConfirmPartialSessionFinish(false); return true; },
+    "workout-completion": () => { closeWorkoutCompletionModal(); return true; },
+    "workout-discard-confirmation": () => { setConfirmDiscardSession(false); return true; },
+    "food-catalog-ambiguity": () => { setPendingFoodResolution(null); return true; },
+    "food-estimator": () => { closeFoodEstimatorModal(); return true; },
+    "body-fat-info": () => { setBodyFatInfoModalOpen(false); return true; },
+    "custom-exercise-form": () => { setCustomExerciseFormOpen(false); return true; },
+    "exercise-picker": () => { closeExercisePicker(); return true; },
+    "personal-food-ai-chat": () => { setPersonalFoodAIChatOpen(false); return true; },
+    "personal-food-form": () => { setPersonalFoodFormVisible(false); return true; },
+    "exercise-catalog-detail": () => { setSelectedExerciseDetail(null); return true; },
+    "measurement-photo": () => { setExpandedPhotoUri(null); return true; },
+    "measurement-entry": () => { closeMeasurementEntryScreen(); return true; },
+    "byok-explanation": () => { setShowByokExplain(false); return true; },
+    "provider-delete": () => { closeProviderDeleteModal(); return true; },
+    "diet-copy-confirmation": () => { setDietCopyModal(null); return true; },
+    "diet-copy-date-picker": () => { closeDietCopyPicker(); return true; },
+    "diet-date-picker": () => { setShowDietDatePicker(false); return true; },
+    "birth-date-picker": () => { setShowBirthDatePicker(false); return true; },
+    "measurement-date-picker": () => { setShowMeasurementDatePicker(false); return true; },
+    "measurements-history-expanded": () => { setShowAllMeasurementsHistory(false); return true; },
+    "training-history-expanded": () => { setShowAllTrainingHistory(false); return true; },
+    "workout-history-detail": () => { setSelectedWorkoutHistoryId(null); return true; },
+    "training-history": () => { closeTrainingHistory(); return true; },
+    "training-exercise-detail": () => { setExerciseDetailIndex(null); return true; },
+    "series-type-picker": () => { setSeriesTypePickerTarget(null); return true; },
+    "chat-provider-dropdown": () => { setChatProviderDropdownOpen(false); return true; },
+    "food-provider-dropdown": () => { setFoodAIProviderDropdownOpen(false); return true; },
+    "anthropic-model-dropdown": () => { setAnthropicModelDropdownOpen(false); return true; },
+    "openai-model-dropdown": () => { setOpenAIModelDropdownOpen(false); return true; },
+    "google-model-dropdown": () => { setGoogleModelDropdownOpen(false); return true; },
+    "measures-period-dropdown": () => { setMeasuresDashboardPeriodDropdownOpen(false); return true; },
+    "measures-metric-dropdown": () => { setMeasuresChartMetricDropdownOpen(false); return true; },
+    "training-period-dropdown": () => { setTrainingStatsPeriodDropdownOpen(false); return true; },
+    "training-metric-dropdown": () => { setTrainingStatsMetricDropdownOpen(false); return true; },
+    "diet-item-menu": () => { setDietItemMenu(null); return true; },
+    "training-template-menu": () => { setTrainingMenuTemplateId(null); return true; },
+    "training-exercise-menu": () => { setActiveExerciseMenuId(null); return true; },
+    "training-series-menu": () => { setActiveSeriesMenuId(null); return true; },
+    "settings-food-detail": () => { setSelectedFoodDetail(null); return true; },
+    "settings-product-detail": () => { setSelectedProductDetail(null); return true; },
+    "settings-personal-food-detail": () => { setSelectedPersonalFoodDetail(null); return true; },
+    "diet-meal-editor": () => { resetDietMealEditorState(); return true; },
+    "request-template-discard": () => { setConfirmDiscardTemplateDraft(true); return true; },
+    "close-training-template": () => {
+      if (activeTrainingTemplateMode === "edit") closeTrainingTemplateEditor();
+      else closeTrainingTemplateDetails();
+      return true;
+    },
+    "request-workout-discard": () => { setConfirmDiscardSession(true); return true; },
+    "go-home": () => { setTab("home"); return true; },
+    "delegate-system": () => false,
+  } satisfies Record<ShellBackCommand, () => boolean>;
+  const shellBackPressRef = useRef<() => boolean>(() => false);
+  shellBackPressRef.current = () => {
+    const resolution = resolveShellBackCommand({
+      layers: shellLayerState,
+      trainingTemplateRoute: shellTrainingTemplateRoute,
+      hasActiveWorkoutSession: activeWorkoutSession !== null,
+      tab,
+    });
+    return shellBackHandlers[resolution.command]();
+  };
+
+  // Android hardware back button: one stable subscription, always reading the
+  // latest shell state and handlers through shellBackPressRef.
   useEffect(() => {
     if (Platform.OS !== "android") return;
-    const handler = BackHandler.addEventListener("hardwareBackPress", () => {
-      // Layer 1: close any open modal / overlay
-      if (trainingTemplateConflict) { setTrainingTemplateConflict(null); return true; }
-      if (confirmDiscardTemplateDraft) { setConfirmDiscardTemplateDraft(false); return true; }
-      if (dataDeletionScope) {
-        if (!dataDeletionBusy) closeDataDeletion();
-        return true;
-      }
-      if (confirmPartialSessionFinish) { setConfirmPartialSessionFinish(false); return true; }
-      if (workoutCompletionModal) { closeWorkoutCompletionModal(); return true; }
-      if (confirmDiscardSession) { setConfirmDiscardSession(false); return true; }
-      if (pendingFoodResolution) { setPendingFoodResolution(null); return true; }
-      if (foodEstimatorModalOpen) { setFoodEstimatorModalOpen(false); return true; }
-      if (bodyFatInfoModalOpen) { setBodyFatInfoModalOpen(false); return true; }
-      if (customExerciseFormOpen) { setCustomExerciseFormOpen(false); return true; }
-      if (exercisePickerOpen) { setExercisePickerOpen(false); return true; }
-      if (personalFoodAIChatOpen) { setPersonalFoodAIChatOpen(false); return true; }
-      if (personalFoodFormVisible) { setPersonalFoodFormVisible(false); return true; }
-      if (measurementEntryScreenOpen) { setMeasurementEntryScreenOpen(false); return true; }
-      if (showByokExplain) { setShowByokExplain(false); return true; }
-      if (providerDeleteModal) { setProviderDeleteModal(null); return true; }
-      if (dietCopyModal) { setDietCopyModal(null); return true; }
-      if (dietCopyPickCategory) { setDietCopyPickCategory(null); return true; }
-      if (showDietDatePicker) { setShowDietDatePicker(false); return true; }
-      if (showBirthDatePicker) { setShowBirthDatePicker(false); return true; }
-      if (showMeasurementDatePicker) { setShowMeasurementDatePicker(false); return true; }
-      if (showAllMeasurementsHistory) { setShowAllMeasurementsHistory(false); return true; }
-      if (showAllTrainingHistory) { setShowAllTrainingHistory(false); return true; }
-      if (selectedWorkoutHistoryId) { setSelectedWorkoutHistoryId(null); return true; }
-      if (trainingHistoryScreenOpen) { setTrainingHistoryScreenOpen(false); return true; }
-      // Close dropdowns
-      if (chatProviderDropdownOpen) { setChatProviderDropdownOpen(false); return true; }
-      if (foodAIProviderDropdownOpen) { setFoodAIProviderDropdownOpen(false); return true; }
-      if (anthropicModelDropdownOpen) { setAnthropicModelDropdownOpen(false); return true; }
-      if (openAIModelDropdownOpen) { setOpenAIModelDropdownOpen(false); return true; }
-      if (googleModelDropdownOpen) { setGoogleModelDropdownOpen(false); return true; }
-      if (measuresDashboardPeriodDropdownOpen) { setMeasuresDashboardPeriodDropdownOpen(false); return true; }
-      if (measuresChartMetricDropdownOpen) { setMeasuresChartMetricDropdownOpen(false); return true; }
-      if (trainingStatsPeriodDropdownOpen) { setTrainingStatsPeriodDropdownOpen(false); return true; }
-      if (trainingStatsMetricDropdownOpen) { setTrainingStatsMetricDropdownOpen(false); return true; }
-
-      // Layer 2: training template screen → close it
-      if (activeTrainingTemplateId) {
-        if (activeTrainingTemplateMode === "edit") {
-          if (trainingTemplateDraftDirty) setConfirmDiscardTemplateDraft(true);
-          else closeTrainingTemplateEditor();
-          return true;
-        }
-        setActiveTrainingTemplateId(null);
-        return true;
-      }
-
-      // Layer 3: active workout session → ask to discard (don't just close)
-      if (activeWorkoutSession) {
-        setConfirmDiscardSession(true);
-        return true;
-      }
-
-      // Layer 4: non-home tab → go to home
-      if (tab !== "home") { setTab("home"); return true; }
-
-      // Home tab: let Android handle it (close app)
-      return false;
-    });
+    const handler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      createHardwareBackPressCallback(shellBackPressRef),
+    );
     return () => handler.remove();
-  });
+  }, []);
 
   useEffect(() => {
     if (tab !== "chat") return;
@@ -12249,6 +12305,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setExercisePickerOpen(true);
   }
 
+  function closeExercisePicker() {
+    setExercisePickerOpen(false);
+    setSupersetPickerTarget(null);
+  }
+
   function openExerciseCatalogInspector() {
     setExercisePickerSearch("");
     setExercisePickerMuscleFilter("all");
@@ -12278,8 +12339,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         "catalog_link",
         linkedCatalog(catalogRef(entry.sourceId, entry.id), "selection"),
       );
-      setSupersetPickerTarget(null);
-      setExercisePickerOpen(false);
+      closeExercisePicker();
     } else if (activeWorkoutSession) {
       addExerciseToSession(entry);
     } else {
@@ -12320,7 +12380,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }));
     setExpandedExerciseId(exerciseId);
     setActiveExerciseMenuId(null);
-    setExercisePickerOpen(false);
+    closeExercisePicker();
     setError(null);
   }
 
@@ -12365,7 +12425,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }));
     setExpandedExerciseId(exerciseId);
     setActiveExerciseMenuId(null);
-    setExercisePickerOpen(false);
+    closeExercisePicker();
     setError(null);
   }
 
@@ -12411,7 +12471,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setExpandedExerciseId(exerciseId);
     setActiveExerciseMenuId(null);
     setCustomExerciseFormOpen(false);
-    setExercisePickerOpen(false);
+    closeExercisePicker();
     setError(null);
 
     const feedbackOwner = activeWorkoutSession ? "session" : "editor";
@@ -13344,7 +13404,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         },
       ],
     }));
-    setExercisePickerOpen(false);
+    closeExercisePicker();
     setError(null);
   }
 
@@ -14676,7 +14736,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               gap: 4,
             }}
           >
-            {(["home", "training", "diet", "measures", "chat", "settings"] as TabKey[]).map((key) => {
+            {TAB_DESTINATIONS.map(({ key, compactIcon, compactTestId, label }) => {
               const isActiveTab = tab === key;
               const tabTextColor = isActiveTab
                 ? mobileTheme.color.brandPrimary
@@ -14685,8 +14745,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 <Pressable
                   key={key}
                   onPress={() => setTab(key)}
-                  testID={`nav-tab-${key}`}
-                  accessibilityLabel={tabLabel(key)}
+                  testID={compactTestId}
+                  accessibilityLabel={label}
                   accessibilityRole="button"
                   style={{
                     flex: 1,
@@ -14699,8 +14759,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     borderColor: isActiveTab ? "rgba(203,255,26,0.5)" : "transparent",
                   }}
                 >
-                  {key === "settings" ? (
-                    <Ionicons color={tabTextColor} name="settings-sharp" size={18} />
+                  {compactIcon ? (
+                    <Ionicons
+                      color={tabTextColor}
+                      name={compactIcon as keyof typeof Ionicons.glyphMap}
+                      size={18}
+                    />
                   ) : (
                     <Text
                       numberOfLines={1}
@@ -14710,7 +14774,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         fontSize: 11,
                       }}
                     >
-                      {mobileTabLabel(key)}
+                      {compactTabLabel(key)}
                     </Text>
                   )}
                 </Pressable>
@@ -15060,7 +15124,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </Text>
                 </Pressable>
                 {showByokExplain ? (
-                  <View style={{ backgroundColor: "rgba(255,255,255,0.04)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
+                  <View
+                    testID={shellSurfaceTestId("byok-explanation")}
+                    style={{ backgroundColor: "rgba(255,255,255,0.04)", borderRadius: mobileTheme.radius.md, padding: 14 }}
+                  >
                     <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
                       BYOK significa "Bring Your Own Key" (Trae Tu Propia Clave). Gymnasia no incluye acceso a ningún proveedor de IA. Tú proporcionas tu propia API key de OpenAI, Anthropic o Google, y las conversaciones se envían directamente desde tu dispositivo al proveedor. Gymnasia no envía tu clave a servidores propios; la usa únicamente para autenticar las peticiones ante el proveedor que eliges.
                     </Text>
@@ -15109,6 +15176,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       <Feather name="chevron-right" size={20} color={mobileTheme.color.textSecondary} />
                     </Pressable>
                     <Pressable
+                      testID="diet-date-picker-toggle"
                       onPress={() => setShowDietDatePicker((prev) => !prev)}
                       style={{ width: 34, height: 34, borderRadius: 999, alignItems: "center", justifyContent: "center" }}
                     >
@@ -15119,6 +15187,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 {showDietDatePicker ? (
                   Platform.OS === "web" ? (
                     <TextInput
+                      testID={shellSurfaceTestId("diet-date-picker")}
                       value={selectedDietDate}
                       onChangeText={(text) => {
                         const parsed = new Date(text + "T12:00:00");
@@ -15133,7 +15202,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                       }}
                     />
                   ) : (
-                    <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgSurface, padding: 8, gap: 8 }}>
+                    <View
+                      testID={shellSurfaceTestId("diet-date-picker")}
+                      style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgSurface, padding: 8, gap: 8 }}
+                    >
                       <DateTimePicker value={dateFromISO(selectedDietDate)} mode="date" display={Platform.OS === "ios" ? "inline" : "default"} onChange={onDietDateChange} />
                       {Platform.OS === "ios" ? (
                         <Pressable
@@ -16595,6 +16667,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   }}
                                 />
                                 <View
+                                  testID={shellSurfaceTestId("training-series-menu")}
                                   style={{
                                     position: "absolute",
                                     top: 40,
@@ -16879,7 +16952,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   onOpenTemplate={openCurrentTemplateFromHistory}
                 />
               ) : (
-                <View testID="training-global-history" style={{ gap: 18, paddingBottom: 110 }}>
+                <View testID={shellSurfaceTestId("training-history")} style={{ gap: 18, paddingBottom: 110 }}>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
                     <Pressable
                       onPress={closeTrainingHistory}
@@ -17203,7 +17276,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   }
                 >
                   {trainingStatsPeriodDropdownOpen ? (
-                    <View style={{ position: "absolute", top: 56, right: 14, zIndex: 20, elevation: 12 }}>
+                    <View
+                      testID={shellSurfaceTestId("training-period-dropdown")}
+                      style={{ position: "absolute", top: 56, right: 14, zIndex: 20, elevation: 12 }}
+                    >
                       <View
                         style={{
                           minWidth: 128,
@@ -17247,7 +17323,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   ) : null}
 
                   {trainingStatsMetricDropdownOpen ? (
-                    <View style={{ position: "absolute", top: 56, left: 14, zIndex: 20, elevation: 12 }}>
+                    <View
+                      testID={shellSurfaceTestId("training-metric-dropdown")}
+                      style={{ position: "absolute", top: 56, left: 14, zIndex: 20, elevation: 12 }}
+                    >
                       <View
                         style={{
                           minWidth: 150,
@@ -17463,7 +17542,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     </Text>
                     {canExpandTrainingHistory ? (
                       <Pressable
-                        testID="training-history-toggle"
+                        testID={shellSurfaceTestId("training-history-expanded")}
                         onPress={() => setShowAllTrainingHistory((current) => !current)}
                       >
                         <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "800" }}>
@@ -18436,6 +18515,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                 </SwipeableSetRow>
                                 {isSeriesMenuOpen && (
                                   <View
+                                    testID={shellSurfaceTestId("training-series-menu")}
                                     style={{
                                       position: "absolute",
                                       top: 36,
@@ -18612,6 +18692,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                       {isMenuOpen ? (
                         <View
+                          testID={shellSurfaceTestId("training-exercise-menu")}
                           style={{
                             position: "absolute",
                             top: 56,
@@ -19149,6 +19230,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                           {isMenuOpen ? (
                             <View
+                              testID={shellSurfaceTestId("training-template-menu")}
                               style={{
                                 position: "absolute",
                                 top: 56,
@@ -19283,6 +19365,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 return (
                   <View
                     key={meal.id}
+                    testID={isEditing ? shellSurfaceTestId("diet-meal-editor") : undefined}
                     style={{
                       borderWidth: 1,
                       borderColor: mobileTheme.color.borderSubtle,
@@ -19407,6 +19490,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                                   </View>
                                   {isItemMenuOpen ? (
                                     <View
+                                      testID={shellSurfaceTestId("diet-item-menu")}
                                       style={{
                                         minWidth: 124,
                                         borderWidth: 1,
@@ -20100,6 +20184,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                 {measuresDashboardPeriodDropdownOpen ? (
                   <View
+                    testID={shellSurfaceTestId("measures-period-dropdown")}
                     style={{
                       position: "absolute",
                       top: 56,
@@ -20163,6 +20248,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                 {measuresChartMetricDropdownOpen ? (
                   <View
+                    testID={shellSurfaceTestId("measures-metric-dropdown")}
                     style={{
                       position: "absolute",
                       top: 56,
@@ -20608,6 +20694,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </Text>
                   {canExpandMeasurementHistory ? (
                     <Pressable
+                      testID={shellSurfaceTestId("measurements-history-expanded")}
                       onPress={() => setShowAllMeasurementsHistory((current) => !current)}
                     >
                       <Text
@@ -20901,6 +20988,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                           {showBirthDatePicker ? (
                             (Platform.OS as string) === "web" ? (
                               <TextInput
+                                testID={shellSurfaceTestId("birth-date-picker")}
                                 value={dietSettingsDraft.birth_date || ""}
                                 onChangeText={(text) => {
                                   updateDietSettings((prev) => ({ ...prev, birth_date: text }));
@@ -20915,6 +21003,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               />
                             ) : (
                               <DateTimePicker
+                                testID={shellSurfaceTestId("birth-date-picker")}
                                 value={dietSettingsDraft.birth_date ? new Date(dietSettingsDraft.birth_date) : new Date(1990, 0, 1)}
                                 mode="date"
                                 display={Platform.OS === "ios" ? "spinner" : "default"}
@@ -21302,6 +21391,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   {[
                     {
                       label: "Gymnasia Coach",
+                      surfaceId: "chat-provider-dropdown" as const,
                       value: store.chatProvider,
                       onChange: (p: Provider) => { void selectChatProvider(p); },
                       open: chatProviderDropdownOpen,
@@ -21310,6 +21400,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     },
                     {
                       label: "Gymnasia Food Estimator",
+                      surfaceId: "food-provider-dropdown" as const,
                       value: store.foodAIProvider,
                       onChange: (p: Provider) => { setStore((prev) => ({ ...prev, foodAIProvider: p })); setFoodAIProviderDropdownOpen(false); },
                       open: foodAIProviderDropdownOpen,
@@ -21329,6 +21420,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                           {dropdown.label}
                         </Text>
                         <Pressable
+                          testID={`${dropdown.surfaceId}-toggle`}
                           onPress={() => { dropdown.otherClose(); dropdown.setOpen(!dropdown.open); }}
                           style={{
                             flexDirection: "row",
@@ -21349,6 +21441,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                         </Pressable>
                         {dropdown.open ? (
                           <View
+                            testID={shellSurfaceTestId(dropdown.surfaceId)}
                             style={{
                               borderWidth: 1,
                               borderColor: mobileTheme.color.borderSubtle,
@@ -21749,6 +21842,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                               {anthropicModelDropdownOpen ? (
                                 <View
+                                  testID={shellSurfaceTestId("anthropic-model-dropdown")}
                                   style={{
                                     borderWidth: 1,
                                     borderColor: mobileTheme.color.borderSubtle,
@@ -21947,6 +22041,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                               {openAIModelDropdownOpen ? (
                                 <View
+                                  testID={shellSurfaceTestId("openai-model-dropdown")}
                                   style={{
                                     borderWidth: 1,
                                     borderColor: mobileTheme.color.borderSubtle,
@@ -22230,6 +22325,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
                               {googleModelDropdownOpen ? (
                                 <View
+                                  testID={shellSurfaceTestId("google-model-dropdown")}
                                   style={{
                                     borderWidth: 1,
                                     borderColor: mobileTheme.color.borderSubtle,
@@ -22892,6 +22988,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                               </Pressable>
                               {selectedFoodDetail?.id === food.id ? (
                                 <View
+                                  testID={shellSurfaceTestId("settings-food-detail")}
                                   style={{
                                     backgroundColor: mobileTheme.color.bgSurface,
                                     borderRadius: 12,
@@ -23056,6 +23153,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   {/* Product detail */}
                   {selectedProductDetail ? (
                     <View
+                      testID={shellSurfaceTestId("settings-product-detail")}
                       style={{
                         backgroundColor: mobileTheme.color.bgSurface,
                         borderRadius: 12,
@@ -23207,6 +23305,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   {/* AI Chat */}
                   <MiniChat
                     visible={personalFoodAIChatOpen}
+                    testID={shellSurfaceTestId("personal-food-ai-chat")}
                     title="Gymnasia Food Estimator"
                     contextLabel="Alimentos personales"
                     systemPrompt={FOOD_AI_SYSTEM_PROMPT}
@@ -23240,6 +23339,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   {/* Add/Edit form */}
                   {personalFoodFormVisible ? (
                     <View
+                      testID={shellSurfaceTestId("personal-food-form")}
                       style={{
                         borderWidth: 1,
                         borderColor: mobileTheme.color.borderSubtle,
@@ -23429,6 +23529,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   {/* Personal food detail */}
                   {selectedPersonalFoodDetail ? (
                     <View
+                      testID={shellSurfaceTestId("settings-personal-food-detail")}
                       style={{
                         backgroundColor: mobileTheme.color.cardBg,
                         borderRadius: 12,
@@ -24624,6 +24725,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {selectedExerciseDetail ? (
         <View
+          testID={shellSurfaceTestId("exercise-catalog-detail")}
           style={{
             position: "absolute",
             top: 0,
@@ -24714,6 +24816,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {expandedPhotoUri ? (
         <Pressable
+          testID={shellSurfaceTestId("measurement-photo")}
           onPress={() => setExpandedPhotoUri(null)}
           style={{
             position: "absolute",
@@ -24740,6 +24843,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {measurementEntryScreenOpen ? (
         <KeyboardAvoidingView
+          testID={shellSurfaceTestId("measurement-entry")}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{
             position: "absolute",
@@ -24874,7 +24978,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               {showMeasurementDatePicker ? (
                 Platform.OS === "web" ? (
                   <TextInput
-                    testID="measurement-date-input"
+                    testID={shellSurfaceTestId("measurement-date-picker")}
                     value={measurementDateTextInput}
                     onChangeText={(text) => {
                       setMeasurementDateTextInput(text);
@@ -24898,6 +25002,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   />
                 ) : (
                 <View
+                  testID={shellSurfaceTestId("measurement-date-picker")}
                   style={{
                     borderWidth: 1,
                     borderColor: mobileTheme.color.borderSubtle,
@@ -25150,6 +25255,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {foodEstimatorModalOpen ? (
         <KeyboardAvoidingView
+          testID={shellSurfaceTestId("food-estimator")}
           behavior="padding"
           style={{
             position: "absolute",
@@ -25361,6 +25467,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {pendingImport ? (
         <View
+          testID={shellSurfaceTestId("backup-import-confirmation")}
           style={{
             position: "absolute",
             top: 0,
@@ -25440,6 +25547,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       {dietCopyPickCategory ? (
         Platform.OS === "android" ? (
           <DateTimePicker
+            testID={shellSurfaceTestId("diet-copy-date-picker")}
             value={dietCopyPickDate}
             mode="date"
             display="default"
@@ -25447,6 +25555,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           />
         ) : (
           <View
+            testID={shellSurfaceTestId("diet-copy-date-picker")}
             style={{
               position: "absolute",
               top: 0,
@@ -25559,7 +25668,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {pendingFoodResolution ? (
         <View
-          testID="food-catalog-ambiguity-modal"
+          testID={shellSurfaceTestId("food-catalog-ambiguity")}
           style={{
             position: "absolute",
             top: 0,
@@ -25649,6 +25758,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {dietCopyModal ? (
         <View
+          testID={shellSurfaceTestId("diet-copy-confirmation")}
           style={{
             position: "absolute",
             top: 0,
@@ -25773,6 +25883,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {dataDeletionScope ? (
         <View
+          testID={shellSurfaceTestId("data-deletion")}
           accessibilityViewIsModal
           style={{
             position: "absolute",
@@ -25982,6 +26093,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {providerDeleteModal ? (
         <View
+          testID={shellSurfaceTestId("provider-delete")}
           style={{
             position: "absolute",
             top: 0,
@@ -26135,7 +26247,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {confirmDiscardTemplateDraft ? (
         <View
-          testID="training-editor-discard-modal"
+          testID={shellSurfaceTestId("training-template-discard")}
           style={{
             position: "absolute", top: 0, right: 0, bottom: 0, left: 0,
             backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20,
@@ -26169,7 +26281,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {trainingTemplateConflict ? (
         <View
-          testID="training-editor-conflict-modal"
+          testID={shellSurfaceTestId("training-template-conflict")}
           style={{
             position: "absolute", top: 0, right: 0, bottom: 0, left: 0,
             backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20,
@@ -26210,7 +26322,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {confirmPartialSessionFinish && activeWorkoutSession ? (
         <View
-          testID="training-partial-finish-modal"
+          testID={shellSurfaceTestId("training-partial-finish")}
           style={{
             position: "absolute",
             top: 0,
@@ -26314,6 +26426,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {workoutCompletionModal ? (
         <View
+          testID={shellSurfaceTestId("workout-completion")}
           style={{
             position: "absolute",
             top: 0,
@@ -26593,6 +26706,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         if (!ex) return null;
         return (
           <View
+            testID={shellSurfaceTestId("training-exercise-detail")}
             style={{
               position: "absolute",
               top: 0,
@@ -26750,6 +26864,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {exercisePickerOpen ? (
         <ExerciseCatalogBrowser
+          testID={shellSurfaceTestId("exercise-picker")}
           mode={exercisePickerMode}
           items={exerciseCatalogResults}
           muscleGroups={exercisePickerMuscleGroups}
@@ -26760,10 +26875,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           result={exerciseCatalogResult}
           onQueryChange={setExercisePickerSearch}
           onMuscleGroupChange={setExercisePickerMuscleFilter}
-          onClose={() => {
-            setExercisePickerOpen(false);
-            setSupersetPickerTarget(null);
-          }}
+          onClose={closeExercisePicker}
           onRetry={() => { void retryExerciseCatalog(); }}
           onEndReached={() => { void loadMoreExerciseCatalogResults(); }}
           onChoose={(entry) => { void chooseExerciseCatalogEntry(entry); }}
@@ -26776,6 +26888,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {customExerciseFormOpen ? (
         <View
+          testID={shellSurfaceTestId("custom-exercise-form")}
           style={{
             position: "absolute",
             top: 0, right: 0, bottom: 0, left: 0,
@@ -27002,6 +27115,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {seriesTypePickerTarget && (
         <Pressable
+          testID={shellSurfaceTestId("series-type-picker")}
           onPress={() => setSeriesTypePickerTarget(null)}
           style={{
             position: "absolute",
@@ -27200,6 +27314,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {bodyFatInfoModalOpen && (
         <View
+          testID={shellSurfaceTestId("body-fat-info")}
           style={{
             position: "absolute",
             top: 0,

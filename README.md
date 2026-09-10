@@ -5,6 +5,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 ## Estructura
 
 - `apps/mobile`: App Expo React Native y web (unica aplicacion)
+- `apps/mobile/shell`: Registro tipado de destinos, superficies y política de Atrás del shell
 - `apps/feedback-worker`: Worker de Cloudflare que recibe propuestas de mejora, alimentos, ejercicios y denuncias de respuestas de IA desde la app y crea issues en un repositorio privado. Opcional: si esta caido, la app avisa y sigue funcionando
 - `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa). Ver su `README.md`
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
@@ -88,6 +89,7 @@ npm run test:health-safety  # regresiones y propiedades sanitarias sin red
 npm run policy:bundle:check # verifica bundle, certificado y firma públicos
 npm run check:policy-trust  # verifica la raíz pública integrada en la app
 npm run test:agent:e2e  # app web + Playwright + proveedores falsos
+npm run test:shell:e2e  # navegación y capas del shell a 390 px y 960 px
 npm run test:measurements:performance:e2e # historial máximo, recálculos y actualizaciones
 npm run test:dev-store  # saneado, esquema, atomicidad y guarda de Git
 npm run test:dev-store:e2e # middleware real de Metro sobre localhost

@@ -100,7 +100,7 @@ Elija primero el dominio que posee el contrato, no el archivo que parezca más c
 | Si va a modificar… | Lea primero | Primeros controles |
 | --- | --- | --- |
 | Límites local-first, variantes, persistencia general o una nueva dependencia remota | [Arquitectura local-first](architecture/overview.md) | `npm test`, typecheck y el check del límite afectado. No haga que guardar datos personales dependa de red. |
-| Arranque, shell, navegación, configuración Expo o comportamiento por plataforma | [Shell de aplicación, plataformas y navegación](mobile/application-shell.md) | typecheck, `build:web` y la E2E de shell/flujo afectado; pruebe nativo si toca capacidades nativas. |
+| Arranque, shell, navegación, configuración Expo o comportamiento por plataforma | [Shell de aplicación, plataformas y navegación](mobile/application-shell.md) | typecheck, `build:web`, `npm run test:shell:e2e` y la E2E del flujo afectado; pruebe nativo si toca capacidades nativas. |
 | Almacenes locales, recuperación, secretos BYOK, borrado o importación/exportación | [Estado local, recuperación, borrado y copias](mobile/local-state-and-backup.md) | `npm test`, `npm run test:storage-recovery:e2e` o `npm run test:data-deletion:e2e` según corresponda. |
 | Plantillas, series, sesiones, descansos o alertas de entrenamiento | [Plantillas, series y ejecución de entrenamientos](mobile/training.md) | La E2E concreta: `npm run test:train:e2e`, `test:train:series:e2e`, `test:train:series-operations:e2e` o `test:train:compound:e2e`. |
 | Dieta, objetivos, alimentos personales, búsqueda o estimación asistida | [Dieta y estimación de alimentos](mobile/diet-and-food-estimation.md) | `npm run test:diet:e2e`; añada pruebas del agente si una tool lee o escribe el dominio. |
