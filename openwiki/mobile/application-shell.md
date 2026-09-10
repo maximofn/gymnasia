@@ -75,10 +75,10 @@ La prueba de navegador `storage-recovery.e2e.mjs` cubre que el JSON roto queda i
 
 ## Navegación controlada por estado
 
-La ruta principal es una unión interna, no una URL ni una pila:
+La ruta principal es una unión interna, no una URL ni una pila. `apps/mobile/shell/shellRegistry.ts` es el registro único de los seis destinos y de sus dos presentaciones; `TabKey` se deriva de sus claves:
 
 ```ts
-type TabKey = "home" | "training" | "diet" | "measures" | "chat" | "settings";
+type TabKey = (typeof TAB_DESTINATIONS)[number]["key"];
 ```
 
 Los controles cambian `tab` con `setTab`; las pantallas secundarias se expresan con estado local, por ejemplo la plantilla y modo de entrenamiento activo, una sesión activa, el selector de fecha de dieta, modales y `SettingsTabKey`. La navegación no se restaura como una ruta al reiniciar: una instancia normal comienza en Inicio, excepto la instancia remontada para informar un borrado incompleto, que abre Configuración.
@@ -92,7 +92,7 @@ Los controles cambian `tab` con `setTab`; las pantallas secundarias se expresan 
 | `chat` | Mantiene hilo, mensajes, entrada y estados de envío; el proveedor y su política quedan en módulos del agente. | Tiempo de ejecución y configuración del agente |
 | `settings` | Enruta secciones de configuración e integra proveedores, memoria, datos, notificaciones y trazas. | [Estado local y copia de seguridad](local-state-and-backup.md) |
 
-Añadir una pestaña exige actualizar la unión, las dos superficies de navegación, etiquetas, renderizado y pruebas: no hay un registro de rutas único que lo haga automáticamente. Extraer una pantalla de este componente grande debe preservar los `testID`, la barrera de hidratación, la propiedad local del estado y la política de regreso de Android.
+Cada destino declara etiquetas compacta y completa, iconos, layouts y los `testID` de ambas barras. Añadir una pestaña exige ampliar ese registro y el renderizado de su pantalla; los controles de navegación se derivan automáticamente. Extraer una pantalla de este componente grande debe preservar la barrera de hidratación, la propiedad local del estado y la política de regreso de Android.
 
 ### Presentación adaptable, no dos navegadores
 
@@ -102,7 +102,7 @@ No se debe inferir que una tableta nativa obtiene la barra lateral: el criterio 
 
 ## Regreso de Android y capas efímeras
 
-En Android, un efecto instala un listener de `BackHandler`. Su prioridad es una política explícita y debe actualizarse al añadir una capa interactiva:
+En Android, un efecto instala una sola vez un listener de `BackHandler`. Un `ref` actualizado durante cada render ofrece al listener el estado y los handlers actuales sin volver a suscribirlo. `SHELL_BACK_LAYERS` mantiene el inventario de las superficies globales, rutas anidadas y menús contextuales que participan en esa política; cada una declara prioridad única, ámbito, propietario, comportamiento y `testID`:
 
 ```mermaid
 flowchart TD
@@ -121,7 +121,9 @@ flowchart TD
 
 *La política consume Atrás por capas antes de delegar en la actividad nativa desde Inicio.*
 
-Las capas incluyen, entre otras, conflictos y borrados de entrenamiento, confirmación de borrado de datos, finalización o descarte de sesión, estimación de alimentos, selectores de fecha, formularios, modales de proveedor y desplegables. Se cierra solo la primera coincidencia. Durante un borrado de datos, Atrás queda consumido en vez de abandonar la operación. Una sesión activa nunca se cierra silenciosamente: abre su confirmación de descarte. El listener se vuelve a registrar después de cada render para capturar el estado actual; una superposición nueva no adquiere esta semántica hasta que se incorpora expresamente y con la prioridad visual correcta.
+`resolveShellBackCommand` es puro: recibe un `Record<ShellLayerId, boolean>`, el estado de plantilla/sesión y la pestaña, elige la capa activa de mayor prioridad y devuelve una única orden simbólica. `App.tsx` mantiene mapas exhaustivos de estado y handlers, de modo que TypeScript obliga a integrar cualquier identificador nuevo en ambos lados. Las capas incluyen conflictos y borrados de entrenamiento, importación, finalización o descarte de sesión, detalles de ejercicio, fotos ampliadas, selector de tipo de serie, estimación de alimentos, selectores de fecha, formularios, menús y desplegables. Durante un borrado de datos, Atrás queda consumido en vez de abandonar la operación. Una sesión activa nunca se cierra silenciosamente: abre su confirmación de descarte.
+
+Los `Modal` nativos y las pantallas de recuperación/arranque también están inventariados en `SYSTEM_OWNED_SHELL_SURFACES`, pero no entran en el resolutor global. React Native entrega el cierre de un `Modal` a su `onRequestClose` y no al listener global; las pantallas de arranque delegan en el sistema. Una superficie nueva no adquiere semántica de Atrás hasta que se registra con la prioridad visual y el propietario correctos.
 
 ## Notificaciones, alarmas y degradaciones observables
 
@@ -146,7 +148,8 @@ No hay una suite de componentes dedicada a todo `App.tsx`; valide de forma propo
 ```bash
 npm --workspace apps/mobile exec tsc --noEmit
 npm --workspace apps/mobile run build:web
-npm --workspace apps/mobile run test:storage-recovery:e2e
+npm run test:shell:e2e
+npm run test:storage-recovery:e2e
 ```
 
-Para un cambio de navegación, use además `apps/mobile/scripts/train-usability.e2e.mjs` en web compacta y con `TRAIN_E2E_VIEWPORT_WIDTH=960` o superior para ejercer ambos selectores. Para permisos, configuración Expo, notificaciones, `BackHandler`, sonido o alarmas, la exportación web no basta: ejecute el control de permisos aplicable y pruebe una compilación nativa en un dispositivo/emulador, verificando concesión/denegación y comportamiento en segundo plano.
+La E2E de shell recorre los seis destinos y varias capas reproducibles con viewports de 390 y 960 píxeles; las E2E de cada dominio completan los recorridos que requieren datos específicos. Para permisos, configuración Expo, notificaciones, `BackHandler`, sonido o alarmas, la exportación web no basta: ejecute el control de permisos aplicable y pruebe una compilación nativa en un dispositivo/emulador, verificando concesión/denegación y comportamiento en segundo plano.
