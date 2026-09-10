@@ -2,6 +2,7 @@ import { Feather } from "@expo/vector-icons";
 import {
   FlatList,
   Image,
+  PixelRatio,
   Platform,
   Pressable,
   SafeAreaView,
@@ -39,6 +40,7 @@ type Props = {
 
 const ROW_HEIGHT = 92;
 const ANDROID_STATUS_BAR_INSET = Platform.OS === "android" ? StatusBar.currentHeight ?? 0 : 0;
+const FILTER_BAR_HEIGHT = Math.max(48, Math.ceil(32 + 14 * PixelRatio.getFontScale()));
 
 function ResultNotice({ result, hasItems }: { result: ExerciseCatalogResult | null; hasItems: boolean }) {
   if (!result) return null;
@@ -136,7 +138,12 @@ export function ExerciseCatalogBrowser({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={{ maxHeight: 42, marginBottom: 8, paddingHorizontal: 14 }}
+          style={{
+            minHeight: FILTER_BAR_HEIGHT,
+            maxHeight: FILTER_BAR_HEIGHT,
+            marginBottom: 8,
+            paddingHorizontal: 14,
+          }}
           contentContainerStyle={{ gap: 8, alignItems: "center", paddingRight: 28 }}
         >
           {["all", ...muscleGroups].map((muscle) => {
