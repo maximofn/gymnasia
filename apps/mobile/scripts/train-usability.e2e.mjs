@@ -172,6 +172,15 @@ async function clickByTestIdPrefix(page, prefix, index = 0) {
   );
 }
 
+async function expectTestIdPrefixCount(page, prefix, expectedCount) {
+  await page.waitForFunction(
+    ({ idPrefix, count }) =>
+      document.querySelectorAll(`[data-testid^="${idPrefix}"]`).length === count,
+    { idPrefix: prefix, count: expectedCount },
+    { timeout: STEP_TIMEOUT_MS },
+  );
+}
+
 async function fillInputByPlaceholder(page, placeholder, value, index = 0) {
   const locator = page.locator(`input[placeholder="${placeholder}"]`);
   const count = await locator.count();
@@ -248,12 +257,12 @@ async function runTrainUsabilityE2E(page, baseUrl) {
   logStep("Routine list actions: clone, move, delete");
   await clickByTestIdPrefix(page, "training-template-menu-");
   await clickByTestIdPrefix(page, "training-template-clone-");
-  await expectBodyContains(page, "2 rutinas");
+  await expectTestIdPrefixCount(page, "training-template-menu-", 2);
   await clickByTestIdPrefix(page, "training-template-menu-", 1);
   await clickByTestIdPrefix(page, "training-template-move-");
   await clickByTestIdPrefix(page, "training-template-menu-", 1);
   await clickByTestIdPrefix(page, "training-template-delete-");
-  await expectBodyContains(page, "1 rutina");
+  await expectTestIdPrefixCount(page, "training-template-menu-", 1);
 
   logStep("Starting session from routine menu");
   await clickByTestIdPrefix(page, "training-template-menu-");
