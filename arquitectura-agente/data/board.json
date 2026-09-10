@@ -86,7 +86,7 @@
         {
           "id": "GYM-231",
           "title": "Paginar y buscar globalmente el catálogo de ejercicios",
-          "state": "todo",
+          "state": "done",
           "summary": "Mostrar y descargar ejercicios por páginas con scroll infinito y buscar primero en todo el catálogo remoto, de modo que una coincidencia aparezca aunque aún no se haya cargado su página de navegación.",
           "dependsOn": [],
           "related": [
@@ -2135,7 +2135,7 @@
         {
           "id": "GYM-184",
           "title": "Convertir BackHandler y las rutas del shell en un registro testeable",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Eliminar la lista manual frágil de overlays y evitar re-registrar el botón Atrás en cada render.",
           "dependsOn": [],
           "related": [
