@@ -218,13 +218,19 @@ import {
   type WorkoutEffortBreakdown,
 } from "./training/workoutExecution";
 import {
+  WORKOUT_SUMMARY_SCHEMA_VERSION,
+  buildWorkoutPrescriptionSnapshot,
   buildHomeWeekProgress,
   calculateWorkoutStreak,
   classifyWorkoutCompletion,
   isCompletedWorkoutSummary,
   normalizeWorkoutSessionSummary,
+  recalculateWorkoutSessionSummary,
   sortWorkoutHistoryDesc,
+  summarizeWorkoutPrescriptionSnapshot,
   type WorkoutCompletionStatus,
+  type WorkoutPrescriptionSeriesSnapshot,
+  type WorkoutSummaryRecalculation,
   type WorkoutSessionSummary,
 } from "./training/workoutHistory";
 import {
@@ -4316,6 +4322,392 @@ function formatTrainingHistoryDate(rawValue: string): string {
   });
 }
 
+function formatWorkoutHistoryVolume(value: number): string {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? `${rounded} kg` : `${rounded.toFixed(1)} kg`;
+}
+
+function formatPrescriptionNumber(value: number | null, suffix: string): string {
+  if (value === null) return `— ${suffix}`;
+  const rounded = Math.round(value * 10) / 10;
+  return `${Number.isInteger(rounded) ? rounded : rounded.toFixed(1)} ${suffix}`;
+}
+
+function workoutPrescriptionSeriesDetail(series: WorkoutPrescriptionSeriesSnapshot): string {
+  const details = [
+    formatPrescriptionNumber(series.reps, "reps"),
+    formatPrescriptionNumber(series.weight_kg, "kg"),
+    series.rest_seconds === null ? "descanso —" : `descanso ${formatClock(series.rest_seconds)}`,
+  ];
+  if (
+    series.tempo_contraction !== null
+    || series.tempo_pause !== null
+    || series.tempo_relaxation !== null
+  ) {
+    details.push(
+      `tempo ${series.tempo_contraction ?? "—"}-${series.tempo_pause ?? "—"}-${series.tempo_relaxation ?? "—"}`,
+    );
+  }
+  return details.join(" · ");
+}
+
+function WorkoutHistoryEntryCard({
+  summary,
+  onPress,
+  showTemplateName,
+  testID,
+}: {
+  summary: WorkoutSessionSummary;
+  onPress: () => void;
+  showTemplateName: boolean;
+  testID: string;
+}) {
+  const isCompleted = isCompletedWorkoutSummary(summary);
+  const statusColor = isCompleted ? mobileTheme.color.brandPrimary : "#F5C542";
+  const statusBackground = isCompleted
+    ? "rgba(203,255,26,0.1)"
+    : "rgba(245,197,66,0.1)";
+  const statusBorder = isCompleted
+    ? "rgba(203,255,26,0.34)"
+    : "rgba(245,197,66,0.34)";
+  return (
+    <Pressable
+      onPress={onPress}
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={`Abrir ${summary.template_name}, ${formatTrainingHistoryDate(summary.finished_at)}`}
+      style={{
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.05)",
+        backgroundColor: mobileTheme.color.bgSurface,
+        padding: 14,
+        gap: 10,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+        <View style={{ flex: 1, minWidth: 0, gap: showTemplateName ? 3 : 0 }}>
+          {showTemplateName ? (
+            <Text
+              numberOfLines={1}
+              style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}
+            >
+              {summary.template_name}
+            </Text>
+          ) : null}
+          <Text style={{ color: showTemplateName ? "#8B94A3" : mobileTheme.color.textPrimary, fontSize: showTemplateName ? 12 : 15, fontWeight: "700" }}>
+            {formatTrainingHistoryDate(summary.finished_at)}
+          </Text>
+        </View>
+        <View
+          testID={`training-history-status-${summary.id}`}
+          style={{
+            minHeight: 28,
+            borderRadius: mobileTheme.radius.pill,
+            borderWidth: 1,
+            borderColor: statusBorder,
+            backgroundColor: statusBackground,
+            paddingHorizontal: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ color: statusColor, fontSize: 12, fontWeight: "800" }}>
+            {isCompleted ? "Completo" : "Parcial"}
+          </Text>
+        </View>
+        <Feather name="chevron-right" size={17} color="#697383" />
+      </View>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <Feather name="check-circle" size={14} color={statusColor} />
+          <Text style={{ color: "#A6AFBC", fontSize: 13, fontWeight: "600" }}>
+            {summary.completed_effort_count}/{summary.total_effort_count} esfuerzos
+          </Text>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <Feather name="clock" size={14} color="#8B94A3" />
+          <Text style={{ color: "#A6AFBC", fontSize: 13, fontWeight: "600" }}>
+            {formatClock(summary.elapsed_seconds)}
+          </Text>
+        </View>
+      </View>
+    </Pressable>
+  );
+}
+
+function WorkoutHistoryDetail({
+  summary,
+  recalculation,
+  hasCurrentTemplate,
+  onBack,
+  onOpenTemplate,
+}: {
+  summary: WorkoutSessionSummary;
+  recalculation: WorkoutSummaryRecalculation;
+  hasCurrentTemplate: boolean;
+  onBack: () => void;
+  onOpenTemplate: () => void;
+}) {
+  const isCompleted = isCompletedWorkoutSummary(summary);
+  const snapshot = summary.prescription_snapshot;
+  return (
+    <View testID="training-history-detail" style={{ gap: 18, paddingBottom: 110 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+        <Pressable
+          onPress={onBack}
+          testID="training-history-detail-back"
+          accessibilityRole="button"
+          accessibilityLabel="Volver al historial"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 999,
+            borderWidth: 1,
+            borderColor: "rgba(255,255,255,0.12)",
+            backgroundColor: mobileTheme.color.bgSurface,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Feather name="arrow-left" size={18} color={mobileTheme.color.textPrimary} />
+        </Pressable>
+        <View style={{ flex: 1, minWidth: 0 }}>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "700" }}>
+            {formatTrainingHistoryDate(summary.finished_at)}
+          </Text>
+          <Text numberOfLines={1} style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800" }}>
+            {summary.template_name}
+          </Text>
+        </View>
+        <View
+          style={{
+            minHeight: 30,
+            borderRadius: mobileTheme.radius.pill,
+            backgroundColor: isCompleted ? "rgba(203,255,26,0.12)" : "rgba(245,197,66,0.12)",
+            paddingHorizontal: 11,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ color: isCompleted ? mobileTheme.color.brandPrimary : "#F5C542", fontSize: 12, fontWeight: "800" }}>
+            {isCompleted ? "Completo" : "Parcial"}
+          </Text>
+        </View>
+      </View>
+
+      <View
+        style={{
+          borderRadius: 18,
+          borderWidth: 1,
+          borderColor: "rgba(255,255,255,0.06)",
+          backgroundColor: "#151A22",
+          overflow: "hidden",
+        }}
+      >
+        {[
+          ["Duración", formatClock(summary.elapsed_seconds)],
+          ["Esfuerzos", `${summary.completed_effort_count}/${summary.total_effort_count}`],
+          ["Repeticiones", `${summary.total_reps}`],
+          ["Volumen", formatWorkoutHistoryVolume(summary.total_volume_kg)],
+          ["Calorías estimadas", `${summary.estimated_calories} kcal`],
+        ].map(([label, value], index) => (
+          <View
+            key={label}
+            style={{
+              minHeight: 45,
+              paddingHorizontal: 14,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+              borderTopWidth: index === 0 ? 0 : 1,
+              borderTopColor: "rgba(255,255,255,0.05)",
+            }}
+          >
+            <Text style={{ color: "#8B94A3", fontSize: 13, fontWeight: "600" }}>{label}</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "800" }}>{value}</Text>
+          </View>
+        ))}
+      </View>
+
+      {recalculation.status === "match" ? (
+        <View
+          testID="training-history-recalculation-status"
+          style={{
+            borderRadius: 14,
+            borderWidth: 1,
+            borderColor: "rgba(203,255,26,0.26)",
+            backgroundColor: "rgba(203,255,26,0.07)",
+            padding: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 9,
+          }}
+        >
+          <Feather name="check-circle" size={17} color={mobileTheme.color.brandPrimary} />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "800" }}>
+              Cálculo verificado
+            </Text>
+            <Text style={{ color: "#A6AFBC", fontSize: 12, lineHeight: 17 }}>
+              La prescripción guardada reproduce los totales originales.
+            </Text>
+          </View>
+        </View>
+      ) : recalculation.status === "mismatch" ? (
+        <View
+          testID="training-history-recalculation-status"
+          accessibilityRole="alert"
+          style={{
+            borderRadius: 14,
+            borderWidth: 1,
+            borderColor: "rgba(245,197,66,0.32)",
+            backgroundColor: "rgba(245,197,66,0.08)",
+            padding: 12,
+            gap: 7,
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Feather name="alert-triangle" size={16} color="#F5C542" />
+            <Text style={{ color: "#F5C542", fontSize: 13, fontWeight: "800" }}>
+              El cálculo actual no coincide
+            </Text>
+          </View>
+          <Text style={{ color: "#D5C889", fontSize: 12, lineHeight: 18 }}>
+            Conservamos como referencia los totales guardados al terminar la sesión.
+          </Text>
+          <Text testID="training-history-stored-totals" style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+            Guardado: {summary.total_reps} reps · {formatWorkoutHistoryVolume(summary.total_volume_kg)}
+          </Text>
+          <Text testID="training-history-recalculated-totals" style={{ color: "#C0A94F", fontSize: 12, fontWeight: "700" }}>
+            Cálculo actual: {recalculation.recalculated.totalReps} reps · {formatWorkoutHistoryVolume(recalculation.recalculated.totalVolumeKg)}
+          </Text>
+        </View>
+      ) : (
+        <View
+          testID="training-history-legacy-message"
+          style={{
+            borderRadius: 14,
+            borderWidth: 1,
+            borderColor: "rgba(255,255,255,0.08)",
+            backgroundColor: "rgba(255,255,255,0.025)",
+            padding: 12,
+            flexDirection: "row",
+            alignItems: "flex-start",
+            gap: 9,
+          }}
+        >
+          <Feather name="info" size={16} color="#8B94A3" style={{ marginTop: 1 }} />
+          <Text style={{ flex: 1, color: "#A6AFBC", fontSize: 12, lineHeight: 18 }}>
+            Esta sesión se guardó antes de conservar la prescripción. Sus totales originales siguen disponibles, pero no se puede reconstruir el detalle ni verificarlos.
+          </Text>
+        </View>
+      )}
+
+      <View style={{ gap: 9 }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
+          Rutina de aquella sesión
+        </Text>
+        {hasCurrentTemplate ? (
+          <Pressable
+            onPress={onOpenTemplate}
+            testID="training-history-open-template"
+            style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 6 }}
+          >
+            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "800" }}>
+              Ver rutina actual
+            </Text>
+          </Pressable>
+        ) : (
+          <View testID="training-history-template-deleted" style={{ flexDirection: "row", alignItems: "center", gap: 7 }}>
+            <Feather name="archive" size={14} color="#8B94A3" />
+            <Text style={{ color: "#8B94A3", fontSize: 13, fontWeight: "700" }}>Rutina eliminada</Text>
+          </View>
+        )}
+      </View>
+
+      {snapshot ? (
+        <View testID="training-history-prescription" style={{ gap: 12 }}>
+          {snapshot.exercises.map((exercise, exerciseIndex) => (
+            <View
+              key={`${exercise.name}-${exerciseIndex}`}
+              style={{
+                borderRadius: 18,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.06)",
+                backgroundColor: mobileTheme.color.bgSurface,
+                overflow: "hidden",
+              }}
+            >
+              <View style={{ paddingHorizontal: 14, paddingVertical: 12, backgroundColor: "rgba(203,255,26,0.045)" }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}>
+                  {exercise.name}
+                </Text>
+              </View>
+              {exercise.series.map((series, seriesIndex) => (
+                <View
+                  key={`${exerciseIndex}-${seriesIndex}`}
+                  style={{
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    gap: 7,
+                    borderTopWidth: 1,
+                    borderTopColor: "rgba(255,255,255,0.05)",
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 9 }}>
+                    <View
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: 999,
+                        backgroundColor: series.completed ? mobileTheme.color.brandPrimary : "#252C37",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Feather name={series.completed ? "check" : "minus"} size={13} color={series.completed ? "#06090D" : "#8B94A3"} />
+                    </View>
+                    <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "800" }}>
+                      Serie {seriesIndex + 1} · {SERIES_TYPE_META[series.type].label}
+                    </Text>
+                  </View>
+                  <Text style={{ marginLeft: 33, color: "#9DA7B5", fontSize: 12, lineHeight: 18 }}>
+                    {workoutPrescriptionSeriesDetail(series)}
+                  </Text>
+                  {series.sub_series.length > 0 ? (
+                    <View style={{ marginLeft: 33, borderLeftWidth: 2, borderLeftColor: "rgba(203,255,26,0.24)", paddingLeft: 10, gap: 8 }}>
+                      {series.sub_series.map((subSeries, subSeriesIndex) => (
+                        <View key={`${exerciseIndex}-${seriesIndex}-${subSeriesIndex}`} style={{ flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
+                          <Feather
+                            name={subSeries.completed ? "check-circle" : "circle"}
+                            size={14}
+                            color={subSeries.completed ? mobileTheme.color.brandPrimary : "#697383"}
+                            style={{ marginTop: 2 }}
+                          />
+                          <View style={{ flex: 1, gap: 2 }}>
+                            <Text style={{ color: "#D5DBE4", fontSize: 12, fontWeight: "700" }}>
+                              {subSeries.exercise_name || `Mini-serie ${subSeriesIndex + 1}`}
+                            </Text>
+                            <Text style={{ color: "#818B99", fontSize: 11, lineHeight: 16 }}>
+                              {formatPrescriptionNumber(subSeries.reps, "reps")} · {formatPrescriptionNumber(subSeries.weight_kg, "kg")} · {subSeries.rest_seconds === null ? "pausa —" : `pausa ${formatClock(subSeries.rest_seconds)}`}
+                            </Text>
+                          </View>
+                        </View>
+                      ))}
+                    </View>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 function formatTrainingStatsMetricValue(metric: TrainingStatsMetricKey, value: number): string {
   if (metric === "duration") {
     const rounded = Math.round(value * 10) / 10;
@@ -4974,12 +5366,6 @@ function normalizeStore(
     };
   });
 
-  const trainingResult = resolveTrainingIssues(templates, trainingSink);
-  if (!trainingResult.ok) {
-    throw new Error(formatTrainingIssues(trainingResult.issues));
-  }
-  if (trainingResult.issues.length > 0) options.onTrainingIssues?.(trainingResult.issues);
-
   const normalizedMeasurementsResult = normalizeMeasurementCollection(
     Array.isArray(raw.measurements) ? raw.measurements : [],
     uid,
@@ -4989,9 +5375,27 @@ function normalizeStore(
   }
   const normalizedWorkoutHistory = sortWorkoutHistoryDesc(
     (Array.isArray(raw.workoutHistory) ? raw.workoutHistory : []).map((summary, index) =>
-      normalizeWorkoutSessionSummary(summary, index, uid(`session_summary_${index}`)),
+      normalizeWorkoutSessionSummary(
+        summary,
+        index,
+        uid(`session_summary_${index}`),
+        undefined,
+        {
+          mode: options.training ?? "repair",
+          onSnapshotIssue: (message) => trainingSink.push(
+            `workoutHistory[${index}].prescription_snapshot`,
+            "unknown_schema_version",
+            message,
+          ),
+        },
+      ),
     ),
   ).slice(0, MAX_WORKOUT_HISTORY_ITEMS);
+  const trainingResult = resolveTrainingIssues(templates, trainingSink);
+  if (!trainingResult.ok) {
+    throw new Error(formatTrainingIssues(trainingResult.issues));
+  }
+  if (trainingResult.issues.length > 0) options.onTrainingIssues?.(trainingResult.issues);
 
   return {
     templates,
@@ -6644,6 +7048,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [trainingStatsMetric, setTrainingStatsMetric] = useState<TrainingStatsMetricKey>("volume");
   const [trainingStatsMetricDropdownOpen, setTrainingStatsMetricDropdownOpen] = useState(false);
   const [showAllTrainingHistory, setShowAllTrainingHistory] = useState(false);
+  const [trainingHistoryScreenOpen, setTrainingHistoryScreenOpen] = useState(false);
+  const [selectedWorkoutHistoryId, setSelectedWorkoutHistoryId] = useState<string | null>(null);
   const [trainingMenuTemplateId, setTrainingMenuTemplateId] = useState<string | null>(null);
   const [activeExerciseMenuId, setActiveExerciseMenuId] = useState<string | null>(null);
   const [activeSeriesMenuId, setActiveSeriesMenuId] = useState<string | null>(null);
@@ -7328,6 +7734,30 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return showAllTrainingHistory ? recentFirst : recentFirst.slice(0, 4);
   }, [activeTrainingHistory, showAllTrainingHistory]);
   const canExpandTrainingHistory = activeTrainingHistory.length > 4;
+  const globalTrainingHistory = useMemo(
+    () => sortWorkoutHistoryDesc(store.workoutHistory),
+    [store.workoutHistory],
+  );
+  const selectedWorkoutHistorySummary = useMemo(
+    () => selectedWorkoutHistoryId
+      ? store.workoutHistory.find((summary) => summary.id === selectedWorkoutHistoryId) ?? null
+      : null,
+    [selectedWorkoutHistoryId, store.workoutHistory],
+  );
+  const selectedWorkoutHistoryRecalculation = useMemo<WorkoutSummaryRecalculation>(
+    () => selectedWorkoutHistorySummary
+      ? recalculateWorkoutSessionSummary(selectedWorkoutHistorySummary)
+      : { status: "unavailable" },
+    [selectedWorkoutHistorySummary],
+  );
+  const selectedWorkoutHistoryTemplate = useMemo(
+    () => selectedWorkoutHistorySummary
+      ? store.templates.find(
+          (template) => template.id === selectedWorkoutHistorySummary.template_id,
+        ) ?? null
+      : null,
+    [selectedWorkoutHistorySummary, store.templates],
+  );
   const activeTrainingLegacySummaryCount = useMemo(
     () => activeTrainingFilteredHistory.filter((summary) => summary.calculation_version === 1).length,
     [activeTrainingFilteredHistory],
@@ -7520,6 +7950,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     tab === "training"
       ? activeWorkoutSession
         ? "Sesión Activa"
+        : trainingHistoryScreenOpen
+          ? selectedWorkoutHistorySummary
+            ? "Detalle del entrenamiento"
+            : "Historial"
         : activeTrainingTemplate
           ? activeTrainingTemplateMode === "edit"
             ? "Editar Rutina"
@@ -7540,10 +7974,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     tab === "training" &&
     !activeTrainingTemplate &&
     !activeWorkoutSession &&
+    !trainingHistoryScreenOpen &&
     showGlobalScreenLoading;
   const showTrainingEditorSkeleton =
     isTrainingTemplateScreenOpen &&
     (isTrainingEditorLoading || showGlobalScreenLoading);
+
+  useEffect(() => {
+    if (tab !== "training" || !trainingHistoryScreenOpen) return;
+    const frame = requestAnimationFrame(() => {
+      mainScrollRef.current?.scrollTo({ y: 0, animated: false });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [selectedWorkoutHistoryId, tab, trainingHistoryScreenOpen]);
 
   // Android hardware back button: navigate back through UI layers instead of closing
   useEffect(() => {
@@ -7576,6 +8019,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (showMeasurementDatePicker) { setShowMeasurementDatePicker(false); return true; }
       if (showAllMeasurementsHistory) { setShowAllMeasurementsHistory(false); return true; }
       if (showAllTrainingHistory) { setShowAllTrainingHistory(false); return true; }
+      if (selectedWorkoutHistoryId) { setSelectedWorkoutHistoryId(null); return true; }
+      if (trainingHistoryScreenOpen) { setTrainingHistoryScreenOpen(false); return true; }
       // Close dropdowns
       if (chatProviderDropdownOpen) { setChatProviderDropdownOpen(false); return true; }
       if (foodAIProviderDropdownOpen) { setFoodAIProviderDropdownOpen(false); return true; }
@@ -12084,6 +12529,32 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setTrainingMenuTemplateId(null);
   }
 
+  function openTrainingHistory(summaryId: string | null = null) {
+    setActiveTrainingTemplateId(null);
+    setActiveTrainingTemplateMode("detail");
+    setTrainingDetailMuscleFilter("all");
+    setShowAllTrainingHistory(false);
+    setTrainingHistoryScreenOpen(true);
+    setSelectedWorkoutHistoryId(summaryId);
+    setTrainingMenuTemplateId(null);
+  }
+
+  function closeTrainingHistory() {
+    if (selectedWorkoutHistoryId) {
+      setSelectedWorkoutHistoryId(null);
+      return;
+    }
+    setTrainingHistoryScreenOpen(false);
+  }
+
+  function openCurrentTemplateFromHistory() {
+    if (!selectedWorkoutHistoryTemplate) return;
+    const templateId = selectedWorkoutHistoryTemplate.id;
+    setSelectedWorkoutHistoryId(null);
+    setTrainingHistoryScreenOpen(false);
+    openTrainingTemplate(templateId);
+  }
+
   function deleteTrainingTemplate(templateId: string) {
     setStore((prev) => ({
       ...prev,
@@ -12121,11 +12592,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     template: WorkoutTemplate | null,
     finishedAt: string,
   ): WorkoutSessionSummary {
-    const executionUnits = template ? listWorkoutExecutionUnits(template) : [];
-    const sessionPerformance = summarizeWorkoutExecution(
-      executionUnits,
-      session.completed_unit_keys,
-    );
+    const prescriptionSnapshot = template
+      ? buildWorkoutPrescriptionSnapshot(template, session.completed_unit_keys)
+      : null;
+    const sessionPerformance = prescriptionSnapshot
+      ? summarizeWorkoutPrescriptionSnapshot(prescriptionSnapshot)
+      : summarizeWorkoutExecution([], session.completed_unit_keys);
     return {
       id: `session_summary_${session.id}`,
       template_id: session.template_id,
@@ -12136,8 +12608,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         sessionPerformance.completedEffortCount,
         sessionPerformance.totalEffortCount,
       ),
+      summary_schema_version: prescriptionSnapshot ? WORKOUT_SUMMARY_SCHEMA_VERSION : 1,
       calculation_version: WORKOUT_SUMMARY_CALCULATION_VERSION,
-      can_recalculate: false,
+      can_recalculate: prescriptionSnapshot !== null,
+      prescription_snapshot: prescriptionSnapshot,
       completed_effort_count: sessionPerformance.completedEffortCount,
       total_effort_count: sessionPerformance.totalEffortCount,
       effort_breakdown: sessionPerformance.effortBreakdown,
@@ -13866,24 +14340,33 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
             </View>
           </View>
-        ) : tab === "training" && (isTrainingTemplateScreenOpen || activeWorkoutSession) ? null : tab === "training" ? (
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+        ) : tab === "training" && (isTrainingTemplateScreenOpen || activeWorkoutSession || trainingHistoryScreenOpen) ? null : tab === "training" ? (
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
             <TabTitle>{headerTitle}</TabTitle>
-            {store.templates.length > 0 && !showTrainingListSkeleton ? (
-              <View
+            {!showTrainingListSkeleton ? (
+              <Pressable
+                onPress={() => openTrainingHistory()}
+                testID="training-open-global-history"
+                accessibilityRole="button"
+                accessibilityLabel="Abrir historial de entrenamientos"
                 style={{
                   minHeight: 32,
                   borderRadius: mobileTheme.radius.pill,
-                  backgroundColor: "rgba(123,170,0,0.26)",
-                  paddingHorizontal: 12,
+                  borderWidth: 1,
+                  borderColor: "rgba(203,255,26,0.3)",
+                  backgroundColor: "rgba(203,255,26,0.08)",
+                  paddingHorizontal: 11,
+                  flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
+                  gap: 6,
                 }}
               >
+                <Feather name="clock" size={14} color={mobileTheme.color.brandPrimary} />
                 <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>
-                  {store.templates.length} {store.templates.length === 1 ? "rutina" : "rutinas"}
+                  Historial{store.workoutHistory.length > 0 ? ` · ${store.workoutHistory.length}` : ""}
                 </Text>
-              </View>
+              </Pressable>
             ) : null}
           </View>
         ) : (
@@ -16095,6 +16578,92 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </Pressable>
                 </View>
               </View>
+            ) : trainingHistoryScreenOpen ? (
+              selectedWorkoutHistorySummary ? (
+                <WorkoutHistoryDetail
+                  summary={selectedWorkoutHistorySummary}
+                  recalculation={selectedWorkoutHistoryRecalculation}
+                  hasCurrentTemplate={selectedWorkoutHistoryTemplate !== null}
+                  onBack={closeTrainingHistory}
+                  onOpenTemplate={openCurrentTemplateFromHistory}
+                />
+              ) : (
+                <View testID="training-global-history" style={{ gap: 18, paddingBottom: 110 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                    <Pressable
+                      onPress={closeTrainingHistory}
+                      testID="training-global-history-back"
+                      accessibilityRole="button"
+                      accessibilityLabel="Volver a mis rutinas"
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 999,
+                        borderWidth: 1,
+                        borderColor: "rgba(255,255,255,0.12)",
+                        backgroundColor: mobileTheme.color.bgSurface,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Feather name="arrow-left" size={18} color={mobileTheme.color.textPrimary} />
+                    </Pressable>
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "800" }}>
+                        Historial
+                      </Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 12, lineHeight: 17 }}>
+                        {globalTrainingHistory.length === 0
+                          ? "Tus sesiones guardadas aparecerán aquí."
+                          : `${globalTrainingHistory.length} ${globalTrainingHistory.length === 1 ? "sesión guardada" : "sesiones guardadas"}`}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {globalTrainingHistory.length === 0 ? (
+                    <View
+                      style={{
+                        minHeight: 320,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingHorizontal: 22,
+                        gap: 12,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 62,
+                          height: 62,
+                          borderRadius: 18,
+                          backgroundColor: "rgba(203,255,26,0.1)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Feather name="clock" size={25} color={mobileTheme.color.brandPrimary} />
+                      </View>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800", textAlign: "center" }}>
+                        Aún no hay entrenamientos
+                      </Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 14, lineHeight: 20, textAlign: "center" }}>
+                        Completa una rutina o guarda una sesión parcial para consultar aquí exactamente lo que hiciste.
+                      </Text>
+                    </View>
+                  ) : (
+                    <View style={{ gap: 10 }}>
+                      {globalTrainingHistory.map((summary) => (
+                        <WorkoutHistoryEntryCard
+                          key={summary.id}
+                          summary={summary}
+                          onPress={() => openTrainingHistory(summary.id)}
+                          showTemplateName
+                          testID={`training-global-history-${summary.id}`}
+                        />
+                      ))}
+                    </View>
+                  )}
+                </View>
+              )
             ) : isTrainingDetailOpen && activeTrainingTemplate ? (
               <View style={{ gap: 16, paddingBottom: 110 }}>
                 <View
@@ -16633,74 +17202,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                     </View>
                   ) : (
                     <View style={{ gap: 10 }}>
-                      {activeTrainingHistoryEntries.map((summary) => {
-                        const isCompleted = isCompletedWorkoutSummary(summary);
-                        const statusColor = isCompleted ? mobileTheme.color.brandPrimary : "#F5C542";
-                        const statusBackground = isCompleted
-                          ? "rgba(203,255,26,0.1)"
-                          : "rgba(245,197,66,0.1)";
-                        const statusBorder = isCompleted
-                          ? "rgba(203,255,26,0.34)"
-                          : "rgba(245,197,66,0.34)";
-                        return (
-                          <View
-                            key={summary.id}
-                            testID={`training-history-${summary.id}`}
-                            style={{
-                              borderRadius: 18,
-                              borderWidth: 1,
-                              borderColor: "rgba(255,255,255,0.05)",
-                              backgroundColor: mobileTheme.color.bgSurface,
-                              padding: 14,
-                              gap: 10,
-                            }}
-                          >
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                gap: 10,
-                              }}
-                            >
-                              <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
-                                {formatTrainingHistoryDate(summary.finished_at)}
-                              </Text>
-                              <View
-                                testID={`training-history-status-${summary.id}`}
-                                style={{
-                                  minHeight: 28,
-                                  borderRadius: mobileTheme.radius.pill,
-                                  borderWidth: 1,
-                                  borderColor: statusBorder,
-                                  backgroundColor: statusBackground,
-                                  paddingHorizontal: 10,
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                <Text style={{ color: statusColor, fontSize: 12, fontWeight: "800" }}>
-                                  {isCompleted ? "Completo" : "Parcial"}
-                                </Text>
-                              </View>
-                            </View>
-                            <View style={{ flexDirection: "row", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-                              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                                <Feather name="check-circle" size={14} color={statusColor} />
-                                <Text style={{ color: "#A6AFBC", fontSize: 13, fontWeight: "600" }}>
-                                  {summary.completed_effort_count}/{summary.total_effort_count} esfuerzos
-                                </Text>
-                              </View>
-                              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                                <Feather name="clock" size={14} color="#8B94A3" />
-                                <Text style={{ color: "#A6AFBC", fontSize: 13, fontWeight: "600" }}>
-                                  {formatClock(summary.elapsed_seconds)}
-                                </Text>
-                              </View>
-                            </View>
-                          </View>
-                        );
-                      })}
+                      {activeTrainingHistoryEntries.map((summary) => (
+                        <WorkoutHistoryEntryCard
+                          key={summary.id}
+                          summary={summary}
+                          onPress={() => openTrainingHistory(summary.id)}
+                          showTemplateName={false}
+                          testID={`training-history-${summary.id}`}
+                        />
+                      ))}
                     </View>
                   )}
                 </View>
@@ -23424,6 +23934,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   </View>
 
                   <Pressable
+                    testID="backup-export"
                     onPress={runBackupExport}
                     disabled={backupBusy !== null}
                     style={{
@@ -23809,6 +24320,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       {tab === "training" &&
       !activeTrainingTemplate &&
       !activeWorkoutSession &&
+      !trainingHistoryScreenOpen &&
       !showTrainingListSkeleton &&
       !showTrainingEditorSkeleton &&
       store.templates.length > 0 ? (

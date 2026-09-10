@@ -41,6 +41,14 @@ export type WorkoutExecutionSummary = {
   effortBreakdown: WorkoutEffortBreakdown;
 };
 
+export type WorkoutEffortCalculationInput = {
+  key: string;
+  kind: WorkoutExecutionUnitKind;
+  reps: string | number | null;
+  weightKg: string | number | null;
+  completed: boolean;
+};
+
 export function primaryWorkoutExecutionKey(exerciseId: string, seriesId: string): string {
   return `${exerciseId}:${seriesId}`;
 }
@@ -172,18 +180,19 @@ export function resolveWorkoutExecutionRest(
   return 0;
 }
 
-function parseNonNegativeNumber(rawValue: string): number {
-  const normalized = rawValue.trim().replace(",", ".");
-  if (!normalized) return 0;
+function parseNonNegativeNumber(rawValue: string | number | null): number {
+  if (rawValue === null) return 0;
+  const normalized = typeof rawValue === "string"
+    ? rawValue.trim().replace(",", ".")
+    : rawValue;
+  if (normalized === "") return 0;
   const parsed = Number(normalized);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
 
-export function summarizeWorkoutExecution(
-  units: readonly WorkoutExecutionUnit[],
-  completedUnitKeys: readonly string[],
+export function summarizeWorkoutEfforts(
+  efforts: readonly WorkoutEffortCalculationInput[],
 ): WorkoutExecutionSummary {
-  const completedKeys = new Set(completedUnitKeys);
   const seenKeys = new Set<string>();
   let totalReps = 0;
   let totalVolumeKg = 0;
@@ -194,17 +203,17 @@ export function summarizeWorkoutExecution(
     total_sub_series: 0,
   };
 
-  for (const unit of units) {
-    if (seenKeys.has(unit.key)) continue;
-    seenKeys.add(unit.key);
-    if (unit.kind === "primary") effortBreakdown.total_primary += 1;
+  for (const effort of efforts) {
+    if (seenKeys.has(effort.key)) continue;
+    seenKeys.add(effort.key);
+    if (effort.kind === "primary") effortBreakdown.total_primary += 1;
     else effortBreakdown.total_sub_series += 1;
 
-    if (!completedKeys.has(unit.key)) continue;
-    if (unit.kind === "primary") effortBreakdown.completed_primary += 1;
+    if (!effort.completed) continue;
+    if (effort.kind === "primary") effortBreakdown.completed_primary += 1;
     else effortBreakdown.completed_sub_series += 1;
-    const reps = Math.max(0, Math.round(parseNonNegativeNumber(unit.reps)));
-    const weightKg = parseNonNegativeNumber(unit.weightKg);
+    const reps = Math.max(0, Math.round(parseNonNegativeNumber(effort.reps)));
+    const weightKg = parseNonNegativeNumber(effort.weightKg);
     totalReps += reps;
     totalVolumeKg += reps * weightKg;
   }
@@ -217,6 +226,20 @@ export function summarizeWorkoutExecution(
     totalReps,
     effortBreakdown,
   };
+}
+
+export function summarizeWorkoutExecution(
+  units: readonly WorkoutExecutionUnit[],
+  completedUnitKeys: readonly string[],
+): WorkoutExecutionSummary {
+  const completedKeys = new Set(completedUnitKeys);
+  return summarizeWorkoutEfforts(units.map((unit) => ({
+    key: unit.key,
+    kind: unit.kind,
+    reps: unit.reps,
+    weightKg: unit.weightKg,
+    completed: completedKeys.has(unit.key),
+  })));
 }
 
 export function expandLegacyCompletedSeriesKeys(

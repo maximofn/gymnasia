@@ -388,6 +388,21 @@ async function run(page, baseUrl) {
   );
   assert.deepEqual(findTemplate(store, "tpl_ops"), templateBeforeSessionChange);
   assert.equal(store.workoutHistory[0].completed_effort_count, 1);
+  assert.equal(store.workoutHistory[0].summary_schema_version, 2);
+  assert.equal(store.workoutHistory[0].can_recalculate, true);
+  assert.equal(
+    store.workoutHistory[0].prescription_snapshot.exercises[0].series[0].type,
+    "dropset",
+    "el historial no conservó el tipo ejecutado antes de restaurar la rutina canónica",
+  );
+  assert.equal(
+    store.workoutHistory[0].prescription_snapshot.exercises[0].series[0].completed,
+    true,
+  );
+  assert.equal(
+    store.workoutHistory[0].prescription_snapshot.exercises[0].series[0].sub_series[0].completed,
+    false,
+  );
   await page.getByText("Sesión parcial guardada", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
   assert.equal(await page.getByText("¡Sesión completada!", { exact: true }).count(), 0);
   logStep("Parcial confirmado, cambios detectados y rutina original restaurada");

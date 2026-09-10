@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import {
   BACKUP_APP_ID,
   BACKUP_SCHEMA_VERSION,
+  MAX_BACKUP_MANIFEST_BYTES,
   MAX_BACKUP_MEDIA_BYTES,
   MAX_BACKUP_PHOTOS,
   createBackupPackage,
@@ -72,13 +73,23 @@ function manifestFor(selection: ReturnType<typeof selectBackupMedia>): BackupMan
 
 describe("backup de fotos portable", () => {
   it("mantiene la importación del formato JSON v1 y rechaza versiones futuras", () => {
+    const legacyData = data();
+    legacyData.store.workoutHistory = [{
+      id: "session-with-snapshot",
+      prescription_snapshot: {
+        schema_version: 1,
+        execution_schema_version: 1,
+        weight_unit: "kg",
+        exercises: [],
+      },
+    }];
     const legacy = {
       app: BACKUP_APP_ID,
       type: "backup",
       schemaVersion: 1,
       appVersion: "1.19.0",
       createdAt: "2026-08-01T12:00:00.000Z",
-      data: data(),
+      data: legacyData,
     };
 
     expect(parseBackupPayloadV1(legacy)).toEqual(legacy);
@@ -219,5 +230,71 @@ describe("backup de fotos portable", () => {
         expect(selected.links.every((link) => selected.assets.some((asset) => asset.id === link.assetId))).toBe(true);
       },
     ));
+  });
+
+  it("conserva 180 prescripciones históricas grandes sin recortar la retención", async () => {
+    const series = Array.from({ length: 5 }, (_, seriesIndex) => ({
+      type: "superset",
+      reps: 12,
+      weight_kg: 80,
+      rest_seconds: 90,
+      tempo_contraction: null,
+      tempo_pause: null,
+      tempo_relaxation: null,
+      completed: seriesIndex % 2 === 0,
+      sub_series: Array.from({ length: 2 }, (_, subSeriesIndex) => ({
+        exercise_name: `Ejercicio complementario ${subSeriesIndex + 1}`,
+        reps: 15,
+        weight_kg: 20,
+        rest_seconds: 10,
+        completed: true,
+      })),
+    }));
+    const prescriptionSnapshot = {
+      schema_version: 1,
+      execution_schema_version: 1,
+      weight_unit: "kg",
+      exercises: Array.from({ length: 10 }, (_, exerciseIndex) => ({
+        name: `Ejercicio histórico con nombre descriptivo ${exerciseIndex + 1}`,
+        series,
+      })),
+    };
+    const workoutHistory = Array.from({ length: 180 }, (_, index) => ({
+      id: `session-${index}`,
+      template_id: `template-${index}`,
+      template_name: `Rutina histórica ${index}`,
+      finished_at: new Date(Date.UTC(2026, 0, 1, index)).toISOString(),
+      elapsed_seconds: 3600,
+      completion_status: "partial",
+      summary_schema_version: 2,
+      calculation_version: 2,
+      can_recalculate: true,
+      prescription_snapshot: prescriptionSnapshot,
+      completed_effort_count: 130,
+      total_effort_count: 150,
+      effort_breakdown: {
+        completed_primary: 30,
+        completed_sub_series: 100,
+        total_primary: 50,
+        total_sub_series: 100,
+      },
+      estimated_calories: 420,
+      total_volume_kg: 78000,
+      total_reps: 2100,
+    }));
+    const selection = selectBackupMedia([]);
+    const manifest = manifestFor(selection);
+    manifest.data.store.workoutHistory = workoutHistory;
+    const manifestBytes = new TextEncoder().encode(JSON.stringify(manifest)).byteLength;
+
+    expect(manifestBytes).toBeGreaterThan(2 * 1024 * 1024);
+    expect(manifestBytes).toBeLessThanOrEqual(MAX_BACKUP_MANIFEST_BYTES);
+    const packageBytes = createBackupPackage(manifest, selection.filesByEntry);
+    const parsed = await readAndVerifyBackupPackage(packageBytes, digestHex);
+    const parsedHistory = parsed.manifest.data.store.workoutHistory as unknown[];
+    expect(parsedHistory).toHaveLength(180);
+    expect(parsedHistory[179]).toMatchObject({
+      prescription_snapshot: prescriptionSnapshot,
+    });
   });
 });
