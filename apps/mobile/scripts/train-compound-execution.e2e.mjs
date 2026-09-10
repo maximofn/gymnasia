@@ -570,7 +570,20 @@ async function verifyCompoundExecution(browser, baseUrl) {
     total_primary: 5,
     total_sub_series: 5,
   });
-  assert.equal(summary.can_recalculate, false);
+  assert.equal(summary.summary_schema_version, 2);
+  assert.equal(summary.can_recalculate, true);
+  assert.equal(summary.prescription_snapshot.schema_version, 1);
+  assert.equal(summary.prescription_snapshot.exercises[0].name, "Press de banca");
+  assert.equal(summary.prescription_snapshot.exercises[0].series.length, 5);
+  assert.equal(
+    summary.prescription_snapshot.exercises[0].series.every((series) =>
+      series.completed && series.sub_series.every((subSeries) => subSeries.completed)),
+    true,
+  );
+  assert.doesNotMatch(
+    JSON.stringify(summary.prescription_snapshot),
+    /image_uri|catalog_link|muscle/,
+  );
   const legacy = store.workoutHistory.find((item) => item.id === "legacy_summary");
   assert.equal(legacy.calculation_version, 1);
   assert.equal(legacy.completion_status, "partial");

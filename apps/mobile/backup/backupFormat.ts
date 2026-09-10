@@ -10,7 +10,9 @@ export const MAX_BACKUP_PHOTOS = 500;
 export const MAX_BACKUP_PHOTO_BYTES = 5 * 1024 * 1024;
 export const MAX_BACKUP_MEDIA_BYTES = 200 * 1024 * 1024;
 export const MAX_BACKUP_PACKAGE_BYTES = 220 * 1024 * 1024;
-export const MAX_BACKUP_MANIFEST_BYTES = 2 * 1024 * 1024;
+// El historial conserva hasta 180 prescripciones completas. Ocho MiB cubren una
+// colección grande sin recortar sesiones; el límite total del paquete no cambia.
+export const MAX_BACKUP_MANIFEST_BYTES = 8 * 1024 * 1024;
 
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 const MEDIA_ENTRY_PATTERN = /^media\/([a-f0-9]{64})\.jpg$/;
