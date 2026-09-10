@@ -1,5 +1,16 @@
 import { Feather } from "@expo/vector-icons";
-import { FlatList, Image, Pressable, SafeAreaView, ScrollView, Text, TextInput, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 import { mobileTheme } from "../theme";
 import { exerciseCatalogImageUri } from "./sources";
@@ -27,6 +38,7 @@ type Props = {
 };
 
 const ROW_HEIGHT = 92;
+const ANDROID_STATUS_BAR_INSET = Platform.OS === "android" ? StatusBar.currentHeight ?? 0 : 0;
 
 function ResultNotice({ result, hasItems }: { result: ExerciseCatalogResult | null; hasItems: boolean }) {
   if (!result) return null;
@@ -73,7 +85,7 @@ export function ExerciseCatalogBrowser({
       testID={testID}
       style={{ position: "absolute", inset: 0, backgroundColor: "#0D1117", zIndex: 700, elevation: 70 }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, paddingTop: ANDROID_STATUS_BAR_INSET }}>
         <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
           <Pressable accessibilityLabel="Cerrar catálogo" onPress={onClose} style={{ padding: 6 }}>
             <Feather name="arrow-left" size={24} color={mobileTheme.color.textPrimary} />
