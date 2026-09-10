@@ -2135,7 +2135,7 @@
         {
           "id": "GYM-184",
           "title": "Convertir BackHandler y las rutas del shell en un registro testeable",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Eliminar la lista manual frágil de overlays y evitar re-registrar el botón Atrás en cada render.",
           "dependsOn": [],
           "related": [
