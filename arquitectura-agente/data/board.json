@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-09",
+    "updated": "2026-09-10",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -2066,7 +2066,7 @@
         {
           "id": "GYM-179",
           "title": "Guardar la prescripción ejecutada en el historial de entrenamientos",
-          "state": "todo",
+          "state": "done",
           "summary": "Conservar ejercicios y series suficientes para auditar y recalcular resúmenes históricos.",
           "dependsOn": [
             "GYM-173",
