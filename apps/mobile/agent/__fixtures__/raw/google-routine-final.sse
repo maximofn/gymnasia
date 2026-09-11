@@ -1,3 +1,18 @@
-data: {"candidates":[{"content":{"role":"model","parts":[{"text":"He creado la Rutina E2E con una serie ejecutable."}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":35,"candidatesTokenCount":14,"totalTokenCount":49}}
+event: interaction.created
+data: {"event_type": "interaction.created", "interaction": {"id": "fixture_google-routine-final", "status": "in_progress"}}
 
+event: step.start
+data: {"event_type": "step.start", "index": 0, "step": {"type": "model_output"}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "text", "text": "He creado la Rutina E2E con una serie ejecutable."}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 0}
+
+event: interaction.completed
+data: {"event_type": "interaction.completed", "interaction": {"id": "fixture_google-routine-final", "status": "completed", "usage": {"total_input_tokens": 35, "total_output_tokens": 14, "total_tokens": 49}}}
+
+event: done
 data: [DONE]
+

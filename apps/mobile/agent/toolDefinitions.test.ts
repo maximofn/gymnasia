@@ -91,13 +91,9 @@ describe("contrato schema ↔ ejecutor ↔ proveedores", () => {
   });
 
   it("proyecta el catálogo completo al formato de Google", () => {
-    expect(CHAT_TOOLS.google).toEqual([{
-      functionDeclarations: AGENT_TOOL_DEFINITIONS.map((tool) => ({
-        name: tool.name,
-        description: tool.description,
-        parameters: tool.inputSchema,
-      })),
-    }]);
+    expect(CHAT_TOOLS.google).toEqual(AGENT_TOOL_DEFINITIONS.map((tool) => ({
+      type: "function", name: tool.name, description: tool.description, parameters: tool.inputSchema,
+    })));
   });
 
   it("limita las comidas de lectura y escritura a las categorías de la app", () => {
@@ -134,7 +130,7 @@ describe("contrato schema ↔ ejecutor ↔ proveedores", () => {
       .toBe(tool!.inputSchema);
     expect(CHAT_TOOLS.anthropic.find((item) => item.name === "create_routine")?.input_schema)
       .toBe(tool!.inputSchema);
-    expect(CHAT_TOOLS.google[0].functionDeclarations.find((item) => item.name === "create_routine")?.parameters)
+    expect(CHAT_TOOLS.google.find((item) => item.name === "create_routine")?.parameters)
       .toBe(tool!.inputSchema);
   });
 });

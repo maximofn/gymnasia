@@ -120,6 +120,11 @@ function resolveBuildVariant() {
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   const variant = resolveBuildVariant();
+  const fixturePort = process.env.GOOGLE_FIXTURE_PORT;
+  if (fixturePort && (variant.environment !== "development" || variant.providerMode !== "byok"
+    || !/^\d+$/.test(fixturePort) || Number(fixturePort) < 1024 || Number(fixturePort) > 65535)) {
+    throw new Error("GOOGLE_FIXTURE_PORT requiere Development BYOK y un puerto local válido.");
+  }
   const bundledPolicy = readBundledPolicyMetadata(variant.environment);
   const base = baseConfig.expo;
   const policyCandidate = process.env.POLICY_CANDIDATE
@@ -142,6 +147,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     extra: {
       ...base.extra,
       environment: variant.environment,
+      ...(fixturePort ? { googleFixturePort: Number(fixturePort) } : {}),
       channel: variant.policyChannel,
       storageNamespace: variant.storageNamespace,
       providerMode: variant.providerMode,

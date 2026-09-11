@@ -1,5 +1,4 @@
-event: message
-data: {"content":"","thinking":null,"modelParts":[{"functionCall":{"name":"read_field_value","args":{"key":"Objetivo"}}}],"finishReason":"STOP"}
+data: {"interactionId": "google_turn_0", "status": "requires_action", "steps": [{"type": "function_call", "id": "google_call_1", "name": "read_field_value", "arguments": {"key": "Objetivo"}}], "content": "", "thinking": null, "usage": {}}
 
-event: message
-data: {"content":"Tu objetivo es ganar masa muscular.","thinking":null,"modelParts":[{"text":"Tu objetivo es ganar masa muscular."}],"finishReason":"STOP"}
+data: {"interactionId": "google_turn_1", "status": "completed", "steps": [{"type": "model_output", "content": [{"type": "text", "text": "Tu objetivo es ganar masa muscular."}]}], "content": "Tu objetivo es ganar masa muscular.", "thinking": null, "usage": {}}
+

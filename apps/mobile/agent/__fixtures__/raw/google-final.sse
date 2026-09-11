@@ -1,5 +1,27 @@
-data: {"candidates":[{"content":{"role":"model","parts":[{"text":"Tu objetivo es "}]},"index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":4,"totalTokenCount":36}}
+event: interaction.created
+data: {"event_type": "interaction.created", "interaction": {"id": "fixture_google-final", "status": "in_progress"}}
 
-data: {"candidates":[{"content":{"role":"model","parts":[{"text":"ganar masa muscular."}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":8,"totalTokenCount":40}}
+event: step.start
+data: {"event_type": "step.start", "index": 0, "step": {"type": "model_output"}}
 
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "text", "text": "Tu objetivo es "}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 0}
+
+event: step.start
+data: {"event_type": "step.start", "index": 1, "step": {"type": "model_output"}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 1, "delta": {"type": "text", "text": "ganar masa muscular."}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 1}
+
+event: interaction.completed
+data: {"event_type": "interaction.completed", "interaction": {"id": "fixture_google-final", "status": "completed", "usage": {"total_input_tokens": 32, "total_output_tokens": 8, "total_tokens": 40}}}
+
+event: done
 data: [DONE]
+

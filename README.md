@@ -175,3 +175,6 @@ El formato y sus invariantes están documentados en
 - Ficha, declaraciones y capturas para Google Play: `docs/store/google-play/`
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`
+
+La generación con Google usa Interactions sin almacenamiento remoto de conversaciones.
+Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/testing/google-interactions.md).

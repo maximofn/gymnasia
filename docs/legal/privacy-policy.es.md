@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v1
-effective_date: 2026-09-01
+version: 2026-09-v2
+effective_date: 2026-09-11
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -67,7 +67,10 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
   volumen o mantenimiento) y nivel de actividad. Se usan para estimar tus calorías y
   macronutrientes.
 - **Conversaciones con el asistente**: el historial completo de tus hilos de chat,
-  incluidos los mensajes del modelo.
+  incluidos los mensajes del modelo. Los turnos nuevos de Google conservan además
+  los pasos de respuesta, resúmenes de pensamiento, firmas técnicas, llamadas a
+  herramientas, argumentos y resultados necesarios para continuar el diálogo. Estos
+  datos siguen el borrado y las copias manuales del chat; no contienen la clave API.
 - **Memoria del asistente**: notas en texto libre que tú o el propio asistente guardáis
   para recordar cosas entre conversaciones. Puede contener cualquier dato que hayas
   contado en el chat, incluidos datos de salud.
@@ -142,7 +145,9 @@ Cuando usas el asistente, tu dispositivo se conecta **directamente** con el prov
 que hayas elegido. La petición incluye:
 
 - las instrucciones del sistema del asistente;
-- **los últimos 20 mensajes** del hilo de conversación;
+- en el chat principal, **el historial completo para Google**, incluidos los pasos de
+  respuesta y herramientas de los turnos nuevos; para OpenAI y Anthropic, **los últimos
+  20 mensajes**. Los asistentes de alimentos envían el historial de su sesión;
 - los resultados de las herramientas que el asistente utiliza a petición tuya, que
   pueden incluir tu peso, tu porcentaje de grasa, tus perímetros, las comidas del día
   o tus rutinas;
@@ -157,6 +162,11 @@ clasificación separada antes de generar la respuesta normal. Esta opción está
 desactivada por defecto, requiere consentimiento independiente para cada proveedor y
 puedes revocarla en cualquier momento. Los mensajes que la comprobación local clasifica
 como riesgo alto o crítico se interceptan en el dispositivo y no se envían al proveedor.
+
+Todas las consultas de generación a Google desactivan el guardado de conversaciones
+de Interactions mediante `store: false`. La app vuelve a enviar el contexto desde el
+dispositivo en cada petición y no utiliza una conversación almacenada en Google para
+continuar el diálogo. Este ajuste no sustituye los términos generales del proveedor.
 
 Ese contenido queda sujeto a la política de privacidad y a los términos del proveedor
 que hayas elegido, bajo tu propia cuenta con él:
@@ -174,7 +184,9 @@ Gymnasia usa la cámara y la galería en dos sitios, y los trata de forma distin
 
 - **Estimador de comida**: las imágenes que eliges (hasta seis) se envían al proveedor
   de IA para estimar los valores nutricionales. No se guardan en la aplicación ni se
-  suben a ningún otro sitio.
+  suben a ningún otro sitio. Para continuar un análisis con Google, las imágenes se
+  mantienen en memoria y se reenvían durante esa sesión; se descartan al reiniciarla.
+  El historial técnico de estos asistentes temporales no se incorpora al chat persistente.
 - **Fotografías de progreso** asociadas a una medición: la aplicación crea una copia
   JPEG en su almacenamiento privado, limita su lado largo a 2048 píxeles y elimina los
   metadatos EXIF, XMP, IPTC y comentarios, incluida la ubicación que pudiera llevar el

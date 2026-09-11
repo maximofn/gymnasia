@@ -1,3 +1,27 @@
-data: {"candidates":[{"content":{"role":"model","parts":[{"functionCall":{"id":"google_call_first","name":"read_field_value","args":{"key":"Objetivo"}}},{"functionCall":{"id":"google_call_second","name":"read_field_value","args":"{\"key\":\"Altura\"}"}}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":22,"candidatesTokenCount":14,"totalTokenCount":36}}
+event: interaction.created
+data: {"event_type": "interaction.created", "interaction": {"id": "fixture_google-multiple-tool-calls", "status": "in_progress"}}
 
+event: step.start
+data: {"event_type": "step.start", "index": 0, "step": {"type": "function_call", "id": "google_call_first", "name": "read_field_value", "arguments": {}}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "arguments_delta", "arguments": "{\"key\": \"Objetivo\"}"}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 0}
+
+event: step.start
+data: {"event_type": "step.start", "index": 1, "step": {"type": "function_call", "id": "google_call_second", "name": "read_field_value", "arguments": {}}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 1, "delta": {"type": "arguments_delta", "arguments": "{\"key\":\"Altura\"}"}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 1}
+
+event: interaction.completed
+data: {"event_type": "interaction.completed", "interaction": {"id": "fixture_google-multiple-tool-calls", "status": "requires_action", "usage": {"total_input_tokens": 22, "total_output_tokens": 14, "total_tokens": 36}}}
+
+event: done
 data: [DONE]
+

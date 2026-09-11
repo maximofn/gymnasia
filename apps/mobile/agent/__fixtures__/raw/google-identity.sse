@@ -1,5 +1,27 @@
-data: {"candidates":[{"content":{"role":"model","parts":[{"text":"No. Soy Gymnasia Coach, un sistema "}]},"index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":6,"totalTokenCount":38}}
+event: interaction.created
+data: {"event_type": "interaction.created", "interaction": {"id": "fixture_google-identity", "status": "in_progress"}}
 
-data: {"candidates":[{"content":{"role":"model","parts":[{"text":"de inteligencia artificial."}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":10,"totalTokenCount":42}}
+event: step.start
+data: {"event_type": "step.start", "index": 0, "step": {"type": "model_output"}}
 
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "text", "text": "No. Soy Gymnasia Coach, un sistema "}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 0}
+
+event: step.start
+data: {"event_type": "step.start", "index": 1, "step": {"type": "model_output"}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 1, "delta": {"type": "text", "text": "de inteligencia artificial."}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 1}
+
+event: interaction.completed
+data: {"event_type": "interaction.completed", "interaction": {"id": "fixture_google-identity", "status": "completed", "usage": {"total_input_tokens": 32, "total_output_tokens": 10, "total_tokens": 42}}}
+
+event: done
 data: [DONE]
+

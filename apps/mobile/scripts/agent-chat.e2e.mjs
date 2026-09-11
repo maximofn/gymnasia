@@ -206,7 +206,7 @@ function fixture(name) {
 function providerSystemPrompt(provider, body) {
   if (provider === "openai") return body.instructions;
   if (provider === "anthropic") return body.system;
-  return body.systemInstruction?.parts?.[0]?.text;
+  return body.system_instruction;
 }
 
 function transparencyMarkerCount(prompt) {
@@ -308,6 +308,61 @@ async function assertPersonalDataKeptAsPlainData(page) {
     "la memoria debe conservar los tres campos sembrados, sin borrados silenciosos");
 }
 
+async function assertGoogleFoodInteractions(page) {
+  logStep("Google: estimador, extracción JSON y asistente personal con historial firmado");
+  const bodies = [];
+  await page.route("https://generativelanguage.googleapis.com/v1beta/interactions", async (route) => {
+    const body = route.request().postDataJSON();
+    bodies.push(body);
+    assert.equal(body.store, false);
+    assert.equal(body.stream, true);
+    assert.equal("previous_interaction_id" in body, false);
+    const number = bodies.length;
+    const text = body.response_format ? JSON.stringify({
+      dish_name: "Comida de prueba Interactions", grams: 100, calories_kcal: 100,
+      protein_g: 5, carbs_g: 15, fat_g: 2, food_type: "alimento",
+    }) : `Estimación E2E ${number}: 100 gramos y 100 kcal.`;
+    const event = (event_type, fields) => `event: ${event_type}\ndata: ${JSON.stringify({ event_type, ...fields })}\n\n`;
+    const id = `food-${number}`;
+    await route.fulfill({ contentType: "text/event-stream", body:
+      event("interaction.created", { interaction: { id, status: "in_progress" } })
+      + event("step.start", { index: 0, step: { type: "thought", signature: `opaque-${number}==` } })
+      + event("step.stop", { index: 0 })
+      + event("step.start", { index: 1, step: { type: "model_output", content: [{ type: "text", text }] } })
+      + event("step.stop", { index: 1 })
+      + event("interaction.completed", { interaction: { id, status: "completed", usage: { total_tokens: 10 } } }),
+    });
+  });
+
+  await page.locator('[data-testid="nav-tab-diet"]').click();
+  await page.locator('[data-testid="open-food-estimator-desayuno"]').click();
+  for (const [index, text] of ["Estima una comida de 100 gramos", "Mantén la misma cantidad"].entries()) {
+    await page.locator('[data-testid="food-estimator-input"]').fill(text);
+    await page.locator('[data-testid="food-estimator-send"]').click();
+    await page.locator('[data-testid="chat-message-list-food-estimator"]')
+      .getByText(`Estimación E2E ${index + 1}: 100 gramos y 100 kcal.`, { exact: true }).waitFor();
+  }
+  assert(bodies[1].input.some((step) => step.signature === "opaque-1=="));
+  assert(bodies[0].tools.some((tool) => tool.type === "function"));
+  await page.getByText("Añadir alimento", { exact: true }).last().click();
+  await page.waitForFunction((key) => JSON.stringify(JSON.parse(localStorage.getItem(key)).dietByDate)
+    .includes("Comida de prueba Interactions"), STORE_KEY);
+  assert.equal(bodies[2].response_format.mime_type, "application/json");
+  assert.equal(bodies[2].response_format.schema.properties.grams.type, "number");
+
+  await page.locator('[data-testid="nav-tab-settings"]').click();
+  await page.locator('[data-testid="settings-tab-personalFoods"]').click();
+  await page.locator('[data-testid="open-personal-food-assistant"]').click();
+  for (const [index, text] of ["Describe una comida sencilla", "Ahora estima su energía"].entries()) {
+    await page.locator('[data-testid="personal-food-assistant-input"]').fill(text);
+    await page.locator('[data-testid="personal-food-assistant-send"]').click();
+    await page.locator('[data-testid="chat-message-list-personal-food-assistant"]')
+      .getByText(`Estimación E2E ${index + 4}: 100 gramos y 100 kcal.`, { exact: true }).waitFor();
+  }
+  assert(bodies[4].input.some((step) => step.signature === "opaque-4=="));
+  assert.equal(bodies.length, 5);
+}
+
 async function runNoKeyDisclosureE2E(page, baseUrl) {
   const assertNoLegacyUpdaterRequests = trackLegacyUpdaterRequests(page);
   await page.addInitScript(({ storeKey, store }) => {
@@ -373,7 +428,7 @@ async function runByokLifecycleE2E(page, baseUrl) {
     const apiKey = request.headers()["x-goog-api-key"] ?? "";
     assert(!/[?&]key=/.test(url), `la clave no puede viajar en URL: ${url}`);
 
-    if (url.includes(":streamGenerateContent")) {
+    if (url.endsWith("/v1beta/interactions")) {
       chatRequests.push({
         apiKey,
         url,
@@ -637,7 +692,7 @@ async function runAgentChatE2E(
     ? "**/v1/responses*"
     : provider === "anthropic"
       ? "**/v1/messages*"
-      : "**/v1beta/models/**";
+      : "**/v1beta/interactions";
   await page.route(routePattern, async (route) => {
     const body = route.request().postDataJSON();
     requestBodies.push(body);
@@ -654,7 +709,10 @@ async function runAgentChatE2E(
     ];
     const fixtureName = fixtureByRound[requestBodies.length];
     assert(fixtureName, `${provider} no esperaba una ronda ${requestBodies.length}.`);
-    const responseFixture = fixture(fixtureName);
+    const originalFixture = fixture(fixtureName);
+    const responseFixture = provider === "google" ? originalFixture.split("\n\n")
+      .map((event) => event.startsWith("event: step.start") || event.startsWith("event: step.stop")
+        ? `${event}\n\n${event}` : event).join("\n\n") : originalFixture;
     await route.fulfill({
       status: 200,
       headers: {
@@ -694,9 +752,16 @@ async function runAgentChatE2E(
     "el proveedor debe recibir primero el prompt local de development",
   );
   assert(systemPrompt.includes("Eres Gymnasia Coach, un sistema de inteligencia artificial"));
-  const providerTools = provider === "google"
-    ? requestBodies[0].tools?.[0]?.functionDeclarations
-    : requestBodies[0].tools;
+  const providerTools = requestBodies[0].tools;
+  if (provider === "google") {
+    for (const body of requestBodies) {
+      assert.equal(body.store, false);
+      assert.equal(body.stream, true);
+      assert.equal("previous_interaction_id" in body, false);
+    }
+    assert.equal(requestBodies[1].input.at(-1).type, "function_result");
+    assert.equal(requestBodies[1].input.at(-1).call_id, "google_call_0");
+  }
   const measurementTool = providerTools?.find((tool) => tool.name === "write_measurement");
   const measurementSchema = provider === "anthropic"
     ? measurementTool?.input_schema
@@ -855,12 +920,40 @@ async function runAgentChatE2E(
     await page.locator('[data-testid="ai-report-cancel"]').click({ timeout: STEP_TIMEOUT_MS });
   }
 
+  if (provider === "google") {
+    await page.waitForFunction((key) => Object.values(JSON.parse(localStorage.getItem(key))?.messagesByThread ?? {}).flat()
+      .some((message) => message.googleTurn?.steps?.some((step) => step.type === "function_result")), STORE_KEY);
+    const saved = await page.evaluate((key) => {
+      const store = JSON.parse(localStorage.getItem(key));
+      const [threadId, messages] = Object.entries(store.messagesByThread)
+        .find(([, messages]) => messages.some((message) => message.googleTurn));
+      const transcript = messages.find((message) => message.googleTurn).googleTurn;
+      const legacy = Array.from({ length: 24 }, (_, i) => ({ id: `legacy_${i}`,
+        role: i % 2 ? "assistant" : "user", content: `Mensaje antiguo ${i}`, created_at: "2026-01-01T00:00:00.000Z" }));
+      store.messagesByThread[threadId].unshift(...legacy);
+      localStorage.setItem(key, JSON.stringify(store));
+      return transcript;
+    }, STORE_KEY);
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.locator('[data-testid="nav-tab-chat"]').click();
+    const restored = await page.evaluate((key) => Object.values(JSON.parse(localStorage.getItem(key)).messagesByThread).flat()
+      .find((message) => message.googleTurn)?.googleTurn, STORE_KEY);
+    assert.deepEqual(restored, saved, "La hidratación debe conservar pasos, resultados y firmas");
+  }
+
   await page.locator('[data-testid="chat-input"]').fill("¿Eres humano?");
   await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid^="chat-message-assistant-"]')
     .filter({ hasText: "No. Soy Gymnasia Coach, un sistema de inteligencia artificial." })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   assert.equal(requestBodies.length, 3, `${provider} debe responder también a la comprobación de identidad.`);
+  if (provider === "google") {
+    const history = requestBodies[2].input;
+    assert(history.length > 24, "Google debe recibir más de 20 mensajes");
+    assert(history.some((step) => step.content?.some((part) => part.text === "Mensaje antiguo 0")));
+    assert.equal(history.filter((step) => step.type === "function_result").length, 1);
+    assert.equal(history.filter((step) => step.type === "function_call").length, 1);
+  }
   const identitySystemPrompt = providerSystemPrompt(provider, requestBodies[2]);
   assert.equal(transparencyMarkerCount(identitySystemPrompt), 1);
   assert(identitySystemPrompt.includes("Nunca afirmes ni insinúes que eres humano"));
@@ -1031,6 +1124,7 @@ async function runAgentChatE2E(
       { timeout: STEP_TIMEOUT_MS },
     );
   }
+  if (provider === "google") await assertGoogleFoodInteractions(page);
   assert.equal(deploymentRequests, 0, "development no debe consultar deployments de política");
   assertNoLegacyUpdaterRequests();
   logStep(`${provider}/local completado: UI → SSE → tools de lectura/escritura → persistencia → UI`);
@@ -1207,7 +1301,7 @@ async function main() {
   let browser = null;
   try {
     browser = await chromium.launch({ headless: process.env.AGENT_E2E_HEADLESS !== "0" });
-    for (const provider of ["openai", "anthropic", "google"]) {
+    for (const provider of (process.env.AGENT_E2E_PROVIDER ? [process.env.AGENT_E2E_PROVIDER] : ["openai", "anthropic", "google"])) {
       const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
       const page = await context.newPage();
       page.on("pageerror", (error) => console.error(`[agent-e2e][${provider}][page] ${error.message}`));
@@ -1225,6 +1319,7 @@ async function main() {
         await context.close().catch(() => {});
       }
     }
+    if (process.env.AGENT_E2E_PROVIDER) return;
     for (const backendScenario of ["created", "down", "malformed", "retry"]) {
       const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
       const page = await context.newPage();

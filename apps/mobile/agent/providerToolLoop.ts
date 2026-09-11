@@ -1,9 +1,73 @@
+import { type GoogleInteractionTurn, type GoogleStep } from "./googleInteractions";
+import { canonicalToolJson } from "./toolOperationLedger";
 import {
   toolCallOccurrenceKey,
   type ToolCallEnvelope,
 } from "./toolOperationLedger";
 
 export const MAX_TOOL_ROUNDS = 10;
+
+export async function runGoogleToolLoop(input: {
+  initialTurn: GoogleInteractionTurn;
+  initialMessages: GoogleStep[];
+  requestNextTurn: (messages: GoogleStep[]) => Promise<GoogleInteractionTurn>;
+  executeTool: ExecuteTool;
+  executionId?: string;
+  maxRounds?: number;
+}): Promise<GoogleInteractionTurn & {
+  history: GoogleStep[];
+  interactions: Array<{ id: string; usage: Record<string, unknown> }>;
+}> {
+  let turn = input.initialTurn;
+  const messages: GoogleStep[] = JSON.parse(JSON.stringify(input.initialMessages));
+  const history: GoogleStep[] = [];
+  const interactions: Array<{ id: string; usage: Record<string, unknown> }> = [];
+  const seenInteractions = new Map<string, string>();
+  const seenCallIds = new Set<string>();
+  const occurrences = new Map<string, number>();
+  for (let round = 0; ; round += 1) {
+    const identity = canonicalToolJson({ status: turn.status, steps: turn.steps });
+    const previous = seenInteractions.get(turn.interactionId);
+    if (previous !== undefined && previous !== identity) {
+      throw new Error("Google Interactions: identidad de interacción contradictoria.");
+    }
+    if (previous === undefined) {
+      // A new round cannot reuse an identity already committed in this history.
+      for (const step of turn.steps) {
+        if (step.type !== "function_call") continue;
+        if (seenCallIds.has(step.id)) {
+          throw new Error("Google Interactions: ID de herramienta repetido entre rondas.");
+        }
+        seenCallIds.add(step.id);
+      }
+      seenInteractions.set(turn.interactionId, identity);
+      interactions.push({ id: turn.interactionId, usage: turn.usage });
+      history.push(...turn.steps);
+      messages.push(...turn.steps);
+    }
+    if (turn.status === "completed") return { ...turn, history, interactions };
+    if (round >= (input.maxRounds ?? MAX_TOOL_ROUNDS)) {
+      throw new Error("Google Interactions: la respuesta sigue pendiente de herramientas al alcanzar el límite de rondas.");
+    }
+    // Replaying an entire round reuses its results, without new occurrences/effects.
+    if (previous === undefined) {
+      for (const call of turn.steps) {
+        if (call.type !== "function_call") continue;
+        const result = await input.executeTool(call.name, call.arguments, {
+          executionId: input.executionId ?? "legacy-execution",
+          provider: "google", providerCallId: call.id, name: call.name, args: call.arguments,
+          occurrence: nextOccurrence(occurrences, call.name, call.arguments),
+        });
+        const output: GoogleStep = { type: "function_result", name: call.name, call_id: call.id,
+          result: [{ type: "text", text: result }] };
+        history.push(output);
+        messages.push(output);
+      }
+    }
+    // A caller must not mutate the committed snapshot used by future rounds.
+    turn = await input.requestNextTurn(JSON.parse(JSON.stringify(messages)) as GoogleStep[]);
+  }
+}
 
 export type ExecuteTool = (
   name: string,
@@ -156,94 +220,6 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
       { role: "assistant", content: turn.contentBlocks },
       { role: "user", content: toolResults },
     ];
-    turn = await input.requestNextTurn(messages);
-  }
-  return turn;
-}
-
-export type GoogleFunctionCall = {
-  id?: string;
-  name: string;
-  args?: Record<string, unknown>;
-};
-
-export type GoogleResponsePart = {
-  text?: string;
-  functionCall?: GoogleFunctionCall;
-  thought?: boolean;
-  thoughtSignature?: string;
-};
-
-export type GoogleToolTurn = {
-  modelParts: GoogleResponsePart[];
-};
-
-export function mapGoogleResponsePartToRequestPart(
-  part: GoogleResponsePart,
-): Record<string, unknown> | null {
-  const nextPart: Record<string, unknown> = {};
-  if (typeof part.text === "string") nextPart.text = part.text;
-  if (part.functionCall) {
-    nextPart.functionCall = {
-      ...(typeof part.functionCall.id === "string" && part.functionCall.id.trim()
-        ? { id: part.functionCall.id.trim() }
-        : {}),
-      name: part.functionCall.name,
-      args: part.functionCall.args ?? {},
-    };
-  }
-  if (part.thought === true) nextPart.thought = true;
-  if (typeof part.thoughtSignature === "string" && part.thoughtSignature.trim()) {
-    nextPart.thoughtSignature = part.thoughtSignature;
-  }
-  return Object.keys(nextPart).length > 0 ? nextPart : null;
-}
-
-export async function runGoogleToolLoop<TTurn extends GoogleToolTurn>(input: {
-  initialTurn: TTurn;
-  initialMessages: Array<Record<string, unknown>>;
-  requestNextTurn: (messages: Array<Record<string, unknown>>) => Promise<TTurn>;
-  executeTool: ExecuteTool;
-  executionId?: string;
-  maxRounds?: number;
-}): Promise<TTurn> {
-  let turn = input.initialTurn;
-  const messages = [...input.initialMessages];
-  const occurrences = new Map<string, number>();
-  const maxRounds = input.maxRounds ?? MAX_TOOL_ROUNDS;
-  for (let round = 0; round < maxRounds; round += 1) {
-    const toolCalls = turn.modelParts.filter(
-      (part): part is GoogleResponsePart & { functionCall: GoogleFunctionCall } =>
-        Boolean(part.functionCall?.name),
-    );
-    if (toolCalls.length === 0) break;
-    const modelParts = turn.modelParts
-      .map(mapGoogleResponsePartToRequestPart)
-      .filter((part): part is Record<string, unknown> => Boolean(part));
-    const responseParts: Array<Record<string, unknown>> = [];
-    for (const part of toolCalls) {
-      const functionCall = part.functionCall;
-      const args = functionCall.args ?? {};
-      const result = await input.executeTool(functionCall.name, args, {
-        executionId: input.executionId ?? "legacy-execution",
-        provider: "google",
-        providerCallId: functionCall.id,
-        name: functionCall.name,
-        args,
-        occurrence: nextOccurrence(occurrences, functionCall.name, args),
-      });
-      responseParts.push({
-        functionResponse: {
-          ...(typeof functionCall.id === "string" && functionCall.id.trim()
-            ? { id: functionCall.id.trim() }
-            : {}),
-          name: functionCall.name,
-          response: { result },
-        },
-      });
-    }
-    messages.push({ role: "model", parts: modelParts });
-    messages.push({ role: "user", parts: responseParts });
     turn = await input.requestNextTurn(messages);
   }
   return turn;

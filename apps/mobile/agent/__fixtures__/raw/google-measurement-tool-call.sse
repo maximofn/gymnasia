@@ -1,3 +1,18 @@
-data: {"candidates":[{"content":{"role":"model","parts":[{"functionCall":{"name":"write_measurement","args":{"date":"2024-04-11","data":{"weight_kg":75.5,"body_fat_pct":18.5}}}}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":18,"candidatesTokenCount":8,"totalTokenCount":26}}
+event: interaction.created
+data: {"event_type": "interaction.created", "interaction": {"id": "fixture_google-measurement-tool-call", "status": "in_progress"}}
 
+event: step.start
+data: {"event_type": "step.start", "index": 0, "step": {"type": "function_call", "id": "google_call_0", "name": "write_measurement", "arguments": {}}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "arguments_delta", "arguments": "{\"date\": \"2024-04-11\", \"data\": {\"weight_kg\": 75.5, \"body_fat_pct\": 18.5}}"}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 0}
+
+event: interaction.completed
+data: {"event_type": "interaction.completed", "interaction": {"id": "fixture_google-measurement-tool-call", "status": "requires_action", "usage": {"total_input_tokens": 18, "total_output_tokens": 8, "total_tokens": 26}}}
+
+event: done
 data: [DONE]
+

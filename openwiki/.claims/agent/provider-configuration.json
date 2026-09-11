@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:42cec128d6538faa7dd92f669ebd627c8fbcd2dec1c300337881b16f7a8b2002",
+  "pageVersion": "sha256:6a594e98f687be675ba822d6b31c7dd8e43f5c6fe3a25a828de7e4922caa5920",
   "claims": [
     {
       "id": "claim_593d6e5c167c4d37bb621397b1ddd1a3",
@@ -305,10 +305,24 @@
           "version": "repo-lines-v1:sha256:aee7704323cd88884c9c92c55d4d21197d12beab740078d660650bdd80254c2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhOGExMWRjODUzZGJkNTcxNDIwOGM2Y2M1ZDUyMDM1MDViOWM4OWZjNjRkMDY0ZjA3NzRhY2YyNGVjNzU3NTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhMzhlZTljYzczYzlmMWYyYzhmOGM1NmQwMGJkMDBkZTViMDczNjlmMTJlMDgwYWJiZDc5YzhjNDM3NTZjMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1ZWQ3NWRlMTUzOGU4NjM1NmRjNTZkMzFhMGRlMGUzMDcyZDhlYjNhZjU2YWM5YWU3YTZiNDY4YWVmM2M2YTMifQ"
         }
       ]
+    },
+    {
+      "id": "claim_5f77b12c552ca09e31d7e93894764bf9",
+      "statement": "El endpoint local de Google solo admite Development con clave ficticia; la generación real usa Interactions sin persistencia remota.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts",
+          "version": "sha256:92a559ae8930d7419b487dffb0370308b4419261fc35e10fb41595f5084e18ed"
+        },
+        {
+          "resource": "repo://apps/mobile/app.config.ts",
+          "version": "sha256:51fa110f95f8fb06a06693edc0fc92061e9bd067bb9412150a07849db70af8f6"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.0",
-    "at": "2026-09-07T11:37:28.236Z"
+    "by": "manual-code-review",
+    "at": "2026-09-11T00:00:00.000Z"
   }
 }

@@ -8,7 +8,7 @@ este documento conserva las respuestas verificadas contra el código y la polít
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v1` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v2` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -29,6 +29,12 @@ de IA, el proveedor elegido recibe la clave BYOK, los mensajes necesarios para r
 los resultados de herramientas que el usuario autoriza y, en el estimador, hasta seis
 fotografías. Ese contexto puede incluir datos personales, de salud, entrenamiento,
 nutrición y medidas.
+
+Con Google se reenvía el historial completo, incluidos los pasos, firmas técnicas y
+resultados de herramientas de los turnos nuevos. Interactions lleva `store: false`;
+esto no cambia la declaración conservadora `Processed ephemerally: No` ni añade un
+tercero o una categoría de datos a la tabla. Los asistentes de alimentos conservan
+ese contexto solo durante su sesión; el chat principal lo incluye en su backup local.
 
 El backend opcional de incidencias recibe, tras vista previa y confirmación, la pregunta
 anterior, la respuesta denunciada y detalles opcionales. También trata la IP de conexión

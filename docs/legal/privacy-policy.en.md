@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v1
-effective_date: 2026-09-01
+version: 2026-09-v2
+effective_date: 2026-09-11
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -66,7 +66,10 @@ All of the following is stored on your device only:
   bulking or maintenance) and activity level. Used to estimate your calories and
   macronutrients.
 - **Conversations with the assistant**: the complete history of your chat threads,
-  including the model's messages.
+  including the model's messages. New Google turns also retain response steps,
+  thought summaries, technical signatures, tool calls, arguments and results needed
+  to continue the dialogue. These data follow chat deletion and manual backups; they
+  do not contain the API key.
 - **Assistant memory**: free-text notes that you or the assistant save in order to
   remember things between conversations. It may contain anything you have mentioned in
   the chat, including health data.
@@ -138,7 +141,9 @@ When you use the assistant, your device connects **directly** to the provider yo
 The request includes:
 
 - the assistant's system instructions;
-- **the last 20 messages** of the conversation thread;
+- in the main chat, **the complete history for Google**, including response and tool
+  steps from new turns; for OpenAI and Anthropic, **the last 20 messages**. Food
+  assistants send the history of their session;
 - the results of the tools the assistant uses at your request, which may include your
   weight, your body fat percentage, your measurements, the day's meals or your routines;
 - in the food estimator, **the images you provide**, encoded within the request.
@@ -151,6 +156,11 @@ before the normal response is generated. This option is off by default, requires
 separate consent for each provider, and can be revoked at any time. Messages classified
 locally as high or critical risk are intercepted on the device and are not sent to the
 provider.
+
+All generation requests to Google disable Interactions conversation storage using
+`store: false`. The app resends context from the device with each request and does not
+use a conversation stored at Google to continue the dialogue. This setting does not
+replace the provider's general terms.
 
 That content is subject to the privacy policy and terms of the provider you chose, under
 your own account with them:
@@ -169,7 +179,9 @@ differently:
 
 - **Food estimator**: the images you select (up to six) are sent to the AI provider to
   estimate nutritional values. They are not stored in the app and are not uploaded
-  anywhere else.
+  anywhere else. When continuing an analysis with Google, images remain in memory
+  and are resent during that session; they are discarded when the session is reset.
+  Technical history from these temporary assistants is not added to persistent chat.
 - **Progress photographs** attached to a measurement: the app creates a JPEG copy in
   its private storage, limits its longest edge to 2048 pixels and removes EXIF, XMP,
   IPTC and comment metadata, including any location carried by the original. It does

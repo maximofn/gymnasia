@@ -1,3 +1,29 @@
+import type { GoogleStep } from "./googleInteractions";
+
+export const GOOGLE_INTERACTIONS_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
+
+export function buildGoogleInteractionRequest(input: {
+  model: string;
+  history: GoogleStep[];
+  systemInstruction?: string;
+  tools?: Array<Record<string, unknown>>;
+  thinking?: boolean;
+  responseSchema?: Record<string, unknown>;
+}): Record<string, unknown> {
+  return {
+    model: normalizeGoogleModel(input.model),
+    input: input.history,
+    stream: true,
+    store: false,
+    ...(input.systemInstruction ? { system_instruction: input.systemInstruction } : {}),
+    ...(input.tools?.length ? { tools: input.tools } : {}),
+    ...(input.thinking ? { generation_config: { thinking_level: "high", thinking_summaries: "auto" } } : {}),
+    ...(input.responseSchema ? { response_format: {
+      type: "text", mime_type: "application/json", schema: input.responseSchema,
+    } } : {}),
+  };
+}
+
 export type FakeProviderSurface =
   | "main-chat"
   | "food-estimator"

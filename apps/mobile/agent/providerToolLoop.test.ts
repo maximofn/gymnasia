@@ -77,7 +77,7 @@ describe("integración del bucle con proveedor falso", () => {
     const requestNextTurn = vi.fn(async (_messages: Array<Record<string, unknown>>) => finalTurn);
     const result = await runGoogleToolLoop({
       initialTurn,
-      initialMessages: [{ role: "user", parts: [{ text: "¿Cuál es mi objetivo?" }] }],
+      initialMessages: [{ type: "user_input", content: [{ type: "text", text: "¿Cuál es mi objetivo?" }] }],
       requestNextTurn,
       executeTool,
     });
@@ -93,15 +93,8 @@ describe("integración del bucle con proveedor falso", () => {
       }),
     );
     const nextMessages = requestNextTurn.mock.calls[0][0];
-    expect(nextMessages.at(-1)).toEqual({
-      role: "user",
-      parts: [{
-        functionResponse: {
-          name: "read_field_value",
-          response: { result: "Ganar masa muscular" },
-        },
-      }],
-    });
+    expect(nextMessages.at(-1)).toEqual({ type: "function_result", name: "read_field_value",
+      call_id: "google_call_1", result: [{ type: "text", text: "Ganar masa muscular" }] });
   });
 
   it("falla de forma explícita si OpenAI omite el id necesario para continuar", async () => {

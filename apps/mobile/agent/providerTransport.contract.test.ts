@@ -33,6 +33,9 @@ describe("provider transport contract", () => {
 
   it("never puts Google API keys in request URLs", () => {
     expect(appSource).not.toMatch(/generativelanguage\.googleapis\.com[^"`\n]*(?:\?|&)key=/);
-    expect(appSource.match(/googleApiHeaders\(/g)?.length).toBeGreaterThanOrEqual(6);
+    const transport = readFileSync(new URL("./googleStreamTransport.ts", import.meta.url), "utf8");
+    expect(transport).toContain("googleApiHeaders(options.apiKey");
+    expect(appSource).not.toContain(":generateContent");
+    expect(appSource).not.toContain(":streamGenerateContent");
   });
 });
