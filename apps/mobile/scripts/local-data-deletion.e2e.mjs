@@ -75,6 +75,17 @@ function seedStore() {
         role: "user",
         content: `actividad-${marker}`,
         created_at: "2026-08-30T10:00:00.000Z",
+      }, {
+        id: "google_deletion_e2e", role: "assistant", content: `respuesta-${marker}`,
+        created_at: "2026-08-30T10:00:01.000Z",
+        googleTurn: {
+          version: 1, model: "gemini-3.8-flash",
+          steps: [
+            { type: "thought", signature: `firma-${marker}`, summary: [] },
+            { type: "model_output", content: [{ type: "text", text: `respuesta-${marker}` }] },
+          ],
+          interactions: [{ id: `interaction-${marker}`, usage: { total_tokens: 2 } }],
+        },
       }],
     },
     keys: [

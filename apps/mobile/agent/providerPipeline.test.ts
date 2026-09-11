@@ -224,7 +224,7 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
     let continuedMessages: Array<Record<string, unknown>> = [];
     const result = await runGoogleToolLoop({
       initialTurn,
-      initialMessages: [{ role: "user", parts: [{ text: "¿Cuál es mi objetivo?" }] }],
+      initialMessages: [{ type: "user_input", content: [{ type: "text", text: "¿Cuál es mi objetivo?" }] }],
       executeTool,
       requestNextTurn: async (messages) => {
         continuedMessages = messages;
@@ -235,27 +235,17 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       },
     });
 
-    expect(initialTurn.modelParts).toEqual([{
-      functionCall: { name: "read_field_value", args: { key: "Objetivo" } },
-      thought: false,
-      thoughtSignature: undefined,
-    }]);
+    expect(initialTurn.steps).toEqual([{ type: "function_call", id: "google_call_0",
+      name: "read_field_value", arguments: { key: "Objetivo" } }]);
     expect(executeTool).toHaveBeenCalledWith(
       "read_field_value",
       { key: "Objetivo" },
       expect.any(Object),
     );
-    expect(continuedMessages.at(-1)).toEqual({
-      role: "user",
-      parts: [{
-        functionResponse: {
-          name: "read_field_value",
-          response: { result: "Ganar masa muscular" },
-        },
-      }],
-    });
+    expect(continuedMessages.at(-1)).toEqual({ type: "function_result", name: "read_field_value",
+      call_id: "google_call_0", result: [{ type: "text", text: "Ganar masa muscular" }] });
     expect(result.content).toBe("Tu objetivo es ganar masa muscular.");
-    expect(result.finishReason).toBe("STOP");
+    expect(result.status).toBe("completed");
   });
 });
 
@@ -350,9 +340,9 @@ describe("contrato de parsing de llamadas a herramientas", () => {
     expect(anthropicResult.contentBlocks).toEqual([
       expect.objectContaining({ type: "text" }),
     ]);
-    expect(googleResult.modelParts).toEqual([
-      expect.objectContaining({ text: expect.any(String) }),
-      expect.objectContaining({ text: expect.any(String) }),
+    expect(googleResult.steps).toEqual([
+      expect.objectContaining({ type: "model_output" }),
+      expect.objectContaining({ type: "model_output" }),
     ]);
     expect(openAIExecute).not.toHaveBeenCalled();
     expect(anthropicExecute).not.toHaveBeenCalled();
@@ -494,21 +484,9 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       requestNextTurn,
     });
 
-    expect(initialTurn.modelParts).toEqual([
-      expect.objectContaining({
-        functionCall: {
-          id: "google_call_first",
-          name: "read_field_value",
-          args: { key: "Objetivo" },
-        },
-      }),
-      expect.objectContaining({
-        functionCall: {
-          id: "google_call_second",
-          name: "read_field_value",
-          args: { key: "Altura" },
-        },
-      }),
+    expect(initialTurn.steps).toEqual([
+      { type: "function_call", id: "google_call_first", name: "read_field_value", arguments: { key: "Objetivo" } },
+      { type: "function_call", id: "google_call_second", name: "read_field_value", arguments: { key: "Altura" } },
     ]);
     expect(executeTool.mock.calls).toEqual([
       ["read_field_value", { key: "Objetivo" }, expect.objectContaining({
@@ -521,44 +499,9 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       })],
     ]);
     expect(requestNextTurn.mock.calls[0]![0]).toEqual([
-      {
-        role: "model",
-        parts: [
-          {
-            functionCall: {
-              id: "google_call_first",
-              name: "read_field_value",
-              args: { key: "Objetivo" },
-            },
-          },
-          {
-            functionCall: {
-              id: "google_call_second",
-              name: "read_field_value",
-              args: { key: "Altura" },
-            },
-          },
-        ],
-      },
-      {
-        role: "user",
-        parts: [
-          {
-            functionResponse: {
-              id: "google_call_first",
-              name: "read_field_value",
-              response: { result: "valor:Objetivo" },
-            },
-          },
-          {
-            functionResponse: {
-              id: "google_call_second",
-              name: "read_field_value",
-              response: { result: "valor:Altura" },
-            },
-          },
-        ],
-      },
+      ...initialTurn.steps,
+      { type: "function_result", name: "read_field_value", call_id: "google_call_first", result: [{ type: "text", text: "valor:Objetivo" }] },
+      { type: "function_result", name: "read_field_value", call_id: "google_call_second", result: [{ type: "text", text: "valor:Altura" }] },
     ]);
   });
 
@@ -572,7 +515,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
 
     expect(openAI.finish().outputItems).toEqual([]);
     expect(anthropic.finish().contentBlocks).toEqual([]);
-    expect(google.finish().modelParts).toEqual([]);
+    expect(() => google.finish()).toThrow("truncated");
 
     expect(() => createOpenAIStreamParser().push(
       'event: error\ndata: {"error":{"message":"openai controlled"}}\n\n',
@@ -581,7 +524,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       'event: error\ndata: {"type":"error","error":{"message":"anthropic controlled"}}\n\n',
     )).toThrow("anthropic controlled");
     expect(() => createGoogleStreamParser().push(
-      'data: {"error":{"message":"google controlled"}}\n\n',
+      'data: {"event_type":"error","error":{"message":"google controlled"}}\n\n',
     )).toThrow("google controlled");
   });
 
@@ -602,22 +545,12 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       requestNextTurn: async () => ({ responseId: "resp_done", outputItems: [] }),
     });
 
-    const google = createGoogleStreamParser();
-    google.push(
-      'data: {"candidates":[{"content":{"parts":[{"functionCall":{"name":"read_field_value","args":"{not-json"}}]}}]}\n\n',
-    );
-    const googleTurn = google.finish();
-
     expect(executeTool).toHaveBeenCalledWith(
       "read_field_value",
       {},
       expect.any(Object),
     );
-    expect(googleTurn.modelParts).toEqual([
-      expect.objectContaining({
-        functionCall: { name: "read_field_value", args: {} },
-      }),
-    ]);
+
   });
 });
 

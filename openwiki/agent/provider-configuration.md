@@ -56,6 +56,8 @@ La aplicación móvil admite credenciales aportadas por la persona usuaria (**BY
 
 Esta página cubre el contrato de configuración hasta la solicitud de proveedor. El streaming, los formatos de mensajes y las continuaciones de herramientas se describen en [Streaming de proveedores](./provider-streaming.md); el uso de las credenciales por el chat y las herramientas locales, en [Entorno de ejecución del agente](./runtime.md).
 
+Google genera mediante Interactions con `store: false` y continúa reenviando el historial local completo. La verificación y el catálogo siguen usando `/v1beta/models`; listar un modelo no garantiza que admita todas las capacidades de Interactions. Los errores de compatibilidad se muestran sin fallback de protocolo. Para validar XHR en Development existe un [servidor local con clave ficticia](../../docs/testing/google-interactions.md), aislado de Production.
+
 ## Modelo canónico, borradores e invariantes
 
 `ProviderConfiguration` contiene `provider`, `is_active`, `api_key`, `model`, `workspace_id?` y `reasoning_effort?`; `ProviderDraft` omite la selección activa para que la interfaz pueda editar sin publicar cambios. `PROVIDERS` establece el orden canónico `openai`, `anthropic`, `google`. `normalizeProviderConfigurations` siempre produce esos tres registros y exactamente uno activo: conserva el primero activo en ese orden o activa OpenAI si no había ninguno.

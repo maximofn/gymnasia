@@ -72,6 +72,23 @@ function manifestFor(selection: ReturnType<typeof selectBackupMedia>): BackupMan
 }
 
 describe("backup de fotos portable", () => {
+  it("conserva el historial completo de Google y las firmas opacas en el paquete", async () => {
+    const manifest = manifestFor(selectBackupMedia([]));
+    const googleTurn = {
+      version: 1, model: "gemini-3.8-flash",
+      steps: [
+        { type: "thought", signature: "  opaque==\n", summary: [{ type: "text", text: "Resumen" }] },
+        { type: "function_call", id: "call-backup", name: "get_personal_data", arguments: { key: "objetivo" } },
+        { type: "function_result", call_id: "call-backup", name: "get_personal_data", result: [{ type: "text", text: "Fuerza" }] },
+        { type: "model_output", content: [{ type: "text", text: "Tu objetivo es fuerza." }] },
+      ],
+      interactions: [{ id: "interaction-backup", usage: { total_tokens: 10 } }],
+    };
+    manifest.data.store.messagesByThread = { google: [{ role: "assistant", content: "Tu objetivo es fuerza.", googleTurn }] };
+    const parsed = await readAndVerifyBackupPackage(createBackupPackage(manifest, new Map()), digestHex);
+    expect(parsed.manifest.data.store.messagesByThread).toEqual(manifest.data.store.messagesByThread);
+  });
+
   it("mantiene la importación del formato JSON v1 y rechaza versiones futuras", () => {
     const legacyData = data();
     legacyData.store.workoutHistory = [{

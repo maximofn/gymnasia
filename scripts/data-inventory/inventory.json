@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia. Se creó en GYM-190 (ticket para publicar la política de privacidad y preparar las declaraciones de salud). De aquí salen la política publicada y las respuestas de Data safety en docs/legal/play-declarations.md. Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198 (ticket para generar y validar el Android App Bundle de producción). Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-09-v1",
+  "policyVersion": "2026-09-v2",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -44,7 +44,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Estado principal: rutinas, historial de entrenamiento con sus totales, versión de cálculo y la prescripción ejecutada de cada sesión (nombres, tipos de serie, repeticiones, peso, descanso, tempo, mini-series y qué esfuerzos se completaron; sin imágenes ni enlaces de catálogo), dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt.",
+      "purpose": "Estado principal: rutinas, historial de entrenamiento con sus totales, versión de cálculo y la prescripción ejecutada de cada sesión (nombres, tipos de serie, repeticiones, peso, descanso, tempo, mini-series y qué esfuerzos se completaron; sin imágenes ni enlaces de catálogo), dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt. Los turnos nuevos de Google incluyen pasos, resúmenes de pensamiento, firmas opacas, llamadas, argumentos, resultados y uso de tokens; se conservan en las copias manuales del chat y se borran con él. Nunca incluyen credenciales BYOK.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "rewrite",
       "fullDeletion": "delete"
@@ -421,7 +421,7 @@
       "host": "generativelanguage.googleapis.com",
       "trigger": "user-initiated",
       "requiresUserKey": true,
-      "sends": "La clave BYOK en la cabecera x-goog-api-key y el mismo contexto, mensajes, resultados autorizados e imágenes descritos para api.openai.com. alt=sse puede viajar como parámetro de consulta, pero la clave no.",
+      "sends": "Clave BYOK solo en x-goog-api-key. Toda generación usa Interactions con store:false y sin previous_interaction_id: se envía el historial completo local de la conversación, incluidos texto, pasos y firmas de pensamiento, llamadas y resultados de herramientas. Las imágenes del estimador se reenvían en la sesión temporal. El sistema y las herramientas se incluyen en cada ronda; la extracción nutricional usa salida JSON. El catálogo/verificación sigue usando GET models. No hay backend de Gymnasia.",
       "thirdParty": "Google"
     },
     {

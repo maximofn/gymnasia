@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-10",
+    "updated": "2026-09-11",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -2147,7 +2147,7 @@
         {
           "id": "GYM-185",
           "title": "Desduplicar eventos y llamadas de Google durante el streaming",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Evitar texto y tool calls duplicados ante reenvíos de eventos de Google o nombres repetidos.",
           "dependsOn": [],
           "related": [
@@ -2167,6 +2167,20 @@
             "GYM-122",
             "GYM-159",
             "GYM-184"
+          ]
+        },
+        {
+          "id": "GYM-232",
+          "title": "Migrar Google a Interactions API sin persistencia remota",
+          "state": "in_progress",
+          "summary": "Conservar el historial de Google en el dispositivo y reenviarlo completo, con herramientas sin ejecuciones duplicadas.",
+          "dependsOn": [],
+          "related": [
+            "GYM-185",
+            "GYM-168",
+            "GYM-39",
+            "GYM-42",
+            "GYM-68"
           ]
         }
       ]
@@ -3061,6 +3075,7 @@
         "GYM-179",
         "GYM-184",
         "GYM-185",
+        "GYM-232",
         "GYM-186",
         "GYM-160",
         "GYM-172"

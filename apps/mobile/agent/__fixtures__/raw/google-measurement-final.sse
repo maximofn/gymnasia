@@ -1,3 +1,18 @@
-data: {"candidates":[{"content":{"role":"model","parts":[{"text":"He guardado 75,5 kg y 18,5 % de grasa para el 11 de abril de 2024."}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":32,"candidatesTokenCount":18,"totalTokenCount":50}}
+event: interaction.created
+data: {"event_type": "interaction.created", "interaction": {"id": "fixture_google-measurement-final", "status": "in_progress"}}
 
+event: step.start
+data: {"event_type": "step.start", "index": 0, "step": {"type": "model_output"}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "text", "text": "He guardado 75,5 kg y 18,5 % de grasa para el 11 de abril de 2024."}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 0}
+
+event: interaction.completed
+data: {"event_type": "interaction.completed", "interaction": {"id": "fixture_google-measurement-final", "status": "completed", "usage": {"total_input_tokens": 32, "total_output_tokens": 18, "total_tokens": 50}}}
+
+event: done
 data: [DONE]
+

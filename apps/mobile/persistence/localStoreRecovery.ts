@@ -1,3 +1,5 @@
+import { isGoogleConversationTurn } from "../agent/googleInteractions";
+
 export const LOCAL_STORE_RECOVERY_RECORD_VERSION = 1 as const;
 
 export const LOCAL_STORE_ROOT_FIELDS = [
@@ -267,6 +269,9 @@ function validateMessagesByThread(
         validateOptionalScalar(message, key, messagePath, "string", issues),
       );
       validateOptionalScalar(message, "is_streaming", messagePath, "boolean", issues);
+      if (message.googleTurn !== undefined && !isGoogleConversationTurn(message.googleTurn)) {
+        pushIssue(issues, `${messagePath}.googleTurn`, "invalid_json", "El historial técnico de Google no es válido.");
+      }
     });
   });
 }

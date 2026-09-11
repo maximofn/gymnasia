@@ -420,13 +420,9 @@ export const CHAT_TOOLS = {
     description: tool.description,
     input_schema: tool.inputSchema,
   })),
-  google: [{
-    functionDeclarations: AGENT_TOOL_DEFINITIONS.map((tool) => ({
-      name: tool.name,
-      description: tool.description,
-      parameters: tool.inputSchema,
-    })),
-  }],
+  google: AGENT_TOOL_DEFINITIONS.map((tool) => ({
+    type: "function", name: tool.name, description: tool.description, parameters: tool.inputSchema,
+  })),
 };
 
 export type ToolInputValidation = {

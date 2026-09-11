@@ -75,8 +75,16 @@ import {
   type FeedbackProposal,
 } from "./agent/feedbackProposals";
 import { FeedbackProposalBanner } from "./FeedbackProposalBanner";
+import { googleInteractionEndpoint, requestGoogleInteraction } from "./agent/googleStreamTransport";
 import {
-  mapGoogleResponsePartToRequestPart,
+  buildGoogleHistory,
+  isGoogleConversationTurn,
+  type GoogleContent,
+  type GoogleConversationTurn,
+  type GoogleInteractionTurn,
+  type GoogleStep,
+} from "./agent/googleInteractions";
+import {
   parseOpenAIFunctionArguments,
   runAnthropicToolLoop,
   runGoogleToolLoop,
@@ -84,7 +92,6 @@ import {
 } from "./agent/providerToolLoop";
 import {
   createAnthropicStreamParser,
-  createGoogleStreamParser,
   createOpenAIStreamParser,
 } from "./agent/providerStreamParsers";
 import {
@@ -568,10 +575,12 @@ type ChatMessage = {
     origin: AiReportResponseOrigin;
   };
   thinking?: string | null;
+  googleTurn?: GoogleConversationTurn;
+  googleInput?: GoogleContent[];
   is_streaming?: boolean;
   created_at: string;
 };
-type AnthropicChatResult = { content: string; thinking: string | null };
+type AnthropicChatResult = { content: string; thinking: string | null; googleTurn?: GoogleConversationTurn };
 type OpenAIReasoningSummaryPart = { type: "summary_text"; text: string };
 type OpenAIReasoningOutputItem = {
   type: "reasoning";
@@ -639,17 +648,6 @@ type AnthropicStreamTurnResult = AnthropicChatResult & {
   contentBlocks: AnthropicResponseBlock[];
   stopReason: string | null;
 };
-type GoogleFunctionCall = { name: string; args?: Record<string, unknown> };
-type GoogleResponsePart = {
-  text?: string;
-  functionCall?: GoogleFunctionCall;
-  thought?: boolean;
-  thoughtSignature?: string;
-};
-type GoogleStreamTurnResult = AnthropicChatResult & {
-  modelParts: GoogleResponsePart[];
-  finishReason: string | null;
-};
 type OpenAIModelOption = { id: string; owned_by: string | null };
 type GoogleModelOption = { id: string; display_name: string | null };
 type ProviderConnectionState = "connected" | "disconnected" | "checking" | "unknown";
@@ -665,7 +663,42 @@ type ProviderConnectionCheckResult = {
   severity: Exclude<ProviderStatusSeverity, "info">;
 };
 type ProviderDeleteModalState = { provider: Provider; maskedApiKey: string };
-type ChatInputMessage = { role: "user" | "assistant" | "system"; content: string };
+type ChatInputMessage = {
+  role: "user" | "assistant" | "system";
+  content: string;
+  googleTurn?: GoogleConversationTurn;
+  googleInput?: GoogleContent[];
+};
+
+function toChatInput(message: ChatInputMessage): ChatInputMessage {
+  return {
+    role: message.role,
+    content: message.content,
+    ...(message.googleTurn ? { googleTurn: message.googleTurn } : {}),
+    ...(message.googleInput ? { googleInput: message.googleInput } : {}),
+  };
+}
+
+function callGoogleInteraction(
+  provider: AIKey,
+  options: {
+    history: GoogleStep[];
+    systemInstruction?: string;
+    tools?: Array<Record<string, unknown>>;
+    thinking?: boolean;
+    responseSchema?: Record<string, unknown>;
+  },
+  handlers?: StreamingHandlers,
+): Promise<GoogleInteractionTurn> {
+  return requestGoogleInteraction({
+    ...options,
+    model: provider.model,
+    apiKey: provider.api_key,
+    platform: Platform.OS,
+    environment: Constants.expoConfig?.extra?.environment,
+    fixturePort: Constants.expoConfig?.extra?.googleFixturePort,
+  }, handlers);
+}
 type FoodEstimatorImage = {
   id: string;
   uri: string;
@@ -2079,10 +2112,15 @@ async function fetchOpenAIModelsDirect(apiKey: string): Promise<OpenAIModelOptio
   return parseOpenAIModelOptions(payload);
 }
 
+function googleModelsBaseUrl(apiKey: string): string {
+  return googleInteractionEndpoint(Constants.expoConfig?.extra?.googleFixturePort,
+    Constants.expoConfig?.extra?.environment, apiKey).replace(/\/interactions$/, "/models");
+}
+
 async function fetchGoogleModelsDirect(apiKey: string): Promise<GoogleModelOption[]> {
   if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.google];
   const response = await fetchProviderConfiguration(
-    "https://generativelanguage.googleapis.com/v1beta/models",
+    googleModelsBaseUrl(apiKey),
     {
       method: "GET",
       headers: googleApiHeaders(apiKey),
@@ -2157,6 +2195,7 @@ async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnec
   return verifyProviderConfiguration(provider, {
     platform: Platform.OS === "web" ? "web" : "native",
     fakeMode: IS_FAKE_PROVIDER_MODE,
+    ...(provider.provider === "google" ? { googleModelsBaseUrl: googleModelsBaseUrl(provider.api_key) } : {}),
     anthropicProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/verify"),
   });
 }
@@ -2627,186 +2666,11 @@ async function streamOpenAIRequestViaFetch(
   }
 }
 
-async function streamGoogleRequestViaXHR(
-  url: string,
-  headers: Record<string, string>,
-  body: Record<string, unknown>,
-  handlers?: StreamingHandlers,
-  networkFallbackMessage = "No se pudo conectar con Google AI.",
-  statusFallbackPrefix = "Google AI error",
-): Promise<GoogleStreamTurnResult> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    const parser = createGoogleStreamParser(handlers);
-    let lastOffset = 0;
-    let settled = false;
-
-    const cleanup = () => {
-      xhr.onreadystatechange = null;
-      xhr.onprogress = null;
-      xhr.onerror = null;
-      xhr.ontimeout = null;
-    };
-
-    const rejectOnce = (error: Error) => {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      reject(error);
-    };
-
-    const resolveOnce = (result: GoogleStreamTurnResult) => {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      resolve(result);
-    };
-
-    const processPendingResponseText = () => {
-      const fullText = xhr.responseText ?? "";
-      const nextText = fullText.slice(lastOffset);
-      lastOffset = fullText.length;
-      if (nextText) parser.push(nextText);
-    };
-
-    xhr.open("POST", url);
-    xhr.timeout = 120000;
-    Object.entries(headers).forEach(([key, value]) => {
-      xhr.setRequestHeader(key, value);
-    });
-
-    xhr.onprogress = () => {
-      try {
-        processPendingResponseText();
-      } catch (err) {
-        xhr.abort();
-        rejectOnce(
-          err instanceof Error ? err : new Error("No se pudo procesar el stream de Google AI."),
-        );
-      }
-    };
-
-    xhr.onerror = () => {
-      rejectOnce(new Error(networkFallbackMessage));
-    };
-
-    xhr.ontimeout = () => {
-      rejectOnce(new Error("Tiempo de espera agotado al conectar con Google AI."));
-    };
-
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState !== xhr.DONE || settled) return;
-
-      try {
-        processPendingResponseText();
-      } catch (err) {
-        rejectOnce(
-          err instanceof Error ? err : new Error("No se pudo procesar el stream de Google AI."),
-        );
-        return;
-      }
-
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          resolveOnce(parser.finish());
-        } catch (err) {
-          rejectOnce(
-            err instanceof Error ? err : new Error("No se pudo finalizar el stream de Google AI."),
-          );
-        }
-        return;
-      }
-
-      const payload = parseJsonSafely<unknown>(xhr.responseText ?? "");
-      const rawMessage = xhr.responseText?.trim();
-      const fallbackMessage = xhr.status
-        ? `${statusFallbackPrefix} (${xhr.status})`
-        : networkFallbackMessage;
-      rejectOnce(new Error(extractErrorMessage(payload, rawMessage || fallbackMessage)));
-    };
-
-    xhr.send(JSON.stringify(body));
-  });
-}
-
-async function streamGoogleRequestViaFetch(
-  url: string,
-  headers: Record<string, string>,
-  body: Record<string, unknown>,
-  handlers?: StreamingHandlers,
-  networkFallbackMessage = "No se pudo conectar con Google AI.",
-  statusFallbackPrefix = "Google AI error",
-): Promise<GoogleStreamTurnResult> {
-  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-  const timeoutId = setTimeout(() => {
-    controller?.abort();
-  }, 120000);
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-      signal: controller?.signal,
-    });
-
-    if (!response.ok) {
-      const rawText = await response.text().catch(() => "");
-      const payload = parseJsonSafely<unknown>(rawText);
-      throw new Error(
-        extractErrorMessage(payload, rawText || `${statusFallbackPrefix} (${response.status})`),
-      );
-    }
-
-    const parser = createGoogleStreamParser(handlers);
-    const reader = response.body?.getReader();
-    if (!reader) {
-      const rawText = await response.text().catch(() => "");
-      if (rawText) parser.push(rawText);
-      return parser.finish();
-    }
-
-    const decoder = new TextDecoder();
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      if (!value) continue;
-      parser.push(decoder.decode(value, { stream: true }));
-    }
-
-    const remaining = decoder.decode();
-    if (remaining) parser.push(remaining);
-    return parser.finish();
-  } catch (err) {
-    if (err instanceof Error && err.name === "AbortError") {
-      throw new Error("Tiempo de espera agotado al conectar con Google AI.");
-    }
-    if (err instanceof Error && err.message.trim()) {
-      throw err;
-    }
-    throw new Error(networkFallbackMessage);
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-function parseGoogleContent(payload: unknown): string | null {
-  if (!payload || typeof payload !== "object") return null;
-  const maybe = payload as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string; thought?: boolean }> } }>;
-  };
-  const text = (maybe.candidates?.[0]?.content?.parts ?? [])
-    .filter((part) => part?.thought !== true)
-    .map((part) => part.text?.trim())
-    .filter(Boolean)
-    .join("\n");
-  return text || null;
-}
-
 async function callProviderChatAPI(
   provider: AIKey,
   messages: ChatInputMessage[],
   surface: AiConversationSurface = "main-chat",
+  onGoogleTurn?: (turn: GoogleConversationTurn) => void,
 ): Promise<string> {
   if (IS_FAKE_PROVIDER_MODE) {
     const latestUserInput = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
@@ -2905,39 +2769,13 @@ async function callProviderChatAPI(
     return result.content;
   }
 
-  const googleMessages = nonSystemMessages.map((msg) => ({
-    role: msg.role === "assistant" ? "model" : "user",
-    parts: [{ text: msg.content }],
-  }));
-
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(normalizeProviderModel("google", provider.model))}:generateContent`,
-    {
-      method: "POST",
-      headers: googleApiHeaders(provider.api_key, {
-        "Content-Type": "application/json",
-      }),
-      body: JSON.stringify({
-        contents: googleMessages,
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-      }),
-    },
-  );
-
-  let payload: unknown = null;
-  try {
-    payload = await response.json();
-  } catch {
-    // ignore json parse errors
-  }
-
-  if (!response.ok) {
-    throw new Error(extractErrorMessage(payload, `Google AI error (${response.status})`));
-  }
-
-  const content = parseGoogleContent(payload);
-  if (!content) throw new Error("Google AI no devolvio contenido.");
-  return content;
+  const turn = await callGoogleInteraction(provider, {
+    history: buildGoogleHistory(messages), systemInstruction: systemPrompt,
+  });
+  if (turn.status !== "completed" || !turn.content) throw new Error("Google AI no devolvió contenido completo.");
+  onGoogleTurn?.({ version: 1, model: normalizeProviderModel("google", provider.model),
+    steps: turn.steps, interactions: [{ id: turn.interactionId, usage: turn.usage }] });
+  return turn.content;
 }
 
 async function evaluateHealthSafetyWithProvider(
@@ -3238,75 +3076,25 @@ async function callProviderChatAPIWithTools(
     return { content, thinking };
   }
 
-  // --- GOOGLE ---
-  const googleMessages: any[] = nonSystemMessages.map((msg) => ({
-    role: msg.role === "assistant" ? "model" : "user",
-    parts: [{ text: msg.content }],
-  }));
+  // Google keeps the complete local transcript, including opaque thought signatures.
+  const googleMessages = buildGoogleHistory(messages);
   let streamedContent = "";
   let streamedThinking = "";
   const streamHandlers: StreamingHandlers = {
-    onContentDelta: (delta) => {
-      streamedContent += delta;
-      options?.onContentDelta?.(delta, streamedContent);
-    },
-    onThinkingDelta: (delta) => {
-      streamedThinking += delta;
-      options?.onThinkingDelta?.(delta, streamedThinking);
-    },
+    onContentDelta: (delta) => { streamedContent += delta; options?.onContentDelta?.(delta, streamedContent); },
+    onThinkingDelta: (delta) => { streamedThinking += delta; options?.onThinkingDelta?.(delta, streamedThinking); },
   };
-  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(normalizeProviderModel("google", provider.model))}:streamGenerateContent?alt=sse`;
-
-  const makeGoogleRequest = async (msgs: any[], includeTools: boolean) => {
-    const body: any = {
-      contents: msgs,
-      systemInstruction: { parts: [{ text: systemPrompt }] },
-      generationConfig: {
-        thinkingConfig: {
-          includeThoughts: true,
-          thinkingLevel: "high",
-        },
-      },
-    };
-    if (includeTools) body.tools = CHAT_TOOLS.google;
-    if (Platform.OS === "web") {
-      return streamGoogleRequestViaFetch(
-        googleUrl,
-        googleApiHeaders(provider.api_key, {
-          "Content-Type": "application/json",
-          Accept: "text/event-stream",
-        }),
-        body,
-        streamHandlers,
-        "No se pudo conectar con Google AI.",
-        "Google AI error",
-      );
-    }
-    return streamGoogleRequestViaXHR(
-      googleUrl,
-      googleApiHeaders(provider.api_key, {
-        "Content-Type": "application/json",
-        Accept: "text/event-stream",
-      }),
-      body,
-      streamHandlers,
-      "No se pudo conectar con Google AI.",
-      "Google AI error",
-    );
-  };
-
-  const payload = await runGoogleToolLoop({
-    initialTurn: await makeGoogleRequest(googleMessages, true),
-    initialMessages: googleMessages,
-    requestNextTurn: (currentMessages) => makeGoogleRequest(currentMessages, true),
-    executeTool: executeGuardedTool,
-    executionId: options?.executionId,
-  });
-
+  const makeRequest = (history: GoogleStep[]) => callGoogleInteraction(provider, {
+    history, systemInstruction: systemPrompt, tools: CHAT_TOOLS.google, thinking: true,
+  }, streamHandlers);
+  const payload = await runGoogleToolLoop({ initialTurn: await makeRequest(googleMessages),
+    initialMessages: googleMessages, requestNextTurn: makeRequest,
+    executeTool: executeGuardedTool, executionId: options?.executionId });
   const content = streamedContent.trim() || payload.content;
-  const thinking = streamedThinking.trim() || payload.thinking || null;
-  if (!content) throw new Error("Google AI no devolvio contenido.");
-  return { content, thinking };
+  if (!content) throw new Error("Google AI no devolvió contenido.");
+  return { content, thinking: streamedThinking.trim() || payload.thinking,
+    googleTurn: { version: 1, model: normalizeProviderModel("google", provider.model),
+      steps: payload.history, interactions: payload.interactions } };
 }
 
 const foodEstimatorTools = {
@@ -3333,21 +3121,9 @@ const foodEstimatorTools = {
       },
     },
   ],
-  google: [
-    {
-      functionDeclarations: [
-        {
-          name: SCAN_BARCODE_TOOL,
-          description: SCAN_BARCODE_DESC,
-          parameters: {
-            type: "object",
-            properties: { barcode: { type: "string", description: SCAN_BARCODE_PARAM_DESC } },
-            required: ["barcode"],
-          },
-        },
-      ],
-    },
-  ],
+  google: [{ type: "function", name: SCAN_BARCODE_TOOL, description: SCAN_BARCODE_DESC,
+    parameters: { type: "object", properties: { barcode: { type: "string", description: SCAN_BARCODE_PARAM_DESC } },
+      required: ["barcode"] } }],
 };
 
 type FoodEstimatorCallOptions = StreamingHandlers & {
@@ -3635,110 +3411,34 @@ async function callFoodEstimatorAPI(
     return { content, thinking };
   }
 
-  // --- GOOGLE ---
-  const googleContents: any[] = nonSystemMessages.map((msg, index) => {
-    if (msg.role === "assistant") {
-      return { role: "model", parts: [{ text: msg.content.trim() || "Entendido." }] };
-    }
-    const textContent = msg.content.trim() || "Analiza esta comida y estima los valores solicitados.";
-    if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
-      return { role: "user", parts: [{ text: textContent }] };
-    }
-    return {
-      role: "user",
-      parts: [
-        { text: textContent },
-        ...normalizedImages.map((image) => ({
-          inline_data: { mime_type: image.mime_type, data: image.base64 },
-        })),
-      ],
-    };
-  });
+  const googleMessages = buildGoogleHistory(nonSystemMessages.map((message, index) =>
+    index === lastNonSystemUserMessageIndex && normalizedImages.length > 0
+      ? { ...message, googleInput: [{ type: "text", text: message.content },
+          ...normalizedImages.map((image) => ({ type: "image", mime_type: image.mime_type, data: image.base64 }))] }
+      : message));
   let streamedContent = "";
   let streamedThinking = "";
   const streamHandlers: StreamingHandlers = {
-    onContentDelta: (delta) => {
-      streamedContent += delta;
-      options?.onContentDelta?.(delta, streamedContent);
-    },
-    onThinkingDelta: (delta) => {
-      streamedThinking += delta;
-      options?.onThinkingDelta?.(delta, streamedThinking);
-    },
+    onContentDelta: (delta) => { streamedContent += delta; options?.onContentDelta?.(delta, streamedContent); },
+    onThinkingDelta: (delta) => { streamedThinking += delta; options?.onThinkingDelta?.(delta, streamedThinking); },
   };
-  const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
-  const makeGoogleRequest = async (contents: any[]) => {
-    const body = {
-      contents,
-      systemInstruction: { parts: [{ text: systemPrompt }] },
-      tools: foodEstimatorTools.google,
-      generationConfig: {
-        thinkingConfig: {
-          includeThoughts: true,
-          thinkingLevel: "high",
-        },
-      },
-    };
-    if (Platform.OS === "web") {
-      return streamGoogleRequestViaFetch(
-        googleUrl,
-        googleApiHeaders(provider.api_key, {
-          "Content-Type": "application/json",
-          Accept: "text/event-stream",
-        }),
-        body,
-        streamHandlers,
-        "No se pudo conectar con Google AI.",
-        "Google AI error",
-      );
-    }
-    return streamGoogleRequestViaXHR(
-      googleUrl,
-      googleApiHeaders(provider.api_key, {
-        "Content-Type": "application/json",
-        Accept: "text/event-stream",
-      }),
-      body,
-      streamHandlers,
-      "No se pudo conectar con Google AI.",
-      "Google AI error",
-    );
-  };
-
+  const makeRequest = (history: GoogleStep[]) => callGoogleInteraction(provider, {
+    history, systemInstruction: systemPrompt, tools: foodEstimatorTools.google, thinking: true,
+  }, streamHandlers);
   options?.onStatus?.(normalizedImages.length > 0 ? "Analizando imagen..." : "Pensando...");
-  let payload: GoogleStreamTurnResult = await makeGoogleRequest(googleContents);
-  for (let round = 0; round < 5; round++) {
-    const functionCalls = payload.modelParts.filter(
-      (part): part is GoogleResponsePart & { functionCall: GoogleFunctionCall } =>
-        Boolean(part.functionCall?.name),
-    );
-    if (functionCalls.length === 0) break;
-    const modelParts = payload.modelParts
-      .map(mapGoogleResponsePartToRequestPart)
-      .filter((part: Record<string, unknown> | null): part is Record<string, unknown> => Boolean(part));
-    googleContents.push({
-      role: "model",
-      parts: modelParts,
-    });
-    const functionResponseParts: any[] = [];
-    for (const part of functionCalls) {
-      const toolName = part.functionCall.name ?? "";
-      options?.onStatus?.(toolName === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${toolName}...`);
-      options?.onToolUsed?.(toolName);
-      const result = await handleFoodEstimatorToolCall(toolName, part.functionCall.args ?? {});
-      functionResponseParts.push({
-        functionResponse: { name: toolName, response: { result } },
-      });
-    }
-    googleContents.push({ role: "user", parts: functionResponseParts });
-    options?.onStatus?.("Procesando resultado...");
-    payload = await makeGoogleRequest(googleContents);
-  }
-
+  const payload = await runGoogleToolLoop({ initialTurn: await makeRequest(googleMessages),
+    initialMessages: googleMessages, requestNextTurn: makeRequest, maxRounds: 5,
+    executeTool: async (name, args) => {
+      options?.onStatus?.(name === SCAN_BARCODE_TOOL ? "Leyendo código de barras..." : `Usando herramienta: ${name}...`);
+      options?.onToolUsed?.(name);
+      const result = await handleFoodEstimatorToolCall(name, args);
+      options?.onStatus?.("Procesando resultado...");
+      return result;
+    } });
   const content = streamedContent.trim() || payload.content;
-  const thinking = streamedThinking.trim() || payload.thinking || null;
-  if (!content) throw new Error("Google AI no devolvio contenido.");
-  return { content, thinking };
+  if (!content) throw new Error("Google AI no devolvió contenido.");
+  return { content, thinking: streamedThinking.trim() || payload.thinking,
+    googleTurn: { version: 1, model, steps: payload.history, interactions: payload.interactions } };
 }
 
 function uid(prefix: string): string {
@@ -5282,6 +4982,8 @@ function normalizeChatMessage(raw: ChatMessage, index: number): ChatMessage {
     report_context: reportContext,
     policy_context: policyContext,
     thinking,
+    ...(isGoogleConversationTurn(raw.googleTurn) ? { googleTurn: raw.googleTurn } : {}),
+    ...(Array.isArray(raw.googleInput) ? { googleInput: raw.googleInput } : {}),
     is_streaming: false,
     created_at:
       typeof raw?.created_at === "string" && raw.created_at.trim()
@@ -5549,16 +5251,18 @@ function MiniChat({
     try {
       const history: ChatInputMessage[] = [
         { role: "system", content: `${policyLease.prompt.content}\n\n${systemPrompt}` },
-        ...excludeLocalDisclosureMessages(mcMessages).map((m) => ({ role: m.role, content: m.content })),
+        ...excludeLocalDisclosureMessages(mcMessages).map(toChatInput),
         { role: "user" as const, content: text },
       ];
-      const response = await callProviderChatAPI(provider, history, "personal-food-assistant");
+      let googleTurn: GoogleConversationTurn | undefined;
+      const response = await callProviderChatAPI(provider, history, "personal-food-assistant", (turn) => { googleTurn = turn; });
       const outputDecision = classifyHealthSafetyText(response, "output", healthSelection.policy);
       const assistantMsg: ChatMessage = outputDecision.level === "none"
         ? {
             id: uid("msg"),
             role: "assistant",
             content: response,
+            googleTurn,
             report_context: {
               provider: provider.provider,
               model: provider.model,
@@ -5569,6 +5273,7 @@ function MiniChat({
           }
         : {
             ...createHealthSafetyChatMessage(outputDecision, healthSelection.policy),
+            googleTurn,
             report_context: {
               provider: provider.provider,
               model: provider.model,
@@ -9812,7 +9517,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setThreads(store.threads);
     if (!chatSessionInitRef.current) {
       chatSessionInitRef.current = true;
-      // Start a fresh chat session on every app launch
+      if (store.chatProvider === "google") {
+        const previous = [...store.threads].reverse().find((thread) =>
+          (store.messagesByThread[thread.id] ?? []).some((message) =>
+            message.googleTurn || message.report_context?.provider === "google"));
+        if (previous) {
+          setActiveThreadId(previous.id);
+          return;
+        }
+      }
+      // Other providers retain their existing fresh-session behavior.
       const id = uid("thread");
       const thread: ChatThread = { id, title: "Gymnasia Coach" };
       setStore((prev) => ({
@@ -10055,9 +9769,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         flushAssistantDraft(true);
       };
 
-      const history = excludeLocalDisclosureMessages([...threadMessages, userMessage])
-        .slice(-20)
-        .map((msg) => ({ role: msg.role, content: msg.content }));
+      const allHistory = excludeLocalDisclosureMessages([...threadMessages, userMessage]);
+      const history = (activeProvider.provider === "google" ? allHistory : allHistory.slice(-20)).map(toChatInput);
       // GYM-139: el system prompt procede exclusivamente de la política
       // seleccionada más la política local de transparencia que añade
       // composeAiSystemPrompt. Ningún dato local puede sumar texto aquí, así que
@@ -10172,11 +9885,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         },
         content: `${safetyResponse.reason}\n\n${safetyResponse.message}`,
         thinking: null,
+        googleTurn: assistantResult.googleTurn,
         is_streaming: false,
       }) : ({
         ...current,
         content: streamState.visibleContent,
         thinking: assistantResult.thinking,
+        googleTurn: assistantResult.googleTurn,
         is_streaming: false,
       }));
       if (!safetyResponse && assistantResult.thinking?.trim()) {
@@ -11126,6 +10841,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       return;
     }
 
+    if (resolvedProvider.provider === "google" && !foodEstimatorHasLLMResponse) {
+      userMessage.googleInput = [{ type: "text", text: messageText }, ...foodEstimatorImages
+        .filter((image) => image.base64.trim())
+        .map((image) => ({ type: "image", mime_type: image.mime_type || "image/jpeg", data: image.base64 }))];
+    }
+
     const policyBoundary = foodEstimatorMessages.some((message) => message.role === "user")
       ? "turn"
       : "new-conversation";
@@ -11244,10 +10965,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           role: "system",
           content: `${policyLease.prompt.content}\n\n${FOOD_ESTIMATOR_SYSTEM_PROMPT}`,
         },
-        ...excludeLocalDisclosureMessages(nextMessages).map<ChatInputMessage>((message) => ({
-          role: message.role === "assistant" ? "assistant" : "user",
-          content: message.content,
-        })),
+        ...excludeLocalDisclosureMessages(nextMessages).map(toChatInput),
       ];
       const skipImages = foodEstimatorHasLLMResponse;
       let assistantResult: AnthropicChatResult | null = null;
@@ -11309,11 +11027,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               },
               content: `${safetyResponse.reason}\n\n${safetyResponse.message}`,
               thinking: null,
+              googleTurn: assistantResult.googleTurn,
               is_streaming: false,
             } : {
               ...message,
               content: streamState.visibleContent,
               thinking: assistantResult.thinking,
+              googleTurn: assistantResult.googleTurn,
               is_streaming: false,
             }
           : message
@@ -11445,30 +11165,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       return requireValidStructuredNutrition(toolBlock.input);
     }
 
-    // Google — responseSchema does not support additionalProperties
-    const { additionalProperties: _ap, ...googleSchema } = jsonSchema;
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-      {
-        method: "POST",
-        headers: googleApiHeaders(provider.api_key, { "Content-Type": "application/json" }),
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: extractPrompt }] }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            responseSchema: googleSchema,
-          },
-        }),
-      },
-    );
-    if (!response.ok) {
-      const errBody = await response.text().catch(() => "");
-      throw new Error(`Google error: ${response.status} ${errBody}`);
-    }
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error("No se recibió respuesta de Google");
-    return requireValidStructuredNutrition(JSON.parse(text));
+    const turn = await callGoogleInteraction(provider, {
+      history: [{ type: "user_input", content: [{ type: "text", text: extractPrompt }] }],
+      responseSchema: jsonSchema,
+    });
+    if (turn.status !== "completed" || !turn.content) throw new Error("Google no devolvió datos completos.");
+    return requireValidStructuredNutrition(JSON.parse(turn.content));
   }
 
   async function addFoodFromEstimatorJSON() {

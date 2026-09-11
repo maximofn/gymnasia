@@ -22,6 +22,7 @@ export type ProviderVerificationOptions = {
   anthropicProxyUrl?: string;
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
+  googleModelsBaseUrl?: string;
 };
 
 const ANTHROPIC_API_VERSION = "2023-06-01";
@@ -169,7 +170,7 @@ export async function verifyProviderConfiguration(
       return { ok: true, severity: "success", message: SUCCESS_MESSAGE };
     } else {
       response = await fetchProviderConfiguration(
-        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}`,
+        `${options.googleModelsBaseUrl ?? "https://generativelanguage.googleapis.com/v1beta/models"}/${encodeURIComponent(model)}`,
         { method: "GET", headers: googleApiHeaders(apiKey) },
         fetchImpl,
         timeoutMs,

@@ -1,3 +1,18 @@
-data: {"candidates":[{"content":{"role":"model","parts":[{"functionCall":{"name":"create_routine","args":{"data":{"name":"Rutina E2E","category":"strength","icon":"activity","duration_minutes":45,"exercises":[{"kind":"custom","name":"Peso muerto rumano","muscle":"Isquiotibiales","series":[{"type":"normal","reps":10,"weight_kg":40,"rest_seconds":90}]}]}}}}]},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":20,"candidatesTokenCount":15,"totalTokenCount":35}}
+event: interaction.created
+data: {"event_type": "interaction.created", "interaction": {"id": "fixture_google-routine-tool-call", "status": "in_progress"}}
 
+event: step.start
+data: {"event_type": "step.start", "index": 0, "step": {"type": "function_call", "id": "google_call_0", "name": "create_routine", "arguments": {}}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "arguments_delta", "arguments": "{\"data\": {\"name\": \"Rutina E2E\", \"category\": \"strength\", \"icon\": \"activity\", \"duration_minutes\": 45, \"exercises\": [{\"kind\": \"custom\", \"name\": \"Peso muerto rumano\", \"muscle\": \"Isquiotibiales\", \"series\": [{\"type\": \"normal\", \"reps\": 10, \"weight_kg\": 40, \"rest_seconds\": 90}]}]}}"}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 0}
+
+event: interaction.completed
+data: {"event_type": "interaction.completed", "interaction": {"id": "fixture_google-routine-tool-call", "status": "requires_action", "usage": {"total_input_tokens": 20, "total_output_tokens": 15, "total_tokens": 35}}}
+
+event: done
 data: [DONE]
+
