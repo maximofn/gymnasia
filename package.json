@@ -26,6 +26,8 @@
     "check:policy-trust": "node scripts/policy-promotion/render-trusted-roots.mjs",
     "check:android-permissions": "node scripts/android-permissions/check.mjs --check",
     "test:android-permissions": "node --test scripts/android-permissions/*.test.mjs",
+    "check:android-native-config": "node scripts/android-native-config/check.mjs --check",
+    "test:android-native-config": "node --test scripts/android-native-config/*.test.mjs",
     "verify:production-source": "node scripts/production-release/verify-source.mjs",
     "verify:production-artifact": "node scripts/production-release/verify-artifact.mjs",
     "prepare:production-version": "node scripts/production-release/release-version.mjs prepare",

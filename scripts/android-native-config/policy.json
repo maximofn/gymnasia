@@ -1,0 +1,55 @@
+{
+  "$comment": "Contrato semántico de la configuración Android generada por Expo. apps/mobile/android sigue siendo un artefacto ignorado: este fichero enumera únicamente las decisiones nativas que requieren revisión explícita.",
+  "expectedSourcePermissions": [
+    "INTERNET",
+    "MODIFY_AUDIO_SETTINGS",
+    "READ_EXTERNAL_STORAGE",
+    "RECEIVE_BOOT_COMPLETED",
+    "SCHEDULE_EXACT_ALARM",
+    "VIBRATE",
+    "WAKE_LOCK",
+    "WRITE_EXTERNAL_STORAGE"
+  ],
+  "expectedRemovalDirectives": [
+    "RECORD_AUDIO",
+    "REQUEST_INSTALL_PACKAGES",
+    "SYSTEM_ALERT_WINDOW",
+    "USE_EXACT_ALARM"
+  ],
+  "forbiddenSourcePermissions": [
+    "FOREGROUND_SERVICE",
+    "RECORD_AUDIO",
+    "REQUEST_INSTALL_PACKAGES",
+    "SYSTEM_ALERT_WINDOW",
+    "USE_EXACT_ALARM"
+  ],
+  "application": {
+    "attributes": {
+      "android:enableOnBackInvokedCallback": "false"
+    }
+  },
+  "mainActivity": {
+    "name": ".MainActivity",
+    "attributes": {
+      "android:exported": "true",
+      "android:screenOrientation": "portrait",
+      "android:launchMode": "singleTask"
+    },
+    "requiredMarkers": [
+      "class MainActivity : ReactActivity()",
+      "override fun getMainComponentName(): String = \"main\"",
+      "ReactActivityDelegateWrapper(",
+      "super.onCreate(null)",
+      "invokeDefaultOnBackPressed()",
+      "moveTaskToBack(false)"
+    ]
+  },
+  "expectedNotificationSounds": [
+    "ascending.wav",
+    "beep.wav",
+    "bell.wav",
+    "buzzer.wav",
+    "rest_finished.wav"
+  ],
+  "allowedPrebuildWarnings": []
+}

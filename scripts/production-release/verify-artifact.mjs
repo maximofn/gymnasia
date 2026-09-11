@@ -174,6 +174,7 @@ function main() {
       targetSdk: manifest.targetSdk,
       certificateSha256,
       permissions: manifest.permissions,
+      notificationSounds: evaluated.notificationSounds,
     },
     policySnapshot: {
       candidate: snapshot.candidate,

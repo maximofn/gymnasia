@@ -411,9 +411,13 @@ import {
   type MeasuresChartMetricKey,
   type MeasuresDashboardPeriodKey,
   type NotificationSettings,
-  type NotificationSoundKey,
   type UserPreferences,
 } from "./storage/userPreferences";
+import {
+  DEFAULT_NOTIFICATION_SOUND,
+  NOTIFICATION_SOUND_CATALOG,
+  type NotificationSoundKey,
+} from "./notifications/notificationSounds";
 import { LegalFooter } from "./LegalFooter";
 import { resolvePrivacyPolicyUrl } from "./agent/externalLinks";
 import { openExternalUrl } from "./openExternalUrl";
@@ -712,13 +716,18 @@ type TrainingTemplateScreenMode = "detail" | "edit";
 type TrainingStatsPeriodKey = "3m" | "6m" | "12m" | "all";
 type TrainingStatsMetricKey = "volume" | "reps" | "duration";
 
-const NOTIFICATION_SOUND_OPTIONS: Array<{ key: NotificationSoundKey; label: string; file: string; asset: ReturnType<typeof require> }> = [
-  { key: "rest_finished", label: "Descanso terminado (default)", file: "rest_finished.wav", asset: require("./assets/rest_finished.wav") },
-  { key: "beep", label: "Beep electrónico", file: "beep.wav", asset: require("./assets/beep.wav") },
-  { key: "bell", label: "Campana", file: "bell.wav", asset: require("./assets/bell.wav") },
-  { key: "ascending", label: "Ascendente (do-mi-sol)", file: "ascending.wav", asset: require("./assets/ascending.wav") },
-  { key: "buzzer", label: "Buzzer grave", file: "buzzer.wav", asset: require("./assets/buzzer.wav") },
-];
+const NOTIFICATION_SOUND_ASSETS = {
+  rest_finished: require("./assets/rest_finished.wav"),
+  beep: require("./assets/beep.wav"),
+  bell: require("./assets/bell.wav"),
+  ascending: require("./assets/ascending.wav"),
+  buzzer: require("./assets/buzzer.wav"),
+} satisfies Record<NotificationSoundKey, ReturnType<typeof require>>;
+
+const NOTIFICATION_SOUND_OPTIONS = NOTIFICATION_SOUND_CATALOG.map((sound) => ({
+  ...sound,
+  asset: NOTIFICATION_SOUND_ASSETS[sound.key],
+}));
 
 // Android no deja consultar desde JS si la app puede programar alarmas exactas
 // (expo-notifications no expone canScheduleExactAlarms), así que el veredicto se
@@ -6854,7 +6863,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const restNotifDeliveredAtRef = useRef<number | null>(null);
   const alarmHealthRef = useRef<AlarmHealth>(DEFAULT_ALARM_HEALTH);
   const restNotifBodyRef = useRef<string>("");
-  const notifSettingsRef = useRef<NotificationSettings>({ enabled: true, sound: true, vibrate: true, soundKey: "rest_finished" });
+  const notifSettingsRef = useRef<NotificationSettings>({
+    enabled: true,
+    sound: true,
+    vibrate: true,
+    soundKey: DEFAULT_NOTIFICATION_SOUND.key,
+  });
   const providerSettingsInitializedRef = useRef(false);
   const exerciseIssueDebounceRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const pendingTrainingExerciseFeedbackRef = useRef<Array<{
@@ -7976,7 +7990,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         await Notifications.setNotificationChannelAsync("rest_end_alert", {
           name: "Descanso terminado",
           importance: Notifications.AndroidImportance.MAX,
-          sound: "rest_finished.wav",
+          sound: DEFAULT_NOTIFICATION_SOUND.file,
           vibrationPattern: [0, 300, 150, 300],
           enableVibrate: true,
           bypassDnd: true,
@@ -8050,7 +8064,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         || !sameRestNotification(payload, currentPayload)
       ) return;
       const triggerDate = payload.expected_at_ms;
-      const soundFile = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)?.file ?? "rest_finished.wav";
+      const soundFile = NOTIFICATION_SOUND_OPTIONS.find((o) => o.key === settings.soundKey)?.file
+        ?? DEFAULT_NOTIFICATION_SOUND.file;
       void pushTrace("scheduleNotif", "entry", {
         sessionId: payload.session_id,
         restCycleId: payload.rest_cycle_id,

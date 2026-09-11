@@ -24,6 +24,8 @@ export const PRODUCTION_GATES = Object.freeze([
   ["npm", ["run", "test:prompt-policy"]],
   ["npm", ["run", "check:android-permissions"]],
   ["npm", ["run", "test:android-permissions"]],
+  ["npm", ["run", "check:android-native-config"]],
+  ["npm", ["run", "test:android-native-config"]],
   ["npm", ["run", "check:health-safety"]],
   ["npm", ["run", "test:health-safety"]],
   ["npm", ["run", "check:data-inventory"]],
@@ -297,6 +299,13 @@ export function parseManifestXml(xml) {
   };
 }
 
+export function extractNotificationSoundsFromArchiveListing(archiveListing) {
+  return [...String(archiveListing ?? "").matchAll(/(?:^|\s)(?:base\/)?res\/raw\/([^/\s]+\.wav)(?=\s|$)/gm)]
+    .map((match) => match[1])
+    .filter((value, index, values) => values.indexOf(value) === index)
+    .sort();
+}
+
 export function extractCertificateDigest(output) {
   return output.match(/certificate SHA-256 digest:\s*([A-Fa-f0-9:]+)/i)?.[1]
     ?? output.match(/SHA256:\s*([A-Fa-f0-9:]+)/i)?.[1]
@@ -397,6 +406,23 @@ export function evaluateArtifactCandidate({
     violations.push({ code: "archive-kind", message: `El contenido ZIP no corresponde a un ${kind.toUpperCase()}.` });
   }
 
+  const notificationSounds = extractNotificationSoundsFromArchiveListing(archiveListing);
+  const nativeConfigPolicy = JSON.parse(readFileSync(
+    join(repositoryRoot, "scripts", "android-native-config", "policy.json"),
+    "utf8",
+  ));
+  const expectedNotificationSounds = [...nativeConfigPolicy.expectedNotificationSounds].sort();
+  const missingNotificationSounds = expectedNotificationSounds
+    .filter((sound) => !notificationSounds.includes(sound));
+  const unexpectedNotificationSounds = notificationSounds
+    .filter((sound) => !expectedNotificationSounds.includes(sound));
+  if (missingNotificationSounds.length > 0 || unexpectedNotificationSounds.length > 0) {
+    violations.push({
+      code: "artifact-notification-sounds",
+      message: `Sonidos nativos inesperados: faltan [${missingNotificationSounds.join(", ")}], sobran [${unexpectedNotificationSounds.join(", ")}].`,
+    });
+  }
+
   if (manifest.packageName !== policy.android.packageName) {
     violations.push({ code: "package", message: `Package inesperado: ${manifest.packageName || "(vacío)"}.` });
   }
@@ -440,14 +466,26 @@ export function evaluateArtifactCandidate({
     violations.push({ code: "snapshot-drift", message: "El snapshot preparado no coincide con app.config." });
   }
 
-  const blockedPermissions = JSON.parse(readFileSync(
+  const permissionPolicy = JSON.parse(readFileSync(
     join(repositoryRoot, "scripts", "android-permissions", "policy.json"),
     "utf8",
-  )).blockedPermissions;
-  for (const permission of blockedPermissions) {
+  ));
+  for (const permission of permissionPolicy.blockedPermissions) {
     if (manifest.permissions.includes(permission)) {
       violations.push({ code: "permission", message: `El manifest fusionado contiene ${permission}.` });
     }
+  }
+  const artifactPermissions = [...new Set(manifest.permissions)].sort();
+  const expectedArtifactPermissions = [...permissionPolicy.expectedArtifactPermissions].sort();
+  const missingArtifactPermissions = expectedArtifactPermissions
+    .filter((permission) => !artifactPermissions.includes(permission));
+  const unexpectedArtifactPermissions = artifactPermissions
+    .filter((permission) => !expectedArtifactPermissions.includes(permission));
+  if (missingArtifactPermissions.length > 0 || unexpectedArtifactPermissions.length > 0) {
+    violations.push({
+      code: "artifact-permissions",
+      message: `Permisos del manifest fusionado inesperados: faltan [${missingArtifactPermissions.join(", ")}], sobran [${unexpectedArtifactPermissions.join(", ")}].`,
+    });
   }
 
   if (normalizeCertificateDigest(certificateSha256)
@@ -455,7 +493,7 @@ export function evaluateArtifactCandidate({
     violations.push({ code: "certificate", message: "El artefacto no usa el certificado de subida aprobado." });
   }
 
-  return { violations, looksAab, looksApk };
+  return { violations, looksAab, looksApk, notificationSounds };
 }
 
 export function sha256Bytes(value) {

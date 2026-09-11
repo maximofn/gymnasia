@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-11",
+    "updated": "2026-09-12",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -2160,7 +2160,7 @@
         {
           "id": "GYM-186",
           "title": "Conciliar la configuración Expo con el proyecto Android generado",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Detectar deriva de permisos, assets y ciclo de vida entre app.json y apps/mobile/android.",
           "dependsOn": [],
           "related": [

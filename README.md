@@ -172,6 +172,7 @@ El formato y sus invariantes están documentados en
 - Entornos y promoción de políticas: `docs/architecture/policy-environments.md`
 - Política y revisión sanitaria del agente: `docs/architecture/health-safety-policy.md`
 - Fotos de progreso y formato de backup: `docs/architecture/measurement-photo-backups.md`
+- Contrato entre Expo, Android generado y artefacto final: `docs/architecture/android-native-config.md`
 - Ficha, declaraciones y capturas para Google Play: `docs/store/google-play/`
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`

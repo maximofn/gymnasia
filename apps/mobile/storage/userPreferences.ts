@@ -1,3 +1,11 @@
+import {
+  DEFAULT_NOTIFICATION_SOUND,
+  NOTIFICATION_SOUND_KEYS,
+  type NotificationSoundKey,
+} from "../notifications/notificationSounds";
+
+export type { NotificationSoundKey } from "../notifications/notificationSounds";
+
 export const USER_PREFERENCES_SCHEMA_VERSION = 1 as const;
 
 export const USER_PREFERENCES_CHART_PERIODS = ["1m", "3m", "6m", "all"] as const;
@@ -12,17 +20,10 @@ export const USER_PREFERENCES_CHART_METRICS = [
   "quadriceps",
   "calf",
 ] as const;
-export const USER_PREFERENCES_NOTIFICATION_SOUNDS = [
-  "rest_finished",
-  "beep",
-  "bell",
-  "ascending",
-  "buzzer",
-] as const;
+export const USER_PREFERENCES_NOTIFICATION_SOUNDS = NOTIFICATION_SOUND_KEYS;
 
 export type MeasuresDashboardPeriodKey = typeof USER_PREFERENCES_CHART_PERIODS[number];
 export type MeasuresChartMetricKey = typeof USER_PREFERENCES_CHART_METRICS[number];
-export type NotificationSoundKey = typeof USER_PREFERENCES_NOTIFICATION_SOUNDS[number];
 
 export type NotificationSettings = {
   enabled: boolean;
@@ -65,7 +66,7 @@ export function createDefaultUserPreferences(): UserPreferences {
       enabled: true,
       sound: true,
       vibrate: true,
-      soundKey: "rest_finished",
+      soundKey: DEFAULT_NOTIFICATION_SOUND.key,
     },
   };
 }

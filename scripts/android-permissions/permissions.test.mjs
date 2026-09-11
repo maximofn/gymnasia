@@ -64,6 +64,13 @@ test("SCHEDULE_EXACT_ALARM sigue declarado", () => {
     "Es el permiso concedible por el usuario que conserva la puntualidad del aviso de descanso.");
 });
 
+test("FOREGROUND_SERVICE ya no se declara ni se admite en el artefacto", () => {
+  const configured = readConfiguredPermissions(policy);
+  assert.equal(configured.permissions.includes("FOREGROUND_SERVICE"), false);
+  assert.equal(policy.allowedPermissions.includes("FOREGROUND_SERVICE"), false);
+  assert.equal(policy.expectedArtifactPermissions.includes("FOREGROUND_SERVICE"), false);
+});
+
 test("ninguna dependencia no reconocida declara hoy un permiso prohibido", () => {
   const manifests = collectManifestPermissions(policy);
   const blocked = policy.blockedPermissions.map(normalizePermission);
