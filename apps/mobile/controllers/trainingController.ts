@@ -19,8 +19,82 @@ import type {
 } from "../training/presentationModel";
 import type { CatalogLink } from "../catalogs/types";
 import type { WorkoutTemplateValidation } from "../training/workoutTemplateTransactions";
-import type { WorkoutSession } from "../training/workoutSessionModel";
+import type { WorkoutSession, WorkoutSessionResolutionKind } from "../training/workoutSessionModel";
 import type { ScreenController } from "./types";
+
+export type WorkoutCompletionModalState = {
+  kind: WorkoutSessionResolutionKind;
+  summary: WorkoutSessionSummary | null;
+  has_template_changes: boolean;
+  original_template: WorkoutTemplate | null;
+  draft_template: WorkoutTemplate | null;
+  canonical_conflict: boolean;
+};
+
+export type TrainingResolutionModel = {
+  discardDraftOpen: boolean;
+  conflictOpen: boolean;
+  partialFinishOpen: boolean;
+  completedEffortCount: number;
+  totalEffortCount: number;
+  completion: WorkoutCompletionModalState | null;
+  hasActiveSession: boolean;
+};
+
+export type TrainingResolutionActions = {
+  keepEditing(): void;
+  discardDraft(): void;
+  loadCurrentTemplate(): void;
+  overwriteTemplate(): void;
+  continueAfterConflict(): void;
+  continuePartialSession(): void;
+  savePartialSession(): void;
+  finalizeWithTemplateChanges(canonicalConflict: boolean): void;
+  revertTemplateChanges(): void;
+  continueSessionResolution(): void;
+  finishOrClose(): void;
+};
+
+export type TrainingResolutionControllerInput = TrainingResolutionModel & TrainingResolutionActions;
+
+export function useTrainingResolutionController(
+  input: TrainingResolutionControllerInput,
+): ScreenController<TrainingResolutionModel, TrainingResolutionActions> {
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const model = useMemo<TrainingResolutionModel>(() => ({
+    discardDraftOpen: input.discardDraftOpen,
+    conflictOpen: input.conflictOpen,
+    partialFinishOpen: input.partialFinishOpen,
+    completedEffortCount: input.completedEffortCount,
+    totalEffortCount: input.totalEffortCount,
+    completion: input.completion,
+    hasActiveSession: input.hasActiveSession,
+  }), [
+    input.completedEffortCount,
+    input.completion,
+    input.conflictOpen,
+    input.discardDraftOpen,
+    input.hasActiveSession,
+    input.partialFinishOpen,
+    input.totalEffortCount,
+  ]);
+  const actions = useMemo<TrainingResolutionActions>(() => ({
+    keepEditing: () => inputRef.current.keepEditing(),
+    discardDraft: () => inputRef.current.discardDraft(),
+    loadCurrentTemplate: () => inputRef.current.loadCurrentTemplate(),
+    overwriteTemplate: () => inputRef.current.overwriteTemplate(),
+    continueAfterConflict: () => inputRef.current.continueAfterConflict(),
+    continuePartialSession: () => inputRef.current.continuePartialSession(),
+    savePartialSession: () => inputRef.current.savePartialSession(),
+    finalizeWithTemplateChanges: (canonicalConflict) => inputRef.current.finalizeWithTemplateChanges(canonicalConflict),
+    revertTemplateChanges: () => inputRef.current.revertTemplateChanges(),
+    continueSessionResolution: () => inputRef.current.continueSessionResolution(),
+    finishOrClose: () => inputRef.current.finishOrClose(),
+  }), []);
+  const back = useMemo(() => ({ layers: {}, handlers: {} }), []);
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
 
 export type TrainingSessionSubSeriesState = {
   key: string;

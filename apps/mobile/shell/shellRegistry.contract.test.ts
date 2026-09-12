@@ -21,7 +21,11 @@ const trainingScreenSource = readFileSync(
   new URL("../screens/TrainingScreen.tsx", import.meta.url),
   "utf8",
 );
-const shellUiSource = `${appSource}\n${chatScreenSource}\n${measurementsScreenSource}\n${dietScreenSource}\n${settingsScreenSource}\n${trainingScreenSource}`;
+const trainingOverlaysSource = readFileSync(
+  new URL("../screens/TrainingOverlays.tsx", import.meta.url),
+  "utf8",
+);
+const shellUiSource = `${appSource}\n${chatScreenSource}\n${measurementsScreenSource}\n${dietScreenSource}\n${settingsScreenSource}\n${trainingScreenSource}\n${trainingOverlaysSource}`;
 const reportModalSource = readFileSync(new URL("../AiResponseReportModal.tsx", import.meta.url), "utf8");
 const recoverySource = readFileSync(new URL("../LocalStoreRecoveryScreen.tsx", import.meta.url), "utf8");
 
