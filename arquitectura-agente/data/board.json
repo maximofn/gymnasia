@@ -2172,7 +2172,7 @@
         {
           "id": "GYM-232",
           "title": "Migrar Google a Interactions API sin persistencia remota",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Conservar el historial de Google en el dispositivo y reenviarlo completo, con herramientas sin ejecuciones duplicadas.",
           "dependsOn": [],
           "related": [
