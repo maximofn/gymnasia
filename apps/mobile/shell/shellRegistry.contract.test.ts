@@ -7,6 +7,10 @@ import {
 } from "./shellRegistry";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const trainingControllerSource = readFileSync(
+  new URL("../controllers/trainingController.ts", import.meta.url),
+  "utf8",
+);
 const appShellSource = readFileSync(new URL("../screens/AppShell.tsx", import.meta.url), "utf8");
 const chatScreenSource = readFileSync(new URL("../screens/ChatScreen.tsx", import.meta.url), "utf8");
 const catalogOverlaysSource = readFileSync(
@@ -71,7 +75,8 @@ describe("contrato estático del shell", () => {
       /function closeExercisePicker\(\) \{\s*setExercisePickerOpen\(false\);\s*setSupersetPickerTarget\(null\);\s*\}/,
     );
     expect(appSource.match(/setExercisePickerOpen\(false\)/g)).toHaveLength(1);
-    expect(appSource).toContain('"exercise-picker": () => { closeExercisePicker(); return true; }');
+    expect(trainingControllerSource).toContain("inputRef.current.closePicker();");
+    expect(appSource).toContain('"exercise-picker": trainingCatalogController.back.handlers["exercise-picker"]');
     expect(appSource).toContain(
       '"data-deletion": () => { if (!dataDeletionBusyRef.current) closeDataDeletion(); return true; }',
     );

@@ -4,6 +4,10 @@ import { LOCAL_STORE_ROOT_FIELDS } from "../persistence/localStoreRecovery";
 
 // App.tsx no es importable en Node, así que el contrato se asserta sobre su fuente.
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const trainingOverlaysSource = readFileSync(
+  new URL("../screens/TrainingOverlays.tsx", import.meta.url),
+  "utf8",
+);
 const policySource = readFileSync(new URL("../dev-store/policy.json", import.meta.url), "utf8");
 
 /**
@@ -33,9 +37,9 @@ describe("contrato de series con App.tsx", () => {
     expect(appSource).not.toContain("SERIES_TYPE_META: Record");
   });
 
-  it("App.tsx consume el módulo extraído", () => {
+  it("la composición y las pantallas consumen los módulos extraídos", () => {
     expect(appSource).toContain('from "./training/seriesContract"');
-    expect(appSource).toContain('from "./training/seriesPresentation"');
+    expect(trainingOverlaysSource).toContain('from "../training/seriesPresentation"');
     expect(appSource).toContain('from "./training/workoutTemplateOperations"');
   });
 

@@ -145,7 +145,7 @@ import {
   foodCatalogImageUri,
   normalizePersonalFood,
 } from "./catalogs/sources";
-import { ExerciseCatalogBrowser, type ExerciseCatalogBrowserMode } from "./catalogs/ExerciseCatalogBrowser";
+import type { ExerciseCatalogBrowserMode } from "./catalogs/ExerciseCatalogBrowser";
 import {
   createExerciseCatalogService,
   normalizeExerciseCatalogSearch,
@@ -183,10 +183,6 @@ import {
   type TrainingNormalizationMode,
   type TrainingValidationIssue,
 } from "./training/seriesContract";
-import {
-  ALL_SERIES_TYPES,
-  SERIES_TYPE_META,
-} from "./training/seriesPresentation";
 import {
   buildWorkoutTemplateRevision,
   changeExerciseSeriesType,
@@ -345,6 +341,7 @@ import { useHomeController } from "./controllers/homeController";
 import { useMeasurementsController } from "./controllers/measurementsController";
 import {
   useTrainingDetailController,
+  useTrainingCatalogController,
   useTrainingEditorController,
   useTrainingHistoryController,
   useTrainingListController,
@@ -395,6 +392,7 @@ import {
   TrainingEditorScreen,
   TrainingHistoryScreen,
   TrainingListScreen,
+  TrainingCatalogOverlays,
   TrainingResolutionOverlays,
   TrainingExerciseDetailOverlay,
   TrainingSessionScreen,
@@ -1098,17 +1096,6 @@ function shouldUseAnthropicWebProxy(): boolean {
 function anthropicWebProxyUrl(path: string): string | undefined {
   return shouldUseAnthropicWebProxy() ? buildWebProxyUrl(path) : undefined;
 }
-
-const EXERCISE_EQUIPMENT_OPTIONS = [
-  "Peso corporal", "Barra", "Mancuernas", "Máquina", "Cable",
-  "Kettlebell", "Banda elástica", "Polea", "Otro",
-];
-const EXERCISE_DIFFICULTY_OPTIONS = ["Principiante", "Intermedio", "Avanzado"];
-const EXERCISE_MUSCLE_OPTIONS = [
-  "Pecho", "Espalda", "Hombros", "Bíceps", "Tríceps",
-  "Cuádriceps", "Isquiotibiales", "Glúteos", "Gemelos",
-  "Core", "Antebrazos", "Trapecio", "Aductores", "Abductores",
-];
 
 type CustomExerciseDraft = {
   name: string;
@@ -5999,6 +5986,42 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       else closeWorkoutCompletionModal();
     },
   });
+  const trainingCatalogController = useTrainingCatalogController({
+    pickerOpen: exercisePickerOpen,
+    pickerMode: exercisePickerMode,
+    results: exerciseCatalogResults,
+    muscleGroups: exercisePickerMuscleGroups,
+    query: exercisePickerSearch,
+    muscleGroup: exercisePickerMuscleFilter,
+    loading: exerciseCatalogLoading,
+    loadingMore: exerciseCatalogLoadingMore,
+    result: exerciseCatalogResult,
+    customFormOpen: customExerciseFormOpen,
+    customDraft: customExerciseDraft,
+    seriesTypePickerTarget,
+    workoutSessionTemplateDraft,
+    trainingTemplateDraft,
+    updateQuery: setExercisePickerSearch,
+    updateMuscleGroup: setExercisePickerMuscleFilter,
+    closePicker: closeExercisePicker,
+    retry: () => { void retryExerciseCatalog(); },
+    loadMore: () => { void loadMoreExerciseCatalogResults(); },
+    choose: (entry) => { void chooseExerciseCatalogEntry(entry); },
+    openCustomForm: () => {
+      setCustomExerciseDraft(EMPTY_CUSTOM_EXERCISE_DRAFT);
+      setCustomExerciseFormOpen(true);
+    },
+    closeCustomForm: () => setCustomExerciseFormOpen(false),
+    updateCustomDraft: setCustomExerciseDraft,
+    saveCustomExercise: addCustomExerciseFromForm,
+    closeSeriesTypePicker: () => setSeriesTypePickerTarget(null),
+    selectSeriesType: (seriesType) => {
+      const target = seriesTypePickerTarget;
+      if (!target) return;
+      changeSeriesTypeInTemplate(target.source, target.exerciseId, target.seriesId, seriesType);
+      setSeriesTypePickerTarget(null);
+    },
+  });
   const headerTitle =
     tab === "training"
       ? activeWorkoutSession
@@ -6052,8 +6075,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "food-catalog-ambiguity": dietController.back.layers["food-catalog-ambiguity"],
     "food-estimator": dietController.back.layers["food-estimator"],
     "body-fat-info": measurementsController.back.layers["body-fat-info"],
-    "custom-exercise-form": customExerciseFormOpen,
-    "exercise-picker": exercisePickerOpen,
+    "custom-exercise-form": trainingCatalogController.back.layers["custom-exercise-form"],
+    "exercise-picker": trainingCatalogController.back.layers["exercise-picker"],
     "personal-food-ai-chat": personalFoodsSettingsController.back.layers["personal-food-ai-chat"],
     "personal-food-form": personalFoodsSettingsController.back.layers["personal-food-form"],
     "exercise-catalog-detail": selectedExerciseDetail !== null,
@@ -6071,9 +6094,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "workout-history-detail": trainingHistoryController.back.layers["workout-history-detail"],
     "training-history": trainingHistoryController.back.layers["training-history"],
     "training-exercise-detail": trainingDetailController.back.layers["training-exercise-detail"],
-    "series-type-picker": activeWorkoutSession
-      ? trainingSessionController.back.layers["series-type-picker"]
-      : trainingEditorController.back.layers["series-type-picker"],
+    "series-type-picker": trainingCatalogController.back.layers["series-type-picker"],
     "chat-provider-dropdown": providerSettingsController.back.layers["chat-provider-dropdown"],
     "food-provider-dropdown": providerSettingsController.back.layers["food-provider-dropdown"],
     "anthropic-model-dropdown": providerSettingsController.back.layers["anthropic-model-dropdown"],
@@ -6112,8 +6133,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "food-catalog-ambiguity": dietController.back.handlers["food-catalog-ambiguity"],
     "food-estimator": dietController.back.handlers["food-estimator"],
     "body-fat-info": measurementsController.back.handlers["body-fat-info"],
-    "custom-exercise-form": () => { setCustomExerciseFormOpen(false); return true; },
-    "exercise-picker": () => { closeExercisePicker(); return true; },
+    "custom-exercise-form": trainingCatalogController.back.handlers["custom-exercise-form"],
+    "exercise-picker": trainingCatalogController.back.handlers["exercise-picker"],
     "personal-food-ai-chat": personalFoodsSettingsController.back.handlers["personal-food-ai-chat"],
     "personal-food-form": personalFoodsSettingsController.back.handlers["personal-food-form"],
     "exercise-catalog-detail": () => { setSelectedExerciseDetail(null); return true; },
@@ -6131,9 +6152,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "workout-history-detail": trainingHistoryController.back.handlers["workout-history-detail"],
     "training-history": trainingHistoryController.back.handlers["training-history"],
     "training-exercise-detail": trainingDetailController.back.handlers["training-exercise-detail"],
-    "series-type-picker": activeWorkoutSession
-      ? trainingSessionController.back.handlers["series-type-picker"]
-      : trainingEditorController.back.handlers["series-type-picker"],
+    "series-type-picker": trainingCatalogController.back.handlers["series-type-picker"],
     "chat-provider-dropdown": providerSettingsController.back.handlers["chat-provider-dropdown"],
     "food-provider-dropdown": providerSettingsController.back.handlers["food-provider-dropdown"],
     "anthropic-model-dropdown": providerSettingsController.back.handlers["anthropic-model-dropdown"],
@@ -14115,356 +14134,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         onClose={() => setExerciseDetailIndex(null)}
       />
 
-      {exercisePickerOpen ? (
-        <ExerciseCatalogBrowser
-          testID={shellSurfaceTestId("exercise-picker")}
-          mode={exercisePickerMode}
-          items={exerciseCatalogResults}
-          muscleGroups={exercisePickerMuscleGroups}
-          query={exercisePickerSearch}
-          muscleGroup={exercisePickerMuscleFilter}
-          loading={exerciseCatalogLoading}
-          loadingMore={exerciseCatalogLoadingMore}
-          result={exerciseCatalogResult}
-          onQueryChange={setExercisePickerSearch}
-          onMuscleGroupChange={setExercisePickerMuscleFilter}
-          onClose={closeExercisePicker}
-          onRetry={() => { void retryExerciseCatalog(); }}
-          onEndReached={() => { void loadMoreExerciseCatalogResults(); }}
-          onChoose={(entry) => { void chooseExerciseCatalogEntry(entry); }}
-          onCreateCustom={() => {
-            setCustomExerciseDraft(EMPTY_CUSTOM_EXERCISE_DRAFT);
-            setCustomExerciseFormOpen(true);
-          }}
-        />
-      ) : null}
-
-      {customExerciseFormOpen ? (
-        <View
-          testID={shellSurfaceTestId("custom-exercise-form")}
-          style={{
-            position: "absolute",
-            top: 0, right: 0, bottom: 0, left: 0,
-            backgroundColor: "#0D1117",
-            zIndex: 750,
-            elevation: 75,
-          }}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior={Platform.OS === "ios" ? "padding" : undefined}
-            >
-              {/* Header */}
-              <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
-                <Pressable onPress={() => setCustomExerciseFormOpen(false)} hitSlop={10}>
-                  <Feather name="arrow-left" size={24} color={mobileTheme.color.textPrimary} />
-                </Pressable>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700", flex: 1 }}>
-                  Nuevo ejercicio
-                </Text>
-              </View>
-
-              <ScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{ padding: 14, gap: 20, paddingBottom: 40 }}
-                keyboardShouldPersistTaps="handled"
-              >
-                {/* Nombre */}
-                <View style={{ gap: 6 }}>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Nombre *</Text>
-                  <TextInput
-                    testID="training-exercise-custom-name"
-                    value={customExerciseDraft.name}
-                    onChangeText={(v) => setCustomExerciseDraft((d) => ({ ...d, name: v }))}
-                    placeholder="Ej: Flexiones, Sentadilla búlgara..."
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      borderRadius: mobileTheme.radius.md,
-                      paddingHorizontal: 12,
-                      paddingVertical: 10,
-                      color: mobileTheme.color.textPrimary,
-                      fontSize: 16,
-                      backgroundColor: "#171B23",
-                      minHeight: 48,
-                    }}
-                  />
-                </View>
-
-                {/* Grupo muscular */}
-                <View style={{ gap: 6 }}>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Grupo muscular principal</Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                    {EXERCISE_MUSCLE_OPTIONS.map((muscle) => {
-                      const isActive = customExerciseDraft.muscle_group === muscle;
-                      return (
-                        <Pressable
-                          key={muscle}
-                          onPress={() => setCustomExerciseDraft((d) => ({ ...d, muscle_group: isActive ? "" : muscle }))}
-                          style={{
-                            paddingHorizontal: 14,
-                            paddingVertical: 7,
-                            borderRadius: mobileTheme.radius.pill,
-                            borderWidth: 1,
-                            borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
-                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
-                          }}
-                        >
-                          <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
-                            {muscle}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
-
-                {/* Músculos secundarios */}
-                <View style={{ gap: 6 }}>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Músculos secundarios</Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                    {EXERCISE_MUSCLE_OPTIONS
-                      .filter((m) => m !== customExerciseDraft.muscle_group)
-                      .map((muscle) => {
-                        const isActive = customExerciseDraft.secondary_muscles.includes(muscle);
-                        return (
-                          <Pressable
-                            key={muscle}
-                            onPress={() =>
-                              setCustomExerciseDraft((d) => ({
-                                ...d,
-                                secondary_muscles: isActive
-                                  ? d.secondary_muscles.filter((m) => m !== muscle)
-                                  : [...d.secondary_muscles, muscle],
-                              }))
-                            }
-                            style={{
-                              paddingHorizontal: 14,
-                              paddingVertical: 7,
-                              borderRadius: mobileTheme.radius.pill,
-                              borderWidth: 1,
-                              borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
-                              backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
-                            }}
-                          >
-                            <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
-                              {muscle}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                  </View>
-                </View>
-
-                {/* Equipamiento */}
-                <View style={{ gap: 6 }}>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Equipamiento</Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                    {EXERCISE_EQUIPMENT_OPTIONS.map((eq) => {
-                      const isActive = customExerciseDraft.equipment === eq;
-                      return (
-                        <Pressable
-                          key={eq}
-                          onPress={() => setCustomExerciseDraft((d) => ({ ...d, equipment: isActive ? "" : eq }))}
-                          style={{
-                            paddingHorizontal: 14,
-                            paddingVertical: 7,
-                            borderRadius: mobileTheme.radius.pill,
-                            borderWidth: 1,
-                            borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
-                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
-                          }}
-                        >
-                          <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
-                            {eq}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
-
-                {/* Dificultad */}
-                <View style={{ gap: 6 }}>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Dificultad</Text>
-                  <View style={{ flexDirection: "row", gap: 8 }}>
-                    {EXERCISE_DIFFICULTY_OPTIONS.map((diff) => {
-                      const isActive = customExerciseDraft.difficulty === diff;
-                      return (
-                        <Pressable
-                          key={diff}
-                          onPress={() => setCustomExerciseDraft((d) => ({ ...d, difficulty: isActive ? "" : diff }))}
-                          style={{
-                            paddingHorizontal: 14,
-                            paddingVertical: 7,
-                            borderRadius: mobileTheme.radius.pill,
-                            borderWidth: 1,
-                            borderColor: isActive ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle,
-                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
-                            flex: 1,
-                            alignItems: "center",
-                          }}
-                        >
-                          <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>
-                            {diff}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
-
-                {/* Instrucciones */}
-                <View style={{ gap: 6 }}>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Instrucciones</Text>
-                  <TextInput
-                    value={customExerciseDraft.instructions}
-                    onChangeText={(v) => setCustomExerciseDraft((d) => ({ ...d, instructions: v }))}
-                    placeholder="Describe cómo realizar el ejercicio..."
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    multiline
-                    numberOfLines={4}
-                    textAlignVertical="top"
-                    style={{
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      borderRadius: mobileTheme.radius.md,
-                      paddingHorizontal: 12,
-                      paddingVertical: 10,
-                      color: mobileTheme.color.textPrimary,
-                      fontSize: 14,
-                      backgroundColor: "#171B23",
-                      minHeight: 100,
-                    }}
-                  />
-                </View>
-
-                {/* Guardar */}
-                <Pressable
-                  testID="training-exercise-custom-save"
-                  onPress={addCustomExerciseFromForm}
-                  disabled={!customExerciseDraft.name.trim()}
-                  style={{
-                    backgroundColor: customExerciseDraft.name.trim()
-                      ? mobileTheme.color.brandPrimary
-                      : "rgba(203,255,26,0.2)",
-                    borderRadius: mobileTheme.radius.lg,
-                    paddingVertical: 16,
-                    alignItems: "center",
-                    opacity: customExerciseDraft.name.trim() ? 1 : 0.5,
-                  }}
-                >
-                  <Text style={{ color: "#07090D", fontSize: 17, fontWeight: "800" }}>
-                    Guardar ejercicio
-                  </Text>
-                </Pressable>
-              </ScrollView>
-            </KeyboardAvoidingView>
-          </SafeAreaView>
-        </View>
-      ) : null}
-
-      {seriesTypePickerTarget && (
-        <Pressable
-          testID={shellSurfaceTestId("series-type-picker")}
-          onPress={() => setSeriesTypePickerTarget(null)}
-          style={{
-            position: "absolute",
-            top: 0, right: 0, bottom: 0, left: 0,
-            backgroundColor: "rgba(0,0,0,0.76)",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 610,
-            elevation: 61,
-          }}
-        >
-          <Pressable
-            onPress={(e) => e.stopPropagation()}
-            style={{
-              width: "85%",
-              maxWidth: 340,
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.08)",
-              backgroundColor: "#12151C",
-              paddingVertical: 12,
-              paddingHorizontal: 4,
-            }}
-          >
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700", paddingHorizontal: 12, marginBottom: 10 }}>
-              Tipo de serie
-            </Text>
-            <ScrollView style={{ maxHeight: 420 }}>
-              {ALL_SERIES_TYPES.map((st) => {
-                const meta = SERIES_TYPE_META[st];
-                const isSelected = (() => {
-                  const tpl = seriesTypePickerTarget.source === "session"
-                    ? workoutSessionTemplateDraft?.draft
-                    : trainingTemplateDraft?.draft;
-                  const ex = tpl?.exercises.find((e) => e.id === seriesTypePickerTarget.exerciseId);
-                  const s = ex?.series?.find((s) => s.id === seriesTypePickerTarget.seriesId);
-                  return (s?.type ?? "normal") === st;
-                })();
-                return (
-                  <Pressable
-                    key={st}
-                    onPress={() => {
-                      changeSeriesTypeInTemplate(
-                        seriesTypePickerTarget.source,
-                        seriesTypePickerTarget.exerciseId,
-                        seriesTypePickerTarget.seriesId,
-                        st,
-                      );
-                      setSeriesTypePickerTarget(null);
-                    }}
-                    testID={`training-series-type-option-${st}`}
-                    style={{
-                      minHeight: 44,
-                      paddingHorizontal: 12,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 10,
-                      backgroundColor: isSelected ? "rgba(203,255,26,0.1)" : "transparent",
-                      borderRadius: 10,
-                      marginHorizontal: 4,
-                    }}
-                  >
-                    <View style={{
-                      width: 32,
-                      height: 24,
-                      borderRadius: 6,
-                      backgroundColor: st === "warmup" ? "rgba(255,74,74,0.2)" : "#202630",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}>
-                      <Text style={{
-                        color: st === "warmup" ? "#FF4A4A" : "#8C95A4",
-                        fontSize: 10,
-                        fontWeight: "700",
-                      }}>
-                        {meta.short}
-                      </Text>
-                    </View>
-                    <Text style={{
-                      flex: 1,
-                      color: isSelected ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary,
-                      fontSize: 15,
-                      fontWeight: isSelected ? "700" : "500",
-                    }}>
-                      {meta.label}
-                    </Text>
-                    {isSelected && (
-                      <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} />
-                    )}
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          </Pressable>
-        </Pressable>
-      )}
+      <TrainingCatalogOverlays
+        model={trainingCatalogController.model}
+        actions={trainingCatalogController.actions}
+      />
 
       {activeWorkoutSession && tab !== "training" ? (() => {
         const currentExercise = activeSessionExercises.find((e) => e.isCurrentExercise);

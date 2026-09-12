@@ -1,17 +1,214 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { memo } from "react";
 import ConfettiCannon from "react-native-confetti-cannon";
-import { Image, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
+import { ExerciseCatalogBrowser } from "../catalogs/ExerciseCatalogBrowser";
 import type {
+  TrainingCatalogActions,
+  TrainingCatalogModel,
   TrainingResolutionActions,
   TrainingResolutionModel,
   TrainingDetailExercise,
 } from "../controllers/trainingController";
+import { ALL_SERIES_TYPES, SERIES_TYPE_META } from "../training/seriesPresentation";
 import { formatClock } from "../training/presentationModel";
 import { diffWorkoutTemplates } from "../training/workoutTemplateOperations";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import { mobileTheme } from "../theme";
+
+const EXERCISE_EQUIPMENT_OPTIONS = [
+  "Peso corporal", "Barra", "Mancuernas", "Máquina", "Cable",
+  "Kettlebell", "Banda elástica", "Polea", "Otro",
+];
+const EXERCISE_DIFFICULTY_OPTIONS = ["Principiante", "Intermedio", "Avanzado"];
+const EXERCISE_MUSCLE_OPTIONS = [
+  "Pecho", "Espalda", "Hombros", "Bíceps", "Tríceps",
+  "Cuádriceps", "Isquiotibiales", "Glúteos", "Gemelos",
+  "Core", "Antebrazos", "Trapecio", "Aductores", "Abductores",
+];
+
+export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
+  model,
+  actions,
+}: {
+  model: Readonly<TrainingCatalogModel>;
+  actions: Readonly<TrainingCatalogActions>;
+}) {
+  const draft = model.customDraft;
+  return (
+    <>
+      {model.pickerOpen ? (
+        <ExerciseCatalogBrowser
+          testID={shellSurfaceTestId("exercise-picker")}
+          mode={model.pickerMode}
+          items={model.results}
+          muscleGroups={model.muscleGroups}
+          query={model.query}
+          muscleGroup={model.muscleGroup}
+          loading={model.loading}
+          loadingMore={model.loadingMore}
+          result={model.result}
+          onQueryChange={actions.updateQuery}
+          onMuscleGroupChange={actions.updateMuscleGroup}
+          onClose={actions.closePicker}
+          onRetry={actions.retry}
+          onEndReached={actions.loadMore}
+          onChoose={actions.choose}
+          onCreateCustom={actions.openCustomForm}
+        />
+      ) : null}
+
+      {model.customFormOpen ? (
+        <View testID={shellSurfaceTestId("custom-exercise-form")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "#0D1117", zIndex: 750, elevation: 75 }}>
+          <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+              <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
+                <Pressable onPress={actions.closeCustomForm} hitSlop={10}>
+                  <Feather name="arrow-left" size={24} color={mobileTheme.color.textPrimary} />
+                </Pressable>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700", flex: 1 }}>Nuevo ejercicio</Text>
+              </View>
+
+              <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 14, gap: 20, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Nombre *</Text>
+                  <TextInput
+                    testID="training-exercise-custom-name"
+                    value={draft.name}
+                    onChangeText={(name) => actions.updateCustomDraft((current) => ({ ...current, name }))}
+                    placeholder="Ej: Flexiones, Sentadilla búlgara..."
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, paddingHorizontal: 12, paddingVertical: 10, color: mobileTheme.color.textPrimary, fontSize: 16, backgroundColor: "#171B23", minHeight: 48 }}
+                  />
+                </View>
+
+                <OptionChips
+                  label="Grupo muscular principal"
+                  options={EXERCISE_MUSCLE_OPTIONS}
+                  selected={(option) => draft.muscle_group === option}
+                  onToggle={(option, active) => actions.updateCustomDraft((current) => ({ ...current, muscle_group: active ? "" : option }))}
+                />
+                <OptionChips
+                  label="Músculos secundarios"
+                  options={EXERCISE_MUSCLE_OPTIONS.filter((option) => option !== draft.muscle_group)}
+                  selected={(option) => draft.secondary_muscles.includes(option)}
+                  onToggle={(option, active) => actions.updateCustomDraft((current) => ({
+                    ...current,
+                    secondary_muscles: active
+                      ? current.secondary_muscles.filter((muscle) => muscle !== option)
+                      : [...current.secondary_muscles, option],
+                  }))}
+                />
+                <OptionChips
+                  label="Equipamiento"
+                  options={EXERCISE_EQUIPMENT_OPTIONS}
+                  selected={(option) => draft.equipment === option}
+                  onToggle={(option, active) => actions.updateCustomDraft((current) => ({ ...current, equipment: active ? "" : option }))}
+                />
+                <OptionChips
+                  label="Dificultad"
+                  options={EXERCISE_DIFFICULTY_OPTIONS}
+                  selected={(option) => draft.difficulty === option}
+                  onToggle={(option, active) => actions.updateCustomDraft((current) => ({ ...current, difficulty: active ? "" : option }))}
+                />
+
+                <View style={{ gap: 6 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Instrucciones</Text>
+                  <TextInput
+                    value={draft.instructions}
+                    onChangeText={(instructions) => actions.updateCustomDraft((current) => ({ ...current, instructions }))}
+                    placeholder="Describe cómo realizar el ejercicio..."
+                    placeholderTextColor={mobileTheme.color.textSecondary}
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                    style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, paddingHorizontal: 12, paddingVertical: 10, color: mobileTheme.color.textPrimary, fontSize: 14, backgroundColor: "#171B23", minHeight: 100 }}
+                  />
+                </View>
+
+                <Pressable
+                  testID="training-exercise-custom-save"
+                  onPress={actions.saveCustomExercise}
+                  disabled={!draft.name.trim()}
+                  style={{ backgroundColor: draft.name.trim() ? mobileTheme.color.brandPrimary : "rgba(203,255,26,0.2)", borderRadius: mobileTheme.radius.lg, paddingVertical: 16, alignItems: "center", opacity: draft.name.trim() ? 1 : 0.5 }}
+                >
+                  <Text style={{ color: "#07090D", fontSize: 17, fontWeight: "800" }}>Guardar ejercicio</Text>
+                </Pressable>
+              </ScrollView>
+            </KeyboardAvoidingView>
+          </SafeAreaView>
+        </View>
+      ) : null}
+
+      {model.seriesTypePickerOpen ? (
+        <Pressable testID={shellSurfaceTestId("series-type-picker")} onPress={actions.closeSeriesTypePicker} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.76)", alignItems: "center", justifyContent: "center", zIndex: 610, elevation: 61 }}>
+          <Pressable onPress={(event) => event.stopPropagation()} style={{ width: "85%", maxWidth: 340, borderRadius: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)", backgroundColor: "#12151C", paddingVertical: 12, paddingHorizontal: 4 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700", paddingHorizontal: 12, marginBottom: 10 }}>Tipo de serie</Text>
+            <ScrollView style={{ maxHeight: 420 }}>
+              {ALL_SERIES_TYPES.map((seriesType) => {
+                const meta = SERIES_TYPE_META[seriesType];
+                const selected = model.selectedSeriesType === seriesType;
+                return (
+                  <Pressable
+                    key={seriesType}
+                    onPress={() => actions.selectSeriesType(seriesType)}
+                    testID={`training-series-type-option-${seriesType}`}
+                    style={{ minHeight: 44, paddingHorizontal: 12, flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: selected ? "rgba(203,255,26,0.1)" : "transparent", borderRadius: 10, marginHorizontal: 4 }}
+                  >
+                    <View style={{ width: 32, height: 24, borderRadius: 6, backgroundColor: seriesType === "warmup" ? "rgba(255,74,74,0.2)" : "#202630", alignItems: "center", justifyContent: "center" }}>
+                      <Text style={{ color: seriesType === "warmup" ? "#FF4A4A" : "#8C95A4", fontSize: 10, fontWeight: "700" }}>{meta.short}</Text>
+                    </View>
+                    <Text style={{ flex: 1, color: selected ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary, fontSize: 15, fontWeight: selected ? "700" : "500" }}>{meta.label}</Text>
+                    {selected ? <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} /> : null}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      ) : null}
+    </>
+  );
+});
+
+function OptionChips({
+  label,
+  options,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  options: ReadonlyArray<string>;
+  selected(option: string): boolean;
+  onToggle(option: string, selected: boolean): void;
+}) {
+  return (
+    <View style={{ gap: 6 }}>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>{label}</Text>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+        {options.map((option) => {
+          const active = selected(option);
+          return (
+            <Pressable key={option} onPress={() => onToggle(option, active)} style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: mobileTheme.radius.pill, borderWidth: 1, borderColor: active ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle, backgroundColor: active ? "rgba(160,204,0,0.12)" : "#0D1117" }}>
+              <Text style={{ color: active ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>{option}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
 
 export const TrainingExerciseDetailOverlay = memo(function TrainingExerciseDetailOverlay({
   exercise,

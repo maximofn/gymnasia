@@ -4,7 +4,7 @@ import type {
   WorkoutSessionSummary,
   WorkoutSummaryRecalculation,
 } from "../training/workoutHistory";
-import type { ExerciseSeries, SubSeries } from "../training/seriesContract";
+import type { ExerciseSeries, SeriesType, SubSeries } from "../training/seriesContract";
 import type { WorkoutEffortBreakdown, WorkoutExecutionUnit } from "../training/workoutExecution";
 import type {
   RoutineIconName,
@@ -18,9 +18,157 @@ import type {
   TrainingStatsPeriodKey,
 } from "../training/presentationModel";
 import type { CatalogLink } from "../catalogs/types";
-import type { WorkoutTemplateValidation } from "../training/workoutTemplateTransactions";
+import type { ExerciseCatalogBrowserMode } from "../catalogs/ExerciseCatalogBrowser";
+import type { ExerciseCatalogResult, ExerciseCatalogSummary } from "../catalogs/exerciseCatalogRuntime";
+import type {
+  WorkoutSessionTemplateDraftRecord,
+  WorkoutTemplateDraftState,
+  WorkoutTemplateValidation,
+} from "../training/workoutTemplateTransactions";
 import type { WorkoutSession, WorkoutSessionResolutionKind } from "../training/workoutSessionModel";
 import type { ScreenController } from "./types";
+
+export type CustomExerciseDraft = {
+  name: string;
+  muscle_group: string;
+  secondary_muscles: string[];
+  equipment: string;
+  difficulty: string;
+  instructions: string;
+};
+
+export type SeriesTypePickerTarget = {
+  exerciseId: string;
+  seriesId: string;
+  source: "editor" | "session";
+};
+
+export type TrainingCatalogModel = {
+  pickerOpen: boolean;
+  pickerMode: ExerciseCatalogBrowserMode;
+  results: ExerciseCatalogSummary[];
+  muscleGroups: string[];
+  query: string;
+  muscleGroup: string;
+  loading: boolean;
+  loadingMore: boolean;
+  result: ExerciseCatalogResult | null;
+  customFormOpen: boolean;
+  customDraft: CustomExerciseDraft;
+  seriesTypePickerOpen: boolean;
+  selectedSeriesType: SeriesType | null;
+};
+
+export type TrainingCatalogActions = {
+  updateQuery(value: string): void;
+  updateMuscleGroup(value: string): void;
+  closePicker(): void;
+  retry(): void;
+  loadMore(): void;
+  choose(entry: ExerciseCatalogSummary): void;
+  openCustomForm(): void;
+  closeCustomForm(): void;
+  updateCustomDraft(mutator: (current: CustomExerciseDraft) => CustomExerciseDraft): void;
+  saveCustomExercise(): void;
+  closeSeriesTypePicker(): void;
+  selectSeriesType(type: SeriesType): void;
+};
+
+export type TrainingCatalogControllerInput = Omit<TrainingCatalogModel, "seriesTypePickerOpen" | "selectedSeriesType"> &
+  TrainingCatalogActions & {
+    seriesTypePickerTarget: SeriesTypePickerTarget | null;
+    workoutSessionTemplateDraft: WorkoutSessionTemplateDraftRecord | null;
+    trainingTemplateDraft: WorkoutTemplateDraftState | null;
+  };
+
+export function useTrainingCatalogController(
+  input: TrainingCatalogControllerInput,
+): ScreenController<
+  TrainingCatalogModel,
+  TrainingCatalogActions,
+  "custom-exercise-form" | "exercise-picker" | "series-type-picker"
+> {
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const selectedSeriesType = useMemo<SeriesType | null>(() => {
+    const target = input.seriesTypePickerTarget;
+    if (!target) return null;
+    const template = target.source === "session"
+      ? input.workoutSessionTemplateDraft?.draft
+      : input.trainingTemplateDraft?.draft;
+    return template?.exercises
+      .find((exercise) => exercise.id === target.exerciseId)
+      ?.series?.find((series) => series.id === target.seriesId)?.type ?? "normal";
+  }, [input.seriesTypePickerTarget, input.trainingTemplateDraft, input.workoutSessionTemplateDraft]);
+  const model = useMemo<TrainingCatalogModel>(() => ({
+    pickerOpen: input.pickerOpen,
+    pickerMode: input.pickerMode,
+    results: input.results,
+    muscleGroups: input.muscleGroups,
+    query: input.query,
+    muscleGroup: input.muscleGroup,
+    loading: input.loading,
+    loadingMore: input.loadingMore,
+    result: input.result,
+    customFormOpen: input.customFormOpen,
+    customDraft: input.customDraft,
+    seriesTypePickerOpen: input.seriesTypePickerTarget !== null,
+    selectedSeriesType,
+  }), [
+    input.customDraft,
+    input.customFormOpen,
+    input.loading,
+    input.loadingMore,
+    input.muscleGroup,
+    input.muscleGroups,
+    input.pickerMode,
+    input.pickerOpen,
+    input.query,
+    input.result,
+    input.results,
+    input.seriesTypePickerTarget,
+    selectedSeriesType,
+  ]);
+  const actions = useMemo<TrainingCatalogActions>(() => ({
+    updateQuery: (value) => inputRef.current.updateQuery(value),
+    updateMuscleGroup: (value) => inputRef.current.updateMuscleGroup(value),
+    closePicker: () => inputRef.current.closePicker(),
+    retry: () => inputRef.current.retry(),
+    loadMore: () => inputRef.current.loadMore(),
+    choose: (entry) => inputRef.current.choose(entry),
+    openCustomForm: () => inputRef.current.openCustomForm(),
+    closeCustomForm: () => inputRef.current.closeCustomForm(),
+    updateCustomDraft: (mutator) => inputRef.current.updateCustomDraft(mutator),
+    saveCustomExercise: () => inputRef.current.saveCustomExercise(),
+    closeSeriesTypePicker: () => inputRef.current.closeSeriesTypePicker(),
+    selectSeriesType: (type) => inputRef.current.selectSeriesType(type),
+  }), []);
+  const back = useMemo(() => ({
+    layers: {
+      "custom-exercise-form": input.customFormOpen,
+      "exercise-picker": input.pickerOpen,
+      "series-type-picker": input.seriesTypePickerTarget !== null,
+    },
+    handlers: {
+      "custom-exercise-form": () => {
+        if (!inputRef.current.customFormOpen) return false;
+        inputRef.current.closeCustomForm();
+        return true;
+      },
+      "exercise-picker": () => {
+        if (!inputRef.current.pickerOpen) return false;
+        inputRef.current.closePicker();
+        return true;
+      },
+      "series-type-picker": () => {
+        if (!inputRef.current.seriesTypePickerTarget) return false;
+        inputRef.current.closeSeriesTypePicker();
+        return true;
+      },
+    },
+  }), [input.customFormOpen, input.pickerOpen, input.seriesTypePickerTarget]);
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
 
 export type WorkoutCompletionModalState = {
   kind: WorkoutSessionResolutionKind;
