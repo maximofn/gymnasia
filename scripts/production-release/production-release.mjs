@@ -306,6 +306,36 @@ export function extractNotificationSoundsFromArchiveListing(archiveListing) {
     .sort();
 }
 
+export function expectedNotificationSounds() {
+  const nativeConfigPolicy = JSON.parse(readFileSync(
+    join(repositoryRoot, "scripts", "android-native-config", "policy.json"),
+    "utf8",
+  ));
+  return [...nativeConfigPolicy.expectedNotificationSounds].sort();
+}
+
+export function extractNotificationSoundsFromCompiledResources(
+  resourceTable,
+  expectedSounds = expectedNotificationSounds(),
+) {
+  const lines = String(resourceTable ?? "").split(/\r?\n/);
+  const rawResourceNames = new Set();
+  for (let index = 0; index < lines.length; index += 1) {
+    const match = lines[index].match(/\bresource\s+0x[a-f0-9]+\s+.*\braw\/([a-z][a-z0-9_]*)\b/i);
+    if (!match) continue;
+    let valueIndex = index + 1;
+    let isWav = false;
+    while (valueIndex < lines.length && !/\bresource\s+0x[a-f0-9]+\s+/i.test(lines[valueIndex])) {
+      if (/\(file\)\s+\S+\.wav(?:\s|$)/i.test(lines[valueIndex])) isWav = true;
+      valueIndex += 1;
+    }
+    if (isWav) rawResourceNames.add(match[1]);
+  }
+  return [...new Set(expectedSounds)]
+    .filter((sound) => rawResourceNames.has(sound.replace(/\.wav$/i, "")))
+    .sort();
+}
+
 export function extractCertificateDigest(output) {
   return output.match(/certificate SHA-256 digest:\s*([A-Fa-f0-9:]+)/i)?.[1]
     ?? output.match(/SHA256:\s*([A-Fa-f0-9:]+)/i)?.[1]
@@ -321,6 +351,7 @@ export function evaluateArtifactCandidate({
   snapshot,
   certificateSha256,
   archiveListing,
+  notificationSounds: inspectedNotificationSounds,
   size,
   sha256,
   httpMimeType,
@@ -406,16 +437,14 @@ export function evaluateArtifactCandidate({
     violations.push({ code: "archive-kind", message: `El contenido ZIP no corresponde a un ${kind.toUpperCase()}.` });
   }
 
-  const notificationSounds = extractNotificationSoundsFromArchiveListing(archiveListing);
-  const nativeConfigPolicy = JSON.parse(readFileSync(
-    join(repositoryRoot, "scripts", "android-native-config", "policy.json"),
-    "utf8",
-  ));
-  const expectedNotificationSounds = [...nativeConfigPolicy.expectedNotificationSounds].sort();
-  const missingNotificationSounds = expectedNotificationSounds
+  const notificationSounds = inspectedNotificationSounds === undefined
+    ? extractNotificationSoundsFromArchiveListing(archiveListing)
+    : [...new Set(inspectedNotificationSounds)].sort();
+  const requiredNotificationSounds = expectedNotificationSounds();
+  const missingNotificationSounds = requiredNotificationSounds
     .filter((sound) => !notificationSounds.includes(sound));
   const unexpectedNotificationSounds = notificationSounds
-    .filter((sound) => !expectedNotificationSounds.includes(sound));
+    .filter((sound) => !requiredNotificationSounds.includes(sound));
   if (missingNotificationSounds.length > 0 || unexpectedNotificationSounds.length > 0) {
     violations.push({
       code: "artifact-notification-sounds",

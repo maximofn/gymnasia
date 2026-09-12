@@ -8,6 +8,9 @@ import { basename, dirname, resolve } from "node:path";
 import {
   evaluateArtifactCandidate,
   extractCertificateDigest,
+  extractNotificationSoundsFromArchiveListing,
+  extractNotificationSoundsFromCompiledResources,
+  expectedNotificationSounds,
   loadReleasePolicy,
   parseManifestXml,
   repositoryRoot,
@@ -104,18 +107,24 @@ function inspectArtifact(options, policy, artifact) {
       appConfig,
       manifestXml,
       certificateOutput,
+      notificationSounds: extractNotificationSoundsFromArchiveListing(archiveListing),
       tools: { bundletoolVersion: policy.bundletoolVersion, bundletoolSha256 },
     };
   }
 
   const manifestXml = run("apkanalyzer", ["manifest", "print", artifact]);
   const certificateOutput = run("apksigner", ["verify", "--print-certs", artifact]);
+  const resourceTable = run("aapt2", ["dump", "resources", artifact]);
   return {
     archiveListing,
     appConfig,
     manifestXml,
     certificateOutput,
-    tools: { apkanalyzer: true, apksigner: true },
+    notificationSounds: extractNotificationSoundsFromCompiledResources(
+      resourceTable,
+      expectedNotificationSounds(),
+    ),
+    tools: { aapt2: true, apkanalyzer: true, apksigner: true },
   };
 }
 
@@ -142,6 +151,7 @@ function main() {
     snapshot,
     certificateSha256,
     archiveListing: inspection.archiveListing,
+    notificationSounds: inspection.notificationSounds,
     size,
     sha256,
     httpMimeType,

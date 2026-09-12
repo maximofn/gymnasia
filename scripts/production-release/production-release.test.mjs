@@ -10,6 +10,7 @@ import {
   evaluateSourceCandidate,
   extractCertificateDigest,
   extractNotificationSoundsFromArchiveListing,
+  extractNotificationSoundsFromCompiledResources,
   loadReleasePolicy,
   normalizeCertificateDigest,
   parseManifestXml,
@@ -349,6 +350,55 @@ test("extrae los sonidos nativos tanto de APK como de AAB", () => {
     extractNotificationSoundsFromArchiveListing("res/raw/beep.wav\nbase/res/raw/bell.wav\nassets/ignored.wav"),
     ["beep.wav", "bell.wav"],
   );
+});
+
+test("extrae los sonidos del APK por su nombre lógico aunque sus ficheros estén ofuscados", () => {
+  const resourceTable = `Package Groups (1)
+    resource 0x7f120000 raw/ascending
+      () (file) res/7M.wav
+    resource 0x7f120001 raw/assets_ascending
+      () (file) res/nC.wav
+    resource 0x7f120006 raw/beep
+      () (file) res/KH.wav
+    resource 0x7f120007 raw/bell
+      () (file) res/CE.wav
+    resource 0x7f120008 raw/buzzer
+      () (file) res/Rj.wav
+    resource 0x7f120009 raw/firebase_common_keep
+      () (file) res/qF.xml
+    resource 0x7f12001e raw/rest_finished
+      () (file) res/jp.wav`;
+  assert.deepEqual(
+    extractNotificationSoundsFromArchiveListing("res/7M.wav\nres/83.wav\nres/CE.wav\nres/KH.wav\nres/Rj.wav"),
+    [],
+  );
+  assert.deepEqual(
+    extractNotificationSoundsFromCompiledResources(resourceTable, notificationSounds),
+    notificationSounds,
+  );
+  assert.deepEqual(
+    extractNotificationSoundsFromCompiledResources(resourceTable, ["firebase_common_keep.wav"]),
+    [],
+  );
+});
+
+test("acepta un APK cuyos nombres físicos están ofuscados si conserva los recursos lógicos", () => {
+  const sourceEvidence = {
+    ...validSourceEvidence,
+    profile: "production-apk",
+    artifactType: "apk",
+  };
+  const result = evaluateArtifactCandidate(artifactInput({
+    kind: "apk",
+    sourceEvidence,
+    archiveListing: "AndroidManifest.xml\nres/7M.wav\nres/83.wav\nres/CE.wav\nres/KH.wav\nres/Rj.wav",
+    notificationSounds,
+    size: policy.artifacts.apk.minBytes,
+    httpMimeType: "application/vnd.android.package-archive",
+    detectedMimeType: "application/vnd.android.package-archive",
+    publishedFilename: policy.artifacts.apk.publishedFilename,
+  }));
+  assert.deepEqual(result.violations, []);
 });
 
 test("propiedad: cualquier permiso fusionado no aprobado invalida el artefacto", () => {
