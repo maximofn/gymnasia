@@ -93,6 +93,15 @@ import {
 } from "./agent/aiTransparency";
 import type { ChatSystemPromptSelection } from "./agent/chatSystemPrompt";
 import {
+  chatRoleLabel,
+  createAiIdentityChatMessage,
+  createHealthSafetyChatMessage,
+  normalizeMessagesByThread,
+  normalizeThreadTitle,
+  type ChatMessage,
+  type ChatThread,
+} from "./agent/chatModel";
+import {
   acquireAgentPolicyLease,
 } from "./agent/agentPolicyRuntime";
 import {
@@ -586,26 +595,6 @@ type PendingFoodResolution = {
   date: string;
   editing: DietItemMenuState;
   proposeManual: boolean;
-};
-type ChatThread = { id: string; title: string | null };
-type ChatMessageKind = AiDisclosureMessageKind | "health_safety_intervention" | "technical_error";
-type ChatMessage = {
-  id: string;
-  role: "user" | "assistant" | "system";
-  content: string;
-  kind?: ChatMessageKind;
-  health_safety?: HealthSafetyMessageMetadata;
-  policy_context?: PolicyContext;
-  report_context?: {
-    provider?: string | null;
-    model?: string | null;
-    origin: AiReportResponseOrigin;
-  };
-  thinking?: string | null;
-  googleTurn?: GoogleConversationTurn;
-  googleInput?: GoogleContent[];
-  is_streaming?: boolean;
-  created_at: string;
 };
 type AnthropicChatResult = { content: string; thinking: string | null; googleTurn?: GoogleConversationTurn };
 type OpenAIReasoningSummaryPart = { type: "summary_text"; text: string };
@@ -3388,49 +3377,6 @@ function uid(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function createAiIdentityChatMessage(
-  prefix = "msg",
-  surface: AiConversationSurface = "main-chat",
-): ChatMessage {
-  return {
-    id: uid(prefix),
-    ...createAiDisclosureMessage(surface),
-    created_at: new Date().toISOString(),
-  };
-}
-
-function createHealthSafetyChatMessage(
-  decision: HealthSafetyDecision,
-  policy: HealthSafetyRuntimePolicy,
-  prefix = "msg",
-): ChatMessage {
-  const response = createLocalHealthSafetyResponse(decision, policy);
-  return {
-    id: uid(prefix),
-    role: "assistant",
-    kind: "health_safety_intervention",
-    health_safety: response.metadata,
-    report_context: { origin: "health_safety" },
-    content: `${response.reason}\n\n${response.message}`,
-    created_at: new Date().toISOString(),
-  };
-}
-
-function normalizeThreadTitle(title: string | null, index: number): string | null {
-  if (typeof title !== "string") return title;
-  const normalized = title.trim();
-  const coachMatch = normalized.match(/^(?:Coach|Agente|Gymnasia Coach)(?:\s+(\d+))?$/i);
-  if (!coachMatch) return normalized || null;
-  const suffix = coachMatch[1] ?? (index > 0 ? `${index + 1}` : "");
-  return suffix ? `Gymnasia Coach ${suffix}` : "Gymnasia Coach";
-}
-
-function chatRoleLabel(role: ChatMessage["role"]): string {
-  if (role === "assistant") return getAiTransparencyCopy("main-chat").agentName;
-  if (role === "user") return "Tú";
-  return "Sistema";
-}
-
 function parseFoodEstimatorNutritionJSON(rawValue: string): {
   dish_name: string;
   calories_kcal: number;
@@ -4088,80 +4034,6 @@ function createActivityResetStore(store: LocalStore): LocalStore {
     chatProvider: store.chatProvider,
     foodAIProvider: store.foodAIProvider,
   };
-}
-
-function normalizeChatMessage(raw: ChatMessage, index: number): ChatMessage {
-  const role =
-    raw?.role === "assistant" || raw?.role === "system" || raw?.role === "user"
-      ? raw.role
-      : "assistant";
-  const thinking = typeof raw?.thinking === "string" ? raw.thinking : null;
-  const kind: ChatMessageKind | undefined = [
-    AI_DISCLOSURE_MESSAGE_KIND,
-    "health_safety_intervention",
-    "technical_error",
-  ].includes(raw?.kind ?? "")
-    ? raw.kind
-    : undefined;
-  const healthSafety = kind === "health_safety_intervention"
-    && raw.health_safety
-    && ["elevated", "high", "critical"].includes(raw.health_safety.level)
-    && ["es", "en", "pt"].includes(raw.health_safety.locale)
-    && Array.isArray(raw.health_safety.ruleIds)
-    && typeof raw.health_safety.reasonCode === "string"
-    && typeof raw.health_safety.policyVersion === "string"
-      ? raw.health_safety
-      : undefined;
-  const rawReportContext = raw?.report_context;
-  const reportOrigin: AiReportResponseOrigin | null = rawReportContext
-    && ["model", "health_safety", "unknown"].includes(rawReportContext.origin)
-      ? rawReportContext.origin
-      : kind === "health_safety_intervention"
-        ? "health_safety"
-        : null;
-  const reportContext = reportOrigin
-    ? {
-        provider: typeof rawReportContext?.provider === "string"
-          ? rawReportContext.provider
-          : undefined,
-        model: typeof rawReportContext?.model === "string"
-          ? rawReportContext.model
-          : undefined,
-        origin: reportOrigin,
-      }
-    : undefined;
-  const policyContext = normalizePolicyContext(raw?.policy_context);
-  return {
-    id: raw?.id?.trim() || uid(`msg-${index}`),
-    role,
-    content: typeof raw?.content === "string" ? raw.content : "",
-    kind,
-    health_safety: healthSafety,
-    report_context: reportContext,
-    policy_context: policyContext,
-    thinking,
-    ...(isGoogleConversationTurn(raw.googleTurn) ? { googleTurn: raw.googleTurn } : {}),
-    ...(Array.isArray(raw.googleInput) ? { googleInput: raw.googleInput } : {}),
-    is_streaming: false,
-    created_at:
-      typeof raw?.created_at === "string" && raw.created_at.trim()
-        ? raw.created_at
-        : new Date().toISOString(),
-  };
-}
-
-function normalizeMessagesByThread(
-  rawMessagesByThread: Record<string, ChatMessage[]> | null | undefined,
-): Record<string, ChatMessage[]> {
-  if (!rawMessagesByThread || typeof rawMessagesByThread !== "object") return {};
-  return Object.fromEntries(
-    Object.entries(rawMessagesByThread).map(([threadId, threadMessages]) => [
-      threadId,
-      Array.isArray(threadMessages)
-        ? threadMessages.map((message, index) => normalizeChatMessage(message, index))
-        : [],
-    ]),
-  );
 }
 
 function normalizeStore(
