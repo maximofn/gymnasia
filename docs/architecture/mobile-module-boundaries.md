@@ -65,6 +65,15 @@ persistencia se montan una sola vez en la raíz y conservan su estado al cambiar
 de pestaña. Las pantallas reciben únicamente `model` y `actions`; no importan
 SecureStore, AsyncStorage ni APIs de Expo directamente.
 
+El acceso a proveedores también queda detrás de entradas públicas de `agent/`:
+`providerCatalog.ts` descubre y verifica modelos, `providerResponseModel.ts`
+normaliza respuestas, `providerStreamTransport.ts` transporta SSE,
+`providerChatClient.ts` resuelve turnos simples, `providerToolClient.ts` ejecuta
+los bucles con herramientas y `foodEstimatorClient.ts` contiene el flujo
+multimodal y la extracción nutricional estructurada. `App.tsx` solo inyecta el
+entorno local (plataforma, fixture y proxy opcional); no contiene endpoints ni
+clientes HTTP de proveedor.
+
 ## Control automático
 
 `scripts/mobile-boundaries/check.mjs` analiza imports estáticos, exports desde
