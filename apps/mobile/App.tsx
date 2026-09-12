@@ -330,6 +330,15 @@ import {
   type LocalStoreHydrationOutcome,
 } from "./persistence/localStoreRecovery";
 import {
+  MAX_WORKOUT_HISTORY_ITEMS,
+  createActivityResetStore,
+  createInitialStore,
+  mergeStoreWithSecureApiKeys,
+  normalizeStore,
+  serializeStoreForAsyncStorage,
+  type LocalStore,
+} from "./persistence/localStoreModel";
+import {
   AiResponseReportAction,
   AiResponseReportModal,
   type AiResponseReportContext,
@@ -755,18 +764,6 @@ type Dashboard = {
   weight: number | null;
 };
 
-type LocalStore = {
-  templates: WorkoutTemplate[];
-  workoutHistory: WorkoutSessionSummary[];
-  dietByDate: Record<string, DietDay>;
-  dietSettings: DietSettings;
-  measurements: Measurement[];
-  threads: ChatThread[];
-  messagesByThread: Record<string, ChatMessage[]>;
-  keys: AIKey[];
-  chatProvider?: Provider;
-  foodAIProvider?: Provider;
-};
 
 const STORAGE_KEY = scopedStorageKey("gymnasia.mobile.local.v3");
 const LOCAL_STORE_LAST_GOOD_KEY = scopedStorageKey("gymnasia.mobile.local.last_good.v1");
@@ -1605,7 +1602,6 @@ const ENABLE_GLOBAL_SCREEN_LOAD_DELAY = false;
 const GLOBAL_SCREEN_LOAD_DELAY_MS = 1200;
 const TRAINING_LOADING_SKELETON_ROWS = 4;
 const TRAINING_EDITOR_LOADING_SKELETON_ROWS = 2;
-const MAX_WORKOUT_HISTORY_ITEMS = 180;
 const DIET_MACRO_MODE_OPTIONS: Array<{ key: DietMacroMode; label: string }> = [
   { key: "manual_calories", label: "kcal" },
   { key: "protein_by_weight", label: "g/kg" },
@@ -1653,28 +1649,6 @@ function secureStoreKey(provider: Provider): string {
 
 function emptyProviderApiKeys(): Record<Provider, string> {
   return { openai: "", anthropic: "", google: "" };
-}
-
-function serializeStoreForAsyncStorage(store: LocalStore): LocalStore {
-  // Las credenciales tienen su propio repositorio versionado. El estado general
-  // nunca vuelve a ser una segunda fuente de secretos, tampoco en web.
-  return stripProviderApiKeys(store);
-}
-
-function mergeStoreWithSecureApiKeys(
-  store: LocalStore,
-  secureApiKeys: Record<Provider, string>,
-): LocalStore {
-  return {
-    ...store,
-    keys: store.keys.map((item) => {
-      const secureValue = secureApiKeys[item.provider]?.trim() ?? "";
-      return {
-        ...item,
-        api_key: secureValue || item.api_key,
-      };
-    }),
-  };
 }
 
 async function isSecureStoreAvailable(): Promise<boolean> {
@@ -4006,158 +3980,6 @@ function DesktopSidebar({ tab, onTabChange }: { tab: TabKey; onTabChange: (tab: 
       </View>
     </View>
   );
-}
-
-function createInitialStore(): LocalStore {
-  const firstThreadId = uid("thread");
-
-  return {
-    templates: [],
-    workoutHistory: [],
-    dietByDate: {},
-    dietSettings: createDefaultDietSettings(),
-    measurements: [],
-    threads: [{ id: firstThreadId, title: "Gymnasia Coach 1" }],
-    messagesByThread: {
-      [firstThreadId]: [createAiIdentityChatMessage()],
-    },
-    keys: createDefaultProviderKeys(),
-  };
-}
-
-function createActivityResetStore(store: LocalStore): LocalStore {
-  const initial = createInitialStore();
-  return {
-    ...initial,
-    dietSettings: { ...store.dietSettings },
-    keys: store.keys.map((key) => ({ ...key })),
-    chatProvider: store.chatProvider,
-    foodAIProvider: store.foodAIProvider,
-  };
-}
-
-function normalizeStore(
-  raw: LocalStore,
-  options: {
-    training?: TrainingNormalizationMode;
-    onTrainingIssues?: (issues: TrainingValidationIssue[]) => void;
-  } = {},
-): LocalStore {
-  const normalizedDietSettings = normalizeDietSettings(raw.dietSettings);
-  const keys = normalizeProviderConfigurations(raw.keys);
-  // "repair" por defecto y a propósito: en el arranque, lanzar aquí manda el
-  // almacén del usuario a cuarentena y bloquea la app en la pantalla de
-  // recuperación. Solo la importación de una copia pide "strict".
-  const trainingSink = createIssueSink(options.training ?? "repair");
-
-  // Migrate chatProvider / foodAIProvider
-  const chatProvider: Provider = (raw as Record<string, unknown>).chatProvider as Provider
-    ?? keys.find((k) => k.is_active)?.provider
-    ?? "openai";
-  const foodAIProvider: Provider = (raw as Record<string, unknown>).foodAIProvider as Provider ?? "google";
-
-  const templates: WorkoutTemplate[] = (raw.templates ?? []).map((template, templateIndex) => {
-    const templateField = `templates[${templateIndex}]`;
-    const templateSchemaVersion = readSeriesSchemaVersion(template);
-    if (templateSchemaVersion !== null && templateSchemaVersion > TRAINING_SERIES_SCHEMA_VERSION) {
-      trainingSink.push(
-        `${templateField}.series_schema_version`,
-        "unknown_schema_version",
-        "Una rutina se guardó con una versión posterior de la app y se ha leído lo mejor posible.",
-      );
-    }
-    const normalizedExercises = (template.exercises ?? []).map((exercise, exerciseIndex) => {
-      const normalizedSeries = buildSeriesFromLegacyExercise(
-        exercise,
-        `${templateField}.exercises[${exerciseIndex}]`,
-        uid,
-        trainingSink,
-      );
-      const nextSets = seriesToLegacySets(normalizedSeries);
-      const firstWeightText = normalizedSeries.find((item) => item.weight_kg.trim())?.weight_kg ?? "";
-      const firstRestText = normalizedSeries.find((item) => item.rest_seconds.trim())?.rest_seconds ?? "";
-      const parsedLoad = Number(firstWeightText);
-      const parsedRest = Number(firstRestText);
-      return {
-        ...exercise,
-        name: exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`,
-        image_uri: normalizeExerciseImageUri(exercise.image_uri),
-        catalog_link: normalizeCatalogLink(exercise.catalog_link),
-        series: normalizedSeries,
-        sets: nextSets,
-        load_kg:
-          Number.isFinite(parsedLoad) && parsedLoad > 0 ? parsedLoad : exercise.load_kg ?? null,
-        rest_seconds:
-          Number.isFinite(parsedRest) && parsedRest > 0 ? parsedRest : exercise.rest_seconds ?? null,
-      };
-    });
-
-    const normalizedDuration = normalizeDurationText(template.duration_minutes ?? "");
-    const normalizedCategory =
-      template.category === "strength" ||
-      template.category === "hypertrophy" ||
-      template.category === "cardio" ||
-      template.category === "flexibility"
-        ? template.category
-        : inferTrainingCategory(template.name?.trim() || "");
-    const normalizedIcon = normalizeTemplateIcon(template.icon, normalizedCategory, templateIndex);
-    return {
-      ...template,
-      series_schema_version: sealedSeriesSchemaVersion(template),
-      name: template.name?.trim() || `Rutina ${templateIndex + 1}`,
-      category: normalizedCategory,
-      icon: normalizedIcon,
-      duration_minutes: normalizedDuration,
-      exercises: normalizedExercises,
-    };
-  });
-
-  const normalizedMeasurementsResult = normalizeMeasurementCollection(
-    Array.isArray(raw.measurements) ? raw.measurements : [],
-    uid,
-  );
-  if (!normalizedMeasurementsResult.ok) {
-    throw new Error(formatMeasurementIssues(normalizedMeasurementsResult.issues));
-  }
-  const normalizedWorkoutHistory = sortWorkoutHistoryDesc(
-    (Array.isArray(raw.workoutHistory) ? raw.workoutHistory : []).map((summary, index) =>
-      normalizeWorkoutSessionSummary(
-        summary,
-        index,
-        uid(`session_summary_${index}`),
-        undefined,
-        {
-          mode: options.training ?? "repair",
-          onSnapshotIssue: (message) => trainingSink.push(
-            `workoutHistory[${index}].prescription_snapshot`,
-            "unknown_schema_version",
-            message,
-          ),
-        },
-      ),
-    ),
-  ).slice(0, MAX_WORKOUT_HISTORY_ITEMS);
-  const trainingResult = resolveTrainingIssues(templates, trainingSink);
-  if (!trainingResult.ok) {
-    throw new Error(formatTrainingIssues(trainingResult.issues));
-  }
-  if (trainingResult.issues.length > 0) options.onTrainingIssues?.(trainingResult.issues);
-
-  return {
-    templates,
-    workoutHistory: normalizedWorkoutHistory,
-    dietByDate: normalizeDietByDate(raw.dietByDate, uid),
-    dietSettings: normalizedDietSettings,
-    measurements: normalizedMeasurementsResult.value,
-    threads: (raw.threads ?? []).map((thread, index) => ({
-      ...thread,
-      title: normalizeThreadTitle(thread.title, index),
-    })),
-    messagesByThread: normalizeMessagesByThread(raw.messagesByThread),
-    keys,
-    chatProvider,
-    foodAIProvider,
-  };
 }
 
 type MiniChatProps = {

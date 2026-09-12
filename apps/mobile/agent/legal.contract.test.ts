@@ -14,6 +14,10 @@ import {
 // el enlace legal es fácil de perder en un refactor del pie de Ajustes y nadie lo
 // echaría de menos hasta la siguiente revisión de Google Play.
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const localStoreModelSource = readFileSync(
+  new URL("../persistence/localStoreModel.ts", import.meta.url),
+  "utf8",
+);
 const footerSource = readFileSync(new URL("../LegalFooter.tsx", import.meta.url), "utf8");
 const esHtml = readFileSync(
   new URL("../public/privacidad/index.html", import.meta.url),
@@ -72,7 +76,9 @@ describe("el binario no distribuye datos de salud que no sean del usuario", () =
   });
 
   it("una instalación nueva en móvil arranca sin mediciones", () => {
-    const initialStore = appSource.slice(appSource.indexOf("function createInitialStore()"));
+    const initialStore = localStoreModelSource.slice(
+      localStoreModelSource.indexOf("function createInitialStore("),
+    );
     expect(initialStore.slice(0, 400)).toContain("measurements: []");
   });
 });
