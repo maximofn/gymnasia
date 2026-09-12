@@ -347,11 +347,21 @@ import { useDietController } from "./controllers/dietController";
 import { useHomeController } from "./controllers/homeController";
 import { useMeasurementsController } from "./controllers/measurementsController";
 import {
+  useDataSettingsController,
+  useNotificationSettingsController,
+  useSettingsTabsController,
+  type SettingsTabKey,
+} from "./controllers/settingsController";
+import {
   ChatScreen,
+  DataSettingsPanel,
   DietHeader,
   DietMealsScreen,
   HomeScreen,
   MeasurementsScreen,
+  NotificationSettingsPanel,
+  PreferencesSettingsPanel,
+  SettingsTabs,
 } from "./screens";
 import {
   AiResponseReportAction,
@@ -602,7 +612,6 @@ Notifications.setNotificationHandler({
   },
 });
 
-type SettingsTabKey = "diet" | "provider" | "memory" | "training" | "foods" | "products" | "personalFoods" | "measures" | "preferences" | "notifications" | "data" | "traces";
 type WorkoutCompletionModalState = {
   kind: WorkoutSessionResolutionKind;
   summary: WorkoutSessionSummary | null;
@@ -1636,21 +1645,6 @@ const DIET_MEAL_META: Record<
   Merienda: { icon: "coffee", accent: "#4D84FF", dot: "#4D84FF" },
   Cena: { icon: "moon", accent: "#7D6DFF", dot: "#7D6DFF" },
 };
-const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
-  { key: "diet", label: "Dieta" },
-  { key: "provider", label: "Proveedor IA" },
-  { key: "memory", label: "Memoria" },
-  { key: "training", label: "Entreno" },
-  { key: "foods", label: "Alimentos" },
-  { key: "products", label: "Productos comerciales" },
-  { key: "personalFoods", label: "Alimentos personales" },
-  { key: "measures", label: "Medidas" },
-  { key: "preferences", label: "Preferencias" },
-  { key: "notifications", label: "Notificaciones" },
-  { key: "data", label: "Datos" },
-  { key: "traces", label: "Trazas" },
-];
-
 const DIET_GOAL_OPTIONS: Array<{ key: DietGoal; label: string }> = [
   { key: "bulk", label: "Volumen" },
   { key: "cut", label: "Definición" },
@@ -5458,21 +5452,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [settingsTab, setSettingsTab] = useState<SettingsTabKey>(
     deletionOutcome?.report.status === "incomplete" ? "data" : "diet",
   );
-  const settingsTabsScrollRef = useRef<ScrollView>(null);
-  const settingsTabsScrollXRef = useRef(0);
-  const settingsTabsContainerWidthRef = useRef(0);
-  const settingsTabsContentWidthRef = useRef(0);
-  const [settingsTabsCanScrollLeft, setSettingsTabsCanScrollLeft] = useState(false);
-  const [settingsTabsCanScrollRight, setSettingsTabsCanScrollRight] = useState(false);
-  const updateSettingsTabsScrollArrows = useCallback(() => {
-    const containerWidth = settingsTabsContainerWidthRef.current;
-    const contentWidth = settingsTabsContentWidthRef.current;
-    const scrollX = settingsTabsScrollXRef.current;
-    const maxScrollX = Math.max(0, contentWidth - containerWidth);
-    setSettingsTabsCanScrollLeft(scrollX > 4);
-    setSettingsTabsCanScrollRight(scrollX < maxScrollX - 4);
-  }, []);
-
   const [selectedExerciseDetail, setSelectedExerciseDetail] = useState<ExerciseRepoEntry | null>(null);
   const [exercisesRepo, setExercisesRepo] = useState<ExerciseRepoEntry[]>([]);
   const [exerciseCatalogSnapshot, setExerciseCatalogSnapshot] = useState<CatalogSnapshot<ExerciseRepoEntry>>(
@@ -6097,6 +6076,66 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     previousWeightKg: weightMeasurementPair.previous,
     openTraining: () => setTab("training"),
     startTrainingSession,
+  });
+  const settingsTabsController = useSettingsTabsController({
+    activeTab: settingsTab,
+    selectTab: (nextTab) => {
+      setSettingsTab(nextTab);
+      setSelectedExerciseDetail(null);
+      setSelectedFoodDetail(null);
+      setSelectedPersonalFoodDetail(null);
+      setPersonalFoodFormVisible(false);
+      setPersonalFoodAIChatOpen(false);
+    },
+  });
+  const dataSettingsBackupResult = useMemo(() => {
+    if (!backupResult) return null;
+    const details = (backupResult.details ?? []).slice(0, 5).map((detail) => {
+      const subject = detail.measuredAt
+        ? new Date(detail.measuredAt).toLocaleDateString("es-ES")
+        : `medición ${detail.measurementId.slice(0, 8)}`;
+      return `${subject}: ${backupDetailReasonLabel(detail.reason)}`;
+    });
+    return {
+      status: backupResult.status,
+      message: backupResult.message,
+      details,
+      remainingDetailCount: Math.max(0, (backupResult.details?.length ?? 0) - 5),
+    };
+  }, [backupResult]);
+  const dataSettingsDeletionReport = useMemo(() => {
+    if (!dataDeletionReport) return null;
+    return {
+      status: dataDeletionReport.status,
+      scope: dataDeletionReport.scope,
+      failures: dataDeletionReport.failures.map((failure) => ({
+        id: failure.id,
+        label: failure.label,
+        message: dataDeletionFailureCopy(failure),
+      })),
+    };
+  }, [dataDeletionReport]);
+  const dataSettingsController = useDataSettingsController({
+    lastBackupLabel: lastBackupAt
+      ? new Date(lastBackupAt).toLocaleString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "Nunca",
+    backupBusy,
+    backupResult: dataSettingsBackupResult,
+    deletionReport: dataSettingsDeletionReport,
+    deletionBusy: dataDeletionBusy,
+    deletionBlocked: backupBusy !== null || sendingChat || foodEstimatorSending || dataDeletionBusy,
+    exportBackup: () => void runBackupExport(),
+    importBackup: () => void pickBackupForImport(),
+    openBackupPolicy: () => void openExternalUrl(`${resolvePrivacyPolicyUrl()}#copias`),
+    retryDeletion: (scope) => void performDataDeletion(scope),
+    openDeletion: openDataDeletion,
+    openDeletionPolicy: () => void openExternalUrl(`${resolvePrivacyPolicyUrl()}#eliminacion`),
   });
 
   const filteredTrainingTemplates = useMemo(() => {
@@ -7064,6 +7103,57 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       void pushTrace("previewSound", "error", { error: String(e) });
     }
   }, []);
+  const notificationSettingsController = useNotificationSettingsController({
+    isAndroid: Platform.OS === "android",
+    alarmPunctuality,
+    showBatteryGuidance,
+    batteryGuidance,
+    permissionGranted: notifPermissionGranted,
+    restChannelImportance,
+    settings: userPrefs.notifications,
+    soundOptions: NOTIFICATION_SOUND_OPTIONS,
+    openExactAlarmSettings: () => {
+      void pushTrace("notifPerm", "opening exact alarm settings");
+      void IntentLauncher.startActivityAsync(
+        IntentLauncher.ActivityAction.REQUEST_SCHEDULE_EXACT_ALARM,
+        androidPackageId ? { data: `package:${androidPackageId}` } : {},
+      ).catch((cause) => {
+        void pushTrace("notifPerm", "exact alarm intent failed, fallback to app settings", {
+          error: String(cause),
+        });
+        Linking.openSettings();
+      });
+    },
+    openApplicationSettings: () => Linking.openSettings(),
+    toggleEnabled: () => setUserPrefs((previous) => ({
+      ...previous,
+      notifications: {
+        ...previous.notifications,
+        enabled: !previous.notifications.enabled,
+      },
+    })),
+    toggleSound: () => setUserPrefs((previous) => ({
+      ...previous,
+      notifications: {
+        ...previous.notifications,
+        sound: !previous.notifications.sound,
+      },
+    })),
+    toggleVibration: () => setUserPrefs((previous) => ({
+      ...previous,
+      notifications: {
+        ...previous.notifications,
+        vibrate: !previous.notifications.vibrate,
+      },
+    })),
+    selectSound: (soundKey) => {
+      setUserPrefs((previous) => ({
+        ...previous,
+        notifications: { ...previous.notifications, soundKey },
+      }));
+      void previewSound(soundKey);
+    },
+  });
 
   useEffect(() => {
     if (globalScreenLoadTimeoutRef.current) {
@@ -13483,98 +13573,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ) : (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
         {tab === "settings" ? (
-          <View style={{ position: "relative" }}>
-            <ScrollView
-              ref={settingsTabsScrollRef}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{ flexGrow: 0 }}
-              contentContainerStyle={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 12 }}
-              scrollEventThrottle={16}
-              onLayout={(e) => {
-                settingsTabsContainerWidthRef.current = e.nativeEvent.layout.width;
-                updateSettingsTabsScrollArrows();
-              }}
-              onContentSizeChange={(w) => {
-                settingsTabsContentWidthRef.current = w;
-                updateSettingsTabsScrollArrows();
-              }}
-              onScroll={(e) => {
-                settingsTabsScrollXRef.current = e.nativeEvent.contentOffset.x;
-                updateSettingsTabsScrollArrows();
-              }}
-            >
-              {SETTINGS_TAB_OPTIONS.map((option) => {
-                const isActive = settingsTab === option.key;
-                return (
-                  <Pressable
-                    key={option.key}
-                    accessibilityRole="tab"
-                    accessibilityState={{ selected: isActive }}
-                    accessibilityLabel={option.label}
-                    testID={`settings-tab-${option.key}`}
-                    onPress={() => { setSettingsTab(option.key); setSelectedExerciseDetail(null); setSelectedFoodDetail(null); setSelectedPersonalFoodDetail(null); setPersonalFoodFormVisible(false); setPersonalFoodAIChatOpen(false); }}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                      borderRadius: mobileTheme.radius.pill,
-                      paddingHorizontal: 12,
-                      minHeight: 34,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-            {settingsTabsCanScrollLeft ? (
-              <Pressable
-                onPress={() => {
-                  const targetX = Math.max(0, settingsTabsScrollXRef.current - 160);
-                  settingsTabsScrollRef.current?.scrollTo({ x: targetX, animated: false });
-                }}
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                  bottom: 12,
-                  width: 40,
-                  alignItems: "flex-start",
-                  justifyContent: "center",
-                  paddingLeft: 4,
-                  backgroundColor: "rgba(7,9,13,0.65)",
-                }}
-              >
-                <Ionicons name="chevron-back" size={20} color="rgba(244,247,251,0.85)" />
-              </Pressable>
-            ) : null}
-            {settingsTabsCanScrollRight ? (
-              <Pressable
-                onPress={() => {
-                  const targetX = settingsTabsScrollXRef.current + 160;
-                  settingsTabsScrollRef.current?.scrollTo({ x: targetX, animated: false });
-                }}
-                style={{
-                  position: "absolute",
-                  right: 0,
-                  top: 0,
-                  bottom: 12,
-                  width: 40,
-                  alignItems: "flex-end",
-                  justifyContent: "center",
-                  paddingRight: 4,
-                  backgroundColor: "rgba(7,9,13,0.65)",
-                }}
-              >
-                <Ionicons name="chevron-forward" size={20} color="rgba(244,247,251,0.85)" />
-              </Pressable>
-            ) : null}
-          </View>
+          <SettingsTabs model={settingsTabsController.model} actions={settingsTabsController.actions} />
         ) : null}
         {tab === "chat" ? (
           <ChatScreen model={chatController.model} actions={chatController.actions} />
@@ -20194,800 +20193,21 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               ) : null}
 
               {settingsTab === "preferences" ? (
-                <View style={{ gap: 12 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                    Preferencias del usuario
-                  </Text>
-                  {Object.entries(userPrefs).map(([key, value]) => {
-                    let displayLabel = key;
-                    let displayValue = String(value);
-                    if (key === "chartPeriod") {
-                      displayLabel = "Vista del gráfico";
-                      const option = MEASURES_DASHBOARD_PERIOD_OPTIONS.find((o) => o.key === value);
-                      displayValue = option ? option.label : String(value);
-                    }
-                    return (
-                      <View
-                        key={key}
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          backgroundColor: mobileTheme.color.cardBg,
-                          borderRadius: 12,
-                          padding: 14,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                        }}
-                      >
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
-                          {displayLabel}
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
-                          {displayValue}
-                        </Text>
-                      </View>
-                    );
-                  })}
-                </View>
+                <PreferencesSettingsPanel preferences={userPrefs} />
               ) : null}
 
               {settingsTab === "notifications" ? (
-                <View style={{ gap: 12 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                    Notificaciones de descanso
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                    Configura cómo quieres que te avise la app cuando termina un descanso.
-                  </Text>
-
-                  {Platform.OS === "android" ? (
-                    <Pressable
-                      onPress={async () => {
-                        void pushTrace("notifPerm", "opening exact alarm settings");
-                        try {
-                          await IntentLauncher.startActivityAsync(
-                            IntentLauncher.ActivityAction.REQUEST_SCHEDULE_EXACT_ALARM,
-                            androidPackageId ? { data: `package:${androidPackageId}` } : {},
-                          );
-                        } catch (e) {
-                          void pushTrace("notifPerm", "exact alarm intent failed, fallback to app settings", { error: String(e) });
-                          Linking.openSettings();
-                        }
-                      }}
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        backgroundColor: "rgba(203,255,26,0.06)",
-                        borderRadius: 12,
-                        padding: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(203,255,26,0.3)",
-                      }}
-                    >
-                      <View style={{ flex: 1, gap: 2 }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
-                          Permiso de alarmas exactas
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                          {alarmPunctuality.detail}
-                        </Text>
-                      </View>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                        <Text
-                          style={{
-                            fontSize: 11,
-                            fontWeight: "700",
-                            color: alarmPunctuality.status === "late"
-                              ? "#FF6B6B"
-                              : alarmPunctuality.status === "ontime"
-                                ? mobileTheme.color.brandPrimary
-                                : mobileTheme.color.textSecondary,
-                          }}
-                        >
-                          {alarmPunctuality.badge}
-                        </Text>
-                        <Feather name="chevron-right" size={18} color={mobileTheme.color.textSecondary} />
-                      </View>
-                    </Pressable>
-                  ) : null}
-
-                  {/* Guía del fabricante. Es la causa más común de que el aviso no
-                      suene en segundo plano, y no se arregla desde la app. */}
-                  {showBatteryGuidance && batteryGuidance ? (
-                    <Pressable
-                      onPress={() => Linking.openSettings()}
-                      style={{
-                        backgroundColor: alarmPunctuality.status === "late" ? "rgba(255,107,107,0.08)" : mobileTheme.color.bgSurface,
-                        borderRadius: 12,
-                        padding: 14,
-                        borderWidth: 1,
-                        borderColor: alarmPunctuality.status === "late" ? "rgba(255,107,107,0.35)" : mobileTheme.color.borderSubtle,
-                        gap: 6,
-                      }}
-                    >
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                        <Feather
-                          name="battery-charging"
-                          size={16}
-                          color={alarmPunctuality.status === "late" ? "#FF6B6B" : mobileTheme.color.textSecondary}
-                        />
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600", flex: 1 }}>
-                          {batteryGuidance.brand === "tu fabricante"
-                            ? "Tu móvil puede bloquear los avisos en segundo plano"
-                            : `Los móviles ${batteryGuidance.brand} bloquean los avisos en segundo plano`}
-                        </Text>
-                      </View>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        Para ahorrar batería, el sistema congela las apps que no estás usando y el aviso de descanso no llega hasta que vuelves a abrir Gymnasia. No es algo que la app pueda cambiar por su cuenta.
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
-                        {batteryGuidance.path}
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontStyle: "italic" }}>
-                        Este aviso desaparecerá solo cuando comprobemos que los avisos llegan puntuales.
-                      </Text>
-                    </Pressable>
-                  ) : null}
-
-                  {/* Avisos de degradación, excluyentes y en orden de gravedad: sin
-                      permiso de notificaciones no hay nada que ajustar más abajo. */}
-                  {notifPermissionGranted === false ? (
-                    <Pressable
-                      onPress={() => Linking.openSettings()}
-                      style={{
-                        backgroundColor: "rgba(255,107,107,0.08)",
-                        borderRadius: 12,
-                        padding: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,107,107,0.35)",
-                        gap: 4,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
-                        Notificaciones bloqueadas por Android
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        Sin ellas solo podremos avisarte con la app abierta. Toca para abrir los ajustes del sistema.
-                      </Text>
-                    </Pressable>
-                  ) : Platform.OS === "android" && restChannelImportance !== null && restChannelImportance <= 1 ? (
-                    <Pressable
-                      onPress={() => Linking.openSettings()}
-                      style={{
-                        backgroundColor: "rgba(255,107,107,0.08)",
-                        borderRadius: 12,
-                        padding: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,107,107,0.35)",
-                        gap: 4,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
-                        El canal "Descanso terminado" está silenciado
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        Los avisos llegarán sin sonido. Toca para reactivarlo en los ajustes del sistema.
-                      </Text>
-                    </Pressable>
-                  ) : null}
-
-                  {Platform.OS === "android" ? (
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontStyle: "italic" }}>
-                      Con la pantalla apagada Android puede retrasar el aviso unos minutos para ahorrar batería. Si el descanso ya había terminado, te avisaremos igualmente al volver a la app.
-                    </Text>
-                  ) : null}
-
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: 12,
-                      padding: 14,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                    }}
-                  >
-                    <View style={{ flex: 1, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
-                        Activar notificaciones
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        Muestra una notificación al terminar el descanso
-                      </Text>
-                    </View>
-                    <Pressable
-                      testID="notification-enabled-toggle"
-                      accessibilityRole="switch"
-                      accessibilityLabel={`Activar notificaciones: ${userPrefs.notifications.enabled ? "sí" : "no"}`}
-                      accessibilityState={{ checked: userPrefs.notifications.enabled }}
-                      onPress={() => setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, enabled: !prev.notifications.enabled } }))}
-                      style={{
-                        width: 52,
-                        height: 30,
-                        borderRadius: 15,
-                        backgroundColor: userPrefs.notifications.enabled ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{
-                        position: "absolute",
-                        left: userPrefs.notifications.enabled ? 26 : 4,
-                        width: 22,
-                        height: 22,
-                        borderRadius: 11,
-                        backgroundColor: "#fff",
-                      }} />
-                    </Pressable>
-                  </View>
-
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: 12,
-                      padding: 14,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      opacity: userPrefs.notifications.enabled ? 1 : 0.4,
-                    }}
-                  >
-                    <View style={{ flex: 1, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
-                        Sonido
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        Reproduce el sonido de descanso terminado
-                      </Text>
-                    </View>
-                    <Pressable
-                      testID="notification-sound-toggle"
-                      accessibilityRole="switch"
-                      accessibilityLabel={`Sonido: ${userPrefs.notifications.sound ? "sí" : "no"}`}
-                      accessibilityState={{
-                        checked: userPrefs.notifications.sound,
-                        disabled: !userPrefs.notifications.enabled,
-                      }}
-                      onPress={() => userPrefs.notifications.enabled && setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, sound: !prev.notifications.sound } }))}
-                      style={{
-                        width: 52,
-                        height: 30,
-                        borderRadius: 15,
-                        backgroundColor: userPrefs.notifications.sound ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{
-                        position: "absolute",
-                        left: userPrefs.notifications.sound ? 26 : 4,
-                        width: 22,
-                        height: 22,
-                        borderRadius: 11,
-                        backgroundColor: "#fff",
-                      }} />
-                    </Pressable>
-                  </View>
-
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: 12,
-                      padding: 14,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      opacity: userPrefs.notifications.enabled ? 1 : 0.4,
-                    }}
-                  >
-                    <View style={{ flex: 1, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
-                        Vibración
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        Vibra el móvil al terminar el descanso
-                      </Text>
-                    </View>
-                    <Pressable
-                      testID="notification-vibrate-toggle"
-                      accessibilityRole="switch"
-                      accessibilityLabel={`Vibración: ${userPrefs.notifications.vibrate ? "sí" : "no"}`}
-                      accessibilityState={{
-                        checked: userPrefs.notifications.vibrate,
-                        disabled: !userPrefs.notifications.enabled,
-                      }}
-                      onPress={() => userPrefs.notifications.enabled && setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, vibrate: !prev.notifications.vibrate } }))}
-                      style={{
-                        width: 52,
-                        height: 30,
-                        borderRadius: 15,
-                        backgroundColor: userPrefs.notifications.vibrate ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <View style={{
-                        position: "absolute",
-                        left: userPrefs.notifications.vibrate ? 26 : 4,
-                        width: 22,
-                        height: 22,
-                        borderRadius: 11,
-                        backgroundColor: "#fff",
-                      }} />
-                    </Pressable>
-                  </View>
-
-                  {!userPrefs.notifications.enabled ? (
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontStyle: "italic" }}>
-                      Con las notificaciones desactivadas, solo se avisará con sonido/vibración cuando la app esté abierta.
-                    </Text>
-                  ) : null}
-
-                  {/* Sound selector */}
-                  <View
-                    style={{
-                      gap: 8,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: 12,
-                      padding: 14,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      opacity: userPrefs.notifications.enabled ? 1 : 0.4,
-                    }}
-                  >
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                      <View style={{ flex: 1, gap: 2 }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
-                          Sonido de notificación
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                          Elige el tono que sonará al terminar el descanso
-                        </Text>
-                      </View>
-                      <Pressable
-                        testID="notification-sound-selector-toggle"
-                        accessibilityRole="switch"
-                        accessibilityLabel={`Sonido de notificación: ${userPrefs.notifications.sound ? "sí" : "no"}`}
-                        accessibilityState={{
-                          checked: userPrefs.notifications.sound,
-                          disabled: !userPrefs.notifications.enabled,
-                        }}
-                        onPress={() => setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, sound: !prev.notifications.sound } }))}
-                        disabled={!userPrefs.notifications.enabled}
-                        style={{
-                          width: 52,
-                          height: 30,
-                          borderRadius: 15,
-                          backgroundColor: userPrefs.notifications.sound ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <View style={{
-                          position: "absolute",
-                          left: userPrefs.notifications.sound ? 26 : 4,
-                          width: 22,
-                          height: 22,
-                          borderRadius: 11,
-                          backgroundColor: "#fff",
-                        }} />
-                      </Pressable>
-                    </View>
-
-                    {userPrefs.notifications.sound ? (
-                      <View style={{ gap: 6, marginTop: 4 }}>
-                        {NOTIFICATION_SOUND_OPTIONS.map((option) => {
-                          const isSelected = userPrefs.notifications.soundKey === option.key;
-                          return (
-                            <Pressable
-                              key={option.key}
-                              testID={`notification-sound-option-${option.key}`}
-                              accessibilityRole="radio"
-                              accessibilityLabel={`${option.label}${isSelected ? ", seleccionado" : ""}`}
-                              accessibilityState={{
-                                selected: isSelected,
-                                disabled: !userPrefs.notifications.enabled,
-                              }}
-                              onPress={() => {
-                                setUserPrefs((prev) => ({ ...prev, notifications: { ...prev.notifications, soundKey: option.key } }));
-                                void previewSound(option.key);
-                              }}
-                              disabled={!userPrefs.notifications.enabled}
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                paddingVertical: 10,
-                                paddingHorizontal: 12,
-                                borderRadius: mobileTheme.radius.md,
-                                borderWidth: 1,
-                                borderColor: isSelected ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-                                backgroundColor: isSelected ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp,
-                              }}
-                            >
-                              <Text style={{ color: isSelected ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
-                                {option.label}
-                              </Text>
-                              {isSelected ? (
-                                <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} />
-                              ) : null}
-                            </Pressable>
-                          );
-                        })}
-                      </View>
-                    ) : null}
-                  </View>
-                </View>
+                <NotificationSettingsPanel
+                  model={notificationSettingsController.model}
+                  actions={notificationSettingsController.actions}
+                />
               ) : null}
 
               {settingsTab === "data" ? (
-                <View style={{ gap: 12 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                    Copia de seguridad
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                    Exporta tus datos y fotos de progreso a un paquete .gymnasia. Las fotos se optimizan y se eliminan sus metadatos antes de incluirlas. Guárdalo en tu proveedor de nube (Drive, Dropbox, OneDrive…) o donde prefieras. La copia no incluye tus API keys de proveedores IA.
-                  </Text>
-
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: 12,
-                      padding: 14,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
-                      Última copia
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
-                      {lastBackupAt
-                        ? new Date(lastBackupAt).toLocaleString("es-ES", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : "Nunca"}
-                    </Text>
-                  </View>
-
-                  <Pressable
-                    testID="backup-export"
-                    onPress={runBackupExport}
-                    disabled={backupBusy !== null}
-                    style={{
-                      height: 48,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.brandPrimary,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexDirection: "row",
-                      gap: 8,
-                      opacity: backupBusy !== null ? 0.6 : 1,
-                    }}
-                  >
-                    {backupBusy === "export" ? (
-                      <ActivityIndicator size="small" color="#06090D" />
-                    ) : (
-                      <>
-                        <Feather name="upload" size={18} color="#06090D" />
-                        <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>
-                          Exportar copia de seguridad
-                        </Text>
-                      </>
-                    )}
-                  </Pressable>
-
-                  <Pressable
-                    testID="backup-import-picker"
-                    onPress={pickBackupForImport}
-                    disabled={backupBusy !== null}
-                    style={{
-                      height: 48,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: "transparent",
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.brandPrimary,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexDirection: "row",
-                      gap: 8,
-                      opacity: backupBusy !== null ? 0.6 : 1,
-                    }}
-                  >
-                    {backupBusy === "import" ? (
-                      <ActivityIndicator size="small" color={mobileTheme.color.brandPrimary} />
-                    ) : (
-                      <>
-                        <Feather name="download" size={18} color={mobileTheme.color.brandPrimary} />
-                        <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 15 }}>
-                          Restaurar desde archivo
-                        </Text>
-                      </>
-                    )}
-                  </Pressable>
-
-                  {backupResult ? (
-                    <View
-                      testID="backup-result"
-                      accessibilityLiveRegion="polite"
-                      style={{
-                        gap: 4,
-                        backgroundColor:
-                          backupResult.status === "ok"
-                            ? "rgba(203,255,26,0.10)"
-                            : backupResult.status === "warning"
-                              ? "rgba(255,190,92,0.10)"
-                              : "rgba(255,138,138,0.10)",
-                        borderRadius: 12,
-                        padding: 14,
-                        borderWidth: 1,
-                        borderColor:
-                          backupResult.status === "ok"
-                            ? "rgba(203,255,26,0.5)"
-                            : backupResult.status === "warning"
-                              ? "rgba(255,190,92,0.5)"
-                              : "rgba(255,138,138,0.5)",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: backupResult.status === "error" ? "#FF8A8A" : mobileTheme.color.textPrimary,
-                          fontSize: 13,
-                          fontWeight: "600",
-                        }}
-                      >
-                        {backupResult.message}
-                      </Text>
-                      {backupResult.details?.slice(0, 5).map((detail, index) => (
-                        <Text
-                          key={`${detail.measurementId}-${detail.reason}-${index}`}
-                          style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}
-                        >
-                          • {detail.measuredAt
-                            ? new Date(detail.measuredAt).toLocaleDateString("es-ES")
-                            : `medición ${detail.measurementId.slice(0, 8)}`}: {backupDetailReasonLabel(detail.reason)}
-                        </Text>
-                      ))}
-                      {(backupResult.details?.length ?? 0) > 5 ? (
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                          Y {(backupResult.details?.length ?? 0) - 5} incidencia(s) más.
-                        </Text>
-                      ) : null}
-                    </View>
-                  ) : null}
-
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
-                    Restaurar sustituye por completo los datos actuales por los del archivo. El paquete puede contener información sensible y no está cifrado. Tus API keys se mantienen.
-                  </Text>
-                  <Pressable
-                    accessibilityRole="link"
-                    accessibilityLabel="Ver qué contiene la copia de seguridad en la política de privacidad"
-                    testID="legal-backup-policy-link"
-                    onPress={() => { void openExternalUrl(`${resolvePrivacyPolicyUrl()}#copias`); }}
-                    hitSlop={8}
-                  >
-                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
-                      Qué contiene este archivo
-                    </Text>
-                  </Pressable>
-
-                  <View
-                    style={{
-                      height: 1,
-                      backgroundColor: mobileTheme.color.borderSubtle,
-                      marginVertical: 8,
-                    }}
-                  />
-
-                  <View style={{ gap: 6 }}>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}>
-                      Gestionar tus datos
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>
-                      Elige el alcance antes de borrar. Gymnasia comprobará cada destino y no dirá que terminó si queda algo pendiente.
-                    </Text>
-                  </View>
-
-                  {dataDeletionReport?.status === "incomplete" ? (
-                    <View
-                      accessibilityLiveRegion="polite"
-                      testID="data-deletion-report"
-                      style={{
-                        gap: 10,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,77,79,0.55)",
-                        borderRadius: mobileTheme.radius.lg,
-                        backgroundColor: "rgba(255,77,79,0.10)",
-                        padding: 14,
-                      }}
-                    >
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                        <Feather name="alert-triangle" size={17} color="#FF6E6E" />
-                        <Text style={{ color: "#FF9A9A", fontSize: 14, fontWeight: "800", flex: 1 }}>
-                          El borrado quedó incompleto
-                        </Text>
-                      </View>
-                      {dataDeletionReport.failures.map((failure) => (
-                        <View key={failure.id} style={{ gap: 2 }}>
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
-                            {failure.label}
-                          </Text>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 17 }}>
-                            {dataDeletionFailureCopy(failure)}
-                          </Text>
-                        </View>
-                      ))}
-                      <Pressable
-                        testID="data-deletion-retry"
-                        accessibilityRole="button"
-                        accessibilityLabel="Reintentar borrado de datos"
-                        disabled={dataDeletionBusy}
-                        onPress={() => void performDataDeletion(dataDeletionReport.scope)}
-                        style={{
-                          minHeight: 44,
-                          borderRadius: mobileTheme.radius.md,
-                          backgroundColor: "#FF4D4F",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexDirection: "row",
-                          gap: 8,
-                          opacity: dataDeletionBusy ? 0.6 : 1,
-                        }}
-                      >
-                        {dataDeletionBusy ? <ActivityIndicator size="small" color="#FFE8EB" /> : <Feather name="refresh-cw" size={15} color="#FFE8EB" />}
-                        <Text style={{ color: "#FFE8EB", fontSize: 14, fontWeight: "800" }}>
-                          Reintentar borrado
-                        </Text>
-                      </Pressable>
-                    </View>
-                  ) : null}
-
-                  <View
-                    style={{
-                      gap: 12,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.08)",
-                      borderRadius: mobileTheme.radius.lg,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      padding: 14,
-                    }}
-                  >
-                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
-                      <View
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: 10,
-                          backgroundColor: "rgba(203,255,26,0.10)",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Feather name="rotate-ccw" size={17} color={mobileTheme.color.brandPrimary} />
-                      </View>
-                      <View style={{ flex: 1, gap: 4 }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
-                          Borrar actividad y conversaciones
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
-                          Borra entrenamientos, dieta, medidas, chats y sesiones. Conserva memoria, alimentos personales, preferencias y claves API.
-                        </Text>
-                      </View>
-                    </View>
-                    <Pressable
-                      testID="data-deletion-open-activity"
-                      accessibilityRole="button"
-                      accessibilityLabel="Borrar actividad y conversaciones"
-                      disabled={dataDeletionBlocked}
-                      onPress={() => openDataDeletion("activity")}
-                      style={{
-                        minHeight: 44,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,138,138,0.55)",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        opacity: dataDeletionBlocked ? 0.45 : 1,
-                      }}
-                    >
-                      <Text style={{ color: "#FFB0B0", fontSize: 14, fontWeight: "800" }}>
-                        Borrar actividad
-                      </Text>
-                    </Pressable>
-                  </View>
-
-                  <View
-                    style={{
-                      gap: 12,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,77,79,0.42)",
-                      borderRadius: mobileTheme.radius.lg,
-                      backgroundColor: "rgba(255,77,79,0.07)",
-                      padding: 14,
-                    }}
-                  >
-                    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
-                      <View
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: 10,
-                          backgroundColor: "rgba(255,77,79,0.18)",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Feather name="trash-2" size={17} color="#FF6E6E" />
-                      </View>
-                      <View style={{ flex: 1, gap: 4 }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>
-                          Borrar todos mis datos
-                        </Text>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
-                          Borra también memoria, alimentos personales, preferencias, claves, cachés, trazas y metadatos locales.
-                        </Text>
-                      </View>
-                    </View>
-                    <Pressable
-                      testID="data-deletion-open-all"
-                      accessibilityRole="button"
-                      accessibilityLabel="Borrar todos mis datos"
-                      disabled={dataDeletionBlocked}
-                      onPress={() => openDataDeletion("all-personal")}
-                      style={{
-                        minHeight: 44,
-                        borderRadius: mobileTheme.radius.md,
-                        backgroundColor: "#FF4D4F",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        opacity: dataDeletionBlocked ? 0.45 : 1,
-                      }}
-                    >
-                      <Text style={{ color: "#FFE8EB", fontSize: 14, fontWeight: "800" }}>
-                        Borrar todos mis datos
-                      </Text>
-                    </Pressable>
-                  </View>
-
-                  {dataDeletionBlocked && !dataDeletionBusy ? (
-                    <Text style={{ color: "#FFCD77", fontSize: 12, lineHeight: 17 }}>
-                      Termina la conversación, estimación o copia de seguridad en curso antes de borrar.
-                    </Text>
-                  ) : null}
-
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 17 }}>
-                    Los archivos exportados, las fotos de la galería, los permisos del sistema y los datos enviados a proveedores están fuera del control de Gymnasia y no se pueden borrar desde aquí.
-                  </Text>
-                  <Pressable
-                    accessibilityRole="link"
-                    accessibilityLabel="Ver cómo eliminar tus datos en la política de privacidad"
-                    testID="legal-deletion-policy-link"
-                    onPress={() => { void openExternalUrl(`${resolvePrivacyPolicyUrl()}#eliminacion`); }}
-                    hitSlop={8}
-                  >
-                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
-                      Qué puede borrar Gymnasia
-                    </Text>
-                  </Pressable>
-                </View>
+                <DataSettingsPanel
+                  model={dataSettingsController.model}
+                  actions={dataSettingsController.actions}
+                />
               ) : null}
 
               {settingsTab === "traces" ? (

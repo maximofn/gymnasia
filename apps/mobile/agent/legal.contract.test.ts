@@ -14,6 +14,10 @@ import {
 // el enlace legal es fácil de perder en un refactor del pie de Ajustes y nadie lo
 // echaría de menos hasta la siguiente revisión de Google Play.
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const settingsScreenSource = readFileSync(
+  new URL("../screens/SettingsScreen.tsx", import.meta.url),
+  "utf8",
+);
 const localStoreModelSource = readFileSync(
   new URL("../persistence/localStoreModel.ts", import.meta.url),
   "utf8",
@@ -38,7 +42,7 @@ describe("contrato estático del enlace legal en la app", () => {
   });
 
   it("enlaza también desde la copia de seguridad, donde se explican los datos", () => {
-    expect(appSource).toContain('testID="legal-backup-policy-link"');
+    expect(settingsScreenSource).toContain('testID="legal-backup-policy-link"');
     expect(appSource).toContain("#copias");
   });
 
