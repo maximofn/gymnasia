@@ -68,7 +68,7 @@ export class GoogleStreamError extends Error {
 
 export function createGoogleStreamParser(handlers?: StreamingHandlers) {
   let buffer = "";
-  let interactionId = "";
+  let interactionId: string | null = null;
   let terminal: GoogleInteractionTurn["status"] | null = null;
   let usage: Record<string, unknown> = {};
   let content = "";
@@ -110,13 +110,13 @@ export function createGoogleStreamParser(handlers?: StreamingHandlers) {
       fail("after_terminal", "evento después del cierre de la interacción");
     }
     if (type === "interaction.created") {
-      if (interactionId || !isGoogleRecord(data.interaction)
-        || typeof data.interaction.id !== "string" || !data.interaction.id.trim()
+      if (interactionId !== null || !isGoogleRecord(data.interaction)
+        || typeof data.interaction.id !== "string"
         || data.interaction.status !== "in_progress") fail("invalid_created", "apertura de interacción no válida");
       interactionId = (data.interaction as { id: string }).id;
       return;
     }
-    if (!interactionId) fail("missing_created", "evento recibido antes de abrir la interacción");
+    if (interactionId === null) fail("missing_created", "evento recibido antes de abrir la interacción");
     if (data.interaction_id !== undefined && data.interaction_id !== interactionId) {
       fail("interaction_mismatch", "el evento pertenece a otra interacción");
     }
@@ -228,7 +228,9 @@ export function createGoogleStreamParser(handlers?: StreamingHandlers) {
     },
     finish(): GoogleInteractionTurn {
       if (failure) throw failure;
-      if (buffer.trim() || !terminal) return fail("truncated", "respuesta interrumpida o incompleta");
+      if (buffer.trim() || !terminal || interactionId === null) {
+        return fail("truncated", "respuesta interrumpida o incompleta");
+      }
       finished = true;
       return { interactionId, status: terminal, steps: [...steps.values()].map((item) => item.step as GoogleStep),
         content: content.trim(), thinking: thinking.trim() || null, usage };

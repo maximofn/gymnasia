@@ -4,7 +4,9 @@ GYM-232 (ticket para migrar toda generación de Google a Interactions sin guarda
 conversaciones remotas) incluye chat, asistentes de alimentos, extracción JSON y
 evaluación sanitaria opcional. Las peticiones llevan `store: false` y nunca
 `previous_interaction_id`. El transporte es Fetch en web y XHR incremental en
-Android/iOS. Si el XHR nativo falla antes de entregar contenido visible, la app
+Android/iOS. Google representa con una cadena vacía el ID de una interacción no
+guardada; el parser usa la presencia del evento `interaction.created`, no el valor
+del ID, para controlar el ciclo de vida. Si el XHR nativo falla antes de entregar contenido visible, la app
 repite la petición una vez con XHR almacenado completo, sin eventos de progreso.
 
 ## Contrato y regresiones
@@ -53,6 +55,14 @@ siguiente antes de cerrar el ticket.
   El dispositivo no estaba conectado por ADB, por lo que no se obtuvo la excepción
   de OkHttp. Se añadió la recuperación almacenada y queda pendiente validarla en
   una nueva build Android.
+- Android real, APK v1.42.2: la recuperación almacenada recibió y procesó el SSE,
+  pero el parser rechazó `interaction.created` porque Google devolvió `id: ""` al
+  respetar `store: false`. Una petición real confirmó el mismo ID vacío en apertura,
+  actualización de estado y cierre; se añadió cobertura del stream completo y de
+  una continuación con herramientas donde todas las rondas carecen de ID remoto.
+  Una prueba temporal de contrato contra Google completó además dos rondas reales,
+  con una función ficticia ejecutada una sola vez; la prueba y la clave no forman
+  parte del repositorio.
 - Antes de distribuir: completar Android y publicar los HTML de privacidad en
   `gymnasia-web`, siguiendo `docs/legal/privacy-change-checklist.md`.
 
