@@ -2160,6 +2160,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     alarmRevision: 0,
   });
   const manualRestSkipRef = useRef(false);
+  // AppState.currentState cambia antes de que termine la reconciliación nativa.
+  // Esta copia solo avanza al recibir nuestro evento y mantiene parado el tick
+  // mientras comprobamos si Android ya entregó el aviso de descanso.
+  const workoutAppStateRef = useRef(AppState.currentState);
+  const foregroundRestRecoveryRef = useRef(false);
   const pendingRecoveredRestAlertRef = useRef<{
     alert: WorkoutRestAlert;
     play: boolean;
@@ -4108,9 +4113,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   useEffect(() => {
     if (!activeWorkoutSession || activeWorkoutSession.status !== "running") return;
     const interval = setInterval(() => {
-      if (AppState.currentState !== "active") return;
+      if (workoutAppStateRef.current !== "active" || foregroundRestRecoveryRef.current) return;
       setActiveWorkoutSession((prev) => {
         if (!prev || prev.status !== "running") return prev;
+        if (workoutAppStateRef.current !== "active" || foregroundRestRecoveryRef.current) return prev;
         const result = reconcileWorkoutSessionClock(prev, Date.now());
         if (result.clockMovedBackward) {
           void pushTrace("workoutClock", "device clock moved backward", {
@@ -4126,55 +4132,66 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", async (nextAppState) => {
+      workoutAppStateRef.current = nextAppState;
       if (nextAppState === "active") {
+        foregroundRestRecoveryRef.current = true;
         // El usuario puede haber cambiado permisos o ajustes del canal mientras
         // estaba fuera; sin esto el aviso se quedaría obsoleto en pantalla.
         void refreshNotificationDiagnostics();
-      }
-      if (nextAppState === "active") {
-        const now = Date.now();
-        const current = activeWorkoutSessionRef.current;
-        if (current) {
-          const expectedPayload = restNotificationPayloadForSession(current);
-          const wasDelivered = expectedPayload
-            ? await syncRestDeliveryFromTray(expectedPayload)
-            : false;
-          const result = reconcileWorkoutSessionClock(current, now);
-          if (result.restAlert) {
-            manualRestSkipRef.current = !shouldPlayRecoveredRestAlert(
-              result.restAlert.expected_at_ms,
-              now,
-              wasDelivered,
-              REST_ALERT_FALLBACK_WINDOW_MS,
-            );
-            void pushTrace("restAlert", "foreground recovery decision", {
-              delivered: wasDelivered,
-              expectedAt: result.restAlert.expected_at_ms,
-              suppressed: manualRestSkipRef.current,
-            });
+        try {
+          const now = Date.now();
+          const current = activeWorkoutSessionRef.current;
+          if (current) {
+            const expectedPayload = restNotificationPayloadForSession(current);
+            const wasObservedByListener = expectedPayload !== null
+              && restNotifDeliveredAtRef.current !== null
+              && restNotifExpectedAtRef.current === expectedPayload.expected_at_ms;
+            const wasFoundInTray = expectedPayload
+              ? await syncRestDeliveryFromTray(expectedPayload)
+              : false;
+            if (workoutAppStateRef.current !== "active") return;
+            const wasDelivered = wasObservedByListener || wasFoundInTray;
+            const result = reconcileWorkoutSessionClock(current, now);
+            if (result.restAlert) {
+              manualRestSkipRef.current = !shouldPlayRecoveredRestAlert(
+                result.restAlert.expected_at_ms,
+                now,
+                wasDelivered,
+                REST_ALERT_FALLBACK_WINDOW_MS,
+              );
+              void pushTrace("restAlert", "foreground recovery decision", {
+                delivered: wasDelivered,
+                observedByListener: wasObservedByListener,
+                foundInTray: wasFoundInTray,
+                expectedAt: result.restAlert.expected_at_ms,
+                suppressed: manualRestSkipRef.current,
+              });
+            }
+            if (result.autoPaused) {
+              setError("La sesión llevaba más de 12 horas sin actualizarse. Hemos conservado sus tiempos y la hemos pausado para que puedas revisarla.");
+            }
+            if (result.clockMovedBackward) {
+              void pushTrace("workoutClock", "device clock moved backward", {
+                sessionId: current.id,
+              });
+            }
+            try {
+              await persistWorkoutSessionImmediately(result.session);
+            } catch (persistError) {
+              setError("No se pudo guardar el reloj recuperado de la sesión.");
+              void pushTrace("workoutClock", "foreground persistence failed", {
+                sessionId: current.id,
+                error: String(persistError),
+              });
+            }
+            activeWorkoutSessionRef.current = result.session;
+            setActiveWorkoutSession(result.session);
+            if (!activeRestNotificationPayload(result.session, now)) {
+              await cancelRestEndNotification();
+            }
           }
-          if (result.autoPaused) {
-            setError("La sesión llevaba más de 12 horas sin actualizarse. Hemos conservado sus tiempos y la hemos pausado para que puedas revisarla.");
-          }
-          if (result.clockMovedBackward) {
-            void pushTrace("workoutClock", "device clock moved backward", {
-              sessionId: current.id,
-            });
-          }
-          try {
-            await persistWorkoutSessionImmediately(result.session);
-          } catch (persistError) {
-            setError("No se pudo guardar el reloj recuperado de la sesión.");
-            void pushTrace("workoutClock", "foreground persistence failed", {
-              sessionId: current.id,
-              error: String(persistError),
-            });
-          }
-          activeWorkoutSessionRef.current = result.session;
-          setActiveWorkoutSession(result.session);
-          if (!activeRestNotificationPayload(result.session, now)) {
-            await cancelRestEndNotification();
-          }
+        } finally {
+          foregroundRestRecoveryRef.current = false;
         }
       }
       if (/inactive|background/.test(nextAppState)) {
