@@ -419,7 +419,6 @@ import {
   createDefaultDietSettings,
   createDietMealExpandedState,
   dateFromISO,
-  formatDietDayContext,
   formatDietDayHeader,
   formatNutritionNumber,
   isoDateFromDate,
@@ -430,7 +429,6 @@ import {
   shiftISODateByDays,
   sortDietMealsByCategory,
   sumDayCalories,
-  sumDayMacroGrams,
   todayISO,
   type ActivityLevel,
   type DietDay,
@@ -439,6 +437,7 @@ import {
   type DietMeal,
   type DietSettings,
 } from "./diet/model";
+import { buildDietDailyPresentationModel } from "./diet/dailyPresentationModel";
 import { buildDietPlanningModel } from "./diet/planningModel";
 import {
   normalizeMeasurements as normalizeMeasurementCollection,
@@ -3917,8 +3916,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const exerciseIssueSentRef = useRef<Set<string>>(new Set());
 
   const today = todayISO();
-  const dietDateLabel = formatDietDayHeader(selectedDietDate);
-  const dietDateContextLabel = formatDietDayContext(selectedDietDate, today);
   const todayDietDay = store.dietByDate[today] ?? { day_date: today, meals: [] };
   const dietDay = store.dietByDate[selectedDietDate] ?? { day_date: selectedDietDate, meals: [] };
   const activeProvider = useMemo(
@@ -4086,129 +4083,83 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const canAutocompleteGkgMacro = dietPlanningModel.autocomplete.enabled;
   const autocompleteGkgMacroKey = dietPlanningModel.autocomplete.macro;
   const autocompleteGkgMacroPerKgText = dietPlanningModel.autocomplete.gramsPerKgText;
-  const mealNutritionIssueByField = useMemo(
-    () => new Map(mealNutritionIssues.map((issue) => [issue.field, issue] as const)),
-    [mealNutritionIssues],
-  );
-  const dayCaloriesConsumed = sumDayCalories(dietDay);
-  const dayProteinConsumed = sumDayMacroGrams(dietDay, "protein_g");
-  const dayCarbsConsumed = sumDayMacroGrams(dietDay, "carbs_g");
-  const dayFatConsumed = sumDayMacroGrams(dietDay, "fat_g");
   const proteinDailyTargetGrams = savedDietPlanEvaluation.macroGrams.protein;
   const carbsDailyTargetGrams = savedDietPlanEvaluation.macroGrams.carbs;
   const fatDailyTargetGrams = savedDietPlanEvaluation.macroGrams.fat;
-  const dayCaloriesProgress =
-    dietDailyCaloriesTarget > 0 ? dayCaloriesConsumed / dietDailyCaloriesTarget : 0;
-  const dayCaloriesPercent =
-    dietDailyCaloriesTarget > 0 ? Math.round(Math.min((dayCaloriesConsumed / dietDailyCaloriesTarget) * 100, 999)) : 0;
-  const dietMacroOverview = useMemo(() => [
-    {
-      key: "protein",
-      label: "Proteína",
-      consumed: dayProteinConsumed,
-      total: proteinDailyTargetGrams,
-      accent: "#B266FF",
+  const dietDailyPresentation = useMemo(() => buildDietDailyPresentationModel({
+    selectedDate: selectedDietDate,
+    referenceDate: today,
+    day: dietDay,
+    dailyCaloriesTarget: dietDailyCaloriesTarget,
+    macroTargets: {
+      protein: proteinDailyTargetGrams,
+      carbs: carbsDailyTargetGrams,
+      fat: fatDailyTargetGrams,
     },
-    {
-      key: "carbs",
-      label: "Carbos",
-      consumed: dayCarbsConsumed,
-      total: carbsDailyTargetGrams,
-      accent: mobileTheme.color.brandPrimary,
+    foods: foodsRepo,
+    personalFoods,
+    foodSearch: dietFoodSearch,
+    selectedFood: dietSelectedFood,
+    selectedGrams: dietSelectedGrams,
+    nutritionIssues: mealNutritionIssues,
+    manualFields: {
+      name: mealTitleInput,
+      grams: mealGramsInput,
+      calories_kcal: mealCaloriesInput,
+      protein_g: mealProteinInput,
+      carbs_g: mealCarbsInput,
+      fat_g: mealFatInput,
     },
-    {
-      key: "fat",
-      label: "Grasa",
-      consumed: dayFatConsumed,
-      total: fatDailyTargetGrams,
-      accent: "#4D84FF",
-    },
-  ], [
-    carbsDailyTargetGrams,
-    dayCarbsConsumed,
-    dayFatConsumed,
-    dayProteinConsumed,
-    fatDailyTargetGrams,
-    proteinDailyTargetGrams,
-  ]);
-  const orderedDietMeals = useMemo(() => DIET_MEAL_CATEGORIES.map((category) => {
-    const existing = dietDay.meals.find((meal) => meal.title === category);
-    return existing ?? {
-      id: `meal_virtual_${selectedDietDate}_${category.toLowerCase()}`,
-      title: category,
-      items: [],
-    };
-  }), [dietDay.meals, selectedDietDate]);
-  const dietFoodSearchResults = useMemo(() => {
-    const query = dietFoodSearch.trim().toLowerCase();
-    if (!query) return [];
-    return [...foodsRepo, ...personalFoods]
-      .filter((food) => food.name.toLowerCase().includes(query))
-      .slice(0, 8);
-  }, [dietFoodSearch, foodsRepo, personalFoods]);
-  const selectedDietFoodPreview = useMemo(() => {
-    if (!dietSelectedFood) return null;
-    const validation = validateNutritionFormInput({
-      name: dietSelectedFood.name,
-      grams: dietSelectedGrams,
-      calories_kcal: 0,
-      protein_g: 0,
-      carbs_g: 0,
-      fat_g: 0,
-    });
-    const grams = validation.ok ? validation.value.grams : 0;
-    const ratio = grams / 100;
-    return {
-      calories: Math.round(dietSelectedFood.calories_per_100g * ratio),
-      protein: Math.round(dietSelectedFood.protein_per_100g * ratio * 10) / 10,
-      carbs: Math.round(dietSelectedFood.carbs_per_100g * ratio * 10) / 10,
-      fat: Math.round(dietSelectedFood.fat_per_100g * ratio * 10) / 10,
-    };
-  }, [dietSelectedFood, dietSelectedGrams]);
-  const dietManualFields = useMemo(() => ({
-    name: mealTitleInput,
-    grams: mealGramsInput,
-    calories_kcal: mealCaloriesInput,
-    protein_g: mealProteinInput,
-    carbs_g: mealCarbsInput,
-    fat_g: mealFatInput,
   }), [
+    carbsDailyTargetGrams,
+    dietDailyCaloriesTarget,
+    dietDay,
+    dietFoodSearch,
+    dietSelectedFood,
+    dietSelectedGrams,
+    fatDailyTargetGrams,
+    foodsRepo,
     mealCaloriesInput,
     mealCarbsInput,
     mealFatInput,
     mealGramsInput,
+    mealNutritionIssues,
     mealProteinInput,
     mealTitleInput,
+    personalFoods,
+    proteinDailyTargetGrams,
+    selectedDietDate,
+    today,
   ]);
   const dietController = useDietController({
-    dateLabel: dietDateLabel,
-    dateContextLabel: dietDateContextLabel,
+    dateLabel: dietDailyPresentation.dateLabel,
+    dateContextLabel: dietDailyPresentation.dateContextLabel,
     selectedDate: selectedDietDate,
     datePickerOpen: showDietDatePicker,
     isWeb: Platform.OS === "web",
     isIos: Platform.OS === "ios",
-    caloriesConsumed: dayCaloriesConsumed,
+    caloriesConsumed: dietDailyPresentation.caloriesConsumed,
     caloriesTarget: dietDailyCaloriesTarget,
-    caloriesProgress: dayCaloriesProgress,
-    caloriesPercent: dayCaloriesPercent,
-    macroOverview: dietMacroOverview,
+    caloriesProgress: dietDailyPresentation.caloriesProgress,
+    caloriesPercent: dietDailyPresentation.caloriesPercent,
+    macroOverview: dietDailyPresentation.macroOverview,
     exceededBudgetCalories: savedDietPlanEvaluation.budgetStatus === "exceeded"
       ? savedDietPlanEvaluation.excessCalories
       : null,
-    meals: orderedDietMeals,
+    meals: dietDailyPresentation.meals,
     expandedMeals: dietMealExpanded,
     editorCategory: dietMealEditorCategory,
     editingItem: dietEditingItem,
     itemMenu: dietItemMenu,
     catalogAvailability: foodCatalogAvailability,
     foodSearch: dietFoodSearch,
-    foodSearchResults: dietFoodSearchResults,
+    foodSearchResults: dietDailyPresentation.foodSearchResults,
     addMode: dietAddMode,
     selectedFood: dietSelectedFood,
     selectedGrams: dietSelectedGrams,
-    selectedFoodPreview: selectedDietFoodPreview,
-    nutritionIssues: mealNutritionIssueByField,
-    manualFields: dietManualFields,
+    selectedFoodPreview: dietDailyPresentation.selectedFoodPreview,
+    nutritionIssues: dietDailyPresentation.nutritionIssues,
+    manualFields: dietDailyPresentation.manualFields,
     foodCatalogAmbiguityOpen: pendingFoodResolution !== null,
     foodEstimatorOpen: foodEstimatorModalOpen,
     copyConfirmationOpen: dietCopyModal !== null,
