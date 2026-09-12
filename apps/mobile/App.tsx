@@ -56,7 +56,7 @@ import {
   type FeedbackProposal,
 } from "./agent/feedbackProposals";
 import { FeedbackProposalBanner } from "./FeedbackProposalBanner";
-import { googleInteractionEndpoint, requestGoogleInteraction } from "./agent/googleStreamTransport";
+import { requestGoogleInteraction } from "./agent/googleStreamTransport";
 import {
   buildGoogleHistory,
   isGoogleConversationTurn,
@@ -366,17 +366,22 @@ import {
   anthropicThinkingConfig,
   createFakeProviderResult,
   explainAnthropicError,
-  FAKE_PROVIDER_MODELS,
-  fetchProviderConfiguration,
   googleApiHeaders,
 } from "./agent/providerTransport";
 import {
-  anthropicModelsQuery,
-  collectAnthropicModels,
   parseAnthropicModelOptions,
-  type AnthropicModelCatalog,
   type AnthropicModelOption,
 } from "./agent/anthropicModels";
+import {
+  fetchAnthropicModelsDirect,
+  fetchAnthropicModelsViaWebProxy,
+  fetchGoogleModels,
+  fetchOpenAIModels,
+  verifyProviderConnection,
+  type GoogleModelOption,
+  type OpenAIModelOption,
+  type ProviderVerificationResult,
+} from "./agent/providerCatalog";
 import {
   NUTRITION_FOOD_TYPES,
   formatNutritionValidationIssues,
@@ -400,7 +405,6 @@ import {
   normalizeMeasurements as normalizeMeasurementCollection,
   type Measurement,
 } from "./measurements/measurementContract";
-import { verifyProviderConfiguration } from "./agent/providerVerification";
 import {
   DEFAULT_MODELS,
   DEFAULT_OPENAI_REASONING_EFFORT,
@@ -621,13 +625,6 @@ type AnthropicResponseBlock = AnthropicTextBlock | AnthropicThinkingBlock | Anth
 type AnthropicStreamTurnResult = AnthropicChatResult & {
   contentBlocks: AnthropicResponseBlock[];
   stopReason: string | null;
-};
-type OpenAIModelOption = { id: string; owned_by: string | null };
-type GoogleModelOption = { id: string; display_name: string | null };
-type ProviderConnectionCheckResult = {
-  ok: boolean;
-  message: string;
-  severity: Exclude<ProviderStatusSeverity, "info">;
 };
 type ProviderDeleteModalState = { provider: Provider; maskedApiKey: string };
 type ChatInputMessage = {
@@ -1514,216 +1511,6 @@ function extractErrorMessage(payload: unknown, fallback: string): string {
   return candidate.error?.message ?? candidate.detail ?? candidate.message ?? fallback;
 }
 
-function parseOpenAIModelOptions(payload: unknown): OpenAIModelOption[] {
-  if (!payload || typeof payload !== "object") return [];
-
-  const maybeDirect = payload as {
-    data?: Array<{ id?: string; owned_by?: string }>;
-    models?: Array<{ id?: string; owned_by?: string }>;
-  };
-  const rawItems = Array.isArray(maybeDirect.models)
-    ? maybeDirect.models
-    : Array.isArray(maybeDirect.data)
-      ? maybeDirect.data
-      : [];
-
-  const dedup = new Map<string, OpenAIModelOption>();
-  rawItems.forEach((item) => {
-    const modelId = item?.id?.trim();
-    if (!modelId) return;
-    dedup.set(modelId, {
-      id: modelId,
-      owned_by: item?.owned_by?.trim() || null,
-    });
-  });
-  return Array.from(dedup.values()).sort((a, b) => a.id.localeCompare(b.id));
-}
-
-function parseGoogleModelOptions(payload: unknown): GoogleModelOption[] {
-  if (!payload || typeof payload !== "object") return [];
-
-  const maybeDirect = payload as {
-    models?: Array<{
-      name?: string;
-      displayName?: string;
-      display_name?: string;
-      supportedGenerationMethods?: string[];
-    }>;
-  };
-  const rawItems = Array.isArray(maybeDirect.models) ? maybeDirect.models : [];
-
-  const dedup = new Map<string, GoogleModelOption>();
-  rawItems.forEach((item) => {
-    const rawName = item?.name?.trim();
-    if (!rawName) return;
-    const modelId = rawName.replace(/^models\//, "").trim();
-    if (!modelId) return;
-
-    const methods = Array.isArray(item?.supportedGenerationMethods)
-      ? item.supportedGenerationMethods
-      : null;
-    if (methods && methods.length > 0 && !methods.includes("generateContent")) return;
-
-    const displayName = item?.displayName?.trim() || item?.display_name?.trim() || null;
-    dedup.set(modelId, {
-      id: modelId,
-      display_name: displayName,
-    });
-  });
-
-  return Array.from(dedup.values()).sort((a, b) => a.id.localeCompare(b.id));
-}
-
-async function fetchAnthropicModelsViaWebProxy(
-  apiKey: string,
-  workspaceId?: string,
-): Promise<AnthropicModelCatalog> {
-  if (IS_FAKE_PROVIDER_MODE) {
-    return {
-      options: [...FAKE_PROVIDER_MODELS.anthropic],
-      pagesFetched: 1,
-      truncated: false,
-      partial: false,
-      warning: null,
-    };
-  }
-  try {
-    // El proxy ya recorre la paginación y devuelve el catálogo agregado, así
-    // que este bucle termina en la primera vuelta. Se usa el mismo recorrido
-    // que en nativo para que una app nueva contra un proxy viejo —que sí
-    // pagina— siga funcionando.
-    return await collectAnthropicModels(async () => {
-      const response = await fetchProviderConfiguration(buildWebProxyUrl("/chat/providers/anthropic/models"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(anthropicProxyCredentials(apiKey, workspaceId)),
-      });
-
-      let payload: unknown = null;
-      try {
-        payload = await response.json();
-      } catch {
-        // ignore json parse errors
-      }
-
-      if (!response.ok) {
-        throw new Error(explainAnthropicError(
-          extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`),
-        ));
-      }
-
-      return payload;
-    });
-  } catch (err) {
-    const rawMessage = err instanceof Error ? err.message.trim() : "";
-    if (rawMessage.toLowerCase().includes("failed to fetch")) {
-      throw new Error(ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE);
-    }
-    throw new Error(rawMessage || ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE);
-  }
-}
-
-async function fetchAnthropicModelsDirect(
-  apiKey: string,
-  workspaceId?: string,
-): Promise<AnthropicModelCatalog> {
-  if (IS_FAKE_PROVIDER_MODE) {
-    return {
-      options: [...FAKE_PROVIDER_MODELS.anthropic],
-      pagesFetched: 1,
-      truncated: false,
-      partial: false,
-      warning: null,
-    };
-  }
-  // En nativo no hay proxy que agregue el catálogo, así que la paginación se
-  // recorre aquí: sin esto, el móvil enseñaba solo la primera página.
-  return collectAnthropicModels(async (afterId) => {
-    const response = await fetchProviderConfiguration(
-      `https://api.anthropic.com/v1/models${anthropicModelsQuery(afterId)}`,
-      {
-        method: "GET",
-        headers: anthropicApiHeaders(
-          apiKey,
-          ANTHROPIC_API_VERSION,
-          workspaceId,
-          { "Content-Type": "application/json" },
-          { directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS },
-        ),
-      },
-    );
-
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      throw new Error(explainAnthropicError(
-        extractErrorMessage(payload, `Anthropic error (${response.status})`),
-      ));
-    }
-
-    return payload;
-  });
-}
-
-async function fetchOpenAIModelsDirect(apiKey: string): Promise<OpenAIModelOption[]> {
-  if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.openai];
-  const response = await fetchProviderConfiguration("https://api.openai.com/v1/models", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
-
-  let payload: unknown = null;
-  try {
-    payload = await response.json();
-  } catch {
-    // ignore json parse errors
-  }
-
-  if (!response.ok) {
-    throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
-  }
-
-  return parseOpenAIModelOptions(payload);
-}
-
-function googleModelsBaseUrl(apiKey: string): string {
-  return googleInteractionEndpoint(Constants.expoConfig?.extra?.googleFixturePort,
-    Constants.expoConfig?.extra?.environment, apiKey).replace(/\/interactions$/, "/models");
-}
-
-async function fetchGoogleModelsDirect(apiKey: string): Promise<GoogleModelOption[]> {
-  if (IS_FAKE_PROVIDER_MODE) return [...FAKE_PROVIDER_MODELS.google];
-  const response = await fetchProviderConfiguration(
-    googleModelsBaseUrl(apiKey),
-    {
-      method: "GET",
-      headers: googleApiHeaders(apiKey),
-    },
-  );
-
-  let payload: unknown = null;
-  try {
-    payload = await response.json();
-  } catch {
-    // ignore json parse errors
-  }
-
-  if (!response.ok) {
-    throw new Error(extractErrorMessage(payload, `Google AI error (${response.status})`));
-  }
-
-  return parseGoogleModelOptions(payload);
-}
-
 async function callAnthropicViaWebProxy(
   provider: AIKey,
   systemPrompt: string,
@@ -1772,15 +1559,6 @@ async function callAnthropicViaWebProxy(
     }
     throw new Error(rawMessage);
   }
-}
-
-async function verifyProviderConnection(provider: AIKey): Promise<ProviderConnectionCheckResult> {
-  return verifyProviderConfiguration(provider, {
-    platform: Platform.OS === "web" ? "web" : "native",
-    fakeMode: IS_FAKE_PROVIDER_MODE,
-    ...(provider.provider === "google" ? { googleModelsBaseUrl: googleModelsBaseUrl(provider.api_key) } : {}),
-    anthropicProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/verify"),
-  });
 }
 
 function parseOpenAIContent(payload: unknown): string | null {
@@ -8903,8 +8681,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setAnthropicModelOptionsMessage(null);
     try {
       const catalog = shouldUseAnthropicWebProxy()
-        ? await fetchAnthropicModelsViaWebProxy(apiKey, workspaceId)
-        : await fetchAnthropicModelsDirect(apiKey, workspaceId);
+        ? await fetchAnthropicModelsViaWebProxy({
+            apiKey,
+            workspaceId,
+            proxyUrl: buildWebProxyUrl("/chat/providers/anthropic/models"),
+            fakeMode: IS_FAKE_PROVIDER_MODE,
+          })
+        : await fetchAnthropicModelsDirect({
+            apiKey,
+            workspaceId,
+            fakeMode: IS_FAKE_PROVIDER_MODE,
+            directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS,
+          });
 
       if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       setAnthropicModelOptions(catalog.options);
@@ -8944,7 +8732,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setOpenAIModelOptionsLoading(true);
     setOpenAIModelOptionsMessage(null);
     try {
-      const options = await fetchOpenAIModelsDirect(apiKey);
+      const options = await fetchOpenAIModels({
+        apiKey,
+        fakeMode: IS_FAKE_PROVIDER_MODE,
+      });
 
       if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       setOpenAIModelOptions(options);
@@ -8976,7 +8767,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setGoogleModelOptionsLoading(true);
     setGoogleModelOptionsMessage(null);
     try {
-      const options = await fetchGoogleModelsDirect(apiKey);
+      const options = await fetchGoogleModels({
+        apiKey,
+        fakeMode: IS_FAKE_PROVIDER_MODE,
+        fixturePort: Constants.expoConfig?.extra?.googleFixturePort,
+        environment: Constants.expoConfig?.extra?.environment,
+      });
 
       if (!isProviderDiscoveryCurrent(providerOperationsRef.current, token)) return;
       setGoogleModelOptions(options);
@@ -9125,7 +8921,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   async function persistProviderCandidate(
     candidate: AIKey,
     token: ProviderSaveToken,
-    verifiedStatus: ProviderConnectionCheckResult | null,
+    verifiedStatus: ProviderVerificationResult | null,
   ): Promise<boolean> {
     const provider = candidate.provider;
     if (!isProviderSaveCurrent(
@@ -9277,7 +9073,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       },
     }));
 
-    const check = await verifyProviderConnection(candidate);
+    const check = await verifyProviderConnection({
+      provider: candidate,
+      platform: Platform.OS === "web" ? "web" : "native",
+      fakeMode: IS_FAKE_PROVIDER_MODE,
+      anthropicProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/verify"),
+      googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
+      environment: Constants.expoConfig?.extra?.environment,
+    });
     if (!isProviderSaveCurrent(
       providerOperationsRef.current,
       token,
