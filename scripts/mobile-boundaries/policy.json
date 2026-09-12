@@ -47,7 +47,7 @@
     "catalogs": ["catalogs/ExerciseCatalogBrowser.tsx", "catalogs/CatalogStatusNotice.tsx", "catalogs/exerciseCatalogRuntime.ts", "catalogs/matching.ts", "catalogs/migrations.ts", "catalogs/runtime.ts", "catalogs/sources.ts", "catalogs/types.ts"],
     "controllers": ["controllers/types.ts"],
     "diet": ["diet/model.ts", "diet/nutritionContract.ts"],
-    "measurements": ["measurements/measurementContract.ts", "measurements/measurementPerformance.ts"],
+    "measurements": ["measurements/measurementContract.ts", "measurements/measurementPerformance.ts", "measurements/presentationModel.ts"],
     "persistence": ["persistence/localStoreModel.ts", "persistence/localStoreRecovery.ts", "persistence/localStoreRuntime.ts"],
     "platform": ["platform/index.ts"],
     "screens": ["screens/index.ts"],
