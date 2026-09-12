@@ -125,17 +125,12 @@ import {
   scopedStorageKey,
 } from "./runtimeEnvironment";
 import {
-  aggregateCatalogAvailability,
   catalogStatuses,
   catalogWarnings,
   initialCatalogSnapshot,
-  latestCatalogFetch,
-  readCatalogCache,
-  refreshCatalog,
 } from "./catalogs/runtime";
 import {
   EXERCISE_CATALOG_SOURCE,
-  FOOD_CATALOG_DEFINITIONS,
   PERSONAL_FOODS_SOURCE_DEFINITION,
   exerciseCatalogImageUri,
   foodCatalogImageUri,
@@ -315,6 +310,7 @@ import {
   useLocalStoreRuntime,
   type LocalStoreRuntime,
 } from "./persistence/localStoreRuntime";
+import { useFoodCatalogRuntime } from "./controllers/catalogController";
 import { useAiReportController, useChatController } from "./controllers/chatController";
 import { useDietController, useDietResolutionController } from "./controllers/dietController";
 import { useHomeController } from "./controllers/homeController";
@@ -3705,10 +3701,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     seriesId: string;
     subSeriesId: string;
   } | null>(null);
-  const [foodsRepo, setFoodsRepo] = useState<FoodRepoEntry[]>([]);
-  const [foodCatalogSnapshots, setFoodCatalogSnapshots] = useState<Array<CatalogSnapshot<FoodRepoEntry>>>(
-    () => FOOD_CATALOG_DEFINITIONS.map((definition) => initialCatalogSnapshot(definition)),
-  );
   const [selectedFoodDetail, setSelectedFoodDetail] = useState<FoodRepoEntry | null>(null);
   const [foodSearch, setFoodSearch] = useState("");
   const [foodCategoryFilter, setFoodCategoryFilter] = useState("all");
@@ -3716,23 +3708,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [selectedProductDetail, setSelectedProductDetail] = useState<FoodRepoEntry | null>(null);
   const [personalFoods, setPersonalFoods] = useState<FoodRepoEntry[]>([]);
   const [personalFoodsHydrated, setPersonalFoodsHydrated] = useState(false);
-  const foodCatalogAvailability = useMemo<CatalogSearchAvailability>(() => ({
-    availability: aggregateCatalogAvailability(foodCatalogSnapshots),
-    fetchedAt: latestCatalogFetch(foodCatalogSnapshots),
-    sources: [
-      ...catalogStatuses(foodCatalogSnapshots),
-      {
-        sourceId: "user_personal_foods",
-        label: "Alimentos personales",
-        availability: "cached",
-        fetchedAt: null,
-        refreshing: false,
-        cachePersisted: true,
-        warning: null,
-      },
-    ],
-    warnings: catalogWarnings(foodCatalogSnapshots),
-  }), [foodCatalogSnapshots]);
+  const foodCatalogRuntime = useFoodCatalogRuntime({
+    isHydrated,
+    services: APP_PLATFORM_SERVICES,
+    getRuntimeGeneration: () => catalogRuntimeGenerationRef.current,
+    isRuntimeBlocked: () => dataDeletionBusyRef.current,
+  });
+  const foodsRepo = foodCatalogRuntime.foods;
+  const foodCatalogAvailability = foodCatalogRuntime.availability;
   const exerciseCatalogAvailability = useMemo<CatalogSearchAvailability>(() => ({
     availability: exerciseCatalogSnapshot.availability,
     fetchedAt: exerciseCatalogSnapshot.fetchedAt,
@@ -4158,7 +4141,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     editItem: startEditDietItem,
     editItemWithAi: startEditDietItemWithAI,
     deleteItem: deleteDietItem,
-    retryCatalog: () => { void retryFoodCatalogs(); },
+    retryCatalog: () => { void foodCatalogRuntime.retry(); },
     changeFoodSearch: changeDietFoodSearch,
     focusFoodSearch: () => setDietFoodSearch(""),
     clearFoodSearch: clearDietFoodSearch,
@@ -4342,7 +4325,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     selectedFood: selectedFoodDetail,
     productSearch,
     selectedProduct: selectedProductDetail,
-    retry: () => void retryFoodCatalogs(),
+    retry: () => void foodCatalogRuntime.retry(),
     changeFoodSearch: setFoodSearch,
     changeFoodCategory: setFoodCategoryFilter,
     selectFood: setSelectedFoodDetail,
@@ -5955,33 +5938,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return exerciseCatalogServiceRef.current;
   }
 
-  function catalogRuntimeDependencies(generation: number) {
-    return {
-      storage: {
-        getItem: (key: string) => AsyncStorage.getItem(key),
-        setItem: async (key: string, value: string) => {
-          if (dataDeletionBusyRef.current || catalogRuntimeGenerationRef.current !== generation) {
-            throw new Error("Catalog runtime invalidated.");
-          }
-          await AsyncStorage.setItem(key, value);
-        },
-      },
-      fetcher: (url: string) => fetch(url),
-    };
-  }
-
-  async function retryFoodCatalogs(): Promise<void> {
-    const generation = catalogRuntimeGenerationRef.current;
-    const pending = foodCatalogSnapshots.map((snapshot) => ({ ...snapshot, refreshing: true }));
-    setFoodCatalogSnapshots(pending);
-    const refreshed = await Promise.all(FOOD_CATALOG_DEFINITIONS.map((definition, index) => (
-      refreshCatalog(definition, pending[index], catalogRuntimeDependencies(generation))
-    )));
-    if (catalogRuntimeGenerationRef.current !== generation) return;
-    setFoodCatalogSnapshots(refreshed);
-    setFoodsRepo(refreshed.flatMap((snapshot) => snapshot.data));
-  }
-
   async function retryExerciseCatalog(): Promise<void> {
     const generation = catalogRuntimeGenerationRef.current;
     if (exercisePickerOpen) {
@@ -5999,23 +5955,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (!isHydrated || dataDeletionBusyRef.current) return;
     let cancelled = false;
     const generation = catalogRuntimeGenerationRef.current;
-    const dependencies = catalogRuntimeDependencies(generation);
-    void Promise.all(FOOD_CATALOG_DEFINITIONS.map((definition) => (
-      readCatalogCache(definition, dependencies)
-    ))).then(async (cached) => {
-      if (cancelled || catalogRuntimeGenerationRef.current !== generation) return;
-      const pending = cached.map((snapshot) => ({ ...snapshot, refreshing: true }));
-      setFoodCatalogSnapshots(pending);
-      setFoodsRepo(cached.flatMap((snapshot) => snapshot.data));
-      const refreshed = await Promise.all(FOOD_CATALOG_DEFINITIONS.map((definition, index) => (
-        refreshCatalog(definition, pending[index], dependencies)
-      )));
-      if (cancelled || catalogRuntimeGenerationRef.current !== generation) return;
-      setFoodCatalogSnapshots(refreshed);
-      setFoodsRepo(refreshed.flatMap((snapshot) => snapshot.data));
-    }).catch((catalogError) => {
-      console.error("[Catalogs] nutrition runtime failed:", catalogError);
-    });
     void getExerciseCatalogService().initialize().then(async (cached) => {
       if (cancelled || catalogRuntimeGenerationRef.current !== generation) return;
       applyExerciseCatalogState(cached);

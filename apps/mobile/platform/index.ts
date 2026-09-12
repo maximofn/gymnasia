@@ -41,6 +41,9 @@ export type AppPlatformServices = Readonly<{
   }>;
   sharing: typeof Sharing;
   documentPicker: typeof DocumentPicker;
+  network: Readonly<{
+    fetch: typeof fetch;
+  }>;
   native: Readonly<{
     AppState: typeof AppState;
     BackHandler: typeof BackHandler;
@@ -68,6 +71,7 @@ export function createExpoPlatformServices(): AppPlatformServices {
     files: { File, Paths },
     sharing: Sharing,
     documentPicker: DocumentPicker,
+    network: { fetch },
     native: { AppState, BackHandler, Linking, Platform, Vibration },
   };
 }

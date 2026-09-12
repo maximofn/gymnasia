@@ -17,9 +17,10 @@ describe("AppPlatformServices", () => {
       "files",
       "sharing",
       "documentPicker",
+      "network",
       "native",
     ] as const satisfies ReadonlyArray<keyof AppPlatformServices>;
 
-    expect(requiredPorts).toHaveLength(13);
+    expect(requiredPorts).toHaveLength(14);
   });
 });
