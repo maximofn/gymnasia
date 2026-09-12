@@ -1,16 +1,87 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { memo } from "react";
 import ConfettiCannon from "react-native-confetti-cannon";
-import { Pressable, Text, View } from "react-native";
+import { Image, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import type {
   TrainingResolutionActions,
   TrainingResolutionModel,
+  TrainingDetailExercise,
 } from "../controllers/trainingController";
 import { formatClock } from "../training/presentationModel";
 import { diffWorkoutTemplates } from "../training/workoutTemplateOperations";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import { mobileTheme } from "../theme";
+
+export const TrainingExerciseDetailOverlay = memo(function TrainingExerciseDetailOverlay({
+  exercise,
+  onClose,
+}: {
+  exercise: TrainingDetailExercise | null;
+  onClose(): void;
+}) {
+  if (!exercise) return null;
+  return (
+    <View testID={shellSurfaceTestId("training-exercise-detail")} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "#06090D", zIndex: 200 }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+          <View style={{ position: "relative" }}>
+            {exercise.imageUri ? (
+              <Image source={{ uri: exercise.imageUri }} style={{ width: "100%", aspectRatio: 16 / 10 }} resizeMode="cover" />
+            ) : (
+              <View style={{ width: "100%", aspectRatio: 16 / 10, backgroundColor: exercise.previewMeta.backgroundColor, alignItems: "center", justifyContent: "center" }}>
+                <Feather name={exercise.previewMeta.icon} size={64} color={exercise.previewMeta.accentColor} />
+              </View>
+            )}
+            <Pressable onPress={onClose} style={{ position: "absolute", top: 14, left: 14, width: 40, height: 40, borderRadius: 999, borderWidth: 1, borderColor: "rgba(255,255,255,0.14)", backgroundColor: "rgba(8,11,16,0.48)", alignItems: "center", justifyContent: "center" }}>
+              <Feather name="arrow-left" size={18} color="#FFFFFF" />
+            </Pressable>
+          </View>
+          <View style={{ padding: 20, gap: 16 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "700" }}>
+              {exercise.exerciseName}
+            </Text>
+            {exercise.muscle ? (
+              <View style={{ flexDirection: "row" }}>
+                <View style={{ minHeight: 44, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#171B23", paddingHorizontal: 12, flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <Feather name="target" size={14} color={mobileTheme.color.brandPrimary} />
+                  <Text style={{ color: "#E8EDF5", fontSize: 14, fontWeight: "700" }}>{exercise.muscle}</Text>
+                </View>
+              </View>
+            ) : null}
+            {exercise.instructions ? (
+              <View style={{ gap: 8 }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>Instrucciones</Text>
+                <Text style={{ color: "#8B94A3", fontSize: 15, lineHeight: 22 }}>{exercise.instructions}</Text>
+              </View>
+            ) : null}
+            {exercise.seriesItems.length > 0 ? (
+              <View style={{ gap: 8 }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>Series</Text>
+                <View style={{ borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#171B23", overflow: "hidden" }}>
+                  <View style={{ flexDirection: "row", paddingVertical: 8, paddingHorizontal: 12, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.06)", backgroundColor: "#1C212A" }}>
+                    <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", width: 40, textAlign: "center" }}>#</Text>
+                    <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", flex: 1, textAlign: "center" }}>Reps</Text>
+                    <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", flex: 1, textAlign: "center" }}>Peso</Text>
+                    <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", flex: 1, textAlign: "center" }}>Descanso</Text>
+                  </View>
+                  {exercise.seriesItems.map((series, index) => (
+                    <View key={series.id} style={{ flexDirection: "row", paddingVertical: 10, paddingHorizontal: 12, borderBottomWidth: index < exercise.seriesItems.length - 1 ? 1 : 0, borderBottomColor: "rgba(255,255,255,0.04)" }}>
+                      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700", width: 40, textAlign: "center" }}>{index + 1}</Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 14, flex: 1, textAlign: "center" }}>{series.reps.trim() || "--"}</Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 14, flex: 1, textAlign: "center" }}>{series.weight_kg.trim() ? `${series.weight_kg.trim()} kg` : "--"}</Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 14, flex: 1, textAlign: "center" }}>{series.rest_seconds.trim() ? `${series.rest_seconds.trim()}s` : "--"}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : null}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
+});
 
 export const TrainingResolutionOverlays = memo(function TrainingResolutionOverlays({
   model,

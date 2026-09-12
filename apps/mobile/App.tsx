@@ -396,6 +396,7 @@ import {
   TrainingHistoryScreen,
   TrainingListScreen,
   TrainingResolutionOverlays,
+  TrainingExerciseDetailOverlay,
   TrainingSessionScreen,
   WorkoutHistoryEntryCard,
 } from "./screens";
@@ -14109,166 +14110,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         actions={trainingResolutionController.actions}
       />
 
-      {exerciseDetailIndex !== null && (() => {
-        const ex = activeTrainingDetailExercises[exerciseDetailIndex];
-        if (!ex) return null;
-        return (
-          <View
-            testID={shellSurfaceTestId("training-exercise-detail")}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "#06090D",
-              zIndex: 200,
-            }}
-          >
-            <SafeAreaView style={{ flex: 1 }}>
-              <ScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{ paddingBottom: 40 }}
-                showsVerticalScrollIndicator={false}
-              >
-                <View style={{ position: "relative" }}>
-                  {ex.imageUri ? (
-                    <Image
-                      source={{ uri: ex.imageUri }}
-                      style={{ width: "100%", aspectRatio: 16 / 10 }}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View
-                      style={{
-                        width: "100%",
-                        aspectRatio: 16 / 10,
-                        backgroundColor: ex.previewMeta.backgroundColor,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Feather name={ex.previewMeta.icon} size={64} color={ex.previewMeta.accentColor} />
-                    </View>
-                  )}
-                  <Pressable
-                    onPress={() => setExerciseDetailIndex(null)}
-                    style={{
-                      position: "absolute",
-                      top: 14,
-                      left: 14,
-                      width: 40,
-                      height: 40,
-                      borderRadius: 999,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.14)",
-                      backgroundColor: "rgba(8,11,16,0.48)",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Feather name="arrow-left" size={18} color="#FFFFFF" />
-                  </Pressable>
-                </View>
-                <View style={{ padding: 20, gap: 16 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "700" }}>
-                    {ex.exerciseName}
-                  </Text>
-                  {ex.muscle ? (
-                    <View style={{ flexDirection: "row" }}>
-                      <View
-                        style={{
-                          minHeight: 44,
-                          borderRadius: 14,
-                          borderWidth: 1,
-                          borderColor: "rgba(255,255,255,0.06)",
-                          backgroundColor: "#171B23",
-                          paddingHorizontal: 12,
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
-                      >
-                        <Feather name="target" size={14} color={mobileTheme.color.brandPrimary} />
-                        <Text style={{ color: "#E8EDF5", fontSize: 14, fontWeight: "700" }}>
-                          {ex.muscle}
-                        </Text>
-                      </View>
-                    </View>
-                  ) : null}
-                  {ex.instructions ? (
-                    <View style={{ gap: 8 }}>
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>
-                        Instrucciones
-                      </Text>
-                      <Text style={{ color: "#8B94A3", fontSize: 15, lineHeight: 22 }}>
-                        {ex.instructions}
-                      </Text>
-                    </View>
-                  ) : null}
-                  {ex.seriesItems.length > 0 && (
-                    <View style={{ gap: 8 }}>
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "700" }}>
-                        Series
-                      </Text>
-                      <View
-                        style={{
-                          borderRadius: 14,
-                          borderWidth: 1,
-                          borderColor: "rgba(255,255,255,0.06)",
-                          backgroundColor: "#171B23",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            paddingVertical: 8,
-                            paddingHorizontal: 12,
-                            borderBottomWidth: 1,
-                            borderBottomColor: "rgba(255,255,255,0.06)",
-                            backgroundColor: "#1C212A",
-                          }}
-                        >
-                          <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", width: 40, textAlign: "center" }}>#</Text>
-                          <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", flex: 1, textAlign: "center" }}>Reps</Text>
-                          <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", flex: 1, textAlign: "center" }}>Peso</Text>
-                          <Text style={{ color: "#636B78", fontSize: 12, fontWeight: "700", flex: 1, textAlign: "center" }}>Descanso</Text>
-                        </View>
-                        {ex.seriesItems.map((s: ExerciseSeries, sIdx: number) => (
-                          <View
-                            key={s.id}
-                            style={{
-                              flexDirection: "row",
-                              paddingVertical: 10,
-                              paddingHorizontal: 12,
-                              borderBottomWidth: sIdx < ex.seriesItems.length - 1 ? 1 : 0,
-                              borderBottomColor: "rgba(255,255,255,0.04)",
-                            }}
-                          >
-                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700", width: 40, textAlign: "center" }}>
-                              {sIdx + 1}
-                            </Text>
-                            <Text style={{ color: "#8B94A3", fontSize: 14, flex: 1, textAlign: "center" }}>
-                              {s.reps.trim() || "--"}
-                            </Text>
-                            <Text style={{ color: "#8B94A3", fontSize: 14, flex: 1, textAlign: "center" }}>
-                              {s.weight_kg.trim() ? `${s.weight_kg.trim()} kg` : "--"}
-                            </Text>
-                            <Text style={{ color: "#8B94A3", fontSize: 14, flex: 1, textAlign: "center" }}>
-                              {s.rest_seconds.trim() ? `${s.rest_seconds.trim()}s` : "--"}
-                            </Text>
-                          </View>
-                        ))}
-                      </View>
-                    </View>
-                  )}
-                </View>
-              </ScrollView>
-            </SafeAreaView>
-          </View>
-        );
-      })()}
+      <TrainingExerciseDetailOverlay
+        exercise={exerciseDetailIndex === null ? null : activeTrainingDetailExercises[exerciseDetailIndex] ?? null}
+        onClose={() => setExerciseDetailIndex(null)}
+      />
 
       {exercisePickerOpen ? (
         <ExerciseCatalogBrowser
