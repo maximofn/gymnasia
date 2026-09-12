@@ -3,9 +3,6 @@ type: guía operativa
 title: Generación y validación de imágenes de catálogo
 description: Flujo operativo para generar imágenes de alimentos y ejercicios con Hugging Face, conservar las referencias de catálogo y validar WebP, proporción y artefactos derivados antes de publicar.
 tags: [content, images, generation, catalogs, validation]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-d54ece17be93a2b0fabf9d35
     resource: repo://ejercicios/SOURCES.md
@@ -19,9 +16,14 @@ sources:
     resource: repo://scripts/catalogs/catalogs.mjs
   - id: openwiki-source-869bed5ee1bbd205948cf49e
     resource: repo://scripts/catalogs/catalogs.test.mjs
+  - id: openwiki-source-87ef8bdaf847493a7f3a10e0
+    resource: repo://scripts/catalogs/exercise-pagination.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-12T11:47:11.882Z
 ---
 
 # Generación y validación de imágenes de catálogo
@@ -106,7 +108,7 @@ node scripts/catalogs/generate.mjs --write --domain ejercicios
 node scripts/catalogs/generate.mjs --write --domain alimentos
 ```
 
-Antes de escribir, ese comando inspecciona **los cuatro dominios**. Si cualquiera viola el contrato, falla y no publica los agregados seleccionados. Si pasa, solo reemplaza `all.json` e `index.json` del dominio indicado mediante archivos temporales y renombres; el escritor revierte los artefactos ya sustituidos si ocurre un fallo. Esto reemplaza el mecanismo histórico que reconstruía agregados directamente desde Python: no hay un segundo formato de agregados.
+Antes de escribir, ese comando inspecciona **los cuatro dominios**. Si cualquiera viola el contrato, falla y no publica los agregados seleccionados. Si pasa, reemplaza mediante archivos temporales y renombres los agregados del dominio indicado: `all.json` e `index.json` cuando corresponden y, para ejercicios, también el árbol paginado `catalog-v1/`. El escritor publica el manifiesto de ejercicios después de sus páginas, directorios por ID e índices de búsqueda; además elimina los JSON paginados que ya no se esperan y revierte sustituciones y eliminaciones si ocurre un fallo. Esto reemplaza el mecanismo histórico que reconstruía agregados directamente desde Python: no hay un segundo formato de agregados.
 
 Después de una operación de imágenes —incluida una ejecución de un único ID— ejecute la comprobación completa, que además detecta artefactos derivados obsoletos:
 

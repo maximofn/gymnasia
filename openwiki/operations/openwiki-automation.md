@@ -11,9 +11,6 @@ openwiki:
   test_paths: [ops/openwiki-automation-template/tests/classify-openwiki-error.test.mjs]
   invariants: [La automatización solo se ejecuta en un repositorio privado; el estado OAuth se cifra fuera del checkout; los diagnósticos solo exponen categorías saneadas.]
   validation_commands: [npm --workspace ops/openwiki-automation-template test]
-verified:
-  - by: openwiki/0.4.3
-    at: 2026-09-06T11:56:49.315Z
 sources:
   - id: openwiki-source-d63b46e4983cf20d445e960a
     resource: repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml

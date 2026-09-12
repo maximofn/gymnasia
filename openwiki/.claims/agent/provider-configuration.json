@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:6a594e98f687be675ba822d6b31c7dd8e43f5c6fe3a25a828de7e4922caa5920",
+  "pageVersion": "sha256:223cceec2c3b7a30d5800f3afa3b092f4c6244d14b20d9c23f1254a554dc0156",
   "claims": [
     {
       "id": "claim_593d6e5c167c4d37bb621397b1ddd1a3",
@@ -162,7 +162,7 @@
         },
         {
           "resource": "repo://apps/mobile/agent/providerVerification.ts#L64-L194",
-          "version": "repo-lines-v1:sha256:851c4e615862fb9328fee83b8c3e37da911b02ccbd982d878221b9ebf2413ee8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyM2MwYzk5NzAyMWVmZmM3MGQ0NzdjNTVjYmM1NzFjNGUwYWZiODVkMWY0ODNjYzZhNDYxYWE3NjY0NjYzNjk2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIn0"
+          "version": "repo-lines-v1:sha256:7d5d78904f25966230dc6b8bbb485caca9a51bc578e325b73ee0c8dec766e541:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyM2MwYzk5NzAyMWVmZmM3MGQ0NzdjNTVjYmM1NzFjNGUwYWZiODVkMWY0ODNjYzZhNDYxYWE3NjY0NjYzNjk2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIn0"
         }
       ]
     },
@@ -238,7 +238,7 @@
         },
         {
           "resource": "repo://apps/mobile/agent/providerTransport.contract.test.ts#L14-L37",
-          "version": "repo-lines-v1:sha256:cb8992eb344d22ca92b85d19c45e36ff4a9b60a1cc81b2ff1d0fe22ab2d12734:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNjliZTk1NjFlNzE0NTdhMGE1YjIwODk4ZTM5NjZkNWNlM2MxN2NkMzkyMzJkZGUzODhmOWEwZGY0ZGJkY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3MDFiNzY5YzQ5NDExNmNhNTU2NjdiZmJiYjg4ODc4M2Q5MDFiZmU2OTliNTM1M2ZhYzQxMTdkYjkyOTFjZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+          "version": "repo-lines-v1:sha256:594fc400c13c2d03c7583ba968d9f796cf38dee979da1e5d0bc04baf6d7a1d1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNjliZTk1NjFlNzE0NTdhMGE1YjIwODk4ZTM5NjZkNWNlM2MxN2NkMzkyMzJkZGUzODhmOWEwZGY0ZGJkY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3MDFiNzY5YzQ5NDExNmNhNTU2NjdiZmJiYjg4ODc4M2Q5MDFiZmU2OTliNTM1M2ZhYzQxMTdkYjkyOTFjZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
         }
       ]
     },
@@ -308,21 +308,49 @@
     },
     {
       "id": "claim_5f77b12c552ca09e31d7e93894764bf9",
-      "statement": "El endpoint local de Google solo admite Development con clave ficticia; la generación real usa Interactions sin persistencia remota.",
+      "statement": "El endpoint local de Google solo se habilita con un puerto válido, Development en modo BYOK y la clave ficticia `e2e-local-fake-key`; la generación normal usa Interactions con `store: false`.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts",
-          "version": "sha256:92a559ae8930d7419b487dffb0370308b4419261fc35e10fb41595f5084e18ed"
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L12-L31",
+          "version": "repo-lines-v1:sha256:893fbd77c2839a9bedd2d2270b38edcc4f8db7d74778504153bcefca9638429c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5OTFiNjNmYzkxOTBlYTFjNjU3ZDU1ZWIyZWM2M2E5MWNhM2ExMTFkMDcwM2Q4NDQ3NTM4YWJmNDc0ZDAyMDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzZDFlM2Y4MDMzNDljOWVjMDk3M2U5MmQ5ZGU1MTUxOGZjY2ExYzY5OGJjZjc0YzFkOTFlN2FlZTgxNTkxZGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjMDYxMWY1ZjE4MDU2NTViZWQ3YTAwYjg1Zjk2YzZhNTg3MjAxZWQ1YzdkNzBjMGZkNzc5ZGVlMmUwZDA4YzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0N2NkY2RmMzRiNjU1YjQwYTM0MTA3NTQ3Y2IxZGRmMDMyYjA0MDIzNzJhN2U1YzQyMWNiOWY0ZTNjNDI1OTEifQ"
         },
         {
-          "resource": "repo://apps/mobile/app.config.ts",
-          "version": "sha256:51fa110f95f8fb06a06693edc0fc92061e9bd067bb9412150a07849db70af8f6"
+          "resource": "repo://apps/mobile/agent/providerTransport.ts#L3-L24",
+          "version": "repo-lines-v1:sha256:d3742d42f37692c5d20dbe6a9ce5b8046a6a714511154c0f248abaca2341555b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkOTA2NDE2ZjUyOTczNGQwZWVmMDljMTQzYmQyNzcwZTFlZmJjMmQxMTlhY2NjZjVjNDFhYmYyN2U2NzRkMTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM1OWI4OWRlY2ZjMmZhODI1YTNjYzE4MDU5MWFiYjlkMjMxNDZmNzk2YjU4MGQ0ODc0YzY3ZWVmODc3ZDQ0OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzNTkzMGY4MTRlOTg1YzRiMzNkN2RkNDA0ZDdkODFiODcwMWRlYTEwYTg0MmJmYzQ1NzBiMTcxMzM3ZDI1NjcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/app.config.ts#L102-L128",
+          "version": "repo-lines-v1:sha256:d23048c2330668259469db75a911eb02b83eddde56f34e2ff290e09b80481f2e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmY2IxZDYyNDc3OGM5MTcxMGM0N2U0ZjFhZTgwNTA4MWJmODBjY2EwZTY3N2ZmYjBjYTYwZWVkZDM1MTk3MzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkOTE1MTZlMjQzMDdhMTBkNTc4MjQ2NmQ2NTRlZmU1OGZjYjlmMmRhZTYyNzJmYmQwMmEwYjA5NjY1MTJiMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyNmUwOWNkYmIyNGY2NGE5MDRjZDRiODZjZWVkMjYyNWQyNGM2Nzg3NGQ0YjE3ZTEzM2MwNGIyNTE4ZjlmZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5d40fda981c841b9a1b4d4dd6a591f14",
+      "statement": "En nativo, si SecureStore no está disponible, la aplicación no crea el repositorio de proveedores: puede conservar la última configuración legible para la sesión, pero no persistir una nueva.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8482-L8542",
+          "version": "repo-lines-v1:sha256:238a739c5f20e59cc2b6cd9b2ed996d855765a51a2c26815d9f39a81d5549953:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4ZjEzZDhjMTc4ZjVjNzgzZTZmNDQxYmQ5YWUwNmRiYzllZTY1YTNkNGNlMTdiY2NhMWEzNmFiZWZhOWZiODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkOWUxMjU0NjQyNTU3NmQzZGVhZThjOWI5ZGJmMTI4ZDVkNmRkYWY1ZDdmZTg1NzkzNDkyN2RlZmZhM2I5ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1NWFmNDBmNzE0MjE2MzY2NmQ4ZmZhMjdjM2JjNTYwNDZlMDZlOWFhMTllMTg4ZDQ5ZmUzZjFiZWQwYWU5MzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlYmE4ZmU4NThlYTA2MWY0MDE2MDExNDk4OWIyOWRiMTliZjY5YzVlZWU0ODhmYWJhODljMTEyOTVlNmYxZTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2ea9eb3b8dcb4918917702c18a56c79f",
+      "statement": "Las exportaciones excluyen las claves BYOK y una importación conserva la `api_key` y el `workspace_id` Anthropic existentes en el dispositivo, en vez de aceptar esos secretos desde el archivo.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L10087-L10116",
+          "version": "repo-lines-v1:sha256:74d801f0f46316d0d8a7c35ec7435b11b2aa0076272f13cf87a979e8001199d9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYTc2NjcxODgxMDgwZTdiYTViMTUxMDBmNmNlYjFkZmVkZjg5MTgzYTRmZjE4OTY4MTBhZWQ1ZTg1YjQxMGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2YTQ5YWNkM2ZiNDhkM2FkMDNhOGNkMmM2OWQzMWRiYmVlZGU2NGJlMGVhOWQzMTljZmY2NzFmZGUwN2ExZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgwMjJjODZiMjdhNzRlOWRjZTA5NmM2YWYwZjk1YjkxY2I5ZGUwNGY2ZjU1NzNlODJkNzY3MDQ0YjUxYTQzMmEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerCredentials.ts#L19-L27",
+          "version": "repo-lines-v1:sha256:53cf8061589712fde37f5b84b0a906ca270ba77a0888c96b1a0db3efc7ec12a0:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTcyMDZiZjY0YzcyMDE4ZmNjZjk2MTM2MTY2ZWQzMTk2OTNkOTZiZjBmMGQ5MGFkYThmODY1MTZlNTQ4OGU3MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2QxMDhhOWEyNDhiMjU5MTk5ZmU2OWFlODMxODM4YjMxMTMzZDNmN2FmZjBhNjFkMzYxMTgwMzUyODRhNGIyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGQ3MTU4MzhjM2NjZDBkZTU4MjcyMWY3NTI5MjNkN2MwZGQzZjI3ZDM0MmY5YzBmNjAxMjE5YThlOGMyMzRiYiJ9"
         }
       ]
     }
   ],
   "verification": {
-    "by": "manual-code-review",
-    "at": "2026-09-11T00:00:00.000Z"
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-12T11:47:11.882Z"
   }
 }

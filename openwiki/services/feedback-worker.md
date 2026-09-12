@@ -11,9 +11,6 @@ openwiki:
   test_paths: [apps/feedback-worker/test/handler.test.ts, apps/mobile/agent/feedbackContract.contract.test.ts]
   invariants: [El cliente no elige repositorio ni etiquetas; una respuesta creada debe incluir número y URL verificables; la misma clave o contenido no crea una incidencia duplicada.]
   validation_commands: [npm --workspace apps/feedback-worker run test, npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/feedbackContract.contract.test.ts]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-ecc8cf626716f1ed125add59
     resource: repo://apps/feedback-worker/package.json
@@ -47,7 +44,12 @@ sources:
     resource: repo://apps/mobile/agent/feedbackPipeline.test.ts
   - id: openwiki-source-a6ba9053969a3e00cd971742
     resource: repo://apps/mobile/app.config.ts
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+  - id: openwiki-source-7a047b00a95eb325eb147887
+    resource: repo://apps/mobile/environment.ts
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-12T11:47:11.882Z
 ---
 
 # Worker de feedback e incidencias verificables
@@ -136,7 +138,7 @@ La retención se aplica exclusivamente a `report`. El cron de `wrangler.jsonc` s
 
 ## Configuración, despliegue y pruebas
 
-`wrangler.jsonc` declara `src/index.ts`, el binding D1 `DB`, el cron, la ruta, observabilidad y las variables no secretas `GITHUB_REPO`, `ALLOWED_ORIGINS` y `FEEDBACK_ENABLED`. El valor `FEEDBACK_ENABLED:false` permite apagar la escritura sin publicar una aplicación nueva. La configuración Expo deja el endpoint de desarrollo vacío; staging y producción usan el receptor configurado, por lo que cambiar URL o contrato distribuido requiere el proceso de release correspondiente.
+`wrangler.jsonc` declara `src/index.ts`, el binding D1 `DB`, el cron, la ruta, observabilidad y las variables no secretas `GITHUB_REPO`, `ALLOWED_ORIGINS` y `FEEDBACK_ENABLED`. El valor `FEEDBACK_ENABLED:false` permite apagar la escritura sin publicar una aplicación nueva. La configuración Expo deja el endpoint de desarrollo vacío y staging y producción usan el mismo receptor; `FEEDBACK_API_BASE_URL` tiene prioridad para apuntar un build a otro destino durante las pruebas. Antes de crear el cliente, `resolveFeedbackEndpoint` elimina barras finales y rechaza una URL sin `https`, o con credenciales, consulta o fragmento; solo admite `http` para `localhost` o `127.0.0.1` en desarrollo. Por tanto, cambiar URL o contrato distribuido requiere el proceso de release correspondiente y verificar el inventario de destinos de red.
 
 Para preparar el servicio se crea D1, se aplican migraciones y se cargan los secretos mediante Wrangler; una credencial de GitHub debe ser de cuenta técnica, con mínimo privilegio para el único repositorio receptor. Para cambiar persistencia o retención, la migración remota debe aplicarse antes del despliegue:
 

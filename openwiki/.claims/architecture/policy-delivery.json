@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:71e98cfd2e601e9923d548ca43c0455229b160b20a2df5807516c83a4ee7dfe2",
+  "pageVersion": "sha256:aa526b4e948c1db38f0645a6922648fd10e26a9f88a63621f9f541294dedf753",
   "claims": [
     {
       "id": "claim_531b0801ff69469ba48c4b25cec7318c",
@@ -100,7 +100,7 @@
     },
     {
       "id": "claim_b9ab1428615e433d9424fdb83f061a3a",
-      "statement": "La preparación del snapshot de build para staging o production descarga y verifica el deployment exitoso, el digest, las raíces y las tools, exige evidencia autorizable del gate sanitario, y genera los módulos de prompt, runtime sanitario, snapshot firmado y metadatos usados por la build.",
+      "statement": "La preparación del snapshot de build para staging o production descarga y verifica el deployment exitoso, el digest, las raíces y las tools, exige evidencia no autorizante de una puerta sanitaria aprobada, y genera los módulos de prompt, runtime sanitario, snapshot firmado y metadatos usados por la build.",
       "evidence": [
         {
           "resource": "repo://.github/workflows/build-apk.yml#L214-L227",
@@ -176,7 +176,7 @@
     },
     {
       "id": "claim_cdefbb6509b74abfa14f75dff25e3ff8",
-      "statement": "El lease del agente une y congela profundamente el prompt, la política sanitaria fusionada, el contexto de activación y el estado de una misma selección; la interfaz lo adquiere antes de clasificar la entrada sanitaria de un envío.",
+      "statement": "El lease del agente une y congela profundamente el prompt, la política sanitaria fusionada, el contexto de activación y el estado de una misma selección; la interfaz lo adquiere antes de clasificar la entrada sanitaria o enviar un turno.",
       "evidence": [
         {
           "resource": "repo://apps/mobile/App.tsx#L5202-L5249",
@@ -347,6 +347,6 @@
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-07T11:37:28.236Z"
+    "at": "2026-09-12T11:47:11.882Z"
   }
 }

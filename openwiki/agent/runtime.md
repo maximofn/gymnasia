@@ -16,9 +16,7 @@ related:
   - ../mobile/diet-and-food-estimation.md
   - ../mobile/training.md
   - ../services/feedback-worker.md
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+  - ../operations/runtime-behavior.md
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
@@ -54,7 +52,10 @@ sources:
     resource: repo://apps/mobile/agent/toolOperationLedger.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-12T11:47:11.882Z
 ---
 
 # Runtime del agente y herramientas
@@ -96,11 +97,11 @@ sequenceDiagram
 
 *El lease y el filtro sanitario gobiernan todo el turno; una llamada del proveedor nunca autoriza por sí misma un efecto local.*
 
-La clasificación sanitaria bloquea directamente los riesgos `high` y `critical`, persiste el mensaje del usuario junto a una respuesta local y evita el proveedor. Para riesgo `elevated`, puede solicitar consentimiento antes de consultar el evaluador del proveedor; sin consentimiento conserva la decisión determinista. Un borrador del asistente se crea solo después de superar ese punto, con `is_streaming`, contexto de política y origen/modelo para reporte. El historial excluye mensajes locales de divulgación y se limita a los últimos 20 mensajes.
+La clasificación sanitaria bloquea directamente los riesgos `high` y `critical`, persiste el mensaje del usuario junto a una respuesta local y evita el proveedor. Para riesgo `elevated`, puede solicitar consentimiento antes de consultar el evaluador del proveedor; sin consentimiento conserva la decisión determinista. Un borrador del asistente se crea solo después de superar ese punto, con `is_streaming`, contexto de política y origen/modelo para reporte. El historial excluye mensajes locales de divulgación; OpenAI y Anthropic reciben los últimos 20, mientras que Google recibe el historial local completo para conservar sus firmas de pensamiento opacas.
 
-Los deltas actualizan el borrador, agrupados cada 40 ms. Un `HealthSafeStreamGate` inspecciona el agregado antes de hacerlo visible. Al finalizar, una intervención sanitaria reemplaza el texto del modelo, elimina el razonamiento y marca el origen; de otro modo se materializan contenido y razonamiento y se desactiva `is_streaming`.
+Los deltas actualizan el borrador, agrupados cada 40 ms. Un `HealthSafeStreamGate` inspecciona el agregado antes de hacerlo visible: si la entrada ya tenía riesgo distinto de `none`, retiene todo el texto hasta el cierre; en otro caso solo libera segmentos terminados que siguen limpios. Al finalizar vuelve a clasificar el contenido completo. Una intervención sanitaria reemplaza el texto del modelo, elimina el razonamiento y marca el origen; de otro modo se materializan contenido y razonamiento y se desactiva `is_streaming`.
 
-La llamada completa puede intentarse hasta tres veces. Solo errores de red, timeout, sobrecarga y los códigos transitorios contemplados por el patrón se reintentan, esperando 2 y 4 segundos; cada nuevo intento reinicia el borrador y el guard de streaming. Un fallo no recuperable o el agotamiento convierte el mismo borrador en `technical_error` con el prefijo `Error de proveedor:` y siempre libera `sendingChat`. Este reintento de transporte no es una garantía de exactamente una vez: las escrituras se protegen independientemente.
+La llamada completa puede intentarse hasta tres veces. Solo errores que coinciden con red, timeout, sobrecarga, `529`, `503` o `429` se reintentan, esperando 2 y 4 segundos; cada nuevo intento reinicia el borrador y el guard de streaming. Un fallo no recuperable o el agotamiento convierte el mismo borrador en `technical_error` con el prefijo `Error de proveedor:` y siempre libera `sendingChat`. Este reintento de transporte no es una garantía de exactamente una vez: las escrituras se protegen independientemente.
 
 ## Proveedor y bucle de herramientas
 

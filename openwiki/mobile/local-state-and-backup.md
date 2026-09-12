@@ -1,14 +1,14 @@
 ---
+type: concepto técnico
+title: Estado local, recuperación y backup
+description: Arquitectura local-first de Gymnasia para persistencia, recuperación ante corrupción, borrado verificable y copias portables con fotos de mediciones. Explica los límites entre datos, secretos BYOK y cachés, incluidos los ámbitos de almacenamiento por entorno.
+tags: [mobile, persistence, local-storage, secure-storage, backup, recovery]
 okf:
   version: 1
   kind: code-wiki
   status: grounded
-  scope: Local persistence, hydration, sensitive storage, reset, tracing, and manual backup in apps/mobile
-type: concepto
-title: Estado local, recuperación, borrado y copias
-description: Describe cómo la aplicación móvil conserva, recupera y borra datos locales, y cómo exporta e importa copias portables con fotos de mediciones. Delimita secretos BYOK, datos sensibles y garantías que no ofrece la restauración.
-summary: Complete persistence map and lifecycle for the local-first Expo app, including storage boundaries, normalization, manual JSON backup, failure modes, and security invariants.
-tags: [mobile, persistence, local-storage, secure-storage, backup, recovery]
+  scope: Persistencia local, hidratación, secretos, borrado y backup manual en apps/mobile
+summary: Mapa de persistencia y ciclo de vida de la aplicación Expo local-first, incluidos límites de propiedad, normalización, backup ZIP versionado, fallos y garantías de seguridad.
 related:
   - ./application-shell.md
   - ./training.md
@@ -19,7 +19,7 @@ related:
   - ../operations/build-release-and-testing.md
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+    at: 2026-09-12T11:47:11.882Z
 sources:
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
@@ -31,6 +31,8 @@ sources:
     resource: repo://apps/mobile/backup/measurementMedia.test.ts
   - id: openwiki-source-c13b295e970a1149f0f40cbd
     resource: repo://apps/mobile/backup/measurementMedia.ts
+  - id: openwiki-source-7a047b00a95eb325eb147887
+    resource: repo://apps/mobile/environment.ts
   - id: openwiki-source-7385ff07d119a125cc2d0f88
     resource: repo://apps/mobile/persistence/localStoreRecovery.test.ts
   - id: openwiki-source-f6b98cd46b889ff9fc8877c4
@@ -39,7 +41,7 @@ sources:
     resource: repo://apps/mobile/storage/localDataDeletion.test.ts
   - id: openwiki-source-eb61d67eccd058343c908bca
     resource: repo://apps/mobile/storage/localDataDeletion.ts
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
 ---
 
 # Estado local, recuperación, borrado y copias
@@ -48,7 +50,7 @@ La aplicación es *local-first*: `GymnasiaApp` mantiene el estado activo en Reac
 
 ## Almacenes y límites de propiedad
 
-`LocalStore`, bajo `gymnasia.mobile.local.v3`, contiene plantillas e historial de entrenamiento, dieta y sus ajustes, mediciones, hilos y mensajes, configuración de proveedores, y los proveedores de chat y de IA de alimentos. La hidratación acepta los contenedores raíz que faltan en formatos antiguos y luego normaliza el estado de dominio. El validador estructural rechaza campos raíz desconocidos, proveedores no admitidos y tipos incompatibles antes de permitir una escritura de recuperación; no expone valores ni nombres desconocidos en sus incidencias.
+`LocalStore` contiene plantillas e historial de entrenamiento, dieta y sus ajustes, mediciones, hilos y mensajes, metadatos de proveedores y los proveedores de chat y de IA de alimentos. Su clave base es `gymnasia.mobile.local.v3`. Producción usa esa clave literalmente; desarrollo y *staging* anteponen su `storageNamespace` (`gymnasia.development:` o `gymnasia.staging:`), por lo que los datos de cada variante quedan aislados. Las claves de `SecureStore` usan el mismo ámbito con punto en lugar de dos puntos. La hidratación acepta contenedores raíz ausentes de formatos antiguos y luego normaliza el estado de dominio. El validador estructural rechaza campos raíz desconocidos, proveedores no admitidos y tipos incompatibles antes de permitir una escritura de recuperación; sus incidencias no exponen valores ni nombres desconocidos.
 
 Además del agregado existen particiones con ciclos de vida propios:
 
@@ -101,7 +103,7 @@ La limpieza de una medición puede eliminar un archivo propio sin referencias, y
 
 El formato actual es un paquete ZIP con MIME `application/zip` y extensión `.gymnasia`; su nombre es `gymnasia_backup_YYYYMMDD_HHMM.gymnasia`. Incluye `manifest.json` de esquema **2** y, opcionalmente, JPEG en `media/<sha256>.jpg`. El manifiesto identifica la app, versión de esquema, versión de aplicación y fecha de creación, y contiene `data` con el `LocalStore` saneado, preferencias, alimentos personales y memoria personal. Para compatibilidad, el importador aún acepta el backup JSON de esquema 1.
 
-Antes de empaquetar, las `photo_uri` del manifiesto se vuelven `null`; los bytes viajan como assets separados y enlaces de `measurementId` a hash. Los assets repetidos se deduplican. Se priorizan las mediciones recientes y se declaran omisiones cuando falta el medio, no puede leerse, no es válido o excede los límites: 500 enlaces/fotos, 5 MiB por foto, 200 MiB de medios, 2 MiB de manifiesto y 220 MiB de paquete. Una omisión no elimina los valores numéricos de su medición.
+Antes de empaquetar, las `photo_uri` del manifiesto se vuelven `null`; los bytes viajan como assets separados y enlaces de `measurementId` a hash. Los assets repetidos se deduplican. Se priorizan las mediciones recientes y se declaran omisiones cuando falta el medio, no puede leerse, no es válido o excede los límites: 500 enlaces/fotos, 5 MiB por foto, 200 MiB de medios, **8 MiB de manifiesto** y 220 MiB de paquete. Una omisión no elimina los valores numéricos de su medición.
 
 ```mermaid
 sequenceDiagram

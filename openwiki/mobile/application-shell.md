@@ -1,11 +1,8 @@
 ---
 type: arquitectura de shell móvil
-title: Shell de aplicación, plataformas y navegación
-description: El shell Expo de Gymnasia arranca App.tsx, hidrata almacenamiento local con recuperación explícita y presenta la navegación React Native/Web adaptada a cada plataforma. También describe la configuración por variante y el comportamiento observable de avisos de descanso, permisos y degradaciones.
+title: Shell de aplicación y navegación
+description: El shell Expo de Gymnasia arranca App.tsx, protege la hidratación local con recuperación explícita y presenta una navegación React Native/Web adaptada a cada plataforma. Documenta las superficies, el regreso Android, las variantes Expo y los avisos locales de descanso.
 tags: [mobile, application-shell, expo, navigation, hydration, react-native]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-a6ba9053969a3e00cd971742
     resource: repo://apps/mobile/app.config.ts
@@ -21,9 +18,18 @@ sources:
     resource: repo://apps/mobile/LocalStoreRecoveryScreen.tsx
   - id: openwiki-source-1d477406340582311e84da48
     resource: repo://apps/mobile/runtimeEnvironment.ts
+  - id: openwiki-source-ee382022b458bb4be8f1d137
+    resource: repo://apps/mobile/scripts/shell-navigation.e2e.mjs
   - id: openwiki-source-566414ee4d2c02f464360b14
     resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+  - id: openwiki-source-e49562cb6bbccd786d80c2b7
+    resource: repo://apps/mobile/shell/shellRegistry.test.ts
+  - id: openwiki-source-e5d6f282bc4f08b4d12f037b
+    resource: repo://apps/mobile/shell/shellRegistry.ts
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-12T11:47:11.882Z
 ---
 
 # Shell de aplicación, plataformas y navegación
@@ -129,9 +135,9 @@ Los `Modal` nativos y las pantallas de recuperación/arranque también están in
 
 El shell instala un `Notifications.setNotificationHandler` a nivel de módulo. Para una notificación de fin de descanso en primer plano, muestra banner y reproduce sonido salvo que detecte que acaba de sonar la alerta interna equivalente; incluso el duplicado queda en lista y se traza. Al iniciar una sesión, intenta preparar audio y solicitar permiso de notificaciones. En Android crea el canal local `rest_end_alert` con importancia máxima, sonido, vibración y visibilidad pública; los errores se trazan, sin bloquear el entrenamiento.
 
-Mientras un descanso está activo, al pasar la app a segundo plano agenda una notificación de fecha y antes cancela las previamente programadas. El payload conserva `expectedAt`; listeners de recepción y pulsación registran evidencia de entrega y calculan retraso. Si el temporizador termina, la alerta en la app solo se suprime con evidencia de entrega; si no la hay, puede actuar como respaldo dentro de una ventana relevante. Así, la programación es una ayuda local observable, no una garantía de que Android haya despertado o entregado la alarma a tiempo.
+Al comenzar un descanso programable, el shell cancela antes los avisos previos y agenda una notificación local para la fecha de fin; al salir del descanso o quedar sin sesión la cancela. Al volver a primer plano, consulta la bandeja y la última pulsación para comprobar una entrega que un listener pudo no observar si Android mató el proceso. El payload conserva `expectedAt`; esa evidencia permite calcular retraso y decidir si se suprime la alerta interna de respaldo. Sin evidencia, la alerta puede sonar dentro de la ventana relevante. Así, la programación es una ayuda local observable, no una garantía de que Android haya despertado o entregado la alarma a tiempo.
 
-`app.json` declara los permisos Android `FOREGROUND_SERVICE`, `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea `USE_EXACT_ALARM` junto con permisos no requeridos. La preferencia almacenada de notificaciones controla si se agenda, sonido, vibración y sonido seleccionado; no concede permisos del sistema. La pantalla de configuración puede abrir `REQUEST_SCHEDULE_EXACT_ALARM` en Android, por lo que el usuario y el sistema operativo siguen siendo la autoridad para alarmas exactas. Véase [Validación de permisos Android publicables](../operations/android-permissions.md) para la política de entrega y [Entrenamiento](training.md) para la semántica funcional de descansos.
+`app.json` declara los permisos Android `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`; bloquea `USE_EXACT_ALARM` junto con permisos no requeridos. La preferencia almacenada de notificaciones controla si se agenda, sonido, vibración y sonido seleccionado; no concede permisos del sistema. La pantalla de configuración puede abrir `REQUEST_SCHEDULE_EXACT_ALARM` en Android, por lo que el usuario y el sistema operativo siguen siendo la autoridad para alarmas exactas. Véase [Validación de permisos Android publicables](../operations/android-permissions.md) para la política de entrega y [Entrenamiento](training.md) para la semántica funcional de descansos.
 
 ## Configuración Expo, variantes y aislamiento
 
