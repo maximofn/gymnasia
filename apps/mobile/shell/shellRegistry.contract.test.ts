@@ -8,7 +8,11 @@ import {
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
 const chatScreenSource = readFileSync(new URL("../screens/ChatScreen.tsx", import.meta.url), "utf8");
-const shellUiSource = `${appSource}\n${chatScreenSource}`;
+const measurementsScreenSource = readFileSync(
+  new URL("../screens/MeasurementsScreen.tsx", import.meta.url),
+  "utf8",
+);
+const shellUiSource = `${appSource}\n${chatScreenSource}\n${measurementsScreenSource}`;
 const reportModalSource = readFileSync(new URL("../AiResponseReportModal.tsx", import.meta.url), "utf8");
 const recoverySource = readFileSync(new URL("../LocalStoreRecoveryScreen.tsx", import.meta.url), "utf8");
 

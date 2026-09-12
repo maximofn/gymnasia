@@ -45,10 +45,10 @@
   "publicEntries": {
     "agent": ["agent/aiTransparency.ts", "agent/chatModel.ts", "agent/externalLinks.ts", "agent/feedbackIssues.ts", "agent/feedbackProposals.ts", "agent/generated/legalCopy.generated.ts", "agent/healthSafety.ts", "agent/googleInteractions.ts", "agent/policyContext.ts", "agent/providerConfiguration.ts", "agent/providerCredentials.ts", "agent/signedPolicySelection.ts"],
     "catalogs": ["catalogs/ExerciseCatalogBrowser.tsx", "catalogs/CatalogStatusNotice.tsx", "catalogs/exerciseCatalogRuntime.ts", "catalogs/matching.ts", "catalogs/migrations.ts", "catalogs/runtime.ts", "catalogs/sources.ts", "catalogs/types.ts"],
-    "controllers": ["controllers/chatController.ts", "controllers/homeController.ts", "controllers/types.ts"],
+    "controllers": ["controllers/chatController.ts", "controllers/homeController.ts", "controllers/measurementsController.ts", "controllers/types.ts"],
     "diet": ["diet/model.ts", "diet/nutritionContract.ts"],
     "measurements": ["measurements/measurementContract.ts", "measurements/measurementPerformance.ts", "measurements/presentationModel.ts"],
-    "persistence": ["persistence/localStoreModel.ts", "persistence/localStoreRecovery.ts", "persistence/localStoreRuntime.ts"],
+    "persistence": ["persistence/localStoreModel.ts", "persistence/localStoreRecovery.ts", "persistence/localStoreRuntime.ts", "storage/userPreferences.ts"],
     "platform": ["platform/index.ts"],
     "screens": ["screens/index.ts"],
     "shell": ["shell/shellRegistry.ts"],

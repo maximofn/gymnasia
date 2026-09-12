@@ -344,7 +344,8 @@ import {
 } from "./persistence/localStoreRuntime";
 import { useChatController } from "./controllers/chatController";
 import { useHomeController } from "./controllers/homeController";
-import { ChatScreen, HomeScreen } from "./screens";
+import { useMeasurementsController } from "./controllers/measurementsController";
+import { ChatScreen, HomeScreen, MeasurementsScreen } from "./screens";
 import {
   AiResponseReportAction,
   AiResponseReportModal,
@@ -5436,7 +5437,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
   const [measuresChartMetric, setMeasuresChartMetric] = useState<MeasuresChartMetricKey>("weight");
   const [measuresChartMetricDropdownOpen, setMeasuresChartMetricDropdownOpen] = useState(false);
-  const [measuresChartContainerWidth, setMeasuresChartContainerWidth] = useState(0);
   const [showAllMeasurementsHistory, setShowAllMeasurementsHistory] = useState(false);
   const [expandedPhotoUri, setExpandedPhotoUri] = useState<string | null>(null);
   const [heightInput, setHeightInput] = useState("");
@@ -5768,120 +5768,42 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const latestBodyWeightKg = latestWeightMeasurement?.weight_kg ?? null;
   const dietHeightCm = store.dietSettings.height_cm ? parseFloat(store.dietSettings.height_cm) : null;
   const latestBodyHeightCm = latestHeightMeasurement?.height_cm ?? (Number.isFinite(dietHeightCm) && dietHeightCm! > 0 ? dietHeightCm : null);
-  const measuresDashboardPeriodMeta = useMemo(
-    () =>
-      MEASURES_DASHBOARD_PERIOD_OPTIONS.find((option) => option.key === measuresDashboardPeriod) ??
-      MEASURES_DASHBOARD_PERIOD_OPTIONS[1],
-    [measuresDashboardPeriod],
-  );
-  const canExpandMeasurementHistory = store.measurements.length > 4;
   const dietSettings = store.dietSettings;
-
-
   const userSex: UserSex = store.dietSettings.sex ?? "male";
   const measurementSummary = useMemo(
     () => resolveMeasurementSummary(preparedMeasurements, latestBodyHeightCm, userSex, measurementWork),
     [preparedMeasurements, latestBodyHeightCm, userSex],
   );
   const weightMeasurementPair = measurementSummary.weight_kg;
-  const measuresAllStatCards = useMemo(() => {
-    if (measurementWork) measurementWork.cards += 1;
-    const {
-      weight_kg: weightMeasurementPair, body_fat_pct: bodyFatMeasurementPair,
-      neck_cm: neckMeasurementPair, waist_cm: waistMeasurementPair,
-      chest_cm: chestMeasurementPair, hips_cm: hipsMeasurementPair,
-      biceps_cm: armMeasurementPair, quadriceps_cm: quadMeasurementPair, calf_cm: calfMeasurementPair,
-    } = measurementSummary;
-    return [
-      buildMeasurementStatCard("Peso", weightMeasurementPair.latest, weightMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} kg`, "kg", true),
-      buildMeasurementStatCard("% Grasa", bodyFatMeasurementPair.latest, bodyFatMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)}%`, "%", true),
-      buildMeasurementStatCard("Pecho", chestMeasurementPair.latest, chestMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-      buildMeasurementStatCard("Cintura", waistMeasurementPair.latest, waistMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", true),
-      buildMeasurementStatCard("Cadera", hipsMeasurementPair.latest, hipsMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-      buildMeasurementStatCard("Brazo", armMeasurementPair.latest, armMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-      buildMeasurementStatCard("Cuello", neckMeasurementPair.latest, neckMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-      buildMeasurementStatCard("Cuádriceps", quadMeasurementPair.latest, quadMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-      buildMeasurementStatCard("Gemelo", calfMeasurementPair.latest, calfMeasurementPair.previous, (v) => `${formatMeasurementNumber(v)} cm`, "cm", false),
-    ];
-  }, [measurementSummary]);
-  const measuresStatCardRows = useMemo(() => {
-    const rows: (typeof measuresAllStatCards)[] = [];
-    for (let i = 0; i < measuresAllStatCards.length; i += 3) {
-      rows.push(measuresAllStatCards.slice(i, i + 3));
-    }
-    return rows;
-  }, [measuresAllStatCards]);
-  const measuresChartMetricMeta = MEASURES_CHART_METRIC_OPTIONS.find((o) => o.key === measuresChartMetric) ?? MEASURES_CHART_METRIC_OPTIONS[0];
-
-  function extractMetricValue(m: Measurement): number | null {
-    if (measuresChartMetricMeta.key === "bodyFat") {
-      return estimateMeasurementBodyFatPercentage(m, latestBodyHeightCm, userSex);
-    }
-    const field = measuresChartMetricMeta.field;
-    if (!field) return null;
-    const v = m[field];
-    return typeof v === "number" && Number.isFinite(v) ? v : null;
-  }
-
-  const measuresDashboardChartPoints = useMemo(() => {
-    const points = buildPreparedMeasurementChartPoints(preparedMeasurements, extractMetricValue, {
-      days: measuresDashboardPeriodMeta.days,
-    }, measurementWork).map((point) => {
-      const date = measurementDateAtLocalNoon(point.measuredOn)!;
-      return {
-        ...point,
-        label: `${date.getDate()} ${DIET_MONTH_LABELS_SHORT[date.getMonth()]}`,
-      };
-    });
-
-    if (points.length === 0) return [];
-
-    const values = points.map((p) => p.value);
-    const minValue = Math.min(...values);
-    const maxValue = Math.max(...values);
-    const range = Math.max(0.4, maxValue - minValue);
-
-    return points.map((point, index) => ({
-      ...point,
-      heightPercent: 24 + ((point.value - minValue) / range) * 64,
-      isLatest: index === points.length - 1,
-    }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [measuresDashboardPeriodMeta.days, preparedMeasurements, measuresChartMetric, latestBodyHeightCm, userSex]);
-
-  const allMetricValues = useMemo(() => {
-    return buildPreparedMeasurementChartPoints(preparedMeasurements, extractMetricValue, { days: null }, measurementWork)
-      .map((point) => ({ timestamp: point.timestamp, value: point.value }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preparedMeasurements, measuresChartMetric, latestBodyHeightCm, userSex]);
-
-  const measuresDashboardScaleLabels = useMemo(() => {
-    if (measuresDashboardChartPoints.length === 0) {
-      return { top: null, mid: null, bottom: null };
-    }
-
-    const values = measuresDashboardChartPoints.map((point) => point.value);
-    const minValue = Math.min(...values);
-    const maxValue = Math.max(...values);
-    const middleValue = minValue + (maxValue - minValue) / 2;
-
-    return {
-      top: formatMeasurementNumber(maxValue),
-      mid: formatMeasurementNumber(middleValue),
-      bottom: formatMeasurementNumber(minValue),
-    };
-  }, [measuresDashboardChartPoints]);
-  const measurementHistoryEntries = useMemo(
-    () =>
-      (showAllMeasurementsHistory
-        ? store.measurements
-        : store.measurements.slice(0, 4)
-      ).map((measurement, sourceIndex) => ({
-        measurement,
-        sourceIndex,
-      })),
-    [showAllMeasurementsHistory, store.measurements],
-  );
+  const measurementsController = useMeasurementsController({
+    measurements: store.measurements,
+    preparedMeasurements,
+    summary: measurementSummary,
+    effectiveHeightCm: latestBodyHeightCm,
+    sex: userSex,
+    measurementWork: measurementWork ?? undefined,
+    mediaNotice: measurementMediaNotice,
+    period: measuresDashboardPeriod,
+    metric: measuresChartMetric,
+    periodDropdownOpen: measuresDashboardPeriodDropdownOpen,
+    metricDropdownOpen: measuresChartMetricDropdownOpen,
+    showAllHistory: showAllMeasurementsHistory,
+    bodyFatInfoOpen: bodyFatInfoModalOpen,
+    expandedPhotoUri,
+    entryOpen: measurementEntryScreenOpen,
+    datePickerOpen: showMeasurementDatePicker,
+    openEntry: openMeasurementEntryScreen,
+    setPeriodDropdownOpen: setMeasuresDashboardPeriodDropdownOpen,
+    selectPeriod: selectMeasuresDashboardPeriod,
+    setMetricDropdownOpen: setMeasuresChartMetricDropdownOpen,
+    selectMetric: selectMeasuresChartMetric,
+    setBodyFatInfoOpen: setBodyFatInfoModalOpen,
+    setShowAllHistory: setShowAllMeasurementsHistory,
+    editMeasurement: openMeasurementForEdit,
+    setExpandedPhotoUri,
+    closeEntry: closeMeasurementEntryScreen,
+    setDatePickerOpen: setShowMeasurementDatePicker,
+  });
   const savedDietPlanEvaluation = evaluateDietPlan(dietSettings, latestBodyWeightKg);
   const draftDietPlanEvaluation = evaluateDietPlan(dietSettingsDraft, latestBodyWeightKg);
   const dietDailyCaloriesTarget = savedDietPlanEvaluation.dailyCaloriesTarget ?? 0;
@@ -6477,22 +6399,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "workout-discard-confirmation": confirmDiscardSession,
     "food-catalog-ambiguity": pendingFoodResolution !== null,
     "food-estimator": foodEstimatorModalOpen,
-    "body-fat-info": bodyFatInfoModalOpen,
+    "body-fat-info": measurementsController.back.layers["body-fat-info"],
     "custom-exercise-form": customExerciseFormOpen,
     "exercise-picker": exercisePickerOpen,
     "personal-food-ai-chat": personalFoodAIChatOpen,
     "personal-food-form": personalFoodFormVisible,
     "exercise-catalog-detail": selectedExerciseDetail !== null,
-    "measurement-photo": expandedPhotoUri !== null,
-    "measurement-entry": measurementEntryScreenOpen,
+    "measurement-photo": measurementsController.back.layers["measurement-photo"],
+    "measurement-entry": measurementsController.back.layers["measurement-entry"],
     "byok-explanation": chatController.back.layers["byok-explanation"],
     "provider-delete": providerDeleteModal !== null,
     "diet-copy-confirmation": dietCopyModal !== null,
     "diet-copy-date-picker": dietCopyPickCategory !== null,
     "diet-date-picker": showDietDatePicker,
     "birth-date-picker": showBirthDatePicker,
-    "measurement-date-picker": showMeasurementDatePicker,
-    "measurements-history-expanded": showAllMeasurementsHistory,
+    "measurement-date-picker": measurementsController.back.layers["measurement-date-picker"],
+    "measurements-history-expanded": measurementsController.back.layers["measurements-history-expanded"],
     "training-history-expanded": showAllTrainingHistory,
     "workout-history-detail": selectedWorkoutHistoryId !== null,
     "training-history": trainingHistoryScreenOpen,
@@ -6503,8 +6425,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "anthropic-model-dropdown": anthropicModelDropdownOpen,
     "openai-model-dropdown": openAIModelDropdownOpen,
     "google-model-dropdown": googleModelDropdownOpen,
-    "measures-period-dropdown": measuresDashboardPeriodDropdownOpen,
-    "measures-metric-dropdown": measuresChartMetricDropdownOpen,
+    "measures-period-dropdown": measurementsController.back.layers["measures-period-dropdown"],
+    "measures-metric-dropdown": measurementsController.back.layers["measures-metric-dropdown"],
     "training-period-dropdown": trainingStatsPeriodDropdownOpen,
     "training-metric-dropdown": trainingStatsMetricDropdownOpen,
     "diet-item-menu": dietItemMenu !== null,
@@ -6533,22 +6455,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "workout-discard-confirmation": () => { setConfirmDiscardSession(false); return true; },
     "food-catalog-ambiguity": () => { setPendingFoodResolution(null); return true; },
     "food-estimator": () => { closeFoodEstimatorModal(); return true; },
-    "body-fat-info": () => { setBodyFatInfoModalOpen(false); return true; },
+    "body-fat-info": measurementsController.back.handlers["body-fat-info"],
     "custom-exercise-form": () => { setCustomExerciseFormOpen(false); return true; },
     "exercise-picker": () => { closeExercisePicker(); return true; },
     "personal-food-ai-chat": () => { setPersonalFoodAIChatOpen(false); return true; },
     "personal-food-form": () => { setPersonalFoodFormVisible(false); return true; },
     "exercise-catalog-detail": () => { setSelectedExerciseDetail(null); return true; },
-    "measurement-photo": () => { setExpandedPhotoUri(null); return true; },
-    "measurement-entry": () => { closeMeasurementEntryScreen(); return true; },
+    "measurement-photo": measurementsController.back.handlers["measurement-photo"],
+    "measurement-entry": measurementsController.back.handlers["measurement-entry"],
     "byok-explanation": chatController.back.handlers["byok-explanation"],
     "provider-delete": () => { closeProviderDeleteModal(); return true; },
     "diet-copy-confirmation": () => { setDietCopyModal(null); return true; },
     "diet-copy-date-picker": () => { closeDietCopyPicker(); return true; },
     "diet-date-picker": () => { setShowDietDatePicker(false); return true; },
     "birth-date-picker": () => { setShowBirthDatePicker(false); return true; },
-    "measurement-date-picker": () => { setShowMeasurementDatePicker(false); return true; },
-    "measurements-history-expanded": () => { setShowAllMeasurementsHistory(false); return true; },
+    "measurement-date-picker": measurementsController.back.handlers["measurement-date-picker"],
+    "measurements-history-expanded": measurementsController.back.handlers["measurements-history-expanded"],
     "training-history-expanded": () => { setShowAllTrainingHistory(false); return true; },
     "workout-history-detail": () => { setSelectedWorkoutHistoryId(null); return true; },
     "training-history": () => { closeTrainingHistory(); return true; },
@@ -6559,8 +6481,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "anthropic-model-dropdown": () => { setAnthropicModelDropdownOpen(false); return true; },
     "openai-model-dropdown": () => { setOpenAIModelDropdownOpen(false); return true; },
     "google-model-dropdown": () => { setGoogleModelDropdownOpen(false); return true; },
-    "measures-period-dropdown": () => { setMeasuresDashboardPeriodDropdownOpen(false); return true; },
-    "measures-metric-dropdown": () => { setMeasuresChartMetricDropdownOpen(false); return true; },
+    "measures-period-dropdown": measurementsController.back.handlers["measures-period-dropdown"],
+    "measures-metric-dropdown": measurementsController.back.handlers["measures-metric-dropdown"],
     "training-period-dropdown": () => { setTrainingStatsPeriodDropdownOpen(false); return true; },
     "training-metric-dropdown": () => { setTrainingStatsMetricDropdownOpen(false); return true; },
     "diet-item-menu": () => { setDietItemMenu(null); return true; },
@@ -17876,801 +17798,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           ) : null}
 
           {tab === "measures" ? (
-            <View style={{ gap: 14 }}>
-              {measurementDateConflicts.length > 0 ? (
-                <View
-                  testID="measurement-duplicate-warning"
-                  accessibilityLiveRegion="polite"
-                  style={{
-                    borderRadius: 12,
-                    borderWidth: 1,
-                    borderColor: "rgba(255,190,92,0.45)",
-                    backgroundColor: "rgba(255,190,92,0.10)",
-                    padding: 12,
-                    flexDirection: "row",
-                    alignItems: "flex-start",
-                    gap: 8,
-                  }}
-                >
-                  <Feather name="alert-triangle" size={17} color="#FFBE5C" style={{ marginTop: 1 }} />
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, lineHeight: 18, flex: 1 }}>
-                    {`Hay mediciones repetidas en ${measurementDateConflicts.length} fecha(s). Se conservan sin fusionar; edítalas o elimínalas desde el historial.`}
-                  </Text>
-                </View>
-              ) : null}
-              {measurementMediaNotice ? (
-                <View
-                  accessibilityLiveRegion="polite"
-                  style={{
-                    borderRadius: 12,
-                    borderWidth: 1,
-                    borderColor: "rgba(255,190,92,0.45)",
-                    backgroundColor: "rgba(255,190,92,0.10)",
-                    padding: 12,
-                    flexDirection: "row",
-                    alignItems: "flex-start",
-                    gap: 8,
-                  }}
-                >
-                  <Feather name="alert-circle" size={17} color="#FFBE5C" style={{ marginTop: 1 }} />
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, lineHeight: 18, flex: 1 }}>
-                    {measurementMediaNotice}
-                  </Text>
-                </View>
-              ) : null}
-              <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                <Pressable
-                  testID="measurement-add"
-                  onPress={openMeasurementEntryScreen}
-                  style={{
-                    minHeight: 44,
-                    borderRadius: 14,
-                    backgroundColor: mobileTheme.color.brandPrimary,
-                    paddingHorizontal: 16,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 8,
-                  }}
-                >
-                  <Ionicons name="add-circle-outline" size={18} color="#06090D" />
-                  <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 14 }}>
-                    Registrar
-                  </Text>
-                </Pressable>
-              </View>
-
-              {measuresStatCardRows.map((row, rowIdx) => (
-                <View key={`measures-row-${rowIdx}`} style={{ flexDirection: "row", gap: 10 }}>
-                  {row.map((card) => (
-                    <StatCard
-                      key={card.label}
-                      testID={`measurement-stat-${card.label}`}
-                      label={card.label}
-                      value={card.valueText}
-                      subtitle={card.changeText}
-                      subtitleColor={card.changeColor}
-                      subtitleIcon={<Feather name={card.changeIcon} size={11} color={card.changeColor} style={{ marginTop: 2 }} />}
-                    />
-                  ))}
-                </View>
-              ))}
-
-              <ChartCard
-                zIndex={measuresChartMetricDropdownOpen || measuresDashboardPeriodDropdownOpen ? 10 : 1}
-                title={
-                  <Pressable
-                    testID="measures-chart-metric-current"
-                    accessibilityRole="button"
-                    accessibilityLabel="Métrica de la gráfica"
-                    accessibilityValue={{ text: measuresChartMetricMeta.label }}
-                    onPress={toggleMeasuresChartMetricDropdown}
-                    style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
-                      {measuresChartMetricMeta.label}
-                    </Text>
-                    <Ionicons
-                      name={measuresChartMetricDropdownOpen ? "chevron-up" : "chevron-down"}
-                      size={16}
-                      color={mobileTheme.color.textSecondary}
-                    />
-                  </Pressable>
-                }
-                periodSelector={
-                  <Pressable
-                    testID="measures-chart-period-current"
-                    accessibilityRole="button"
-                    accessibilityLabel="Periodo de la gráfica"
-                    accessibilityValue={{ text: measuresDashboardPeriodMeta.label }}
-                    onPress={toggleMeasuresDashboardPeriodDropdown}
-                    style={{
-                      minHeight: 34,
-                      borderRadius: mobileTheme.radius.pill,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.06)",
-                      backgroundColor: "#1B2029",
-                      paddingHorizontal: 12,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 6,
-                    }}
-                  >
-                    <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "700" }}>
-                      {measuresDashboardPeriodMeta.label}
-                    </Text>
-                    <Ionicons
-                      name={measuresDashboardPeriodDropdownOpen ? "chevron-up" : "chevron-down"}
-                      size={14}
-                      color="#6F7785"
-                    />
-                  </Pressable>
-                }
-              >
-
-                {measuresDashboardPeriodDropdownOpen ? (
-                  <View
-                    testID={shellSurfaceTestId("measures-period-dropdown")}
-                    style={{
-                      position: "absolute",
-                      top: 56,
-                      right: 14,
-                      zIndex: 20,
-                      elevation: 12,
-                    }}
-                  >
-                    <View
-                      style={{
-                        minWidth: 128,
-                        borderRadius: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.06)",
-                        backgroundColor: "#1B2029",
-                        shadowColor: "#000000",
-                        shadowOpacity: 0.28,
-                        shadowRadius: 14,
-                        shadowOffset: { width: 0, height: 8 },
-                        padding: 6,
-                        gap: 4,
-                      }}
-                    >
-                      {MEASURES_DASHBOARD_PERIOD_OPTIONS.map((option) => {
-                        const isActive = measuresDashboardPeriod === option.key;
-                        return (
-                          <Pressable
-                            key={option.key}
-                            testID={`measures-chart-period-option-${option.key}`}
-                            accessibilityRole="button"
-                            accessibilityState={{ selected: isActive }}
-                            onPress={() => selectMeasuresDashboardPeriod(option.key)}
-                            style={{
-                              minHeight: 34,
-                              borderRadius: 10,
-                              paddingHorizontal: 10,
-                              flexDirection: "row",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              backgroundColor: isActive ? "rgba(203,255,26,0.12)" : "transparent",
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary,
-                                fontSize: 12,
-                                fontWeight: "700",
-                              }}
-                            >
-                              {option.label}
-                            </Text>
-                            {isActive ? (
-                              <Ionicons name="checkmark" size={14} color={mobileTheme.color.brandPrimary} />
-                            ) : null}
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                  </View>
-                ) : null}
-
-                {measuresChartMetricDropdownOpen ? (
-                  <View
-                    testID={shellSurfaceTestId("measures-metric-dropdown")}
-                    style={{
-                      position: "absolute",
-                      top: 56,
-                      left: 14,
-                      zIndex: 20,
-                      elevation: 12,
-                    }}
-                  >
-                    <View
-                      style={{
-                        minWidth: 150,
-                        borderRadius: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.06)",
-                        backgroundColor: "#1B2029",
-                        shadowColor: "#000000",
-                        shadowOpacity: 0.28,
-                        shadowRadius: 14,
-                        shadowOffset: { width: 0, height: 8 },
-                        padding: 6,
-                        gap: 4,
-                      }}
-                    >
-                      {MEASURES_CHART_METRIC_OPTIONS.map((option) => {
-                        const isActive = measuresChartMetric === option.key;
-                        return (
-                          <Pressable
-                            key={option.key}
-                            testID={`measures-chart-metric-option-${option.key}`}
-                            accessibilityRole="button"
-                            accessibilityState={{ selected: isActive }}
-                            onPress={() => selectMeasuresChartMetric(option.key)}
-                            style={{
-                              minHeight: 34,
-                              borderRadius: 10,
-                              paddingHorizontal: 10,
-                              flexDirection: "row",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              backgroundColor: isActive ? "rgba(203,255,26,0.12)" : "transparent",
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary,
-                                fontSize: 12,
-                                fontWeight: "700",
-                              }}
-                            >
-                              {option.label}
-                            </Text>
-                            {isActive ? (
-                              <Ionicons name="checkmark" size={14} color={mobileTheme.color.brandPrimary} />
-                            ) : null}
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                  </View>
-                ) : null}
-
-                <View
-                  style={{
-                    minHeight: 214,
-                    borderRadius: 18,
-                    backgroundColor: "#11161E",
-                    zIndex: 1,
-                    paddingVertical: 12,
-                    paddingHorizontal: 10,
-                    flexDirection: "row",
-                    gap: 10,
-                  }}
-                >
-                  {measuresDashboardChartPoints.length === 0 ? (
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        paddingHorizontal: 14,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: "#8B94A3",
-                          fontSize: 13,
-                          lineHeight: 18,
-                          textAlign: "center",
-                        }}
-                      >
-                        {store.measurements.some((m) => extractMetricValue(m) !== null)
-                          ? `No hay registros de ${measuresChartMetricMeta.label.toLowerCase()} suficientes para este periodo.`
-                          : `Registra ${measuresChartMetricMeta.label.toLowerCase()} para ver la evolución.`}
-                      </Text>
-                    </View>
-                  ) : (
-                    <View style={{ flex: 1 }} onLayout={(e) => { const w = e.nativeEvent.layout.width; if (w > 0 && w !== measuresChartContainerWidth) setMeasuresChartContainerWidth(w); }}>
-                      {measuresChartContainerWidth > 0 ? (() => {
-                        const chartW = measuresChartContainerWidth;
-                        const chartH = 160;
-                        const padL = 36;
-                        const padR = 12;
-                        const padT = 8;
-                        const padB = 24;
-                        const plotW = chartW - padL - padR;
-                        const plotH = chartH - padT - padB;
-                        const pts = measuresDashboardChartPoints;
-                        const vals = pts.map((p) => p.value);
-                        const rawMin = Math.min(...vals);
-                        const rawMax = Math.max(...vals);
-                        const bfPad = measuresChartMetric === "bodyFat" ? 3 : 1;
-                        const minV = Math.floor(rawMin) - bfPad;
-                        const maxV = Math.ceil(rawMax) + bfPad;
-                        const rangeV = Math.max(0.4, maxV - minV);
-                        const minT = pts[0].timestamp;
-                        const maxT = pts[pts.length - 1].timestamp;
-                        const rangeT = Math.max(1, maxT - minT);
-                        const coords = pts.map((p) => ({
-                          x: padL + (pts.length === 1 ? plotW / 2 : ((p.timestamp - minT) / rangeT) * plotW),
-                          y: padT + plotH - ((p.value - minV) / rangeV) * plotH,
-                        }));
-
-                        // Smooth curve using cardinal spline
-                        let linePath = "";
-                        if (coords.length === 1) {
-                          linePath = `M${coords[0].x},${coords[0].y}L${coords[0].x},${coords[0].y}`;
-                        } else if (coords.length === 2) {
-                          linePath = `M${coords[0].x},${coords[0].y}L${coords[1].x},${coords[1].y}`;
-                        } else {
-                          linePath = `M${coords[0].x},${coords[0].y}`;
-                          for (let i = 0; i < coords.length - 1; i++) {
-                            const p0 = coords[Math.max(0, i - 1)];
-                            const p1 = coords[i];
-                            const p2 = coords[i + 1];
-                            const p3 = coords[Math.min(coords.length - 1, i + 2)];
-                            const cp1x = p1.x + (p2.x - p0.x) / 6;
-                            const cp1y = p1.y + (p2.y - p0.y) / 6;
-                            const cp2x = p2.x - (p3.x - p1.x) / 6;
-                            const cp2y = p2.y - (p3.y - p1.y) / 6;
-                            linePath += `C${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
-                          }
-                        }
-
-                        const areaPath = linePath + `L${coords[coords.length - 1].x},${padT + plotH}L${coords[0].x},${padT + plotH}Z`;
-
-                        // Compute MA using full history (not just visible range)
-                        function computeMaFromFullHistory(window: number): Array<{ x: number; y: number }> {
-                          const result: Array<{ x: number; y: number }> = [];
-                          for (let i = 0; i < pts.length; i++) {
-                            // Find this point's index in the full history
-                            const fullIdx = allMetricValues.findIndex((v) => v.timestamp === pts[i].timestamp);
-                            if (fullIdx === -1) {
-                              // Fallback: use only visible data
-                              const start = Math.max(0, i - window + 1);
-                              const w = vals.slice(start, i + 1);
-                              const avg = w.reduce((s, v) => s + v, 0) / w.length;
-                              result.push({ x: coords[i].x, y: padT + plotH - ((avg - minV) / rangeV) * plotH });
-                            } else {
-                              const start = Math.max(0, fullIdx - window + 1);
-                              const w = allMetricValues.slice(start, fullIdx + 1).map((v) => v.value);
-                              const avg = w.reduce((s, v) => s + v, 0) / w.length;
-                              result.push({ x: coords[i].x, y: padT + plotH - ((avg - minV) / rangeV) * plotH });
-                            }
-                          }
-                          return result;
-                        }
-                        const maCoords = computeMaFromFullHistory(10);
-                        function buildMaPath(maCoords: Array<{ x: number; y: number }>): string {
-                          if (maCoords.length === 1) return `M${maCoords[0].x},${maCoords[0].y}L${maCoords[0].x},${maCoords[0].y}`;
-                          if (maCoords.length === 2) return `M${maCoords[0].x},${maCoords[0].y}L${maCoords[1].x},${maCoords[1].y}`;
-                          let path = `M${maCoords[0].x},${maCoords[0].y}`;
-                          for (let i = 0; i < maCoords.length - 1; i++) {
-                            const p0 = maCoords[Math.max(0, i - 1)];
-                            const p1 = maCoords[i];
-                            const p2 = maCoords[i + 1];
-                            const p3 = maCoords[Math.min(maCoords.length - 1, i + 2)];
-                            const cp1x = p1.x + (p2.x - p0.x) / 6;
-                            const cp1y = p1.y + (p2.y - p0.y) / 6;
-                            const cp2x = p2.x - (p3.x - p1.x) / 6;
-                            const cp2y = p2.y - (p3.y - p1.y) / 6;
-                            path += `C${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
-                          }
-                          return path;
-                        }
-                        const maPath = buildMaPath(maCoords);
-
-                        const ma30Coords = computeMaFromFullHistory(30);
-                        const ma30Path = buildMaPath(ma30Coords);
-
-                        // Scale labels
-                        const midV = minV + rangeV / 2;
-                        const gridLines = [
-                          { y: padT, label: formatMeasurementNumber(maxV) },
-                          { y: padT + plotH / 2, label: formatMeasurementNumber(midV) },
-                          { y: padT + plotH, label: formatMeasurementNumber(minV) },
-                        ];
-
-                        // X-axis labels: show first, last, and middle
-                        const labelIndices = new Set<number>();
-                        labelIndices.add(0);
-                        labelIndices.add(pts.length - 1);
-                        if (pts.length > 2) labelIndices.add(Math.floor(pts.length / 2));
-                        if (pts.length > 4) {
-                          labelIndices.add(Math.floor(pts.length / 4));
-                          labelIndices.add(Math.floor((3 * pts.length) / 4));
-                        }
-
-                        return (
-                          <View style={{ flex: 1 }}>
-                            <View style={{ flexDirection: "row", gap: 12, marginBottom: 6, paddingLeft: padL }}>
-                              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                                <View style={{ width: 16, height: 0, borderTopWidth: 2, borderTopColor: "#7EC8FF", borderStyle: "dashed" }} />
-                                <Text style={{ color: "#7EC8FF", fontSize: 8, fontWeight: "600" }}>Media 10 valores</Text>
-                              </View>
-                              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                                <View style={{ width: 16, height: 0, borderTopWidth: 2, borderTopColor: "#2B5C8A", borderStyle: "dotted" }} />
-                                <Text style={{ color: "#2B5C8A", fontSize: 8, fontWeight: "600" }}>Media 30 valores</Text>
-                              </View>
-                            </View>
-                            {measuresChartMetric === "bodyFat" && (
-                              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 6, paddingLeft: padL }}>
-                                {[
-                                  { label: "Subatlético", color: "rgba(255,75,75,0.45)" },
-                                  { label: "Atlético", color: "rgba(203,255,26,0.45)" },
-                                  { label: "Saludable", color: "rgba(0,198,107,0.45)" },
-                                  { label: "Aceptable", color: "rgba(203,255,26,0.45)" },
-                                  { label: "Obesidad", color: "rgba(255,140,0,0.45)" },
-                                  { label: "Sobre obesidad", color: "rgba(255,75,75,0.45)" },
-                                ].map((z) => (
-                                  <View key={z.label} style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
-                                    <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: z.color }} />
-                                    <Text style={{ color: "#8B94A3", fontSize: 7, fontWeight: "600" }}>{z.label}</Text>
-                                  </View>
-                                ))}
-                                <Pressable onPress={() => setBodyFatInfoModalOpen(true)} hitSlop={8}>
-                                  <Ionicons name="information-circle-outline" size={14} color="#8B94A3" />
-                                </Pressable>
-                              </View>
-                            )}
-                            <Svg width="100%" height={chartH} viewBox={`0 0 ${chartW} ${chartH}`}>
-                              <Defs>
-                                <LinearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                                  <Stop offset="0" stopColor={mobileTheme.color.brandPrimary} stopOpacity="0.35" />
-                                  <Stop offset="1" stopColor={mobileTheme.color.brandPrimary} stopOpacity="0.02" />
-                                </LinearGradient>
-                              </Defs>
-
-                              {gridLines.map((gl, i) => (
-                                <Path
-                                  key={`grid-${i}`}
-                                  d={`M${padL},${gl.y}L${chartW - padR},${gl.y}`}
-                                  stroke="rgba(255,255,255,0.06)"
-                                  strokeWidth={1}
-                                />
-                              ))}
-
-                              {measuresChartMetric === "bodyFat" && (() => {
-                                const zones = userSex === "female" ? BODY_FAT_ZONES_FEMALE : BODY_FAT_ZONES_MALE;
-                                return zones.map((zone, i) => {
-                                  const y1 = padT + plotH - ((Math.min(zone.max, maxV) - minV) / rangeV) * plotH;
-                                  const y2 = padT + plotH - ((Math.max(zone.min, minV) - minV) / rangeV) * plotH;
-                                  const clampY1 = Math.max(padT, Math.min(padT + plotH, y1));
-                                  const clampY2 = Math.max(padT, Math.min(padT + plotH, y2));
-                                  const h = clampY2 - clampY1;
-                                  if (h <= 0) return null;
-                                  return (
-                                    <Rect
-                                      key={`zone-${i}`}
-                                      x={padL}
-                                      y={clampY1}
-                                      width={plotW}
-                                      height={h}
-                                      fill={zone.color}
-                                    />
-                                  );
-                                });
-                              })()}
-                              {measuresChartMetric === "bodyFat" && (() => {
-                                const zones = userSex === "female" ? BODY_FAT_ZONES_FEMALE : BODY_FAT_ZONES_MALE;
-                                const zoneLabels = ["Subatl.", "Atlético", "Saludable", "Aceptable", "Obesidad", "S. obes."];
-                                const elements: React.JSX.Element[] = [];
-                                zones.slice(0, -1).forEach((zone, i) => {
-                                  const y = padT + plotH - ((zone.max - minV) / rangeV) * plotH;
-                                  if (y < padT || y > padT + plotH) return;
-                                  elements.push(
-                                    <Path
-                                      key={`zone-line-${i}`}
-                                      d={`M${padL},${y}L${padL + plotW},${y}`}
-                                      stroke="rgba(255,255,255,0.15)"
-                                      strokeWidth={0.8}
-                                      strokeDasharray="3,3"
-                                    />
-                                  );
-                                  if (y - 6 >= padT) {
-                                    elements.push(
-                                      <SvgText
-                                        key={`zone-lbl-above-${i}`}
-                                        x={padL + 3}
-                                        y={y - 3}
-                                        fill="rgba(255,255,255,0.35)"
-                                        fontSize={6}
-                                        fontWeight="600"
-                                      >
-                                        {zoneLabels[i + 1]}
-                                      </SvgText>
-                                    );
-                                  }
-                                  if (y + 8 <= padT + plotH) {
-                                    elements.push(
-                                      <SvgText
-                                        key={`zone-lbl-below-${i}`}
-                                        x={padL + 3}
-                                        y={y + 8}
-                                        fill="rgba(255,255,255,0.35)"
-                                        fontSize={6}
-                                        fontWeight="600"
-                                      >
-                                        {zoneLabels[i]}
-                                      </SvgText>
-                                    );
-                                  }
-                                });
-                                return elements;
-                              })()}
-
-                              {measuresChartMetric !== "bodyFat" && (
-                                <Path d={areaPath} fill="url(#areaGrad)" />
-                              )}
-                              <Path d={linePath} fill="none" stroke={mobileTheme.color.brandPrimary} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.5} />
-                              {pts.length >= 3 ? (
-                                <Path d={maPath} fill="none" stroke="#7EC8FF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} strokeDasharray="6,4" />
-                              ) : null}
-                              {pts.length >= 3 ? (
-                                <Path d={ma30Path} fill="none" stroke="#2B5C8A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.85} strokeDasharray="2,4" />
-                              ) : null}
-
-                              {coords.map((c, i) => (
-                                <Circle
-                                  key={pts[i].key}
-                                  cx={c.x}
-                                  cy={c.y}
-                                  r={1}
-                                  fill={mobileTheme.color.brandPrimary}
-                                />
-                              ))}
-                            </Svg>
-
-                            <View style={{ height: 16, position: "relative", marginLeft: padL, marginRight: padR }}>
-                              {(() => {
-                                const NUM_LABELS = 4;
-                                const startD = new Date(minT);
-                                const endD = new Date(maxT);
-                                const labels: Array<{ label: string }> = [];
-                                const period = measuresDashboardPeriod;
-
-                                // Check if range spans multiple years
-                                const startYear = startD.getFullYear();
-                                const endYear = endD.getFullYear();
-                                const multiYear = startYear !== endYear;
-
-                                const fmtMonth = (d: Date) => {
-                                  const m = DIET_MONTH_LABELS_SHORT[d.getMonth()];
-                                  return multiYear ? `${m} '${String(d.getFullYear()).slice(2)}` : m;
-                                };
-                                const fmtDay = (d: Date) => {
-                                  const day = d.getDate();
-                                  const m = DIET_MONTH_LABELS_SHORT[d.getMonth()];
-                                  return multiYear ? `${day} ${m} '${String(d.getFullYear()).slice(2)}` : `${day} ${m}`;
-                                };
-
-                                if (period === "all" || period === "6m") {
-                                  for (let i = 0; i < NUM_LABELS; i++) {
-                                    const t = minT + (rangeT * i) / (NUM_LABELS - 1);
-                                    labels.push({ label: fmtMonth(new Date(t)) });
-                                  }
-                                } else {
-                                  // 3m or 1m: day + month labels
-                                  for (let i = 0; i < NUM_LABELS; i++) {
-                                    const t = minT + (rangeT * i) / (NUM_LABELS - 1);
-                                    labels.push({ label: fmtDay(new Date(t)) });
-                                  }
-                                }
-
-                                return labels.map((m, i) => {
-                                  const xPct = (i / (NUM_LABELS - 1)) * 100;
-                                  return (
-                                    <Text
-                                      key={`lbl-${i}`}
-                                      style={{
-                                        position: "absolute",
-                                        left: `${xPct}%`,
-                                        transform: [{ translateX: -28 }],
-                                        width: 56,
-                                        textAlign: "center",
-                                        color: "#7F8795",
-                                        fontSize: 9,
-                                        fontWeight: "600",
-                                      }}
-                                      numberOfLines={1}
-                                    >
-                                      {m.label}
-                                    </Text>
-                                  );
-                                });
-                              })()}
-                            </View>
-
-                            <View style={{ position: "absolute", top: 0, left: 0 }}>
-                              {gridLines.map((gl, i) => (
-                                <Text
-                                  key={`label-${i}`}
-                                  style={{
-                                    position: "absolute",
-                                    top: gl.y - 6,
-                                    left: 0,
-                                    color: "#4E5665",
-                                    fontSize: 10,
-                                  }}
-                                >
-                                  {gl.label}
-                                </Text>
-                              ))}
-                            </View>
-                          </View>
-                        );
-                      })() : null}
-                    </View>
-                  )}
-                </View>
-              </ChartCard>
-
-              <View style={{ gap: 10 }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 12,
-                  }}
-                >
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
-                    Historial de registros
-                  </Text>
-                  {canExpandMeasurementHistory ? (
-                    <Pressable
-                      testID={shellSurfaceTestId("measurements-history-expanded")}
-                      onPress={() => setShowAllMeasurementsHistory((current) => !current)}
-                    >
-                      <Text
-                        style={{
-                          color: mobileTheme.color.brandPrimary,
-                          fontSize: 13,
-                          fontWeight: "800",
-                        }}
-                      >
-                        {showAllMeasurementsHistory ? "Ver menos" : "Ver todo"}
-                      </Text>
-                    </Pressable>
-                  ) : null}
-                </View>
-
-                {measurementHistoryEntries.length === 0 ? (
-                  <View
-                    style={{
-                      borderRadius: 18,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.04)",
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      padding: 14,
-                      gap: 8,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                      Todavía no hay registros
-                    </Text>
-                    <Text style={{ color: "#8B94A3", fontSize: 13, lineHeight: 18 }}>
-                      Usa `Registrar` para guardar tu primer peso, foto o perímetro corporal.
-                    </Text>
-                  </View>
-                ) : (
-                  <View style={{ gap: 10 }}>
-                    {measurementHistoryEntries.map(({ measurement, sourceIndex }) => {
-                      const currentMetricValue = extractMetricValue(measurement);
-                      const previousMetricMeasurement =
-                        currentMetricValue === null
-                          ? null
-                          : store.measurements
-                              .slice(sourceIndex + 1)
-                              .find((entry) => extractMetricValue(entry) !== null) ?? null;
-                      const previousMetricValue = previousMetricMeasurement ? extractMetricValue(previousMetricMeasurement) : null;
-                      const metricDelta =
-                        currentMetricValue !== null && previousMetricValue !== null
-                          ? Math.round((currentMetricValue - previousMetricValue) * 10) / 10
-                          : null;
-                      const changeIsDecrease = metricDelta !== null && metricDelta < 0;
-                      const prefersDecrease = measuresChartMetricMeta.key === "weight" || measuresChartMetricMeta.key === "bodyFat" || measuresChartMetricMeta.key === "waist";
-                      const changeBadgeColor =
-                        metricDelta === null
-                          ? "#6F7785"
-                          : (prefersDecrease ? changeIsDecrease : !changeIsDecrease)
-                            ? "#19C37D"
-                            : mobileTheme.color.brandPrimary;
-                      const changeBadgeBackground =
-                        metricDelta === null
-                          ? "rgba(127,135,149,0.14)"
-                          : (prefersDecrease ? changeIsDecrease : !changeIsDecrease)
-                            ? "rgba(25,195,125,0.14)"
-                            : "rgba(203,255,26,0.12)";
-
-                      return (
-                        <Pressable
-                          testID={`measurement-history-${measurement.id}`}
-                          key={measurement.id}
-                          onPress={() => openMeasurementForEdit(measurement)}
-                          style={{
-                            borderRadius: 18,
-                            borderWidth: 1,
-                            borderColor: "rgba(255,255,255,0.04)",
-                            backgroundColor: mobileTheme.color.bgSurface,
-                            padding: 14,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 12,
-                          }}
-                        >
-                          <View style={{ flex: 1, gap: 4 }}>
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}>
-                              {formatMeasurementHistoryDate(measurement.measured_on)}
-                            </Text>
-                            <Text
-                              style={{ color: "#7F8795", fontSize: 12, lineHeight: 17 }}
-                              numberOfLines={1}
-                            >
-                              {buildMeasurementHistorySummary(measurement, latestBodyHeightCm, userSex)}
-                            </Text>
-                          </View>
-
-                          {metricDelta !== null ? (
-                            <View
-                              style={{
-                                minHeight: 30,
-                                borderRadius: mobileTheme.radius.pill,
-                                backgroundColor: changeBadgeBackground,
-                                paddingHorizontal: 10,
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: 6,
-                              }}
-                            >
-                              <Feather
-                                name={changeIsDecrease ? "trending-down" : "trending-up"}
-                                size={11}
-                                color={changeBadgeColor}
-                              />
-                              <Text style={{ color: changeBadgeColor, fontSize: 12, fontWeight: "800" }}>
-                                {formatMeasurementNumber(Math.abs(metricDelta))} {measuresChartMetricMeta.unit}
-                              </Text>
-                            </View>
-                          ) : null}
-
-                          <Ionicons name="chevron-forward" size={18} color="#5D6675" />
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                )}
-              </View>
-
-              {store.measurements.some((m) => m.photo_uri) ? (
-                <View style={{ gap: 10 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "800", fontSize: 20 }}>
-                    Fotos de progreso
-                  </Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                    {store.measurements
-                      .filter((m) => m.photo_uri)
-                      .map((m) => (
-                        <Pressable key={m.id} onPress={() => setExpandedPhotoUri(m.photo_uri)} style={{ width: "31%", aspectRatio: 1, borderRadius: 14, overflow: "hidden" }}>
-                          <Image
-                            source={{ uri: m.photo_uri! }}
-                            style={{ width: "100%", height: "100%" }}
-                            resizeMode="cover"
-                          />
-                          <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.55)", paddingHorizontal: 6, paddingVertical: 3 }}>
-                            <Text style={{ color: "#fff", fontSize: 10, fontWeight: "700" }}>
-                              {formatMeasurementHistoryDate(m.measured_on)}
-                            </Text>
-                          </View>
-                        </Pressable>
-                      ))}
-                  </View>
-                </View>
-              ) : null}
-            </View>
+            <MeasurementsScreen
+              model={measurementsController.model}
+              actions={measurementsController.actions}
+            />
           ) : null}
 
           {tab === "settings" ? (
