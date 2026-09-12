@@ -22,6 +22,8 @@ import type {
   DietSettings,
   GkgMacroKey,
 } from "../diet/model";
+import { parseNonNegativeNumberInput } from "../diet/model";
+import { buildDietPlanningModel, type DietPlanningModel } from "../diet/planningModel";
 import type { DietMacroMode, NutritionValidationIssue } from "../diet/nutritionContract";
 import type { Measurement } from "../measurements/measurementContract";
 import { normalizePersonalFood } from "../catalogs/sources";
@@ -29,6 +31,7 @@ import type { CatalogSearchAvailability, FoodCatalogEntry } from "../catalogs/ty
 import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
 import type { NotificationSoundKey } from "../notifications/notificationSounds";
 import type { NotificationSettings } from "../storage/userPreferences";
+import type { LocalStoreRuntime } from "../persistence/localStoreRuntime";
 import type { ScreenController } from "./types";
 import { clearTraces, formatTraces, getTraces, type TraceEntry } from "../trace";
 
@@ -955,6 +958,197 @@ export function useDietSettingsController(
     },
   }), [input.birthDatePickerVisible]);
   return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
+
+export function useDietSettingsRuntime(input: {
+  localStore: LocalStoreRuntime;
+  latestHeightCm: number | null;
+  latestWeightKg: number | null;
+  isWeb: boolean;
+  isIos: boolean;
+  setError(message: string | null): void;
+}): {
+  controller: ReturnType<typeof useDietSettingsController>;
+  planning: DietPlanningModel;
+} {
+  const savedSettings = input.localStore.store.dietSettings;
+  const [draft, setDraft] = useState<DietSettings>(() => ({
+    ...savedSettings,
+    manual_macro_calories: { ...savedSettings.manual_macro_calories },
+  }));
+  const [dirty, setDirty] = useState(false);
+  const [saveResult, setSaveResult] = useState<string | null>(null);
+  const [birthDatePickerVisible, setBirthDatePickerVisible] = useState(false);
+  const inputRef = useRef(input);
+  inputRef.current = input;
+
+  useEffect(() => {
+    if (dirty) return;
+    setDraft({
+      ...savedSettings,
+      manual_macro_calories: { ...savedSettings.manual_macro_calories },
+    });
+  }, [dirty, savedSettings]);
+
+  const planning = useMemo(
+    () => buildDietPlanningModel(savedSettings, draft, input.latestWeightKg),
+    [draft, input.latestWeightKg, savedSettings],
+  );
+
+  function update(updater: (previous: DietSettings) => DietSettings): void {
+    setDraft((previous) => updater(previous));
+    setDirty(true);
+    setSaveResult(null);
+  }
+
+  function changeGramsPerKg(macro: GkgMacroKey, value: string): void {
+    const weight = inputRef.current.latestWeightKg;
+    const caloriesPerGram = macro === "fat" ? 9 : 4;
+    const settingKey = macro === "protein"
+      ? "protein_grams_per_kg"
+      : macro === "carbs"
+        ? "carbs_grams_per_kg"
+        : "fat_grams_per_kg";
+    update((previous) => {
+      const gramsPerKg = parseNonNegativeNumberInput(value) ?? 0;
+      const calories = weight ? Math.round(gramsPerKg * weight * caloriesPerGram) : 0;
+      return {
+        ...previous,
+        [settingKey]: value,
+        manual_macro_calories: {
+          ...previous.manual_macro_calories,
+          [macro]: gramsPerKg > 0 && weight
+            ? String(calories)
+            : previous.manual_macro_calories[macro],
+        },
+      };
+    });
+  }
+
+  const controller = useDietSettingsController({
+    draft,
+    issues: planning.issueByField,
+    latestHeightCm: input.latestHeightCm,
+    latestWeightKg: input.latestWeightKg,
+    birthDatePickerVisible,
+    isWeb: input.isWeb,
+    isIos: input.isIos,
+    proteinMaxGramsPerKgHint: planning.proteinMaxGramsPerKgHint,
+    carbsMaxGramsPerKgHint: planning.carbsMaxGramsPerKgHint,
+    fatMaxGramsPerKgHint: planning.fatMaxGramsPerKgHint,
+    configuredMacroCaloriesTotal: planning.configuredMacroCaloriesTotal,
+    configuredMacroCaloriesExcess: planning.configuredMacroCaloriesExcess,
+    configuredMacroCaloriesRemaining: planning.configuredMacroCaloriesRemaining,
+    draftProteinTargetGrams: planning.draftProteinTargetGrams,
+    draftCarbsTargetGrams: planning.draftCarbsTargetGrams,
+    draftFatTargetGrams: planning.draftFatTargetGrams,
+    dirty,
+    saveResult,
+    changeSex: (sex) => update((previous) => ({ ...previous, sex })),
+    changeHeight: (heightCm) => update((previous) => ({ ...previous, height_cm: heightCm })),
+    changeBirthDate: (birthDate) => update((previous) => ({ ...previous, birth_date: birthDate })),
+    showBirthDatePicker: () => setBirthDatePickerVisible(true),
+    closeBirthDatePicker: () => setBirthDatePickerVisible(false),
+    selectBirthDate: (birthDate) => update((previous) => ({
+      ...previous,
+      birth_date: birthDate.toISOString().slice(0, 10),
+    })),
+    changeGoal: (goal) => update((previous) => ({ ...previous, goal })),
+    changeActivityLevel: (activityLevel) => update((previous) => ({
+      ...previous,
+      activity_level: activityLevel,
+    })),
+    changeDailyCalories: (dailyCalories) => update((previous) => ({
+      ...previous,
+      daily_calories: dailyCalories,
+    })),
+    calculateDailyCalories: () => {
+      const heightCm = parseFloat(draft.height_cm ?? "") || (inputRef.current.latestHeightCm ?? 0);
+      const weightKg = inputRef.current.latestWeightKg ?? 0;
+      const birthDate = draft.birth_date;
+      if (!weightKg || !heightCm || !birthDate) {
+        inputRef.current.setError("Introduce altura, peso y fecha de nacimiento para calcular.");
+        return;
+      }
+      const ageYears = Math.floor((Date.now() - new Date(birthDate).getTime()) / 31557600000);
+      const sexOffset = (draft.sex ?? "male") === "female" ? -161 : 5;
+      const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + sexOffset;
+      const activityMultipliers: Record<string, number> = {
+        moderate: 1.55,
+        intermediate: 1.725,
+        high: 1.9,
+      };
+      const multiplier = activityMultipliers[draft.activity_level ?? "moderate"] ?? 1.55;
+      const goalMultiplier = draft.goal === "cut" ? 0.8 : draft.goal === "bulk" ? 1.2 : 1;
+      update((previous) => ({
+        ...previous,
+        daily_calories: String(Math.round(bmr * multiplier * goalMultiplier)),
+      }));
+      inputRef.current.setError(null);
+    },
+    changeMacroMode: (mode) => update((previous) => {
+      if (previous.macro_mode === mode) return previous;
+      if (mode !== "manual_calories" || previous.macro_mode !== "protein_by_weight") {
+        return { ...previous, macro_mode: mode };
+      }
+      const weight = inputRef.current.latestWeightKg;
+      if (weight === null || !Number.isFinite(weight) || weight <= 0) {
+        return { ...previous, macro_mode: mode };
+      }
+      const protein = parseNonNegativeNumberInput(previous.protein_grams_per_kg) ?? 0;
+      const carbs = parseNonNegativeNumberInput(previous.carbs_grams_per_kg) ?? 0;
+      const fat = parseNonNegativeNumberInput(previous.fat_grams_per_kg) ?? 0;
+      if (protein <= 0 && carbs <= 0 && fat <= 0) return { ...previous, macro_mode: mode };
+      return {
+        ...previous,
+        macro_mode: mode,
+        manual_macro_calories: {
+          protein: `${Math.max(0, Math.round(weight * protein * 4))}`,
+          carbs: `${Math.max(0, Math.round(weight * carbs * 4))}`,
+          fat: `${Math.max(0, Math.round(weight * fat * 9))}`,
+        },
+      };
+    }),
+    changeManualMacroCalories: (macro, value) => {
+      const weight = inputRef.current.latestWeightKg;
+      const caloriesPerGram = macro === "fat" ? 9 : 4;
+      const settingKey = macro === "protein"
+        ? "protein_grams_per_kg"
+        : macro === "carbs"
+          ? "carbs_grams_per_kg"
+          : "fat_grams_per_kg";
+      update((previous) => {
+        const calories = parseNonNegativeNumberInput(value) ?? 0;
+        const gramsPerKg = weight ? (calories / caloriesPerGram / weight).toFixed(2) : "";
+        return {
+          ...previous,
+          manual_macro_calories: { ...previous.manual_macro_calories, [macro]: value },
+          [settingKey]: calories > 0 && weight ? gramsPerKg : previous[settingKey],
+        };
+      });
+    },
+    changeMacroGramsPerKg: changeGramsPerKg,
+    save: () => {
+      if (planning.draftEvaluation.issues.length > 0) {
+        setSaveResult("Revisa los campos marcados antes de guardar el plan.");
+        return;
+      }
+      const nextSettings = {
+        ...draft,
+        manual_macro_calories: { ...draft.manual_macro_calories },
+      };
+      inputRef.current.localStore.update((previous) => ({
+        ...previous,
+        dietSettings: nextSettings,
+      }));
+      setDirty(false);
+      setSaveResult(planning.draftEvaluation.budgetStatus === "exceeded"
+        ? `Plan guardado con un exceso de ${planning.draftEvaluation.excessCalories.toFixed(0)} kcal.`
+        : "Plan guardado.");
+    },
+  });
+
+  return useMemo(() => ({ controller, planning }), [controller, planning]);
 }
 
 export type MeasurementsSettingsModel = {
