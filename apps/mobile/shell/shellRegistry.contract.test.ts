@@ -11,6 +11,10 @@ const trainingControllerSource = readFileSync(
   new URL("../controllers/trainingController.ts", import.meta.url),
   "utf8",
 );
+const catalogControllerSource = readFileSync(
+  new URL("../controllers/catalogController.ts", import.meta.url),
+  "utf8",
+);
 const appShellSource = readFileSync(new URL("../screens/AppShell.tsx", import.meta.url), "utf8");
 const chatScreenSource = readFileSync(new URL("../screens/ChatScreen.tsx", import.meta.url), "utf8");
 const catalogOverlaysSource = readFileSync(
@@ -73,9 +77,9 @@ describe("contrato estático del shell", () => {
 
   it("usa cierres canónicos para estados acoplados y bloquea el borrado en curso", () => {
     expect(appSource).toMatch(
-      /function closeExercisePicker\(\) \{\s*setExercisePickerOpen\(false\);\s*setSupersetPickerTarget\(null\);\s*\}/,
+      /function closeExercisePicker\(\) \{\s*exerciseCatalogRuntime\.actions\.closePicker\(\);\s*setSupersetPickerTarget\(null\);\s*\}/,
     );
-    expect(appSource.match(/setExercisePickerOpen\(false\)/g)).toHaveLength(1);
+    expect(catalogControllerSource.match(/setPickerOpen\(false\)/g)).toHaveLength(1);
     expect(trainingControllerSource).toContain("inputRef.current.closePicker();");
     expect(appSource).toContain('"exercise-picker": trainingCatalogController.back.handlers["exercise-picker"]');
     expect(appSource).toContain(
