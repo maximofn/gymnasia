@@ -13,7 +13,11 @@ const measurementsScreenSource = readFileSync(
   "utf8",
 );
 const dietScreenSource = readFileSync(new URL("../screens/DietScreen.tsx", import.meta.url), "utf8");
-const shellUiSource = `${appSource}\n${chatScreenSource}\n${measurementsScreenSource}\n${dietScreenSource}`;
+const settingsScreenSource = readFileSync(
+  new URL("../screens/SettingsScreen.tsx", import.meta.url),
+  "utf8",
+);
+const shellUiSource = `${appSource}\n${chatScreenSource}\n${measurementsScreenSource}\n${dietScreenSource}\n${settingsScreenSource}`;
 const reportModalSource = readFileSync(new URL("../AiResponseReportModal.tsx", import.meta.url), "utf8");
 const recoverySource = readFileSync(new URL("../LocalStoreRecoveryScreen.tsx", import.meta.url), "utf8");
 

@@ -348,8 +348,13 @@ import { useHomeController } from "./controllers/homeController";
 import { useMeasurementsController } from "./controllers/measurementsController";
 import {
   useDataSettingsController,
+  useDietSettingsController,
+  useFoodCatalogSettingsController,
+  useMemorySettingsController,
+  useMeasurementsSettingsController,
   useNotificationSettingsController,
   useSettingsTabsController,
+  useTrainingSettingsController,
   type SettingsTabKey,
 } from "./controllers/settingsController";
 import {
@@ -357,11 +362,17 @@ import {
   DataSettingsPanel,
   DietHeader,
   DietMealsScreen,
+  DietSettingsPanel,
+  FoodsSettingsPanel,
   HomeScreen,
+  MemorySettingsPanel,
   MeasurementsScreen,
+  MeasurementsSettingsPanel,
   NotificationSettingsPanel,
   PreferencesSettingsPanel,
+  ProductsSettingsPanel,
   SettingsTabs,
+  TrainingSettingsPanel,
 } from "./screens";
 import {
   AiResponseReportAction,
@@ -5790,8 +5801,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     closeEntry: closeMeasurementEntryScreen,
     setDatePickerOpen: setShowMeasurementDatePicker,
   });
-  const savedDietPlanEvaluation = evaluateDietPlan(dietSettings, latestBodyWeightKg);
-  const draftDietPlanEvaluation = evaluateDietPlan(dietSettingsDraft, latestBodyWeightKg);
+  const savedDietPlanEvaluation = useMemo(
+    () => evaluateDietPlan(dietSettings, latestBodyWeightKg),
+    [dietSettings, latestBodyWeightKg],
+  );
+  const draftDietPlanEvaluation = useMemo(
+    () => evaluateDietPlan(dietSettingsDraft, latestBodyWeightKg),
+    [dietSettingsDraft, latestBodyWeightKg],
+  );
   const dietDailyCaloriesTarget = savedDietPlanEvaluation.dailyCaloriesTarget ?? 0;
   const draftDietDailyCaloriesTarget = draftDietPlanEvaluation.dailyCaloriesTarget ?? 0;
   const proteinGramsPerKgTarget =
@@ -5877,11 +5894,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const configuredMacroCaloriesTotal = draftDietPlanEvaluation.assignedCalories;
   const configuredMacroCaloriesRemaining = draftDietPlanEvaluation.remainingCalories;
   const configuredMacroCaloriesExcess = draftDietPlanEvaluation.excessCalories;
-  const dietPlanDraftIssueByField = new Map(
-    draftDietPlanEvaluation.issues.map((issue) => [issue.field, issue] as const),
+  const dietPlanDraftIssueByField = useMemo(
+    () => new Map(draftDietPlanEvaluation.issues.map((issue) => [issue.field, issue] as const)),
+    [draftDietPlanEvaluation.issues],
   );
-  const mealNutritionIssueByField = new Map(
-    mealNutritionIssues.map((issue) => [issue.field, issue] as const),
+  const mealNutritionIssueByField = useMemo(
+    () => new Map(mealNutritionIssues.map((issue) => [issue.field, issue] as const)),
+    [mealNutritionIssues],
   );
   const draftProteinTargetGrams = draftDietPlanEvaluation.macroGrams.protein;
   const draftCarbsTargetGrams = draftDietPlanEvaluation.macroGrams.carbs;
@@ -6088,6 +6107,122 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setPersonalFoodAIChatOpen(false);
     },
   });
+  const dietSettingsController = useDietSettingsController({
+    draft: dietSettingsDraft,
+    issues: dietPlanDraftIssueByField,
+    latestHeightCm: latestBodyHeightCm,
+    latestWeightKg: latestBodyWeightKg,
+    birthDatePickerVisible: showBirthDatePicker,
+    isWeb: Platform.OS === "web",
+    isIos: Platform.OS === "ios",
+    proteinMaxGramsPerKgHint,
+    carbsMaxGramsPerKgHint,
+    fatMaxGramsPerKgHint,
+    configuredMacroCaloriesTotal,
+    configuredMacroCaloriesExcess,
+    configuredMacroCaloriesRemaining,
+    draftProteinTargetGrams,
+    draftCarbsTargetGrams,
+    draftFatTargetGrams,
+    dirty: dietSettingsDraftDirty,
+    saveResult: dietPlanSaveResult,
+    changeSex: (sex) => updateDietSettings((previous) => ({ ...previous, sex })),
+    changeHeight: (heightCm) => updateDietSettings((previous) => ({
+      ...previous,
+      height_cm: heightCm,
+    })),
+    changeBirthDate: (birthDate) => updateDietSettings((previous) => ({
+      ...previous,
+      birth_date: birthDate,
+    })),
+    showBirthDatePicker: () => setShowBirthDatePicker(true),
+    closeBirthDatePicker: () => setShowBirthDatePicker(false),
+    selectBirthDate: (birthDate) => updateDietSettings((previous) => ({
+      ...previous,
+      birth_date: birthDate.toISOString().slice(0, 10),
+    })),
+    changeGoal: updateDietGoal,
+    changeActivityLevel: updateActivityLevel,
+    changeDailyCalories: updateDietDailyCalories,
+    calculateDailyCalories: () => {
+      const heightCm = parseFloat(dietSettingsDraft.height_cm ?? "") || (latestBodyHeightCm ?? 0);
+      const weightKg = latestBodyWeightKg ?? 0;
+      const birthDate = dietSettingsDraft.birth_date;
+      if (!weightKg || !heightCm || !birthDate) {
+        setError("Introduce altura, peso y fecha de nacimiento para calcular.");
+        return;
+      }
+      const ageYears = Math.floor((Date.now() - new Date(birthDate).getTime()) / 31557600000);
+      const sexOffset = (dietSettingsDraft.sex ?? "male") === "female" ? -161 : 5;
+      const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + sexOffset;
+      const activityMultipliers: Record<string, number> = {
+        moderate: 1.55,
+        intermediate: 1.725,
+        high: 1.9,
+      };
+      const multiplier = activityMultipliers[dietSettingsDraft.activity_level ?? "moderate"] ?? 1.55;
+      const goalMultiplier = dietSettingsDraft.goal === "cut"
+        ? 0.8
+        : dietSettingsDraft.goal === "bulk"
+          ? 1.2
+          : 1;
+      updateDietDailyCalories(String(Math.round(bmr * multiplier * goalMultiplier)));
+      setError(null);
+    },
+    changeMacroMode: setDietMacroMode,
+    changeManualMacroCalories: updateManualMacroCalories,
+    changeMacroGramsPerKg: (macro, value) => {
+      if (macro === "protein") updateProteinGramsPerKg(value);
+      else if (macro === "carbs") updateCarbsGramsPerKg(value);
+      else updateFatGramsPerKg(value);
+    },
+    save: saveDietPlan,
+  });
+  const memorySettingsController = useMemorySettingsController({
+    fields: memoryFields,
+    newKey: memoryNewKey,
+    newDescription: memoryNewDesc,
+    newValue: memoryNewValue,
+    updateField: updateMemoryField,
+    commitField: () => void commitMemoryField(),
+    deleteField: (index) => void deleteMemoryField(index),
+    changeNewKey: setMemoryNewKey,
+    changeNewDescription: setMemoryNewDesc,
+    changeNewValue: setMemoryNewValue,
+    addField: () => void addMemoryField(),
+    clearAll: () => {
+      Alert.alert("Borrar memoria", "¿Seguro que quieres eliminar todos los datos personales?", [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar todo",
+          style: "destructive",
+          onPress: () => void saveMemoryFields([]),
+        },
+      ]);
+    },
+  });
+  const measurementsSettingsController = useMeasurementsSettingsController({
+    measurements: store.measurements,
+    duplicateDateCount: measurementDateConflicts.length,
+    addMeasurement: openMeasurementEntryScreen,
+    editMeasurement: openMeasurementForEdit,
+    deleteMeasurement: (id) => void deleteMeasurement(id),
+  });
+  const foodCatalogSettingsController = useFoodCatalogSettingsController({
+    foods: foodsRepo,
+    availability: foodCatalogAvailability,
+    foodSearch,
+    foodCategory: foodCategoryFilter,
+    selectedFood: selectedFoodDetail,
+    productSearch,
+    selectedProduct: selectedProductDetail,
+    retry: () => void retryFoodCatalogs(),
+    changeFoodSearch: setFoodSearch,
+    changeFoodCategory: setFoodCategoryFilter,
+    selectFood: setSelectedFoodDetail,
+    changeProductSearch: setProductSearch,
+    selectProduct: setSelectedProductDetail,
+  });
   const dataSettingsBackupResult = useMemo(() => {
     if (!backupResult) return null;
     const details = (backupResult.details ?? []).slice(0, 5).map((detail) => {
@@ -6269,6 +6404,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     result.sort((a, b) => a.name.localeCompare(b.name));
     return result;
   }, [store.templates, exercisesRepo]);
+  const trainingSettingsController = useTrainingSettingsController({
+    templates: store.templates,
+    catalogAvailability: exerciseCatalogAvailability,
+    catalogSummary: exerciseCatalogState.manifest
+      ? `${exerciseCatalogState.manifest.itemCount.toLocaleString("es-ES")} ejercicios · ${exerciseCatalogState.manifest.pageSize} por página`
+      : "Abre el catálogo para descargar su índice y consultar los ejercicios disponibles.",
+    localOnlyExercises,
+    retryCatalog: () => void retryExerciseCatalog(),
+    openCatalog: openExerciseCatalogInspector,
+  });
   const activeTrainingPreviewImageUri = useMemo(
     () => activeTrainingPreviewExercises.find((exercise) => exercise.imageUri)?.imageUri ?? null,
     [activeTrainingPreviewExercises],
@@ -17216,458 +17361,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           {tab === "settings" ? (
             <View style={{ gap: 12 }}>
               {settingsTab === "diet" ? (
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgSurface,
-                    borderRadius: mobileTheme.radius.lg,
-                    padding: 12,
-                    gap: 10,
-                  }}
-                >
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                    Plan de dieta
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary }}>
-                    Define tu objetivo y las calorías diarias.
-                  </Text>
-
-                  <View style={{ flexDirection: "row", gap: 8 }}>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10, alignSelf: "center" }}>Sexo</Text>
-                    {(["male", "female"] as const).map((s) => (
-                      <Pressable
-                        key={s}
-                        onPress={() => updateDietSettings((prev) => ({ ...prev, sex: s }))}
-                        style={{
-                          flex: 1,
-                          minHeight: 36,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: (dietSettingsDraft.sex ?? "male") === s ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-                          backgroundColor: (dietSettingsDraft.sex ?? "male") === s ? "rgba(203,255,26,0.12)" : mobileTheme.color.bgApp,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text style={{ color: (dietSettingsDraft.sex ?? "male") === s ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontWeight: "700", fontSize: 13 }}>
-                          {s === "male" ? "Hombre" : "Mujer"}
-                        </Text>
-                      </Pressable>
-                    ))}
-                  </View>
-
-                  <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
-                    <View style={{ flex: 0.7, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Altura</Text>
-                      <TextInput
-                        value={dietSettingsDraft.height_cm ?? (latestBodyHeightCm ? String(latestBodyHeightCm) : "")}
-                        onChangeText={(v) => updateDietSettings((prev) => ({ ...prev, height_cm: v }))}
-                        placeholder="cm"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                        keyboardType="decimal-pad"
-                        style={{
-                          minHeight: 40,
-                          borderRadius: mobileTheme.radius.md,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgApp,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 10,
-                          fontSize: 14,
-                        }}
-                      />
-                    </View>
-                    <View style={{ flex: 0.7, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Peso</Text>
-                      <View style={{
-                        minHeight: 40,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        backgroundColor: mobileTheme.color.bgApp,
-                        justifyContent: "center",
-                        paddingHorizontal: 10,
-                      }}>
-                        <Text style={{ color: latestBodyWeightKg ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
-                          {latestBodyWeightKg ? `${latestBodyWeightKg}` : "—"}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={{ flex: 0.6, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Edad</Text>
-                      <View style={{
-                        minHeight: 40,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        backgroundColor: mobileTheme.color.bgApp,
-                        justifyContent: "center",
-                        paddingHorizontal: 10,
-                      }}>
-                        <Text style={{ color: dietSettingsDraft.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
-                          {dietSettingsDraft.birth_date ? `${Math.floor((Date.now() - new Date(dietSettingsDraft.birth_date).getTime()) / 31557600000)}` : "—"}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={{ flex: 1.5, gap: 2 }}>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>F. Nacimiento</Text>
-                      {Platform.OS === "web" ? (
-                        <TextInput
-                          value={dietSettingsDraft.birth_date ?? ""}
-                          onChangeText={(v) => {
-                            updateDietSettings((prev) => ({ ...prev, birth_date: v }));
-                          }}
-                          placeholder="AAAA-MM-DD"
-                          placeholderTextColor={mobileTheme.color.textSecondary}
-                          style={{
-                            minHeight: 40,
-                            borderRadius: mobileTheme.radius.md,
-                            borderWidth: 1,
-                            borderColor: mobileTheme.color.borderSubtle,
-                            backgroundColor: mobileTheme.color.bgApp,
-                            color: mobileTheme.color.textPrimary,
-                            paddingHorizontal: 10,
-                            fontSize: 14,
-                          }}
-                        />
-                      ) : (
-                        <>
-                          <Pressable
-                            onPress={() => setShowBirthDatePicker(true)}
-                            style={{
-                              minHeight: 40,
-                              borderRadius: mobileTheme.radius.md,
-                              borderWidth: 1,
-                              borderColor: mobileTheme.color.borderSubtle,
-                              backgroundColor: mobileTheme.color.bgApp,
-                              flexDirection: "row",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              paddingHorizontal: 10,
-                            }}
-                          >
-                            <Text style={{ color: dietSettingsDraft.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>
-                              {dietSettingsDraft.birth_date || "Seleccionar"}
-                            </Text>
-                            <Feather name="calendar" size={14} color={mobileTheme.color.textSecondary} />
-                          </Pressable>
-                          {showBirthDatePicker ? (
-                            (Platform.OS as string) === "web" ? (
-                              <TextInput
-                                testID={shellSurfaceTestId("birth-date-picker")}
-                                value={dietSettingsDraft.birth_date || ""}
-                                onChangeText={(text) => {
-                                  updateDietSettings((prev) => ({ ...prev, birth_date: text }));
-                                }}
-                                placeholder="AAAA-MM-DD"
-                                placeholderTextColor={mobileTheme.color.textSecondary}
-                                style={{
-                                  minHeight: 40, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle,
-                                  borderRadius: 12, backgroundColor: mobileTheme.color.bgApp,
-                                  color: mobileTheme.color.textPrimary, paddingHorizontal: 10, fontSize: 14,
-                                }}
-                              />
-                            ) : (
-                              <DateTimePicker
-                                testID={shellSurfaceTestId("birth-date-picker")}
-                                value={dietSettingsDraft.birth_date ? new Date(dietSettingsDraft.birth_date) : new Date(1990, 0, 1)}
-                                mode="date"
-                                display={Platform.OS === "ios" ? "spinner" : "default"}
-                                maximumDate={new Date()}
-                                minimumDate={new Date(1930, 0, 1)}
-                                onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
-                                  setShowBirthDatePicker(Platform.OS === "ios");
-                                  if (selectedDate) {
-                                    const iso = selectedDate.toISOString().slice(0, 10);
-                                    updateDietSettings((prev) => ({ ...prev, birth_date: iso }));
-                                  }
-                                }}
-                              />
-                            )
-                          ) : null}
-                        </>
-                      )}
-                    </View>
-                  </View>
-
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Objetivo</Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                    {DIET_GOAL_OPTIONS.map((option) => {
-                      const isActive = dietSettingsDraft.goal === option.key;
-                      return (
-                        <Pressable
-                          key={option.key}
-                          onPress={() => updateDietGoal(option.key)}
-                          style={{
-                            borderWidth: 1,
-                            borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                            borderRadius: mobileTheme.radius.pill,
-                            paddingHorizontal: 12,
-                            minHeight: 34,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp,
-                          }}
-                        >
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
-                            {option.label}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Nivel de actividad</Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                    {ACTIVITY_LEVEL_OPTIONS.map((option) => {
-                      const isActive = dietSettingsDraft.activity_level === option.key;
-                      return (
-                        <Pressable
-                          key={option.key}
-                          onPress={() => updateActivityLevel(option.key)}
-                          style={{
-                            borderWidth: 1,
-                            borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                            borderRadius: mobileTheme.radius.pill,
-                            paddingHorizontal: 12,
-                            minHeight: 34,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp,
-                          }}
-                        >
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
-                            {option.label}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Calorías diarias</Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                    Añádelas a mano o pulsa Calcular para estimarlas automáticamente.
-                  </Text>
-                  <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-                    <TextInput
-                      testID="diet-plan-daily-calories-input"
-                      style={{
-                        flex: 1,
-                        minHeight: 42,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: dietPlanDraftIssueByField.has("daily_calories") ? "#FF5A5F" : mobileTheme.color.borderSubtle,
-                        backgroundColor: mobileTheme.color.bgApp,
-                        color: mobileTheme.color.textPrimary,
-                        paddingHorizontal: 12,
-                      }}
-                      value={dietSettingsDraft.daily_calories}
-                      onChangeText={updateDietDailyCalories}
-                      placeholder="Calorías objetivo (kcal)"
-                      placeholderTextColor={mobileTheme.color.textSecondary}
-                      keyboardType="decimal-pad"
-                    />
-                    <Pressable
-                      onPress={() => {
-                        const heightCm = parseFloat(dietSettingsDraft.height_cm ?? "") || (latestBodyHeightCm ?? 0);
-                        const weightKg = latestBodyWeightKg ?? 0;
-                        const birthDate = dietSettingsDraft.birth_date;
-                        if (!weightKg || !heightCm || !birthDate) {
-                          setError("Introduce altura, peso y fecha de nacimiento para calcular.");
-                          return;
-                        }
-                        const ageYears = Math.floor((Date.now() - new Date(birthDate).getTime()) / 31557600000);
-                        // Mifflin-St Jeor BMR
-                        const sexOffset = (dietSettingsDraft.sex ?? "male") === "female" ? -161 : 5;
-                        const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + sexOffset;
-                        const activityMultipliers: Record<string, number> = {
-                          moderate: 1.55,
-                          intermediate: 1.725,
-                          high: 1.9,
-                        };
-                        const multiplier = activityMultipliers[dietSettingsDraft.activity_level ?? "moderate"] ?? 1.55;
-                        const tdee = bmr * multiplier;
-                        const goalMultiplier = dietSettingsDraft.goal === "cut" ? 0.8 : dietSettingsDraft.goal === "bulk" ? 1.2 : 1;
-                        updateDietDailyCalories(String(Math.round(tdee * goalMultiplier)));
-                        setError(null);
-                      }}
-                      style={{
-                        minHeight: 42,
-                        borderRadius: mobileTheme.radius.md,
-                        backgroundColor: mobileTheme.color.brandPrimary,
-                        paddingHorizontal: 12,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text style={{ color: "#000", fontSize: 12, fontWeight: "700" }}>Calcular</Text>
-                    </Pressable>
-                  </View>
-
-                  {dietPlanDraftIssueByField.get("daily_calories") ? (
-                    <Text testID="diet-plan-error-daily-calories" style={{ color: "#FF8D8D", fontSize: 11 }}>
-                      {dietPlanDraftIssueByField.get("daily_calories")?.message}
-                    </Text>
-                  ) : null}
-
-                  <View style={{ flexDirection: "row", gap: 8 }}>
-                    {DIET_MACRO_MODE_OPTIONS.map((option) => {
-                      const isActive = dietSettingsDraft.macro_mode === option.key;
-                      return (
-                        <Pressable
-                          key={option.key}
-                          testID={`diet-macro-mode-${option.key}`}
-                          onPress={() => setDietMacroMode(option.key)}
-                          style={{
-                            flex: 1,
-                            minHeight: 38,
-                            borderRadius: mobileTheme.radius.md,
-                            borderWidth: 1,
-                            borderColor: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-                            backgroundColor: isActive ? "rgba(203,255,26,0.10)" : mobileTheme.color.bgApp,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontWeight: "800", fontSize: 12 }}>
-                            {option.key === "manual_calories" ? "Planificar por kcal" : "Planificar por g/kg"}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-
-
-
-                  {([
-                    { macro: "protein" as const, kcalLabel: "Proteínas", gkgLabel: "Proteína", gkgHint: proteinMaxGramsPerKgHint, gkgValue: dietSettingsDraft.protein_grams_per_kg, gkgOnChange: updateProteinGramsPerKg },
-                    { macro: "carbs" as const, kcalLabel: "Carbohidratos", gkgLabel: "Carbohidratos", gkgHint: carbsMaxGramsPerKgHint, gkgValue: dietSettingsDraft.carbs_grams_per_kg, gkgOnChange: updateCarbsGramsPerKg },
-                    { macro: "fat" as const, kcalLabel: "Grasas", gkgLabel: "Grasas", gkgHint: fatMaxGramsPerKgHint, gkgValue: dietSettingsDraft.fat_grams_per_kg, gkgOnChange: updateFatGramsPerKg },
-                  ]).map((row, idx) => (
-                    <View key={row.macro}>
-                      {idx === 0 ? (
-                        <View style={{ flexDirection: "row", gap: 10, marginBottom: 4 }}>
-                          <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>kcal</Text>
-                          <Text style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700", textAlign: "center" }}>g/kg</Text>
-                        </View>
-                      ) : null}
-                      <View style={{ flexDirection: "row", gap: 10, marginBottom: 2 }}>
-                        <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }}>{row.kcalLabel}</Text>
-                        <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 12 }} numberOfLines={1}>
-                          {row.gkgLabel}{row.gkgHint !== null ? ` · max ${row.gkgHint.toFixed(1)}` : ""}
-                        </Text>
-                      </View>
-                      <View style={{ flexDirection: "row", gap: 10 }}>
-                        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: dietPlanDraftIssueByField.has(`manual_macro_calories.${row.macro}`) ? "#FF5A5F" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
-                          <TextInput
-                            testID={`diet-plan-${row.macro}-calories-input`}
-                            style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
-                            value={dietSettingsDraft.manual_macro_calories[row.macro]}
-                            onChangeText={(value) => updateManualMacroCalories(row.macro, value)}
-                            placeholder="kcal"
-                            placeholderTextColor={mobileTheme.color.textSecondary}
-                            keyboardType="decimal-pad"
-                          />
-                          <View style={{ justifyContent: "center", paddingRight: 6 }}>
-                            <Pressable onPress={() => updateManualMacroCalories(row.macro, String((parseInt(dietSettingsDraft.manual_macro_calories[row.macro]) || 0) + 1))} style={{ padding: 4 }}>
-                              <Feather name="chevron-up" size={16} color={mobileTheme.color.textSecondary} />
-                            </Pressable>
-                            <Pressable onPress={() => updateManualMacroCalories(row.macro, String(Math.max(0, (parseInt(dietSettingsDraft.manual_macro_calories[row.macro]) || 0) - 1)))} style={{ padding: 4 }}>
-                              <Feather name="chevron-down" size={16} color={mobileTheme.color.textSecondary} />
-                            </Pressable>
-                          </View>
-                        </View>
-                        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: dietPlanDraftIssueByField.has(`${row.macro}_grams_per_kg`) ? "#FF5A5F" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}>
-                          <TextInput
-                            testID={`diet-plan-${row.macro}-gkg-input`}
-                            style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }}
-                            value={row.gkgValue}
-                            onChangeText={row.gkgOnChange}
-                            placeholder="g/kg"
-                            placeholderTextColor={mobileTheme.color.textSecondary}
-                            keyboardType="decimal-pad"
-                          />
-                          <View style={{ justifyContent: "center", paddingRight: 6 }}>
-                            <Pressable onPress={() => row.gkgOnChange((Math.round(((parseFloat(row.gkgValue) || 0) + 0.1) * 10) / 10).toFixed(1))} style={{ padding: 4 }}>
-                              <Feather name="chevron-up" size={16} color={mobileTheme.color.textSecondary} />
-                            </Pressable>
-                            <Pressable onPress={() => row.gkgOnChange((Math.max(0, Math.round(((parseFloat(row.gkgValue) || 0) - 0.1) * 10) / 10)).toFixed(1))} style={{ padding: 4 }}>
-                              <Feather name="chevron-down" size={16} color={mobileTheme.color.textSecondary} />
-                            </Pressable>
-                          </View>
-                        </View>
-                      </View>
-                      {dietPlanDraftIssueByField.get(`manual_macro_calories.${row.macro}`) || dietPlanDraftIssueByField.get(`${row.macro}_grams_per_kg`) ? (
-                        <Text style={{ color: "#FF8D8D", fontSize: 11, marginTop: 3 }}>
-                          {(dietPlanDraftIssueByField.get(`manual_macro_calories.${row.macro}`) ?? dietPlanDraftIssueByField.get(`${row.macro}_grams_per_kg`))?.message}
-                        </Text>
-                      ) : null}
-                    </View>
-                  ))}
-
-                  <View
-                    style={{
-                      borderWidth: 1,
-                      borderColor: configuredMacroCaloriesExcess > 0 ? "rgba(255,90,95,0.65)" : mobileTheme.color.borderSubtle,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.bgApp,
-                      padding: 10,
-                      gap: 4,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
-                      Asignadas: {configuredMacroCaloriesTotal.toFixed(0)} kcal
-                    </Text>
-                    <Text
-                      style={{
-                        color: configuredMacroCaloriesExcess > 0 ? "#FF8D8D" : mobileTheme.color.brandPrimary,
-                        fontWeight: "700",
-                      }}
-                    >
-                      {configuredMacroCaloriesExcess > 0
-                        ? `Excedente: ${configuredMacroCaloriesExcess.toFixed(0)} kcal · Restantes: 0 kcal`
-                        : `Restantes: ${configuredMacroCaloriesRemaining.toFixed(0)} kcal`}
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                      P: {draftProteinTargetGrams.toFixed(1)}g ({(draftProteinTargetGrams * 4).toFixed(0)} kcal) • C: {draftCarbsTargetGrams.toFixed(1)}g ({(draftCarbsTargetGrams * 4).toFixed(0)} kcal) • G: {draftFatTargetGrams.toFixed(1)}g ({(draftFatTargetGrams * 9).toFixed(0)} kcal)
-                    </Text>
-                    {configuredMacroCaloriesExcess > 0 ? (
-                      <Text testID="diet-plan-budget-warning" accessibilityLiveRegion="polite" style={{ color: "#FF8D8D", fontSize: 12, lineHeight: 17 }}>
-                        Los macros superan el objetivo diario en {configuredMacroCaloriesExcess.toFixed(0)} kcal. Puedes guardar el plan, pero el reparto no es coherente.
-                      </Text>
-                    ) : null}
-                  </View>
-
-                  <Pressable
-                    testID="save-diet-plan"
-                    accessibilityRole="button"
-                    accessibilityLabel="Guardar plan de dieta"
-                    disabled={!dietSettingsDraftDirty}
-                    onPress={saveDietPlan}
-                    style={{
-                      minHeight: 44,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.brandPrimary,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      opacity: dietSettingsDraftDirty ? 1 : 0.45,
-                    }}
-                  >
-                    <Text style={{ color: "#06090D", fontWeight: "800" }}>Guardar plan</Text>
-                  </Pressable>
-                  {dietSettingsDraftDirty ? (
-                    <Text testID="diet-plan-unsaved" style={{ color: "#F3B95F", fontSize: 11 }}>
-                      Tienes cambios sin guardar.
-                    </Text>
-                  ) : null}
-                  {dietPlanSaveResult ? (
-                    <Text testID="diet-plan-save-result" accessibilityLiveRegion="polite" style={{ color: dietPlanSaveResult.startsWith("Plan guardado") ? mobileTheme.color.brandPrimary : "#FF8D8D", fontSize: 12 }}>
-                      {dietPlanSaveResult}
-                    </Text>
-                  ) : null}
-
-                </View>
+                <DietSettingsPanel
+                  model={dietSettingsController.model}
+                  actions={dietSettingsController.actions}
+                />
               ) : null}
 
               {settingsTab === "provider" ? (
@@ -18858,756 +18555,31 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               ) : null}
 
               {settingsTab === "memory" ? (
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgSurface,
-                    borderRadius: mobileTheme.radius.lg,
-                    padding: 12,
-                    gap: 12,
-                  }}
-                >
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                    Memoria del coach
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                    Datos personales que el coach recuerda entre conversaciones. Puedes editarlos o dejar que el coach los guarde cuando le compartas información. El coach los consulta cuando los necesita: nunca se envían como instrucciones del sistema ni modifican su comportamiento.
-                  </Text>
-
-                  {memoryFields.map((field, index) => (
-                    <View
-                      key={`mem_${index}`}
-                      style={{
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        backgroundColor: mobileTheme.color.bgApp,
-                        borderRadius: mobileTheme.radius.md,
-                        padding: 10,
-                        gap: 8,
-                      }}
-                    >
-                      <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-                        <TextInput
-                          style={{
-                            flex: 1,
-                            minHeight: 36,
-                            borderRadius: 8,
-                            borderWidth: 1,
-                            borderColor: mobileTheme.color.borderSubtle,
-                            backgroundColor: mobileTheme.color.bgSurface,
-                            color: mobileTheme.color.textPrimary,
-                            paddingHorizontal: 10,
-                            fontSize: 13,
-                            fontWeight: "700",
-                          }}
-                          testID={`memory-field-key-${index}`}
-                          value={field.key}
-                          onChangeText={(text) => updateMemoryField(index, "key", text)}
-                          onBlur={commitMemoryField}
-                          placeholder="Campo"
-                          placeholderTextColor={mobileTheme.color.textSecondary}
-                        />
-                        <Pressable
-                          onPress={() => deleteMemoryField(index)}
-                          style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: 8,
-                            backgroundColor: "rgba(255,77,79,0.15)",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Feather name="trash-2" size={13} color="#FF4D4F" />
-                        </Pressable>
-                      </View>
-                      <TextInput
-                        style={{
-                          minHeight: 36,
-                          borderRadius: 8,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgSurface,
-                          color: mobileTheme.color.textSecondary,
-                          paddingHorizontal: 10,
-                          fontSize: 12,
-                        }}
-                        value={field.description}
-                        onChangeText={(text) => updateMemoryField(index, "description", text)}
-                        onBlur={commitMemoryField}
-                        placeholder="Descripción (para qué sirve este campo)"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                      />
-                      <TextInput
-                        style={{
-                          minHeight: 36,
-                          borderRadius: 8,
-                          borderWidth: 1,
-                          borderColor: mobileTheme.color.borderSubtle,
-                          backgroundColor: mobileTheme.color.bgSurface,
-                          color: mobileTheme.color.textPrimary,
-                          paddingHorizontal: 10,
-                          fontSize: 13,
-                        }}
-                        value={field.value}
-                        onChangeText={(text) => updateMemoryField(index, "value", text)}
-                        onBlur={commitMemoryField}
-                        placeholder="Valor"
-                        placeholderTextColor={mobileTheme.color.textSecondary}
-                      />
-                    </View>
-                  ))}
-
-                  <View style={{ borderTopWidth: 1, borderTopColor: mobileTheme.color.borderSubtle, paddingTop: 12, gap: 8 }}>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
-                      Añadir campo
-                    </Text>
-                    <TextInput
-                      style={{
-                        minHeight: 40,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        backgroundColor: mobileTheme.color.bgApp,
-                        color: mobileTheme.color.textPrimary,
-                        paddingHorizontal: 10,
-                        fontSize: 13,
-                        fontWeight: "700",
-                      }}
-                      value={memoryNewKey}
-                      onChangeText={setMemoryNewKey}
-                      placeholder="Campo (ej: Nombre)"
-                      placeholderTextColor={mobileTheme.color.textSecondary}
-                    />
-                    <TextInput
-                      style={{
-                        minHeight: 40,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        backgroundColor: mobileTheme.color.bgApp,
-                        color: mobileTheme.color.textSecondary,
-                        paddingHorizontal: 10,
-                        fontSize: 12,
-                      }}
-                      value={memoryNewDesc}
-                      onChangeText={setMemoryNewDesc}
-                      placeholder="Descripción (ej: Nombre real del usuario)"
-                      placeholderTextColor={mobileTheme.color.textSecondary}
-                    />
-                    <TextInput
-                      style={{
-                        minHeight: 40,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        backgroundColor: mobileTheme.color.bgApp,
-                        color: mobileTheme.color.textPrimary,
-                        paddingHorizontal: 10,
-                        fontSize: 13,
-                      }}
-                      value={memoryNewValue}
-                      onChangeText={setMemoryNewValue}
-                      placeholder="Valor (ej: Juan)"
-                      placeholderTextColor={mobileTheme.color.textSecondary}
-                    />
-                    <Pressable
-                      onPress={addMemoryField}
-                      disabled={!memoryNewKey.trim()}
-                      style={{
-                        height: 44,
-                        borderRadius: mobileTheme.radius.md,
-                        backgroundColor: memoryNewKey.trim() ? mobileTheme.color.brandPrimary : "#2F3440",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        opacity: memoryNewKey.trim() ? 1 : 0.5,
-                      }}
-                    >
-                      <Text style={{ color: memoryNewKey.trim() ? "#06090D" : "#9AA2AE", fontWeight: "700" }}>
-                        Añadir
-                      </Text>
-                    </Pressable>
-                  </View>
-
-                  {memoryFields.length > 0 ? (
-                    <Pressable
-                      onPress={() => {
-                        Alert.alert("Borrar memoria", "¿Seguro que quieres eliminar todos los datos personales?", [
-                          { text: "Cancelar", style: "cancel" },
-                          {
-                            text: "Eliminar todo",
-                            style: "destructive",
-                            onPress: async () => {
-                              await saveMemoryFields([]);
-                            },
-                          },
-                        ]);
-                      }}
-                      style={{
-                        marginTop: 4,
-                        height: 44,
-                        borderRadius: mobileTheme.radius.md,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,100,100,0.4)",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text style={{ color: "#ffb5b5", fontWeight: "700" }}>Borrar toda la memoria</Text>
-                    </Pressable>
-                  ) : null}
-                </View>
+                <MemorySettingsPanel
+                  model={memorySettingsController.model}
+                  actions={memorySettingsController.actions}
+                />
               ) : null}
 
               {settingsTab === "training" ? (
-                <View style={{ gap: 16 }}>
-                  {/* Routines section */}
-                  <View
-                    style={{
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: mobileTheme.radius.lg,
-                      padding: 12,
-                      gap: 10,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                      Rutinas ({store.templates.length})
-                    </Text>
-                    {store.templates.length === 0 ? (
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                        No hay rutinas creadas.
-                      </Text>
-                    ) : (
-                      store.templates.map((tpl) => {
-                        const catLabel = TRAINING_CATEGORY_EDIT_OPTIONS.find((o) => o.key === tpl.category)?.label ?? "Sin categoría";
-                        return (
-                          <View
-                            key={tpl.id}
-                            style={{
-                              borderWidth: 1,
-                              borderColor: mobileTheme.color.borderSubtle,
-                              borderRadius: mobileTheme.radius.md,
-                              padding: 10,
-                              gap: 6,
-                            }}
-                          >
-                            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 14 }}>
-                                {tpl.name}
-                              </Text>
-                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                                {catLabel}
-                              </Text>
-                            </View>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                              {tpl.exercises.length} ejercicio{tpl.exercises.length !== 1 ? "s" : ""}
-                              {tpl.duration_minutes ? ` · ${tpl.duration_minutes} min` : ""}
-                            </Text>
-                            {tpl.exercises.length > 0 ? (
-                              <View style={{ gap: 4, marginTop: 2 }}>
-                                {tpl.exercises.map((ex, i) => {
-                                  const totalSeries = ex.series?.length ?? ex.sets?.length ?? 0;
-                                  return (
-                                    <View key={ex.id} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                      {ex.image_uri ? (
-                                        <Image
-                                          source={{ uri: ex.image_uri }}
-                                          style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: "#1a1a1a" }}
-                                        />
-                                      ) : (
-                                        <View style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: "#1a1a1a", alignItems: "center", justifyContent: "center" }}>
-                                          <Text style={{ color: "#555", fontSize: 10 }}>{i + 1}</Text>
-                                        </View>
-                                      )}
-                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, flex: 1 }} numberOfLines={2}>
-                                        {ex.name ?? `Ejercicio ${i + 1}`}
-                                      </Text>
-                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                                        {totalSeries}×
-                                      </Text>
-                                    </View>
-                                  );
-                                })}
-                              </View>
-                            ) : null}
-                          </View>
-                        );
-                      })
-                    )}
-                  </View>
-
-                  {/* Catálogo público de ejercicios */}
-                  <View
-                    style={{
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: mobileTheme.radius.lg,
-                      padding: 12,
-                      gap: 10,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                      Catálogo de ejercicios
-                    </Text>
-                    <CatalogStatusNotice
-                      metadata={exerciseCatalogAvailability}
-                      onRetry={() => { void retryExerciseCatalog(); }}
-                      testID="settings-exercise-catalog-status"
-                    />
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>
-                      {exerciseCatalogState.manifest
-                        ? `${exerciseCatalogState.manifest.itemCount.toLocaleString("es-ES")} ejercicios · ${exerciseCatalogState.manifest.pageSize} por página`
-                        : "Abre el catálogo para descargar su índice y consultar los ejercicios disponibles."}
-                    </Text>
-                    <Pressable
-                      testID="settings-open-exercise-catalog"
-                      onPress={openExerciseCatalogInspector}
-                      style={{
-                        minHeight: 48,
-                        borderRadius: mobileTheme.radius.pill,
-                        backgroundColor: mobileTheme.color.brandPrimary,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexDirection: "row",
-                        gap: 8,
-                      }}
-                    >
-                      <Feather name="book-open" size={17} color="#07090D" />
-                      <Text style={{ color: "#07090D", fontSize: 15, fontWeight: "800" }}>
-                        Consultar catálogo
-                      </Text>
-                    </Pressable>
-                  </View>
-
-                  {/* Ejercicios locales (en tus rutinas) que aún no están en la base de datos de la app */}
-                  {localOnlyExercises.length > 0 ? (
-                    <View
-                      style={{
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        backgroundColor: mobileTheme.color.bgSurface,
-                        borderRadius: mobileTheme.radius.lg,
-                        padding: 12,
-                        gap: 10,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                        Tus ejercicios (aún no en la app) ({localOnlyExercises.length})
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        Ejercicios que tienes en tus rutinas pero que todavía no están en la base de
-                        datos de la app. Se añadirán en próximas actualizaciones.
-                      </Text>
-                      {localOnlyExercises.map((ex) => (
-                        <View
-                          key={ex.name}
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 10,
-                            paddingVertical: 4,
-                            borderBottomWidth: 1,
-                            borderBottomColor: mobileTheme.color.borderSubtle,
-                          }}
-                        >
-                          <View style={{ flexDirection: "row", gap: 2 }}>
-                            <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a", alignItems: "center", justifyContent: "center" }}>
-                              <Feather name="clock" size={16} color={mobileTheme.color.textSecondary} />
-                            </View>
-                          </View>
-                          <View style={{ flex: 1 }}>
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={2}>
-                              {ex.name}
-                            </Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                              Pendiente de añadir
-                            </Text>
-                          </View>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, flexShrink: 0, marginLeft: 6 }}>
-                            {ex.muscle}
-                          </Text>
-                        </View>
-                      ))}
-                    </View>
-                  ) : null}
-                </View>
+                <TrainingSettingsPanel
+                  model={trainingSettingsController.model}
+                  actions={trainingSettingsController.actions}
+                />
               ) : null}
 
               {settingsTab === "foods" ? (
-                <View style={{ gap: 12 }}>
-                  <CatalogStatusNotice
-                    metadata={foodCatalogAvailability}
-                    onRetry={() => { void retryFoodCatalogs(); }}
-                    testID="settings-food-catalog-status"
-                  />
-                  {/* Search bar */}
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      paddingHorizontal: 10,
-                      height: 40,
-                    }}
-                  >
-                    <Feather name="search" size={16} color={mobileTheme.color.textSecondary} />
-                    <TextInput
-                      value={foodSearch}
-                      onChangeText={setFoodSearch}
-                      placeholder="Buscar alimento..."
-                      placeholderTextColor={mobileTheme.color.textSecondary}
-                      style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 14, marginLeft: 8 }}
-                    />
-                    {foodSearch ? (
-                      <Pressable onPress={() => setFoodSearch("")} style={{ padding: 4 }}>
-                        <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
-                      </Pressable>
-                    ) : null}
-                  </View>
-
-                  {/* Category filter chips */}
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-                    {["all", ...Array.from(new Set(foodsRepo.filter((f) => !f.source || f.source === "alimento").map((f) => f.category))).sort()].map((cat) => {
-                      const isActive = foodCategoryFilter === cat;
-                      const label = cat === "all" ? "Todos" : cat.charAt(0).toUpperCase() + cat.slice(1);
-                      return (
-                        <Pressable
-                          key={cat}
-                          onPress={() => setFoodCategoryFilter(cat)}
-                          style={{
-                            borderWidth: 1,
-                            borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
-                            borderRadius: mobileTheme.radius.pill,
-                            paddingHorizontal: 10,
-                            minHeight: 30,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
-                          }}
-                        >
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "600" }}>
-                            {label}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-
-                  {/* Food list */}
-                  <View
-                    style={{
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: mobileTheme.radius.lg,
-                      padding: 12,
-                      gap: 10,
-                    }}
-                  >
-                    {(() => {
-                      const onlyFoods = foodsRepo.filter((f) => !f.source || f.source === "alimento");
-                      const filtered = onlyFoods.filter((f) => {
-                        const matchesSearch = !foodSearch || f.name.toLowerCase().includes(foodSearch.toLowerCase()) || f.category.toLowerCase().includes(foodSearch.toLowerCase());
-                        const matchesCategory = foodCategoryFilter === "all" || f.category === foodCategoryFilter;
-                        return matchesSearch && matchesCategory;
-                      });
-                      return (
-                        <>
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                            Alimentos ({onlyFoods.length})
-                          </Text>
-                          {filtered.length === 0 ? (
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                              No se encontraron alimentos.
-                            </Text>
-                          ) : filtered.map((food) => (
-                            <View key={food.id}>
-                              <Pressable
-                                onPress={() => setSelectedFoodDetail(selectedFoodDetail?.id === food.id ? null : food)}
-                                style={{
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  gap: 10,
-                                  paddingVertical: 6,
-                                  borderBottomWidth: 1,
-                                  borderBottomColor: mobileTheme.color.borderSubtle,
-                                }}
-                              >
-                                <FoodThumbnail food={food} />
-                                <View style={{ flex: 1 }}>
-                                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
-                                    {food.name}
-                                  </Text>
-                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                                    {food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g
-                                  </Text>
-                                </View>
-                                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
-                                  {food.category}
-                                </Text>
-                              </Pressable>
-                              {selectedFoodDetail?.id === food.id ? (
-                                <View
-                                  testID={shellSurfaceTestId("settings-food-detail")}
-                                  style={{
-                                    backgroundColor: mobileTheme.color.bgSurface,
-                                    borderRadius: 12,
-                                    padding: 16,
-                                    gap: 12,
-                                    marginTop: 6,
-                                    borderWidth: 1,
-                                    borderColor: mobileTheme.color.borderSubtle,
-                                  }}
-                                >
-                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
-                                    Por 100g
-                                  </Text>
-                                  <View style={{ flexDirection: "row", gap: 8 }}>
-                                    {[
-                                      { label: "Calorías", value: `${food.calories_per_100g}`, unit: "kcal", color: "#FF6B6B" },
-                                      { label: "Proteína", value: `${food.protein_per_100g}`, unit: "g", color: "#4ECDC4" },
-                                      { label: "Carbos", value: `${food.carbs_per_100g}`, unit: "g", color: "#FFE66D" },
-                                      { label: "Grasa", value: `${food.fat_per_100g}`, unit: "g", color: "#FF8A5C" },
-                                    ].map((macro) => (
-                                      <View
-                                        key={macro.label}
-                                        style={{
-                                          flex: 1,
-                                          backgroundColor: macro.color + "15",
-                                          borderRadius: 8,
-                                          padding: 8,
-                                          alignItems: "center",
-                                          gap: 2,
-                                        }}
-                                      >
-                                        <Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>
-                                          {macro.value}
-                                        </Text>
-                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
-                                          {macro.unit}
-                                        </Text>
-                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
-                                          {macro.label}
-                                        </Text>
-                                      </View>
-                                    ))}
-                                  </View>
-                                  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text>
-                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
-                                      {food.fiber_per_100g}g
-                                    </Text>
-                                  </View>
-                                  {food.serving_size_g > 0 ? (
-                                    <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}>
-                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
-                                        Ración típica
-                                      </Text>
-                                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>
-                                        {food.serving_description || `${food.serving_size_g}g`}
-                                      </Text>
-                                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                                        {Math.round(food.calories_per_100g * food.serving_size_g / 100)} kcal · P:{(food.protein_per_100g * food.serving_size_g / 100).toFixed(1)}g · C:{(food.carbs_per_100g * food.serving_size_g / 100).toFixed(1)}g · G:{(food.fat_per_100g * food.serving_size_g / 100).toFixed(1)}g
-                                      </Text>
-                                    </View>
-                                  ) : null}
-                                </View>
-                              ) : null}
-                            </View>
-                          ))}
-                        </>
-                      );
-                    })()}
-                  </View>
-                </View>
+                <FoodsSettingsPanel
+                  model={foodCatalogSettingsController.model}
+                  actions={foodCatalogSettingsController.actions}
+                />
               ) : null}
 
               {settingsTab === "products" ? (
-                <View style={{ gap: 12 }}>
-                  <CatalogStatusNotice
-                    metadata={foodCatalogAvailability}
-                    onRetry={() => { void retryFoodCatalogs(); }}
-                    testID="settings-product-catalog-status"
-                  />
-                  {/* Search bar */}
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      borderRadius: mobileTheme.radius.md,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      paddingHorizontal: 10,
-                      height: 40,
-                    }}
-                  >
-                    <Feather name="search" size={16} color={mobileTheme.color.textSecondary} />
-                    <TextInput
-                      value={productSearch}
-                      onChangeText={setProductSearch}
-                      placeholder="Buscar producto comercial..."
-                      placeholderTextColor={mobileTheme.color.textSecondary}
-                      style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 14, marginLeft: 8 }}
-                    />
-                    {productSearch ? (
-                      <Pressable onPress={() => setProductSearch("")} style={{ padding: 4 }}>
-                        <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
-                      </Pressable>
-                    ) : null}
-                  </View>
-
-                  {/* Product list */}
-                  <View
-                    style={{
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      borderRadius: mobileTheme.radius.lg,
-                      padding: 12,
-                      gap: 10,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
-                      Productos comerciales ({foodsRepo.filter((f) => f.source === "producto_comercial").length})
-                    </Text>
-                    {(() => {
-                      const products = foodsRepo.filter((f) => f.source === "producto_comercial");
-                      const filtered = products.filter((f) =>
-                        !productSearch || f.name.toLowerCase().includes(productSearch.toLowerCase()),
-                      );
-                      if (filtered.length === 0) {
-                        return (
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                            {products.length === 0 ? "No hay productos comerciales." : "No se encontraron productos."}
-                          </Text>
-                        );
-                      }
-                      return filtered.map((food) => (
-                        <Pressable
-                          key={food.id}
-                          onPress={() => setSelectedProductDetail(food)}
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 10,
-                            paddingVertical: 6,
-                            borderBottomWidth: 1,
-                            borderBottomColor: mobileTheme.color.borderSubtle,
-                          }}
-                        >
-                          <FoodThumbnail food={food} />
-                          <View style={{ flex: 1 }}>
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
-                              {food.name}
-                            </Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                              {food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g
-                            </Text>
-                          </View>
-                        </Pressable>
-                      ));
-                    })()}
-                  </View>
-
-                  {/* Product detail */}
-                  {selectedProductDetail ? (
-                    <View
-                      testID={shellSurfaceTestId("settings-product-detail")}
-                      style={{
-                        backgroundColor: mobileTheme.color.bgSurface,
-                        borderRadius: 12,
-                        padding: 16,
-                        gap: 12,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                      }}
-                    >
-                      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>
-                          {selectedProductDetail.name}
-                        </Text>
-                        <Pressable onPress={() => setSelectedProductDetail(null)} style={{ padding: 4 }}>
-                          <Feather name="x" size={20} color={mobileTheme.color.textSecondary} />
-                        </Pressable>
-                      </View>
-
-                      {selectedProductDetail.image ? (
-                        <Image
-                          source={{ uri: foodRepoImageUri(selectedProductDetail)! }}
-                          style={{ width: "100%", height: 160, borderRadius: 8 }}
-                          resizeMode="contain"
-                        />
-                      ) : null}
-
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
-                        Por 100g
-                      </Text>
-                      <View style={{ flexDirection: "row", gap: 8 }}>
-                        {[
-                          { label: "Calorías", value: `${selectedProductDetail.calories_per_100g}`, unit: "kcal", color: "#FF6B6B" },
-                          { label: "Proteína", value: `${selectedProductDetail.protein_per_100g}`, unit: "g", color: "#4ECDC4" },
-                          { label: "Carbos", value: `${selectedProductDetail.carbs_per_100g}`, unit: "g", color: "#FFE66D" },
-                          { label: "Grasa", value: `${selectedProductDetail.fat_per_100g}`, unit: "g", color: "#FF8A5C" },
-                        ].map((macro) => (
-                          <View
-                            key={macro.label}
-                            style={{
-                              flex: 1,
-                              backgroundColor: macro.color + "15",
-                              borderRadius: 8,
-                              padding: 8,
-                              alignItems: "center",
-                              gap: 2,
-                            }}
-                          >
-                            <Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>
-                              {macro.value}
-                            </Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
-                              {macro.unit}
-                            </Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>
-                              {macro.label}
-                            </Text>
-                          </View>
-                        ))}
-                      </View>
-
-                      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>
-                          {selectedProductDetail.fiber_per_100g}g
-                        </Text>
-                      </View>
-
-                      {selectedProductDetail.serving_size_g > 0 ? (
-                        <View
-                          style={{
-                            backgroundColor: "#ffffff08",
-                            borderRadius: 8,
-                            padding: 10,
-                            gap: 4,
-                          }}
-                        >
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
-                            Ración típica ({selectedProductDetail.serving_size_g}g)
-                          </Text>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                            {Math.round(selectedProductDetail.calories_per_100g * selectedProductDetail.serving_size_g / 100)} kcal · P:{(selectedProductDetail.protein_per_100g * selectedProductDetail.serving_size_g / 100).toFixed(1)}g · C:{(selectedProductDetail.carbs_per_100g * selectedProductDetail.serving_size_g / 100).toFixed(1)}g · G:{(selectedProductDetail.fat_per_100g * selectedProductDetail.serving_size_g / 100).toFixed(1)}g
-                          </Text>
-                        </View>
-                      ) : null}
-                    </View>
-                  ) : null}
-                </View>
+                <ProductsSettingsPanel
+                  model={foodCatalogSettingsController.model}
+                  actions={foodCatalogSettingsController.actions}
+                />
               ) : null}
 
               {settingsTab === "personalFoods" ? (
@@ -20028,168 +19000,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               ) : null}
 
               {settingsTab === "measures" ? (
-                <View style={{ gap: 12 }}>
-                  {measurementDateConflicts.length > 0 ? (
-                    <View
-                      testID="measurement-settings-duplicate-warning"
-                      style={{
-                        borderRadius: 12,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,190,92,0.45)",
-                        backgroundColor: "rgba(255,190,92,0.10)",
-                        padding: 12,
-                        flexDirection: "row",
-                        alignItems: "flex-start",
-                        gap: 8,
-                      }}
-                    >
-                      <Feather name="alert-triangle" size={17} color="#FFBE5C" style={{ marginTop: 1 }} />
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, lineHeight: 18, flex: 1 }}>
-                        {`Hay mediciones repetidas en ${measurementDateConflicts.length} fecha(s). Se conservan para que decidas cuál editar o eliminar.`}
-                      </Text>
-                    </View>
-                  ) : null}
-                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                      Medidas guardadas ({store.measurements.length})
-                    </Text>
-                    <Pressable
-                      onPress={openMeasurementEntryScreen}
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 6,
-                        borderWidth: 1,
-                        borderColor: "rgba(203,255,26,0.45)",
-                        borderRadius: mobileTheme.radius.pill,
-                        paddingHorizontal: 12,
-                        paddingVertical: 6,
-                        backgroundColor: "rgba(203,255,26,0.08)",
-                      }}
-                    >
-                      <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
-                      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>Añadir</Text>
-                    </Pressable>
-                  </View>
-
-                  {store.measurements.length === 0 ? (
-                    <View
-                      style={{
-                        backgroundColor: mobileTheme.color.bgSurface,
-                        borderRadius: mobileTheme.radius.lg,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        padding: 24,
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                      <Feather name="activity" size={32} color={mobileTheme.color.textSecondary} />
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, textAlign: "center" }}>
-                        No hay medidas guardadas. Pulsa "Añadir" para registrar tus medidas.
-                      </Text>
-                    </View>
-                  ) : (
-                    store.measurements.map((m, idx) => {
-                      const dateStr = formatMeasurementHistoryDate(m.measured_on);
-                      const fields: Array<{ label: string; value: string }> = [];
-                      if (m.weight_kg !== null) fields.push({ label: "Peso", value: `${formatMeasurementNumber(m.weight_kg)} kg` });
-                      if (m.height_cm !== null) fields.push({ label: "Altura", value: `${formatMeasurementNumber(m.height_cm)} cm` });
-                      if (m.neck_cm !== null) fields.push({ label: "Cuello", value: `${formatMeasurementNumber(m.neck_cm)} cm` });
-                      if (m.chest_cm !== null) fields.push({ label: "Pecho", value: `${formatMeasurementNumber(m.chest_cm)} cm` });
-                      if (m.waist_cm !== null) fields.push({ label: "Cintura", value: `${formatMeasurementNumber(m.waist_cm)} cm` });
-                      if (m.hips_cm !== null) fields.push({ label: "Cadera", value: `${formatMeasurementNumber(m.hips_cm)} cm` });
-                      if (m.biceps_cm !== null) fields.push({ label: "Bíceps", value: `${formatMeasurementNumber(m.biceps_cm)} cm` });
-                      if (m.quadriceps_cm !== null) fields.push({ label: "Cuádriceps", value: `${formatMeasurementNumber(m.quadriceps_cm)} cm` });
-                      if (m.calf_cm !== null) fields.push({ label: "Gemelo", value: `${formatMeasurementNumber(m.calf_cm)} cm` });
-                      if (m.photo_uri) fields.push({ label: "Foto", value: "Sí" });
-
-                      return (
-                        <View
-                          key={m.id}
-                          style={{
-                            backgroundColor: mobileTheme.color.bgSurface,
-                            borderRadius: mobileTheme.radius.lg,
-                            borderWidth: 1,
-                            borderColor: mobileTheme.color.borderSubtle,
-                            padding: 12,
-                            gap: 8,
-                          }}
-                        >
-                          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                            <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>
-                              {dateStr}
-                            </Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                              #{store.measurements.length - idx}
-                            </Text>
-                          </View>
-
-                          {fields.length > 0 ? (
-                            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-                              {fields.map((f) => (
-                                <View
-                                  key={f.label}
-                                  style={{
-                                    backgroundColor: "#ffffff08",
-                                    borderRadius: 8,
-                                    paddingHorizontal: 10,
-                                    paddingVertical: 6,
-                                    gap: 2,
-                                  }}
-                                >
-                                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{f.label}</Text>
-                                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>{f.value}</Text>
-                                </View>
-                              ))}
-                            </View>
-                          ) : (
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Sin medidas numéricas</Text>
-                          )}
-
-                          <View style={{ flexDirection: "row", gap: 8 }}>
-                            <Pressable
-                              onPress={() => openMeasurementForEdit(m)}
-                              style={{
-                                flex: 1,
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: 6,
-                                paddingVertical: 8,
-                                borderRadius: mobileTheme.radius.md,
-                                borderWidth: 1,
-                                borderColor: mobileTheme.color.borderSubtle,
-                              }}
-                            >
-                              <Feather name="edit-2" size={13} color={mobileTheme.color.textSecondary} />
-                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Editar</Text>
-                            </Pressable>
-                            <Pressable
-                              testID={`measurement-delete-${m.id}`}
-                              onPress={() => { void deleteMeasurement(m.id); }}
-                              style={{
-                                flex: 1,
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: 6,
-                                paddingVertical: 8,
-                                borderRadius: mobileTheme.radius.md,
-                                borderWidth: 1,
-                                borderColor: "#FF6B6B44",
-                                backgroundColor: "#FF6B6B10",
-                              }}
-                            >
-                              <Feather name="trash-2" size={13} color="#FF6B6B" />
-                              <Text style={{ color: "#FF6B6B", fontSize: 12, fontWeight: "600" }}>Eliminar</Text>
-                            </Pressable>
-                          </View>
-                        </View>
-                      );
-                    })
-                  )}
-                </View>
+                <MeasurementsSettingsPanel
+                  model={measurementsSettingsController.model}
+                  actions={measurementsSettingsController.actions}
+                />
               ) : null}
 
               {settingsTab === "preferences" ? (
