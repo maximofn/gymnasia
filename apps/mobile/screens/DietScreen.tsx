@@ -368,7 +368,7 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                     {[
                       { field: "name" as const, label: "Nombre del alimento", test: "manual-food-name-input", keyboard: undefined, width: undefined },
                       { field: "grams" as const, label: "Gramos (g)", test: "manual-food-grams-input", keyboard: "decimal-pad" as const, width: 110 },
-                      { field: "calories_kcal" as const, label: "Calorías (kcal)", test: "manual-food-calories-input", keyboard: "decimal-pad" as const, width: 110 },
+                      { field: "calories_kcal" as const, label: "Calorías (kcal)", test: "manual-food-calories-input", errorTest: "manual-food-calories-error", keyboard: "decimal-pad" as const, width: 110 },
                       { field: "protein_g" as const, label: "Proteínas (g)", test: "manual-food-protein_g-input", keyboard: "decimal-pad" as const, width: 110 },
                       { field: "carbs_g" as const, label: "Carbohidratos (g)", test: "manual-food-carbs_g-input", keyboard: "decimal-pad" as const, width: 110 },
                       { field: "fat_g" as const, label: "Grasas (g)", test: "manual-food-fat_g-input", keyboard: "decimal-pad" as const, width: 110 },
@@ -387,7 +387,7 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                           />
                         </View>
                         {model.nutritionIssues.get(field.field) ? (
-                          <Text testID={`manual-food-${field.field}-error`} style={{ color: "#FF7B7B", fontSize: 12, marginLeft: field.width ? 118 : 0 }}>{model.nutritionIssues.get(field.field)?.message}</Text>
+                          <Text testID={"errorTest" in field ? field.errorTest : `manual-food-${field.field}-error`} style={{ color: "#FF7B7B", fontSize: 12, marginLeft: field.width ? 118 : 0 }}>{model.nutritionIssues.get(field.field)?.message}</Text>
                         ) : null}
                       </View>
                     ))}

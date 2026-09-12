@@ -372,6 +372,7 @@ import {
   DataSettingsPanel,
   DietHeader,
   DietMealsScreen,
+  FoodEstimatorOverlay,
   DietSettingsPanel,
   FoodsSettingsPanel,
   HomeScreen,
@@ -13120,217 +13121,34 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         actions={measurementsController.actions}
       />
 
-      {foodEstimatorModalOpen ? (
-        <KeyboardAvoidingView
-          testID={shellSurfaceTestId("food-estimator")}
-          behavior="padding"
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: mobileTheme.color.bgApp,
-            zIndex: 610,
-            elevation: 61,
-          }}
-        >
-          <View
-            style={{
-              paddingHorizontal: mobileTheme.spacing[4],
-              paddingTop: mobileTheme.spacing[4],
-              paddingBottom: 12,
-              borderBottomWidth: 1,
-              borderBottomColor: mobileTheme.color.borderSubtle,
-              backgroundColor: mobileTheme.color.bgApp,
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <View style={{ flex: 1, minWidth: 0, flexDirection: "row", alignItems: "center", gap: 10 }}>
-                <Pressable
-                  onPress={closeFoodEstimatorModal}
-                  hitSlop={8}
-                  accessibilityLabel="Cerrar Gymnasia Food Estimator"
-                  accessibilityRole="button"
-                >
-                  <Feather name="arrow-left" size={22} color={mobileTheme.color.textPrimary} />
-                </Pressable>
-                <Text
-                  numberOfLines={2}
-                  style={{ color: mobileTheme.color.textPrimary, fontSize: 18, lineHeight: 21, fontWeight: "800", flexShrink: 1 }}
-                >
-                  Gymnasia Food Estimator
-                </Text>
-              </View>
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, flexShrink: 0, marginLeft: 8 }}>
-                {foodEstimatorProvider
-                  ? PROVIDER_UI_META[foodEstimatorProvider.provider].label
-                  : "Sin API key"}
-              </Text>
-            </View>
-          </View>
-
-          <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4], paddingTop: 10, gap: 10 }}>
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              <Pressable
-                onPress={addFoodEstimatorImageFromLibrary}
-                disabled={foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES}
-                accessibilityLabel="Subir foto para estimar la comida"
-                accessibilityRole="button"
-                style={{
-                  flex: 1,
-                  minHeight: 40,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: "rgba(203,255,26,0.45)",
-                  backgroundColor: "rgba(203,255,26,0.10)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "row",
-                  gap: 6,
-                  opacity: foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES ? 0.5 : 1,
-                }}
-              >
-                <Ionicons name="image-outline" size={16} color={mobileTheme.color.brandPrimary} />
-                <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 13 }}>Subir foto</Text>
-              </Pressable>
-              <Pressable
-                onPress={addFoodEstimatorImageFromCamera}
-                disabled={foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES}
-                accessibilityLabel="Hacer foto para estimar la comida"
-                accessibilityRole="button"
-                style={{
-                  flex: 1,
-                  minHeight: 40,
-                  borderRadius: mobileTheme.radius.md,
-                  borderWidth: 1,
-                  borderColor: "rgba(203,255,26,0.45)",
-                  backgroundColor: "rgba(203,255,26,0.10)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "row",
-                  gap: 6,
-                  opacity: foodEstimatorImages.length >= FOOD_ESTIMATOR_MAX_IMAGES ? 0.5 : 1,
-                }}
-              >
-                <Ionicons name="camera-outline" size={16} color={mobileTheme.color.brandPrimary} />
-                <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 13 }}>Cámara</Text>
-              </Pressable>
-            </View>
-
-            {foodEstimatorImages.length > 0 ? (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ gap: 8 }}>
-                {foodEstimatorImages.map((image) => (
-                  <View
-                    key={image.id}
-                    style={{
-                      width: 68,
-                      height: 68,
-                      borderRadius: 12,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      overflow: "hidden",
-                      backgroundColor: mobileTheme.color.bgSurface,
-                    }}
-                  >
-                    <Image source={{ uri: image.uri }} style={{ width: "100%", height: "100%" }} />
-                    <Pressable
-                      onPress={() => removeFoodEstimatorImage(image.id)}
-                      accessibilityLabel="Quitar foto de la estimación"
-                      accessibilityRole="button"
-                      style={{
-                        position: "absolute",
-                        top: 3,
-                        right: 3,
-                        width: 18,
-                        height: 18,
-                        borderRadius: 999,
-                        backgroundColor: "rgba(0,0,0,0.65)",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Feather name="x" size={10} color="#FFFFFF" />
-                    </Pressable>
-                  </View>
-                ))}
-              </ScrollView>
-            ) : null}
-
-            <SharedChatPanel
-              variant="estimator"
-              messages={foodEstimatorMessages}
-              inputValue={foodEstimatorInput}
-              onInputChange={setFoodEstimatorInput}
-              onSend={() => {
-                void sendFoodEstimatorMessage();
-              }}
-              sendDisabled={foodEstimatorSending}
-              sendLabel={foodEstimatorSending ? "Enviando..." : "Enviar"}
-              inputPlaceholder="Describe la comida o pide ajustes..."
-              streamingIndicatorLabel={foodEstimatorStatus || `${foodThinkingLabel}...`}
-              expandedThinking={foodEstimatorExpandedThinking}
-              onToggleThinking={(messageId) => {
-                setFoodEstimatorExpandedThinking((prev) => ({ ...prev, [messageId]: !prev[messageId] }));
-              }}
-              pendingStatusMessage={foodEstimatorSending ? (foodEstimatorStatus || `${foodThinkingLabel}...`) : null}
-              scrollRef={foodEstimatorScrollRef}
-              disclosureSurface="food-estimator"
-              onReportMessage={(message, conversation) => {
-                handleOpenAiReport("food-estimator", message, conversation);
-              }}
-            />
-          </View>
-
-          <View
-            style={{
-              paddingHorizontal: mobileTheme.spacing[4],
-              paddingVertical: 10,
-              borderTopWidth: 1,
-              borderTopColor: mobileTheme.color.borderSubtle,
-              backgroundColor: mobileTheme.color.bgApp,
-              gap: 6,
-            }}
-          >
-            <Pressable
-              onPress={() => {
-                void addFoodFromEstimatorJSON();
-              }}
-              disabled={!foodEstimatorHasLLMResponse || foodEstimatorSending || !dietMealEditorCategory}
-              style={{
-                minHeight: 46,
-                borderRadius: mobileTheme.radius.md,
-                backgroundColor: foodEstimatorHasLLMResponse && dietMealEditorCategory
-                  ? mobileTheme.color.brandPrimary
-                  : mobileTheme.color.bgSurface,
-                alignItems: "center",
-                justifyContent: "center",
-                opacity:
-                  !foodEstimatorHasLLMResponse || foodEstimatorSending || !dietMealEditorCategory
-                    ? 0.5
-                    : 1,
-              }}
-            >
-              <Text
-                style={{
-                  color: foodEstimatorHasLLMResponse && dietMealEditorCategory
-                    ? "#06090D"
-                    : mobileTheme.color.textSecondary,
-                  fontWeight: "700",
-                  fontSize: 15,
-                }}
-              >
-                Añadir alimento
-              </Text>
-            </Pressable>
-            {!dietMealEditorCategory ? (
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, textAlign: "center" }}>
-                Abre primero "Añadir alimento" en una comida.
-              </Text>
-            ) : null}
-          </View>
-        </KeyboardAvoidingView>
-      ) : null}
+      <FoodEstimatorOverlay
+        open={foodEstimatorModalOpen}
+        providerLabel={foodEstimatorProvider ? PROVIDER_UI_META[foodEstimatorProvider.provider].label : "Sin API key"}
+        images={foodEstimatorImages}
+        maxImages={FOOD_ESTIMATOR_MAX_IMAGES}
+        messages={foodEstimatorMessages}
+        inputValue={foodEstimatorInput}
+        sending={foodEstimatorSending}
+        statusLabel={foodEstimatorStatus || `${foodThinkingLabel}...`}
+        expandedThinking={foodEstimatorExpandedThinking}
+        scrollRef={foodEstimatorScrollRef}
+        hasResponse={foodEstimatorHasLLMResponse}
+        hasMealTarget={dietMealEditorCategory !== null}
+        onClose={closeFoodEstimatorModal}
+        onAddImageFromLibrary={() => { void addFoodEstimatorImageFromLibrary(); }}
+        onAddImageFromCamera={() => { void addFoodEstimatorImageFromCamera(); }}
+        onRemoveImage={removeFoodEstimatorImage}
+        onInputChange={setFoodEstimatorInput}
+        onSend={() => { void sendFoodEstimatorMessage(); }}
+        onToggleThinking={(messageId) => {
+          setFoodEstimatorExpandedThinking((previous) => ({
+            ...previous,
+            [messageId]: !previous[messageId],
+          }));
+        }}
+        onReportMessage={handleOpenAiReport}
+        onAddFood={() => { void addFoodFromEstimatorJSON(); }}
+      />
 
       {pendingImport ? (
         <BackupImportConfirmation

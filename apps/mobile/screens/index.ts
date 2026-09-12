@@ -2,6 +2,7 @@ export { DesktopSidebar, TabTitle } from "./AppShell";
 export { ExerciseCatalogDetailOverlay } from "./CatalogOverlays";
 export { ChatScreen } from "./ChatScreen";
 export { DietHeader, DietMealsScreen } from "./DietScreen";
+export { FoodEstimatorOverlay } from "./DietOverlays";
 export { HomeScreen } from "./HomeScreen";
 export { MeasurementsOverlays, MeasurementsScreen } from "./MeasurementsScreen";
 export { SharedChatPanel } from "./SharedChatPanel";
