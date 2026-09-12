@@ -1,5 +1,8 @@
 import { useCallback, useMemo, useRef } from "react";
 
+import type { CatalogSearchAvailability, FoodCatalogEntry } from "../catalogs/types";
+import type { DietItem, DietMeal } from "../diet/model";
+import type { DietMealCategory, NutritionValidationIssue } from "../diet/nutritionContract";
 import type { ScreenController } from "./types";
 
 export type DietMacroOverviewItem = {
@@ -23,6 +26,28 @@ export type DietScreenModel = {
   caloriesPercent: number;
   macroOverview: readonly DietMacroOverviewItem[];
   exceededBudgetCalories: number | null;
+  meals: readonly DietMeal[];
+  expandedMeals: Readonly<Record<DietMealCategory, boolean>>;
+  editorCategory: DietMealCategory | null;
+  editingItem: { meal_id: string; item_id: string } | null;
+  itemMenu: { meal_id: string; item_id: string } | null;
+  catalogAvailability: CatalogSearchAvailability;
+  foodSearch: string;
+  foodSearchResults: readonly FoodCatalogEntry[];
+  addMode: "search" | "form" | "ai" | "selected" | null;
+  selectedFood: FoodCatalogEntry | null;
+  selectedGrams: string;
+  selectedFoodPreview: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  } | null;
+  nutritionIssues: ReadonlyMap<string, NutritionValidationIssue>;
+  manualFields: Readonly<Record<
+    "name" | "grams" | "calories_kcal" | "protein_g" | "carbs_g" | "fat_g",
+    string
+  >>;
 };
 
 export type DietScreenActions = {
@@ -32,6 +57,26 @@ export type DietScreenActions = {
   changeWebDate(value: string): void;
   changeNativeDate(eventType: string, date?: Date): void;
   closeDatePicker(): void;
+  toggleMeal(category: DietMealCategory): void;
+  toggleItemMenu(mealId: string, itemId: string): void;
+  editItem(category: DietMealCategory, meal: DietMeal, item: DietItem): void;
+  editItemWithAi(category: DietMealCategory, meal: DietMeal, item: DietItem): void;
+  deleteItem(meal: DietMeal, item: DietItem): void;
+  retryCatalog(): void;
+  changeFoodSearch(category: DietMealCategory, value: string): void;
+  focusFoodSearch(): void;
+  clearFoodSearch(): void;
+  selectFood(category: DietMealCategory, food: FoodCatalogEntry): void;
+  changeSelectedGrams(value: string): void;
+  saveSelectedFood(): void;
+  returnToFoodSearch(): void;
+  changeManualField(field: keyof DietScreenModel["manualFields"], value: string): void;
+  saveManualFood(): void;
+  cancelMealEditor(): void;
+  openManualFood(category: DietMealCategory): void;
+  openFoodEstimator(category: DietMealCategory): void;
+  repeatPreviousDay(category: DietMealCategory): void;
+  repeatFromDate(category: DietMealCategory): void;
 };
 
 type DietBackLayer =
@@ -62,6 +107,26 @@ type DietControllerInput = DietScreenModel & {
   closeDatePicker(): void;
   closeItemMenu(): void;
   closeMealEditor(): void;
+  toggleMeal(category: DietMealCategory): void;
+  toggleItemMenu(mealId: string, itemId: string): void;
+  editItem(category: DietMealCategory, meal: DietMeal, item: DietItem): void;
+  editItemWithAi(category: DietMealCategory, meal: DietMeal, item: DietItem): void;
+  deleteItem(meal: DietMeal, item: DietItem): void;
+  retryCatalog(): void;
+  changeFoodSearch(category: DietMealCategory, value: string): void;
+  focusFoodSearch(): void;
+  clearFoodSearch(): void;
+  selectFood(category: DietMealCategory, food: FoodCatalogEntry): void;
+  changeSelectedGrams(value: string): void;
+  saveSelectedFood(): void;
+  returnToFoodSearch(): void;
+  changeManualField(field: keyof DietScreenModel["manualFields"], value: string): void;
+  saveManualFood(): void;
+  cancelMealEditor(): void;
+  openManualFood(category: DietMealCategory): void;
+  openFoodEstimator(category: DietMealCategory): void;
+  repeatPreviousDay(category: DietMealCategory): void;
+  repeatFromDate(category: DietMealCategory): void;
 };
 
 export function useDietController(
@@ -82,6 +147,20 @@ export function useDietController(
     caloriesPercent: input.caloriesPercent,
     macroOverview: input.macroOverview,
     exceededBudgetCalories: input.exceededBudgetCalories,
+    meals: input.meals,
+    expandedMeals: input.expandedMeals,
+    editorCategory: input.editorCategory,
+    editingItem: input.editingItem,
+    itemMenu: input.itemMenu,
+    catalogAvailability: input.catalogAvailability,
+    foodSearch: input.foodSearch,
+    foodSearchResults: input.foodSearchResults,
+    addMode: input.addMode,
+    selectedFood: input.selectedFood,
+    selectedGrams: input.selectedGrams,
+    selectedFoodPreview: input.selectedFoodPreview,
+    nutritionIssues: input.nutritionIssues,
+    manualFields: input.manualFields,
   }), [
     input.caloriesConsumed,
     input.caloriesPercent,
@@ -95,6 +174,20 @@ export function useDietController(
     input.isWeb,
     input.macroOverview,
     input.selectedDate,
+    input.meals,
+    input.expandedMeals,
+    input.editorCategory,
+    input.editingItem,
+    input.itemMenu,
+    input.catalogAvailability,
+    input.foodSearch,
+    input.foodSearchResults,
+    input.addMode,
+    input.selectedFood,
+    input.selectedGrams,
+    input.selectedFoodPreview,
+    input.nutritionIssues,
+    input.manualFields,
   ]);
   const captureHeaderHeight = useCallback((height: number) => targetsRef.current.captureHeaderHeight(height), []);
   const changeDay = useCallback((days: number) => targetsRef.current.changeDay(days), []);
@@ -102,6 +195,26 @@ export function useDietController(
   const changeWebDate = useCallback((value: string) => targetsRef.current.changeWebDate(value), []);
   const changeNativeDate = useCallback((eventType: string, date?: Date) => targetsRef.current.changeNativeDate(eventType, date), []);
   const closeDatePickerAction = useCallback(() => targetsRef.current.closeDatePicker(), []);
+  const toggleMeal = useCallback((category: DietMealCategory) => targetsRef.current.toggleMeal(category), []);
+  const toggleItemMenu = useCallback((mealId: string, itemId: string) => targetsRef.current.toggleItemMenu(mealId, itemId), []);
+  const editItem = useCallback((category: DietMealCategory, meal: DietMeal, item: DietItem) => targetsRef.current.editItem(category, meal, item), []);
+  const editItemWithAi = useCallback((category: DietMealCategory, meal: DietMeal, item: DietItem) => targetsRef.current.editItemWithAi(category, meal, item), []);
+  const deleteItem = useCallback((meal: DietMeal, item: DietItem) => targetsRef.current.deleteItem(meal, item), []);
+  const retryCatalog = useCallback(() => targetsRef.current.retryCatalog(), []);
+  const changeFoodSearch = useCallback((category: DietMealCategory, value: string) => targetsRef.current.changeFoodSearch(category, value), []);
+  const focusFoodSearch = useCallback(() => targetsRef.current.focusFoodSearch(), []);
+  const clearFoodSearch = useCallback(() => targetsRef.current.clearFoodSearch(), []);
+  const selectFood = useCallback((category: DietMealCategory, food: FoodCatalogEntry) => targetsRef.current.selectFood(category, food), []);
+  const changeSelectedGrams = useCallback((value: string) => targetsRef.current.changeSelectedGrams(value), []);
+  const saveSelectedFood = useCallback(() => targetsRef.current.saveSelectedFood(), []);
+  const returnToFoodSearch = useCallback(() => targetsRef.current.returnToFoodSearch(), []);
+  const changeManualField = useCallback((field: keyof DietScreenModel["manualFields"], value: string) => targetsRef.current.changeManualField(field, value), []);
+  const saveManualFood = useCallback(() => targetsRef.current.saveManualFood(), []);
+  const cancelMealEditor = useCallback(() => targetsRef.current.cancelMealEditor(), []);
+  const openManualFood = useCallback((category: DietMealCategory) => targetsRef.current.openManualFood(category), []);
+  const openFoodEstimator = useCallback((category: DietMealCategory) => targetsRef.current.openFoodEstimator(category), []);
+  const repeatPreviousDay = useCallback((category: DietMealCategory) => targetsRef.current.repeatPreviousDay(category), []);
+  const repeatFromDate = useCallback((category: DietMealCategory) => targetsRef.current.repeatFromDate(category), []);
   const actions = useMemo<DietScreenActions>(() => ({
     captureHeaderHeight,
     changeDay,
@@ -109,7 +222,27 @@ export function useDietController(
     changeWebDate,
     changeNativeDate,
     closeDatePicker: closeDatePickerAction,
-  }), [captureHeaderHeight, changeDay, changeNativeDate, changeWebDate, closeDatePickerAction, toggleDatePicker]);
+    toggleMeal,
+    toggleItemMenu,
+    editItem,
+    editItemWithAi,
+    deleteItem,
+    retryCatalog,
+    changeFoodSearch,
+    focusFoodSearch,
+    clearFoodSearch,
+    selectFood,
+    changeSelectedGrams,
+    saveSelectedFood,
+    returnToFoodSearch,
+    changeManualField,
+    saveManualFood,
+    cancelMealEditor,
+    openManualFood,
+    openFoodEstimator,
+    repeatPreviousDay,
+    repeatFromDate,
+  }), [captureHeaderHeight, cancelMealEditor, changeDay, changeFoodSearch, changeManualField, changeNativeDate, changeSelectedGrams, changeWebDate, clearFoodSearch, closeDatePickerAction, deleteItem, editItem, editItemWithAi, focusFoodSearch, openFoodEstimator, openManualFood, repeatFromDate, repeatPreviousDay, retryCatalog, returnToFoodSearch, saveManualFood, saveSelectedFood, selectFood, toggleDatePicker, toggleItemMenu, toggleMeal]);
   const makeBackHandler = useCallback((close: keyof Pick<
     DietControllerInput,
     | "closeFoodCatalogAmbiguity"
