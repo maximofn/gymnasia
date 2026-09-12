@@ -616,6 +616,20 @@ esto hay que arreglarlo antes o el job pasará siempre.
   falla bajo el locale español con `MissingFormatArgumentException`; forzar
   `-J-Duser.language=en -J-Duser.country=US` permite imprimir el certificado.
 
+### Los nombres físicos de recursos del APK pueden estar ofuscados
+- Gotcha: el APK de GYM-186 (ticket para conciliar la configuración Expo con el
+  Android generado) contenía los cinco sonidos nativos, pero la optimización de
+  Android cambió rutas como `res/raw/ascending.wav` por nombres físicos como
+  `res/7M.wav`. Buscar los nombres declarativos en el listado ZIP produjo un
+  falso fallo después de completar correctamente la build.
+- Fix: para un APK, validar los nombres lógicos `raw/<nombre>` de la tabla de
+  recursos compilada con `aapt2 dump resources`. Los nombres del ZIP solo sirven
+  para reconocer la estructura del artefacto. El AAB sí conserva
+  `base/res/raw/<nombre>.wav` y puede seguir validándose por sus rutas. El
+  workflow ejecuta el controlador de publicación del SHA protegido de `main`,
+  separado del checkout inmutable que produjo la app; así una corrección de la
+  prueba puede reconciliar el mismo artefacto sin recompilarlo.
+
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:
 ```bash

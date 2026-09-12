@@ -49,6 +49,18 @@ release 1.42.0, ya sin `FOREGROUND_SERVICE`, y comprueba que los cinco sonidos
 estén realmente empaquetados. La evidencia `ProductionArtifactEvidenceV1` guarda
 ambas listas para que la revisión posterior no dependa del log del workflow.
 
+En un APK, la comprobación lee la tabla de recursos compilada con `aapt2` y busca
+los nombres lógicos `raw/ascending`, `raw/beep`, etc. No se basa en los nombres
+físicos del ZIP: Android puede ofuscarlos como `res/7M.wav` durante la
+optimización aunque el recurso lógico y su contenido sigan intactos. En un AAB,
+que conserva las rutas declarativas, se comprueban las entradas `base/res/raw/`.
+
+El workflow conserva dos revisiones separadas: compila y acredita el commit
+inmutable de la transacción, pero ejecuta el controlador de publicación desde el
+SHA protegido de `main` que lanzó el workflow. Una corrección del verificador
+puede así volver a examinar un APK ya terminado sin alterar ni recompilar su
+código fuente.
+
 Esta segunda capa es necesaria porque las dependencias pueden añadir permisos
 durante el manifest merger aunque no aparezcan en `app.json` ni en el manifest
 fuente generado por Expo.

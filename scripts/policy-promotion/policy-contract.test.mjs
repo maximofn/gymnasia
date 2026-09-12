@@ -128,6 +128,14 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
   assert.match(validationJob, /--artifact-type apk/);
   assert.match(validationJob, /--expected-version/);
   assert.match(buildWorkflow, /verify:production-artifact/);
+  assert.match(
+    buildWorkflow,
+    /Checkout trusted release controller[\s\S]*ref: \$\{\{ github\.sha \}\}[\s\S]*path: \.release-controller/,
+  );
+  assert.match(
+    buildWorkflow,
+    /npm --prefix \.release-controller run verify:production-artifact/,
+  );
   assert.match(buildWorkflow, /production-source-evidence\.json/);
   assert.match(buildWorkflow, /production-artifact-evidence\.json/);
   assert.match(buildWorkflow, /Create durable draft before EAS/);

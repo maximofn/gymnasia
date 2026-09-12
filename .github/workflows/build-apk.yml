@@ -463,6 +463,15 @@ jobs:
           test -n "$HTTP_MIME" || { echo "::error::La descarga no declaró Content-Type."; exit 1; }
           echo "http_mime=$HTTP_MIME" >> "$GITHUB_OUTPUT"
 
+      - name: Checkout trusted release controller
+        if: needs.select-transaction.outputs.action == 'build'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: .release-controller
+
       - name: Expose Android artifact tools
         if: needs.select-transaction.outputs.action == 'build'
         shell: bash
@@ -480,7 +489,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm run verify:production-artifact -- \
+          npm --prefix .release-controller run verify:production-artifact -- \
             --artifact /tmp/gymnasia.apk.download \
             --published-filename gymnasia.apk \
             --http-mime "$HTTP_MIME" \
