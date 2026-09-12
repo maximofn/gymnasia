@@ -1968,7 +1968,7 @@
         {
           "id": "GYM-172",
           "title": "Automatizar la sincronización y despliegue del tablero de Linear",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Evitar que el espejo estático quede obsoleto automatizando altas, cambios y un deploy verificable.",
           "dependsOn": [],
           "related": [
