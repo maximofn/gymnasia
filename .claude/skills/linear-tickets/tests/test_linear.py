@@ -1,6 +1,9 @@
 import argparse
 import io
 import importlib.util
+import json
+import os
+import random
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -38,6 +41,206 @@ class ApiKeyLoadingTests(unittest.TestCase):
                 clear=True,
             ):
                 self.assertEqual(linear.load_api_key(), "lin_api_worktree")
+
+
+class BoardSynchronizationTests(unittest.TestCase):
+    @staticmethod
+    def board(title="Titulo local", state="todo", ignore=None):
+        return {
+            "meta": {"updated": "2026-01-01", "ignore": ignore or []},
+            "groups": [
+                {
+                    "id": "otros",
+                    "kind": "group",
+                    "tickets": [
+                        {
+                            "id": "GYM-10",
+                            "title": title,
+                            "state": state,
+                            "summary": "Resumen editorial que no debe cambiar.",
+                            "dependsOn": [],
+                            "related": [],
+                        }
+                    ],
+                }
+            ],
+        }
+
+    @staticmethod
+    def node(identifier="GYM-10", title="Titulo local", state="Todo"):
+        return {"identifier": identifier, "title": title, "state": {"name": state}}
+
+    def test_clean_report_has_stable_machine_contract(self):
+        report = linear.build_board_report(
+            self.board(ignore=["GYM-1"]),
+            [self.node(), self.node("GYM-1", "Onboarding", "Done")],
+            checked_at="2026-09-12T10:00:00Z",
+        )
+
+        self.assertEqual(report, {
+            "schemaVersion": 1,
+            "checkedAt": "2026-09-12T10:00:00Z",
+            "team": "GYM",
+            "status": "clean",
+            "changes": {
+                "states": [],
+                "titles": [],
+                "missingFromBoard": [],
+                "missingFromLinear": [],
+            },
+            "safeChangeCount": 0,
+            "reviewRequiredCount": 0,
+        })
+
+    def test_state_and_title_are_safe_but_inventory_drift_requires_review(self):
+        safe = linear.build_board_report(
+            self.board(),
+            [self.node(title="Titulo de Linear", state="In Review")],
+            checked_at="fixed",
+        )
+        self.assertEqual(safe["status"], "safe_changes")
+        self.assertEqual(safe["changes"]["states"][0]["to"], "in_progress")
+        self.assertEqual(safe["changes"]["titles"][0]["to"], "Titulo de Linear")
+
+        review = linear.build_board_report(
+            self.board(),
+            [self.node("GYM-11", "Nuevo", "Backlog")],
+            checked_at="fixed",
+        )
+        self.assertEqual(review["status"], "review_required")
+        self.assertEqual(review["safeChangeCount"], 0)
+        self.assertEqual(review["reviewRequiredCount"], 2)
+        self.assertEqual(review["changes"]["missingFromBoard"][0]["id"], "GYM-11")
+        self.assertEqual(review["changes"]["missingFromLinear"], [{"id": "GYM-10"}])
+
+    def test_apply_safe_preserves_format_and_editorial_fields(self):
+        board = self.board()
+        raw = json.dumps(board, ensure_ascii=False, indent=2) + "\n"
+        title = 'Titulo con á, "comillas", \\ y una llave }'
+        report = linear.build_board_report(
+            board,
+            [self.node(title=title, state="In Progress")],
+            checked_at="fixed",
+        )
+
+        updated = linear.apply_board_report(
+            raw,
+            report,
+            include_titles=True,
+            updated_on="2026-09-12",
+        )
+        parsed = json.loads(updated)
+        ticket = parsed["groups"][0]["tickets"][0]
+        self.assertEqual(ticket["title"], title)
+        self.assertEqual(ticket["state"], "in_progress")
+        self.assertEqual(ticket["summary"], "Resumen editorial que no debe cambiar.")
+        self.assertEqual(parsed["meta"]["updated"], "2026-09-12")
+        self.assertTrue(updated.endswith("\n"))
+
+    def test_apply_safe_refuses_partial_changes_when_inventory_needs_review(self):
+        board = self.board(title="Viejo")
+        raw = json.dumps(board, ensure_ascii=False, indent=2) + "\n"
+        report = linear.build_board_report(
+            board,
+            [
+                self.node(title="Nuevo"),
+                self.node("GYM-11", "Alta", "Todo"),
+            ],
+            checked_at="fixed",
+        )
+
+        with self.assertRaisesRegex(ValueError, "no aplica cambios parciales"):
+            linear.apply_board_report(raw, report, include_titles=True)
+        self.assertEqual(json.loads(raw)["groups"][0]["tickets"][0]["title"], "Viejo")
+
+    def test_legacy_apply_changes_state_but_not_title(self):
+        board = self.board(title="Viejo")
+        raw = json.dumps(board, ensure_ascii=False, indent=2) + "\n"
+        report = linear.build_board_report(
+            board,
+            [self.node(title="Nuevo", state="Done")],
+            checked_at="fixed",
+        )
+
+        updated = linear.apply_board_report(raw, report, include_titles=False, updated_on="2026-09-12")
+        ticket = json.loads(updated)["groups"][0]["tickets"][0]
+        self.assertEqual(ticket["state"], "done")
+        self.assertEqual(ticket["title"], "Viejo")
+
+    def test_json_mode_reports_drift_without_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root.joinpath(*linear.BOARD_PATH)
+            path.parent.mkdir(parents=True)
+            path.write_text(json.dumps(self.board()), encoding="utf-8")
+            args = argparse.Namespace(
+                team="GYM",
+                format="json",
+                apply=False,
+                apply_safe=False,
+            )
+            output = io.StringIO()
+            with (
+                mock.patch.object(linear, "repo_root", return_value=root),
+                mock.patch.object(linear, "fetch_board_nodes", return_value=[self.node(state="Done")]),
+                redirect_stdout(output),
+            ):
+                linear.cmd_board(args)
+
+        self.assertEqual(json.loads(output.getvalue())["status"], "safe_changes")
+
+    def test_failed_surgical_change_never_calls_atomic_writer(self):
+        board = self.board()
+        del board["groups"][0]["tickets"][0]["state"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root.joinpath(*linear.BOARD_PATH)
+            path.parent.mkdir(parents=True)
+            path.write_text(json.dumps(board), encoding="utf-8")
+            args = argparse.Namespace(
+                team="GYM",
+                format="human",
+                apply=False,
+                apply_safe=True,
+            )
+            with (
+                mock.patch.object(linear, "repo_root", return_value=root),
+                mock.patch.object(linear, "fetch_board_nodes", return_value=[self.node()]),
+                mock.patch.object(linear, "atomic_write_text") as writer,
+                self.assertRaisesRegex(SystemExit, "No se ha escrito nada"),
+            ):
+                linear.cmd_board(args)
+            writer.assert_not_called()
+
+    def test_atomic_writer_preserves_file_permissions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "board.json"
+            path.write_text("antes", encoding="utf-8")
+            path.chmod(0o640)
+
+            linear.atomic_write_text(path, "después")
+
+            self.assertEqual(path.read_text(encoding="utf-8"), "después")
+            self.assertEqual(os.stat(path).st_mode & 0o777, 0o640)
+
+    def test_random_safe_sequences_round_trip_without_touching_summary(self):
+        generator = random.Random(172)
+        states = ["Backlog", "Todo", "In Progress", "In Review", "Done", "Canceled"]
+        for index in range(100):
+            board = self.board(title=f"Local {index}", state="todo")
+            raw = json.dumps(board, ensure_ascii=False, indent=2) + "\n"
+            title = f'Titulo {index} "{generator.randrange(1000)}" \\ á }}'
+            state = generator.choice(states)
+            report = linear.build_board_report(
+                board,
+                [self.node(title=title, state=state)],
+                checked_at="fixed",
+            )
+            updated = linear.apply_board_report(raw, report, include_titles=True)
+            ticket = json.loads(updated)["groups"][0]["tickets"][0]
+            self.assertEqual(ticket["title"], title)
+            self.assertEqual(ticket["state"], linear.board_state_id(state))
+            self.assertEqual(ticket["summary"], "Resumen editorial que no debe cambiar.")
 
 
 class TestPlanValidationTests(unittest.TestCase):

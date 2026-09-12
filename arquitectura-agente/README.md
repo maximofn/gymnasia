@@ -1,11 +1,12 @@
-# Tablero de seguimiento (GYM-31)
+# Tablero de seguimiento (GYM-31, ticket para crear el espejo visual de Linear)
 
 Espejo visual de los tickets de Linear del equipo GYM. Página estática desplegada
 en <https://gymnasia-sable.vercel.app/>.
 
-**No está conectado a Linear.** Sin API, sin token, sin cron, sin backend: una
-página estática que lee un JSON. Se actualiza a mano. Si el tablero y Linear no
-coinciden, manda Linear.
+La página publicada sigue siendo completamente estática: lee un JSON y no tiene
+API, token ni backend en tiempo de ejecución. GitHub Actions compara ese JSON con
+Linear cada seis horas y propone los cambios mecánicos mediante una PR. Si el
+tablero y Linear no coinciden, manda Linear.
 
 Antes esta web era la documentación de arquitectura del agente. Ese contenido se
 migró al blog (GYM-49, <https://maximofn.com/gymnasia-agent>) y aquí solo queda
@@ -64,20 +65,29 @@ se abre y no falla nada.
 
 ## Actualizar el tablero
 
-**Cada modificación en Linear obliga a actualizar el espejo.** El estado se
-sincroniza con la skill `linear-tickets`, desde la raíz del repo:
+**Cada modificación en Linear obliga a actualizar el espejo.** Desde la raíz:
 
 ```bash
-python3 .claude/skills/linear-tickets/scripts/linear.py board          # ¿qué ha derivado?
-python3 .claude/skills/linear-tickets/scripts/linear.py board --apply  # escribe estados + meta.updated
+npm run test:linear
+python3 .claude/skills/linear-tickets/scripts/linear.py board               # salida humana
+python3 .claude/skills/linear-tickets/scripts/linear.py board --format json # contrato de automatización
+python3 .claude/skills/linear-tickets/scripts/linear.py board --apply-safe  # estados y títulos seguros
 npm run test:board
-npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
+npm run test:board:e2e
 ```
 
 `board` sale con código 1 si hay diferencias, así que vale como comprobación.
-`--apply` **solo** toca los estados y `meta.updated`: los títulos, las altas y las
-bajas los reporta pero no los escribe, porque un ticket nuevo necesita `summary`,
-`dependsOn` y `related` escritos con criterio.
+`--format json` usa el schema 1 y sale con código 0 cuando la comparación se pudo
+completar. `--apply-safe` toca estados, títulos y `meta.updated`, pero se niega a
+escribir nada si hay altas o bajas. El antiguo `--apply` continúa disponible y
+solo actualiza estados.
+
+`.github/workflows/board-reconcile.yml` se ejecuta a los 17 minutos cada seis
+horas y también manualmente. Una deriva mecánica crea o refresca la rama reservada
+`automation/board-sync` y deja una PR para revisión; nunca la fusiona. Una alta,
+baja o avería abre o reutiliza `[board-sync] El tablero necesita atención` y deja
+la ejecución en rojo. Solo una conciliación que confirme Linear, `main` y
+producción puede cerrar esa alerta.
 
 Para un ticket nuevo, añadirlo a mano al array `tickets` de su grupo:
 
@@ -109,6 +119,8 @@ Notas sobre el modelo de datos:
 ## Tests
 
 ```bash
+npm run test:linear              # diff, escritura atómica y compatibilidad del CLI
+npm run test:board-automation    # alertas, checksum y contratos de workflows
 npm run test:board       # valida data/board.json (node --test, sin dependencias)
 npm run test:board:e2e   # E2E con Playwright sobre el sitio estático
 ```
@@ -128,16 +140,28 @@ npx --yes serve arquitectura-agente
 
 ## Despliegue
 
-**Un push a `main` no despliega esto.** La integración de Git de Vercel está inactiva
-en el repo, así que hay que lanzar la CLI a mano desde la raíz:
+Un cambio publicable que entra en `main` dispara `.github/workflows/board-deploy.yml`.
+El job vuelve a ejecutar todas las pruebas, resuelve el proyecto exacto `gymnasia`,
+despliega con Vercel CLI `59.16.0` y compara byte a byte el SHA-256 de
+`data/board.json` contra <https://gymnasia-sable.vercel.app/>. La evidencia queda
+en GitHub Deployments, en el resumen del job y en un artefacto conservado 30 días.
+
+El workflow usa el entorno `Board Production`, sin aprobación manual y limitado a
+`main`, con `VERCEL_TOKEN`, `VERCEL_ORG_ID` y `VERCEL_PROJECT_ID`. La conciliación
+usa los secretos de repositorio `LINEAR_API_KEY` y `BOARD_SYNC_TOKEN`; este último
+es un PAT fine-grained limitado a contenido y pull requests del repositorio y solo
+publica la rama y abre la PR. El `GITHUB_TOKEN` efímero gestiona la alerta y cierra
+propuestas obsoletas. Los workflows de PR no reciben secretos.
+
+Para una recuperación manual excepcional desde la raíz:
 
 ```bash
-npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
+npm exec --yes -- vercel@59.16.0 deploy --prod --yes --cwd arquitectura-agente
 ```
 
-La CLI no está instalada de forma permanente (`npm exec` la baja al vuelo) pero la
-sesión sigue autenticada, así que no hace falta `vercel login`. Usar `npm exec --`
-y no `npx`: el hook de rtk reescribe `npx` a `npm` y falla.
+La CLI no está instalada de forma permanente (`npm exec` la baja al vuelo). En un
+entorno humano puede usar la sesión local; en Actions siempre usa el token aislado.
+Usar `npm exec --` y no `npx`: el hook de rtk reescribe `npx` a `npm` y falla.
 
 `vercel.json` solo activa `cleanUrls` y desactiva `trailingSlash`: no hay build, se
 sirven los ficheros tal cual. Por `cleanUrls`, `/index.html` responde con un

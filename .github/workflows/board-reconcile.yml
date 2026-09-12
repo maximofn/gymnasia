@@ -1,0 +1,197 @@
+name: Reconcile Linear board
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: board-reconcile
+  cancel-in-progress: true
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      REPORT_PATH: /tmp/board-report.json
+      PRODUCTION_EVIDENCE_PATH: /tmp/board-production.json
+
+    steps:
+      - name: Check out current main without traversing legacy gitlinks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -c protocol.version=2 fetch --no-tags --depth=1 origin refs/heads/main
+          git checkout --detach FETCH_HEAD
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Test the Linear board contract
+        run: npm run test:linear
+
+      - name: Compare Linear with the board
+        id: audit
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+        run: |
+          set -euo pipefail
+          python3 .claude/skills/linear-tickets/scripts/linear.py board --format json > "$REPORT_PATH"
+          status="$(node -e 'const fs=require("node:fs"); const p=JSON.parse(fs.readFileSync(process.env.REPORT_PATH)); process.stdout.write(p.status)')"
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Stop for human review without applying partial changes
+        id: review
+        if: steps.audit.outputs.status == 'review_required'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node scripts/board-automation/automation.mjs problem \
+            --kind review-required --report "$REPORT_PATH" --run-url "$RUN_URL"
+          GH_TOKEN="$GITHUB_TOKEN" gh pr list \
+            --head automation/board-sync --base main --state open \
+            --json number --jq '.[].number' | while read -r number; do
+              GH_TOKEN="$GITHUB_TOKEN" gh pr close "$number" \
+                --comment "La conciliación ha detectado cambios que requieren criterio humano; esta propuesta mecánica queda obsoleta."
+            done
+          exit 1
+
+      - name: Verify that production still matches main
+        id: production
+        if: steps.audit.outputs.status != 'review_required'
+        continue-on-error: true
+        run: |
+          node scripts/board-automation/verify-production.mjs \
+            --local arquitectura-agente/data/board.json \
+            --url https://gymnasia-sable.vercel.app/ \
+            --attempts 1 \
+            --commit "$GITHUB_SHA" \
+            --output "$PRODUCTION_EVIDENCE_PATH"
+
+      - name: Report stale production
+        if: steps.production.outcome == 'failure'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/board-automation/automation.mjs problem \
+            --kind production-mismatch --evidence "$PRODUCTION_EVIDENCE_PATH" --run-url "$RUN_URL"
+          exit 1
+
+      - name: Install dependencies for a safe proposal
+        if: steps.audit.outputs.status == 'safe_changes'
+        run: npm ci
+
+      - name: Install Chromium for a safe proposal
+        if: steps.audit.outputs.status == 'safe_changes'
+        run: npm exec -- playwright install --with-deps chromium
+
+      - name: Apply and validate safe changes
+        id: safe
+        if: steps.audit.outputs.status == 'safe_changes'
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          APPLIED_REPORT_PATH: ${{ runner.temp }}/board-applied-report.json
+          POST_REPORT_PATH: ${{ runner.temp }}/board-post-report.json
+        run: |
+          set -euo pipefail
+          python3 .claude/skills/linear-tickets/scripts/linear.py board \
+            --format json --apply-safe > "$APPLIED_REPORT_PATH"
+          python3 .claude/skills/linear-tickets/scripts/linear.py board \
+            --format json > "$POST_REPORT_PATH"
+          node -e 'const fs=require("node:fs"); const p=JSON.parse(fs.readFileSync(process.env.POST_REPORT_PATH)); if(p.status!=="clean") throw new Error("Linear cambió durante la conciliación: "+p.status)'
+          npm run test:board-automation
+          npm run test:board
+          npm run test:board:e2e
+          if git diff --quiet -- arquitectura-agente/data/board.json; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+          node scripts/board-automation/automation.mjs pr-body \
+            --report "$APPLIED_REPORT_PATH" > "$RUNNER_TEMP/board-pr-body.md"
+
+      - name: Create or refresh the reviewable pull request
+        if: steps.audit.outputs.status == 'safe_changes' && steps.safe.outputs.has_changes == 'true'
+        env:
+          BOARD_SYNC_TOKEN: ${{ secrets.BOARD_SYNC_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$BOARD_SYNC_TOKEN"
+          git config user.name "gymnasia-board-bot"
+          git config user.email "gymnasia-board-bot@users.noreply.github.com"
+          git switch -C automation/board-sync
+          git add arquitectura-agente/data/board.json
+          git commit -m "chore(board): sincroniza el espejo con Linear"
+          GH_TOKEN="$BOARD_SYNC_TOKEN" gh auth setup-git
+          remote_sha="$(git ls-remote --heads origin refs/heads/automation/board-sync | cut -f1)"
+          if [ -n "$remote_sha" ]; then
+            git push --force-with-lease="refs/heads/automation/board-sync:$remote_sha" \
+              origin HEAD:refs/heads/automation/board-sync
+          else
+            git push origin HEAD:refs/heads/automation/board-sync
+          fi
+          number="$(GH_TOKEN="$BOARD_SYNC_TOKEN" gh pr list \
+            --head automation/board-sync --base main --state open \
+            --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            GH_TOKEN="$BOARD_SYNC_TOKEN" gh pr edit "$number" \
+              --title "chore(board): sincroniza el espejo con Linear" \
+              --body-file "$RUNNER_TEMP/board-pr-body.md"
+          else
+            GH_TOKEN="$BOARD_SYNC_TOKEN" gh pr create \
+              --base main --head automation/board-sync \
+              --title "chore(board): sincroniza el espejo con Linear" \
+              --body-file "$RUNNER_TEMP/board-pr-body.md"
+          fi
+
+      - name: Resolve a safe change that disappeared during reconciliation
+        if: steps.audit.outputs.status == 'safe_changes' && steps.safe.outputs.has_changes == 'false'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          GH_TOKEN="$GITHUB_TOKEN" gh pr list \
+            --head automation/board-sync --base main --state open \
+            --json number --jq '.[].number' | while read -r number; do
+              GH_TOKEN="$GITHUB_TOKEN" gh pr close "$number" \
+                --comment "Linear volvió a coincidir durante la conciliación; esta propuesta automática ha quedado obsoleta."
+            done
+          node scripts/board-automation/automation.mjs healthy --run-url "$RUN_URL"
+
+      - name: Close an obsolete automatic pull request
+        if: steps.audit.outputs.status == 'clean'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          GH_TOKEN="$GITHUB_TOKEN" gh pr list \
+            --head automation/board-sync --base main --state open \
+            --json number --jq '.[].number' | while read -r number; do
+              GH_TOKEN="$GITHUB_TOKEN" gh pr close "$number" \
+                --comment "Linear y el tablero ya coinciden; esta propuesta automática ha quedado obsoleta."
+            done
+
+      - name: Close the deduplicated alert when everything is healthy
+        if: steps.audit.outputs.status == 'clean'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/board-automation/automation.mjs healthy --run-url "$RUN_URL"
+
+      - name: Report an unexpected reconciliation failure
+        if: failure() && steps.review.outcome != 'failure' && steps.production.outcome != 'failure'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/board-automation/automation.mjs problem --kind reconcile-failure --run-url "$RUN_URL"

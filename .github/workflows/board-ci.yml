@@ -1,0 +1,62 @@
+name: Board integrity tests
+
+on:
+  pull_request:
+    paths:
+      - "arquitectura-agente/**"
+      - ".claude/skills/linear-tickets/**"
+      - "scripts/board-automation/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/board-*.yml"
+  push:
+    branches: [main]
+    paths:
+      - "arquitectura-agente/**"
+      - ".claude/skills/linear-tickets/**"
+      - "scripts/board-automation/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/board-*.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  board:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository without traversing legacy gitlinks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -c protocol.version=2 fetch --no-tags --depth=1 origin "$GITHUB_REF"
+          git checkout --detach FETCH_HEAD
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npm exec -- playwright install --with-deps chromium
+
+      - name: Test the Linear board contract
+        run: npm run test:linear
+
+      - name: Test board automation contracts
+        run: npm run test:board-automation
+
+      - name: Validate board data
+        run: npm run test:board
+
+      - name: Exercise the static board in Chromium
+        run: npm run test:board:e2e
