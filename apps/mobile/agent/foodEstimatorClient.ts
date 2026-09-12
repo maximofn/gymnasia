@@ -1,4 +1,9 @@
 import { composeAiSystemPrompt } from "./aiTransparency";
+import {
+  NUTRITION_FOOD_TYPES,
+  formatNutritionValidationIssues,
+  validateStructuredNutrition,
+} from "../diet/nutritionContract";
 import { buildGoogleHistory, type GoogleStep } from "./googleInteractions";
 import {
   requestGoogleProviderInteraction,
@@ -89,6 +94,16 @@ export type FoodEstimatorCallOptions = StreamingHandlers & {
   onToolUsed?: (toolName: string) => void;
 };
 
+export type StructuredNutritionResult = {
+  dish_name: string;
+  grams: number;
+  calories_kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+  food_type: "producto_comercial" | "receta" | "alimento";
+};
+
 const foodEstimatorTools = {
   openai: [
     {
@@ -173,6 +188,164 @@ export async function handleFoodEstimatorToolCall(
     return lookupBarcode(barcode);
   }
   return "Herramienta no reconocida.";
+}
+
+export async function requestStructuredNutrition(
+  provider: ProviderConfiguration,
+  conversationSummary: string,
+  runtime: ProviderChatRuntime,
+): Promise<StructuredNutritionResult> {
+  const requireValidStructuredNutrition = (rawValue: unknown): StructuredNutritionResult => {
+    const validation = validateStructuredNutrition(rawValue);
+    if (!validation.ok) {
+      throw new Error(formatNutritionValidationIssues(validation.issues));
+    }
+    return {
+      dish_name: validation.value.name,
+      grams: validation.value.grams,
+      calories_kcal: validation.value.calories_kcal,
+      protein_g: validation.value.protein_g,
+      carbs_g: validation.value.carbs_g,
+      fat_g: validation.value.fat_g,
+      food_type: validation.value.food_type,
+    };
+  };
+  const model = normalizeProviderModel(provider.provider, provider.model);
+  const jsonSchema = {
+    type: "object" as const,
+    properties: {
+      dish_name: { type: "string" as const, description: "Nombre del plato o alimento" },
+      grams: {
+        type: "number" as const,
+        minimum: 0,
+        description: "Peso total estimado en gramos",
+      },
+      calories_kcal: {
+        type: "number" as const,
+        minimum: 0,
+        description: "Calorías totales en kcal",
+      },
+      protein_g: {
+        type: "number" as const,
+        minimum: 0,
+        description: "Proteínas totales en gramos",
+      },
+      carbs_g: {
+        type: "number" as const,
+        minimum: 0,
+        description: "Carbohidratos totales en gramos",
+      },
+      fat_g: {
+        type: "number" as const,
+        minimum: 0,
+        description: "Grasas totales en gramos",
+      },
+      food_type: {
+        type: "string" as const,
+        enum: [...NUTRITION_FOOD_TYPES],
+        description: "Tipo de alimento: producto_comercial, receta o alimento",
+      },
+    },
+    required: [
+      "dish_name",
+      "grams",
+      "calories_kcal",
+      "protein_g",
+      "carbs_g",
+      "fat_g",
+      "food_type",
+    ] as string[],
+    additionalProperties: false,
+  };
+  const extractPrompt =
+    "Basándote en la conversación anterior, devuelve ÚNICAMENTE un JSON con los datos nutricionales estimados. "
+    + conversationSummary;
+
+  if (provider.provider === "openai") {
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${provider.api_key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        input: [{ role: "user", content: extractPrompt }],
+        text: {
+          format: {
+            type: "json_schema",
+            name: "nutrition",
+            strict: true,
+            schema: jsonSchema,
+          },
+        },
+      }),
+    });
+    if (!response.ok) throw new Error(`OpenAI error: ${response.status}`);
+    const data = await response.json();
+    const outputText = data.output?.find(
+      (item: Record<string, unknown>) => item.type === "message",
+    )?.content?.find(
+      (content: Record<string, unknown>) => content.type === "output_text",
+    )?.text;
+    if (!outputText) throw new Error("No se recibió respuesta de OpenAI");
+    return requireValidStructuredNutrition(JSON.parse(outputText));
+  }
+
+  if (provider.provider === "anthropic") {
+    const proxyUrl = runtime.anthropicWebProxyUrl;
+    const response = await fetch(proxyUrl ?? "https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: proxyUrl
+        ? { "Content-Type": "application/json" }
+        : anthropicApiHeaders(
+            provider.api_key,
+            ANTHROPIC_API_VERSION,
+            provider.workspace_id,
+            { "Content-Type": "application/json" },
+            { directBrowserAccess: runtime.platform === "web" },
+          ),
+      body: JSON.stringify({
+        ...(proxyUrl
+          ? anthropicProxyCredentials(provider.api_key, provider.workspace_id)
+          : {}),
+        model,
+        max_tokens: 1024,
+        messages: [{ role: "user", content: extractPrompt }],
+        tool_choice: { type: "tool", name: "extract_nutrition" },
+        tools: [{
+          name: "extract_nutrition",
+          description: "Extrae datos nutricionales del alimento estimado",
+          input_schema: jsonSchema,
+        }],
+      }),
+    });
+    if (!response.ok) throw new Error(`Anthropic error: ${response.status}`);
+    const data = await response.json();
+    const toolBlock = data.content?.find(
+      (block: Record<string, unknown>) => block.type === "tool_use",
+    );
+    if (!toolBlock?.input) {
+      throw new Error("No se recibió respuesta estructurada de Anthropic");
+    }
+    return requireValidStructuredNutrition(toolBlock.input);
+  }
+
+  const turn = await requestGoogleProviderInteraction(
+    provider,
+    {
+      history: [{
+        type: "user_input",
+        content: [{ type: "text", text: extractPrompt }],
+      }],
+      responseSchema: jsonSchema,
+    },
+    runtime,
+  );
+  if (turn.status !== "completed" || !turn.content) {
+    throw new Error("Google no devolvió datos completos.");
+  }
+  return requireValidStructuredNutrition(JSON.parse(turn.content));
 }
 
 export async function requestFoodEstimate(

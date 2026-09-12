@@ -59,12 +59,9 @@ import { FeedbackProposalBanner } from "./FeedbackProposalBanner";
 import {
   isGoogleConversationTurn,
   type GoogleConversationTurn,
-  type GoogleInteractionTurn,
-  type GoogleStep,
 } from "./agent/googleInteractions";
 import type { StreamingHandlers } from "./agent/providerStreamParsers";
 import {
-  requestGoogleProviderInteraction,
   requestProviderText,
   type ChatInputMessage,
   type ProviderChatResult as AnthropicChatResult,
@@ -75,6 +72,7 @@ import {
   FOOD_ESTIMATOR_SYSTEM_PROMPT,
   SCAN_BARCODE_TOOL,
   requestFoodEstimate,
+  requestStructuredNutrition,
   type FoodEstimatorCallOptions,
   type FoodEstimatorImage,
 } from "./agent/foodEstimatorClient";
@@ -363,10 +361,6 @@ import {
   AiResponseReportModal,
 } from "./AiResponseReportModal";
 import {
-  anthropicApiHeaders,
-  anthropicProxyCredentials,
-} from "./agent/providerTransport";
-import {
   parseAnthropicModelOptions,
   type AnthropicModelOption,
 } from "./agent/anthropicModels";
@@ -381,10 +375,8 @@ import {
   type ProviderVerificationResult,
 } from "./agent/providerCatalog";
 import {
-  NUTRITION_FOOD_TYPES,
   formatNutritionValidationIssues,
   validateNutritionItem,
-  validateStructuredNutrition,
   type DietMacroMode,
 } from "./diet/nutritionContract";
 import {
@@ -609,28 +601,6 @@ function callProviderChatAPI(
   );
 }
 
-function callGoogleInteraction(
-  provider: AIKey,
-  options: {
-    history: GoogleStep[];
-    systemInstruction?: string;
-    tools?: Array<Record<string, unknown>>;
-    thinking?: boolean;
-    responseSchema?: Record<string, unknown>;
-  },
-  handlers?: StreamingHandlers,
-): Promise<GoogleInteractionTurn> {
-  return requestGoogleProviderInteraction(
-    provider,
-    options,
-    {
-      platform: Platform.OS,
-      environment: Constants.expoConfig?.extra?.environment,
-      googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
-    },
-    handlers,
-  );
-}
 type TrainingTemplateScreenMode = "detail" | "edit";
 
 const NOTIFICATION_SOUND_ASSETS = {
@@ -769,7 +739,6 @@ const LEGACY_SECURE_STORE_PREFIXES = [
   scopedSecureStoreKey("gymnasia.mobile.provider.api_key"),
   scopedSecureStoreKey("gymnasia.mobile.v2.provider.api_key"),
 ];
-const ANTHROPIC_API_VERSION = "2023-06-01";
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
 
@@ -5507,105 +5476,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     dish_name: string; grams: number; calories_kcal: number; protein_g: number; carbs_g: number; fat_g: number;
     food_type: "producto_comercial" | "receta" | "alimento";
   }> {
-    const requireValidStructuredNutrition = (rawValue: unknown) => {
-      const validation = validateStructuredNutrition(rawValue);
-      if (!validation.ok) {
-        throw new Error(formatNutritionValidationIssues(validation.issues));
-      }
-      return {
-        dish_name: validation.value.name,
-        grams: validation.value.grams,
-        calories_kcal: validation.value.calories_kcal,
-        protein_g: validation.value.protein_g,
-        carbs_g: validation.value.carbs_g,
-        fat_g: validation.value.fat_g,
-        food_type: validation.value.food_type,
-      };
-    };
-    const model = normalizeProviderModel(provider.provider, provider.model);
-    const jsonSchema = {
-      type: "object" as const,
-      properties: {
-        dish_name: { type: "string" as const, description: "Nombre del plato o alimento" },
-        grams: { type: "number" as const, minimum: 0, description: "Peso total estimado en gramos" },
-        calories_kcal: { type: "number" as const, minimum: 0, description: "Calorías totales en kcal" },
-        protein_g: { type: "number" as const, minimum: 0, description: "Proteínas totales en gramos" },
-        carbs_g: { type: "number" as const, minimum: 0, description: "Carbohidratos totales en gramos" },
-        fat_g: { type: "number" as const, minimum: 0, description: "Grasas totales en gramos" },
-        food_type: {
-          type: "string" as const,
-          enum: [...NUTRITION_FOOD_TYPES],
-          description: "Tipo de alimento: producto_comercial, receta o alimento",
-        },
+    return requestStructuredNutrition(
+      provider,
+      conversationSummary,
+      {
+        fakeMode: IS_FAKE_PROVIDER_MODE,
+        platform: Platform.OS,
+        environment: Constants.expoConfig?.extra?.environment,
+        googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
+        anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
       },
-      required: ["dish_name", "grams", "calories_kcal", "protein_g", "carbs_g", "fat_g", "food_type"] as string[],
-      additionalProperties: false,
-    };
-    const extractPrompt = "Basándote en la conversación anterior, devuelve ÚNICAMENTE un JSON con los datos nutricionales estimados. " + conversationSummary;
-
-    if (provider.provider === "openai") {
-      const response = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${provider.api_key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model,
-          input: [{ role: "user", content: extractPrompt }],
-          text: { format: { type: "json_schema", name: "nutrition", strict: true, schema: jsonSchema } },
-        }),
-      });
-      if (!response.ok) throw new Error(`OpenAI error: ${response.status}`);
-      const data = await response.json();
-      const outputText = data.output?.find((o: Record<string, unknown>) => o.type === "message")
-        ?.content?.find((c: Record<string, unknown>) => c.type === "output_text")?.text;
-      if (!outputText) throw new Error("No se recibió respuesta de OpenAI");
-      return requireValidStructuredNutrition(JSON.parse(outputText));
-    }
-
-    if (provider.provider === "anthropic") {
-      const isWeb = shouldUseAnthropicWebProxy();
-      const baseUrl = isWeb
-        ? buildWebProxyUrl("/chat/providers/anthropic/messages")
-        : "https://api.anthropic.com/v1/messages";
-      const headers: Record<string, string> = isWeb
-        ? { "Content-Type": "application/json" }
-        : anthropicApiHeaders(
-            provider.api_key,
-            ANTHROPIC_API_VERSION,
-            provider.workspace_id,
-            { "Content-Type": "application/json" },
-            { directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS },
-          );
-      const response = await fetch(baseUrl, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          ...(isWeb
-            ? anthropicProxyCredentials(provider.api_key, provider.workspace_id)
-            : {}),
-          model,
-          max_tokens: 1024,
-          messages: [{ role: "user", content: extractPrompt }],
-          tool_choice: { type: "tool", name: "extract_nutrition" },
-          tools: [{
-            name: "extract_nutrition",
-            description: "Extrae datos nutricionales del alimento estimado",
-            input_schema: jsonSchema,
-          }],
-        }),
-      });
-      if (!response.ok) throw new Error(`Anthropic error: ${response.status}`);
-      const data = await response.json();
-      const toolBlock = data.content?.find((b: Record<string, unknown>) => b.type === "tool_use");
-      if (!toolBlock?.input) throw new Error("No se recibió respuesta estructurada de Anthropic");
-      return requireValidStructuredNutrition(toolBlock.input);
-    }
-
-    const turn = await callGoogleInteraction(provider, {
-      history: [{ type: "user_input", content: [{ type: "text", text: extractPrompt }] }],
-      responseSchema: jsonSchema,
-    });
-    if (turn.status !== "completed" || !turn.content) throw new Error("Google no devolvió datos completos.");
-    return requireValidStructuredNutrition(JSON.parse(turn.content));
+    );
   }
 
   async function addFoodFromEstimatorJSON() {
