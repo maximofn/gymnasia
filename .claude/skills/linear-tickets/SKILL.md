@@ -19,33 +19,40 @@ si no se actualiza a mano, se desincroniza en silencio y deja de servir para nad
 Aplica a: cambios de estado, altas, bajas, cambios de título, de dependencias y de
 jerarquía. No aplica a comentarios (el tablero no los muestra).
 
-El ciclo completo, desde la raíz del repo:
+En local, el ciclo completo desde la raíz del repo es:
 
 ```bash
 # 1. Tras tocar Linear, ver qué ha quedado desincronizado
 python3 .claude/skills/linear-tickets/scripts/linear.py board
 
-# 2. Sincronizar los estados (lo demás se edita a mano, ver abajo)
-python3 .claude/skills/linear-tickets/scripts/linear.py board --apply
+# 2. Sincronizar estados y títulos solo si no hay altas ni bajas
+python3 .claude/skills/linear-tickets/scripts/linear.py board --apply-safe
 
-# 3. Validar y desplegar
+# 3. Validar; al llegar a main, GitHub Actions despliega y verifica el hash
+npm run test:linear
 npm run test:board
-npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
+npm run test:board:e2e
 ```
 
 `board` sale con código 1 si hay diferencias, así que sirve tal cual como
-comprobación. **`--apply` solo escribe los estados y `meta.updated`**; lo demás lo
-reporta pero no lo toca, porque requiere criterio:
+comprobación humana. `board --format json` devuelve un informe de schema 1 y sale
+con código 0 cuando la comparación termina, aunque haya deriva; la automatización
+decide con `status` (`clean`, `safe_changes` o `review_required`).
+
+**`--apply-safe` escribe estados, títulos y `meta.updated` únicamente si no hay
+altas ni bajas.** Ante una diferencia de inventario no toca nada, porque requiere
+criterio. El antiguo `--apply` se conserva para compatibilidad y solo escribe
+estados:
 
 - **Ticket nuevo** (`FALTA en el tablero`): añadirlo a mano al array `tickets` del
   grupo que le corresponda, con `summary`, `dependsOn` y `related`. El resumen es
   una línea escrita para quien no tiene contexto, no un copia-pega de la descripción.
-- **Título cambiado**: copiarlo tal cual de Linear. El tablero debe leerse igual
-  que Linear o deja de ser un espejo.
+- **Título cambiado**: `--apply-safe` lo copia tal cual de Linear. El tablero debe
+  leerse igual que Linear o deja de ser un espejo.
 - **`SOBRA`**: el ticket se borró en Linear. Quitarlo del tablero, y revisar que
   nadie lo referencie en `dependsOn`/`related` (el test lo caza).
-- Un push a `main` **no despliega** el tablero: hay que lanzar la CLI de Vercel a
-  mano. Ver `arquitectura-agente/README.md`.
+- Un push a `main` que cambia el sitio despliega el tablero automáticamente y
+  verifica el SHA-256 publicado. Ver `arquitectura-agente/README.md`.
 
 El ruido de onboarding de Linear (GYM-1 a GYM-4) está en `meta.ignore` de
 `board.json` para que no se reporte en cada ejecución.
@@ -84,10 +91,18 @@ python3 .claude/skills/linear-tickets/scripts/linear.py states GYM             #
 
 ### Tablero espejo
 ```bash
-python3 .claude/skills/linear-tickets/scripts/linear.py board            # informa de la deriva (exit 1 si hay)
-python3 .claude/skills/linear-tickets/scripts/linear.py board --apply    # sincroniza estados + meta.updated
+python3 .claude/skills/linear-tickets/scripts/linear.py board              # salida humana; exit 1 si hay deriva
+python3 .claude/skills/linear-tickets/scripts/linear.py board --format json # contrato para automatización
+python3 .claude/skills/linear-tickets/scripts/linear.py board --apply-safe # estados+títulos, sin cambios parciales
+python3 .claude/skills/linear-tickets/scripts/linear.py board --apply      # compatibilidad: solo estados
 ```
 Ver "Regla del espejo" arriba: es obligatorio tras cualquier modificación en Linear.
+
+GitHub ejecuta la conciliación cada seis horas. Una deriva solo de estado o
+título crea o actualiza la PR `chore(board): sincroniza el espejo con Linear`;
+altas y bajas abren una única issue de alerta para que una persona complete el
+contenido editorial. La PR automática omite identifiers en título y cuerpo para
+que la integración de Linear no cambie estados por una simple mención.
 
 ### Creación
 
@@ -407,6 +422,6 @@ Dieciséis cosas que cuestan tiempo si no se saben:
    `close GYM-N ... --dry-run`; si valida, repite sin `--dry-run`. El comentario
    se crea antes de cambiar el estado para que nunca haya un cierre sin evidencia.
 8. **Antes de dar el trabajo por terminado, sincroniza el espejo.** `board`,
-   luego `board --apply`, luego desplegar. Ver "Regla del espejo". Es el paso
-   que más fácil se olvida porque Linear ya se ve correcto: el que se queda
-   desactualizado es el tablero, y nadie se entera hasta semanas después.
+   luego `board --apply-safe` si no hay altas o bajas, y pasa las pruebas. Ver
+   "Regla del espejo". Al llegar a `main`, el workflow despliega y verifica el
+   hash; una ejecución local no sustituye esa evidencia de producción.

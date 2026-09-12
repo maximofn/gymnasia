@@ -141,21 +141,25 @@ Run from repo root unless noted.
     no un proxy.
 
 ## Tablero de seguimiento — Deploy Runbook (`arquitectura-agente/`)
-- Qué es: espejo manual de los tickets de Linear en <https://gymnasia-sable.vercel.app/>.
-  Sitio estático (HTML/CSS/JS vanilla), sin build y sin backend. Los datos viven en
-  `arquitectura-agente/data/board.json` y se actualizan a mano. Ver
+- Qué es: espejo estático de los tickets de Linear en
+  <https://gymnasia-sable.vercel.app/>. Sitio HTML/CSS/JS vanilla, sin build ni
+  backend. Los datos viven en `arquitectura-agente/data/board.json`. Ver
   `arquitectura-agente/README.md`.
-- **Un push a `main` NO despliega esta web.** La integración de Git de Vercel está
-  inactiva en este repo (ver el Solved Problems Log). Hay que desplegar a mano.
-- Desplegar a producción, desde la raíz del repo:
+- `.github/workflows/board-reconcile.yml` compara Linear cada seis horas. Estados
+  y títulos generan una PR revisable; altas y bajas abren la issue deduplicada de
+  alerta y no aplican cambios parciales. La PR nunca se fusiona sola.
+- Un cambio publicable que llega a `main` ejecuta
+  `.github/workflows/board-deploy.yml`: repite los tests, despliega con el entorno
+  `Board Production` y exige que el SHA-256 publicado coincida con el local.
+- Recuperación manual desde la raíz:
   ```bash
-  npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente
+  npm exec --yes -- vercel@59.16.0 deploy --prod --yes --cwd arquitectura-agente
   ```
 - En un worktree, `.vercel/project.json` puede faltar porque está ignorado por Git.
   Antes de desplegar, confirma que contiene `"projectName":"gymnasia"`. Si falta
   o apunta a otro proyecto, enlázalo explícitamente antes del deploy:
   ```bash
-  npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente
+  npm exec --yes -- vercel@59.16.0 link --yes --project gymnasia --cwd arquitectura-agente
   ```
   La salida correcta del deploy empieza por `Deploying gymnasia` y termina
   aliando `https://gymnasia-sable.vercel.app`. Si muestra `Searching for existing
@@ -164,32 +168,31 @@ Run from repo root unless noted.
   vuelo. La sesión suele estar autenticada en
   `~/Library/Application Support/com.vercel.cli`. Comprobarlo sin desplegar:
   ```bash
-  npm exec --yes -- vercel@latest whoami --cwd arquitectura-agente
+  npm exec --yes -- vercel@59.16.0 whoami --cwd arquitectura-agente
   ```
   Si devuelve `The specified token is not valid`, la sesión ha caducado: ejecutar
-  `npm exec --yes -- vercel@latest login`, completar el acceso interactivo y repetir
-  el deploy. Reintentar el despliegue sin renovar la sesión no lo corrige.
-  Si `whoami` sí devuelve el usuario pero `deploy` falla inmediatamente con
-  `Not authorized`, vuelve a enlazar explícitamente el mismo proyecto con
-  `npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente`.
-  La CLI renovará el token OIDC local; verifica que diga `Linked .../gymnasia` y
-  no `Created` antes de repetir el deploy.
-- No usar `npx vercel`: el hook de rtk reescribe `npx` a `npm` y falla con
-  `Unknown command: "vercel@latest"`. Usar `npm exec --` siempre.
+  `npm exec --yes -- vercel@59.16.0 login`, completar el acceso interactivo y
+  repetir el deploy. Si `whoami` funciona pero `deploy` devuelve `Not authorized`,
+  vuelve a enlazar explícitamente el proyecto `gymnasia` y comprueba que diga
+  `Linked`, no `Created`.
+- No usar `npx vercel`: el hook de rtk reescribe `npx` a `npm` y falla. Usar
+  `npm exec --` siempre.
 - Antes de desplegar, pasar los tests:
   ```bash
-  npm run test:board       # valida data/board.json (node --test, sin dependencias)
-  npm run test:board:e2e   # E2E con Playwright sobre el sitio estático
+  npm run test:linear
+  npm run test:board-automation
+  npm run test:board
+  npm run test:board:e2e
   ```
-- Verificar el despliegue comparando lo servido con lo local (Playwright no tiene
-  salida a internet en el sandbox del agente, así que se valida con `curl`):
+- Verificar el despliegue comparando bytes crudos; `rtk curl` normal filtra la
+  salida y falsea el hash:
   ```bash
-  curl -sS https://gymnasia-sable.vercel.app/ | grep -o '<title>[^<]*</title>'
-  shasum -a 256 arquitectura-agente/data/board.json
-  curl -sS https://gymnasia-sable.vercel.app/data/board.json | shasum -a 256
+  rtk proxy curl -sS https://gymnasia-sable.vercel.app/ | grep -o '<title>[^<]*</title>'
+  rtk proxy shasum -a 256 arquitectura-agente/data/board.json
+  rtk proxy curl -sS https://gymnasia-sable.vercel.app/data/board.json | rtk proxy shasum -a 256
   ```
-  `/index.html` devuelve un `Redirecting...` en vez del HTML: es `cleanUrls` de
-  `vercel.json` redirigiendo a `/`. Comprobar siempre contra `/`, no `/index.html`.
+  `/index.html` devuelve un `Redirecting...` en vez del HTML por `cleanUrls`;
+  comprobar siempre `/`.
 
 ## Backend de incidencias — Deploy Runbook (`apps/feedback-worker/`)
 - Qué es: Worker de Cloudflare que custodia el PAT de GitHub y crea las issues
@@ -524,9 +527,9 @@ esto hay que arreglarlo antes o el job pasará siempre.
   - `gymnasia` → `arquitectura-agente/` → <https://gymnasia-sable.vercel.app> (tablero).
   - `gymnasia-web` → `apps/mobile/` → <https://gymnasia.maximofn.com> (export web de la
     app, y **la política de privacidad publicada en `/privacidad` y `/privacy`**).
-- Ninguno de los dos se despliega en el push: `vercel project ls` mostraba
-  `gymnasia-web` sin actualizar desde hacía 15 días mientras `main` seguía avanzando.
-  Mergear la política **no la publica**; hay que lanzar la CLI a mano.
+- `gymnasia-web` no se despliega en el push: mergear la política de privacidad
+  **no la publica** y exige lanzar la CLI a mano. El tablero `gymnasia` sí tiene
+  el workflow dedicado `board-deploy.yml`, que usa la CLI y verifica el hash.
 - En un worktree, la raíz no tiene `.vercel/` (está git-ignored), así que desplegar
   sin enlazar puede crear un proyecto equivocado. El proyecto remoto `gymnasia-web`
   ya tiene `apps/mobile` como **Root Directory**: el vínculo y el deploy se hacen
@@ -551,20 +554,19 @@ esto hay que arreglarlo antes o el job pasará siempre.
   `apps/mobile/agent/generated/legalCopy.generated.ts`. Si no coincide, lo publicado no
   es lo que se revisó.
 
-### Vercel no despliega `arquitectura-agente/` en el push: la integración de Git está inactiva
+### La integración Git de Vercel para `arquitectura-agente/` sigue inactiva
 - Gotcha: el repo *parece* conectado a Vercel — hay deployments de `vercel[bot]` en
-  GitHub — pero los últimos son del **2 de marzo de 2026**. Todo lo publicado después
-  se subió con la CLI desde local. Un push a `main` que toque `arquitectura-agente/`
-  se queda en el repo: producción sigue sirviendo la versión anterior, sin ningún error
-  visible en ninguna parte.
-- Comprobar si un push ha desplegado algo:
+  GitHub — pero esa integración no publica el tablero. El despliegue automático
+  pertenece a `.github/workflows/board-deploy.yml`, que llama a la CLI de Vercel,
+  no a `vercel[bot]`. Mirar solo la integración conduce a diagnosticar como roto un
+  flujo que vive en GitHub Actions.
+- Comprobar el despliegue más reciente:
   ```bash
   gh api repos/maximofn/gymnasia/deployments --jq '[.[].created_at] | max'
   ```
-  Si esa fecha no se mueve tras el push, no ha desplegado: hay que lanzar la CLI a mano
-  (ver "Tablero de seguimiento — Deploy Runbook").
-- Fix definitivo pendiente: reconectar el proyecto en el dashboard de Vercel si se quiere
-  despliegue automático.
+  Si la fecha no se mueve tras un cambio publicable en `main`, revisar primero la
+  ejecución `Deploy architecture board`; el runbook conserva la CLI manual solo
+  como recuperación.
 
 ### Un worktree sin vínculo de Vercel puede crear otro proyecto al desplegar el tablero
 - Gotcha: `arquitectura-agente/.vercel/project.json` está ignorado por Git. Un
@@ -574,7 +576,7 @@ esto hay que arreglarlo antes o el job pasará siempre.
   seguido de `Created .../arquitectura-agente`, y un alias distinto de
   `gymnasia-sable.vercel.app`.
 - Fix: antes del deploy, ejecutar
-  `npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente`
+  `npm exec --yes -- vercel@59.16.0 link --yes --project gymnasia --cwd arquitectura-agente`
   y verificar que la salida diga `Deploying gymnasia` y termine con el alias de
   producción esperado.
 
@@ -584,7 +586,7 @@ esto hay que arreglarlo antes o el job pasará siempre.
   `Not authorized`. El problema es el token OIDC local del vínculo con el
   proyecto, no necesariamente el login global; repetir el deploy no lo renueva.
 - Fix: ejecutar
-  `npm exec --yes -- vercel@latest link --yes --project gymnasia --cwd arquitectura-agente`.
+  `npm exec --yes -- vercel@59.16.0 link --yes --project gymnasia --cwd arquitectura-agente`.
   Debe enlazar el proyecto existente y descargar un token OIDC nuevo. Si muestra
   `Created`, detenerse para no crear otro proyecto. Después repetir el deploy.
 
@@ -597,6 +599,13 @@ esto hay que arreglarlo antes o el job pasará siempre.
   ref exacto + `git checkout --detach FETCH_HEAD`, sin recorrer submódulos. La
   plantilla del repositorio privado puede usar `actions/checkout` porque no
   contiene esos gitlinks.
+
+### GitHub rechaza `prevent_self_review` si un entorno no tiene revisores
+- Gotcha: al crear por API un entorno automático sin revisores, enviar
+  `prevent_self_review=false` parece inocuo pero GitHub responde `422` porque la
+  propiedad solo es válida junto con al menos un revisor requerido.
+- Fix: para entornos automáticos como `Board Production`, omitir por completo
+  `prevent_self_review` y declarar únicamente la política de ramas protegidas.
 
 ### El AAB production puede heredar micrófono y superposición aunque `app.json` no los solicite
 - Gotcha: el manifest fusionado del primer AAB production de GYM-197 (ticket para
