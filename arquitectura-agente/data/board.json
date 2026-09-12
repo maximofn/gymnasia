@@ -1728,7 +1728,7 @@
       "kind": "epic",
       "title": "Remediar los hallazgos técnicos de OpenWiki de agosto de 2026",
       "state": "todo",
-      "summary": "Corregir las causas raíz nuevas detectadas al auditar los 15 conceptos de OpenWiki, sin duplicar las incidencias que ya cubren memoria, persistencia, dieta, runtime, CI y política remota.",
+      "summary": "Corregir las causas raíz nuevas detectadas en las auditorías sucesivas de OpenWiki, sin duplicar las incidencias que ya cubren memoria, persistencia, dieta, runtime, CI y política remota.",
       "dependsOn": [],
       "tickets": [
         {
@@ -1968,7 +1968,7 @@
         {
           "id": "GYM-172",
           "title": "Automatizar la sincronización y despliegue del tablero de Linear",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Evitar que el espejo estático quede obsoleto automatizando altas, cambios y un deploy verificable.",
           "dependsOn": [],
           "related": [
@@ -2181,6 +2181,57 @@
             "GYM-39",
             "GYM-42",
             "GYM-68"
+          ]
+        },
+        {
+          "id": "GYM-233",
+          "title": "Acotar el contexto reenviado a Google Interactions",
+          "state": "todo",
+          "summary": "Limitar mensajes e imágenes reenviados a Google sin romper firmas, pasos ni continuaciones de herramientas.",
+          "dependsOn": [],
+          "related": [
+            "GYM-51",
+            "GYM-57",
+            "GYM-89",
+            "GYM-232"
+          ]
+        },
+        {
+          "id": "GYM-234",
+          "title": "Cifrar las copias portables y las exportaciones de recuperación",
+          "state": "todo",
+          "summary": "Proteger backups, fotos y cuarentenas sensibles con cifrado autenticado y compatibilidad de importación.",
+          "dependsOn": [],
+          "related": [
+            "GYM-24",
+            "GYM-62",
+            "GYM-162",
+            "GYM-163"
+          ]
+        },
+        {
+          "id": "GYM-235",
+          "title": "Cerrar la ventana de duplicación posterior al commit de herramientas",
+          "state": "todo",
+          "summary": "Impedir que un fallo al registrar un efecto ya aplicado permita repetirlo después de reiniciar la app.",
+          "dependsOn": [],
+          "related": [
+            "GYM-42",
+            "GYM-168",
+            "GYM-232"
+          ]
+        },
+        {
+          "id": "GYM-236",
+          "title": "Renovar la telemetría agregada y saneada del runner de OpenWiki",
+          "state": "todo",
+          "summary": "Actualizar métricas estructurales de fiabilidad, latencia y rondas sin publicar contenido privado de las trazas.",
+          "dependsOn": [],
+          "related": [
+            "GYM-89",
+            "GYM-102",
+            "GYM-120",
+            "GYM-172"
           ]
         }
       ]
@@ -3054,10 +3105,12 @@
         "GYM-164",
         "GYM-162",
         "GYM-163",
+        "GYM-234",
         "GYM-165",
         "GYM-166",
         "GYM-167",
         "GYM-168",
+        "GYM-235",
         "GYM-182",
         "GYM-183",
         "GYM-169",
@@ -3076,9 +3129,11 @@
         "GYM-184",
         "GYM-185",
         "GYM-232",
+        "GYM-233",
         "GYM-186",
         "GYM-160",
-        "GYM-172"
+        "GYM-172",
+        "GYM-236"
       ]
     },
     {
