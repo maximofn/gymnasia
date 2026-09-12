@@ -1,14 +1,16 @@
 import { memo, useState, type ReactNode } from "react";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop, Text as SvgText } from "react-native-svg";
-import { Image, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Image, KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import type {
   MeasurementsScreenActions,
   MeasurementsScreenModel,
 } from "../controllers/measurementsController";
 import { DIET_MONTH_LABELS_SHORT } from "../diet/model";
-import { BODY_FAT_ZONES_FEMALE, BODY_FAT_ZONES_MALE, formatMeasurementHistoryDate, formatMeasurementNumber } from "../measurements/presentationModel";
+import { localDateKey } from "../measurements/measurementContract";
+import { BODY_FAT_ZONES_FEMALE, BODY_FAT_ZONES_MALE, formatMeasurementDate, formatMeasurementHistoryDate, formatMeasurementNumber } from "../measurements/presentationModel";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import { mobileTheme } from "../theme";
 
@@ -427,5 +429,245 @@ export const MeasurementsScreen = memo(function MeasurementsScreen({
         </View>
       ) : null}
     </View>
+  );
+});
+
+const MEASUREMENT_ENTRY_FIELDS = [
+  { key: "neck", label: "Cuello (cm)" },
+  { key: "chest", label: "Pecho (cm)" },
+  { key: "waist", label: "Cintura (cm)" },
+  { key: "hips", label: "Cadera (cm)" },
+  { key: "biceps", label: "Bíceps (cm)" },
+  { key: "quadriceps", label: "Cuádriceps (cm)" },
+  { key: "calf", label: "Gemelo (cm)" },
+  { key: "height", label: "Altura (cm)" },
+] as const;
+
+function BodyFatReferenceTable({ sex }: { sex: "male" | "female" }) {
+  const rows = sex === "male"
+    ? [
+        { age: "Edad", sub: "Sub.", ath: "Atlético", fit: "Saludable", acc: "Aceptable", ob: "Obesidad" },
+        { age: "20-29", sub: "<7%", ath: "7-10%", fit: "11-15%", acc: "16-20%", ob: ">20%" },
+        { age: "30-39", sub: "<8%", ath: "8-12%", fit: "13-17%", acc: "18-22%", ob: ">22%" },
+        { age: "40-49", sub: "<10%", ath: "10-14%", fit: "15-19%", acc: "20-24%", ob: ">24%" },
+        { age: "50-59", sub: "<11%", ath: "11-15%", fit: "16-20%", acc: "21-25%", ob: ">25%" },
+        { age: "60+", sub: "<12%", ath: "12-17%", fit: "18-21%", acc: "22-26%", ob: ">26%" },
+      ]
+    : [
+        { age: "Edad", sub: "Sub.", ath: "Atlético", fit: "Saludable", acc: "Aceptable", ob: "Obesidad" },
+        { age: "20-29", sub: "<14%", ath: "14-17%", fit: "18-22%", acc: "23-27%", ob: ">27%" },
+        { age: "30-39", sub: "<15%", ath: "15-18%", fit: "19-23%", acc: "24-28%", ob: ">28%" },
+        { age: "40-49", sub: "<17%", ath: "17-20%", fit: "21-25%", acc: "26-30%", ob: ">30%" },
+        { age: "50-59", sub: "<18%", ath: "18-22%", fit: "23-27%", acc: "28-32%", ob: ">32%" },
+        { age: "60+", sub: "<19%", ath: "19-23%", fit: "24-28%", acc: "29-33%", ob: ">33%" },
+      ];
+  return (
+    <>
+      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700", marginBottom: 8 }}>
+        {sex === "male" ? "Hombres" : "Mujeres"}
+      </Text>
+      <View style={{ borderRadius: 12, overflow: "hidden", marginBottom: 16 }}>
+        {rows.map((row, index) => (
+          <View key={row.age} style={{ flexDirection: "row", backgroundColor: index === 0 ? "rgba(255,255,255,0.06)" : index % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent" }}>
+            {[row.age, row.sub, row.ath, row.fit, row.acc, row.ob].map((cell, cellIndex) => (
+              <Text
+                key={cellIndex}
+                style={{
+                  flex: cellIndex === 0 ? 1.2 : 1,
+                  color: index === 0 ? "#8B94A3" : cellIndex === 1 ? "#FF4B4B" : cellIndex === 2 ? "#CBFF1A" : cellIndex === 3 ? "#00C66B" : cellIndex === 4 ? "#CBFF1A" : cellIndex === 5 ? "#FF8C00" : mobileTheme.color.textPrimary,
+                  fontSize: 10,
+                  fontWeight: index === 0 ? "700" : "600",
+                  paddingVertical: 6,
+                  paddingHorizontal: 4,
+                  textAlign: "center",
+                }}
+              >
+                {cell}
+              </Text>
+            ))}
+          </View>
+        ))}
+      </View>
+    </>
+  );
+}
+
+export const MeasurementsOverlays = memo(function MeasurementsOverlays({
+  model,
+  actions,
+}: {
+  model: Readonly<MeasurementsScreenModel>;
+  actions: Readonly<MeasurementsScreenActions>;
+}) {
+  const { overlays } = model;
+  const { entry } = overlays;
+  return (
+    <>
+      {overlays.expandedPhotoUri ? (
+        <Pressable
+          testID={shellSurfaceTestId("measurement-photo")}
+          onPress={() => actions.expandPhoto(null)}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.92)",
+            zIndex: 999,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Image source={{ uri: overlays.expandedPhotoUri }} style={{ width: "90%", height: "80%", borderRadius: 16 }} resizeMode="contain" />
+          <Text style={{ color: "#fff", fontSize: 14, fontWeight: "700", marginTop: 16 }}>Toca para cerrar</Text>
+        </Pressable>
+      ) : null}
+
+      {entry.visible ? (
+        <KeyboardAvoidingView
+          testID={shellSurfaceTestId("measurement-entry")}
+          behavior={entry.isIos ? "padding" : "height"}
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: mobileTheme.color.bgApp,
+            zIndex: 520,
+            elevation: 52,
+          }}
+        >
+          <View style={{ paddingHorizontal: mobileTheme.spacing[4], paddingTop: mobileTheme.spacing[4], paddingBottom: 12, gap: 8, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp }}>
+            <View style={{ gap: 4 }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 28, fontWeight: "800" }}>
+                {entry.editingMeasurementId ? "Editar medidas" : "Registrar medidas"}
+              </Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+                {entry.editingMeasurementId ? "Modifica los valores de esta entrada." : "Guarda peso, foto y contornos sin salir de la pestaña `Medidas`."}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Pressable onPress={actions.closeEntry} style={{ flex: 1, minHeight: 44, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center" }}>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>Cancelar</Text>
+              </Pressable>
+              <Pressable testID="measurement-save-primary" onPress={actions.saveEntry} disabled={entry.saveBusy} style={{ flex: 1, minHeight: 44, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center", opacity: entry.saveBusy ? 0.6 : 1 }}>
+                {entry.saveBusy ? <ActivityIndicator size="small" color="#06090D" /> : (
+                  <Text style={{ color: "#06090D", fontWeight: "700" }}>{entry.editingMeasurementId ? "Actualizar" : "Guardar medidas"}</Text>
+                )}
+              </Pressable>
+            </View>
+          </View>
+
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingTop: 14, paddingBottom: 120, gap: 12 }} keyboardShouldPersistTaps="handled">
+            {entry.error ? <Text style={{ color: "#ff8a8a" }}>{entry.error}</Text> : null}
+            <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 12 }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                Peso actual: {entry.latestWeightKg !== null ? `${entry.latestWeightKg.toFixed(2)} kg` : "Sin registrar"}
+              </Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                Altura base: {entry.latestHeightCm !== null ? `${formatMeasurementNumber(entry.latestHeightCm)} cm` : "Sin registrar"}
+              </Text>
+              {entry.latestWeightMeasuredOn ? (
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                  Última actualización: {formatMeasurementDate(entry.latestWeightMeasuredOn)}
+                </Text>
+              ) : null}
+
+              <Pressable testID="measurement-date-trigger" onPress={actions.openDatePicker} style={{ minHeight: 44, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, paddingHorizontal: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>Fecha: {formatMeasurementDate(localDateKey(entry.date))}</Text>
+                <Ionicons name="calendar-outline" size={18} color={mobileTheme.color.textSecondary} />
+              </Pressable>
+
+              {entry.datePickerOpen ? entry.isWeb ? (
+                <TextInput testID={shellSurfaceTestId("measurement-date-picker")} value={entry.dateTextInput} onChangeText={actions.changeDateText} placeholder="AAAA-MM-DD" placeholderTextColor={mobileTheme.color.textSecondary} style={{ minHeight: 44, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: 12, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 14 }} />
+              ) : (
+                <View testID={shellSurfaceTestId("measurement-date-picker")} style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, padding: 8, gap: 8 }}>
+                  <DateTimePicker value={entry.date} mode="date" maximumDate={new Date()} display={entry.isIos ? "inline" : "default"} onChange={(event, date) => actions.changeNativeDate(event.type, date)} />
+                  {entry.isIos ? (
+                    <Pressable onPress={actions.closeDatePicker} style={{ height: 38, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, alignItems: "center", justifyContent: "center" }}>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>Cerrar calendario</Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              ) : null}
+
+              <View style={{ gap: 8 }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>Foto de progreso</Text>
+                {entry.photoUri ? (
+                  <Image testID="measurement-photo-preview" source={{ uri: entry.photoUri }} style={{ width: "100%", height: 180, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp }} />
+                ) : (
+                  <View style={{ minHeight: 92, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center", paddingHorizontal: 12 }}>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Sin foto seleccionada</Text>
+                  </View>
+                )}
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  <Pressable testID="measurement-photo-upload" onPress={actions.pickPhoto} style={{ flex: 1, minHeight: 40, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: "rgba(203,255,26,0.45)", backgroundColor: "rgba(203,255,26,0.10)", alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 6 }}>
+                    <Ionicons name="image-outline" size={16} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 13 }}>Subir foto</Text>
+                  </Pressable>
+                  <Pressable onPress={actions.takePhoto} style={{ flex: 1, minHeight: 40, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: "rgba(203,255,26,0.45)", backgroundColor: "rgba(203,255,26,0.10)", alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 6 }}>
+                    <Ionicons name="camera-outline" size={16} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 13 }}>Cámara</Text>
+                  </Pressable>
+                  {entry.photoUri ? (
+                    <Pressable onPress={actions.clearPhoto} style={{ height: 40, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center", paddingHorizontal: 12 }}>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Quitar</Text>
+                    </Pressable>
+                  ) : null}
+                </View>
+              </View>
+
+              <View style={{ gap: 2 }}>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Peso (kg)</Text>
+                <TextInput testID="measurement-weight-input" style={{ minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }} value={entry.fields.weight} onChangeText={(value) => actions.changeEntryField("weight", value)} placeholder="—" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" />
+              </View>
+              <View style={{ gap: 2 }}>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>% Grasa corporal</Text>
+                <TextInput testID="measurement-body-fat-input" style={{ minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }} value={entry.fields.bodyFat} onChangeText={(value) => actions.changeEntryField("bodyFat", value)} placeholder="—" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" />
+              </View>
+              {MEASUREMENT_ENTRY_FIELDS.map((field) => (
+                <View key={field.key} style={{ gap: 2 }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>{field.label}</Text>
+                  <TextInput testID={`measurement-${field.key}-input`} style={{ minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }} value={entry.fields[field.key]} onChangeText={(value) => actions.changeEntryField(field.key, value)} placeholder="—" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" />
+                </View>
+              ))}
+
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <Pressable onPress={actions.closeEntry} style={{ flex: 1, minHeight: 44, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center" }}>
+                  <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>Cancelar</Text>
+                </Pressable>
+                <Pressable onPress={actions.saveEntry} disabled={entry.saveBusy} style={{ flex: 1, minHeight: 44, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center", opacity: entry.saveBusy ? 0.6 : 1 }}>
+                  {entry.saveBusy ? <ActivityIndicator size="small" color="#06090D" /> : (
+                    <Text style={{ color: "#06090D", fontWeight: "700" }}>{entry.editingMeasurementId ? "Actualizar" : "Guardar medidas"}</Text>
+                  )}
+                </Pressable>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      ) : null}
+
+      {overlays.bodyFatInfoOpen ? (
+        <View testID={shellSurfaceTestId("body-fat-info")} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.7)", justifyContent: "center", alignItems: "center", zIndex: 9999, padding: 20 }}>
+          <View style={{ backgroundColor: "#141820", borderRadius: 22, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)", padding: 20, width: "100%", maxHeight: "85%" }}>
+            <ScrollView>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>% Grasa corporal por edad</Text>
+                <Pressable onPress={actions.closeBodyFatInfo} hitSlop={10}>
+                  <Ionicons name="close" size={22} color="#8B94A3" />
+                </Pressable>
+              </View>
+              <BodyFatReferenceTable sex="male" />
+              <BodyFatReferenceTable sex="female" />
+              <Text style={{ color: "#8B94A3", fontSize: 11, lineHeight: 16 }}>
+                El cuerpo necesita al menos un 3-5% (hombres) o 10-13% (mujeres) de grasa esencial. Con la edad, es normal tener algo más de grasa. La distribución (visceral vs. subcutánea) también importa.
+              </Text>
+            </ScrollView>
+          </View>
+        </View>
+      ) : null}
+    </>
   );
 });

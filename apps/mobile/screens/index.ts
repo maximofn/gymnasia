@@ -1,7 +1,7 @@
 export { ChatScreen } from "./ChatScreen";
 export { DietHeader, DietMealsScreen } from "./DietScreen";
 export { HomeScreen } from "./HomeScreen";
-export { MeasurementsScreen } from "./MeasurementsScreen";
+export { MeasurementsOverlays, MeasurementsScreen } from "./MeasurementsScreen";
 export {
   DataSettingsPanel,
   DietSettingsPanel,

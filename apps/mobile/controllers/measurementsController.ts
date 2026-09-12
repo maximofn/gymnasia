@@ -94,7 +94,39 @@ export type MeasurementsScreenModel = {
   showAllHistory: boolean;
   historyRows: readonly MeasurementHistoryRow[];
   photos: readonly Measurement[];
+  overlays: {
+    bodyFatInfoOpen: boolean;
+    expandedPhotoUri: string | null;
+    entry: {
+      visible: boolean;
+      editingMeasurementId: string | null;
+      saveBusy: boolean;
+      error: string | null;
+      latestWeightKg: number | null;
+      latestHeightCm: number | null;
+      latestWeightMeasuredOn: string | null;
+      date: Date;
+      dateTextInput: string;
+      datePickerOpen: boolean;
+      isWeb: boolean;
+      isIos: boolean;
+      photoUri: string | null;
+      fields: Readonly<Record<MeasurementEntryFieldKey, string>>;
+    };
+  };
 };
+
+export type MeasurementEntryFieldKey =
+  | "weight"
+  | "bodyFat"
+  | "neck"
+  | "chest"
+  | "waist"
+  | "hips"
+  | "biceps"
+  | "quadriceps"
+  | "calf"
+  | "height";
 
 export type MeasurementsScreenActions = {
   openEntry(): void;
@@ -106,6 +138,17 @@ export type MeasurementsScreenActions = {
   toggleHistory(): void;
   editMeasurement(measurement: Measurement): void;
   expandPhoto(uri: string | null): void;
+  closeEntry(): void;
+  saveEntry(): void;
+  openDatePicker(): void;
+  changeDateText(value: string): void;
+  changeNativeDate(eventType: string, date?: Date): void;
+  closeDatePicker(): void;
+  pickPhoto(): void;
+  takePhoto(): void;
+  clearPhoto(): void;
+  changeEntryField(field: MeasurementEntryFieldKey, value: string): void;
+  closeBodyFatInfo(): void;
 };
 
 type MeasurementsBackLayer =
@@ -134,6 +177,18 @@ type MeasurementsControllerInput = {
   expandedPhotoUri: string | null;
   entryOpen: boolean;
   datePickerOpen: boolean;
+  editingMeasurementId: string | null;
+  saveBusy: boolean;
+  error: string | null;
+  latestWeightKg: number | null;
+  latestHeightCm: number | null;
+  latestWeightMeasuredOn: string | null;
+  date: Date;
+  dateTextInput: string;
+  isWeb: boolean;
+  isIos: boolean;
+  photoUri: string | null;
+  entryFields: Readonly<Record<MeasurementEntryFieldKey, string>>;
   openEntry(): void;
   setPeriodDropdownOpen(open: boolean): void;
   selectPeriod(period: MeasuresDashboardPeriodKey): void;
@@ -145,6 +200,13 @@ type MeasurementsControllerInput = {
   setExpandedPhotoUri(uri: string | null): void;
   closeEntry(): void;
   setDatePickerOpen(open: boolean): void;
+  saveEntry(): void;
+  changeDateText(value: string): void;
+  changeNativeDate(eventType: string, date?: Date): void;
+  pickPhoto(): void;
+  takePhoto(): void;
+  clearPhoto(): void;
+  changeEntryField(field: MeasurementEntryFieldKey, value: string): void;
 };
 
 export function useMeasurementsController(
@@ -270,6 +332,26 @@ export function useMeasurementsController(
     showAllHistory: input.showAllHistory,
     historyRows,
     photos: input.measurements.filter((measurement) => measurement.photo_uri),
+    overlays: {
+      bodyFatInfoOpen: input.bodyFatInfoOpen,
+      expandedPhotoUri: input.expandedPhotoUri,
+      entry: {
+        visible: input.entryOpen,
+        editingMeasurementId: input.editingMeasurementId,
+        saveBusy: input.saveBusy,
+        error: input.error,
+        latestWeightKg: input.latestWeightKg,
+        latestHeightCm: input.latestHeightCm,
+        latestWeightMeasuredOn: input.latestWeightMeasuredOn,
+        date: input.date,
+        dateTextInput: input.dateTextInput,
+        datePickerOpen: input.datePickerOpen,
+        isWeb: input.isWeb,
+        isIos: input.isIos,
+        photoUri: input.photoUri,
+        fields: input.entryFields,
+      },
+    },
   }), [
     allMetricValues,
     chartPoints,
@@ -282,6 +364,22 @@ export function useMeasurementsController(
     input.periodDropdownOpen,
     input.sex,
     input.showAllHistory,
+    input.bodyFatInfoOpen,
+    input.date,
+    input.datePickerOpen,
+    input.dateTextInput,
+    input.editingMeasurementId,
+    input.entryFields,
+    input.entryOpen,
+    input.error,
+    input.expandedPhotoUri,
+    input.isIos,
+    input.isWeb,
+    input.latestHeightCm,
+    input.latestWeightKg,
+    input.latestWeightMeasuredOn,
+    input.photoUri,
+    input.saveBusy,
     metricMeta,
     metricValue,
     periodMeta,
@@ -296,6 +394,15 @@ export function useMeasurementsController(
   const toggleHistory = useCallback(() => targetsRef.current.setShowAllHistory(!targetsRef.current.showAllHistory), []);
   const editMeasurement = useCallback((measurement: Measurement) => targetsRef.current.editMeasurement(measurement), []);
   const expandPhoto = useCallback((uri: string | null) => targetsRef.current.setExpandedPhotoUri(uri), []);
+  const saveEntry = useCallback(() => targetsRef.current.saveEntry(), []);
+  const openDatePicker = useCallback(() => targetsRef.current.setDatePickerOpen(true), []);
+  const changeDateText = useCallback((value: string) => targetsRef.current.changeDateText(value), []);
+  const changeNativeDate = useCallback((eventType: string, date?: Date) => targetsRef.current.changeNativeDate(eventType, date), []);
+  const closeDatePickerAction = useCallback(() => targetsRef.current.setDatePickerOpen(false), []);
+  const pickPhoto = useCallback(() => targetsRef.current.pickPhoto(), []);
+  const takePhoto = useCallback(() => targetsRef.current.takePhoto(), []);
+  const clearPhoto = useCallback(() => targetsRef.current.clearPhoto(), []);
+  const changeEntryField = useCallback((field: MeasurementEntryFieldKey, value: string) => targetsRef.current.changeEntryField(field, value), []);
   const actions = useMemo<MeasurementsScreenActions>(() => ({
     openEntry,
     togglePeriodDropdown,
@@ -306,7 +413,18 @@ export function useMeasurementsController(
     toggleHistory,
     editMeasurement,
     expandPhoto,
-  }), [editMeasurement, expandPhoto, openBodyFatInfo, openEntry, selectMetric, selectPeriod, toggleHistory, toggleMetricDropdown, togglePeriodDropdown]);
+    closeEntry: () => targetsRef.current.closeEntry(),
+    saveEntry,
+    openDatePicker,
+    changeDateText,
+    changeNativeDate,
+    closeDatePicker: closeDatePickerAction,
+    pickPhoto,
+    takePhoto,
+    clearPhoto,
+    changeEntryField,
+    closeBodyFatInfo: () => targetsRef.current.setBodyFatInfoOpen(false),
+  }), [changeDateText, changeEntryField, changeNativeDate, clearPhoto, closeDatePickerAction, editMeasurement, expandPhoto, openBodyFatInfo, openDatePicker, openEntry, pickPhoto, saveEntry, selectMetric, selectPeriod, takePhoto, toggleHistory, toggleMetricDropdown, togglePeriodDropdown]);
   const closeBodyFatInfo = useCallback(() => { targetsRef.current.setBodyFatInfoOpen(false); return true; }, []);
   const closePhoto = useCallback(() => { targetsRef.current.setExpandedPhotoUri(null); return true; }, []);
   const closeEntry = useCallback(() => { targetsRef.current.closeEntry(); return true; }, []);
