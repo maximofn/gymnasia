@@ -17,6 +17,7 @@ import {
   Platform,
   Vibration,
 } from "react-native";
+import { createPlatformFetch } from "./network";
 
 export type PlatformDocumentPickerAsset = DocumentPicker.DocumentPickerAsset;
 export type PlatformAudioSound = InstanceType<typeof Audio.Sound>;
@@ -71,7 +72,7 @@ export function createExpoPlatformServices(): AppPlatformServices {
     files: { File, Paths },
     sharing: Sharing,
     documentPicker: DocumentPicker,
-    network: { fetch },
+    network: { fetch: createPlatformFetch() },
     native: { AppState, BackHandler, Linking, Platform, Vibration },
   };
 }
