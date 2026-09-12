@@ -56,7 +56,6 @@ import {
   type FeedbackProposal,
 } from "./agent/feedbackProposals";
 import { FeedbackProposalBanner } from "./FeedbackProposalBanner";
-import { requestGoogleInteraction } from "./agent/googleStreamTransport";
 import {
   buildGoogleHistory,
   isGoogleConversationTurn,
@@ -78,10 +77,13 @@ import {
 } from "./agent/providerStreamParsers";
 import {
   buildOpenAIReasoningConfig,
-  parseAnthropicContent,
-  parseOpenAIContent,
-  parseOpenAIResponseResult,
 } from "./agent/providerResponseModel";
+import {
+  requestGoogleProviderInteraction,
+  requestProviderText,
+  type ChatInputMessage,
+  type ProviderChatResult as AnthropicChatResult,
+} from "./agent/providerChatClient";
 import {
   extractProviderErrorMessage as extractErrorMessage,
   streamAnthropicRequestViaXHR,
@@ -571,7 +573,6 @@ Notifications.setNotificationHandler({
   },
 });
 
-type AnthropicChatResult = { content: string; thinking: string | null; googleTurn?: GoogleConversationTurn };
 type HealthSafetyConsentState = {
   consentVersion: string;
   providers: Record<Provider, boolean>;
@@ -595,13 +596,6 @@ type ChatProviderCallOptions = StreamingHandlers & {
   healthPolicy?: HealthSafetyRuntimePolicy;
 };
 type ProviderDeleteModalState = { provider: Provider; maskedApiKey: string };
-type ChatInputMessage = {
-  role: "user" | "assistant" | "system";
-  content: string;
-  googleTurn?: GoogleConversationTurn;
-  googleInput?: GoogleContent[];
-};
-
 function toChatInput(message: ChatInputMessage): ChatInputMessage {
   return {
     role: message.role,
@@ -609,6 +603,27 @@ function toChatInput(message: ChatInputMessage): ChatInputMessage {
     ...(message.googleTurn ? { googleTurn: message.googleTurn } : {}),
     ...(message.googleInput ? { googleInput: message.googleInput } : {}),
   };
+}
+
+function callProviderChatAPI(
+  provider: AIKey,
+  messages: ChatInputMessage[],
+  surface: AiConversationSurface = "main-chat",
+  onGoogleTurn?: (turn: GoogleConversationTurn) => void,
+): Promise<string> {
+  return requestProviderText(
+    provider,
+    messages,
+    {
+      fakeMode: IS_FAKE_PROVIDER_MODE,
+      platform: Platform.OS,
+      environment: Constants.expoConfig?.extra?.environment,
+      googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
+      anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+    },
+    surface,
+    onGoogleTurn,
+  );
 }
 
 function callGoogleInteraction(
@@ -622,14 +637,16 @@ function callGoogleInteraction(
   },
   handlers?: StreamingHandlers,
 ): Promise<GoogleInteractionTurn> {
-  return requestGoogleInteraction({
-    ...options,
-    model: provider.model,
-    apiKey: provider.api_key,
-    platform: Platform.OS,
-    environment: Constants.expoConfig?.extra?.environment,
-    fixturePort: Constants.expoConfig?.extra?.googleFixturePort,
-  }, handlers);
+  return requestGoogleProviderInteraction(
+    provider,
+    options,
+    {
+      platform: Platform.OS,
+      environment: Constants.expoConfig?.extra?.environment,
+      googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
+    },
+    handlers,
+  );
 }
 type FoodEstimatorImage = {
   id: string;
@@ -1464,168 +1481,6 @@ async function downloadOrShareJson(
   } finally {
     if (file.exists) file.delete();
   }
-}
-
-async function callAnthropicViaWebProxy(
-  provider: AIKey,
-  systemPrompt: string,
-  messages: Array<{ role: "assistant" | "user"; content: string }>,
-): Promise<AnthropicChatResult> {
-  const proxyUrl = buildWebProxyUrl("/chat/providers/anthropic/messages");
-  try {
-    const response = await fetch(proxyUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...anthropicProxyCredentials(provider.api_key, provider.workspace_id),
-        model: provider.model || DEFAULT_MODELS.anthropic,
-        max_tokens: 700 + ANTHROPIC_THINKING_BUDGET,
-        thinking: anthropicThinkingConfig(
-          provider.model || DEFAULT_MODELS.anthropic,
-          ANTHROPIC_THINKING_BUDGET,
-        ),
-        system: systemPrompt,
-        messages,
-      }),
-    });
-
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      throw new Error(explainAnthropicError(
-        extractErrorMessage(payload, `Proxy Anthropic error (${response.status})`),
-      ));
-    }
-
-    const result = parseAnthropicContent(payload);
-    if (!result) throw new Error("Anthropic no devolvio contenido.");
-    return result;
-  } catch (err) {
-    const rawMessage = err instanceof Error ? err.message : "No se pudo conectar con Anthropic.";
-    if (rawMessage.toLowerCase().includes("failed to fetch")) {
-      throw new Error(ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE);
-    }
-    throw new Error(rawMessage);
-  }
-}
-
-async function callProviderChatAPI(
-  provider: AIKey,
-  messages: ChatInputMessage[],
-  surface: AiConversationSurface = "main-chat",
-  onGoogleTurn?: (turn: GoogleConversationTurn) => void,
-): Promise<string> {
-  if (IS_FAKE_PROVIDER_MODE) {
-    const latestUserInput = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
-    return createFakeProviderResult(surface, latestUserInput).content;
-  }
-  const systemPrompt = composeAiSystemPrompt(
-    messages
-      .filter((msg) => msg.role === "system")
-      .map((msg) => msg.content)
-      .join("\n\n"),
-    surface,
-  );
-  const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
-    .filter((msg) => msg.role !== "system")
-    .map((msg) => ({
-      role: msg.role === "assistant" ? "assistant" : "user",
-      content: msg.content,
-    }));
-
-  if (provider.provider === "openai") {
-    const reasoning = buildOpenAIReasoningConfig(provider);
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${provider.api_key}`,
-      },
-      body: JSON.stringify({
-        model: normalizeProviderModel("openai", provider.model),
-        instructions: systemPrompt,
-        input: nonSystemMessages,
-        ...(reasoning ? { reasoning } : {}),
-      }),
-    });
-
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
-    }
-
-    const result = parseOpenAIResponseResult(payload);
-    if (!result?.content) throw new Error("OpenAI no devolvio contenido.");
-    return result.content;
-  }
-
-  if (provider.provider === "anthropic") {
-    if (shouldUseAnthropicWebProxy()) {
-      const webResult = await callAnthropicViaWebProxy(provider, systemPrompt, nonSystemMessages);
-      return webResult.content;
-    }
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: anthropicApiHeaders(
-        provider.api_key,
-        ANTHROPIC_API_VERSION,
-        provider.workspace_id,
-        {
-          "Content-Type": "application/json",
-        },
-        { directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS },
-      ),
-      body: JSON.stringify({
-        model: provider.model || DEFAULT_MODELS.anthropic,
-        max_tokens: 700 + ANTHROPIC_THINKING_BUDGET,
-        thinking: anthropicThinkingConfig(
-          provider.model || DEFAULT_MODELS.anthropic,
-          ANTHROPIC_THINKING_BUDGET,
-        ),
-        system: systemPrompt,
-        messages: nonSystemMessages,
-      }),
-    });
-
-    let payload: unknown = null;
-    try {
-      payload = await response.json();
-    } catch {
-      // ignore json parse errors
-    }
-
-    if (!response.ok) {
-      throw new Error(explainAnthropicError(
-        extractErrorMessage(payload, `Anthropic error (${response.status})`),
-      ));
-    }
-
-    const result = parseAnthropicContent(payload);
-    if (!result) throw new Error("Anthropic no devolvio contenido.");
-    return result.content;
-  }
-
-  const turn = await callGoogleInteraction(provider, {
-    history: buildGoogleHistory(messages), systemInstruction: systemPrompt,
-  });
-  if (turn.status !== "completed" || !turn.content) throw new Error("Google AI no devolvió contenido completo.");
-  onGoogleTurn?.({ version: 1, model: normalizeProviderModel("google", provider.model),
-    steps: turn.steps, interactions: [{ id: turn.interactionId, usage: turn.usage }] });
-  return turn.content;
 }
 
 async function evaluateHealthSafetyWithProvider(

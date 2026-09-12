@@ -2,6 +2,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const providerChatClientSource = readFileSync(
+  new URL("./providerChatClient.ts", import.meta.url),
+  "utf8",
+);
 
 function functionSource(name: string, nextName: string): string {
   const start = appSource.indexOf(`async function ${name}`);
@@ -13,13 +17,19 @@ function functionSource(name: string, nextName: string): string {
 
 describe("provider transport contract", () => {
   it("short-circuits every AI conversation surface in fake mode", () => {
-    const chat = functionSource("callProviderChatAPI", "callProviderChatAPIWithTools");
+    const chatStart = providerChatClientSource.indexOf("export async function requestProviderText");
+    expect(chatStart).toBeGreaterThanOrEqual(0);
+    const chat = providerChatClientSource.slice(chatStart);
     const toolChat = functionSource("callProviderChatAPIWithTools", "callFoodEstimatorAPI");
     const estimatorStart = appSource.indexOf("async function callFoodEstimatorAPI");
     const estimator = appSource.slice(estimatorStart, appSource.indexOf("function ", estimatorStart + 30));
 
-    for (const source of [chat, toolChat, estimator]) {
-      const guard = source.indexOf("if (IS_FAKE_PROVIDER_MODE)");
+    for (const [source, guardNeedle] of [
+      [chat, "if (runtime.fakeMode)"],
+      [toolChat, "if (IS_FAKE_PROVIDER_MODE)"],
+      [estimator, "if (IS_FAKE_PROVIDER_MODE)"],
+    ] as const) {
+      const guard = source.indexOf(guardNeedle);
       expect(guard).toBeGreaterThanOrEqual(0);
       const firstProviderNetwork = source.search(/api\.openai\.com|api\.anthropic\.com|generativelanguage\.googleapis\.com|XMLHttpRequest/);
       expect(firstProviderNetwork === -1 || guard < firstProviderNetwork).toBe(true);

@@ -3,6 +3,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const providerChatClientSource = readFileSync(
+  new URL("./providerChatClient.ts", import.meta.url),
+  "utf8",
+);
 const chatScreenSource = readFileSync(
   new URL("../screens/ChatScreen.tsx", import.meta.url),
   "utf8",
@@ -39,9 +43,10 @@ describe("contrato estático de superficies conversacionales", () => {
   });
 
   it("protege las tres fronteras de system prompt", () => {
-    expect(appSource.match(/composeAiSystemPrompt\(/g)?.length).toBeGreaterThanOrEqual(3);
-    expect(appSource).not.toContain("system: FOOD_ESTIMATOR_SYSTEM_PROMPT");
-    expect(appSource).not.toContain("systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }]");
+    const promptBoundarySource = `${appSource}\n${providerChatClientSource}`;
+    expect(promptBoundarySource.match(/composeAiSystemPrompt\(/g)?.length).toBeGreaterThanOrEqual(3);
+    expect(promptBoundarySource).not.toContain("system: FOOD_ESTIMATOR_SYSTEM_PROMPT");
+    expect(promptBoundarySource).not.toContain("systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }]");
   });
 
   it("mantiene la etiqueta accesible y su anuncio nativo", () => {
