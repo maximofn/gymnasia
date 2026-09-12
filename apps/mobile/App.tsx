@@ -433,7 +433,6 @@ import {
 import {
   DIET_MEAL_CATEGORIES,
   NUTRITION_FOOD_TYPES,
-  evaluateDietPlan,
   formatNutritionValidationIssues,
   validateNutritionFormInput,
   validateNutritionItem,
@@ -444,14 +443,12 @@ import {
 } from "./diet/nutritionContract";
 import {
   DIET_MONTH_LABELS_SHORT,
-  GKG_MACRO_KEYS,
   createDefaultDietSettings,
   createDietMealExpandedState,
   dateFromISO,
   formatDietDayContext,
   formatDietDayHeader,
   formatNutritionNumber,
-  gkgMacroCaloriesPerGram,
   isoDateFromDate,
   normalizeDietByDate,
   normalizeDietNonNegativeNumber,
@@ -468,8 +465,8 @@ import {
   type DietItem,
   type DietMeal,
   type DietSettings,
-  type GkgMacroKey,
 } from "./diet/model";
+import { buildDietPlanningModel } from "./diet/planningModel";
 import {
   normalizeMeasurements as normalizeMeasurementCollection,
   type Measurement,
@@ -4126,110 +4123,30 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const latestBodyHeightCm = measurementsRuntime.latestHeightCm;
   const weightMeasurementPair = measurementsRuntime.weightSummary;
   const dietSettings = store.dietSettings;
-  const savedDietPlanEvaluation = useMemo(
-    () => evaluateDietPlan(dietSettings, latestBodyWeightKg),
-    [dietSettings, latestBodyWeightKg],
+  const dietPlanningModel = useMemo(
+    () => buildDietPlanningModel(dietSettings, dietSettingsDraft, latestBodyWeightKg),
+    [dietSettings, dietSettingsDraft, latestBodyWeightKg],
   );
-  const draftDietPlanEvaluation = useMemo(
-    () => evaluateDietPlan(dietSettingsDraft, latestBodyWeightKg),
-    [dietSettingsDraft, latestBodyWeightKg],
-  );
-  const dietDailyCaloriesTarget = savedDietPlanEvaluation.dailyCaloriesTarget ?? 0;
-  const draftDietDailyCaloriesTarget = draftDietPlanEvaluation.dailyCaloriesTarget ?? 0;
-  const proteinGramsPerKgTarget =
-    parseNonNegativeNumberInput(dietSettingsDraft.protein_grams_per_kg) ?? 0;
-  const carbsGramsPerKgTarget =
-    parseNonNegativeNumberInput(dietSettingsDraft.carbs_grams_per_kg) ?? 0;
-  const fatGramsPerKgTarget =
-    parseNonNegativeNumberInput(dietSettingsDraft.fat_grams_per_kg) ?? 0;
-  const gkgMacroTargets: Record<GkgMacroKey, number> = {
-    protein: proteinGramsPerKgTarget,
-    carbs: carbsGramsPerKgTarget,
-    fat: fatGramsPerKgTarget,
-  };
-  const proteinGramsFromWeightPlan =
-    latestBodyWeightKg !== null ? latestBodyWeightKg * proteinGramsPerKgTarget : 0;
-  const carbsGramsFromWeightPlan =
-    latestBodyWeightKg !== null ? latestBodyWeightKg * carbsGramsPerKgTarget : 0;
-  const fatGramsFromWeightPlan =
-    latestBodyWeightKg !== null ? latestBodyWeightKg * fatGramsPerKgTarget : 0;
-  const proteinCaloriesFromWeightPlan = proteinGramsFromWeightPlan * 4;
-  const carbsCaloriesFromWeightPlan = carbsGramsFromWeightPlan * 4;
-  const fatCaloriesFromWeightPlan = fatGramsFromWeightPlan * 9;
-  const hasWeightForGkgPlanning =
-    latestBodyWeightKg !== null && Number.isFinite(latestBodyWeightKg) && latestBodyWeightKg > 0;
-  const gkgConfiguredMacroCount = GKG_MACRO_KEYS.filter(
-    (macro) => gkgMacroTargets[macro] > 0,
-  ).length;
-  const autocompleteGkgMacroKey: GkgMacroKey | null =
-    gkgConfiguredMacroCount === 2
-      ? GKG_MACRO_KEYS.find((macro) => gkgMacroTargets[macro] <= 0) ?? null
-      : null;
-  const canAutocompleteGkgMacro =
-    autocompleteGkgMacroKey !== null && hasWeightForGkgPlanning && draftDietDailyCaloriesTarget > 0;
-  const autocompleteGkgMacroPerKgValue =
-    canAutocompleteGkgMacro && autocompleteGkgMacroKey
-      ? Math.max(
-          0,
-          (draftDietDailyCaloriesTarget -
-            GKG_MACRO_KEYS.reduce((acc, macro) => {
-              if (macro === autocompleteGkgMacroKey) return acc;
-              return (
-                acc +
-                gkgMacroTargets[macro] *
-                  (latestBodyWeightKg ?? 0) *
-                  gkgMacroCaloriesPerGram(macro)
-              );
-            }, 0)) /
-            (gkgMacroCaloriesPerGram(autocompleteGkgMacroKey) * (latestBodyWeightKg ?? 1)),
-        )
-      : null;
-  const autocompleteGkgMacroPerKgText =
-    autocompleteGkgMacroPerKgValue !== null && Number.isFinite(autocompleteGkgMacroPerKgValue)
-      ? autocompleteGkgMacroPerKgValue.toFixed(2).replace(/\.?0+$/, "")
-      : null;
-  const hasAnyGkgMacroConfigured =
-    proteinGramsPerKgTarget > 0 || carbsGramsPerKgTarget > 0 || fatGramsPerKgTarget > 0;
-  const shouldShowGkgMaxHints =
-    hasWeightForGkgPlanning && draftDietDailyCaloriesTarget > 0 && hasAnyGkgMacroConfigured;
-  const proteinMaxGramsPerKgHint = shouldShowGkgMaxHints
-    ? Math.max(0, (draftDietDailyCaloriesTarget - (carbsCaloriesFromWeightPlan + fatCaloriesFromWeightPlan)) / 4)
-        / (latestBodyWeightKg ?? 1)
-    : null;
-  const carbsMaxGramsPerKgHint = shouldShowGkgMaxHints
-    ? Math.max(0, (draftDietDailyCaloriesTarget - (proteinCaloriesFromWeightPlan + fatCaloriesFromWeightPlan)) / 4)
-        / (latestBodyWeightKg ?? 1)
-    : null;
-  const fatMaxGramsPerKgHint = shouldShowGkgMaxHints
-    ? Math.max(0, (draftDietDailyCaloriesTarget - (proteinCaloriesFromWeightPlan + carbsCaloriesFromWeightPlan)) / 9)
-        / (latestBodyWeightKg ?? 1)
-    : null;
-  const proteinGkgPlaceholder =
-    proteinMaxGramsPerKgHint !== null
-      ? `Proteína (g por kg corporal) (${proteinMaxGramsPerKgHint.toFixed(2)} g/kg max)`
-      : "Proteína (g por kg corporal)";
-  const carbsGkgPlaceholder =
-    carbsMaxGramsPerKgHint !== null
-      ? `Carbohidratos (g por kg corporal) (${carbsMaxGramsPerKgHint.toFixed(2)} g/kg max)`
-      : "Carbohidratos (g por kg corporal)";
-  const fatGkgPlaceholder =
-    fatMaxGramsPerKgHint !== null
-      ? `Grasas (g por kg corporal) (${fatMaxGramsPerKgHint.toFixed(2)} g/kg max)`
-      : "Grasas (g por kg corporal)";
-  const configuredMacroCaloriesTotal = draftDietPlanEvaluation.assignedCalories;
-  const configuredMacroCaloriesRemaining = draftDietPlanEvaluation.remainingCalories;
-  const configuredMacroCaloriesExcess = draftDietPlanEvaluation.excessCalories;
-  const dietPlanDraftIssueByField = useMemo(
-    () => new Map(draftDietPlanEvaluation.issues.map((issue) => [issue.field, issue] as const)),
-    [draftDietPlanEvaluation.issues],
-  );
+  const savedDietPlanEvaluation = dietPlanningModel.savedEvaluation;
+  const draftDietPlanEvaluation = dietPlanningModel.draftEvaluation;
+  const dietDailyCaloriesTarget = dietPlanningModel.dailyCaloriesTarget;
+  const proteinMaxGramsPerKgHint = dietPlanningModel.proteinMaxGramsPerKgHint;
+  const carbsMaxGramsPerKgHint = dietPlanningModel.carbsMaxGramsPerKgHint;
+  const fatMaxGramsPerKgHint = dietPlanningModel.fatMaxGramsPerKgHint;
+  const configuredMacroCaloriesTotal = dietPlanningModel.configuredMacroCaloriesTotal;
+  const configuredMacroCaloriesRemaining = dietPlanningModel.configuredMacroCaloriesRemaining;
+  const configuredMacroCaloriesExcess = dietPlanningModel.configuredMacroCaloriesExcess;
+  const dietPlanDraftIssueByField = dietPlanningModel.issueByField;
+  const draftProteinTargetGrams = dietPlanningModel.draftProteinTargetGrams;
+  const draftCarbsTargetGrams = dietPlanningModel.draftCarbsTargetGrams;
+  const draftFatTargetGrams = dietPlanningModel.draftFatTargetGrams;
+  const canAutocompleteGkgMacro = dietPlanningModel.autocomplete.enabled;
+  const autocompleteGkgMacroKey = dietPlanningModel.autocomplete.macro;
+  const autocompleteGkgMacroPerKgText = dietPlanningModel.autocomplete.gramsPerKgText;
   const mealNutritionIssueByField = useMemo(
     () => new Map(mealNutritionIssues.map((issue) => [issue.field, issue] as const)),
     [mealNutritionIssues],
   );
-  const draftProteinTargetGrams = draftDietPlanEvaluation.macroGrams.protein;
-  const draftCarbsTargetGrams = draftDietPlanEvaluation.macroGrams.carbs;
-  const draftFatTargetGrams = draftDietPlanEvaluation.macroGrams.fat;
   const dayCaloriesConsumed = sumDayCalories(dietDay);
   const dayProteinConsumed = sumDayMacroGrams(dietDay, "protein_g");
   const dayCarbsConsumed = sumDayMacroGrams(dietDay, "carbs_g");
