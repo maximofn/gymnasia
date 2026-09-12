@@ -132,7 +132,6 @@ import {
 import {
   EXERCISE_CATALOG_SOURCE,
   exerciseCatalogImageUri,
-  foodCatalogImageUri,
   normalizePersonalFood,
 } from "./catalogs/sources";
 import type { ExerciseCatalogBrowserMode } from "./catalogs/ExerciseCatalogBrowser";
@@ -144,9 +143,6 @@ import {
   type ExerciseCatalogState,
   type ExerciseCatalogSummary,
 } from "./catalogs/exerciseCatalogRuntime";
-import {
-  matchFoodCatalog,
-} from "./catalogs/matching";
 import {
   linkLegacyExercisesFromFreshCatalog,
   normalizeCatalogItemRef,
@@ -431,6 +427,7 @@ import {
   type DietSettings,
 } from "./diet/model";
 import { buildDietDailyPresentationModel } from "./diet/dailyPresentationModel";
+import { dietItemFromCatalog, findDietFoodInCatalog } from "./diet/catalogModel";
 import { buildDietPlanningModel } from "./diet/planningModel";
 import {
   normalizeMeasurements as normalizeMeasurementCollection,
@@ -1046,38 +1043,6 @@ const EMPTY_CUSTOM_EXERCISE_DRAFT: CustomExerciseDraft = {
 
 type ExerciseRepoEntry = ExerciseCatalogEntry;
 type FoodRepoEntry = FoodCatalogEntry;
-
-function foodRepoImageUri(entry: FoodRepoEntry | null | undefined): string | null {
-  return foodCatalogImageUri(entry);
-}
-
-function findFoodInRepo(
-  name: string,
-  repo: FoodRepoEntry[],
-  personal: FoodRepoEntry[],
-): ReturnType<typeof matchFoodCatalog<FoodRepoEntry>> {
-  return matchFoodCatalog([...repo, ...personal], name);
-}
-
-function dietItemFromCatalog(
-  entry: FoodRepoEntry,
-  grams: number,
-  id: string,
-  linkedBy: Extract<CatalogLink, { status: "linked" }>["linkedBy"],
-): DietItem {
-  const ratio = grams / 100;
-  return {
-    id,
-    title: entry.name,
-    grams,
-    calories_kcal: Math.round(entry.calories_per_100g * ratio * 10) / 10,
-    protein_g: Math.round(entry.protein_per_100g * ratio * 10) / 10,
-    carbs_g: Math.round(entry.carbs_per_100g * ratio * 10) / 10,
-    fat_g: Math.round(entry.fat_per_100g * ratio * 10) / 10,
-    image_uri: foodRepoImageUri(entry),
-    catalog_link: linkedCatalog(catalogRef(entry.sourceId, entry.id), linkedBy),
-  };
-}
 
 // Las incidencias se crean a través del backend de recepción (GYM-54), que es
 // quien custodia la credencial de GitHub. Un cliente estático nunca puede
@@ -7051,7 +7016,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       fat_g: fat,
     } = formResult.value;
 
-    const repoMatch = findFoodInRepo(title, foodsRepo, personalFoods);
+    const repoMatch = findDietFoodInCatalog(title, foodsRepo, personalFoods);
     const manualItem: DietItem = {
       id: uid("food"),
       title,
@@ -8245,7 +8210,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       const cat = dietMealEditorCategory;
       const aiName = parsed.dish_name || "Alimento estimado IA";
       const aiGrams = parsed.grams ?? 0;
-      const repoMatch = findFoodInRepo(aiName, foodsRepo, personalFoods);
+      const repoMatch = findDietFoodInCatalog(aiName, foodsRepo, personalFoods);
       const effectiveFoodType = foodEstimatorUsedBarcodeRef.current
         ? "producto_comercial"
         : parsed.food_type;
