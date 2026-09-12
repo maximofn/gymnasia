@@ -5,7 +5,12 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 ## Estructura
 
 - `apps/mobile`: App Expo React Native y web (unica aplicacion)
+- `apps/mobile/controllers`: Estado y acciones memorizadas por flujo; adaptan los dominios a las pantallas
+- `apps/mobile/screens`: Pantallas y superposiciones React Native sin acceso directo a servicios Expo
+- `apps/mobile/platform`: Puertos tipados e implementaciones Expo de almacenamiento, red, multimedia y APIs nativas
+- `apps/mobile/persistence`: Modelo del almacén local, runtime React y recuperación antes de sobrescritura
 - `apps/mobile/shell`: Registro tipado de destinos, superficies y política de Atrás del shell
+- `scripts/mobile-boundaries`: Analizador TypeScript de capas, entradas públicas y ciclos de la app móvil
 - `apps/feedback-worker`: Worker de Cloudflare que recibe propuestas de mejora, alimentos, ejercicios y denuncias de respuestas de IA desde la app y crea issues en un repositorio privado. Opcional: si esta caido, la app avisa y sigue funcionando
 - `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa). Ver su `README.md`
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
@@ -91,6 +96,7 @@ npm run check:policy-trust  # verifica la raíz pública integrada en la app
 npm run test:agent:e2e  # app web + Playwright + proveedores falsos
 npm run test:shell:e2e  # navegación y capas del shell a 390 px y 960 px
 npm run test:measurements:performance:e2e # historial máximo, recálculos y actualizaciones
+npm run check:mobile-boundaries # capas, entradas públicas, imports de plataforma y ciclos
 npm run test:dev-store  # saneado, esquema, atomicidad y guarda de Git
 npm run test:dev-store:e2e # middleware real de Metro sobre localhost
 ```
@@ -173,6 +179,7 @@ El formato y sus invariantes están documentados en
 - Política y revisión sanitaria del agente: `docs/architecture/health-safety-policy.md`
 - Fotos de progreso y formato de backup: `docs/architecture/measurement-photo-backups.md`
 - Contrato entre Expo, Android generado y artefacto final: `docs/architecture/android-native-config.md`
+- Límites y mapa de módulos de la app móvil: `docs/architecture/mobile-module-boundaries.md`
 - Ficha, declaraciones y capturas para Google Play: `docs/store/google-play/`
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`

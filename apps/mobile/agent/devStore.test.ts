@@ -10,6 +10,10 @@ import {
 } from "./devStore";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const localStoreModelSource = readFileSync(
+  new URL("../persistence/localStoreModel.ts", import.meta.url),
+  "utf8",
+);
 
 describe("saneado del espejo de desarrollo", () => {
   it("elimina secretos anidados sin mutar el estado original", () => {
@@ -74,8 +78,10 @@ describe("contrato del espejo en App.tsx", () => {
 
   it("mantiene las claves fuera del agregado en todas las plataformas", () => {
     expect(appSource).not.toContain("if (!secureStoreAvailable) return store;");
-    expect(appSource).toContain("function serializeStoreForAsyncStorage(store: LocalStore)");
-    expect(appSource).toContain("return stripProviderApiKeys(store);");
+    expect(localStoreModelSource).toContain(
+      "function serializeStoreForAsyncStorage(store: LocalStore)",
+    );
+    expect(localStoreModelSource).toContain("return stripProviderApiKeys(store);");
     expect(appSource).toContain('"gymnasia.mobile.provider_configuration.v1"');
   });
 });

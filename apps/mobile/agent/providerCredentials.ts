@@ -9,6 +9,14 @@ export type SecureCredentialStore = {
   deleteItemAsync(key: string): Promise<void>;
 };
 
+export function providerCredential(
+  configuredValue: string | null | undefined,
+  fakeMode: boolean,
+): string {
+  const value = (configuredValue ?? "").trim();
+  return value || (fakeMode ? "development-fixture" : "");
+}
+
 export function maskApiKey(value: string): string {
   const trimmed = value.trim();
   if (!trimmed) return "Sin API key";

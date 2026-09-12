@@ -14,7 +14,10 @@ function sourceBetween(startMarker: string, endMarker: string): string {
 
 describe("contrato de integración del guardrail sanitario", () => {
   it("clasifica antes del proveedor en las tres superficies", () => {
-    const main = sourceBetween("async function sendMessage()", "function resetDietMealEditorState");
+    const main = sourceBetween(
+      "async function sendMessage()",
+      "function resolveFoodEstimatorProviderFromState",
+    );
     const estimator = sourceBetween("async function sendFoodEstimatorMessage", "async function requestStructuredNutritionJSON");
     const mini = sourceBetween("async function sendMcMessage()", "const lastAssistantMsg");
     for (const source of [main, estimator, mini]) {
@@ -30,7 +33,10 @@ describe("contrato de integración del guardrail sanitario", () => {
   });
 
   it("protege streaming, tools y errores técnicos por rutas distintas", () => {
-    const provider = sourceBetween("async function callProviderChatAPIWithTools", "const foodEstimatorTools");
+    const provider = sourceBetween(
+      "async function callProviderChatAPIWithTools",
+      "async function callFoodEstimatorAPI",
+    );
     expect(provider).toContain("healthSafetyToolAllowed");
     expect(provider).toContain("agentToolEffect");
     expect(provider).toContain("tool_blocked_by_health_safety");

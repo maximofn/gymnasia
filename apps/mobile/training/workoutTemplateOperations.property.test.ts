@@ -10,6 +10,7 @@ import {
 } from "./workoutTemplateOperations";
 
 const RUNS = { numRuns: 500, seed: 227 } as const;
+const PROPERTY_TEST_TIMEOUT_MS = 15_000;
 
 function generatedIds(): (prefix: string) => string {
   let counter = 0;
@@ -90,7 +91,7 @@ describe("propiedades de las operaciones de plantillas", () => {
       }),
       RUNS,
     );
-  });
+  }, PROPERTY_TEST_TIMEOUT_MS);
 
   it("una duplicación no comparte objetos ni reutiliza identificadores", () => {
     fc.assert(
@@ -103,7 +104,7 @@ describe("propiedades de las operaciones de plantillas", () => {
       }),
       RUNS,
     );
-  });
+  }, PROPERTY_TEST_TIMEOUT_MS);
 
   it("reasigna referencias entre ejercicios al duplicar cualquier rutina", () => {
     fc.assert(

@@ -3,6 +3,35 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const providerChatClientSource = readFileSync(
+  new URL("./providerChatClient.ts", import.meta.url),
+  "utf8",
+);
+const providerToolClientSource = readFileSync(
+  new URL("./providerToolClient.ts", import.meta.url),
+  "utf8",
+);
+const foodEstimatorClientSource = readFileSync(
+  new URL("./foodEstimatorClient.ts", import.meta.url),
+  "utf8",
+);
+const chatScreenSource = readFileSync(
+  new URL("../screens/ChatScreen.tsx", import.meta.url),
+  "utf8",
+);
+const dietOverlaysSource = readFileSync(
+  new URL("../screens/DietOverlays.tsx", import.meta.url),
+  "utf8",
+);
+const sharedChatPanelSource = readFileSync(
+  new URL("../screens/SharedChatPanel.tsx", import.meta.url),
+  "utf8",
+);
+const personalFoodAssistantSource = readFileSync(
+  new URL("../screens/PersonalFoodAssistantScreen.tsx", import.meta.url),
+  "utf8",
+);
+const conversationalUiSource = `${appSource}\n${chatScreenSource}\n${dietOverlaysSource}\n${sharedChatPanelSource}\n${personalFoodAssistantSource}`;
 const disclosureSource = readFileSync(
   new URL("../AiIdentityDisclosure.tsx", import.meta.url),
   "utf8",
@@ -14,17 +43,23 @@ const promptSource = readFileSync(
 
 describe("contrato estático de superficies conversacionales", () => {
   it("mantiene la divulgación desplazable y la leyenda persistente en las tres superficies", () => {
-    expect(appSource).toContain('<AiIdentityDisclosure surface="main-chat" />');
-    expect(appSource).toContain('<AiIdentityPersistentDisclosure surface="main-chat" />');
-    expect(appSource).toContain('disclosureSurface="food-estimator"');
-    expect(appSource).toContain('<AiIdentityDisclosure surface="personal-food-assistant" />');
-    expect(appSource).toContain('<AiIdentityPersistentDisclosure surface="personal-food-assistant" />');
+    expect(conversationalUiSource).toContain('<AiIdentityDisclosure surface="main-chat" />');
+    expect(conversationalUiSource).toContain('<AiIdentityPersistentDisclosure surface="main-chat" />');
+    expect(conversationalUiSource).toContain('disclosureSurface="food-estimator"');
+    expect(conversationalUiSource).toContain('<AiIdentityDisclosure surface="personal-food-assistant" />');
+    expect(conversationalUiSource).toContain('<AiIdentityPersistentDisclosure surface="personal-food-assistant" />');
   });
 
   it("protege las tres fronteras de system prompt", () => {
-    expect(appSource.match(/composeAiSystemPrompt\(/g)?.length).toBeGreaterThanOrEqual(3);
-    expect(appSource).not.toContain("system: FOOD_ESTIMATOR_SYSTEM_PROMPT");
-    expect(appSource).not.toContain("systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }]");
+    const promptBoundarySource = [
+      appSource,
+      providerChatClientSource,
+      providerToolClientSource,
+      foodEstimatorClientSource,
+    ].join("\n");
+    expect(promptBoundarySource.match(/composeAiSystemPrompt\(/g)?.length).toBeGreaterThanOrEqual(3);
+    expect(promptBoundarySource).not.toContain("system: FOOD_ESTIMATOR_SYSTEM_PROMPT");
+    expect(promptBoundarySource).not.toContain("systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }]");
   });
 
   it("mantiene la etiqueta accesible y su anuncio nativo", () => {
@@ -32,12 +67,12 @@ describe("contrato estático de superficies conversacionales", () => {
     expect(disclosureSource).toContain('accessibilityLiveRegion="polite"');
     expect(disclosureSource).toContain("AccessibilityInfo.announceForAccessibility");
     expect(disclosureSource).toContain('textAlign: "right"');
-    expect(appSource).toContain('accessibilityLabel="Pregunta a Gymnasia Coach"');
-    expect(appSource).toContain("Pregunta a Gymnasia Food Estimator");
+    expect(conversationalUiSource).toContain('accessibilityLabel="Pregunta a Gymnasia Coach"');
+    expect(conversationalUiSource).toContain("Pregunta a Gymnasia Food Estimator");
   });
 
   it("mantiene ambos nombres sin presentar a los agentes como profesionales reales", () => {
-    const conversationalSources = `${appSource}\n${promptSource}`;
+    const conversationalSources = `${conversationalUiSource}\n${promptSource}`;
     for (const prohibited of [
       "Eres Gymnasia Coach, un asistente de gimnasio",
       "Pregunta al coach",
@@ -48,6 +83,7 @@ describe("contrato estático de superficies conversacionales", () => {
       expect(conversationalSources).not.toContain(prohibited);
     }
     expect(promptSource).toContain("Eres Gymnasia Coach, el sistema de inteligencia artificial");
-    expect(appSource).toContain("Eres Gymnasia Food Estimator, el sistema de inteligencia artificial");
+    expect(foodEstimatorClientSource)
+      .toContain("Eres Gymnasia Food Estimator, el sistema de inteligencia artificial");
   });
 });

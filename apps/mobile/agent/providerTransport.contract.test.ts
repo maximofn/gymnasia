@@ -2,24 +2,41 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
-
-function functionSource(name: string, nextName: string): string {
-  const start = appSource.indexOf(`async function ${name}`);
-  const end = appSource.indexOf(`async function ${nextName}`, start + 1);
-  expect(start).toBeGreaterThanOrEqual(0);
-  expect(end).toBeGreaterThan(start);
-  return appSource.slice(start, end);
-}
+const providerChatClientSource = readFileSync(
+  new URL("./providerChatClient.ts", import.meta.url),
+  "utf8",
+);
+const providerToolClientSource = readFileSync(
+  new URL("./providerToolClient.ts", import.meta.url),
+  "utf8",
+);
+const foodEstimatorClientSource = readFileSync(
+  new URL("./foodEstimatorClient.ts", import.meta.url),
+  "utf8",
+);
 
 describe("provider transport contract", () => {
   it("short-circuits every AI conversation surface in fake mode", () => {
-    const chat = functionSource("callProviderChatAPI", "callProviderChatAPIWithTools");
-    const toolChat = functionSource("callProviderChatAPIWithTools", "callFoodEstimatorAPI");
-    const estimatorStart = appSource.indexOf("async function callFoodEstimatorAPI");
-    const estimator = appSource.slice(estimatorStart, appSource.indexOf("function ", estimatorStart + 30));
+    const chatStart = providerChatClientSource.indexOf("export async function requestProviderText");
+    expect(chatStart).toBeGreaterThanOrEqual(0);
+    const chat = providerChatClientSource.slice(chatStart);
+    const toolChatStart = providerToolClientSource.indexOf(
+      "export async function requestProviderToolChat",
+    );
+    expect(toolChatStart).toBeGreaterThanOrEqual(0);
+    const toolChat = providerToolClientSource.slice(toolChatStart);
+    const estimatorStart = foodEstimatorClientSource.indexOf(
+      "export async function requestFoodEstimate",
+    );
+    expect(estimatorStart).toBeGreaterThanOrEqual(0);
+    const estimator = foodEstimatorClientSource.slice(estimatorStart);
 
-    for (const source of [chat, toolChat, estimator]) {
-      const guard = source.indexOf("if (IS_FAKE_PROVIDER_MODE)");
+    for (const [source, guardNeedle] of [
+      [chat, "if (runtime.fakeMode)"],
+      [toolChat, "if (runtime.fakeMode)"],
+      [estimator, "if (runtime.fakeMode)"],
+    ] as const) {
+      const guard = source.indexOf(guardNeedle);
       expect(guard).toBeGreaterThanOrEqual(0);
       const firstProviderNetwork = source.search(/api\.openai\.com|api\.anthropic\.com|generativelanguage\.googleapis\.com|XMLHttpRequest/);
       expect(firstProviderNetwork === -1 || guard < firstProviderNetwork).toBe(true);

@@ -7,6 +7,39 @@ import {
 } from "./shellRegistry";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const trainingControllerSource = readFileSync(
+  new URL("../controllers/trainingController.ts", import.meta.url),
+  "utf8",
+);
+const catalogControllerSource = readFileSync(
+  new URL("../controllers/catalogController.ts", import.meta.url),
+  "utf8",
+);
+const appShellSource = readFileSync(new URL("../screens/AppShell.tsx", import.meta.url), "utf8");
+const chatScreenSource = readFileSync(new URL("../screens/ChatScreen.tsx", import.meta.url), "utf8");
+const catalogOverlaysSource = readFileSync(
+  new URL("../screens/CatalogOverlays.tsx", import.meta.url),
+  "utf8",
+);
+const measurementsScreenSource = readFileSync(
+  new URL("../screens/MeasurementsScreen.tsx", import.meta.url),
+  "utf8",
+);
+const dietScreenSource = readFileSync(new URL("../screens/DietScreen.tsx", import.meta.url), "utf8");
+const dietOverlaysSource = readFileSync(new URL("../screens/DietOverlays.tsx", import.meta.url), "utf8");
+const settingsScreenSource = readFileSync(
+  new URL("../screens/SettingsScreen.tsx", import.meta.url),
+  "utf8",
+);
+const trainingScreenSource = readFileSync(
+  new URL("../screens/TrainingScreen.tsx", import.meta.url),
+  "utf8",
+);
+const trainingOverlaysSource = readFileSync(
+  new URL("../screens/TrainingOverlays.tsx", import.meta.url),
+  "utf8",
+);
+const shellUiSource = `${appSource}\n${appShellSource}\n${chatScreenSource}\n${catalogOverlaysSource}\n${measurementsScreenSource}\n${dietScreenSource}\n${dietOverlaysSource}\n${settingsScreenSource}\n${trainingScreenSource}\n${trainingOverlaysSource}`;
 const reportModalSource = readFileSync(new URL("../AiResponseReportModal.tsx", import.meta.url), "utf8");
 const recoverySource = readFileSync(new URL("../LocalStoreRecoveryScreen.tsx", import.meta.url), "utf8");
 
@@ -20,7 +53,7 @@ describe("contrato estático del shell", () => {
   });
 
   it("deriva las dos barras de TAB_DESTINATIONS", () => {
-    expect(appSource.match(/TAB_DESTINATIONS\.map/g)).toHaveLength(2);
+    expect(shellUiSource.match(/TAB_DESTINATIONS\.map/g)).toHaveLength(2);
     expect(appSource).not.toContain('["home", "training", "diet", "measures", "chat", "settings"]');
     expect(appSource).toContain("type TabKey,");
     expect(appSource).not.toContain('type TabKey = "home"');
@@ -32,11 +65,11 @@ describe("contrato estático del shell", () => {
     for (const surface of SHELL_BACK_LAYERS) {
       const references = appSource.match(new RegExp(`"${surface.id}"`, "g"))?.length ?? 0;
       expect(references, `${surface.id} debe declarar estado y handler`).toBeGreaterThanOrEqual(2);
-      const registryTestIdIsAttached = appSource.includes(`shellSurfaceTestId("${surface.id}")`)
-        || appSource.includes(`testID="${surface.testId}"`)
+      const registryTestIdIsAttached = shellUiSource.includes(`shellSurfaceTestId("${surface.id}")`)
+        || shellUiSource.includes(`testID="${surface.testId}"`)
         || (
-          appSource.includes(`surfaceId: "${surface.id}"`)
-          && appSource.includes("shellSurfaceTestId(dropdown.surfaceId)")
+          shellUiSource.includes(`surfaceId: "${surface.id}"`)
+          && shellUiSource.includes("shellSurfaceTestId(dropdown.surfaceId)")
         );
       expect(registryTestIdIsAttached, `${surface.id} debe aplicar su test ID`).toBe(true);
     }
@@ -44,10 +77,11 @@ describe("contrato estático del shell", () => {
 
   it("usa cierres canónicos para estados acoplados y bloquea el borrado en curso", () => {
     expect(appSource).toMatch(
-      /function closeExercisePicker\(\) \{\s*setExercisePickerOpen\(false\);\s*setSupersetPickerTarget\(null\);\s*\}/,
+      /function closeExercisePicker\(\) \{\s*exerciseCatalogRuntime\.actions\.closePicker\(\);\s*setSupersetPickerTarget\(null\);\s*\}/,
     );
-    expect(appSource.match(/setExercisePickerOpen\(false\)/g)).toHaveLength(1);
-    expect(appSource).toContain('"exercise-picker": () => { closeExercisePicker(); return true; }');
+    expect(catalogControllerSource.match(/setPickerOpen\(false\)/g)).toHaveLength(1);
+    expect(trainingControllerSource).toContain("inputRef.current.closePicker();");
+    expect(appSource).toContain('"exercise-picker": trainingCatalogController.back.handlers["exercise-picker"]');
     expect(appSource).toContain(
       '"data-deletion": () => { if (!dataDeletionBusyRef.current) closeDataDeletion(); return true; }',
     );

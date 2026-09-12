@@ -199,13 +199,7 @@ export const FAKE_PROVIDER_MODELS = {
   google: [{ id: "fixture-google", display_name: "Fixture Google" }],
 } as const;
 
-export function providerCredential(
-  configuredValue: string | null | undefined,
-  fakeMode: boolean,
-): string {
-  const value = (configuredValue ?? "").trim();
-  return value || (fakeMode ? "development-fixture" : "");
-}
+export { providerCredential } from "./providerCredentials";
 
 export async function fetchProviderConfiguration(
   input: string,

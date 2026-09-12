@@ -10,6 +10,7 @@ on:
       - "policy/health-safety/**"
       - "scripts/health-safety/**"
       - "scripts/dev-store/**"
+      - "scripts/mobile-boundaries/**"
       - "docs/ai-transparency.md"
       - "docs/architecture/health-safety-policy.md"
       - "package.json"
@@ -28,6 +29,7 @@ on:
       - "policy/health-safety/**"
       - "scripts/health-safety/**"
       - "scripts/dev-store/**"
+      - "scripts/mobile-boundaries/**"
       - "docs/ai-transparency.md"
       - "docs/architecture/health-safety-policy.md"
       - "package.json"
@@ -75,6 +77,9 @@ jobs:
 
       - name: Run deterministic agent suite
         run: npm test
+
+      - name: Verify mobile architecture boundaries
+        run: npm run check:mobile-boundaries
 
       - name: Run protected dev-store Metro E2E
         run: npm run test:dev-store:e2e

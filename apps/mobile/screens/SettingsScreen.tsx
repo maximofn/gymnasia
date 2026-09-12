@@ -1,0 +1,3336 @@
+import { Feather, Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { memo, useCallback, useRef, useState, type ReactNode } from "react";
+import { ActivityIndicator, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+
+import {
+  type DataSettingsActions,
+  type DataSettingsModel,
+  type DataDeletionScope,
+  type DietSettingsActions,
+  type DietSettingsModel,
+  type FoodCatalogSettingsActions,
+  type FoodCatalogSettingsModel,
+  type MemorySettingsActions,
+  type MemorySettingsModel,
+  type MeasurementsSettingsActions,
+  type MeasurementsSettingsModel,
+  SETTINGS_TAB_OPTIONS,
+  type NotificationSettingsActions,
+  type NotificationSettingsModel,
+  type PersonalFoodsSettingsActions,
+  type PersonalFoodsSettingsModel,
+  type ProviderSettingsActions,
+  type ProviderSettingsModel,
+  type SettingsTabKey,
+  type SettingsTabsActions,
+  type SettingsTabsModel,
+  type TrainingSettingsActions,
+  type TrainingSettingsModel,
+  type TraceSettingsActions,
+  type TraceSettingsModel,
+} from "../controllers/settingsController";
+import {
+  DEFAULT_MODELS,
+  type Provider,
+} from "../agent/providerConfiguration";
+import { providerCredential } from "../agent/providerCredentials";
+import {
+  OPENAI_REASONING_EFFORT_LABELS,
+  PROVIDER_STATUS_COPY,
+  PROVIDER_UI_META,
+  providerConnectionBadge,
+  providerDetailColorBySeverity,
+} from "../agent/providerPresentation";
+import { IS_FAKE_PROVIDER_MODE } from "../runtimeEnvironment";
+import { CatalogStatusNotice } from "../catalogs/CatalogStatusNotice";
+import { foodCatalogImageUri } from "../catalogs/sources";
+import type { UserPreferences } from "../storage/userPreferences";
+import { shellSurfaceTestId } from "../shell/shellRegistry";
+import {
+  formatMeasurementHistoryDate,
+  formatMeasurementNumber,
+} from "../measurements/presentationModel";
+import { mobileTheme } from "../theme";
+
+const CHART_PERIOD_LABELS: Record<UserPreferences["chartPeriod"], string> = {
+  "1m": "1 mes",
+  "3m": "3 meses",
+  "6m": "6 meses",
+  all: "Todo",
+};
+
+export const SettingsTabs = memo(function SettingsTabs({
+  model,
+  actions,
+}: {
+  model: Readonly<SettingsTabsModel>;
+  actions: Readonly<SettingsTabsActions>;
+}) {
+  const scrollRef = useRef<ScrollView>(null);
+  const scrollXRef = useRef(0);
+  const containerWidthRef = useRef(0);
+  const contentWidthRef = useRef(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const updateScrollArrows = useCallback(() => {
+    const maxScrollX = Math.max(0, contentWidthRef.current - containerWidthRef.current);
+    setCanScrollLeft(scrollXRef.current > 4);
+    setCanScrollRight(scrollXRef.current < maxScrollX - 4);
+  }, []);
+
+  return (
+    <View style={{ position: "relative" }}>
+      <ScrollView
+        ref={scrollRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ flexGrow: 0 }}
+        contentContainerStyle={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8,
+          paddingHorizontal: mobileTheme.spacing[4],
+          paddingBottom: 12,
+        }}
+        scrollEventThrottle={16}
+        onLayout={(event) => {
+          containerWidthRef.current = event.nativeEvent.layout.width;
+          updateScrollArrows();
+        }}
+        onContentSizeChange={(width) => {
+          contentWidthRef.current = width;
+          updateScrollArrows();
+        }}
+        onScroll={(event) => {
+          scrollXRef.current = event.nativeEvent.contentOffset.x;
+          updateScrollArrows();
+        }}
+      >
+        {SETTINGS_TAB_OPTIONS.map((option) => {
+          const isActive = model.activeTab === option.key;
+          return (
+            <Pressable
+              key={option.key}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: isActive }}
+              accessibilityLabel={option.label}
+              testID={`settings-tab-${option.key}`}
+              onPress={() => actions.selectTab(option.key)}
+              style={{
+                borderWidth: 1,
+                borderColor: isActive ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle,
+                borderRadius: mobileTheme.radius.pill,
+                paddingHorizontal: 12,
+                minHeight: 34,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: isActive ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface,
+              }}
+            >
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                {option.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+      {canScrollLeft ? (
+        <Pressable
+          onPress={() => {
+            const targetX = Math.max(0, scrollXRef.current - 160);
+            scrollRef.current?.scrollTo({ x: targetX, animated: false });
+          }}
+          style={{ position: "absolute", left: 0, top: 0, bottom: 12, width: 40, alignItems: "flex-start", justifyContent: "center", paddingLeft: 4, backgroundColor: "rgba(7,9,13,0.65)" }}
+        >
+          <Ionicons name="chevron-back" size={20} color="rgba(244,247,251,0.85)" />
+        </Pressable>
+      ) : null}
+      {canScrollRight ? (
+        <Pressable
+          onPress={() => {
+            scrollRef.current?.scrollTo({ x: scrollXRef.current + 160, animated: false });
+          }}
+          style={{ position: "absolute", right: 0, top: 0, bottom: 12, width: 40, alignItems: "flex-end", justifyContent: "center", paddingRight: 4, backgroundColor: "rgba(7,9,13,0.65)" }}
+        >
+          <Ionicons name="chevron-forward" size={20} color="rgba(244,247,251,0.85)" />
+        </Pressable>
+      ) : null}
+    </View>
+  );
+});
+
+export const PersonalFoodsSettingsPanel = memo(function PersonalFoodsSettingsPanel({
+  model,
+  actions,
+  assistant,
+}: {
+  model: Readonly<PersonalFoodsSettingsModel>;
+  actions: Readonly<PersonalFoodsSettingsActions>;
+  assistant: ReactNode;
+}) {
+  return (
+    <View style={{ gap: 12 }}>
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        <Pressable
+          onPress={actions.openForm}
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            borderWidth: 1,
+            borderColor: "rgba(203,255,26,0.45)",
+            borderRadius: mobileTheme.radius.md,
+            paddingVertical: 10,
+            backgroundColor: "rgba(203,255,26,0.08)",
+          }}
+        >
+          <Feather name="edit-3" size={14} color={mobileTheme.color.brandPrimary} />
+          <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>
+            Añadir con formulario
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Añadir un alimento personal con Gymnasia Food Estimator"
+          testID="open-personal-food-assistant"
+          onPress={actions.openAssistant}
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            borderWidth: 1,
+            borderColor: "rgba(78,205,196,0.45)",
+            borderRadius: mobileTheme.radius.md,
+            paddingVertical: 10,
+            backgroundColor: "rgba(78,205,196,0.08)",
+          }}
+        >
+          <Feather name="cpu" size={14} color="#4ECDC4" />
+          <Text style={{ color: "#4ECDC4", fontSize: 13, fontWeight: "700" }}>
+            Añadir con IA
+          </Text>
+        </Pressable>
+      </View>
+
+      {assistant}
+
+      {model.formVisible ? (
+        <View
+          testID={shellSurfaceTestId("personal-food-form")}
+          style={{
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+            backgroundColor: mobileTheme.color.bgSurface,
+            borderRadius: mobileTheme.radius.lg,
+            padding: 12,
+            gap: 10,
+          }}
+        >
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>
+              {model.editingFoodId ? "Editar alimento" : "Nuevo alimento"}
+            </Text>
+            <Pressable onPress={actions.closeForm} style={{ padding: 4 }}>
+              <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
+            </Pressable>
+          </View>
+          {[
+            { key: "name", label: "Nombre", placeholder: "Ej: Batido de proteínas", keyboard: "default" as const },
+            { key: "category", label: "Categoría", placeholder: "Ej: proteína, receta, suplemento", keyboard: "default" as const },
+            { key: "calories_per_100g", label: "Calorías (por unidad base)", placeholder: "kcal", keyboard: "decimal-pad" as const },
+            { key: "protein_per_100g", label: "Proteína (g)", placeholder: "g", keyboard: "decimal-pad" as const },
+            { key: "carbs_per_100g", label: "Carbohidratos (g)", placeholder: "g", keyboard: "decimal-pad" as const },
+            { key: "fat_per_100g", label: "Grasa (g)", placeholder: "g", keyboard: "decimal-pad" as const },
+            { key: "fiber_per_100g", label: "Fibra (g)", placeholder: "g", keyboard: "decimal-pad" as const },
+            { key: "serving_size_g", label: "Tamaño de ración (g/ml)", placeholder: "Ej: 250", keyboard: "decimal-pad" as const },
+            { key: "serving_description", label: "Descripción de ración", placeholder: "Ej: 1 batido (250ml)", keyboard: "default" as const },
+          ].map((field) => (
+            <View key={field.key} style={{ gap: 2 }}>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>
+                {field.label}
+              </Text>
+              <TextInput
+                value={String(model.draft[field.key as keyof typeof model.draft] ?? "")}
+                onChangeText={(text) => actions.updateDraft(field.key as keyof typeof model.draft, text)}
+                placeholder={field.placeholder}
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType={field.keyboard}
+                style={{
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  borderRadius: mobileTheme.radius.md,
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
+                  color: mobileTheme.color.textPrimary,
+                  fontSize: 14,
+                  backgroundColor: mobileTheme.color.cardBg,
+                }}
+              />
+            </View>
+          ))}
+          <Pressable
+            onPress={actions.saveDraft}
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              paddingVertical: 10,
+              borderRadius: mobileTheme.radius.md,
+              backgroundColor: mobileTheme.color.brandPrimary,
+              marginTop: 4,
+            }}
+          >
+            <Text style={{ color: "#000", fontSize: 14, fontWeight: "700" }}>
+              {model.editingFoodId ? "Guardar cambios" : "Añadir"}
+            </Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          borderWidth: 1,
+          borderColor: mobileTheme.color.borderSubtle,
+          borderRadius: mobileTheme.radius.md,
+          backgroundColor: mobileTheme.color.bgSurface,
+          paddingHorizontal: 10,
+          height: 40,
+        }}
+      >
+        <Feather name="search" size={16} color={mobileTheme.color.textSecondary} />
+        <TextInput
+          value={model.search}
+          onChangeText={actions.setSearch}
+          placeholder="Buscar alimento personal..."
+          placeholderTextColor={mobileTheme.color.textSecondary}
+          style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 14, marginLeft: 8 }}
+        />
+        {model.search ? (
+          <Pressable onPress={() => actions.setSearch("")} style={{ padding: 4 }}>
+            <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
+          </Pressable>
+        ) : null}
+      </View>
+
+      <View
+        style={{
+          borderWidth: 1,
+          borderColor: mobileTheme.color.borderSubtle,
+          backgroundColor: mobileTheme.color.bgSurface,
+          borderRadius: mobileTheme.radius.lg,
+          padding: 12,
+          gap: 10,
+        }}
+      >
+        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+          Mis alimentos ({model.foods.length})
+        </Text>
+        {model.filteredFoods.length === 0 ? (
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+            {model.foods.length === 0 ? "No has añadido alimentos personales." : "No se encontraron alimentos."}
+          </Text>
+        ) : model.filteredFoods.map((food) => (
+          <Pressable
+            key={food.id}
+            onPress={() => actions.selectFood(food)}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 10,
+              paddingVertical: 6,
+              borderBottomWidth: 1,
+              borderBottomColor: mobileTheme.color.borderSubtle,
+            }}
+          >
+            <View
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                backgroundColor: "rgba(78,205,196,0.1)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Feather name="user" size={16} color="#4ECDC4" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
+                {food.name}
+              </Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                {food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g
+              </Text>
+            </View>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
+              {food.category}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
+      {model.selectedFood ? (
+        <View
+          testID={shellSurfaceTestId("settings-personal-food-detail")}
+          style={{
+            backgroundColor: mobileTheme.color.cardBg,
+            borderRadius: 12,
+            padding: 16,
+            gap: 12,
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+          }}
+        >
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>
+              {model.selectedFood.name}
+            </Text>
+            <Pressable onPress={actions.closeDetail} style={{ padding: 4 }}>
+              <Feather name="x" size={20} color={mobileTheme.color.textSecondary} />
+            </Pressable>
+          </View>
+
+          <View style={{ flexDirection: "row", gap: 6 }}>
+            <View style={{ backgroundColor: mobileTheme.color.accent + "22", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+              <Text style={{ color: mobileTheme.color.accent, fontSize: 11, fontWeight: "600" }}>
+                {model.selectedFood.category}
+              </Text>
+            </View>
+          </View>
+
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+            Por unidad base
+          </Text>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            {[
+              { label: "Calorías", value: `${model.selectedFood.calories_per_100g}`, unit: "kcal", color: "#FF6B6B" },
+              { label: "Proteína", value: `${model.selectedFood.protein_per_100g}`, unit: "g", color: "#4ECDC4" },
+              { label: "Carbos", value: `${model.selectedFood.carbs_per_100g}`, unit: "g", color: "#FFE66D" },
+              { label: "Grasa", value: `${model.selectedFood.fat_per_100g}`, unit: "g", color: "#FF8A5C" },
+            ].map((macro) => (
+              <View
+                key={macro.label}
+                style={{
+                  flex: 1,
+                  backgroundColor: macro.color + "15",
+                  borderRadius: 8,
+                  padding: 8,
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>{macro.value}</Text>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.unit}</Text>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.label}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{model.selectedFood.fiber_per_100g}g</Text>
+          </View>
+
+          {model.selectedFood.serving_description ? (
+            <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Ración típica</Text>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{model.selectedFood.serving_description}</Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                {Math.round(model.selectedFood.calories_per_100g * model.selectedFood.serving_size_g / 100)} kcal · P:{(model.selectedFood.protein_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g · C:{(model.selectedFood.carbs_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g · G:{(model.selectedFood.fat_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g
+              </Text>
+            </View>
+          ) : null}
+
+          <View style={{ flexDirection: "row", gap: 8, marginTop: 4 }}>
+            <Pressable
+              onPress={actions.editSelectedFood}
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                paddingVertical: 10,
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+              }}
+            >
+              <Feather name="edit-2" size={14} color={mobileTheme.color.textSecondary} />
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Editar</Text>
+            </Pressable>
+            <Pressable
+              onPress={actions.deleteSelectedFood}
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                paddingVertical: 10,
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: "#FF6B6B44",
+                backgroundColor: "#FF6B6B10",
+              }}
+            >
+              <Feather name="trash-2" size={14} color="#FF6B6B" />
+              <Text style={{ color: "#FF6B6B", fontSize: 13, fontWeight: "600" }}>Eliminar</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+    </View>
+  );
+});
+
+function formatPolicyCheckTime(value: string | null): string {
+  if (!value) return "Aún no comprobada";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Fecha no disponible";
+  return date.toLocaleString("es-ES", {
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    month: "short",
+  });
+}
+
+function formatPolicyVersion(value: string): string {
+  return value.startsWith("sha256:") ? `${value.slice(0, 19)}…` : value;
+}
+
+function PolicyStatusCard({
+  model,
+  actions,
+}: {
+  model: Readonly<TraceSettingsModel>;
+  actions: Readonly<TraceSettingsActions>;
+}) {
+  const { policyPresentation: presentation, policyStatus: status } = model;
+  const isHealthy = presentation?.tone === "healthy";
+  const accent = isHealthy ? mobileTheme.color.brandPrimary : "#F3B95F";
+  return (
+    <View
+      testID="policy-status-card"
+      accessibilityLiveRegion="polite"
+      style={{
+        borderWidth: 1,
+        borderColor: status ? `${accent}66` : mobileTheme.color.borderSubtle,
+        backgroundColor: status ? `${accent}0F` : mobileTheme.color.bgSurface,
+        borderRadius: mobileTheme.radius.lg,
+        padding: 16,
+        gap: 14,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+        <View
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: 17,
+            backgroundColor: status ? `${accent}1F` : mobileTheme.color.bgApp,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {status ? (
+            <Feather name={status.state === "active" ? "shield" : "clock"} size={17} color={accent} />
+          ) : (
+            <ActivityIndicator size="small" color={mobileTheme.color.textSecondary} />
+          )}
+        </View>
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={{ color: status ? accent : mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "800", letterSpacing: 0.7, textTransform: "uppercase" }}>
+            {presentation?.title ?? "Comprobando política"}
+          </Text>
+          <Text numberOfLines={1} style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "700" }}>
+            {status?.active.candidate ?? model.defaultPolicyCandidate}
+          </Text>
+        </View>
+      </View>
+
+      {status ? (
+        <View style={{ gap: 8 }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Versión</Text>
+            <Text numberOfLines={1} style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700", flex: 1, textAlign: "right" }}>
+              {formatPolicyVersion(status.active.version)}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Hash</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontFamily: model.monospaceFontFamily }}>{status.active.bundleSha256.slice(0, 12)}</Text>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Origen · canal</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600", textAlign: "right" }}>{presentation?.sourceLabel} · {status.channel}</Text>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Última comprobación</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, textAlign: "right" }}>{formatPolicyCheckTime(status.lastCheckedAt)}</Text>
+          </View>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Propagación local</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12 }}>
+              {status.propagationMs === null ? "Sin dato" : `${Math.round(status.propagationMs / 1000)} s`}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
+      {status?.pending ? (
+        <View testID="policy-pending-status" style={{ borderTopWidth: 1, borderTopColor: `${accent}4D`, paddingTop: 12, gap: 4 }}>
+          <Text style={{ color: accent, fontSize: 12, fontWeight: "800" }}>
+            {presentation?.pendingInstruction}
+          </Text>
+          <Text numberOfLines={1} style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+            {status.pending.candidate} · {status.pending.bundleSha256.slice(0, 12)}
+          </Text>
+        </View>
+      ) : null}
+      {status && status.degradation !== "none" ? (
+        <Text testID="policy-degraded-status" style={{ color: accent, fontSize: 12, lineHeight: 17 }}>
+          {presentation?.degradationMessage}
+        </Text>
+      ) : null}
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Comprobar actualización de política"
+        testID="policy-refresh-button"
+        disabled={model.policyBusy}
+        onPress={actions.refreshPolicy}
+        style={{
+          minHeight: 44,
+          borderRadius: mobileTheme.radius.md,
+          borderWidth: 1,
+          borderColor: mobileTheme.color.brandPrimary,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "row",
+          gap: 8,
+          opacity: model.policyBusy ? 0.6 : 1,
+        }}
+      >
+        {model.policyBusy ? (
+          <ActivityIndicator size="small" color={mobileTheme.color.brandPrimary} />
+        ) : (
+          <Feather name="refresh-cw" size={15} color={mobileTheme.color.brandPrimary} />
+        )}
+        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "800" }}>
+          {model.policyBusy ? "Comprobando…" : "Comprobar actualización"}
+        </Text>
+      </Pressable>
+      {model.policyResult ? (
+        <Text testID="policy-refresh-result" style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
+          {model.policyResult}
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+export const TraceSettingsPanel = memo(function TraceSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<TraceSettingsModel>;
+  actions: Readonly<TraceSettingsActions>;
+}) {
+  return (
+    <View style={{ gap: 12 }}>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+        Trazas de depuración
+      </Text>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+        Registro de notificaciones, descansos y selección de política del agente. Cada entrada lleva timestamp ISO. Las trazas del agente muestran solo metadatos técnicos allowlist; nunca el prompt ni datos personales.
+      </Text>
+
+      <PolicyStatusCard model={model} actions={actions} />
+
+      <View style={{ gap: 10 }}>
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <Pressable
+            onPress={actions.copy}
+            disabled={model.traces.length === 0}
+            style={{
+              flex: 1,
+              minHeight: 44,
+              borderRadius: mobileTheme.radius.md,
+              backgroundColor: mobileTheme.color.brandPrimary,
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: model.traces.length === 0 ? 0.5 : 1,
+            }}
+          >
+            <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 14 }}>
+              {model.copied ? "Copiado ✓" : "Copiar trazas"}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={actions.clear}
+            disabled={model.traces.length === 0}
+            style={{
+              flex: 1,
+              minHeight: 44,
+              borderRadius: mobileTheme.radius.md,
+              borderWidth: 1,
+              borderColor: mobileTheme.color.borderSubtle,
+              backgroundColor: mobileTheme.color.bgSurface,
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: model.traces.length === 0 ? 0.5 : 1,
+            }}
+          >
+            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 14 }}>
+              Borrar
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={actions.reload}
+            style={{
+              minHeight: 44,
+              paddingHorizontal: 14,
+              borderRadius: mobileTheme.radius.md,
+              borderWidth: 1,
+              borderColor: mobileTheme.color.borderSubtle,
+              backgroundColor: mobileTheme.color.bgSurface,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Feather name="refresh-cw" size={16} color={mobileTheme.color.textPrimary} />
+          </Pressable>
+        </View>
+
+        <View
+          style={{
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+            backgroundColor: "#06090D",
+            borderRadius: mobileTheme.radius.md,
+            padding: 10,
+            minHeight: 200,
+            maxHeight: 420,
+          }}
+        >
+          {model.loading ? (
+            <Text style={{ color: "#888", fontSize: 12 }}>Cargando...</Text>
+          ) : model.traces.length === 0 ? (
+            <Text style={{ color: "#888", fontSize: 12 }}>Sin trazas todavía.</Text>
+          ) : (
+            <ScrollView style={{ flex: 1 }} nestedScrollEnabled>
+              <Text style={{ color: "#c7ff1a", fontSize: 11, fontFamily: model.monospaceFontFamily, lineHeight: 15 }}>
+                {model.displayText}
+              </Text>
+            </ScrollView>
+          )}
+        </View>
+
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+          {model.traces.length} entrada(s)
+        </Text>
+      </View>
+
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
+        Las trazas se guardan en AsyncStorage y sobreviven a reinicios de la app.
+      </Text>
+    </View>
+  );
+});
+
+export const SettingsRuntimeFooter = memo(function SettingsRuntimeFooter({
+  appVersion,
+  configurationVersion,
+  environment,
+  policyCandidate,
+  policyChannel,
+  policySha256,
+  providerMode,
+}: {
+  appVersion: string;
+  configurationVersion: string | number;
+  environment: string;
+  policyCandidate: string;
+  policyChannel: string;
+  policySha256: string;
+  providerMode: string;
+}) {
+  return (
+    <View
+      style={{
+        marginTop: 8,
+        alignSelf: "center",
+        maxWidth: 520,
+        width: "100%",
+        borderWidth: 1,
+        borderColor: "rgba(203,255,26,0.32)",
+        backgroundColor: "rgba(203,255,26,0.06)",
+        borderRadius: mobileTheme.radius.md,
+        paddingHorizontal: 12,
+        paddingVertical: 9,
+        gap: 3,
+      }}
+    >
+      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.8 }}>
+        {environment} · {policyChannel} · {providerMode}
+      </Text>
+      <Text numberOfLines={1} style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+        Política {policyCandidate} · {policySha256.slice(0, 12)}
+      </Text>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, opacity: 0.72 }}>
+        Gymnasia v{appVersion} · config v{configurationVersion}
+      </Text>
+    </View>
+  );
+});
+
+export const BackupImportConfirmation = memo(function BackupImportConfirmation({
+  description,
+  onCancel,
+  onConfirm,
+}: {
+  description: string;
+  onCancel(): void;
+  onConfirm(): void;
+}) {
+  return (
+    <View testID={shellSurfaceTestId("backup-import-confirmation")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.78)", paddingHorizontal: 24, alignItems: "center", justifyContent: "center", zIndex: 910, elevation: 91 }}>
+      <View style={{ width: "85%", maxWidth: 380, borderRadius: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)", backgroundColor: mobileTheme.color.bgSurface, padding: 24, alignItems: "center", gap: 16 }}>
+        <Feather name="alert-triangle" size={40} color="#FF8A8A" />
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800", textAlign: "center" }}>¿Restaurar copia?</Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>{description}</Text>
+        <Pressable testID="backup-import-confirm" onPress={onConfirm} style={{ width: "100%", height: 48, borderRadius: mobileTheme.radius.md, backgroundColor: "#FF8A8A", alignItems: "center", justifyContent: "center" }}>
+          <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>Sí, restaurar</Text>
+        </Pressable>
+        <Pressable onPress={onCancel} style={{ width: "100%", height: 44, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, alignItems: "center", justifyContent: "center" }}>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Cancelar</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+});
+
+export const DataDeletionConfirmation = memo(function DataDeletionConfirmation({
+  busy,
+  confirmation,
+  onCancel,
+  onChangeConfirmation,
+  onConfirm,
+  scope,
+}: {
+  busy: boolean;
+  confirmation: string;
+  onCancel(): void;
+  onChangeConfirmation(value: string): void;
+  onConfirm(): void;
+  scope: DataDeletionScope;
+}) {
+  const totalDeletionConfirmed = scope !== "all-personal" || confirmation.trim() === "BORRAR";
+  return (
+    <View testID={shellSurfaceTestId("data-deletion")} accessibilityViewIsModal style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.82)", paddingHorizontal: 20, alignItems: "center", justifyContent: "center", zIndex: 640, elevation: 64 }}>
+      <View style={{ width: "100%", maxWidth: 390, maxHeight: "90%", borderRadius: 24, borderWidth: 1, borderColor: "rgba(255,77,79,0.38)", backgroundColor: "#12151C", paddingHorizontal: 18, paddingTop: 18, paddingBottom: 16, gap: 13 }}>
+        <View style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: "rgba(255,77,79,0.18)", alignItems: "center", justifyContent: "center", alignSelf: "center" }}>
+          <Feather name={scope === "activity" ? "rotate-ccw" : "alert-triangle"} size={22} color="#FF6E6E" />
+        </View>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800", textAlign: "center" }}>
+          {scope === "activity" ? "¿Borrar actividad y conversaciones?" : "¿Borrar todos tus datos?"}
+        </Text>
+        <Text style={{ color: "#A1AAB8", fontSize: 13, lineHeight: 19, textAlign: "center" }}>
+          {scope === "activity" ? "La app volverá a un historial vacío, pero conservará tu configuración personal." : "Esta acción elimina los datos que Gymnasia controla en este dispositivo y no se puede deshacer."}
+        </Text>
+        <View style={{ gap: 8 }}>
+          <View style={{ borderRadius: 12, borderWidth: 1, borderColor: "rgba(255,77,79,0.38)", backgroundColor: "rgba(255,77,79,0.10)", paddingHorizontal: 12, paddingVertical: 10, flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
+            <Feather name="trash-2" size={14} color="#FF8585" style={{ marginTop: 2 }} />
+            <Text style={{ flex: 1, color: "#FFB0B0", fontSize: 12, lineHeight: 18 }}>
+              {scope === "activity" ? "Se borran rutinas, historial, dieta, medidas, conversaciones y sesiones activas." : "Se borran además memoria, alimentos personales, preferencias, claves API, credenciales antiguas, cachés y trazas."}
+            </Text>
+          </View>
+          <View style={{ borderRadius: 12, borderWidth: 1, borderColor: "rgba(203,255,26,0.30)", backgroundColor: "rgba(203,255,26,0.07)", paddingHorizontal: 12, paddingVertical: 10, flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
+            <Feather name="shield" size={14} color={mobileTheme.color.brandPrimary} style={{ marginTop: 2 }} />
+            <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
+              {scope === "activity" ? "Se conservan memoria, alimentos personales, preferencias, claves API, copias y diagnósticos." : "Se conserva únicamente el estado firmado que impide cargar una política de seguridad anterior."}
+            </Text>
+          </View>
+        </View>
+        {scope === "all-personal" ? (
+          <View style={{ gap: 6 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>Escribe BORRAR para confirmar</Text>
+            <TextInput testID="data-deletion-confirmation-input" accessibilityLabel="Escribe BORRAR para confirmar el borrado total" value={confirmation} onChangeText={onChangeConfirmation} editable={!busy} autoCapitalize="characters" autoCorrect={false} placeholder="BORRAR" placeholderTextColor="#697384" style={{ minHeight: 46, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: totalDeletionConfirmed ? "rgba(255,77,79,0.8)" : mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 15, fontWeight: "700", letterSpacing: 1 }} />
+          </View>
+        ) : null}
+        <Pressable testID="data-deletion-confirm" accessibilityRole="button" accessibilityLabel={scope === "activity" ? "Confirmar borrado de actividad y conversaciones" : "Confirmar borrado de todos mis datos"} disabled={busy || !totalDeletionConfirmed} onPress={onConfirm} style={{ width: "100%", minHeight: 48, borderRadius: 14, backgroundColor: "#FF4D4F", alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8, opacity: busy || !totalDeletionConfirmed ? 0.45 : 1 }}>
+          {busy ? <ActivityIndicator size="small" color="#FFE8EB" /> : <Feather name="trash-2" size={15} color="#FFE8EB" />}
+          <Text style={{ color: "#FFE8EB", fontWeight: "800", fontSize: 15 }}>{busy ? "Borrando y comprobando…" : scope === "activity" ? "Borrar actividad" : "Borrar todos mis datos"}</Text>
+        </Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Cancelar borrado de datos" disabled={busy} onPress={onCancel} style={{ width: "100%", minHeight: 44, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#1B1F27", alignItems: "center", justifyContent: "center", opacity: busy ? 0.45 : 1 }}>
+          <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>Cancelar</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+});
+
+export const ProviderDeleteConfirmation = memo(function ProviderDeleteConfirmation({
+  maskedApiKey,
+  onCancel,
+  onConfirm,
+  providerLabel,
+  warning,
+}: {
+  maskedApiKey: string;
+  onCancel(): void;
+  onConfirm(): void;
+  providerLabel: string;
+  warning: string;
+}) {
+  return (
+    <View testID={shellSurfaceTestId("provider-delete")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.78)", paddingHorizontal: 24, alignItems: "center", justifyContent: "center", zIndex: 620, elevation: 62 }}>
+      <View style={{ width: "100%", maxWidth: 360, borderRadius: 24, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#12151C", paddingHorizontal: 18, paddingTop: 18, paddingBottom: 16, alignItems: "center", gap: 12 }}>
+        <View style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: "rgba(255,77,79,0.2)", alignItems: "center", justifyContent: "center" }}>
+          <Feather name="alert-triangle" size={22} color="#FF4D4F" />
+        </View>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 40, fontWeight: "800", textAlign: "center" }}>¿Eliminar API Key?</Text>
+        <Text style={{ color: "#A1AAB8", fontSize: 14, lineHeight: 21, textAlign: "center" }}>Estás a punto de eliminar la API Key de {providerLabel}. Esta acción no se puede deshacer.</Text>
+        <View style={{ width: "100%", borderWidth: 1, borderColor: "rgba(255,77,79,0.45)", borderRadius: 12, backgroundColor: "rgba(255,77,79,0.14)", paddingHorizontal: 12, paddingVertical: 10, flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
+          <Feather name="alert-circle" size={14} color="#FF6E6E" style={{ marginTop: 2 }} />
+          <Text style={{ flex: 1, color: "#FF6E6E", fontSize: 12, lineHeight: 18 }}>{warning}</Text>
+        </View>
+        <View style={{ width: "100%", minHeight: 38, borderRadius: 10, borderWidth: 1, borderColor: "rgba(61,70,82,0.9)", backgroundColor: "#1A1E25", paddingHorizontal: 10, flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <Feather name="key" size={13} color="#778091" />
+          <Text style={{ color: "#9EA7B6", fontSize: 13, fontWeight: "600" }}>{maskedApiKey}</Text>
+        </View>
+        <Pressable testID="provider-delete-confirm" onPress={onConfirm} style={{ width: "100%", minHeight: 46, borderRadius: 14, backgroundColor: "#FF4D4F", alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8 }}>
+          <Feather name="trash-2" size={14} color="#FFE8EB" />
+          <Text style={{ color: "#FFE8EB", fontWeight: "800", fontSize: 16 }}>Sí, eliminar clave</Text>
+        </Pressable>
+        <Pressable onPress={onCancel} style={{ width: "100%", minHeight: 44, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#1B1F27", alignItems: "center", justifyContent: "center" }}>
+          <Text style={{ color: "#E7EBF3", fontSize: 16, fontWeight: "700" }}>Cancelar</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+});
+
+export const PreferencesSettingsPanel = memo(function PreferencesSettingsPanel({
+  preferences,
+}: {
+  preferences: Readonly<UserPreferences>;
+}) {
+  return (
+    <View style={{ gap: 12 }}>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+        Preferencias del usuario
+      </Text>
+      {Object.entries(preferences).map(([key, value]) => {
+        const isChartPeriod = key === "chartPeriod";
+        const displayLabel = isChartPeriod ? "Vista del gráfico" : key;
+        const displayValue = isChartPeriod
+          ? CHART_PERIOD_LABELS[value as UserPreferences["chartPeriod"]] ?? String(value)
+          : String(value);
+        return (
+          <View
+            key={key}
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: mobileTheme.color.cardBg,
+              borderRadius: 12,
+              padding: 14,
+              borderWidth: 1,
+              borderColor: mobileTheme.color.borderSubtle,
+            }}
+          >
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
+              {displayLabel}
+            </Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
+              {displayValue}
+            </Text>
+          </View>
+        );
+      })}
+    </View>
+  );
+});
+
+function NotificationToggle({
+  testID,
+  label,
+  description,
+  checked,
+  disabled = false,
+  onPress,
+}: {
+  testID: string;
+  label: string;
+  description: string;
+  checked: boolean;
+  disabled?: boolean;
+  onPress(): void;
+}) {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        backgroundColor: mobileTheme.color.bgSurface,
+        borderRadius: 12,
+        padding: 14,
+        borderWidth: 1,
+        borderColor: mobileTheme.color.borderSubtle,
+        opacity: disabled ? 0.4 : 1,
+      }}
+    >
+      <View style={{ flex: 1, gap: 2 }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
+          {label}
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          {description}
+        </Text>
+      </View>
+      <Pressable
+        testID={testID}
+        accessibilityRole="switch"
+        accessibilityLabel={`${label}: ${checked ? "sí" : "no"}`}
+        accessibilityState={{ checked, disabled }}
+        onPress={onPress}
+        disabled={disabled}
+        style={{
+          width: 52,
+          height: 30,
+          borderRadius: 15,
+          backgroundColor: checked ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "row",
+        }}
+      >
+        <View
+          style={{
+            position: "absolute",
+            left: checked ? 26 : 4,
+            width: 22,
+            height: 22,
+            borderRadius: 11,
+            backgroundColor: "#fff",
+          }}
+        />
+      </Pressable>
+    </View>
+  );
+}
+
+export const NotificationSettingsPanel = memo(function NotificationSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<NotificationSettingsModel>;
+  actions: Readonly<NotificationSettingsActions>;
+}) {
+  const { settings } = model;
+  return (
+    <View style={{ gap: 12 }}>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+        Notificaciones de descanso
+      </Text>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+        Configura cómo quieres que te avise la app cuando termina un descanso.
+      </Text>
+
+      {model.isAndroid ? (
+        <Pressable
+          onPress={actions.openExactAlarmSettings}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            backgroundColor: "rgba(203,255,26,0.06)",
+            borderRadius: 12,
+            padding: 14,
+            borderWidth: 1,
+            borderColor: "rgba(203,255,26,0.3)",
+          }}
+        >
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+              Permiso de alarmas exactas
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+              {model.alarmPunctuality.detail}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontWeight: "700",
+                color: model.alarmPunctuality.status === "late"
+                  ? "#FF6B6B"
+                  : model.alarmPunctuality.status === "ontime"
+                    ? mobileTheme.color.brandPrimary
+                    : mobileTheme.color.textSecondary,
+              }}
+            >
+              {model.alarmPunctuality.badge}
+            </Text>
+            <Feather name="chevron-right" size={18} color={mobileTheme.color.textSecondary} />
+          </View>
+        </Pressable>
+      ) : null}
+
+      {model.showBatteryGuidance && model.batteryGuidance ? (
+        <Pressable
+          onPress={actions.openApplicationSettings}
+          style={{
+            backgroundColor: model.alarmPunctuality.status === "late" ? "rgba(255,107,107,0.08)" : mobileTheme.color.bgSurface,
+            borderRadius: 12,
+            padding: 14,
+            borderWidth: 1,
+            borderColor: model.alarmPunctuality.status === "late" ? "rgba(255,107,107,0.35)" : mobileTheme.color.borderSubtle,
+            gap: 6,
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Feather
+              name="battery-charging"
+              size={16}
+              color={model.alarmPunctuality.status === "late" ? "#FF6B6B" : mobileTheme.color.textSecondary}
+            />
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600", flex: 1 }}>
+              {model.batteryGuidance.brand === "tu fabricante"
+                ? "Tu móvil puede bloquear los avisos en segundo plano"
+                : `Los móviles ${model.batteryGuidance.brand} bloquean los avisos en segundo plano`}
+            </Text>
+          </View>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+            Para ahorrar batería, el sistema congela las apps que no estás usando y el aviso de descanso no llega hasta que vuelves a abrir Gymnasia. No es algo que la app pueda cambiar por su cuenta.
+          </Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+            {model.batteryGuidance.path}
+          </Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontStyle: "italic" }}>
+            Este aviso desaparecerá solo cuando comprobemos que los avisos llegan puntuales.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {model.permissionGranted === false ? (
+        <Pressable
+          onPress={actions.openApplicationSettings}
+          style={{ backgroundColor: "rgba(255,107,107,0.08)", borderRadius: 12, padding: 14, borderWidth: 1, borderColor: "rgba(255,107,107,0.35)", gap: 4 }}
+        >
+          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+            Notificaciones bloqueadas por Android
+          </Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+            Sin ellas solo podremos avisarte con la app abierta. Toca para abrir los ajustes del sistema.
+          </Text>
+        </Pressable>
+      ) : model.isAndroid && model.restChannelImportance !== null && model.restChannelImportance <= 1 ? (
+        <Pressable
+          onPress={actions.openApplicationSettings}
+          style={{ backgroundColor: "rgba(255,107,107,0.08)", borderRadius: 12, padding: 14, borderWidth: 1, borderColor: "rgba(255,107,107,0.35)", gap: 4 }}
+        >
+          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+            El canal "Descanso terminado" está silenciado
+          </Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+            Los avisos llegarán sin sonido. Toca para reactivarlo en los ajustes del sistema.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {model.isAndroid ? (
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontStyle: "italic" }}>
+          Con la pantalla apagada Android puede retrasar el aviso unos minutos para ahorrar batería. Si el descanso ya había terminado, te avisaremos igualmente al volver a la app.
+        </Text>
+      ) : null}
+
+      <NotificationToggle
+        testID="notification-enabled-toggle"
+        label="Activar notificaciones"
+        description="Muestra una notificación al terminar el descanso"
+        checked={settings.enabled}
+        onPress={actions.toggleEnabled}
+      />
+      <NotificationToggle
+        testID="notification-sound-toggle"
+        label="Sonido"
+        description="Reproduce el sonido de descanso terminado"
+        checked={settings.sound}
+        disabled={!settings.enabled}
+        onPress={actions.toggleSound}
+      />
+      <NotificationToggle
+        testID="notification-vibrate-toggle"
+        label="Vibración"
+        description="Vibra el móvil al terminar el descanso"
+        checked={settings.vibrate}
+        disabled={!settings.enabled}
+        onPress={actions.toggleVibration}
+      />
+
+      {!settings.enabled ? (
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontStyle: "italic" }}>
+          Con las notificaciones desactivadas, solo se avisará con sonido/vibración cuando la app esté abierta.
+        </Text>
+      ) : null}
+
+      <View style={{ gap: 8, backgroundColor: mobileTheme.color.bgSurface, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, opacity: settings.enabled ? 1 : 0.4 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
+              Sonido de notificación
+            </Text>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+              Elige el tono que sonará al terminar el descanso
+            </Text>
+          </View>
+          <Pressable
+            testID="notification-sound-selector-toggle"
+            accessibilityRole="switch"
+            accessibilityLabel={`Sonido de notificación: ${settings.sound ? "sí" : "no"}`}
+            accessibilityState={{ checked: settings.sound, disabled: !settings.enabled }}
+            onPress={actions.toggleSound}
+            disabled={!settings.enabled}
+            style={{ width: 52, height: 30, borderRadius: 15, backgroundColor: settings.sound ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle, alignItems: "center", justifyContent: "center" }}
+          >
+            <View style={{ position: "absolute", left: settings.sound ? 26 : 4, width: 22, height: 22, borderRadius: 11, backgroundColor: "#fff" }} />
+          </Pressable>
+        </View>
+        {settings.sound ? (
+          <View style={{ gap: 6, marginTop: 4 }}>
+            {model.soundOptions.map((option) => {
+              const isSelected = settings.soundKey === option.key;
+              return (
+                <Pressable
+                  key={option.key}
+                  testID={`notification-sound-option-${option.key}`}
+                  accessibilityRole="radio"
+                  accessibilityLabel={`${option.label}${isSelected ? ", seleccionado" : ""}`}
+                  accessibilityState={{ selected: isSelected, disabled: !settings.enabled }}
+                  onPress={() => actions.selectSound(option.key)}
+                  disabled={!settings.enabled}
+                  style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 10, paddingHorizontal: 12, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: isSelected ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle, backgroundColor: isSelected ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp }}
+                >
+                  <Text style={{ color: isSelected ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+                    {option.label}
+                  </Text>
+                  {isSelected ? <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} /> : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : null}
+      </View>
+    </View>
+  );
+});
+
+export const DataSettingsPanel = memo(function DataSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<DataSettingsModel>;
+  actions: Readonly<DataSettingsActions>;
+}) {
+  return (
+    <View style={{ gap: 12 }}>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+        Copia de seguridad
+      </Text>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+        Exporta tus datos y fotos de progreso a un paquete .gymnasia. Las fotos se optimizan y se eliminan sus metadatos antes de incluirlas. Guárdalo en tu proveedor de nube (Drive, Dropbox, OneDrive…) o donde prefieras. La copia no incluye tus API keys de proveedores IA.
+      </Text>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: mobileTheme.color.bgSurface, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle }}>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
+          Última copia
+        </Text>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
+          {model.lastBackupLabel}
+        </Text>
+      </View>
+      <Pressable
+        testID="backup-export"
+        onPress={actions.exportBackup}
+        disabled={model.backupBusy !== null}
+        style={{ height: 48, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8, opacity: model.backupBusy !== null ? 0.6 : 1 }}
+      >
+        {model.backupBusy === "export" ? (
+          <ActivityIndicator size="small" color="#06090D" />
+        ) : (
+          <>
+            <Feather name="upload" size={18} color="#06090D" />
+            <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>
+              Exportar copia de seguridad
+            </Text>
+          </>
+        )}
+      </Pressable>
+      <Pressable
+        testID="backup-import-picker"
+        onPress={actions.importBackup}
+        disabled={model.backupBusy !== null}
+        style={{ height: 48, borderRadius: mobileTheme.radius.md, backgroundColor: "transparent", borderWidth: 1, borderColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8, opacity: model.backupBusy !== null ? 0.6 : 1 }}
+      >
+        {model.backupBusy === "import" ? (
+          <ActivityIndicator size="small" color={mobileTheme.color.brandPrimary} />
+        ) : (
+          <>
+            <Feather name="download" size={18} color={mobileTheme.color.brandPrimary} />
+            <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "700", fontSize: 15 }}>
+              Restaurar desde archivo
+            </Text>
+          </>
+        )}
+      </Pressable>
+
+      {model.backupResult ? (
+        <View
+          testID="backup-result"
+          accessibilityLiveRegion="polite"
+          style={{
+            gap: 4,
+            backgroundColor: model.backupResult.status === "ok"
+              ? "rgba(203,255,26,0.10)"
+              : model.backupResult.status === "warning"
+                ? "rgba(255,190,92,0.10)"
+                : "rgba(255,138,138,0.10)",
+            borderRadius: 12,
+            padding: 14,
+            borderWidth: 1,
+            borderColor: model.backupResult.status === "ok"
+              ? "rgba(203,255,26,0.5)"
+              : model.backupResult.status === "warning"
+                ? "rgba(255,190,92,0.5)"
+                : "rgba(255,138,138,0.5)",
+          }}
+        >
+          <Text style={{ color: model.backupResult.status === "error" ? "#FF8A8A" : mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+            {model.backupResult.message}
+          </Text>
+          {model.backupResult.details.map((detail, index) => (
+            <Text key={`${detail}-${index}`} style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
+              • {detail}
+            </Text>
+          ))}
+          {model.backupResult.remainingDetailCount > 0 ? (
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+              Y {model.backupResult.remainingDetailCount} incidencia(s) más.
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
+
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
+        Restaurar sustituye por completo los datos actuales por los del archivo. El paquete puede contener información sensible y no está cifrado. Tus API keys se mantienen.
+      </Text>
+      <Pressable accessibilityRole="link" accessibilityLabel="Ver qué contiene la copia de seguridad en la política de privacidad" testID="legal-backup-policy-link" onPress={actions.openBackupPolicy} hitSlop={8}>
+        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
+          Qué contiene este archivo
+        </Text>
+      </Pressable>
+      <View style={{ height: 1, backgroundColor: mobileTheme.color.borderSubtle, marginVertical: 8 }} />
+      <View style={{ gap: 6 }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}>
+          Gestionar tus datos
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>
+          Elige el alcance antes de borrar. Gymnasia comprobará cada destino y no dirá que terminó si queda algo pendiente.
+        </Text>
+      </View>
+
+      {model.deletionReport?.status === "incomplete" ? (
+        <View accessibilityLiveRegion="polite" testID="data-deletion-report" style={{ gap: 10, borderWidth: 1, borderColor: "rgba(255,77,79,0.55)", borderRadius: mobileTheme.radius.lg, backgroundColor: "rgba(255,77,79,0.10)", padding: 14 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Feather name="alert-triangle" size={17} color="#FF6E6E" />
+            <Text style={{ color: "#FF9A9A", fontSize: 14, fontWeight: "800", flex: 1 }}>
+              El borrado quedó incompleto
+            </Text>
+          </View>
+          {model.deletionReport.failures.map((failure) => (
+            <View key={failure.id} style={{ gap: 2 }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
+                {failure.label}
+              </Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 17 }}>
+                {failure.message}
+              </Text>
+            </View>
+          ))}
+          <Pressable
+            testID="data-deletion-retry"
+            accessibilityRole="button"
+            accessibilityLabel="Reintentar borrado de datos"
+            disabled={model.deletionBusy}
+            onPress={() => actions.retryDeletion(model.deletionReport!.scope)}
+            style={{ minHeight: 44, borderRadius: mobileTheme.radius.md, backgroundColor: "#FF4D4F", alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8, opacity: model.deletionBusy ? 0.6 : 1 }}
+          >
+            {model.deletionBusy ? <ActivityIndicator size="small" color="#FFE8EB" /> : <Feather name="refresh-cw" size={15} color="#FFE8EB" />}
+            <Text style={{ color: "#FFE8EB", fontSize: 14, fontWeight: "800" }}>Reintentar borrado</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      <DeletionOption
+        icon="rotate-ccw"
+        title="Borrar actividad y conversaciones"
+        description="Borra entrenamientos, dieta, medidas, chats y sesiones. Conserva memoria, alimentos personales, preferencias y claves API."
+        buttonLabel="Borrar actividad"
+        testID="data-deletion-open-activity"
+        blocked={model.deletionBlocked}
+        onPress={() => actions.openDeletion("activity")}
+      />
+      <DeletionOption
+        destructive
+        icon="trash-2"
+        title="Borrar todos mis datos"
+        description="Borra también memoria, alimentos personales, preferencias, claves, cachés, trazas y metadatos locales."
+        buttonLabel="Borrar todos mis datos"
+        testID="data-deletion-open-all"
+        blocked={model.deletionBlocked}
+        onPress={() => actions.openDeletion("all-personal")}
+      />
+      {model.deletionBlocked && !model.deletionBusy ? (
+        <Text style={{ color: "#FFCD77", fontSize: 12, lineHeight: 17 }}>
+          Termina la conversación, estimación o copia de seguridad en curso antes de borrar.
+        </Text>
+      ) : null}
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 17 }}>
+        Los archivos exportados, las fotos de la galería, los permisos del sistema y los datos enviados a proveedores están fuera del control de Gymnasia y no se pueden borrar desde aquí.
+      </Text>
+      <Pressable accessibilityRole="link" accessibilityLabel="Ver cómo eliminar tus datos en la política de privacidad" testID="legal-deletion-policy-link" onPress={actions.openDeletionPolicy} hitSlop={8}>
+        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>
+          Qué puede borrar Gymnasia
+        </Text>
+      </Pressable>
+    </View>
+  );
+});
+
+function DeletionOption({
+  destructive = false,
+  icon,
+  title,
+  description,
+  buttonLabel,
+  testID,
+  blocked,
+  onPress,
+}: {
+  destructive?: boolean;
+  icon: "rotate-ccw" | "trash-2";
+  title: string;
+  description: string;
+  buttonLabel: string;
+  testID: string;
+  blocked: boolean;
+  onPress(): void;
+}) {
+  return (
+    <View style={{ gap: 12, borderWidth: 1, borderColor: destructive ? "rgba(255,77,79,0.42)" : "rgba(255,255,255,0.08)", borderRadius: mobileTheme.radius.lg, backgroundColor: destructive ? "rgba(255,77,79,0.07)" : mobileTheme.color.bgSurface, padding: 14 }}>
+      <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 10 }}>
+        <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: destructive ? "rgba(255,77,79,0.18)" : "rgba(203,255,26,0.10)", alignItems: "center", justifyContent: "center" }}>
+          <Feather name={icon} size={17} color={destructive ? "#FF6E6E" : mobileTheme.color.brandPrimary} />
+        </View>
+        <View style={{ flex: 1, gap: 4 }}>
+          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "800" }}>{title}</Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>{description}</Text>
+        </View>
+      </View>
+      <Pressable
+        testID={testID}
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        disabled={blocked}
+        onPress={onPress}
+        style={{ minHeight: 44, borderRadius: mobileTheme.radius.md, borderWidth: destructive ? 0 : 1, borderColor: "rgba(255,138,138,0.55)", backgroundColor: destructive ? "#FF4D4F" : undefined, alignItems: "center", justifyContent: "center", opacity: blocked ? 0.45 : 1 }}
+      >
+        <Text style={{ color: destructive ? "#FFE8EB" : "#FFB0B0", fontSize: 14, fontWeight: "800" }}>{buttonLabel}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+export const MemorySettingsPanel = memo(function MemorySettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<MemorySettingsModel>;
+  actions: Readonly<MemorySettingsActions>;
+}) {
+  return (
+    <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 12 }}>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+        Memoria del coach
+      </Text>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+        Datos personales que el coach recuerda entre conversaciones. Puedes editarlos o dejar que el coach los guarde cuando le compartas información. El coach los consulta cuando los necesita: nunca se envían como instrucciones del sistema ni modifican su comportamiento.
+      </Text>
+      {model.fields.map((field, index) => (
+        <View key={`mem_${index}`} style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, borderRadius: mobileTheme.radius.md, padding: 10, gap: 8 }}>
+          <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+            <TextInput
+              style={{ flex: 1, minHeight: 36, borderRadius: 8, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, color: mobileTheme.color.textPrimary, paddingHorizontal: 10, fontSize: 13, fontWeight: "700" }}
+              testID={`memory-field-key-${index}`}
+              value={field.key}
+              onChangeText={(text) => actions.updateField(index, "key", text)}
+              onBlur={actions.commitField}
+              placeholder="Campo"
+              placeholderTextColor={mobileTheme.color.textSecondary}
+            />
+            <Pressable onPress={() => actions.deleteField(index)} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: "rgba(255,77,79,0.15)", alignItems: "center", justifyContent: "center" }}>
+              <Feather name="trash-2" size={13} color="#FF4D4F" />
+            </Pressable>
+          </View>
+          <TextInput
+            style={{ minHeight: 36, borderRadius: 8, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, color: mobileTheme.color.textSecondary, paddingHorizontal: 10, fontSize: 12 }}
+            value={field.description}
+            onChangeText={(text) => actions.updateField(index, "description", text)}
+            onBlur={actions.commitField}
+            placeholder="Descripción (para qué sirve este campo)"
+            placeholderTextColor={mobileTheme.color.textSecondary}
+          />
+          <TextInput
+            style={{ minHeight: 36, borderRadius: 8, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, color: mobileTheme.color.textPrimary, paddingHorizontal: 10, fontSize: 13 }}
+            value={field.value}
+            onChangeText={(text) => actions.updateField(index, "value", text)}
+            onBlur={actions.commitField}
+            placeholder="Valor"
+            placeholderTextColor={mobileTheme.color.textSecondary}
+          />
+        </View>
+      ))}
+      <View style={{ borderTopWidth: 1, borderTopColor: mobileTheme.color.borderSubtle, paddingTop: 12, gap: 8 }}>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Añadir campo</Text>
+        <MemoryInput value={model.newKey} onChangeText={actions.changeNewKey} placeholder="Campo (ej: Nombre)" bold />
+        <MemoryInput value={model.newDescription} onChangeText={actions.changeNewDescription} placeholder="Descripción (ej: Nombre real del usuario)" secondary />
+        <MemoryInput value={model.newValue} onChangeText={actions.changeNewValue} placeholder="Valor (ej: Juan)" />
+        <Pressable
+          onPress={actions.addField}
+          disabled={!model.newKey.trim()}
+          style={{ height: 44, borderRadius: mobileTheme.radius.md, backgroundColor: model.newKey.trim() ? mobileTheme.color.brandPrimary : "#2F3440", alignItems: "center", justifyContent: "center", opacity: model.newKey.trim() ? 1 : 0.5 }}
+        >
+          <Text style={{ color: model.newKey.trim() ? "#06090D" : "#9AA2AE", fontWeight: "700" }}>Añadir</Text>
+        </Pressable>
+      </View>
+      {model.fields.length > 0 ? (
+        <Pressable onPress={actions.clearAll} style={{ marginTop: 4, height: 44, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: "rgba(255,100,100,0.4)", alignItems: "center", justifyContent: "center" }}>
+          <Text style={{ color: "#ffb5b5", fontWeight: "700" }}>Borrar toda la memoria</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+});
+
+function MemoryInput({
+  value,
+  onChangeText,
+  placeholder,
+  bold = false,
+  secondary = false,
+}: {
+  value: string;
+  onChangeText(value: string): void;
+  placeholder: string;
+  bold?: boolean;
+  secondary?: boolean;
+}) {
+  return (
+    <TextInput
+      style={{ minHeight: 40, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: secondary ? mobileTheme.color.textSecondary : mobileTheme.color.textPrimary, paddingHorizontal: 10, fontSize: secondary ? 12 : 13, fontWeight: bold ? "700" : undefined }}
+      value={value}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      placeholderTextColor={mobileTheme.color.textSecondary}
+    />
+  );
+}
+
+const DIET_GOALS = [
+  { key: "bulk" as const, label: "Volumen" },
+  { key: "cut" as const, label: "Definición" },
+  { key: "maintain" as const, label: "Mantenimiento" },
+];
+const ACTIVITY_LEVELS = [
+  { key: "moderate" as const, label: "Moderada" },
+  { key: "intermediate" as const, label: "Intermedia" },
+  { key: "high" as const, label: "Alta" },
+];
+
+export const DietSettingsPanel = memo(function DietSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<DietSettingsModel>;
+  actions: Readonly<DietSettingsActions>;
+}) {
+  const draft = model.draft;
+  const age = draft.birth_date
+    ? Math.floor((Date.now() - new Date(draft.birth_date).getTime()) / 31557600000)
+    : null;
+  const macroRows = [
+    { macro: "protein" as const, kcalLabel: "Proteínas", gkgLabel: "Proteína", hint: model.proteinMaxGramsPerKgHint, value: draft.protein_grams_per_kg },
+    { macro: "carbs" as const, kcalLabel: "Carbohidratos", gkgLabel: "Carbohidratos", hint: model.carbsMaxGramsPerKgHint, value: draft.carbs_grams_per_kg },
+    { macro: "fat" as const, kcalLabel: "Grasas", gkgLabel: "Grasas", hint: model.fatMaxGramsPerKgHint, value: draft.fat_grams_per_kg },
+  ];
+
+  return (
+    <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Plan de dieta</Text>
+      <Text style={{ color: mobileTheme.color.textSecondary }}>Define tu objetivo y las calorías diarias.</Text>
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10, alignSelf: "center" }}>Sexo</Text>
+        {(["male", "female"] as const).map((sex) => {
+          const selected = (draft.sex ?? "male") === sex;
+          return (
+            <Pressable key={sex} onPress={() => actions.changeSex(sex)} style={{ flex: 1, minHeight: 36, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: selected ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle, backgroundColor: selected ? "rgba(203,255,26,0.12)" : mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ color: selected ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontWeight: "700", fontSize: 13 }}>
+                {sex === "male" ? "Hombre" : "Mujer"}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
+        <LabeledDietValue label="Altura" flex={0.7}>
+          <TextInput value={draft.height_cm ?? (model.latestHeightCm ? String(model.latestHeightCm) : "")} onChangeText={actions.changeHeight} placeholder="cm" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" style={dietValueStyle} />
+        </LabeledDietValue>
+        <LabeledDietValue label="Peso" flex={0.7}>
+          <View style={dietReadonlyStyle}>
+            <Text style={{ color: model.latestWeightKg ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>{model.latestWeightKg ?? "—"}</Text>
+          </View>
+        </LabeledDietValue>
+        <LabeledDietValue label="Edad" flex={0.6}>
+          <View style={dietReadonlyStyle}>
+            <Text style={{ color: age !== null ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>{age ?? "—"}</Text>
+          </View>
+        </LabeledDietValue>
+        <LabeledDietValue label="F. Nacimiento" flex={1.5}>
+          {model.isWeb ? (
+            <TextInput value={draft.birth_date ?? ""} onChangeText={actions.changeBirthDate} placeholder="AAAA-MM-DD" placeholderTextColor={mobileTheme.color.textSecondary} style={dietValueStyle} />
+          ) : (
+            <>
+              <Pressable onPress={actions.showBirthDatePicker} style={{ ...dietReadonlyStyle, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <Text style={{ color: draft.birth_date ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary, fontSize: 14 }}>{draft.birth_date || "Seleccionar"}</Text>
+                <Feather name="calendar" size={14} color={mobileTheme.color.textSecondary} />
+              </Pressable>
+              {model.birthDatePickerVisible ? (
+                <DateTimePicker
+                  testID={shellSurfaceTestId("birth-date-picker")}
+                  value={draft.birth_date ? new Date(draft.birth_date) : new Date(1990, 0, 1)}
+                  mode="date"
+                  display={model.isIos ? "spinner" : "default"}
+                  maximumDate={new Date()}
+                  minimumDate={new Date(1930, 0, 1)}
+                  onChange={(_event, selectedDate) => {
+                    if (!model.isIos) actions.closeBirthDatePicker();
+                    if (selectedDate) actions.selectBirthDate(selectedDate);
+                  }}
+                />
+              ) : null}
+            </>
+          )}
+        </LabeledDietValue>
+      </View>
+      <ChoiceRow label="Objetivo" options={DIET_GOALS} selected={draft.goal} onSelect={actions.changeGoal} />
+      <ChoiceRow label="Nivel de actividad" options={ACTIVITY_LEVELS} selected={draft.activity_level} onSelect={actions.changeActivityLevel} />
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Calorías diarias</Text>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>Añádelas a mano o pulsa Calcular para estimarlas automáticamente.</Text>
+      <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+        <TextInput
+          testID="diet-plan-daily-calories-input"
+          style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: model.issues.has("daily_calories") ? "#FF5A5F" : mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }}
+          value={draft.daily_calories}
+          onChangeText={actions.changeDailyCalories}
+          placeholder="Calorías objetivo (kcal)"
+          placeholderTextColor={mobileTheme.color.textSecondary}
+          keyboardType="decimal-pad"
+        />
+        <Pressable onPress={actions.calculateDailyCalories} style={{ minHeight: 42, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, paddingHorizontal: 12, alignItems: "center", justifyContent: "center" }}>
+          <Text style={{ color: "#000", fontSize: 12, fontWeight: "700" }}>Calcular</Text>
+        </Pressable>
+      </View>
+      {model.issues.get("daily_calories") ? (
+        <Text testID="diet-plan-error-daily-calories" style={{ color: "#FF8D8D", fontSize: 11 }}>{model.issues.get("daily_calories")?.message}</Text>
+      ) : null}
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        {(["manual_calories", "protein_by_weight"] as const).map((mode) => {
+          const selected = draft.macro_mode === mode;
+          return (
+            <Pressable key={mode} testID={`diet-macro-mode-${mode}`} onPress={() => actions.changeMacroMode(mode)} style={{ flex: 1, minHeight: 38, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: selected ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle, backgroundColor: selected ? "rgba(203,255,26,0.10)" : mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ color: selected ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontWeight: "800", fontSize: 12 }}>{mode === "manual_calories" ? "Planificar por kcal" : "Planificar por g/kg"}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      {macroRows.map((row, index) => (
+        <MacroSettingsRow key={row.macro} row={row} first={index === 0} model={model} actions={actions} />
+      ))}
+      <View style={{ borderWidth: 1, borderColor: model.configuredMacroCaloriesExcess > 0 ? "rgba(255,90,95,0.65)" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, padding: 10, gap: 4 }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>Asignadas: {model.configuredMacroCaloriesTotal.toFixed(0)} kcal</Text>
+        <Text style={{ color: model.configuredMacroCaloriesExcess > 0 ? "#FF8D8D" : mobileTheme.color.brandPrimary, fontWeight: "700" }}>
+          {model.configuredMacroCaloriesExcess > 0 ? `Excedente: ${model.configuredMacroCaloriesExcess.toFixed(0)} kcal · Restantes: 0 kcal` : `Restantes: ${model.configuredMacroCaloriesRemaining.toFixed(0)} kcal`}
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          P: {model.draftProteinTargetGrams.toFixed(1)}g ({(model.draftProteinTargetGrams * 4).toFixed(0)} kcal) • C: {model.draftCarbsTargetGrams.toFixed(1)}g ({(model.draftCarbsTargetGrams * 4).toFixed(0)} kcal) • G: {model.draftFatTargetGrams.toFixed(1)}g ({(model.draftFatTargetGrams * 9).toFixed(0)} kcal)
+        </Text>
+        {model.configuredMacroCaloriesExcess > 0 ? (
+          <Text testID="diet-plan-budget-warning" accessibilityLiveRegion="polite" style={{ color: "#FF8D8D", fontSize: 12, lineHeight: 17 }}>
+            Los macros superan el objetivo diario en {model.configuredMacroCaloriesExcess.toFixed(0)} kcal. Puedes guardar el plan, pero el reparto no es coherente.
+          </Text>
+        ) : null}
+      </View>
+      <Pressable testID="save-diet-plan" accessibilityRole="button" accessibilityLabel="Guardar plan de dieta" disabled={!model.dirty} onPress={actions.save} style={{ minHeight: 44, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center", opacity: model.dirty ? 1 : 0.45 }}>
+        <Text style={{ color: "#06090D", fontWeight: "800" }}>Guardar plan</Text>
+      </Pressable>
+      {model.saveResult ? (
+        <Text testID="diet-plan-save-result" accessibilityLiveRegion="polite" style={{ color: model.saveResult.startsWith("Plan guardado") ? mobileTheme.color.brandPrimary : "#FF8D8D", fontSize: 12 }}>{model.saveResult}</Text>
+      ) : null}
+    </View>
+  );
+});
+
+const dietValueStyle = { minHeight: 40, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 10, fontSize: 14 } as const;
+const dietReadonlyStyle = { minHeight: 40, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, justifyContent: "center" as const, paddingHorizontal: 10 };
+
+function LabeledDietValue({ label, flex, children }: { label: string; flex: number; children: ReactNode }) {
+  return <View style={{ flex, gap: 2 }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>{label}</Text>{children}</View>;
+}
+
+function ChoiceRow<T extends string>({ label, options, selected, onSelect }: { label: string; options: ReadonlyArray<{ key: T; label: string }>; selected: T | undefined; onSelect(value: T): void }) {
+  return <><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>{label}</Text><View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>{options.map((option) => { const active = selected === option.key; return <Pressable key={option.key} onPress={() => onSelect(option.key)} style={{ borderWidth: 1, borderColor: active ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.pill, paddingHorizontal: 12, minHeight: 34, alignItems: "center", justifyContent: "center", backgroundColor: active ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp }}><Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{option.label}</Text></Pressable>; })}</View></>;
+}
+
+function MacroSettingsRow({ row, first, model, actions }: { row: { macro: "protein" | "carbs" | "fat"; kcalLabel: string; gkgLabel: string; hint: number | null; value: string }; first: boolean; model: Readonly<DietSettingsModel>; actions: Readonly<DietSettingsActions> }) {
+  const calorieIssue = model.issues.get(`manual_macro_calories.${row.macro}`);
+  const gramsIssue = model.issues.get(`${row.macro}_grams_per_kg`);
+  return <View>{first ? <View style={{ flexDirection: "row", gap: 10, marginBottom: 4 }}><Text style={macroHeadingStyle}>kcal</Text><Text style={macroHeadingStyle}>g/kg</Text></View> : null}<View style={{ flexDirection: "row", gap: 10, marginBottom: 2 }}><Text style={macroLabelStyle}>{row.kcalLabel}</Text><Text style={macroLabelStyle} numberOfLines={1}>{row.gkgLabel}{row.hint !== null ? ` · max ${row.hint.toFixed(1)}` : ""}</Text></View><View style={{ flexDirection: "row", gap: 10 }}><MacroNumberInput testID={`diet-plan-${row.macro}-calories-input`} value={model.draft.manual_macro_calories[row.macro]} invalid={!!calorieIssue} step={1} onChange={(value) => actions.changeManualMacroCalories(row.macro, value)} /><MacroNumberInput testID={`diet-plan-${row.macro}-gkg-input`} value={row.value} invalid={!!gramsIssue} step={0.1} onChange={(value) => actions.changeMacroGramsPerKg(row.macro, value)} /></View>{calorieIssue || gramsIssue ? <Text style={{ color: "#FF8D8D", fontSize: 11, marginTop: 3 }}>{(calorieIssue ?? gramsIssue)?.message}</Text> : null}</View>;
+}
+
+const macroHeadingStyle = { flex: 1, color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" as const, textAlign: "center" as const };
+const macroLabelStyle = { flex: 1, color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" as const, paddingLeft: 12 };
+
+function MacroNumberInput({ testID, value, invalid, step, onChange }: { testID: string; value: string; invalid: boolean; step: number; onChange(value: string): void }) {
+  const nextValue = (direction: 1 | -1) => {
+    if (step === 1) {
+      return String(Math.max(0, (parseInt(value) || 0) + direction));
+    }
+    return Math.max(0, Math.round(((parseFloat(value) || 0) + step * direction) * 10) / 10).toFixed(1);
+  };
+  return <View style={{ flex: 1, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: invalid ? "#FF5A5F" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, minHeight: 42 }}><TextInput testID={testID} style={{ flex: 1, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, minHeight: 42 }} value={value} onChangeText={onChange} placeholder={step < 1 ? "g/kg" : "kcal"} placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" /><View style={{ justifyContent: "center", paddingRight: 6 }}><Pressable onPress={() => onChange(nextValue(1))} style={{ padding: 4 }}><Feather name="chevron-up" size={16} color={mobileTheme.color.textSecondary} /></Pressable><Pressable onPress={() => onChange(nextValue(-1))} style={{ padding: 4 }}><Feather name="chevron-down" size={16} color={mobileTheme.color.textSecondary} /></Pressable></View></View>;
+}
+
+export const MeasurementsSettingsPanel = memo(function MeasurementsSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<MeasurementsSettingsModel>;
+  actions: Readonly<MeasurementsSettingsActions>;
+}) {
+  return (
+    <View style={{ gap: 12 }}>
+      {model.duplicateDateCount > 0 ? (
+        <View testID="measurement-settings-duplicate-warning" style={{ borderRadius: 12, borderWidth: 1, borderColor: "rgba(255,190,92,0.45)", backgroundColor: "rgba(255,190,92,0.10)", padding: 12, flexDirection: "row", alignItems: "flex-start", gap: 8 }}>
+          <Feather name="alert-triangle" size={17} color="#FFBE5C" style={{ marginTop: 1 }} />
+          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, lineHeight: 18, flex: 1 }}>
+            {`Hay mediciones repetidas en ${model.duplicateDateCount} fecha(s). Se conservan para que decidas cuál editar o eliminar.`}
+          </Text>
+        </View>
+      ) : null}
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+          Medidas guardadas ({model.measurements.length})
+        </Text>
+        <Pressable onPress={actions.addMeasurement} style={{ flexDirection: "row", alignItems: "center", gap: 6, borderWidth: 1, borderColor: "rgba(203,255,26,0.45)", borderRadius: mobileTheme.radius.pill, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: "rgba(203,255,26,0.08)" }}>
+          <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
+          <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>Añadir</Text>
+        </Pressable>
+      </View>
+      {model.measurements.length === 0 ? (
+        <View style={{ backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, padding: 24, alignItems: "center", gap: 8 }}>
+          <Feather name="activity" size={32} color={mobileTheme.color.textSecondary} />
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, textAlign: "center" }}>
+            No hay medidas guardadas. Pulsa "Añadir" para registrar tus medidas.
+          </Text>
+        </View>
+      ) : model.measurements.map((measurement, index) => {
+        const fields = measurementSettingsFields(measurement);
+        return (
+          <View key={measurement.id} style={{ backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, padding: 12, gap: 8 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>{formatMeasurementHistoryDate(measurement.measured_on)}</Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>#{model.measurements.length - index}</Text>
+            </View>
+            {fields.length > 0 ? (
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                {fields.map((field) => (
+                  <View key={field.label} style={{ backgroundColor: "#ffffff08", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, gap: 2 }}>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{field.label}</Text>
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>{field.value}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Sin medidas numéricas</Text>}
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Pressable onPress={() => actions.editMeasurement(measurement)} style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, paddingVertical: 8, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle }}>
+                <Feather name="edit-2" size={13} color={mobileTheme.color.textSecondary} />
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Editar</Text>
+              </Pressable>
+              <Pressable testID={`measurement-delete-${measurement.id}`} onPress={() => actions.deleteMeasurement(measurement.id)} style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, paddingVertical: 8, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: "#FF6B6B44", backgroundColor: "#FF6B6B10" }}>
+                <Feather name="trash-2" size={13} color="#FF6B6B" />
+                <Text style={{ color: "#FF6B6B", fontSize: 12, fontWeight: "600" }}>Eliminar</Text>
+              </Pressable>
+            </View>
+          </View>
+        );
+      })}
+    </View>
+  );
+});
+
+function measurementSettingsFields(measurement: MeasurementsSettingsModel["measurements"][number]) {
+  const fields: Array<{ label: string; value: string }> = [];
+  const add = (label: string, value: number | null, unit: string) => {
+    if (value !== null) fields.push({ label, value: `${formatMeasurementNumber(value)} ${unit}` });
+  };
+  add("Peso", measurement.weight_kg, "kg");
+  add("Altura", measurement.height_cm, "cm");
+  add("Cuello", measurement.neck_cm, "cm");
+  add("Pecho", measurement.chest_cm, "cm");
+  add("Cintura", measurement.waist_cm, "cm");
+  add("Cadera", measurement.hips_cm, "cm");
+  add("Bíceps", measurement.biceps_cm, "cm");
+  add("Cuádriceps", measurement.quadriceps_cm, "cm");
+  add("Gemelo", measurement.calf_cm, "cm");
+  if (measurement.photo_uri) fields.push({ label: "Foto", value: "Sí" });
+  return fields;
+}
+
+export const TrainingSettingsPanel = memo(function TrainingSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<TrainingSettingsModel>;
+  actions: Readonly<TrainingSettingsActions>;
+}) {
+  return (
+    <View style={{ gap: 16 }}>
+      <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Rutinas ({model.templates.length})</Text>
+        {model.templates.length === 0 ? (
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>No hay rutinas creadas.</Text>
+        ) : model.templates.map((template) => (
+          <View key={template.id} style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, padding: 10, gap: 6 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 14 }}>{template.name}</Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{trainingCategoryLabel(template.category)}</Text>
+            </View>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+              {template.exercises.length} ejercicio{template.exercises.length !== 1 ? "s" : ""}{template.duration_minutes ? ` · ${template.duration_minutes} min` : ""}
+            </Text>
+            {template.exercises.length > 0 ? (
+              <View style={{ gap: 4, marginTop: 2 }}>
+                {template.exercises.map((exercise, index) => {
+                  const totalSeries = exercise.series?.length ?? exercise.sets?.length ?? 0;
+                  return (
+                    <View key={exercise.id} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                      {exercise.image_uri ? (
+                        <Image source={{ uri: exercise.image_uri }} style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: "#1a1a1a" }} />
+                      ) : (
+                        <View style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: "#1a1a1a", alignItems: "center", justifyContent: "center" }}><Text style={{ color: "#555", fontSize: 10 }}>{index + 1}</Text></View>
+                      )}
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, flex: 1 }} numberOfLines={2}>{exercise.name ?? `Ejercicio ${index + 1}`}</Text>
+                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{totalSeries}×</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            ) : null}
+          </View>
+        ))}
+      </View>
+      <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Catálogo de ejercicios</Text>
+        <CatalogStatusNotice metadata={model.catalogAvailability} onRetry={actions.retryCatalog} testID="settings-exercise-catalog-status" />
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>{model.catalogSummary}</Text>
+        <Pressable testID="settings-open-exercise-catalog" onPress={actions.openCatalog} style={{ minHeight: 48, borderRadius: mobileTheme.radius.pill, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8 }}>
+          <Feather name="book-open" size={17} color="#07090D" />
+          <Text style={{ color: "#07090D", fontSize: 15, fontWeight: "800" }}>Consultar catálogo</Text>
+        </Pressable>
+      </View>
+      {model.localOnlyExercises.length > 0 ? (
+        <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
+          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Tus ejercicios (aún no en la app) ({model.localOnlyExercises.length})</Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Ejercicios que tienes en tus rutinas pero que todavía no están en la base de datos de la app. Se añadirán en próximas actualizaciones.</Text>
+          {model.localOnlyExercises.map((exercise) => (
+            <View key={exercise.name} style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
+              <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "#1a1a1a", alignItems: "center", justifyContent: "center" }}><Feather name="clock" size={16} color={mobileTheme.color.textSecondary} /></View>
+              <View style={{ flex: 1 }}><Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={2}>{exercise.name}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>Pendiente de añadir</Text></View>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, flexShrink: 0, marginLeft: 6 }}>{exercise.muscle}</Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+});
+
+function trainingCategoryLabel(category: string | undefined): string {
+  if (category === "strength") return "Fuerza";
+  if (category === "hypertrophy") return "Hipertrofia";
+  if (category === "cardio") return "Cardio";
+  if (category === "flexibility") return "Flexibilidad";
+  return "Sin categoría";
+}
+
+export const FoodsSettingsPanel = memo(function FoodsSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<FoodCatalogSettingsModel>;
+  actions: Readonly<FoodCatalogSettingsActions>;
+}) {
+  const foods = model.foods.filter((food) => !food.source || food.source === "alimento");
+  const categories = ["all", ...Array.from(new Set(foods.map((food) => food.category))).sort()];
+  const normalizedSearch = model.foodSearch.toLowerCase();
+  const filtered = foods.filter((food) => (
+    (!normalizedSearch || food.name.toLowerCase().includes(normalizedSearch) || food.category.toLowerCase().includes(normalizedSearch))
+    && (model.foodCategory === "all" || food.category === model.foodCategory)
+  ));
+  return (
+    <View style={{ gap: 12 }}>
+      <CatalogStatusNotice metadata={model.availability} onRetry={actions.retry} testID="settings-food-catalog-status" />
+      <CatalogSearch value={model.foodSearch} onChange={actions.changeFoodSearch} placeholder="Buscar alimento..." />
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+        {categories.map((category) => {
+          const active = model.foodCategory === category;
+          const label = category === "all" ? "Todos" : category.charAt(0).toUpperCase() + category.slice(1);
+          return (
+            <Pressable key={category} onPress={() => actions.changeFoodCategory(category)} style={{ borderWidth: 1, borderColor: active ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.pill, paddingHorizontal: 10, minHeight: 30, alignItems: "center", justifyContent: "center", backgroundColor: active ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgSurface }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "600" }}>{label}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Alimentos ({foods.length})</Text>
+        {filtered.length === 0 ? (
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>No se encontraron alimentos.</Text>
+        ) : filtered.map((food) => (
+          <View key={food.id}>
+            <FoodCatalogRow food={food} showCategory onPress={() => actions.selectFood(model.selectedFood?.id === food.id ? null : food)} />
+            {model.selectedFood?.id === food.id ? (
+              <FoodCatalogDetail food={food} testID={shellSurfaceTestId("settings-food-detail")} />
+            ) : null}
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+});
+
+export const ProductsSettingsPanel = memo(function ProductsSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<FoodCatalogSettingsModel>;
+  actions: Readonly<FoodCatalogSettingsActions>;
+}) {
+  const products = model.foods.filter((food) => food.source === "producto_comercial");
+  const normalizedSearch = model.productSearch.toLowerCase();
+  const filtered = products.filter((food) => !normalizedSearch || food.name.toLowerCase().includes(normalizedSearch));
+  return (
+    <View style={{ gap: 12 }}>
+      <CatalogStatusNotice metadata={model.availability} onRetry={actions.retry} testID="settings-product-catalog-status" />
+      <CatalogSearch value={model.productSearch} onChange={actions.changeProductSearch} placeholder="Buscar producto comercial..." />
+      <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Productos comerciales ({products.length})</Text>
+        {filtered.length === 0 ? (
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>{products.length === 0 ? "No hay productos comerciales." : "No se encontraron productos."}</Text>
+        ) : filtered.map((food) => <FoodCatalogRow key={food.id} food={food} onPress={() => actions.selectProduct(food)} />)}
+      </View>
+      {model.selectedProduct ? (
+        <FoodCatalogDetail food={model.selectedProduct} testID={shellSurfaceTestId("settings-product-detail")} onClose={() => actions.selectProduct(null)} showTitle />
+      ) : null}
+    </View>
+  );
+});
+
+function CatalogSearch({ value, onChange, placeholder }: { value: string; onChange(value: string): void; placeholder: string }) {
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgSurface, paddingHorizontal: 10, height: 40 }}>
+      <Feather name="search" size={16} color={mobileTheme.color.textSecondary} />
+      <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={mobileTheme.color.textSecondary} style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 14, marginLeft: 8 }} />
+      {value ? <Pressable onPress={() => onChange("")} style={{ padding: 4 }}><Feather name="x" size={16} color={mobileTheme.color.textSecondary} /></Pressable> : null}
+    </View>
+  );
+}
+
+function FoodCatalogRow({ food, onPress, showCategory = false }: { food: FoodCatalogSettingsModel["foods"][number]; onPress(): void; showCategory?: boolean }) {
+  return (
+    <Pressable onPress={onPress} style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
+      <SettingsFoodThumbnail food={food} />
+      <View style={{ flex: 1 }}>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>{food.name}</Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g</Text>
+      </View>
+      {showCategory ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{food.category}</Text> : null}
+    </Pressable>
+  );
+}
+
+function SettingsFoodThumbnail({ food }: { food: FoodCatalogSettingsModel["foods"][number] }) {
+  const [failed, setFailed] = useState(false);
+  const uri = foodCatalogImageUri(food);
+  if (uri && !failed) return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
+  const emoji = food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️";
+  return <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}><Text style={{ fontSize: 16 }}>{emoji}</Text></View>;
+}
+
+function FoodCatalogDetail({ food, testID, onClose, showTitle = false }: { food: FoodCatalogSettingsModel["foods"][number]; testID: string; onClose?: () => void; showTitle?: boolean }) {
+  const servingCalories = Math.round(food.calories_per_100g * food.serving_size_g / 100);
+  return (
+    <View testID={testID} style={{ backgroundColor: mobileTheme.color.bgSurface, borderRadius: 12, padding: 16, gap: 12, marginTop: showTitle ? 0 : 6, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle }}>
+      {showTitle ? <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}><Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>{food.name}</Text><Pressable onPress={onClose} style={{ padding: 4 }}><Feather name="x" size={20} color={mobileTheme.color.textSecondary} /></Pressable></View> : null}
+      {showTitle && food.image ? <Image source={{ uri: foodCatalogImageUri(food)! }} style={{ width: "100%", height: 160, borderRadius: 8 }} resizeMode="contain" /> : null}
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Por 100g</Text>
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        {[{ label: "Calorías", value: food.calories_per_100g, unit: "kcal", color: "#FF6B6B" }, { label: "Proteína", value: food.protein_per_100g, unit: "g", color: "#4ECDC4" }, { label: "Carbos", value: food.carbs_per_100g, unit: "g", color: "#FFE66D" }, { label: "Grasa", value: food.fat_per_100g, unit: "g", color: "#FF8A5C" }].map((macro) => <View key={macro.label} style={{ flex: 1, backgroundColor: `${macro.color}15`, borderRadius: 8, padding: 8, alignItems: "center", gap: 2 }}><Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>{macro.value}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.unit}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.label}</Text></View>)}
+      </View>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text><Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{food.fiber_per_100g}g</Text></View>
+      {food.serving_size_g > 0 ? <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>{showTitle ? `Ración típica (${food.serving_size_g}g)` : "Ración típica"}</Text>{!showTitle ? <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{food.serving_description || `${food.serving_size_g}g`}</Text> : null}<Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{servingCalories} kcal · P:{(food.protein_per_100g * food.serving_size_g / 100).toFixed(1)}g · C:{(food.carbs_per_100g * food.serving_size_g / 100).toFixed(1)}g · G:{(food.fat_per_100g * food.serving_size_g / 100).toFixed(1)}g</Text></View> : null}
+    </View>
+  );
+}
+
+export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<ProviderSettingsModel>;
+  actions: Readonly<ProviderSettingsActions>;
+}) {
+  const healthSafetyConsent = { providers: model.healthSafetyProviders };
+  const store = {
+    keys: model.keys,
+    chatProvider: model.chatProvider,
+    foodAIProvider: model.foodProvider,
+  };
+  const orderedProviderKeys = model.keys;
+  const providerDraftByProvider = model.drafts;
+  const providerKeyVisibility = model.keyVisibility;
+  const providerConnectionStatus = model.connectionStatus;
+  const providerSaveLoading = model.saveLoading;
+  const secureStoreAvailable = model.secureStoreAvailable;
+  const chatProviderDropdownOpen = model.chatDropdownOpen;
+  const foodAIProviderDropdownOpen = model.foodDropdownOpen;
+  const anthropicModelDropdownOpen = model.anthropic.dropdownOpen;
+  const anthropicModelFilter = model.anthropic.filter;
+  const anthropicModelOptionsLoading = model.anthropic.loading;
+  const anthropicModelOptionsMessage = model.anthropic.message;
+  const filteredAnthropicModelOptions = model.anthropic.options;
+  const openAIModelDropdownOpen = model.openai.dropdownOpen;
+  const openAIModelFilter = model.openai.filter;
+  const openAIModelOptionsLoading = model.openai.loading;
+  const openAIModelOptionsMessage = model.openai.message;
+  const filteredOpenAIModelOptions = model.openai.options;
+  const normalizedOpenAIProviderModel = model.openai.normalizedModel;
+  const selectedOpenAIReasoningEffort = model.openai.selectedEffort;
+  const supportedOpenAIReasoningEfforts = model.openai.supportedEfforts;
+  const googleModelDropdownOpen = model.google.dropdownOpen;
+  const googleModelFilter = model.google.filter;
+  const googleModelOptionsLoading = model.google.loading;
+  const googleModelOptionsMessage = model.google.message;
+  const filteredGoogleModelOptions = model.google.options;
+  const updateHealthSafetyConsent = (
+    provider: Provider,
+    next: { enabled: boolean; noticeSeen?: boolean },
+  ) => actions.updateHealthSafetyConsent(provider, next.enabled);
+  const selectChatProvider = actions.selectChatProvider;
+  const setChatProviderDropdownOpen = actions.setChatDropdownOpen;
+  const setFoodAIProviderDropdownOpen = actions.setFoodDropdownOpen;
+  const updateProviderDraft = actions.updateDraft;
+  const toggleProviderKeyVisibility = actions.toggleKeyVisibility;
+  const saveProviderApiKey = actions.save;
+  const openDeleteProviderApiKeyModal = actions.openDelete;
+  const toggleAnthropicModelDropdown = actions.toggleAnthropicDropdown;
+  const toggleOpenAIModelDropdown = actions.toggleOpenAIDropdown;
+  const toggleGoogleModelDropdown = actions.toggleGoogleDropdown;
+  const setAnthropicModelFilter = actions.setAnthropicFilter;
+  const setOpenAIModelFilter = actions.setOpenAIFilter;
+  const setGoogleModelFilter = actions.setGoogleFilter;
+  const setAnthropicModelOptionsMessage = actions.setAnthropicMessage;
+  const setOpenAIModelOptionsMessage = actions.setOpenAIMessage;
+  const setGoogleModelOptionsMessage = actions.setGoogleMessage;
+  const loadAnthropicModelOptions = actions.loadAnthropicModels;
+  const loadOpenAIModelOptions = actions.loadOpenAIModels;
+  const loadGoogleModelOptions = actions.loadGoogleModels;
+  const selectAnthropicModel = actions.selectAnthropicModel;
+  const selectOpenAIModel = actions.selectOpenAIModel;
+  const selectGoogleModel = actions.selectGoogleModel;
+  return (
+                  <View style={{ gap: 12 }}>
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "rgba(69,141,255,0.45)",
+                        borderRadius: mobileTheme.radius.lg,
+                        backgroundColor: "rgba(17,58,130,0.24)",
+                        padding: 12,
+                        flexDirection: "row",
+                        gap: 10,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 24,
+                          alignItems: "center",
+                          justifyContent: "flex-start",
+                          paddingTop: 1,
+                        }}
+                      >
+                        <Feather name="shield" size={16} color="#77A8FF" />
+                      </View>
+                      <Text style={{ color: "#77A8FF", flex: 1, lineHeight: 19 }}>
+                        Tus API Keys se almacenan cifradas localmente en tu dispositivo. GYMNASIA nunca las envía a nuestros servidores.
+                      </Text>
+                    </View>
+  
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "rgba(255,205,77,0.45)",
+                        borderRadius: mobileTheme.radius.lg,
+                        backgroundColor: "rgba(255,205,77,0.07)",
+                        padding: 12,
+                        gap: 10,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <Feather name="shield" size={16} color="#FFCD4D" />
+                        <Text style={{ color: "#FFCD4D", fontWeight: "800", flex: 1 }}>
+                          Evaluación sanitaria opcional
+                        </Text>
+                      </View>
+                      <Text style={{ color: mobileTheme.color.textSecondary, lineHeight: 18, fontSize: 12 }}>
+                        En consultas ambiguas puede enviar solo el texto de esa consulta al proveedor elegido para una segunda clasificación. No envía historial, fotos ni memoria local. El filtro determinista y el buffer seguro funcionan siempre, aunque esto esté desactivado.
+                      </Text>
+                      {(["anthropic", "openai", "google"] as Provider[]).map((provider) => {
+                        const enabled = healthSafetyConsent.providers[provider];
+                        return (
+                          <Pressable
+                            key={provider}
+                            accessibilityRole="switch"
+                            accessibilityState={{ checked: enabled }}
+                            accessibilityLabel={`Evaluación sanitaria con ${PROVIDER_UI_META[provider].label}`}
+                            onPress={() => updateHealthSafetyConsent(provider, {
+                              enabled: !enabled,
+                              noticeSeen: true,
+                            })}
+                            style={{ flexDirection: "row", alignItems: "center", gap: 10, minHeight: 38 }}
+                          >
+                            <View
+                              style={{
+                                width: 38,
+                                height: 22,
+                                borderRadius: 999,
+                                padding: 2,
+                                alignItems: enabled ? "flex-end" : "flex-start",
+                                backgroundColor: enabled ? mobileTheme.color.brandPrimary : "#3A414C",
+                              }}
+                            >
+                              <View style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: enabled ? "#06090D" : "#A2AAB5" }} />
+                            </View>
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600", flex: 1 }}>
+                              {PROVIDER_UI_META[provider].label}
+                            </Text>
+                            <Text style={{ color: enabled ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontSize: 11 }}>
+                              {enabled ? "Activada" : "Desactivada"}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+  
+                    {/* Provider selector dropdowns */}
+                    {[
+                      {
+                        label: "Gymnasia Coach",
+                        surfaceId: "chat-provider-dropdown" as const,
+                        value: store.chatProvider,
+                        onChange: (p: Provider) => { void selectChatProvider(p); },
+                        open: chatProviderDropdownOpen,
+                        setOpen: setChatProviderDropdownOpen,
+                        otherClose: () => setFoodAIProviderDropdownOpen(false),
+                      },
+                      {
+                        label: "Gymnasia Food Estimator",
+                        surfaceId: "food-provider-dropdown" as const,
+                        value: store.foodAIProvider,
+                        onChange: (p: Provider) => { actions.selectFoodProvider(p); },
+                        open: foodAIProviderDropdownOpen,
+                        setOpen: setFoodAIProviderDropdownOpen,
+                        otherClose: () => setChatProviderDropdownOpen(false),
+                      },
+                    ].map((dropdown) => {
+                      const selectedKey = dropdown.value
+                        ? store.keys.find((k) => k.provider === dropdown.value)
+                        : null;
+                      const selectedLabel = selectedKey
+                        ? `${PROVIDER_UI_META[selectedKey.provider].label} · ${selectedKey.model || DEFAULT_MODELS[selectedKey.provider]}`
+                        : "Sin proveedor";
+                      return (
+                        <View key={dropdown.label} style={{ gap: 4 }}>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>
+                            {dropdown.label}
+                          </Text>
+                          <Pressable
+                            testID={`${dropdown.surfaceId}-toggle`}
+                            onPress={() => { dropdown.otherClose(); dropdown.setOpen(!dropdown.open); }}
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              borderWidth: 1,
+                              borderColor: dropdown.open ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                              borderRadius: mobileTheme.radius.md,
+                              paddingHorizontal: 12,
+                              paddingVertical: 10,
+                              backgroundColor: mobileTheme.color.bgSurface,
+                            }}
+                          >
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14 }}>
+                              {selectedLabel}
+                            </Text>
+                            <Feather name={dropdown.open ? "chevron-up" : "chevron-down"} size={16} color={mobileTheme.color.textSecondary} />
+                          </Pressable>
+                          {dropdown.open ? (
+                            <View
+                              testID={shellSurfaceTestId(dropdown.surfaceId)}
+                              style={{
+                                borderWidth: 1,
+                                borderColor: mobileTheme.color.borderSubtle,
+                                borderRadius: mobileTheme.radius.md,
+                                backgroundColor: mobileTheme.color.bgSurface,
+                                overflow: "hidden",
+                              }}
+                            >
+                              {(["anthropic", "openai", "google"] as Provider[]).map((provider) => {
+                                const k = store.keys.find((item) => item.provider === provider);
+                                const hasKey = !!providerCredential(k?.api_key, IS_FAKE_PROVIDER_MODE);
+                                const isSelected = dropdown.value === provider;
+                                return (
+                                  <Pressable
+                                    key={provider}
+                                    onPress={() => hasKey && dropdown.onChange(provider)}
+                                    style={{
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      paddingHorizontal: 12,
+                                      paddingVertical: 10,
+                                      backgroundColor: isSelected ? "rgba(203,255,26,0.08)" : "transparent",
+                                      opacity: hasKey ? 1 : 0.4,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: 8,
+                                        backgroundColor: PROVIDER_UI_META[provider].avatar_bg,
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      <Text style={{ color: PROVIDER_UI_META[provider].avatar_text, fontSize: 14, fontWeight: "700" }}>
+                                        {PROVIDER_UI_META[provider].label[0]}
+                                      </Text>
+                                    </View>
+                                    <View style={{ flex: 1 }}>
+                                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+                                        {PROVIDER_UI_META[provider].label}
+                                      </Text>
+                                      {!hasKey ? (
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>Sin API key</Text>
+                                      ) : null}
+                                    </View>
+                                    {isSelected ? <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} /> : null}
+                                  </Pressable>
+                                );
+                              })}
+                            </View>
+                          ) : null}
+                        </View>
+                      );
+                    })}
+  
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 26 }}>
+                      API Keys (BYOK)
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -4 }}>
+                      Configura tus propias claves para usar el asistente IA. Cada proveedor ofrece diferentes modelos y capacidades.
+                    </Text>
+  
+                    {orderedProviderKeys.map((key) => {
+                      const providerMeta = PROVIDER_UI_META[key.provider];
+                      const draft = providerDraftByProvider[key.provider] ?? {
+                        api_key: key.api_key,
+                        model: key.model,
+                        workspace_id: key.workspace_id ?? "",
+                      };
+                      const hasDraftApiKey = !!providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+                      const hasPersistedProviderApiKey = !!providerCredential(key.api_key, IS_FAKE_PROVIDER_MODE);
+                      const keyVisible = providerKeyVisibility[key.provider];
+                      const connectionStatus = providerConnectionStatus[key.provider] ?? {
+                        state: hasDraftApiKey ? "unknown" : "disconnected",
+                        detail: hasDraftApiKey
+                          ? PROVIDER_STATUS_COPY.warningPending
+                          : PROVIDER_STATUS_COPY.warningNoKey,
+                        severity: "warning",
+                      };
+                      const statusMeta = providerConnectionBadge(connectionStatus);
+                      const isSavingProvider = providerSaveLoading[key.provider];
+                      const providerConnectionDetailColor = providerDetailColorBySeverity(
+                        connectionStatus.severity,
+                      );
+                      return (
+                        <View
+                          key={key.provider}
+                          testID={`provider-card-${key.provider}`}
+                          style={{
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            borderRadius: mobileTheme.radius.lg,
+                            backgroundColor: mobileTheme.color.bgSurface,
+                            padding: 12,
+                            gap: 10,
+                          }}
+                        >
+                          <View
+                            style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}
+                          >
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+                              <View
+                                style={{
+                                  width: 42,
+                                  height: 42,
+                                  borderRadius: 12,
+                                  backgroundColor: providerMeta.avatar_bg,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={{ color: providerMeta.avatar_text, fontSize: 22, fontWeight: "700" }}>
+                                  {providerMeta.label.charAt(0)}
+                                </Text>
+                              </View>
+                              <View style={{ flex: 1 }}>
+                                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 29 }}>
+                                  {providerMeta.label}
+                                </Text>
+                                <Text
+                                  numberOfLines={1}
+                                  style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}
+                                >
+                                  {draft.model.trim() || providerMeta.models_hint}
+                                </Text>
+                              </View>
+                            </View>
+                            <View
+                              style={{
+                                borderRadius: mobileTheme.radius.pill,
+                                paddingHorizontal: 10,
+                                minHeight: 28,
+                                backgroundColor: statusMeta.backgroundColor,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexDirection: "row",
+                                gap: 6,
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: 99,
+                                  backgroundColor: statusMeta.dotColor,
+                                }}
+                              />
+                              <Text
+                                style={{
+                                  color: statusMeta.textColor,
+                                  fontWeight: "700",
+                                  fontSize: 12,
+                                }}
+                              >
+                                {statusMeta.text}
+                              </Text>
+                            </View>
+                          </View>
+  
+                          <View
+                            style={{
+                              minHeight: 48,
+                              borderRadius: mobileTheme.radius.md,
+                              borderWidth: 1,
+                              borderColor: "rgba(61,70,82,0.9)",
+                              backgroundColor: "#1A1E25",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              paddingLeft: 12,
+                              paddingRight: 8,
+                              gap: 8,
+                            }}
+                          >
+                            <Feather name="key" size={14} color="#778091" />
+                            <TextInput
+                              testID={`provider-api-key-${key.provider}`}
+                              style={{
+                                flex: 1,
+                                minHeight: 40,
+                                color: hasDraftApiKey ? mobileTheme.color.textSecondary : "#7E8795",
+                                paddingHorizontal: 0,
+                              }}
+                              value={draft.api_key}
+                              onFocus={() => {}}
+                              onChangeText={(value) => updateProviderDraft(key.provider, { api_key: value })}
+                              placeholder="Añade tu API Key"
+                              placeholderTextColor={mobileTheme.color.textSecondary}
+                              autoCapitalize="none"
+                              autoCorrect={false}
+                              secureTextEntry={!keyVisible}
+                            />
+                            <Pressable
+                              onPress={() => {
+  
+                                toggleProviderKeyVisibility(key.provider);
+                              }}
+                              style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 10,
+                                backgroundColor: "#222833",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Feather
+                                name={keyVisible ? "eye-off" : "eye"}
+                                size={16}
+                                color={mobileTheme.color.textSecondary}
+                              />
+                            </Pressable>
+                          </View>
+  
+                          {key.provider === "anthropic" ? (
+                            <View style={{ gap: 6 }}>
+                              <View
+                                style={{
+                                  minHeight: 48,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: "rgba(61,70,82,0.9)",
+                                  backgroundColor: "#1A1E25",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  paddingHorizontal: 12,
+                                  gap: 8,
+                                }}
+                              >
+                                <Feather name="briefcase" size={14} color="#778091" />
+                                <TextInput
+                                  testID="provider-workspace-id-anthropic"
+                                  style={{
+                                    flex: 1,
+                                    minHeight: 40,
+                                    color: mobileTheme.color.textPrimary,
+                                    paddingHorizontal: 0,
+                                  }}
+                                  value={draft.workspace_id ?? ""}
+                                  onChangeText={(value) => updateProviderDraft(
+                                    "anthropic",
+                                    { workspace_id: value },
+                                  )}
+                                  placeholder="Workspace ID (wrkspc_…) — opcional"
+                                  placeholderTextColor={mobileTheme.color.textSecondary}
+                                  autoCapitalize="none"
+                                  autoCorrect={false}
+                                />
+                              </View>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
+                                Solo lo exigen las claves de Anthropic vinculadas a identidad. Lo encontrarás en la consola de Anthropic, dentro de Settings → Workspaces.
+                              </Text>
+                            </View>
+                          ) : null}
+  
+                          <View style={{ flexDirection: "row", gap: 8 }}>
+                            <Pressable
+                              testID={`provider-save-${key.provider}`}
+                              onPress={() => saveProviderApiKey(key.provider)}
+                              disabled={isSavingProvider}
+                              style={{
+                                flex: 1,
+                                height: 44,
+                                borderRadius: mobileTheme.radius.md,
+                                backgroundColor: mobileTheme.color.brandPrimary,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                opacity: isSavingProvider ? 0.7 : 1,
+                              }}
+                            >
+                              <Text style={{ color: "#06090D", fontWeight: "700" }}>
+                                {isSavingProvider ? "Guardando..." : "Guardar"}
+                              </Text>
+                            </Pressable>
+                            <Pressable
+                              testID={`provider-delete-${key.provider}`}
+                              onPress={() => {
+                                if (!hasPersistedProviderApiKey) return;
+                                openDeleteProviderApiKeyModal(key.provider);
+                              }}
+                              disabled={!hasPersistedProviderApiKey}
+                              style={{
+                                flex: 1,
+                                height: 44,
+                                borderRadius: mobileTheme.radius.md,
+                                backgroundColor: hasPersistedProviderApiKey ? "#FF4D4F" : "#2F3440",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexDirection: "row",
+                                gap: 8,
+                                opacity: hasPersistedProviderApiKey ? 1 : 0.6,
+                              }}
+                            >
+                              <Feather
+                                name="trash-2"
+                                size={14}
+                                color={hasPersistedProviderApiKey ? "#FFDDE0" : "#9AA2AE"}
+                              />
+                              <Text
+                                style={{
+                                  color: hasPersistedProviderApiKey ? "#FFE8EB" : "#9AA2AE",
+                                  fontWeight: "700",
+                                }}
+                              >
+                                Eliminar
+                              </Text>
+                            </Pressable>
+                          </View>
+  
+                          <Text
+                            testID={`provider-status-detail-${key.provider}`}
+                            style={{ color: providerConnectionDetailColor, fontSize: 12 }}
+                          >
+                            {connectionStatus.detail}
+                          </Text>
+  
+                          {key.provider === "anthropic" ? (
+                              <View style={{ gap: 8 }}>
+                                <Pressable
+                                  onPress={() => {
+      
+                                    toggleAnthropicModelDropdown();
+                                  }}
+                                  style={{
+                                    minHeight: 44,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                                    <Feather name="list" size={14} color={mobileTheme.color.textSecondary} />
+                                    <Text
+                                      numberOfLines={1}
+                                      style={{ color: mobileTheme.color.textPrimary, flex: 1 }}
+                                    >
+                                      {draft.model.trim() || DEFAULT_MODELS.anthropic}
+                                    </Text>
+                                  </View>
+                                  {anthropicModelOptionsLoading && anthropicModelDropdownOpen ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather
+                                      name={anthropicModelDropdownOpen ? "chevron-up" : "chevron-down"}
+                                      size={16}
+                                      color={mobileTheme.color.textSecondary}
+                                    />
+                                  )}
+                                </Pressable>
+  
+                                <Pressable
+                                  onPress={() => {
+      
+                                    const anthropicApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+                                    if (!anthropicApiKey) {
+                                      setAnthropicModelOptionsMessage({
+                                        text: PROVIDER_STATUS_COPY.warningNoKey,
+                                        severity: "warning",
+                                      });
+                                      return;
+                                    }
+                                    loadAnthropicModelOptions(
+                                      anthropicApiKey,
+                                      draft.workspace_id,
+                                    );
+                                  }}
+                                  style={{
+                                    minHeight: 34,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: "rgba(69,141,255,0.35)",
+                                    backgroundColor: "rgba(69,141,255,0.12)",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexDirection: "row",
+                                    gap: 6,
+                                    paddingHorizontal: 10,
+                                    alignSelf: "flex-start",
+                                  }}
+                                >
+                                  {anthropicModelOptionsLoading ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather name="refresh-cw" size={12} color="#77A8FF" />
+                                  )}
+                                  <Text style={{ color: "#77A8FF", fontSize: 12, fontWeight: "700" }}>
+                                    Actualizar modelos
+                                  </Text>
+                                </Pressable>
+  
+                                {anthropicModelDropdownOpen ? (
+                                  <View
+                                    testID={shellSurfaceTestId("anthropic-model-dropdown")}
+                                    style={{
+                                      borderWidth: 1,
+                                      borderColor: mobileTheme.color.borderSubtle,
+                                      borderRadius: mobileTheme.radius.md,
+                                      backgroundColor: mobileTheme.color.bgApp,
+                                      maxHeight: 210,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        paddingHorizontal: 10,
+                                        paddingTop: 10,
+                                        paddingBottom: 8,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: "rgba(61,70,82,0.5)",
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          minHeight: 36,
+                                          borderRadius: mobileTheme.radius.md,
+                                          borderWidth: 1,
+                                          borderColor: "rgba(61,70,82,0.8)",
+                                          backgroundColor: "#1A1E25",
+                                          paddingHorizontal: 10,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
+                                        <TextInput
+                                          style={{
+                                            flex: 1,
+                                            minHeight: 34,
+                                            color: mobileTheme.color.textPrimary,
+                                            paddingHorizontal: 0,
+                                            fontSize: 12,
+                                          }}
+                                          value={anthropicModelFilter}
+                                          onChangeText={setAnthropicModelFilter}
+                                          placeholder="Filtrar modelos..."
+                                          placeholderTextColor={mobileTheme.color.textSecondary}
+                                          autoCapitalize="none"
+                                          autoCorrect={false}
+                                        />
+                                      </View>
+                                    </View>
+                                    {anthropicModelOptionsLoading ? (
+                                      <View
+                                        style={{
+                                          minHeight: 64,
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <ActivityIndicator size="small" color="#77A8FF" />
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          Cargando modelos de Anthropic...
+                                        </Text>
+                                      </View>
+                                    ) : filteredAnthropicModelOptions.length === 0 ? (
+                                      <View style={{ padding: 12 }}>
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          No hay modelos disponibles para mostrar.
+                                        </Text>
+                                      </View>
+                                    ) : (
+                                      <ScrollView nestedScrollEnabled>
+                                        {filteredAnthropicModelOptions.map((modelOption) => {
+                                          const selected = modelOption.id === draft.model.trim();
+                                          return (
+                                            <Pressable
+                                              key={modelOption.id}
+                                              onPress={() => {
+                  
+                                                selectAnthropicModel(modelOption.id);
+                                              }}
+                                              style={{
+                                                minHeight: 46,
+                                                paddingHorizontal: 12,
+                                                paddingVertical: 8,
+                                                borderBottomWidth: 1,
+                                                borderBottomColor: "rgba(61,70,82,0.5)",
+                                                backgroundColor: selected ? "rgba(69,141,255,0.16)" : "transparent",
+                                                justifyContent: "center",
+                                              }}
+                                            >
+                                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                                                {modelOption.id}
+                                              </Text>
+                                              {modelOption.display_name ? (
+                                                <Text
+                                                  numberOfLines={1}
+                                                  style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}
+                                                >
+                                                  {modelOption.display_name}
+                                                </Text>
+                                              ) : null}
+                                            </Pressable>
+                                          );
+                                        })}
+                                      </ScrollView>
+                                    )}
+                                  </View>
+                                ) : null}
+  
+                                {anthropicModelOptionsMessage ? (
+                                  <Text
+                                    style={{
+                                      color: providerDetailColorBySeverity(anthropicModelOptionsMessage.severity),
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    {anthropicModelOptionsMessage.text}
+                                  </Text>
+                                ) : null}
+                              </View>
+                            ) : key.provider === "openai" ? (
+                              <View style={{ gap: 8 }}>
+                                <Pressable
+                                  onPress={() => {
+      
+                                    toggleOpenAIModelDropdown();
+                                  }}
+                                  style={{
+                                    minHeight: 44,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                                    <Feather name="list" size={14} color={mobileTheme.color.textSecondary} />
+                                    <Text
+                                      numberOfLines={1}
+                                      style={{ color: mobileTheme.color.textPrimary, flex: 1 }}
+                                    >
+                                      {draft.model.trim() || DEFAULT_MODELS.openai}
+                                    </Text>
+                                  </View>
+                                  {openAIModelOptionsLoading && openAIModelDropdownOpen ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather
+                                      name={openAIModelDropdownOpen ? "chevron-up" : "chevron-down"}
+                                      size={16}
+                                      color={mobileTheme.color.textSecondary}
+                                    />
+                                  )}
+                                </Pressable>
+  
+                                <Pressable
+                                  onPress={() => {
+      
+                                    const openAIApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+                                    if (!openAIApiKey) {
+                                      setOpenAIModelOptionsMessage({
+                                        text: PROVIDER_STATUS_COPY.warningNoKey,
+                                        severity: "warning",
+                                      });
+                                      return;
+                                    }
+                                    loadOpenAIModelOptions(openAIApiKey);
+                                  }}
+                                  style={{
+                                    minHeight: 34,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: "rgba(69,141,255,0.35)",
+                                    backgroundColor: "rgba(69,141,255,0.12)",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexDirection: "row",
+                                    gap: 6,
+                                    paddingHorizontal: 10,
+                                    alignSelf: "flex-start",
+                                  }}
+                                >
+                                  {openAIModelOptionsLoading ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather name="refresh-cw" size={12} color="#77A8FF" />
+                                  )}
+                                  <Text style={{ color: "#77A8FF", fontSize: 12, fontWeight: "700" }}>
+                                    Actualizar modelos
+                                  </Text>
+                                </Pressable>
+  
+                                {openAIModelDropdownOpen ? (
+                                  <View
+                                    testID={shellSurfaceTestId("openai-model-dropdown")}
+                                    style={{
+                                      borderWidth: 1,
+                                      borderColor: mobileTheme.color.borderSubtle,
+                                      borderRadius: mobileTheme.radius.md,
+                                      backgroundColor: mobileTheme.color.bgApp,
+                                      maxHeight: 210,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        paddingHorizontal: 10,
+                                        paddingTop: 10,
+                                        paddingBottom: 8,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: "rgba(61,70,82,0.5)",
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          minHeight: 36,
+                                          borderRadius: mobileTheme.radius.md,
+                                          borderWidth: 1,
+                                          borderColor: "rgba(61,70,82,0.8)",
+                                          backgroundColor: "#1A1E25",
+                                          paddingHorizontal: 10,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
+                                        <TextInput
+                                          style={{
+                                            flex: 1,
+                                            minHeight: 34,
+                                            color: mobileTheme.color.textPrimary,
+                                            paddingHorizontal: 0,
+                                            fontSize: 12,
+                                          }}
+                                          value={openAIModelFilter}
+                                          onChangeText={setOpenAIModelFilter}
+                                          placeholder="Filtrar modelos..."
+                                          placeholderTextColor={mobileTheme.color.textSecondary}
+                                          autoCapitalize="none"
+                                          autoCorrect={false}
+                                        />
+                                      </View>
+                                    </View>
+                                    {openAIModelOptionsLoading ? (
+                                      <View
+                                        style={{
+                                          minHeight: 64,
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <ActivityIndicator size="small" color="#77A8FF" />
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          Cargando modelos de OpenAI...
+                                        </Text>
+                                      </View>
+                                    ) : filteredOpenAIModelOptions.length === 0 ? (
+                                      <View style={{ padding: 12 }}>
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          No hay modelos disponibles para mostrar.
+                                        </Text>
+                                      </View>
+                                    ) : (
+                                      <ScrollView nestedScrollEnabled>
+                                        {filteredOpenAIModelOptions.map((modelOption) => {
+                                          const selected = modelOption.id === draft.model.trim();
+                                          return (
+                                            <Pressable
+                                              key={modelOption.id}
+                                              onPress={() => {
+                  
+                                                selectOpenAIModel(modelOption.id);
+                                              }}
+                                              style={{
+                                                minHeight: 46,
+                                                paddingHorizontal: 12,
+                                                paddingVertical: 8,
+                                                borderBottomWidth: 1,
+                                                borderBottomColor: "rgba(61,70,82,0.5)",
+                                                backgroundColor: selected ? "rgba(69,141,255,0.16)" : "transparent",
+                                                justifyContent: "center",
+                                              }}
+                                            >
+                                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                                                {modelOption.id}
+                                              </Text>
+                                              {modelOption.owned_by ? (
+                                                <Text
+                                                  numberOfLines={1}
+                                                  style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}
+                                                >
+                                                  {modelOption.owned_by}
+                                                </Text>
+                                              ) : null}
+                                            </Pressable>
+                                          );
+                                        })}
+                                      </ScrollView>
+                                    )}
+                                  </View>
+                                ) : null}
+  
+                                <View style={{ gap: 8 }}>
+                                  <View style={{ gap: 4 }}>
+                                    <Text
+                                      style={{
+                                        color: mobileTheme.color.textSecondary,
+                                        fontSize: 12,
+                                        fontWeight: "700",
+                                      }}
+                                    >
+                                      Esfuerzo de razonamiento
+                                    </Text>
+                                    <Text
+                                      style={{
+                                        color: mobileTheme.color.textSecondary,
+                                        fontSize: 11,
+                                        lineHeight: 16,
+                                      }}
+                                    >
+                                      Se envia a OpenAI como reasoning.effort en la Responses API.
+                                    </Text>
+                                  </View>
+                                  {supportedOpenAIReasoningEfforts.length > 0 ? (
+                                    <>
+                                      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                                        {supportedOpenAIReasoningEfforts.map((effort) => {
+                                          const selected = effort === selectedOpenAIReasoningEffort;
+                                          return (
+                                            <Pressable
+                                              key={effort}
+                                              onPress={() => updateProviderDraft("openai", { reasoning_effort: effort })}
+                                              style={{
+                                                minHeight: 34,
+                                                borderRadius: mobileTheme.radius.pill,
+                                                borderWidth: 1,
+                                                borderColor: selected
+                                                  ? "rgba(69,141,255,0.5)"
+                                                  : mobileTheme.color.borderSubtle,
+                                                backgroundColor: selected
+                                                  ? "rgba(69,141,255,0.16)"
+                                                  : mobileTheme.color.bgApp,
+                                                paddingHorizontal: 12,
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                              }}
+                                            >
+                                              <Text
+                                                style={{
+                                                  color: selected ? "#77A8FF" : mobileTheme.color.textPrimary,
+                                                  fontSize: 12,
+                                                  fontWeight: "700",
+                                                }}
+                                              >
+                                                {OPENAI_REASONING_EFFORT_LABELS[effort]}
+                                              </Text>
+                                            </Pressable>
+                                          );
+                                        })}
+                                      </View>
+                                      {selectedOpenAIReasoningEffort ? (
+                                        <Text
+                                          style={{
+                                            color: mobileTheme.color.textSecondary,
+                                            fontSize: 11,
+                                            lineHeight: 16,
+                                          }}
+                                        >
+                                          Valor actual: {selectedOpenAIReasoningEffort} para {normalizedOpenAIProviderModel}.
+                                        </Text>
+                                      ) : null}
+                                    </>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#F5C26B",
+                                        fontSize: 11,
+                                        lineHeight: 16,
+                                      }}
+                                    >
+                                      El modelo seleccionado no documenta niveles de reasoning.effort, asi que la app no enviara este campo.
+                                    </Text>
+                                  )}
+                                </View>
+  
+                                {openAIModelOptionsMessage ? (
+                                  <Text
+                                    style={{
+                                      color: providerDetailColorBySeverity(openAIModelOptionsMessage.severity),
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    {openAIModelOptionsMessage.text}
+                                  </Text>
+                                ) : null}
+                              </View>
+                            ) : key.provider === "google" ? (
+                              <View style={{ gap: 8 }}>
+                                <Pressable
+                                  testID="provider-model-dropdown-google"
+                                  onPress={() => {
+      
+                                    toggleGoogleModelDropdown();
+                                  }}
+                                  style={{
+                                    minHeight: 44,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                                    <Feather name="list" size={14} color={mobileTheme.color.textSecondary} />
+                                    <Text
+                                      numberOfLines={1}
+                                      style={{ color: mobileTheme.color.textPrimary, flex: 1 }}
+                                    >
+                                      {draft.model.trim() || DEFAULT_MODELS.google}
+                                    </Text>
+                                  </View>
+                                  {googleModelOptionsLoading && googleModelDropdownOpen ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather
+                                      name={googleModelDropdownOpen ? "chevron-up" : "chevron-down"}
+                                      size={16}
+                                      color={mobileTheme.color.textSecondary}
+                                    />
+                                  )}
+                                </Pressable>
+  
+                                <Pressable
+                                  testID="provider-model-refresh-google"
+                                  onPress={() => {
+      
+                                    const googleApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+                                    if (!googleApiKey) {
+                                      setGoogleModelOptionsMessage({
+                                        text: PROVIDER_STATUS_COPY.warningNoKey,
+                                        severity: "warning",
+                                      });
+                                      return;
+                                    }
+                                    loadGoogleModelOptions(googleApiKey);
+                                  }}
+                                  style={{
+                                    minHeight: 34,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: "rgba(69,141,255,0.35)",
+                                    backgroundColor: "rgba(69,141,255,0.12)",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexDirection: "row",
+                                    gap: 6,
+                                    paddingHorizontal: 10,
+                                    alignSelf: "flex-start",
+                                  }}
+                                >
+                                  {googleModelOptionsLoading ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather name="refresh-cw" size={12} color="#77A8FF" />
+                                  )}
+                                  <Text style={{ color: "#77A8FF", fontSize: 12, fontWeight: "700" }}>
+                                    Actualizar modelos
+                                  </Text>
+                                </Pressable>
+  
+                                {googleModelDropdownOpen ? (
+                                  <View
+                                    testID={shellSurfaceTestId("google-model-dropdown")}
+                                    style={{
+                                      borderWidth: 1,
+                                      borderColor: mobileTheme.color.borderSubtle,
+                                      borderRadius: mobileTheme.radius.md,
+                                      backgroundColor: mobileTheme.color.bgApp,
+                                      maxHeight: 210,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        paddingHorizontal: 10,
+                                        paddingTop: 10,
+                                        paddingBottom: 8,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: "rgba(61,70,82,0.5)",
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          minHeight: 36,
+                                          borderRadius: mobileTheme.radius.md,
+                                          borderWidth: 1,
+                                          borderColor: "rgba(61,70,82,0.8)",
+                                          backgroundColor: "#1A1E25",
+                                          paddingHorizontal: 10,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
+                                        <TextInput
+                                          style={{
+                                            flex: 1,
+                                            minHeight: 34,
+                                            color: mobileTheme.color.textPrimary,
+                                            paddingHorizontal: 0,
+                                            fontSize: 12,
+                                          }}
+                                          value={googleModelFilter}
+                                          onChangeText={setGoogleModelFilter}
+                                          placeholder="Filtrar modelos..."
+                                          placeholderTextColor={mobileTheme.color.textSecondary}
+                                          autoCapitalize="none"
+                                          autoCorrect={false}
+                                        />
+                                      </View>
+                                    </View>
+                                    {googleModelOptionsLoading ? (
+                                      <View
+                                        style={{
+                                          minHeight: 64,
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <ActivityIndicator size="small" color="#77A8FF" />
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          Cargando modelos de Google...
+                                        </Text>
+                                      </View>
+                                    ) : filteredGoogleModelOptions.length === 0 ? (
+                                      <View style={{ padding: 12 }}>
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          No hay modelos disponibles para mostrar.
+                                        </Text>
+                                      </View>
+                                    ) : (
+                                      <ScrollView nestedScrollEnabled>
+                                        {filteredGoogleModelOptions.map((modelOption) => {
+                                          const selected = modelOption.id === draft.model.trim();
+                                          return (
+                                            <Pressable
+                                              key={modelOption.id}
+                                              testID={`provider-model-option-google-${modelOption.id}`}
+                                              onPress={() => {
+                  
+                                                selectGoogleModel(modelOption.id);
+                                              }}
+                                              style={{
+                                                minHeight: 46,
+                                                paddingHorizontal: 12,
+                                                paddingVertical: 8,
+                                                borderBottomWidth: 1,
+                                                borderBottomColor: "rgba(61,70,82,0.5)",
+                                                backgroundColor: selected ? "rgba(69,141,255,0.16)" : "transparent",
+                                                justifyContent: "center",
+                                              }}
+                                            >
+                                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                                                {modelOption.id}
+                                              </Text>
+                                              {modelOption.display_name ? (
+                                                <Text
+                                                  numberOfLines={1}
+                                                  style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}
+                                                >
+                                                  {modelOption.display_name}
+                                                </Text>
+                                              ) : null}
+                                            </Pressable>
+                                          );
+                                        })}
+                                      </ScrollView>
+                                    )}
+                                  </View>
+                                ) : null}
+  
+                                {googleModelOptionsMessage ? (
+                                  <Text
+                                    style={{
+                                      color: providerDetailColorBySeverity(googleModelOptionsMessage.severity),
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    {googleModelOptionsMessage.text}
+                                  </Text>
+                                ) : null}
+                              </View>
+                            ) : (
+                              <TextInput
+                                style={{
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 12,
+                                }}
+                                value={draft.model}
+                                onChangeText={(value) => updateProviderDraft(key.provider, { model: value })}
+                                placeholder={`Modelo (default: ${DEFAULT_MODELS[key.provider]})`}
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                              />
+                            )}
+                        </View>
+                      );
+                    })}
+  
+                    {!secureStoreAvailable ? (
+                      <View
+                        style={{
+                          borderWidth: 1,
+                          borderColor: "rgba(255,177,102,0.45)",
+                          borderRadius: mobileTheme.radius.md,
+                          backgroundColor: "rgba(255,177,102,0.08)",
+                          padding: 10,
+                        }}
+                      >
+                        <Text style={{ color: "#ffd7a8", fontSize: 12 }}>
+                          {model.isWeb
+                            ? "El navegador no dispone de llavero seguro. Las claves se guardan en el almacenamiento local del navegador, sin cifrado del sistema."
+                            : "El llavero seguro no está disponible. No se guardarán cambios de proveedor hasta que vuelva a estar accesible."}
+                        </Text>
+                      </View>
+                    ) : null}
+  
+                  </View>
+  
+  );
+});
+
+type ControllerSlice<Model, Actions> = {
+  model: Readonly<Model>;
+  actions: Readonly<Actions>;
+};
+
+export type SettingsScreenProps = {
+  activeTab: SettingsTabKey;
+  diet: ControllerSlice<DietSettingsModel, DietSettingsActions>;
+  provider: ControllerSlice<ProviderSettingsModel, ProviderSettingsActions>;
+  memory: ControllerSlice<MemorySettingsModel, MemorySettingsActions>;
+  training: ControllerSlice<TrainingSettingsModel, TrainingSettingsActions>;
+  foodCatalog: ControllerSlice<FoodCatalogSettingsModel, FoodCatalogSettingsActions>;
+  personalFoods: ControllerSlice<PersonalFoodsSettingsModel, PersonalFoodsSettingsActions>;
+  measurements: ControllerSlice<MeasurementsSettingsModel, MeasurementsSettingsActions>;
+  preferences: UserPreferences;
+  notifications: ControllerSlice<NotificationSettingsModel, NotificationSettingsActions>;
+  data: ControllerSlice<DataSettingsModel, DataSettingsActions>;
+  traces: ControllerSlice<TraceSettingsModel, TraceSettingsActions>;
+  personalFoodAssistant: ReactNode;
+  runtimeFooter: ReactNode;
+  legalFooter: ReactNode;
+};
+
+export const SettingsScreen = memo(function SettingsScreen({
+  activeTab,
+  diet,
+  provider,
+  memory,
+  training,
+  foodCatalog,
+  personalFoods,
+  measurements,
+  preferences,
+  notifications,
+  data,
+  traces,
+  personalFoodAssistant,
+  runtimeFooter,
+  legalFooter,
+}: SettingsScreenProps) {
+  return (
+    <View style={{ gap: 12 }}>
+      {activeTab === "diet" ? <DietSettingsPanel model={diet.model} actions={diet.actions} /> : null}
+      {activeTab === "provider" ? <ProviderSettingsPanel model={provider.model} actions={provider.actions} /> : null}
+      {activeTab === "memory" ? <MemorySettingsPanel model={memory.model} actions={memory.actions} /> : null}
+      {activeTab === "training" ? <TrainingSettingsPanel model={training.model} actions={training.actions} /> : null}
+      {activeTab === "foods" ? <FoodsSettingsPanel model={foodCatalog.model} actions={foodCatalog.actions} /> : null}
+      {activeTab === "products" ? <ProductsSettingsPanel model={foodCatalog.model} actions={foodCatalog.actions} /> : null}
+      {activeTab === "personalFoods" ? (
+        <PersonalFoodsSettingsPanel
+          model={personalFoods.model}
+          actions={personalFoods.actions}
+          assistant={personalFoodAssistant}
+        />
+      ) : null}
+      {activeTab === "measures" ? <MeasurementsSettingsPanel model={measurements.model} actions={measurements.actions} /> : null}
+      {activeTab === "preferences" ? <PreferencesSettingsPanel preferences={preferences} /> : null}
+      {activeTab === "notifications" ? <NotificationSettingsPanel model={notifications.model} actions={notifications.actions} /> : null}
+      {activeTab === "data" ? <DataSettingsPanel model={data.model} actions={data.actions} /> : null}
+      {activeTab === "traces" ? <TraceSettingsPanel model={traces.model} actions={traces.actions} /> : null}
+      {runtimeFooter}
+      {legalFooter}
+    </View>
+  );
+});

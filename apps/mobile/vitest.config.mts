@@ -11,6 +11,7 @@ export default defineConfig({
       "diet/**/*.test.ts",
       "measurements/**/*.test.ts",
       "persistence/**/*.test.ts",
+      "platform/**/*.test.ts",
       "shell/**/*.test.ts",
       "storage/**/*.test.ts",
       "training/**/*.test.ts",

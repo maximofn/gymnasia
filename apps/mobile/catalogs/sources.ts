@@ -4,10 +4,14 @@ import type {
   FoodCatalogEntry,
   FoodCatalogSourceId,
   LegacyFoodSource,
-  RawExerciseCatalogEntry,
   RawFoodCatalogEntry,
 } from "./types";
 import type { CatalogDefinition } from "./runtime";
+export {
+  EXERCISE_CATALOG_IMAGE_BASE_URL,
+  exerciseCatalogImageUri,
+  foodCatalogImageUri,
+} from "./imageUris";
 
 const REPOSITORY_URL = "https://github.com/maximofn/gymnasia";
 const RAW_BASE_URL = "https://raw.githubusercontent.com/maximofn/gymnasia/main";
@@ -113,22 +117,4 @@ export const CATALOG_SOURCE_REGISTRY = {
 
 export function normalizePersonalFood(entry: RawFoodCatalogEntry): FoodCatalogEntry {
   return { ...entry, sourceId: LEGACY_FOOD_SOURCE_IDS.personal, source: "personal" };
-}
-
-export function foodCatalogImageUri(entry: FoodCatalogEntry | null | undefined): string | null {
-  if (!entry?.image || entry.sourceId === "user_personal_foods") return null;
-  const path = entry.sourceId === "gymnasia_products"
-    ? "productos_comerciales"
-    : entry.sourceId === "gymnasia_recipes"
-      ? "recetas"
-      : "alimentos";
-  return `${RAW_BASE_URL}/${path}/images/${entry.image}`;
-}
-
-export function exerciseCatalogImageUri(
-  entry: Pick<RawExerciseCatalogEntry, "image_male" | "image_female">,
-  gender: "male" | "female",
-): string {
-  const imagePath = gender === "female" ? entry.image_female : entry.image_male;
-  return `${RAW_BASE_URL}/ejercicios/${imagePath}`;
 }
