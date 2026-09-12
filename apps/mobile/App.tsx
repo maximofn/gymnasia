@@ -1,17 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { AppState } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop, Text as SvgText } from "react-native-svg";
 import ConfettiCannon from "react-native-confetti-cannon";
-import * as SecureStore from "expo-secure-store";
-import * as Crypto from "expo-crypto";
-import Constants from "expo-constants";
-import * as ImagePicker from "expo-image-picker";
-import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
-import * as Notifications from "expo-notifications";
-import * as IntentLauncher from "expo-intent-launcher";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -19,28 +10,25 @@ import {
   ActivityIndicator,
   Alert,
   Animated,
-  BackHandler,
   Image,
   Keyboard,
   KeyboardAvoidingView,
   PanResponder,
-  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
   Text,
   TextInput,
-  Linking,
   useWindowDimensions,
-  Vibration,
   View,
 } from "react-native";
 
 import { mobileTheme } from "./theme";
-import * as Clipboard from "expo-clipboard";
-import { File, Paths } from "expo-file-system";
-import * as Sharing from "expo-sharing";
-import * as DocumentPicker from "expo-document-picker";
+import {
+  APP_PLATFORM_SERVICES,
+  type PlatformAudioSound,
+  type PlatformDocumentPickerAsset,
+} from "./platform";
 import { pushTrace, clearTraces, getTraces, formatTraces, type TraceEntry } from "./trace";
 import { CHAT_TOOLS, agentToolEffect } from "./agent/toolDefinitions";
 import {
@@ -540,6 +528,22 @@ import {
   type ShellTemplateRoute,
   type TabKey,
 } from "./shell/shellRegistry";
+
+const {
+  storage: AsyncStorage,
+  secureStorage: SecureStore,
+  crypto: Crypto,
+  constants: Constants,
+  imagePicker: ImagePicker,
+  audio: { Audio, InterruptionModeAndroid, InterruptionModeIOS },
+  notifications: Notifications,
+  intentLauncher: IntentLauncher,
+  clipboard: Clipboard,
+  files: { File, Paths },
+  sharing: Sharing,
+  documentPicker: DocumentPicker,
+  native: { AppState, BackHandler, Linking, Platform, Vibration },
+} = APP_PLATFORM_SERVICES;
 
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
@@ -5918,8 +5922,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     useState<WorkoutCompletionModalState | null>(null);
   const [confirmPartialSessionFinish, setConfirmPartialSessionFinish] = useState(false);
   const [confirmDiscardSession, setConfirmDiscardSession] = useState(false);
-  const restFinishSoundRef = useRef<Audio.Sound | null>(null);
-  const previewSoundRef = useRef<Audio.Sound | null>(null);
+  const restFinishSoundRef = useRef<PlatformAudioSound | null>(null);
+  const previewSoundRef = useRef<PlatformAudioSound | null>(null);
   const workoutTemplateBeforeSessionRef = useRef<WorkoutTemplate | null>(null);
   const globalScreenLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const trainingEditorLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -9433,7 +9437,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return resolveFoodEstimatorProvider(store.keys);
   }
 
-  async function readPickedBackupBytes(asset: DocumentPicker.DocumentPickerAsset): Promise<Uint8Array> {
+  async function readPickedBackupBytes(asset: PlatformDocumentPickerAsset): Promise<Uint8Array> {
     if (typeof asset.size === "number" && asset.size > MAX_BACKUP_PACKAGE_BYTES) {
       throw new Error("El archivo supera el tamaño máximo permitido de 220 MiB.");
     }
