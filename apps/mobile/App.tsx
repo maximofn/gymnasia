@@ -346,7 +346,10 @@ import { useChatController } from "./controllers/chatController";
 import { useDietController } from "./controllers/dietController";
 import { useHomeController } from "./controllers/homeController";
 import { useMeasurementsController } from "./controllers/measurementsController";
-import { useTrainingHistoryController } from "./controllers/trainingController";
+import {
+  useTrainingDetailController,
+  useTrainingHistoryController,
+} from "./controllers/trainingController";
 import {
   useDataSettingsController,
   useDietSettingsController,
@@ -374,6 +377,7 @@ import {
   ProductsSettingsPanel,
   SettingsTabs,
   TrainingSettingsPanel,
+  TrainingDetailScreen,
   TrainingHistoryScreen,
   WorkoutHistoryEntryCard,
 } from "./screens";
@@ -3488,53 +3492,6 @@ function StatCard({ label, value, subtitle, subtitleColor, icon, subtitleIcon, o
   return content;
 }
 
-function ChartCard({ title, subtitle, periodSelector, children, zIndex, footer }: {
-  title: React.ReactNode;
-  subtitle?: string;
-  periodSelector: React.ReactNode;
-  children: React.ReactNode;
-  zIndex?: number;
-  footer?: React.ReactNode;
-}) {
-  return (
-    <View
-      style={{
-        borderRadius: 22,
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.06)",
-        backgroundColor: mobileTheme.color.bgSurface,
-        position: "relative",
-        overflow: "visible",
-        zIndex: zIndex ?? 1,
-        padding: 14,
-        gap: 14,
-      }}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          gap: 12,
-          zIndex: 2,
-        }}
-      >
-        <View style={{ flex: 1, gap: 4 }}>
-          {typeof title === "string" ? (
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>{title}</Text>
-          ) : title}
-          {subtitle ? (
-            <Text style={{ color: "#8B94A3", fontSize: 12 }}>{subtitle}</Text>
-          ) : null}
-        </View>
-        {periodSelector}
-      </View>
-      {children}
-      {footer}
-    </View>
-  );
-}
-
 function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: string; onPress: () => void; disabled?: boolean; icon?: React.ReactNode; testID?: string }) {
   return (
     <Pressable
@@ -6187,13 +6144,52 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       heightPercent: maxValue > 0 ? Math.max(10, (point.metricValue / maxValue) * 100) : 10,
     }));
   }, [activeTrainingFilteredHistory, trainingStatsMetric]);
-  const activeTrainingLatestChartBar = useMemo(
-    () =>
-      activeTrainingChartBars.length > 0
-        ? activeTrainingChartBars[activeTrainingChartBars.length - 1]
-        : null,
-    [activeTrainingChartBars],
-  );
+  const trainingDetailController = useTrainingDetailController({
+    template: activeTrainingTemplate,
+    previewImageUri: activeTrainingPreviewImageUri,
+    categoryMeta: activeTrainingCategoryMeta,
+    icon: activeTrainingIcon,
+    summary: activeTrainingSummary,
+    statsMetricMeta: activeTrainingStatsMetricMeta,
+    statsMetric: trainingStatsMetric,
+    statsPeriod: trainingStatsPeriod,
+    metricDropdownOpen: trainingStatsMetricDropdownOpen,
+    periodDropdownOpen: trainingStatsPeriodDropdownOpen,
+    chartBars: activeTrainingChartBars,
+    completedHistoryCount: activeTrainingCompletedHistory.length,
+    historyCount: activeTrainingHistory.length,
+    filteredHistoryCount: activeTrainingFilteredHistory.length,
+    effortDetail: activeTrainingEffortDetail,
+    legacySummaryCount: activeTrainingLegacySummaryCount,
+    canExpandHistory: canExpandTrainingHistory,
+    showAllHistory: showAllTrainingHistory,
+    historyEntries: activeTrainingHistoryEntries,
+    durationMinutes: activeTrainingDurationMinutes,
+    estimatedCalories: activeTrainingEstimatedCalories,
+    muscleFilters: activeTrainingMuscleFilters,
+    muscleFilter: trainingDetailMuscleFilter,
+    detailExercises: activeTrainingDetailExercises,
+    exerciseDetailOpen: exerciseDetailIndex !== null,
+    close: closeTrainingTemplateDetails,
+    edit: () => {
+      if (activeTrainingTemplate) openTrainingTemplateEditor(activeTrainingTemplate.id);
+    },
+    start: () => {
+      if (activeTrainingTemplate) startTrainingSession(activeTrainingTemplate.id);
+    },
+    toggleMetricDropdown: () => setTrainingStatsMetricDropdownOpen((current) => !current),
+    closeMetricDropdown: () => setTrainingStatsMetricDropdownOpen(false),
+    selectMetric: setTrainingStatsMetric,
+    togglePeriodDropdown: () => setTrainingStatsPeriodDropdownOpen((current) => !current),
+    closePeriodDropdown: () => setTrainingStatsPeriodDropdownOpen(false),
+    selectPeriod: setTrainingStatsPeriod,
+    toggleAllHistory: () => setShowAllTrainingHistory((current) => !current),
+    collapseHistory: () => setShowAllTrainingHistory(false),
+    openHistory: (id) => openTrainingHistory(id),
+    selectMuscle: setTrainingDetailMuscleFilter,
+    openExercise: setExerciseDetailIndex,
+    closeExercise: () => setExerciseDetailIndex(null),
+  });
   const activeSessionTemplate = useMemo(() => {
     if (!activeWorkoutSession) return null;
     if (workoutSessionTemplateDraft?.session_id === activeWorkoutSession.id) {
@@ -6395,10 +6391,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "birth-date-picker": dietSettingsController.back.layers["birth-date-picker"],
     "measurement-date-picker": measurementsController.back.layers["measurement-date-picker"],
     "measurements-history-expanded": measurementsController.back.layers["measurements-history-expanded"],
-    "training-history-expanded": showAllTrainingHistory,
+    "training-history-expanded": trainingDetailController.back.layers["training-history-expanded"],
     "workout-history-detail": trainingHistoryController.back.layers["workout-history-detail"],
     "training-history": trainingHistoryController.back.layers["training-history"],
-    "training-exercise-detail": exerciseDetailIndex !== null,
+    "training-exercise-detail": trainingDetailController.back.layers["training-exercise-detail"],
     "series-type-picker": seriesTypePickerTarget !== null,
     "chat-provider-dropdown": chatProviderDropdownOpen,
     "food-provider-dropdown": foodAIProviderDropdownOpen,
@@ -6407,8 +6403,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "google-model-dropdown": googleModelDropdownOpen,
     "measures-period-dropdown": measurementsController.back.layers["measures-period-dropdown"],
     "measures-metric-dropdown": measurementsController.back.layers["measures-metric-dropdown"],
-    "training-period-dropdown": trainingStatsPeriodDropdownOpen,
-    "training-metric-dropdown": trainingStatsMetricDropdownOpen,
+    "training-period-dropdown": trainingDetailController.back.layers["training-period-dropdown"],
+    "training-metric-dropdown": trainingDetailController.back.layers["training-metric-dropdown"],
     "diet-item-menu": dietController.back.layers["diet-item-menu"],
     "training-template-menu": trainingMenuTemplateId !== null,
     "training-exercise-menu": activeExerciseMenuId !== null,
@@ -6451,10 +6447,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "birth-date-picker": dietSettingsController.back.handlers["birth-date-picker"],
     "measurement-date-picker": measurementsController.back.handlers["measurement-date-picker"],
     "measurements-history-expanded": measurementsController.back.handlers["measurements-history-expanded"],
-    "training-history-expanded": () => { setShowAllTrainingHistory(false); return true; },
+    "training-history-expanded": trainingDetailController.back.handlers["training-history-expanded"],
     "workout-history-detail": trainingHistoryController.back.handlers["workout-history-detail"],
     "training-history": trainingHistoryController.back.handlers["training-history"],
-    "training-exercise-detail": () => { setExerciseDetailIndex(null); return true; },
+    "training-exercise-detail": trainingDetailController.back.handlers["training-exercise-detail"],
     "series-type-picker": () => { setSeriesTypePickerTarget(null); return true; },
     "chat-provider-dropdown": () => { setChatProviderDropdownOpen(false); return true; },
     "food-provider-dropdown": () => { setFoodAIProviderDropdownOpen(false); return true; },
@@ -6463,8 +6459,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "google-model-dropdown": () => { setGoogleModelDropdownOpen(false); return true; },
     "measures-period-dropdown": measurementsController.back.handlers["measures-period-dropdown"],
     "measures-metric-dropdown": measurementsController.back.handlers["measures-metric-dropdown"],
-    "training-period-dropdown": () => { setTrainingStatsPeriodDropdownOpen(false); return true; },
-    "training-metric-dropdown": () => { setTrainingStatsMetricDropdownOpen(false); return true; },
+    "training-period-dropdown": trainingDetailController.back.handlers["training-period-dropdown"],
+    "training-metric-dropdown": trainingDetailController.back.handlers["training-metric-dropdown"],
     "diet-item-menu": dietController.back.handlers["diet-item-menu"],
     "training-template-menu": () => { setTrainingMenuTemplateId(null); return true; },
     "training-exercise-menu": () => { setActiveExerciseMenuId(null); return true; },
@@ -14601,836 +14597,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 actions={trainingHistoryController.actions}
               />
             ) : isTrainingDetailOpen && activeTrainingTemplate ? (
-              <View style={{ gap: 16, paddingBottom: 110 }}>
-                <View
-                  style={{
-                    height: 228,
-                    borderRadius: 26,
-                    overflow: "hidden",
-                    backgroundColor: "#0F141B",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.05)",
-                  }}
-                >
-                  {activeTrainingPreviewImageUri ? (
-                    <Image
-                      source={{ uri: activeTrainingPreviewImageUri }}
-                      style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0,
-                        backgroundColor: "#10161F",
-                        justifyContent: "flex-end",
-                        padding: 20,
-                      }}
-                    >
-                      <View
-                        style={{
-                          position: "absolute",
-                          top: 26,
-                          right: 24,
-                          width: 84,
-                          height: 84,
-                          borderRadius: 999,
-                          backgroundColor:
-                            activeTrainingCategoryMeta?.iconBg ?? "rgba(203,255,26,0.12)",
-                        }}
-                      />
-                      <View
-                        style={{
-                          position: "absolute",
-                          top: 58,
-                          left: 24,
-                          width: 120,
-                          height: 120,
-                          borderRadius: 30,
-                          borderWidth: 1,
-                          borderColor: "rgba(255,255,255,0.05)",
-                          backgroundColor: "rgba(255,255,255,0.03)",
-                          transform: [{ rotate: "-12deg" }],
-                        }}
-                      />
-                      <View
-                        style={{
-                          width: 82,
-                          height: 82,
-                          borderRadius: 24,
-                          backgroundColor:
-                            activeTrainingCategoryMeta?.iconBg ?? "rgba(203,255,26,0.12)",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Feather
-                          name={activeTrainingIcon ?? "activity"}
-                          size={34}
-                          color={activeTrainingCategoryMeta?.color ?? mobileTheme.color.brandPrimary}
-                        />
-                      </View>
-                    </View>
-                  )}
-
-                  <View
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      bottom: 0,
-                      left: 0,
-                      backgroundColor: activeTrainingPreviewImageUri
-                        ? "rgba(6,9,13,0.42)"
-                        : "rgba(6,9,13,0.18)",
-                    }}
-                  />
-
-                  <View
-                    style={{
-                      position: "absolute",
-                      top: 14,
-                      left: 14,
-                      right: 14,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Pressable
-                      onPress={closeTrainingTemplateDetails}
-                      testID="training-detail-back"
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 999,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.14)",
-                        backgroundColor: "rgba(8,11,16,0.48)",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Feather name="arrow-left" size={18} color="#FFFFFF" />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => openTrainingTemplateEditor(activeTrainingTemplate.id)}
-                      testID="training-detail-edit"
-                      style={{
-                        minHeight: 40,
-                        borderRadius: 999,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.14)",
-                        backgroundColor: "rgba(8,11,16,0.48)",
-                        paddingHorizontal: 14,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 8,
-                      }}
-                    >
-                      <Feather name="edit-2" size={14} color="#FFFFFF" />
-                      <Text style={{ color: "#FFFFFF", fontSize: 13, fontWeight: "700", textAlign: "center" }}>
-                        {"Editar\nrutina"}
-                      </Text>
-                    </Pressable>
-                  </View>
-
-                  <View
-                    style={{
-                      position: "absolute",
-                      left: 16,
-                      right: 16,
-                      bottom: 16,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 10,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 42,
-                        height: 42,
-                        borderRadius: 14,
-                        backgroundColor:
-                          activeTrainingCategoryMeta?.iconBg ?? "rgba(203,255,26,0.14)",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Feather
-                        name={activeTrainingIcon ?? "activity"}
-                        size={18}
-                        color={activeTrainingCategoryMeta?.color ?? mobileTheme.color.brandPrimary}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        minHeight: 34,
-                        borderRadius: 999,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.12)",
-                        backgroundColor: "rgba(8,11,16,0.46)",
-                        paddingHorizontal: 12,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>
-                        {activeTrainingCategoryMeta?.label ?? "Rutina"}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-
-                <View style={{ gap: 8 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 34, fontWeight: "700" }}>
-                    {activeTrainingTemplate.name}
-                  </Text>
-                  <Text style={{ color: "#8B94A3", fontSize: 16, lineHeight: 22 }}>
-                    {activeTrainingSummary}
-                  </Text>
-                </View>
-
-                <PrimaryButton
-                  label="Empezar rutina"
-                  onPress={() => startTrainingSession(activeTrainingTemplate.id)}
-                  disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
-                  icon={<Feather name="play" size={14} color="#06090D" />}
-                />
-
-                <ChartCard
-                  zIndex={trainingStatsMetricDropdownOpen || trainingStatsPeriodDropdownOpen ? 10 : 1}
-                  title={
-                    <Pressable
-                      onPress={() => setTrainingStatsMetricDropdownOpen((c) => !c)}
-                      style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
-                        {activeTrainingStatsMetricMeta.label}
-                      </Text>
-                      <Ionicons
-                        name={trainingStatsMetricDropdownOpen ? "chevron-up" : "chevron-down"}
-                        size={16}
-                        color={mobileTheme.color.textSecondary}
-                      />
-                    </Pressable>
-                  }
-                  periodSelector={
-                    <Pressable
-                      onPress={() => setTrainingStatsPeriodDropdownOpen((c) => !c)}
-                      style={{
-                        minHeight: 34,
-                        borderRadius: mobileTheme.radius.pill,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.06)",
-                        backgroundColor: "#1B2029",
-                        paddingHorizontal: 12,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 6,
-                      }}
-                    >
-                      <Text style={{ color: "#9EA6B3", fontSize: 12, fontWeight: "700" }}>
-                        {TRAINING_STATS_PERIOD_OPTIONS.find((o) => o.key === trainingStatsPeriod)?.label ?? "3M"}
-                      </Text>
-                      <Ionicons
-                        name={trainingStatsPeriodDropdownOpen ? "chevron-up" : "chevron-down"}
-                        size={14}
-                        color="#6F7785"
-                      />
-                    </Pressable>
-                  }
-                >
-                  {trainingStatsPeriodDropdownOpen ? (
-                    <View
-                      testID={shellSurfaceTestId("training-period-dropdown")}
-                      style={{ position: "absolute", top: 56, right: 14, zIndex: 20, elevation: 12 }}
-                    >
-                      <View
-                        style={{
-                          minWidth: 128,
-                          borderRadius: 14,
-                          borderWidth: 1,
-                          borderColor: "rgba(255,255,255,0.06)",
-                          backgroundColor: "#1B2029",
-                          shadowColor: "#000000",
-                          shadowOpacity: 0.28,
-                          shadowRadius: 14,
-                          shadowOffset: { width: 0, height: 8 },
-                          padding: 6,
-                          gap: 4,
-                        }}
-                      >
-                        {TRAINING_STATS_PERIOD_OPTIONS.map((option) => {
-                          const isActive = trainingStatsPeriod === option.key;
-                          return (
-                            <Pressable
-                              key={option.key}
-                              onPress={() => { setTrainingStatsPeriod(option.key); setTrainingStatsPeriodDropdownOpen(false); }}
-                              style={{
-                                minHeight: 34,
-                                borderRadius: 10,
-                                paddingHorizontal: 10,
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                backgroundColor: isActive ? "rgba(203,255,26,0.12)" : "transparent",
-                              }}
-                            >
-                              <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
-                                {option.label}
-                              </Text>
-                              {isActive ? <Ionicons name="checkmark" size={14} color={mobileTheme.color.brandPrimary} /> : null}
-                            </Pressable>
-                          );
-                        })}
-                      </View>
-                    </View>
-                  ) : null}
-
-                  {trainingStatsMetricDropdownOpen ? (
-                    <View
-                      testID={shellSurfaceTestId("training-metric-dropdown")}
-                      style={{ position: "absolute", top: 56, left: 14, zIndex: 20, elevation: 12 }}
-                    >
-                      <View
-                        style={{
-                          minWidth: 150,
-                          borderRadius: 14,
-                          borderWidth: 1,
-                          borderColor: "rgba(255,255,255,0.06)",
-                          backgroundColor: "#1B2029",
-                          shadowColor: "#000000",
-                          shadowOpacity: 0.28,
-                          shadowRadius: 14,
-                          shadowOffset: { width: 0, height: 8 },
-                          padding: 6,
-                          gap: 4,
-                        }}
-                      >
-                        {TRAINING_STATS_METRIC_OPTIONS.map((option) => {
-                          const isActive = trainingStatsMetric === option.key;
-                          return (
-                            <Pressable
-                              key={option.key}
-                              onPress={() => { setTrainingStatsMetric(option.key); setTrainingStatsMetricDropdownOpen(false); }}
-                              style={{
-                                minHeight: 34,
-                                borderRadius: 10,
-                                paddingHorizontal: 10,
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                backgroundColor: isActive ? "rgba(203,255,26,0.12)" : "transparent",
-                              }}
-                            >
-                              <Text style={{ color: isActive ? mobileTheme.color.brandPrimary : mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
-                                {option.label}
-                              </Text>
-                              {isActive ? <Ionicons name="checkmark" size={14} color={mobileTheme.color.brandPrimary} /> : null}
-                            </Pressable>
-                          );
-                        })}
-                      </View>
-                    </View>
-                  ) : null}
-
-                  <View
-                    style={{
-                      minHeight: 196,
-                      borderRadius: 18,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.04)",
-                      backgroundColor: "#121720",
-                      paddingHorizontal: 12,
-                      paddingVertical: 12,
-                    }}
-                  >
-                    {activeTrainingChartBars.length === 0 ? (
-                      <View
-                        style={{
-                          flex: 1,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          paddingHorizontal: 10,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: "#8B94A3",
-                            fontSize: 14,
-                            textAlign: "center",
-                            lineHeight: 20,
-                          }}
-                        >
-                          {activeTrainingCompletedHistory.length > 0
-                            ? "No hay sesiones completadas de esta rutina en el periodo seleccionado."
-                            : activeTrainingHistory.length > 0
-                              ? "Todavía no hay sesiones completadas para mostrar estadísticas."
-                              : "Todavía no hay ejecuciones guardadas de esta rutina."}
-                        </Text>
-                      </View>
-                    ) : (
-                      <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{
-                          gap: 12,
-                          alignItems: "flex-end",
-                          paddingRight: 10,
-                          minHeight: 172,
-                        }}
-                      >
-                        {activeTrainingChartBars.map((bar) => (
-                          <View
-                            key={bar.id}
-                            style={{
-                              width: 42,
-                              alignItems: "center",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: bar.isLatest ? mobileTheme.color.brandPrimary : "#8B94A3",
-                                fontSize: 10,
-                                fontWeight: "700",
-                                textAlign: "center",
-                                minHeight: 28,
-                              }}
-                              numberOfLines={2}
-                            >
-                              {bar.metricValueLabel}
-                            </Text>
-                            <View
-                              style={{
-                                marginTop: 6,
-                                width: "100%",
-                                height: 108,
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                              }}
-                            >
-                              <View
-                                style={{
-                                  width: 18,
-                                  height: `${bar.heightPercent}%`,
-                                  minHeight: 10,
-                                  borderRadius: 999,
-                                  backgroundColor: bar.isLatest
-                                    ? mobileTheme.color.brandPrimary
-                                    : "rgba(203,255,26,0.38)",
-                                }}
-                              />
-                            </View>
-                            <Text
-                              style={{
-                                marginTop: 8,
-                                color: "#8B94A3",
-                                fontSize: 10,
-                                fontWeight: bar.isLatest ? "700" : "500",
-                                textAlign: "center",
-                              }}
-                              numberOfLines={1}
-                            >
-                              {bar.label}
-                            </Text>
-                          </View>
-                        ))}
-                      </ScrollView>
-                    )}
-                  </View>
-
-                  {activeTrainingEffortDetail.detailedCount > 0 ? (
-                    <View
-                      testID="training-stats-effort-breakdown"
-                      style={{
-                        borderRadius: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(203,255,26,0.18)",
-                        backgroundColor: "rgba(203,255,26,0.06)",
-                        paddingHorizontal: 12,
-                        paddingVertical: 10,
-                        gap: 3,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "800" }}>
-                        Desglose de esfuerzos completados
-                      </Text>
-                      <Text style={{ color: "#D7DEE8", fontSize: 13, lineHeight: 18 }}>
-                        {activeTrainingEffortDetail.breakdown.completed_primary} principales ·{" "}
-                        {activeTrainingEffortDetail.breakdown.completed_sub_series} mini-series
-                      </Text>
-                      {activeTrainingEffortDetail.detailedCount < activeTrainingFilteredHistory.length ? (
-                        <Text style={{ color: "#8B94A3", fontSize: 11, lineHeight: 16 }}>
-                          Desglose disponible para {activeTrainingEffortDetail.detailedCount} de{" "}
-                          {activeTrainingFilteredHistory.length} entrenamientos.
-                        </Text>
-                      ) : null}
-                    </View>
-                  ) : null}
-
-                  {activeTrainingLegacySummaryCount > 0 ? (
-                    <View
-                      testID="training-stats-legacy-warning"
-                      style={{
-                        borderRadius: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(245,197,66,0.28)",
-                        backgroundColor: "rgba(245,197,66,0.08)",
-                        paddingHorizontal: 12,
-                        paddingVertical: 10,
-                        flexDirection: "row",
-                        alignItems: "flex-start",
-                        gap: 8,
-                      }}
-                    >
-                      <Feather name="info" size={14} color="#F5C542" style={{ marginTop: 2 }} />
-                      <Text style={{ flex: 1, color: "#D5C889", fontSize: 12, lineHeight: 18 }}>
-                        Algunos entrenamientos se calcularon antes de incluir las mini-series. Conservamos sus totales originales porque no hay detalle suficiente para recalcularlos.
-                      </Text>
-                    </View>
-                  ) : null}
-
-                </ChartCard>
-
-                <View testID="training-history" style={{ gap: 10 }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 12,
-                    }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800" }}>
-                      Historial reciente
-                    </Text>
-                    {canExpandTrainingHistory ? (
-                      <Pressable
-                        testID={shellSurfaceTestId("training-history-expanded")}
-                        onPress={() => setShowAllTrainingHistory((current) => !current)}
-                      >
-                        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "800" }}>
-                          {showAllTrainingHistory ? "Ver menos" : "Ver todo"}
-                        </Text>
-                      </Pressable>
-                    ) : null}
-                  </View>
-
-                  {activeTrainingHistoryEntries.length === 0 ? (
-                    <View
-                      style={{
-                        borderRadius: 18,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.04)",
-                        backgroundColor: mobileTheme.color.bgSurface,
-                        padding: 14,
-                        gap: 6,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                        Todavía no hay sesiones
-                      </Text>
-                      <Text style={{ color: "#8B94A3", fontSize: 13, lineHeight: 18 }}>
-                        Las sesiones completadas y las que guardes como parciales aparecerán aquí.
-                      </Text>
-                    </View>
-                  ) : (
-                    <View style={{ gap: 10 }}>
-                      {activeTrainingHistoryEntries.map((summary) => (
-                        <WorkoutHistoryEntryCard
-                          key={summary.id}
-                          summary={summary}
-                          onPress={() => openTrainingHistory(summary.id)}
-                          showTemplateName={false}
-                          testID={`training-history-${summary.id}`}
-                        />
-                      ))}
-                    </View>
-                  )}
-                </View>
-
-                <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
-                  <View
-                    style={{
-                      minHeight: 44,
-                      borderRadius: 14,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.06)",
-                      backgroundColor: "#171B23",
-                      paddingHorizontal: 12,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <Feather name="clock" size={14} color={mobileTheme.color.brandPrimary} />
-                    <Text style={{ color: "#E8EDF5", fontSize: 14, fontWeight: "700" }}>
-                      {activeTrainingDurationMinutes > 0 ? `${activeTrainingDurationMinutes} min` : "-- min"}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      minHeight: 44,
-                      borderRadius: 14,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.06)",
-                      backgroundColor: "#171B23",
-                      paddingHorizontal: 12,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <Feather name="repeat" size={14} color={mobileTheme.color.brandPrimary} />
-                    <Text style={{ color: "#E8EDF5", fontSize: 14, fontWeight: "700" }}>
-                      {activeTrainingTemplate.exercises.length} ejercicios
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      minHeight: 44,
-                      borderRadius: 14,
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.06)",
-                      backgroundColor: "#171B23",
-                      paddingHorizontal: 12,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <Feather name="zap" size={14} color={mobileTheme.color.brandPrimary} />
-                    <Text style={{ color: "#E8EDF5", fontSize: 14, fontWeight: "700" }}>
-                      ~{activeTrainingEstimatedCalories} kcal
-                    </Text>
-                  </View>
-                </View>
-
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 8, paddingRight: 12 }}
-                >
-                  <Pressable
-                    onPress={() => setTrainingDetailMuscleFilter("all")}
-                    style={{
-                      minHeight: 38,
-                      borderRadius: mobileTheme.radius.pill,
-                      borderWidth: 1,
-                      borderColor:
-                        trainingDetailMuscleFilter === "all"
-                          ? "rgba(203,255,26,0.82)"
-                          : mobileTheme.color.borderSubtle,
-                      backgroundColor:
-                        trainingDetailMuscleFilter === "all"
-                          ? "rgba(160,204,0,0.12)"
-                          : "#0D1117",
-                      paddingHorizontal: 16,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color:
-                          trainingDetailMuscleFilter === "all"
-                            ? mobileTheme.color.brandPrimary
-                            : "#9EA6B3",
-                        fontSize: 14,
-                        fontWeight: "700",
-                      }}
-                    >
-                      Todas
-                    </Text>
-                  </Pressable>
-                  {activeTrainingMuscleFilters.map((muscle) => {
-                    const isActive = trainingDetailMuscleFilter === muscle;
-                    return (
-                      <Pressable
-                        key={muscle}
-                        onPress={() => setTrainingDetailMuscleFilter(muscle)}
-                        style={{
-                          minHeight: 38,
-                          borderRadius: mobileTheme.radius.pill,
-                          borderWidth: 1,
-                          borderColor: isActive
-                            ? "rgba(203,255,26,0.82)"
-                            : mobileTheme.color.borderSubtle,
-                          backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
-                          paddingHorizontal: 16,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
-                            fontSize: 14,
-                            fontWeight: "700",
-                          }}
-                        >
-                          {muscle}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </ScrollView>
-
-                <View style={{ gap: 10 }}>
-                  {activeTrainingDetailExercises.length === 0 ? (
-                    <View
-                      style={{
-                        minHeight: 140,
-                        borderRadius: 20,
-                        borderWidth: 1,
-                        borderColor: mobileTheme.color.borderSubtle,
-                        backgroundColor: "#171B23",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        paddingHorizontal: 18,
-                      }}
-                    >
-                      <Text style={{ color: "#8B94A3", fontSize: 16, textAlign: "center", lineHeight: 22 }}>
-                        No hay ejercicios para este grupo muscular en la rutina.
-                      </Text>
-                    </View>
-                  ) : (
-                    activeTrainingDetailExercises.map((exercise, cardIndex) => (
-                      <Pressable
-                        key={exercise.exercise.id}
-                        onPress={() => setExerciseDetailIndex(cardIndex)}
-                        style={{
-                          borderWidth: 1,
-                          borderColor: "rgba(255,255,255,0.06)",
-                          backgroundColor: "#171B23",
-                          borderRadius: 20,
-                          padding: 12,
-                          gap: 8,
-                        }}
-                      >
-                        <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-                          <View
-                            style={{
-                              width: 58,
-                              height: 58,
-                              borderRadius: 16,
-                              overflow: "hidden",
-                              borderWidth: 1,
-                              borderColor: "rgba(255,255,255,0.08)",
-                              backgroundColor: exercise.previewMeta.backgroundColor,
-                              flexShrink: 0,
-                            }}
-                          >
-                            {exercise.imageUri ? (
-                              <Image
-                                source={{ uri: exercise.imageUri }}
-                                style={{ width: "100%", height: "100%" }}
-                                resizeMode="cover"
-                              />
-                            ) : (
-                              <View
-                                style={{
-                                  flex: 1,
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  gap: 4,
-                                  paddingHorizontal: 4,
-                                }}
-                              >
-                                <Feather
-                                  name={exercise.previewMeta.icon}
-                                  size={18}
-                                  color={exercise.previewMeta.accentColor}
-                                />
-                                <Text
-                                  style={{
-                                    color: "#E8EDF5",
-                                    fontSize: 9,
-                                    fontWeight: "700",
-                                    textAlign: "center",
-                                  }}
-                                  numberOfLines={1}
-                                >
-                                  {exercise.previewMeta.label}
-                                </Text>
-                              </View>
-                            )}
-                          </View>
-                          <View style={{ flex: 1 }}>
-                            <Text
-                              style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700" }}
-                              numberOfLines={2}
-                            >
-                              {exercise.exerciseName}
-                            </Text>
-                            <Text style={{ color: "#8B94A3", fontSize: 13, marginTop: 2 }}>
-                              {exercise.volumeLabel}
-                            </Text>
-                          </View>
-                          <Feather name="chevron-right" size={18} color="#636B78" />
-                        </View>
-                        {exercise.seriesItems.length > 0 && (
-                          <View style={{ gap: 0 }}>
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                paddingVertical: 4,
-                                borderBottomWidth: 1,
-                                borderBottomColor: "rgba(255,255,255,0.06)",
-                              }}
-                            >
-                              <Text style={{ color: "#636B78", fontSize: 11, fontWeight: "700", width: 40, textAlign: "center" }}>Serie</Text>
-                              <Text style={{ color: "#636B78", fontSize: 11, fontWeight: "700", flex: 1, textAlign: "center" }}>Reps</Text>
-                              <Text style={{ color: "#636B78", fontSize: 11, fontWeight: "700", flex: 1, textAlign: "center" }}>Peso</Text>
-                              <Text style={{ color: "#636B78", fontSize: 11, fontWeight: "700", flex: 1, textAlign: "center" }}>Descanso</Text>
-                            </View>
-                            {exercise.seriesItems.map((s: ExerciseSeries, sIdx: number) => (
-                              <View
-                                key={s.id}
-                                style={{
-                                  flexDirection: "row",
-                                  paddingVertical: 4,
-                                  borderBottomWidth: sIdx < exercise.seriesItems.length - 1 ? 1 : 0,
-                                  borderBottomColor: "rgba(255,255,255,0.04)",
-                                }}
-                              >
-                                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700", width: 40, textAlign: "center" }}>
-                                  {sIdx + 1}
-                                </Text>
-                                <Text style={{ color: "#8B94A3", fontSize: 12, flex: 1, textAlign: "center" }}>
-                                  {s.reps.trim() || "--"}
-                                </Text>
-                                <Text style={{ color: "#8B94A3", fontSize: 12, flex: 1, textAlign: "center" }}>
-                                  {s.weight_kg.trim() ? `${s.weight_kg.trim()} kg` : "--"}
-                                </Text>
-                                <Text style={{ color: "#8B94A3", fontSize: 12, flex: 1, textAlign: "center" }}>
-                                  {s.rest_seconds.trim() ? `${s.rest_seconds.trim()}s` : "--"}
-                                </Text>
-                              </View>
-                            ))}
-                          </View>
-                        )}
-                      </Pressable>
-                    ))
-                  )}
-                </View>
-
-                <PrimaryButton
-                  label="Empezar rutina"
-                  onPress={() => startTrainingSession(activeTrainingTemplate.id)}
-                  disabled={!templateHasRunnableSeries(activeTrainingTemplate)}
-                  icon={<Feather name="play" size={14} color="#06090D" />}
-                  testID="training-detail-start-session"
-                />
-              </View>
+              <TrainingDetailScreen
+                model={trainingDetailController.model}
+                actions={trainingDetailController.actions}
+              />
             ) : activeTrainingTemplate ? (
               <View style={{ gap: 12, paddingBottom: 110 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
