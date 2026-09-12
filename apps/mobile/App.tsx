@@ -155,9 +155,6 @@ import {
   type ExerciseCatalogSummary,
 } from "./catalogs/exerciseCatalogRuntime";
 import {
-  exerciseCatalogMatchKey,
-  findByCatalogRef,
-  matchExerciseCatalog,
   matchFoodCatalog,
 } from "./catalogs/matching";
 import {
@@ -200,7 +197,6 @@ import { formatWorkoutTemplateIssues } from "./training/workoutTemplateContract"
 import {
   createWorkoutSessionTemplateDraftRecord,
   createWorkoutTemplateDraft,
-  isWorkoutTemplateDraftDirty,
   parseWorkoutSessionTemplateDraftRecord,
   resolveWorkoutTemplateCommit,
   updateWorkoutSessionTemplateDraft,
@@ -219,7 +215,6 @@ import {
   resolveWorkoutExecutionCurrentKey,
   resolveWorkoutExecutionRest,
   summarizeWorkoutExecution,
-  type WorkoutEffortBreakdown,
 } from "./training/workoutExecution";
 import {
   WORKOUT_SUMMARY_SCHEMA_VERSION,
@@ -229,11 +224,8 @@ import {
   classifyWorkoutCompletion,
   isCompletedWorkoutSummary,
   normalizeWorkoutSessionSummary,
-  recalculateWorkoutSessionSummary,
-  sortWorkoutHistoryDesc,
   summarizeWorkoutPrescriptionSnapshot,
   type WorkoutCompletionStatus,
-  type WorkoutSummaryRecalculation,
   type WorkoutSessionSummary,
 } from "./training/workoutHistory";
 import {
@@ -255,31 +247,23 @@ import {
   type WorkoutSessionResolutionKind,
 } from "./training/workoutSessionModel";
 import { buildActiveSessionPresentation } from "./training/sessionPresentationModel";
+import { buildTrainingDetailPresentation } from "./training/detailPresentationModel";
 import {
   defaultTemplateIcon,
   defaultTemplateName,
-  estimateTemplateCalories,
   estimateWorkoutCalories,
   extractFirstPositiveInt,
   formatClock,
   formatHomeExerciseVolume,
   formatPrescriptionNumber,
-  formatSpanishList,
   formatTrainingHistoryDate,
-  formatTrainingStatsHistoryLabel,
-  formatTrainingStatsMetricValue,
   formatWorkoutHistoryVolume,
   inferDurationFromText,
   inferExerciseMuscle,
   inferTemplateDurationMinutes,
   normalizeDurationText,
-  normalizeExerciseImageUri,
   normalizeTemplateIcon,
   parseRestSecondsInput,
-  resolveExercisePreviewMeta,
-  resolveTrainingStatsPeriodStart,
-  totalSeriesCount,
-  trainingCategoryMeta,
   workoutPrescriptionSeriesDetail,
   type TrainingStatsMetricKey,
   type TrainingStatsPeriodKey,
@@ -1160,27 +1144,6 @@ function getExerciseImageUrl(entry: ExerciseRepoEntry, gender: "male" | "female"
   return exerciseCatalogImageUri(entry, gender);
 }
 
-// Busca el ejercicio del repo correspondiente a un nombre dado. Primero intenta
-// coincidencia exacta (más precisa) y si falla usa la clave canónica tolerante.
-function findRepoExerciseMatch(
-  repo: ExerciseRepoEntry[],
-  rawName: string | null | undefined,
-): ExerciseRepoEntry | null {
-  const match = matchExerciseCatalog(repo, rawName);
-  return match.kind === "exact" || match.kind === "alias" ? match.candidate : null;
-}
-
-function resolveRepoExercise(
-  repo: ExerciseRepoEntry[],
-  rawName: string | null | undefined,
-  catalogLink?: CatalogLink,
-): ExerciseRepoEntry | null {
-  if (catalogLink?.status === "linked") {
-    return findByCatalogRef(repo, catalogLink.ref);
-  }
-  return findRepoExerciseMatch(repo, rawName);
-}
-
 // Sanea al leer, sin escribir: esta función corre desde tres handlers de tools
 // en mitad del streaming y desde la exportación de backups, y una escritura ahí
 // competiría con commitMemoryField.
@@ -1449,15 +1412,6 @@ const TRAINING_STATS_PERIOD_OPTIONS: Array<{ key: TrainingStatsPeriodKey; label:
   { key: "6m", label: "6 meses" },
   { key: "12m", label: "1 año" },
   { key: "all", label: "Todo" },
-];
-const TRAINING_STATS_METRIC_OPTIONS: Array<{
-  key: TrainingStatsMetricKey;
-  label: string;
-  shortLabel: string;
-}> = [
-  { key: "volume", label: "Volumen", shortLabel: "kg" },
-  { key: "reps", label: "Repeticiones", shortLabel: "reps" },
-  { key: "duration", label: "Duración", shortLabel: "min" },
 ];
 const ENABLE_GLOBAL_SCREEN_LOAD_DELAY = false;
 const GLOBAL_SCREEN_LOAD_DELAY_MS = 1200;
@@ -4558,125 +4512,67 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     closeTemplateMenu: () => setTrainingMenuTemplateId(null),
     closeLastWorkoutSummary: () => setLastWorkoutSessionSummary(null),
   });
-  const activeTrainingTemplate = useMemo(() => {
-    if (
-      activeTrainingTemplateMode === "edit"
-      && trainingTemplateDraft?.draft.id === activeTrainingTemplateId
-    ) return trainingTemplateDraft.draft;
-    return store.templates.find((template) => template.id === activeTrainingTemplateId) ?? null;
-  }, [activeTrainingTemplateId, activeTrainingTemplateMode, store.templates, trainingTemplateDraft]);
-  const trainingTemplateDraftDirty = useMemo(
-    () => !!trainingTemplateDraft && isWorkoutTemplateDraftDirty(trainingTemplateDraft),
-    [trainingTemplateDraft],
+  const trainingDetailPresentation = useMemo(
+    () => buildTrainingDetailPresentation({
+      activeTemplateId: activeTrainingTemplateId,
+      activeTemplateMode: activeTrainingTemplateMode,
+      templateDraft: trainingTemplateDraft,
+      templates: store.templates,
+      exercisesRepo,
+      exerciseImageBaseUrl: EXERCISES_REPO_BASE_URL,
+      workoutHistory: store.workoutHistory,
+      muscleFilter: trainingDetailMuscleFilter,
+      statsPeriod: trainingStatsPeriod,
+      statsMetric: trainingStatsMetric,
+      showAllHistory: showAllTrainingHistory,
+      selectedHistoryId: selectedWorkoutHistoryId,
+    }),
+    [
+      activeTrainingTemplateId,
+      activeTrainingTemplateMode,
+      exercisesRepo,
+      selectedWorkoutHistoryId,
+      showAllTrainingHistory,
+      store.templates,
+      store.workoutHistory,
+      trainingDetailMuscleFilter,
+      trainingStatsMetric,
+      trainingStatsPeriod,
+      trainingTemplateDraft,
+    ],
   );
-  const trainingTemplateDraftValidation = useMemo(
-    () => trainingTemplateDraft
-      ? validateWorkoutTemplateDraft(trainingTemplateDraft.draft)
-      : null,
-    [trainingTemplateDraft],
-  );
-  const activeTrainingCategory = useMemo(
-    () => (activeTrainingTemplate ? resolveTrainingCategory(activeTrainingTemplate) : null),
-    [activeTrainingTemplate],
-  );
-  const activeTrainingCategoryMeta = useMemo(
-    () => (activeTrainingCategory ? trainingCategoryMeta(activeTrainingCategory) : null),
-    [activeTrainingCategory],
-  );
-  const activeTrainingIcon = useMemo(() => {
-    if (!activeTrainingTemplate || !activeTrainingCategory) return null;
-    return normalizeTemplateIcon(activeTrainingTemplate.icon, activeTrainingCategory, 0);
-  }, [activeTrainingCategory, activeTrainingTemplate]);
-  const activeTrainingDurationMinutes = useMemo(
-    () => (activeTrainingTemplate ? inferTemplateDurationMinutes(activeTrainingTemplate) : 0),
-    [activeTrainingTemplate],
-  );
-  const activeTrainingSeriesTotal = useMemo(
-    () => (activeTrainingTemplate ? totalSeriesCount(activeTrainingTemplate) : 0),
-    [activeTrainingTemplate],
-  );
-  const activeTrainingPreviewExercises = useMemo(() => {
-    if (!activeTrainingTemplate || !activeTrainingCategory) return [];
-    return activeTrainingTemplate.exercises.map((exercise, exerciseIndex) => {
-      const exerciseName = exercise.name?.trim() || `Ejercicio ${exerciseIndex + 1}`;
-      const seriesItems = exercise.series ?? [];
-      const repoMatch = resolveRepoExercise(exercisesRepo, exerciseName, exercise.catalog_link);
-      const muscle =
-        exercise.muscle?.trim() ||
-        repoMatch?.muscle_group ||
-        inferExerciseMuscle(exerciseName, activeTrainingCategory);
-      const firstSeries = seriesItems[0] ?? null;
-      const firstWeight =
-        seriesItems.find((seriesItem) => seriesItem.weight_kg.trim())?.weight_kg.trim() ?? "";
-      const repsLabel = firstSeries?.reps.trim() || "--";
-      const firstRest =
-        seriesItems.find((seriesItem) => seriesItem.rest_seconds.trim())?.rest_seconds.trim() ?? "";
-      // Imagen: prioriza la del repo cuando la guardada falta o es una URL del repo
-      // (posiblemente obsoleta); conserva imágenes propias del usuario.
-      const storedImage = normalizeExerciseImageUri(exercise.image_uri);
-      const repoImageUri = repoMatch ? getExerciseImageUrl(repoMatch, "male") : null;
-      const isStoredRepoImage = !!storedImage && storedImage.startsWith(EXERCISES_REPO_BASE_URL);
-      const imageUri = (!storedImage || isStoredRepoImage) && repoImageUri ? repoImageUri : storedImage;
-      return {
-        exercise,
-        exerciseIndex,
-        exerciseName,
-        imageUri,
-        muscle,
-        previewMeta: resolveExercisePreviewMeta(exerciseName, muscle, activeTrainingCategory),
-        instructions: repoMatch?.instructions ?? "",
-        seriesItems,
-        setsCount: seriesItems.length,
-        repsLabel,
-        weightLabel: firstWeight,
-        restLabel: firstRest,
-        volumeLabel:
-          seriesItems.length > 0
-            ? `${seriesItems.length} x ${repsLabel} reps${firstWeight ? ` • ${firstWeight}kg` : ""}`
-            : "Sin series configuradas",
-      };
-    });
-  }, [activeTrainingCategory, activeTrainingTemplate, exercisesRepo]);
-  const activeTrainingMuscleFilters = useMemo(
-    () => Array.from(new Set(activeTrainingPreviewExercises.map((exercise) => exercise.muscle))),
-    [activeTrainingPreviewExercises],
-  );
-  const activeTrainingDetailExercises = useMemo(
-    () =>
-      activeTrainingPreviewExercises.filter(
-        (exercise) =>
-          trainingDetailMuscleFilter === "all" || exercise.muscle === trainingDetailMuscleFilter,
-      ),
-    [activeTrainingPreviewExercises, trainingDetailMuscleFilter],
-  );
+  const activeTrainingTemplate = trainingDetailPresentation.activeTemplate;
+  const trainingTemplateDraftDirty = trainingDetailPresentation.draftDirty;
+  const trainingTemplateDraftValidation = trainingDetailPresentation.draftValidation;
+  const activeTrainingCategory = trainingDetailPresentation.category;
+  const activeTrainingCategoryMeta = trainingDetailPresentation.categoryMeta;
+  const activeTrainingIcon = trainingDetailPresentation.icon;
+  const activeTrainingDurationMinutes = trainingDetailPresentation.durationMinutes;
+  const activeTrainingSeriesTotal = trainingDetailPresentation.seriesTotal;
+  const activeTrainingPreviewExercises = trainingDetailPresentation.previewExercises;
+  const activeTrainingMuscleFilters = trainingDetailPresentation.muscleFilters;
+  const activeTrainingDetailExercises = trainingDetailPresentation.detailExercises;
+  const localOnlyExercises = trainingDetailPresentation.localOnlyExercises;
+  const activeTrainingPreviewImageUri = trainingDetailPresentation.previewImageUri;
+  const activeTrainingEstimatedCalories = trainingDetailPresentation.estimatedCalories;
+  const activeTrainingSummary = trainingDetailPresentation.summary;
+  const activeTrainingStatsMetricMeta = trainingDetailPresentation.statsMetricMeta;
+  const activeTrainingHistory = trainingDetailPresentation.activeHistory;
+  const activeTrainingCompletedHistory = trainingDetailPresentation.completedHistory;
+  const activeTrainingFilteredHistory = trainingDetailPresentation.filteredHistory;
+  const activeTrainingHistoryEntries = trainingDetailPresentation.historyEntries;
+  const canExpandTrainingHistory = trainingDetailPresentation.canExpandHistory;
+  const globalTrainingHistory = trainingDetailPresentation.globalHistory;
+  const selectedWorkoutHistorySummary = trainingDetailPresentation.selectedHistorySummary;
+  const selectedWorkoutHistoryRecalculation = trainingDetailPresentation.selectedHistoryRecalculation;
+  const selectedWorkoutHistoryTemplate = trainingDetailPresentation.selectedHistoryTemplate;
+  const activeTrainingLegacySummaryCount = trainingDetailPresentation.legacySummaryCount;
+  const activeTrainingEffortDetail = trainingDetailPresentation.effortDetail;
+  const activeTrainingChartBars = trainingDetailPresentation.chartBars;
   const exercisePickerMuscleGroups = useMemo(
     () => exerciseCatalogState.manifest?.muscleGroups.map((group) => group.value) ?? [],
     [exerciseCatalogState.manifest],
   );
-  // Ejercicios que el usuario tiene en sus rutinas (base de datos local) pero que
-  // todavía no existen en la base de datos de la app (markdowns/JSON en GitHub).
-  const localOnlyExercises = useMemo(() => {
-    // Si el repo aún no se ha cargado, no podemos saber qué es "local" todavía.
-    if (exercisesRepo.length === 0) return [] as Array<{ name: string; muscle: string }>;
-    const seen = new Set<string>();
-    const result: Array<{ name: string; muscle: string }> = [];
-    for (const template of store.templates) {
-      for (const exercise of template.exercises) {
-        const name = exercise.name?.trim();
-        if (!name) continue;
-        // Si el ejercicio coincide (incluso con nombre distinto) con uno del repo,
-        // no es "local"; se usa el mismo matcher tolerante que el sync de im\u00e1genes.
-        if (exercise.catalog_link?.status === "linked"
-          || resolveRepoExercise(exercisesRepo, name, exercise.catalog_link)) continue;
-        const key = exerciseCatalogMatchKey(name);
-        if (seen.has(key)) continue;
-        seen.add(key);
-        result.push({ name, muscle: exercise.muscle?.trim() || "" });
-      }
-    }
-    result.sort((a, b) => a.name.localeCompare(b.name));
-    return result;
-  }, [store.templates, exercisesRepo]);
   const trainingSettingsController = useTrainingSettingsController({
     templates: store.templates,
     catalogAvailability: exerciseCatalogAvailability,
@@ -4687,75 +4583,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     retryCatalog: () => void retryExerciseCatalog(),
     openCatalog: openExerciseCatalogInspector,
   });
-  const activeTrainingPreviewImageUri = useMemo(
-    () => activeTrainingPreviewExercises.find((exercise) => exercise.imageUri)?.imageUri ?? null,
-    [activeTrainingPreviewExercises],
-  );
-  const activeTrainingEstimatedCalories = useMemo(
-    () => (activeTrainingTemplate ? estimateTemplateCalories(activeTrainingTemplate) : 0),
-    [activeTrainingTemplate],
-  );
-  const activeTrainingSummary = useMemo(() => {
-    if (activeTrainingMuscleFilters.length === 0) {
-      return "Configura los ejercicios y prepara tu próxima sesión.";
-    }
-    const focus = formatSpanishList(
-      activeTrainingMuscleFilters.slice(0, 3).map((muscle) => muscle.toLowerCase()),
-    );
-    return `Trabaja ${focus} con una sesión estructurada y lista para empezar.`;
-  }, [activeTrainingMuscleFilters]);
-  const activeTrainingStatsMetricMeta = useMemo(
-    () =>
-      TRAINING_STATS_METRIC_OPTIONS.find((option) => option.key === trainingStatsMetric) ??
-      TRAINING_STATS_METRIC_OPTIONS[0],
-    [trainingStatsMetric],
-  );
-  const activeTrainingHistory = useMemo(() => {
-    if (!activeTrainingTemplate) return [];
-    return [...store.workoutHistory]
-      .filter((summary) => summary.template_id === activeTrainingTemplate.id)
-      .sort((a, b) => new Date(a.finished_at).getTime() - new Date(b.finished_at).getTime());
-  }, [activeTrainingTemplate, store.workoutHistory]);
-  const activeTrainingCompletedHistory = useMemo(
-    () => activeTrainingHistory.filter(isCompletedWorkoutSummary),
-    [activeTrainingHistory],
-  );
-  const activeTrainingFilteredHistory = useMemo(() => {
-    const cutoff = resolveTrainingStatsPeriodStart(trainingStatsPeriod);
-    if (cutoff === null) return activeTrainingCompletedHistory;
-    return activeTrainingCompletedHistory.filter(
-      (summary) => new Date(summary.finished_at).getTime() >= cutoff,
-    );
-  }, [activeTrainingCompletedHistory, trainingStatsPeriod]);
-  const activeTrainingHistoryEntries = useMemo(() => {
-    const recentFirst = sortWorkoutHistoryDesc(activeTrainingHistory);
-    return showAllTrainingHistory ? recentFirst : recentFirst.slice(0, 4);
-  }, [activeTrainingHistory, showAllTrainingHistory]);
-  const canExpandTrainingHistory = activeTrainingHistory.length > 4;
-  const globalTrainingHistory = useMemo(
-    () => sortWorkoutHistoryDesc(store.workoutHistory),
-    [store.workoutHistory],
-  );
-  const selectedWorkoutHistorySummary = useMemo(
-    () => selectedWorkoutHistoryId
-      ? store.workoutHistory.find((summary) => summary.id === selectedWorkoutHistoryId) ?? null
-      : null,
-    [selectedWorkoutHistoryId, store.workoutHistory],
-  );
-  const selectedWorkoutHistoryRecalculation = useMemo<WorkoutSummaryRecalculation>(
-    () => selectedWorkoutHistorySummary
-      ? recalculateWorkoutSessionSummary(selectedWorkoutHistorySummary)
-      : { status: "unavailable" },
-    [selectedWorkoutHistorySummary],
-  );
-  const selectedWorkoutHistoryTemplate = useMemo(
-    () => selectedWorkoutHistorySummary
-      ? store.templates.find(
-          (template) => template.id === selectedWorkoutHistorySummary.template_id,
-        ) ?? null
-      : null,
-    [selectedWorkoutHistorySummary, store.templates],
-  );
   const trainingHistoryController = useTrainingHistoryController({
     historyOpen: trainingHistoryScreenOpen,
     selectedSummary: selectedWorkoutHistorySummary,
@@ -4766,54 +4593,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     openHistory: (id) => openTrainingHistory(id),
     openCurrentTemplate: openCurrentTemplateFromHistory,
   });
-  const activeTrainingLegacySummaryCount = useMemo(
-    () => activeTrainingFilteredHistory.filter((summary) => summary.calculation_version === 1).length,
-    [activeTrainingFilteredHistory],
-  );
-  const activeTrainingEffortDetail = useMemo(() => {
-    const detailedSummaries = activeTrainingFilteredHistory.filter(
-      (summary) => summary.effort_breakdown !== null,
-    );
-    const breakdown = detailedSummaries.reduce<WorkoutEffortBreakdown>(
-      (acc, summary) => ({
-        completed_primary: acc.completed_primary + (summary.effort_breakdown?.completed_primary ?? 0),
-        completed_sub_series:
-          acc.completed_sub_series + (summary.effort_breakdown?.completed_sub_series ?? 0),
-        total_primary: acc.total_primary + (summary.effort_breakdown?.total_primary ?? 0),
-        total_sub_series: acc.total_sub_series + (summary.effort_breakdown?.total_sub_series ?? 0),
-      }),
-      {
-        completed_primary: 0,
-        completed_sub_series: 0,
-        total_primary: 0,
-        total_sub_series: 0,
-      },
-    );
-    return { detailedCount: detailedSummaries.length, breakdown };
-  }, [activeTrainingFilteredHistory]);
-  const activeTrainingChartBars = useMemo(() => {
-    const points = activeTrainingFilteredHistory.map((summary) => {
-      const metricValue =
-        trainingStatsMetric === "volume"
-          ? summary.total_volume_kg
-          : trainingStatsMetric === "reps"
-            ? summary.total_reps
-            : Math.round((summary.elapsed_seconds / 60) * 10) / 10;
-      return {
-        id: summary.id,
-        label: formatTrainingStatsHistoryLabel(summary.finished_at),
-        metricValue,
-        metricValueLabel: formatTrainingStatsMetricValue(trainingStatsMetric, metricValue),
-      };
-    });
-
-    const maxValue = points.reduce((acc, point) => Math.max(acc, point.metricValue), 0);
-    return points.map((point, index) => ({
-      ...point,
-      isLatest: index === points.length - 1,
-      heightPercent: maxValue > 0 ? Math.max(10, (point.metricValue / maxValue) * 100) : 10,
-    }));
-  }, [activeTrainingFilteredHistory, trainingStatsMetric]);
   const trainingDetailController = useTrainingDetailController({
     template: activeTrainingTemplate,
     previewImageUri: activeTrainingPreviewImageUri,

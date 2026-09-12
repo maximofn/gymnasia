@@ -52,7 +52,7 @@
     "platform": ["platform/index.ts"],
     "screens": ["screens/index.ts"],
     "shell": ["shell/shellRegistry.ts"],
-    "training": ["training/presentationModel.ts", "training/restNotificationContract.ts", "training/seriesContract.ts", "training/seriesPresentation.ts", "training/sessionPresentationModel.ts", "training/workoutExecution.ts", "training/workoutHistory.ts", "training/workoutSessionClock.ts", "training/workoutSessionModel.ts", "training/workoutTemplateContract.ts", "training/workoutTemplateOperations.ts", "training/workoutTemplateTransactions.ts"]
+    "training": ["training/detailPresentationModel.ts", "training/presentationModel.ts", "training/restNotificationContract.ts", "training/seriesContract.ts", "training/seriesPresentation.ts", "training/sessionPresentationModel.ts", "training/workoutExecution.ts", "training/workoutHistory.ts", "training/workoutSessionClock.ts", "training/workoutSessionModel.ts", "training/workoutTemplateContract.ts", "training/workoutTemplateOperations.ts", "training/workoutTemplateTransactions.ts"]
   },
   "forbiddenExternalImports": {
     "controllers": ["react-native", "expo", "expo-av", "expo-clipboard", "expo-constants", "expo-crypto", "expo-document-picker", "expo-file-system", "expo-image-picker", "expo-intent-launcher", "expo-notifications", "expo-secure-store", "expo-sharing"],
