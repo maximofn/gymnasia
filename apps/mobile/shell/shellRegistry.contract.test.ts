@@ -7,6 +7,8 @@ import {
 } from "./shellRegistry";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const chatScreenSource = readFileSync(new URL("../screens/ChatScreen.tsx", import.meta.url), "utf8");
+const shellUiSource = `${appSource}\n${chatScreenSource}`;
 const reportModalSource = readFileSync(new URL("../AiResponseReportModal.tsx", import.meta.url), "utf8");
 const recoverySource = readFileSync(new URL("../LocalStoreRecoveryScreen.tsx", import.meta.url), "utf8");
 
@@ -32,11 +34,11 @@ describe("contrato estático del shell", () => {
     for (const surface of SHELL_BACK_LAYERS) {
       const references = appSource.match(new RegExp(`"${surface.id}"`, "g"))?.length ?? 0;
       expect(references, `${surface.id} debe declarar estado y handler`).toBeGreaterThanOrEqual(2);
-      const registryTestIdIsAttached = appSource.includes(`shellSurfaceTestId("${surface.id}")`)
-        || appSource.includes(`testID="${surface.testId}"`)
+      const registryTestIdIsAttached = shellUiSource.includes(`shellSurfaceTestId("${surface.id}")`)
+        || shellUiSource.includes(`testID="${surface.testId}"`)
         || (
-          appSource.includes(`surfaceId: "${surface.id}"`)
-          && appSource.includes("shellSurfaceTestId(dropdown.surfaceId)")
+          shellUiSource.includes(`surfaceId: "${surface.id}"`)
+          && shellUiSource.includes("shellSurfaceTestId(dropdown.surfaceId)")
         );
       expect(registryTestIdIsAttached, `${surface.id} debe aplicar su test ID`).toBe(true);
     }

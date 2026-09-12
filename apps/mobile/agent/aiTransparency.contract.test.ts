@@ -3,6 +3,11 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const chatScreenSource = readFileSync(
+  new URL("../screens/ChatScreen.tsx", import.meta.url),
+  "utf8",
+);
+const conversationalUiSource = `${appSource}\n${chatScreenSource}`;
 const disclosureSource = readFileSync(
   new URL("../AiIdentityDisclosure.tsx", import.meta.url),
   "utf8",
@@ -14,11 +19,11 @@ const promptSource = readFileSync(
 
 describe("contrato estático de superficies conversacionales", () => {
   it("mantiene la divulgación desplazable y la leyenda persistente en las tres superficies", () => {
-    expect(appSource).toContain('<AiIdentityDisclosure surface="main-chat" />');
-    expect(appSource).toContain('<AiIdentityPersistentDisclosure surface="main-chat" />');
-    expect(appSource).toContain('disclosureSurface="food-estimator"');
-    expect(appSource).toContain('<AiIdentityDisclosure surface="personal-food-assistant" />');
-    expect(appSource).toContain('<AiIdentityPersistentDisclosure surface="personal-food-assistant" />');
+    expect(conversationalUiSource).toContain('<AiIdentityDisclosure surface="main-chat" />');
+    expect(conversationalUiSource).toContain('<AiIdentityPersistentDisclosure surface="main-chat" />');
+    expect(conversationalUiSource).toContain('disclosureSurface="food-estimator"');
+    expect(conversationalUiSource).toContain('<AiIdentityDisclosure surface="personal-food-assistant" />');
+    expect(conversationalUiSource).toContain('<AiIdentityPersistentDisclosure surface="personal-food-assistant" />');
   });
 
   it("protege las tres fronteras de system prompt", () => {
@@ -32,12 +37,12 @@ describe("contrato estático de superficies conversacionales", () => {
     expect(disclosureSource).toContain('accessibilityLiveRegion="polite"');
     expect(disclosureSource).toContain("AccessibilityInfo.announceForAccessibility");
     expect(disclosureSource).toContain('textAlign: "right"');
-    expect(appSource).toContain('accessibilityLabel="Pregunta a Gymnasia Coach"');
-    expect(appSource).toContain("Pregunta a Gymnasia Food Estimator");
+    expect(conversationalUiSource).toContain('accessibilityLabel="Pregunta a Gymnasia Coach"');
+    expect(conversationalUiSource).toContain("Pregunta a Gymnasia Food Estimator");
   });
 
   it("mantiene ambos nombres sin presentar a los agentes como profesionales reales", () => {
-    const conversationalSources = `${appSource}\n${promptSource}`;
+    const conversationalSources = `${conversationalUiSource}\n${promptSource}`;
     for (const prohibited of [
       "Eres Gymnasia Coach, un asistente de gimnasio",
       "Pregunta al coach",

@@ -342,8 +342,9 @@ import {
   useLocalStoreRuntime,
   type LocalStoreRuntime,
 } from "./persistence/localStoreRuntime";
+import { useChatController } from "./controllers/chatController";
 import { useHomeController } from "./controllers/homeController";
-import { HomeScreen } from "./screens";
+import { ChatScreen, HomeScreen } from "./screens";
 import {
   AiResponseReportAction,
   AiResponseReportModal,
@@ -5281,6 +5282,31 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const chatThinkingLabel = useThinkingLabel(sendingChat);
   const [expandedThinking, setExpandedThinking] = useState<Record<string, boolean>>({});
   const [showByokExplain, setShowByokExplain] = useState(false);
+  const chatController = useChatController({
+    error,
+    hasConfiguredProvider: IS_FAKE_PROVIDER_MODE || store.keys.some((key) => key.api_key.trim()),
+    messages,
+    expandedThinking,
+    thinkingLabel: chatThinkingLabel,
+    input: chatInput,
+    isSending: sendingChat,
+    showByokExplanation: showByokExplain,
+    inputBottomPadding: Platform.OS === "android" ? 24 : 16,
+    changeInput: setChatInput,
+    send: sendMessage,
+    toggleThinking: (messageId) => {
+      setExpandedThinking((previous) => ({
+        ...previous,
+        [messageId]: !previous[messageId],
+      }));
+    },
+    reportMessage: handleOpenAiReport,
+    openProviderSettings: () => {
+      setTab("settings");
+      setSettingsTab("provider");
+    },
+    setShowByokExplanation: setShowByokExplain,
+  });
   const [activePolicySelection, setActivePolicySelection] =
     useState<ChatSystemPromptSelection | null>(null);
   const [policyRuntimeStatus, setPolicyRuntimeStatus] =
@@ -5331,7 +5357,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       })
       .finally(() => setPolicyRefreshBusy(false));
   }, []);
-  const chatScrollRef = useRef<ScrollView>(null);
   const mainScrollRef = useRef<ScrollView>(null);
   const dietScrollY = useRef(new Animated.Value(0)).current;
   // Tracks the live scroll value so the header only re-measures its expanded
@@ -6460,7 +6485,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "exercise-catalog-detail": selectedExerciseDetail !== null,
     "measurement-photo": expandedPhotoUri !== null,
     "measurement-entry": measurementEntryScreenOpen,
-    "byok-explanation": showByokExplain,
+    "byok-explanation": chatController.back.layers["byok-explanation"],
     "provider-delete": providerDeleteModal !== null,
     "diet-copy-confirmation": dietCopyModal !== null,
     "diet-copy-date-picker": dietCopyPickCategory !== null,
@@ -6516,7 +6541,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "exercise-catalog-detail": () => { setSelectedExerciseDetail(null); return true; },
     "measurement-photo": () => { setExpandedPhotoUri(null); return true; },
     "measurement-entry": () => { closeMeasurementEntryScreen(); return true; },
-    "byok-explanation": () => { setShowByokExplain(false); return true; },
+    "byok-explanation": chatController.back.handlers["byok-explanation"],
     "provider-delete": () => { closeProviderDeleteModal(); return true; },
     "diet-copy-confirmation": () => { setDietCopyModal(null); return true; },
     "diet-copy-date-picker": () => { closeDietCopyPicker(); return true; },
@@ -13352,209 +13377,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           </View>
         ) : null}
         {tab === "chat" ? (
-          <View style={{ flex: 1, paddingHorizontal: mobileTheme.spacing[4], gap: 10 }}>
-            {error ? <Text style={{ color: "#ff8a8a", marginBottom: 12 }}>{error}</Text> : null}
-            {IS_FAKE_PROVIDER_MODE || store.keys.some((k) => k.api_key.trim()) ? (
-              <View style={{ flex: 1, gap: 10 }}>
-                <ScrollView
-                  ref={chatScrollRef}
-                  testID="chat-message-list-main-chat"
-                  style={{ flex: 1 }}
-                  contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
-                  showsVerticalScrollIndicator={false}
-                  onContentSizeChange={() => chatScrollRef?.current?.scrollToEnd({ animated: true })}
-                >
-                  <AiIdentityDisclosure surface="main-chat" />
-                  {messages.map((msg) => {
-                    if (msg.kind === "health_safety_intervention") {
-                      return (
-                        <View key={msg.id} style={{ gap: 6 }}>
-                          <HealthSafetyNotice content={msg.content} metadata={msg.health_safety} />
-                          <AiResponseReportAction
-                            message={msg}
-                            onPress={() => handleOpenAiReport("main-chat", msg, messages)}
-                          />
-                        </View>
-                      );
-                    }
-                    return (
-                    <View
-                      key={msg.id}
-                      testID={msg.kind === AI_DISCLOSURE_MESSAGE_KIND ? "ai-intro-message-main-chat" : `chat-message-${msg.role}-${msg.id}`}
-                      style={{ gap: 4 }}
-                    >
-                      {msg.role === "assistant" && msg.thinking ? (
-                        <Pressable
-                          onPress={() => setExpandedThinking((prev) => ({ ...prev, [msg.id]: !prev[msg.id] }))}
-                          style={{
-                            borderWidth: 1,
-                            borderColor: "rgba(147,112,219,0.35)",
-                            backgroundColor: "rgba(147,112,219,0.06)",
-                            borderRadius: mobileTheme.radius.md,
-                            padding: 10,
-                          }}
-                        >
-                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                            <Feather name="cpu" size={12} color="rgba(147,112,219,0.8)" />
-                            <Text style={{ color: "rgba(147,112,219,0.8)", fontSize: 12, fontWeight: "600", flex: 1 }}>
-                              Razonamiento
-                            </Text>
-                            <Feather
-                              name={expandedThinking[msg.id] ? "chevron-up" : "chevron-down"}
-                              size={14}
-                              color="rgba(147,112,219,0.6)"
-                            />
-                          </View>
-                          {expandedThinking[msg.id] ? (
-                            <ScrollView style={{ maxHeight: 200, marginTop: 8 }} nestedScrollEnabled>
-                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 18, fontStyle: "italic" }}>
-                                {msg.thinking}
-                              </Text>
-                            </ScrollView>
-                          ) : null}
-                        </Pressable>
-                      ) : null}
-                      <View
-                        style={{
-                          borderWidth: 1,
-                          borderColor:
-                            msg.kind === "technical_error"
-                              ? "rgba(255,122,122,0.55)"
-                              : msg.role === "assistant"
-                              ? "rgba(203,255,26,0.45)"
-                              : mobileTheme.color.borderSubtle,
-                          backgroundColor:
-                            msg.role === "assistant"
-                              ? "rgba(203,255,26,0.08)"
-                              : mobileTheme.color.bgSurface,
-                          borderRadius: mobileTheme.radius.md,
-                          padding: 10,
-                        }}
-                      >
-                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{chatRoleLabel(msg.role)}</Text>
-                        {msg.content.trim() ? (
-                          <Text style={{ color: msg.kind === "technical_error" ? "#FF8A8A" : mobileTheme.color.textPrimary, marginTop: 4 }}>{msg.content}</Text>
-                        ) : null}
-                        {msg.is_streaming ? (
-                          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: msg.content.trim() ? 8 : 4 }}>
-                            <ActivityIndicator size="small" color={mobileTheme.color.textSecondary} />
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontStyle: "italic" }}>
-                              {`${chatThinkingLabel}...`}
-                            </Text>
-                          </View>
-                        ) : null}
-                      </View>
-                      <AiResponseReportAction
-                        message={msg}
-                        onPress={() => handleOpenAiReport("main-chat", msg, messages)}
-                      />
-                    </View>
-                    );
-                  })}
-                </ScrollView>
-                <View style={{ paddingBottom: Platform.OS === "android" ? 24 : 16, gap: 8 }}>
-                  <TextInput
-                    testID="chat-input"
-                    style={{
-                      minHeight: 44,
-                      maxHeight: 120,
-                      borderRadius: mobileTheme.radius.md,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: mobileTheme.color.bgSurface,
-                      color: mobileTheme.color.textPrimary,
-                      paddingHorizontal: 12,
-                      paddingVertical: 10,
-                      textAlignVertical: "top",
-                    }}
-                    value={chatInput}
-                    onChangeText={setChatInput}
-                    placeholder="Pregunta a Gymnasia Coach"
-                    accessibilityLabel="Pregunta a Gymnasia Coach"
-                    placeholderTextColor={mobileTheme.color.textSecondary}
-                    multiline
-                    blurOnSubmit={false}
-                  />
-                  <PrimaryButton
-                    label={sendingChat ? "Enviando..." : "Enviar"}
-                    onPress={sendMessage}
-                    disabled={sendingChat}
-                    testID="chat-send"
-                  />
-                  <AiIdentityPersistentDisclosure surface="main-chat" />
-                </View>
-              </View>
-            ) : (
-              <ScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{ alignItems: "center", paddingHorizontal: 32, paddingVertical: 16, gap: 20 }}
-                showsVerticalScrollIndicator={false}
-              >
-                <AiIdentityDisclosure surface="main-chat" />
-                {messages
-                  .filter((message) => message.kind === AI_DISCLOSURE_MESSAGE_KIND)
-                  .slice(0, 1)
-                  .map((message) => (
-                    <View
-                      key={message.id}
-                      testID="ai-intro-message-main-chat"
-                      style={{
-                        width: "100%",
-                        borderWidth: 1,
-                        borderColor: "rgba(203,255,26,0.45)",
-                        backgroundColor: "rgba(203,255,26,0.08)",
-                        borderRadius: mobileTheme.radius.md,
-                        padding: 10,
-                      }}
-                    >
-                      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-                        {getAiTransparencyCopy("main-chat").agentName}
-                      </Text>
-                      <Text style={{ color: mobileTheme.color.textPrimary, marginTop: 4 }}>
-                        {message.content}
-                      </Text>
-                    </View>
-                  ))}
-                <View style={{ width: 100, height: 100, borderRadius: 50, backgroundColor: "rgba(255,255,255,0.06)", alignItems: "center", justifyContent: "center" }}>
-                  <Feather name="key" size={40} color="rgba(255,255,255,0.25)" />
-                </View>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "800", textAlign: "center" }}>
-                  API Key no configurada
-                </Text>
-                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 15, textAlign: "center", lineHeight: 22 }}>
-                  Para usar Gymnasia Coach necesitas configurar tu API Key. Obtén una API key de tu proveedor y añádela en los ajustes de la app.
-                </Text>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "rgba(100,149,237,0.08)", borderWidth: 1, borderColor: "rgba(100,149,237,0.25)", borderRadius: mobileTheme.radius.md, padding: 14 }}>
-                  <Feather name="info" size={16} color="rgba(100,149,237,0.9)" />
-                  <Text style={{ color: "rgba(100,149,237,0.9)", fontSize: 13, flex: 1, lineHeight: 19 }}>
-                    Gymnasia guarda tus API keys solo en tu dispositivo, no las guarda en ningún otro lugar.
-                  </Text>
-                </View>
-                <Pressable
-                  onPress={() => { setTab("settings"); setSettingsTab("provider"); }}
-                  style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 52, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, width: "100%", marginTop: 4 }}
-                >
-                  <Ionicons name="settings-sharp" size={18} color="#06090D" />
-                  <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 16 }}>Ir a Ajustes BYOK</Text>
-                </Pressable>
-                <Pressable onPress={() => setShowByokExplain((v) => !v)}>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, textAlign: "center" }}>
-                    {showByokExplain ? "Ocultar" : "¿Qué es BYOK?"}
-                  </Text>
-                </Pressable>
-                {showByokExplain ? (
-                  <View
-                    testID={shellSurfaceTestId("byok-explanation")}
-                    style={{ backgroundColor: "rgba(255,255,255,0.04)", borderRadius: mobileTheme.radius.md, padding: 14 }}
-                  >
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 20 }}>
-                      BYOK significa "Bring Your Own Key" (Trae Tu Propia Clave). Gymnasia no incluye acceso a ningún proveedor de IA. Tú proporcionas tu propia API key de OpenAI, Anthropic o Google, y las conversaciones se envían directamente desde tu dispositivo al proveedor. Gymnasia no envía tu clave a servidores propios; la usa únicamente para autenticar las peticiones ante el proveedor que eliges.
-                    </Text>
-                  </View>
-                ) : null}
-              </ScrollView>
-            )}
-          </View>
+          <ChatScreen model={chatController.model} actions={chatController.actions} />
         ) : (
         <View style={{ flex: 1 }}>
         {tab === "diet" ? (
