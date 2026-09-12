@@ -2,6 +2,16 @@ import { useMemo, useRef } from "react";
 
 import type { PersonalDataField } from "../agent/personalData";
 import type {
+  OpenAIReasoningEffort,
+  Provider,
+  ProviderConfiguration,
+  ProviderDraft,
+} from "../agent/providerConfiguration";
+import type {
+  ProviderConnectionStatus,
+  ProviderStatusSeverity,
+} from "../agent/providerPresentation";
+import type {
   ActivityLevel,
   DietGoal,
   DietSettings,
@@ -14,6 +24,210 @@ import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
 import type { NotificationSoundKey } from "../notifications/notificationSounds";
 import type { NotificationSettings } from "../storage/userPreferences";
 import type { ScreenController } from "./types";
+
+export type ProviderModelOption = {
+  id: string;
+  display_name?: string | null;
+  owned_by?: string | null;
+};
+export type ProviderModelMessage = { text: string; severity: ProviderStatusSeverity } | null;
+
+export type ProviderSettingsModel = {
+  keys: ReadonlyArray<ProviderConfiguration>;
+  chatProvider: Provider | null;
+  foodProvider: Provider | null;
+  healthSafetyProviders: Readonly<Record<Provider, boolean>>;
+  secureStoreAvailable: boolean;
+  isWeb: boolean;
+  chatDropdownOpen: boolean;
+  foodDropdownOpen: boolean;
+  drafts: Readonly<Partial<Record<Provider, ProviderDraft>>>;
+  keyVisibility: Readonly<Record<Provider, boolean>>;
+  connectionStatus: Readonly<Record<Provider, ProviderConnectionStatus>>;
+  saveLoading: Readonly<Record<Provider, boolean>>;
+  anthropic: {
+    dropdownOpen: boolean;
+    filter: string;
+    loading: boolean;
+    message: ProviderModelMessage;
+    options: ReadonlyArray<ProviderModelOption>;
+  };
+  openai: {
+    dropdownOpen: boolean;
+    filter: string;
+    loading: boolean;
+    message: ProviderModelMessage;
+    options: ReadonlyArray<ProviderModelOption>;
+    selectedEffort: OpenAIReasoningEffort | null;
+    supportedEfforts: ReadonlyArray<OpenAIReasoningEffort>;
+    normalizedModel: string;
+  };
+  google: {
+    dropdownOpen: boolean;
+    filter: string;
+    loading: boolean;
+    message: ProviderModelMessage;
+    options: ReadonlyArray<ProviderModelOption>;
+  };
+};
+
+export type ProviderSettingsActions = {
+  updateHealthSafetyConsent(provider: Provider, enabled: boolean): void;
+  selectChatProvider(provider: Provider): void;
+  selectFoodProvider(provider: Provider): void;
+  setChatDropdownOpen(open: boolean): void;
+  setFoodDropdownOpen(open: boolean): void;
+  updateDraft(provider: Provider, patch: Partial<ProviderDraft>): void;
+  toggleKeyVisibility(provider: Provider): void;
+  save(provider: Provider): void;
+  openDelete(provider: Provider): void;
+  toggleAnthropicDropdown(): void;
+  toggleOpenAIDropdown(): void;
+  toggleGoogleDropdown(): void;
+  setAnthropicFilter(value: string): void;
+  setOpenAIFilter(value: string): void;
+  setGoogleFilter(value: string): void;
+  setAnthropicMessage(message: NonNullable<ProviderModelMessage>): void;
+  setOpenAIMessage(message: NonNullable<ProviderModelMessage>): void;
+  setGoogleMessage(message: NonNullable<ProviderModelMessage>): void;
+  loadAnthropicModels(apiKey: string, workspaceId?: string): void;
+  loadOpenAIModels(apiKey: string): void;
+  loadGoogleModels(apiKey: string): void;
+  selectAnthropicModel(id: string): void;
+  selectOpenAIModel(id: string): void;
+  selectGoogleModel(id: string): void;
+};
+
+export type ProviderSettingsControllerInput = ProviderSettingsModel & ProviderSettingsActions;
+
+export function useProviderSettingsController(
+  input: ProviderSettingsControllerInput,
+): ScreenController<
+  ProviderSettingsModel,
+  ProviderSettingsActions,
+  "chat-provider-dropdown" | "food-provider-dropdown" | "anthropic-model-dropdown" | "openai-model-dropdown" | "google-model-dropdown"
+> {
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const model = useMemo<ProviderSettingsModel>(() => ({
+    keys: input.keys,
+    chatProvider: input.chatProvider,
+    foodProvider: input.foodProvider,
+    healthSafetyProviders: input.healthSafetyProviders,
+    secureStoreAvailable: input.secureStoreAvailable,
+    isWeb: input.isWeb,
+    chatDropdownOpen: input.chatDropdownOpen,
+    foodDropdownOpen: input.foodDropdownOpen,
+    drafts: input.drafts,
+    keyVisibility: input.keyVisibility,
+    connectionStatus: input.connectionStatus,
+    saveLoading: input.saveLoading,
+    anthropic: {
+      dropdownOpen: input.anthropic.dropdownOpen,
+      filter: input.anthropic.filter,
+      loading: input.anthropic.loading,
+      message: input.anthropic.message,
+      options: input.anthropic.options,
+    },
+    openai: {
+      dropdownOpen: input.openai.dropdownOpen,
+      filter: input.openai.filter,
+      loading: input.openai.loading,
+      message: input.openai.message,
+      options: input.openai.options,
+      selectedEffort: input.openai.selectedEffort,
+      supportedEfforts: input.openai.supportedEfforts,
+      normalizedModel: input.openai.normalizedModel,
+    },
+    google: {
+      dropdownOpen: input.google.dropdownOpen,
+      filter: input.google.filter,
+      loading: input.google.loading,
+      message: input.google.message,
+      options: input.google.options,
+    },
+  }), [
+    input.anthropic.dropdownOpen,
+    input.anthropic.filter,
+    input.anthropic.loading,
+    input.anthropic.message,
+    input.anthropic.options,
+    input.chatDropdownOpen,
+    input.chatProvider,
+    input.connectionStatus,
+    input.drafts,
+    input.foodDropdownOpen,
+    input.foodProvider,
+    input.google.dropdownOpen,
+    input.google.filter,
+    input.google.loading,
+    input.google.message,
+    input.google.options,
+    input.healthSafetyProviders,
+    input.isWeb,
+    input.keyVisibility,
+    input.keys,
+    input.openai.dropdownOpen,
+    input.openai.filter,
+    input.openai.loading,
+    input.openai.message,
+    input.openai.normalizedModel,
+    input.openai.options,
+    input.openai.selectedEffort,
+    input.openai.supportedEfforts,
+    input.saveLoading,
+    input.secureStoreAvailable,
+  ]);
+  const actions = useMemo<ProviderSettingsActions>(() => ({
+    updateHealthSafetyConsent: (provider, enabled) => inputRef.current.updateHealthSafetyConsent(provider, enabled),
+    selectChatProvider: (provider) => inputRef.current.selectChatProvider(provider),
+    selectFoodProvider: (provider) => inputRef.current.selectFoodProvider(provider),
+    setChatDropdownOpen: (open) => inputRef.current.setChatDropdownOpen(open),
+    setFoodDropdownOpen: (open) => inputRef.current.setFoodDropdownOpen(open),
+    updateDraft: (provider, patch) => inputRef.current.updateDraft(provider, patch),
+    toggleKeyVisibility: (provider) => inputRef.current.toggleKeyVisibility(provider),
+    save: (provider) => inputRef.current.save(provider),
+    openDelete: (provider) => inputRef.current.openDelete(provider),
+    toggleAnthropicDropdown: () => inputRef.current.toggleAnthropicDropdown(),
+    toggleOpenAIDropdown: () => inputRef.current.toggleOpenAIDropdown(),
+    toggleGoogleDropdown: () => inputRef.current.toggleGoogleDropdown(),
+    setAnthropicFilter: (value) => inputRef.current.setAnthropicFilter(value),
+    setOpenAIFilter: (value) => inputRef.current.setOpenAIFilter(value),
+    setGoogleFilter: (value) => inputRef.current.setGoogleFilter(value),
+    setAnthropicMessage: (message) => inputRef.current.setAnthropicMessage(message),
+    setOpenAIMessage: (message) => inputRef.current.setOpenAIMessage(message),
+    setGoogleMessage: (message) => inputRef.current.setGoogleMessage(message),
+    loadAnthropicModels: (apiKey, workspaceId) => inputRef.current.loadAnthropicModels(apiKey, workspaceId),
+    loadOpenAIModels: (apiKey) => inputRef.current.loadOpenAIModels(apiKey),
+    loadGoogleModels: (apiKey) => inputRef.current.loadGoogleModels(apiKey),
+    selectAnthropicModel: (id) => inputRef.current.selectAnthropicModel(id),
+    selectOpenAIModel: (id) => inputRef.current.selectOpenAIModel(id),
+    selectGoogleModel: (id) => inputRef.current.selectGoogleModel(id),
+  }), []);
+  const back = useMemo(() => ({
+    layers: {
+      "chat-provider-dropdown": input.chatDropdownOpen,
+      "food-provider-dropdown": input.foodDropdownOpen,
+      "anthropic-model-dropdown": input.anthropic.dropdownOpen,
+      "openai-model-dropdown": input.openai.dropdownOpen,
+      "google-model-dropdown": input.google.dropdownOpen,
+    },
+    handlers: {
+      "chat-provider-dropdown": () => { inputRef.current.setChatDropdownOpen(false); return true; },
+      "food-provider-dropdown": () => { inputRef.current.setFoodDropdownOpen(false); return true; },
+      "anthropic-model-dropdown": () => { inputRef.current.toggleAnthropicDropdown(); return true; },
+      "openai-model-dropdown": () => { inputRef.current.toggleOpenAIDropdown(); return true; },
+      "google-model-dropdown": () => { inputRef.current.toggleGoogleDropdown(); return true; },
+    },
+  }), [
+    input.anthropic.dropdownOpen,
+    input.chatDropdownOpen,
+    input.foodDropdownOpen,
+    input.google.dropdownOpen,
+    input.openai.dropdownOpen,
+  ]);
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
 
 export type SettingsTabKey =
   | "diet"

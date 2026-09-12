@@ -11,6 +11,7 @@ export {
   NotificationSettingsPanel,
   PreferencesSettingsPanel,
   ProductsSettingsPanel,
+  ProviderSettingsPanel,
   SettingsTabs,
   TrainingSettingsPanel,
 } from "./SettingsScreen";

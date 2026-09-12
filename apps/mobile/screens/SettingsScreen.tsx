@@ -17,11 +17,26 @@ import {
   SETTINGS_TAB_OPTIONS,
   type NotificationSettingsActions,
   type NotificationSettingsModel,
+  type ProviderSettingsActions,
+  type ProviderSettingsModel,
   type SettingsTabsActions,
   type SettingsTabsModel,
   type TrainingSettingsActions,
   type TrainingSettingsModel,
 } from "../controllers/settingsController";
+import {
+  DEFAULT_MODELS,
+  type Provider,
+} from "../agent/providerConfiguration";
+import { providerCredential } from "../agent/providerCredentials";
+import {
+  OPENAI_REASONING_EFFORT_LABELS,
+  PROVIDER_STATUS_COPY,
+  PROVIDER_UI_META,
+  providerConnectionBadge,
+  providerDetailColorBySeverity,
+} from "../agent/providerPresentation";
+import { IS_FAKE_PROVIDER_MODE } from "../runtimeEnvironment";
 import { CatalogStatusNotice } from "../catalogs/CatalogStatusNotice";
 import { foodCatalogImageUri } from "../catalogs/sources";
 import type { UserPreferences } from "../storage/userPreferences";
@@ -1234,3 +1249,1257 @@ function FoodCatalogDetail({ food, testID, onClose, showTitle = false }: { food:
     </View>
   );
 }
+
+export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
+  model,
+  actions,
+}: {
+  model: Readonly<ProviderSettingsModel>;
+  actions: Readonly<ProviderSettingsActions>;
+}) {
+  const healthSafetyConsent = { providers: model.healthSafetyProviders };
+  const store = {
+    keys: model.keys,
+    chatProvider: model.chatProvider,
+    foodAIProvider: model.foodProvider,
+  };
+  const orderedProviderKeys = model.keys;
+  const providerDraftByProvider = model.drafts;
+  const providerKeyVisibility = model.keyVisibility;
+  const providerConnectionStatus = model.connectionStatus;
+  const providerSaveLoading = model.saveLoading;
+  const secureStoreAvailable = model.secureStoreAvailable;
+  const chatProviderDropdownOpen = model.chatDropdownOpen;
+  const foodAIProviderDropdownOpen = model.foodDropdownOpen;
+  const anthropicModelDropdownOpen = model.anthropic.dropdownOpen;
+  const anthropicModelFilter = model.anthropic.filter;
+  const anthropicModelOptionsLoading = model.anthropic.loading;
+  const anthropicModelOptionsMessage = model.anthropic.message;
+  const filteredAnthropicModelOptions = model.anthropic.options;
+  const openAIModelDropdownOpen = model.openai.dropdownOpen;
+  const openAIModelFilter = model.openai.filter;
+  const openAIModelOptionsLoading = model.openai.loading;
+  const openAIModelOptionsMessage = model.openai.message;
+  const filteredOpenAIModelOptions = model.openai.options;
+  const normalizedOpenAIProviderModel = model.openai.normalizedModel;
+  const selectedOpenAIReasoningEffort = model.openai.selectedEffort;
+  const supportedOpenAIReasoningEfforts = model.openai.supportedEfforts;
+  const googleModelDropdownOpen = model.google.dropdownOpen;
+  const googleModelFilter = model.google.filter;
+  const googleModelOptionsLoading = model.google.loading;
+  const googleModelOptionsMessage = model.google.message;
+  const filteredGoogleModelOptions = model.google.options;
+  const updateHealthSafetyConsent = (
+    provider: Provider,
+    next: { enabled: boolean; noticeSeen?: boolean },
+  ) => actions.updateHealthSafetyConsent(provider, next.enabled);
+  const selectChatProvider = actions.selectChatProvider;
+  const setChatProviderDropdownOpen = actions.setChatDropdownOpen;
+  const setFoodAIProviderDropdownOpen = actions.setFoodDropdownOpen;
+  const updateProviderDraft = actions.updateDraft;
+  const toggleProviderKeyVisibility = actions.toggleKeyVisibility;
+  const saveProviderApiKey = actions.save;
+  const openDeleteProviderApiKeyModal = actions.openDelete;
+  const toggleAnthropicModelDropdown = actions.toggleAnthropicDropdown;
+  const toggleOpenAIModelDropdown = actions.toggleOpenAIDropdown;
+  const toggleGoogleModelDropdown = actions.toggleGoogleDropdown;
+  const setAnthropicModelFilter = actions.setAnthropicFilter;
+  const setOpenAIModelFilter = actions.setOpenAIFilter;
+  const setGoogleModelFilter = actions.setGoogleFilter;
+  const setAnthropicModelOptionsMessage = actions.setAnthropicMessage;
+  const setOpenAIModelOptionsMessage = actions.setOpenAIMessage;
+  const setGoogleModelOptionsMessage = actions.setGoogleMessage;
+  const loadAnthropicModelOptions = actions.loadAnthropicModels;
+  const loadOpenAIModelOptions = actions.loadOpenAIModels;
+  const loadGoogleModelOptions = actions.loadGoogleModels;
+  const selectAnthropicModel = actions.selectAnthropicModel;
+  const selectOpenAIModel = actions.selectOpenAIModel;
+  const selectGoogleModel = actions.selectGoogleModel;
+  return (
+                  <View style={{ gap: 12 }}>
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "rgba(69,141,255,0.45)",
+                        borderRadius: mobileTheme.radius.lg,
+                        backgroundColor: "rgba(17,58,130,0.24)",
+                        padding: 12,
+                        flexDirection: "row",
+                        gap: 10,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 24,
+                          alignItems: "center",
+                          justifyContent: "flex-start",
+                          paddingTop: 1,
+                        }}
+                      >
+                        <Feather name="shield" size={16} color="#77A8FF" />
+                      </View>
+                      <Text style={{ color: "#77A8FF", flex: 1, lineHeight: 19 }}>
+                        Tus API Keys se almacenan cifradas localmente en tu dispositivo. GYMNASIA nunca las envía a nuestros servidores.
+                      </Text>
+                    </View>
+  
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "rgba(255,205,77,0.45)",
+                        borderRadius: mobileTheme.radius.lg,
+                        backgroundColor: "rgba(255,205,77,0.07)",
+                        padding: 12,
+                        gap: 10,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <Feather name="shield" size={16} color="#FFCD4D" />
+                        <Text style={{ color: "#FFCD4D", fontWeight: "800", flex: 1 }}>
+                          Evaluación sanitaria opcional
+                        </Text>
+                      </View>
+                      <Text style={{ color: mobileTheme.color.textSecondary, lineHeight: 18, fontSize: 12 }}>
+                        En consultas ambiguas puede enviar solo el texto de esa consulta al proveedor elegido para una segunda clasificación. No envía historial, fotos ni memoria local. El filtro determinista y el buffer seguro funcionan siempre, aunque esto esté desactivado.
+                      </Text>
+                      {(["anthropic", "openai", "google"] as Provider[]).map((provider) => {
+                        const enabled = healthSafetyConsent.providers[provider];
+                        return (
+                          <Pressable
+                            key={provider}
+                            accessibilityRole="switch"
+                            accessibilityState={{ checked: enabled }}
+                            accessibilityLabel={`Evaluación sanitaria con ${PROVIDER_UI_META[provider].label}`}
+                            onPress={() => updateHealthSafetyConsent(provider, {
+                              enabled: !enabled,
+                              noticeSeen: true,
+                            })}
+                            style={{ flexDirection: "row", alignItems: "center", gap: 10, minHeight: 38 }}
+                          >
+                            <View
+                              style={{
+                                width: 38,
+                                height: 22,
+                                borderRadius: 999,
+                                padding: 2,
+                                alignItems: enabled ? "flex-end" : "flex-start",
+                                backgroundColor: enabled ? mobileTheme.color.brandPrimary : "#3A414C",
+                              }}
+                            >
+                              <View style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: enabled ? "#06090D" : "#A2AAB5" }} />
+                            </View>
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600", flex: 1 }}>
+                              {PROVIDER_UI_META[provider].label}
+                            </Text>
+                            <Text style={{ color: enabled ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontSize: 11 }}>
+                              {enabled ? "Activada" : "Desactivada"}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+  
+                    {/* Provider selector dropdowns */}
+                    {[
+                      {
+                        label: "Gymnasia Coach",
+                        surfaceId: "chat-provider-dropdown" as const,
+                        value: store.chatProvider,
+                        onChange: (p: Provider) => { void selectChatProvider(p); },
+                        open: chatProviderDropdownOpen,
+                        setOpen: setChatProviderDropdownOpen,
+                        otherClose: () => setFoodAIProviderDropdownOpen(false),
+                      },
+                      {
+                        label: "Gymnasia Food Estimator",
+                        surfaceId: "food-provider-dropdown" as const,
+                        value: store.foodAIProvider,
+                        onChange: (p: Provider) => { actions.selectFoodProvider(p); },
+                        open: foodAIProviderDropdownOpen,
+                        setOpen: setFoodAIProviderDropdownOpen,
+                        otherClose: () => setChatProviderDropdownOpen(false),
+                      },
+                    ].map((dropdown) => {
+                      const selectedKey = dropdown.value
+                        ? store.keys.find((k) => k.provider === dropdown.value)
+                        : null;
+                      const selectedLabel = selectedKey
+                        ? `${PROVIDER_UI_META[selectedKey.provider].label} · ${selectedKey.model || DEFAULT_MODELS[selectedKey.provider]}`
+                        : "Sin proveedor";
+                      return (
+                        <View key={dropdown.label} style={{ gap: 4 }}>
+                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>
+                            {dropdown.label}
+                          </Text>
+                          <Pressable
+                            testID={`${dropdown.surfaceId}-toggle`}
+                            onPress={() => { dropdown.otherClose(); dropdown.setOpen(!dropdown.open); }}
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              borderWidth: 1,
+                              borderColor: dropdown.open ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
+                              borderRadius: mobileTheme.radius.md,
+                              paddingHorizontal: 12,
+                              paddingVertical: 10,
+                              backgroundColor: mobileTheme.color.bgSurface,
+                            }}
+                          >
+                            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14 }}>
+                              {selectedLabel}
+                            </Text>
+                            <Feather name={dropdown.open ? "chevron-up" : "chevron-down"} size={16} color={mobileTheme.color.textSecondary} />
+                          </Pressable>
+                          {dropdown.open ? (
+                            <View
+                              testID={shellSurfaceTestId(dropdown.surfaceId)}
+                              style={{
+                                borderWidth: 1,
+                                borderColor: mobileTheme.color.borderSubtle,
+                                borderRadius: mobileTheme.radius.md,
+                                backgroundColor: mobileTheme.color.bgSurface,
+                                overflow: "hidden",
+                              }}
+                            >
+                              {(["anthropic", "openai", "google"] as Provider[]).map((provider) => {
+                                const k = store.keys.find((item) => item.provider === provider);
+                                const hasKey = !!providerCredential(k?.api_key, IS_FAKE_PROVIDER_MODE);
+                                const isSelected = dropdown.value === provider;
+                                return (
+                                  <Pressable
+                                    key={provider}
+                                    onPress={() => hasKey && dropdown.onChange(provider)}
+                                    style={{
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      paddingHorizontal: 12,
+                                      paddingVertical: 10,
+                                      backgroundColor: isSelected ? "rgba(203,255,26,0.08)" : "transparent",
+                                      opacity: hasKey ? 1 : 0.4,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: 8,
+                                        backgroundColor: PROVIDER_UI_META[provider].avatar_bg,
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      <Text style={{ color: PROVIDER_UI_META[provider].avatar_text, fontSize: 14, fontWeight: "700" }}>
+                                        {PROVIDER_UI_META[provider].label[0]}
+                                      </Text>
+                                    </View>
+                                    <View style={{ flex: 1 }}>
+                                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }}>
+                                        {PROVIDER_UI_META[provider].label}
+                                      </Text>
+                                      {!hasKey ? (
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>Sin API key</Text>
+                                      ) : null}
+                                    </View>
+                                    {isSelected ? <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} /> : null}
+                                  </Pressable>
+                                );
+                              })}
+                            </View>
+                          ) : null}
+                        </View>
+                      );
+                    })}
+  
+                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 26 }}>
+                      API Keys (BYOK)
+                    </Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -4 }}>
+                      Configura tus propias claves para usar el asistente IA. Cada proveedor ofrece diferentes modelos y capacidades.
+                    </Text>
+  
+                    {orderedProviderKeys.map((key) => {
+                      const providerMeta = PROVIDER_UI_META[key.provider];
+                      const draft = providerDraftByProvider[key.provider] ?? {
+                        api_key: key.api_key,
+                        model: key.model,
+                        workspace_id: key.workspace_id ?? "",
+                      };
+                      const hasDraftApiKey = !!providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+                      const hasPersistedProviderApiKey = !!providerCredential(key.api_key, IS_FAKE_PROVIDER_MODE);
+                      const keyVisible = providerKeyVisibility[key.provider];
+                      const connectionStatus = providerConnectionStatus[key.provider] ?? {
+                        state: hasDraftApiKey ? "unknown" : "disconnected",
+                        detail: hasDraftApiKey
+                          ? PROVIDER_STATUS_COPY.warningPending
+                          : PROVIDER_STATUS_COPY.warningNoKey,
+                        severity: "warning",
+                      };
+                      const statusMeta = providerConnectionBadge(connectionStatus);
+                      const isSavingProvider = providerSaveLoading[key.provider];
+                      const providerConnectionDetailColor = providerDetailColorBySeverity(
+                        connectionStatus.severity,
+                      );
+                      return (
+                        <View
+                          key={key.provider}
+                          testID={`provider-card-${key.provider}`}
+                          style={{
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            borderRadius: mobileTheme.radius.lg,
+                            backgroundColor: mobileTheme.color.bgSurface,
+                            padding: 12,
+                            gap: 10,
+                          }}
+                        >
+                          <View
+                            style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}
+                          >
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+                              <View
+                                style={{
+                                  width: 42,
+                                  height: 42,
+                                  borderRadius: 12,
+                                  backgroundColor: providerMeta.avatar_bg,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text style={{ color: providerMeta.avatar_text, fontSize: 22, fontWeight: "700" }}>
+                                  {providerMeta.label.charAt(0)}
+                                </Text>
+                              </View>
+                              <View style={{ flex: 1 }}>
+                                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 29 }}>
+                                  {providerMeta.label}
+                                </Text>
+                                <Text
+                                  numberOfLines={1}
+                                  style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}
+                                >
+                                  {draft.model.trim() || providerMeta.models_hint}
+                                </Text>
+                              </View>
+                            </View>
+                            <View
+                              style={{
+                                borderRadius: mobileTheme.radius.pill,
+                                paddingHorizontal: 10,
+                                minHeight: 28,
+                                backgroundColor: statusMeta.backgroundColor,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexDirection: "row",
+                                gap: 6,
+                              }}
+                            >
+                              <View
+                                style={{
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: 99,
+                                  backgroundColor: statusMeta.dotColor,
+                                }}
+                              />
+                              <Text
+                                style={{
+                                  color: statusMeta.textColor,
+                                  fontWeight: "700",
+                                  fontSize: 12,
+                                }}
+                              >
+                                {statusMeta.text}
+                              </Text>
+                            </View>
+                          </View>
+  
+                          <View
+                            style={{
+                              minHeight: 48,
+                              borderRadius: mobileTheme.radius.md,
+                              borderWidth: 1,
+                              borderColor: "rgba(61,70,82,0.9)",
+                              backgroundColor: "#1A1E25",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              paddingLeft: 12,
+                              paddingRight: 8,
+                              gap: 8,
+                            }}
+                          >
+                            <Feather name="key" size={14} color="#778091" />
+                            <TextInput
+                              testID={`provider-api-key-${key.provider}`}
+                              style={{
+                                flex: 1,
+                                minHeight: 40,
+                                color: hasDraftApiKey ? mobileTheme.color.textSecondary : "#7E8795",
+                                paddingHorizontal: 0,
+                              }}
+                              value={draft.api_key}
+                              onFocus={() => {}}
+                              onChangeText={(value) => updateProviderDraft(key.provider, { api_key: value })}
+                              placeholder="Añade tu API Key"
+                              placeholderTextColor={mobileTheme.color.textSecondary}
+                              autoCapitalize="none"
+                              autoCorrect={false}
+                              secureTextEntry={!keyVisible}
+                            />
+                            <Pressable
+                              onPress={() => {
+  
+                                toggleProviderKeyVisibility(key.provider);
+                              }}
+                              style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 10,
+                                backgroundColor: "#222833",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Feather
+                                name={keyVisible ? "eye-off" : "eye"}
+                                size={16}
+                                color={mobileTheme.color.textSecondary}
+                              />
+                            </Pressable>
+                          </View>
+  
+                          {key.provider === "anthropic" ? (
+                            <View style={{ gap: 6 }}>
+                              <View
+                                style={{
+                                  minHeight: 48,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: "rgba(61,70,82,0.9)",
+                                  backgroundColor: "#1A1E25",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  paddingHorizontal: 12,
+                                  gap: 8,
+                                }}
+                              >
+                                <Feather name="briefcase" size={14} color="#778091" />
+                                <TextInput
+                                  testID="provider-workspace-id-anthropic"
+                                  style={{
+                                    flex: 1,
+                                    minHeight: 40,
+                                    color: mobileTheme.color.textPrimary,
+                                    paddingHorizontal: 0,
+                                  }}
+                                  value={draft.workspace_id ?? ""}
+                                  onChangeText={(value) => updateProviderDraft(
+                                    "anthropic",
+                                    { workspace_id: value },
+                                  )}
+                                  placeholder="Workspace ID (wrkspc_…) — opcional"
+                                  placeholderTextColor={mobileTheme.color.textSecondary}
+                                  autoCapitalize="none"
+                                  autoCorrect={false}
+                                />
+                              </View>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
+                                Solo lo exigen las claves de Anthropic vinculadas a identidad. Lo encontrarás en la consola de Anthropic, dentro de Settings → Workspaces.
+                              </Text>
+                            </View>
+                          ) : null}
+  
+                          <View style={{ flexDirection: "row", gap: 8 }}>
+                            <Pressable
+                              testID={`provider-save-${key.provider}`}
+                              onPress={() => saveProviderApiKey(key.provider)}
+                              disabled={isSavingProvider}
+                              style={{
+                                flex: 1,
+                                height: 44,
+                                borderRadius: mobileTheme.radius.md,
+                                backgroundColor: mobileTheme.color.brandPrimary,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                opacity: isSavingProvider ? 0.7 : 1,
+                              }}
+                            >
+                              <Text style={{ color: "#06090D", fontWeight: "700" }}>
+                                {isSavingProvider ? "Guardando..." : "Guardar"}
+                              </Text>
+                            </Pressable>
+                            <Pressable
+                              testID={`provider-delete-${key.provider}`}
+                              onPress={() => {
+                                if (!hasPersistedProviderApiKey) return;
+                                openDeleteProviderApiKeyModal(key.provider);
+                              }}
+                              disabled={!hasPersistedProviderApiKey}
+                              style={{
+                                flex: 1,
+                                height: 44,
+                                borderRadius: mobileTheme.radius.md,
+                                backgroundColor: hasPersistedProviderApiKey ? "#FF4D4F" : "#2F3440",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexDirection: "row",
+                                gap: 8,
+                                opacity: hasPersistedProviderApiKey ? 1 : 0.6,
+                              }}
+                            >
+                              <Feather
+                                name="trash-2"
+                                size={14}
+                                color={hasPersistedProviderApiKey ? "#FFDDE0" : "#9AA2AE"}
+                              />
+                              <Text
+                                style={{
+                                  color: hasPersistedProviderApiKey ? "#FFE8EB" : "#9AA2AE",
+                                  fontWeight: "700",
+                                }}
+                              >
+                                Eliminar
+                              </Text>
+                            </Pressable>
+                          </View>
+  
+                          <Text
+                            testID={`provider-status-detail-${key.provider}`}
+                            style={{ color: providerConnectionDetailColor, fontSize: 12 }}
+                          >
+                            {connectionStatus.detail}
+                          </Text>
+  
+                          {key.provider === "anthropic" ? (
+                              <View style={{ gap: 8 }}>
+                                <Pressable
+                                  onPress={() => {
+      
+                                    toggleAnthropicModelDropdown();
+                                  }}
+                                  style={{
+                                    minHeight: 44,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                                    <Feather name="list" size={14} color={mobileTheme.color.textSecondary} />
+                                    <Text
+                                      numberOfLines={1}
+                                      style={{ color: mobileTheme.color.textPrimary, flex: 1 }}
+                                    >
+                                      {draft.model.trim() || DEFAULT_MODELS.anthropic}
+                                    </Text>
+                                  </View>
+                                  {anthropicModelOptionsLoading && anthropicModelDropdownOpen ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather
+                                      name={anthropicModelDropdownOpen ? "chevron-up" : "chevron-down"}
+                                      size={16}
+                                      color={mobileTheme.color.textSecondary}
+                                    />
+                                  )}
+                                </Pressable>
+  
+                                <Pressable
+                                  onPress={() => {
+      
+                                    const anthropicApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+                                    if (!anthropicApiKey) {
+                                      setAnthropicModelOptionsMessage({
+                                        text: PROVIDER_STATUS_COPY.warningNoKey,
+                                        severity: "warning",
+                                      });
+                                      return;
+                                    }
+                                    loadAnthropicModelOptions(
+                                      anthropicApiKey,
+                                      draft.workspace_id,
+                                    );
+                                  }}
+                                  style={{
+                                    minHeight: 34,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: "rgba(69,141,255,0.35)",
+                                    backgroundColor: "rgba(69,141,255,0.12)",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexDirection: "row",
+                                    gap: 6,
+                                    paddingHorizontal: 10,
+                                    alignSelf: "flex-start",
+                                  }}
+                                >
+                                  {anthropicModelOptionsLoading ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather name="refresh-cw" size={12} color="#77A8FF" />
+                                  )}
+                                  <Text style={{ color: "#77A8FF", fontSize: 12, fontWeight: "700" }}>
+                                    Actualizar modelos
+                                  </Text>
+                                </Pressable>
+  
+                                {anthropicModelDropdownOpen ? (
+                                  <View
+                                    testID={shellSurfaceTestId("anthropic-model-dropdown")}
+                                    style={{
+                                      borderWidth: 1,
+                                      borderColor: mobileTheme.color.borderSubtle,
+                                      borderRadius: mobileTheme.radius.md,
+                                      backgroundColor: mobileTheme.color.bgApp,
+                                      maxHeight: 210,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        paddingHorizontal: 10,
+                                        paddingTop: 10,
+                                        paddingBottom: 8,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: "rgba(61,70,82,0.5)",
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          minHeight: 36,
+                                          borderRadius: mobileTheme.radius.md,
+                                          borderWidth: 1,
+                                          borderColor: "rgba(61,70,82,0.8)",
+                                          backgroundColor: "#1A1E25",
+                                          paddingHorizontal: 10,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
+                                        <TextInput
+                                          style={{
+                                            flex: 1,
+                                            minHeight: 34,
+                                            color: mobileTheme.color.textPrimary,
+                                            paddingHorizontal: 0,
+                                            fontSize: 12,
+                                          }}
+                                          value={anthropicModelFilter}
+                                          onChangeText={setAnthropicModelFilter}
+                                          placeholder="Filtrar modelos..."
+                                          placeholderTextColor={mobileTheme.color.textSecondary}
+                                          autoCapitalize="none"
+                                          autoCorrect={false}
+                                        />
+                                      </View>
+                                    </View>
+                                    {anthropicModelOptionsLoading ? (
+                                      <View
+                                        style={{
+                                          minHeight: 64,
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <ActivityIndicator size="small" color="#77A8FF" />
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          Cargando modelos de Anthropic...
+                                        </Text>
+                                      </View>
+                                    ) : filteredAnthropicModelOptions.length === 0 ? (
+                                      <View style={{ padding: 12 }}>
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          No hay modelos disponibles para mostrar.
+                                        </Text>
+                                      </View>
+                                    ) : (
+                                      <ScrollView nestedScrollEnabled>
+                                        {filteredAnthropicModelOptions.map((modelOption) => {
+                                          const selected = modelOption.id === draft.model.trim();
+                                          return (
+                                            <Pressable
+                                              key={modelOption.id}
+                                              onPress={() => {
+                  
+                                                selectAnthropicModel(modelOption.id);
+                                              }}
+                                              style={{
+                                                minHeight: 46,
+                                                paddingHorizontal: 12,
+                                                paddingVertical: 8,
+                                                borderBottomWidth: 1,
+                                                borderBottomColor: "rgba(61,70,82,0.5)",
+                                                backgroundColor: selected ? "rgba(69,141,255,0.16)" : "transparent",
+                                                justifyContent: "center",
+                                              }}
+                                            >
+                                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                                                {modelOption.id}
+                                              </Text>
+                                              {modelOption.display_name ? (
+                                                <Text
+                                                  numberOfLines={1}
+                                                  style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}
+                                                >
+                                                  {modelOption.display_name}
+                                                </Text>
+                                              ) : null}
+                                            </Pressable>
+                                          );
+                                        })}
+                                      </ScrollView>
+                                    )}
+                                  </View>
+                                ) : null}
+  
+                                {anthropicModelOptionsMessage ? (
+                                  <Text
+                                    style={{
+                                      color: providerDetailColorBySeverity(anthropicModelOptionsMessage.severity),
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    {anthropicModelOptionsMessage.text}
+                                  </Text>
+                                ) : null}
+                              </View>
+                            ) : key.provider === "openai" ? (
+                              <View style={{ gap: 8 }}>
+                                <Pressable
+                                  onPress={() => {
+      
+                                    toggleOpenAIModelDropdown();
+                                  }}
+                                  style={{
+                                    minHeight: 44,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                                    <Feather name="list" size={14} color={mobileTheme.color.textSecondary} />
+                                    <Text
+                                      numberOfLines={1}
+                                      style={{ color: mobileTheme.color.textPrimary, flex: 1 }}
+                                    >
+                                      {draft.model.trim() || DEFAULT_MODELS.openai}
+                                    </Text>
+                                  </View>
+                                  {openAIModelOptionsLoading && openAIModelDropdownOpen ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather
+                                      name={openAIModelDropdownOpen ? "chevron-up" : "chevron-down"}
+                                      size={16}
+                                      color={mobileTheme.color.textSecondary}
+                                    />
+                                  )}
+                                </Pressable>
+  
+                                <Pressable
+                                  onPress={() => {
+      
+                                    const openAIApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+                                    if (!openAIApiKey) {
+                                      setOpenAIModelOptionsMessage({
+                                        text: PROVIDER_STATUS_COPY.warningNoKey,
+                                        severity: "warning",
+                                      });
+                                      return;
+                                    }
+                                    loadOpenAIModelOptions(openAIApiKey);
+                                  }}
+                                  style={{
+                                    minHeight: 34,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: "rgba(69,141,255,0.35)",
+                                    backgroundColor: "rgba(69,141,255,0.12)",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexDirection: "row",
+                                    gap: 6,
+                                    paddingHorizontal: 10,
+                                    alignSelf: "flex-start",
+                                  }}
+                                >
+                                  {openAIModelOptionsLoading ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather name="refresh-cw" size={12} color="#77A8FF" />
+                                  )}
+                                  <Text style={{ color: "#77A8FF", fontSize: 12, fontWeight: "700" }}>
+                                    Actualizar modelos
+                                  </Text>
+                                </Pressable>
+  
+                                {openAIModelDropdownOpen ? (
+                                  <View
+                                    testID={shellSurfaceTestId("openai-model-dropdown")}
+                                    style={{
+                                      borderWidth: 1,
+                                      borderColor: mobileTheme.color.borderSubtle,
+                                      borderRadius: mobileTheme.radius.md,
+                                      backgroundColor: mobileTheme.color.bgApp,
+                                      maxHeight: 210,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        paddingHorizontal: 10,
+                                        paddingTop: 10,
+                                        paddingBottom: 8,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: "rgba(61,70,82,0.5)",
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          minHeight: 36,
+                                          borderRadius: mobileTheme.radius.md,
+                                          borderWidth: 1,
+                                          borderColor: "rgba(61,70,82,0.8)",
+                                          backgroundColor: "#1A1E25",
+                                          paddingHorizontal: 10,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
+                                        <TextInput
+                                          style={{
+                                            flex: 1,
+                                            minHeight: 34,
+                                            color: mobileTheme.color.textPrimary,
+                                            paddingHorizontal: 0,
+                                            fontSize: 12,
+                                          }}
+                                          value={openAIModelFilter}
+                                          onChangeText={setOpenAIModelFilter}
+                                          placeholder="Filtrar modelos..."
+                                          placeholderTextColor={mobileTheme.color.textSecondary}
+                                          autoCapitalize="none"
+                                          autoCorrect={false}
+                                        />
+                                      </View>
+                                    </View>
+                                    {openAIModelOptionsLoading ? (
+                                      <View
+                                        style={{
+                                          minHeight: 64,
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <ActivityIndicator size="small" color="#77A8FF" />
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          Cargando modelos de OpenAI...
+                                        </Text>
+                                      </View>
+                                    ) : filteredOpenAIModelOptions.length === 0 ? (
+                                      <View style={{ padding: 12 }}>
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          No hay modelos disponibles para mostrar.
+                                        </Text>
+                                      </View>
+                                    ) : (
+                                      <ScrollView nestedScrollEnabled>
+                                        {filteredOpenAIModelOptions.map((modelOption) => {
+                                          const selected = modelOption.id === draft.model.trim();
+                                          return (
+                                            <Pressable
+                                              key={modelOption.id}
+                                              onPress={() => {
+                  
+                                                selectOpenAIModel(modelOption.id);
+                                              }}
+                                              style={{
+                                                minHeight: 46,
+                                                paddingHorizontal: 12,
+                                                paddingVertical: 8,
+                                                borderBottomWidth: 1,
+                                                borderBottomColor: "rgba(61,70,82,0.5)",
+                                                backgroundColor: selected ? "rgba(69,141,255,0.16)" : "transparent",
+                                                justifyContent: "center",
+                                              }}
+                                            >
+                                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                                                {modelOption.id}
+                                              </Text>
+                                              {modelOption.owned_by ? (
+                                                <Text
+                                                  numberOfLines={1}
+                                                  style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}
+                                                >
+                                                  {modelOption.owned_by}
+                                                </Text>
+                                              ) : null}
+                                            </Pressable>
+                                          );
+                                        })}
+                                      </ScrollView>
+                                    )}
+                                  </View>
+                                ) : null}
+  
+                                <View style={{ gap: 8 }}>
+                                  <View style={{ gap: 4 }}>
+                                    <Text
+                                      style={{
+                                        color: mobileTheme.color.textSecondary,
+                                        fontSize: 12,
+                                        fontWeight: "700",
+                                      }}
+                                    >
+                                      Esfuerzo de razonamiento
+                                    </Text>
+                                    <Text
+                                      style={{
+                                        color: mobileTheme.color.textSecondary,
+                                        fontSize: 11,
+                                        lineHeight: 16,
+                                      }}
+                                    >
+                                      Se envia a OpenAI como reasoning.effort en la Responses API.
+                                    </Text>
+                                  </View>
+                                  {supportedOpenAIReasoningEfforts.length > 0 ? (
+                                    <>
+                                      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                                        {supportedOpenAIReasoningEfforts.map((effort) => {
+                                          const selected = effort === selectedOpenAIReasoningEffort;
+                                          return (
+                                            <Pressable
+                                              key={effort}
+                                              onPress={() => updateProviderDraft("openai", { reasoning_effort: effort })}
+                                              style={{
+                                                minHeight: 34,
+                                                borderRadius: mobileTheme.radius.pill,
+                                                borderWidth: 1,
+                                                borderColor: selected
+                                                  ? "rgba(69,141,255,0.5)"
+                                                  : mobileTheme.color.borderSubtle,
+                                                backgroundColor: selected
+                                                  ? "rgba(69,141,255,0.16)"
+                                                  : mobileTheme.color.bgApp,
+                                                paddingHorizontal: 12,
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                              }}
+                                            >
+                                              <Text
+                                                style={{
+                                                  color: selected ? "#77A8FF" : mobileTheme.color.textPrimary,
+                                                  fontSize: 12,
+                                                  fontWeight: "700",
+                                                }}
+                                              >
+                                                {OPENAI_REASONING_EFFORT_LABELS[effort]}
+                                              </Text>
+                                            </Pressable>
+                                          );
+                                        })}
+                                      </View>
+                                      {selectedOpenAIReasoningEffort ? (
+                                        <Text
+                                          style={{
+                                            color: mobileTheme.color.textSecondary,
+                                            fontSize: 11,
+                                            lineHeight: 16,
+                                          }}
+                                        >
+                                          Valor actual: {selectedOpenAIReasoningEffort} para {normalizedOpenAIProviderModel}.
+                                        </Text>
+                                      ) : null}
+                                    </>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#F5C26B",
+                                        fontSize: 11,
+                                        lineHeight: 16,
+                                      }}
+                                    >
+                                      El modelo seleccionado no documenta niveles de reasoning.effort, asi que la app no enviara este campo.
+                                    </Text>
+                                  )}
+                                </View>
+  
+                                {openAIModelOptionsMessage ? (
+                                  <Text
+                                    style={{
+                                      color: providerDetailColorBySeverity(openAIModelOptionsMessage.severity),
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    {openAIModelOptionsMessage.text}
+                                  </Text>
+                                ) : null}
+                              </View>
+                            ) : key.provider === "google" ? (
+                              <View style={{ gap: 8 }}>
+                                <Pressable
+                                  testID="provider-model-dropdown-google"
+                                  onPress={() => {
+      
+                                    toggleGoogleModelDropdown();
+                                  }}
+                                  style={{
+                                    minHeight: 44,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: mobileTheme.color.borderSubtle,
+                                    backgroundColor: mobileTheme.color.bgApp,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
+                                    <Feather name="list" size={14} color={mobileTheme.color.textSecondary} />
+                                    <Text
+                                      numberOfLines={1}
+                                      style={{ color: mobileTheme.color.textPrimary, flex: 1 }}
+                                    >
+                                      {draft.model.trim() || DEFAULT_MODELS.google}
+                                    </Text>
+                                  </View>
+                                  {googleModelOptionsLoading && googleModelDropdownOpen ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather
+                                      name={googleModelDropdownOpen ? "chevron-up" : "chevron-down"}
+                                      size={16}
+                                      color={mobileTheme.color.textSecondary}
+                                    />
+                                  )}
+                                </Pressable>
+  
+                                <Pressable
+                                  testID="provider-model-refresh-google"
+                                  onPress={() => {
+      
+                                    const googleApiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+                                    if (!googleApiKey) {
+                                      setGoogleModelOptionsMessage({
+                                        text: PROVIDER_STATUS_COPY.warningNoKey,
+                                        severity: "warning",
+                                      });
+                                      return;
+                                    }
+                                    loadGoogleModelOptions(googleApiKey);
+                                  }}
+                                  style={{
+                                    minHeight: 34,
+                                    borderRadius: mobileTheme.radius.md,
+                                    borderWidth: 1,
+                                    borderColor: "rgba(69,141,255,0.35)",
+                                    backgroundColor: "rgba(69,141,255,0.12)",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexDirection: "row",
+                                    gap: 6,
+                                    paddingHorizontal: 10,
+                                    alignSelf: "flex-start",
+                                  }}
+                                >
+                                  {googleModelOptionsLoading ? (
+                                    <ActivityIndicator size="small" color="#77A8FF" />
+                                  ) : (
+                                    <Feather name="refresh-cw" size={12} color="#77A8FF" />
+                                  )}
+                                  <Text style={{ color: "#77A8FF", fontSize: 12, fontWeight: "700" }}>
+                                    Actualizar modelos
+                                  </Text>
+                                </Pressable>
+  
+                                {googleModelDropdownOpen ? (
+                                  <View
+                                    testID={shellSurfaceTestId("google-model-dropdown")}
+                                    style={{
+                                      borderWidth: 1,
+                                      borderColor: mobileTheme.color.borderSubtle,
+                                      borderRadius: mobileTheme.radius.md,
+                                      backgroundColor: mobileTheme.color.bgApp,
+                                      maxHeight: 210,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        paddingHorizontal: 10,
+                                        paddingTop: 10,
+                                        paddingBottom: 8,
+                                        borderBottomWidth: 1,
+                                        borderBottomColor: "rgba(61,70,82,0.5)",
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          minHeight: 36,
+                                          borderRadius: mobileTheme.radius.md,
+                                          borderWidth: 1,
+                                          borderColor: "rgba(61,70,82,0.8)",
+                                          backgroundColor: "#1A1E25",
+                                          paddingHorizontal: 10,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <Feather name="search" size={13} color={mobileTheme.color.textSecondary} />
+                                        <TextInput
+                                          style={{
+                                            flex: 1,
+                                            minHeight: 34,
+                                            color: mobileTheme.color.textPrimary,
+                                            paddingHorizontal: 0,
+                                            fontSize: 12,
+                                          }}
+                                          value={googleModelFilter}
+                                          onChangeText={setGoogleModelFilter}
+                                          placeholder="Filtrar modelos..."
+                                          placeholderTextColor={mobileTheme.color.textSecondary}
+                                          autoCapitalize="none"
+                                          autoCorrect={false}
+                                        />
+                                      </View>
+                                    </View>
+                                    {googleModelOptionsLoading ? (
+                                      <View
+                                        style={{
+                                          minHeight: 64,
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                          gap: 8,
+                                        }}
+                                      >
+                                        <ActivityIndicator size="small" color="#77A8FF" />
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          Cargando modelos de Google...
+                                        </Text>
+                                      </View>
+                                    ) : filteredGoogleModelOptions.length === 0 ? (
+                                      <View style={{ padding: 12 }}>
+                                        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+                                          No hay modelos disponibles para mostrar.
+                                        </Text>
+                                      </View>
+                                    ) : (
+                                      <ScrollView nestedScrollEnabled>
+                                        {filteredGoogleModelOptions.map((modelOption) => {
+                                          const selected = modelOption.id === draft.model.trim();
+                                          return (
+                                            <Pressable
+                                              key={modelOption.id}
+                                              testID={`provider-model-option-google-${modelOption.id}`}
+                                              onPress={() => {
+                  
+                                                selectGoogleModel(modelOption.id);
+                                              }}
+                                              style={{
+                                                minHeight: 46,
+                                                paddingHorizontal: 12,
+                                                paddingVertical: 8,
+                                                borderBottomWidth: 1,
+                                                borderBottomColor: "rgba(61,70,82,0.5)",
+                                                backgroundColor: selected ? "rgba(69,141,255,0.16)" : "transparent",
+                                                justifyContent: "center",
+                                              }}
+                                            >
+                                              <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+                                                {modelOption.id}
+                                              </Text>
+                                              {modelOption.display_name ? (
+                                                <Text
+                                                  numberOfLines={1}
+                                                  style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}
+                                                >
+                                                  {modelOption.display_name}
+                                                </Text>
+                                              ) : null}
+                                            </Pressable>
+                                          );
+                                        })}
+                                      </ScrollView>
+                                    )}
+                                  </View>
+                                ) : null}
+  
+                                {googleModelOptionsMessage ? (
+                                  <Text
+                                    style={{
+                                      color: providerDetailColorBySeverity(googleModelOptionsMessage.severity),
+                                      fontSize: 12,
+                                    }}
+                                  >
+                                    {googleModelOptionsMessage.text}
+                                  </Text>
+                                ) : null}
+                              </View>
+                            ) : (
+                              <TextInput
+                                style={{
+                                  minHeight: 42,
+                                  borderRadius: mobileTheme.radius.md,
+                                  borderWidth: 1,
+                                  borderColor: mobileTheme.color.borderSubtle,
+                                  backgroundColor: mobileTheme.color.bgApp,
+                                  color: mobileTheme.color.textPrimary,
+                                  paddingHorizontal: 12,
+                                }}
+                                value={draft.model}
+                                onChangeText={(value) => updateProviderDraft(key.provider, { model: value })}
+                                placeholder={`Modelo (default: ${DEFAULT_MODELS[key.provider]})`}
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                              />
+                            )}
+                        </View>
+                      );
+                    })}
+  
+                    {!secureStoreAvailable ? (
+                      <View
+                        style={{
+                          borderWidth: 1,
+                          borderColor: "rgba(255,177,102,0.45)",
+                          borderRadius: mobileTheme.radius.md,
+                          backgroundColor: "rgba(255,177,102,0.08)",
+                          padding: 10,
+                        }}
+                      >
+                        <Text style={{ color: "#ffd7a8", fontSize: 12 }}>
+                          {model.isWeb
+                            ? "El navegador no dispone de llavero seguro. Las claves se guardan en el almacenamiento local del navegador, sin cifrado del sistema."
+                            : "El llavero seguro no está disponible. No se guardarán cambios de proveedor hasta que vuelva a estar accesible."}
+                        </Text>
+                      </View>
+                    ) : null}
+  
+                  </View>
+  
+  );
+});
