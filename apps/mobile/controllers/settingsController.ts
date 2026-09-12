@@ -510,6 +510,7 @@ export type TraceSettingsActions = {
 };
 
 export type TraceSettingsControllerInput = {
+  active: boolean;
   policyBusy: boolean;
   policyResult: string | null;
   policyStatus: PolicyRuntimeStatus | null;
@@ -562,11 +563,11 @@ export function useTraceSettingsController(
     refreshPolicy: () => inputRef.current.refreshPolicy(),
   }), []);
   useEffect(() => {
-    actions.reload();
-  }, [actions]);
+    if (input.active) actions.reload();
+  }, [actions, input.active]);
   const model = useMemo<TraceSettingsModel>(() => ({
     traces,
-    displayText: formatTraces(traces),
+    displayText: input.active ? formatTraces(traces) : "",
     loading,
     copied,
     policyBusy: input.policyBusy,
@@ -577,6 +578,7 @@ export function useTraceSettingsController(
     monospaceFontFamily: input.monospaceFontFamily,
   }), [
     copied,
+    input.active,
     input.defaultPolicyCandidate,
     input.monospaceFontFamily,
     input.policyBusy,

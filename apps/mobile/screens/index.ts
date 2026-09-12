@@ -3,7 +3,9 @@ export { DietHeader, DietMealsScreen } from "./DietScreen";
 export { HomeScreen } from "./HomeScreen";
 export { MeasurementsOverlays, MeasurementsScreen } from "./MeasurementsScreen";
 export {
+  BackupImportConfirmation,
   DataSettingsPanel,
+  DataDeletionConfirmation,
   DietSettingsPanel,
   FoodsSettingsPanel,
   MemorySettingsPanel,
@@ -13,6 +15,7 @@ export {
   PreferencesSettingsPanel,
   ProductsSettingsPanel,
   ProviderSettingsPanel,
+  ProviderDeleteConfirmation,
   SettingsTabs,
   SettingsRuntimeFooter,
   TraceSettingsPanel,

@@ -366,7 +366,9 @@ import {
   type SettingsTabKey,
 } from "./controllers/settingsController";
 import {
+  BackupImportConfirmation,
   ChatScreen,
+  DataDeletionConfirmation,
   DataSettingsPanel,
   DietHeader,
   DietMealsScreen,
@@ -382,6 +384,7 @@ import {
   PreferencesSettingsPanel,
   ProductsSettingsPanel,
   ProviderSettingsPanel,
+  ProviderDeleteConfirmation,
   SettingsTabs,
   SettingsRuntimeFooter,
   TraceSettingsPanel,
@@ -5369,6 +5372,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     createFoodId: () => uid("food"),
   });
   const traceSettingsController = useTraceSettingsController({
+    active: settingsTab === "traces",
     policyBusy: policyRefreshBusy,
     policyResult: policyRefreshResult,
     policyStatus: policyRuntimeStatus,
@@ -13936,82 +13940,21 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ) : null}
 
       {pendingImport ? (
-        <View
-          testID={shellSurfaceTestId("backup-import-confirmation")}
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.78)",
-            paddingHorizontal: 24,
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 910,
-            elevation: 91,
-          }}
-        >
-          <View
-            style={{
-              width: "85%",
-              maxWidth: 380,
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.08)",
-              backgroundColor: mobileTheme.color.bgSurface,
-              padding: 24,
-              alignItems: "center",
-              gap: 16,
-            }}
-          >
-            <Feather name="alert-triangle" size={40} color="#FF8A8A" />
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800", textAlign: "center" }}>
-              ¿Restaurar copia?
-            </Text>
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>
-              Se sustituirán TODOS tus datos actuales por los de la copia
-              {pendingBackupCreatedAt(pendingImport)
-                ? ` del ${new Date(pendingBackupCreatedAt(pendingImport)).toLocaleString("es-ES", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}`
-                : ""}
-              {pendingBackupAppVersion(pendingImport) ? ` (Gymnasia v${pendingBackupAppVersion(pendingImport)})` : ""}. La copia declara {pendingBackupPhotoCount(pendingImport)} foto(s).{"\n"}Esta acción no se puede deshacer.
-            </Text>
-            <Pressable
-              testID="backup-import-confirm"
-              onPress={applyPendingImport}
-              style={{
-                width: "100%",
-                height: 48,
-                borderRadius: mobileTheme.radius.md,
-                backgroundColor: "#FF8A8A",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>Sí, restaurar</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setPendingImport(null)}
-              style={{
-                width: "100%",
-                height: 44,
-                borderRadius: mobileTheme.radius.md,
-                borderWidth: 1,
-                borderColor: mobileTheme.color.borderSubtle,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Cancelar</Text>
-            </Pressable>
-          </View>
-        </View>
+        <BackupImportConfirmation
+          description={`Se sustituirán TODOS tus datos actuales por los de la copia${pendingBackupCreatedAt(pendingImport)
+            ? ` del ${new Date(pendingBackupCreatedAt(pendingImport)).toLocaleString("es-ES", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`
+            : ""}${pendingBackupAppVersion(pendingImport)
+            ? ` (Gymnasia v${pendingBackupAppVersion(pendingImport)})`
+            : ""}. La copia declara ${pendingBackupPhotoCount(pendingImport)} foto(s).\nEsta acción no se puede deshacer.`}
+          onConfirm={applyPendingImport}
+          onCancel={() => setPendingImport(null)}
+        />
       ) : null}
 
       {dietCopyPickCategory ? (
@@ -14352,367 +14295,24 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ) : null}
 
       {dataDeletionScope ? (
-        <View
-          testID={shellSurfaceTestId("data-deletion")}
-          accessibilityViewIsModal
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.82)",
-            paddingHorizontal: 20,
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 640,
-            elevation: 64,
-          }}
-        >
-          <View
-            style={{
-              width: "100%",
-              maxWidth: 390,
-              maxHeight: "90%",
-              borderRadius: 24,
-              borderWidth: 1,
-              borderColor: "rgba(255,77,79,0.38)",
-              backgroundColor: "#12151C",
-              paddingHorizontal: 18,
-              paddingTop: 18,
-              paddingBottom: 16,
-              gap: 13,
-            }}
-          >
-            <View
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: 14,
-                backgroundColor: "rgba(255,77,79,0.18)",
-                alignItems: "center",
-                justifyContent: "center",
-                alignSelf: "center",
-              }}
-            >
-              <Feather
-                name={dataDeletionScope === "activity" ? "rotate-ccw" : "alert-triangle"}
-                size={22}
-                color="#FF6E6E"
-              />
-            </View>
-
-            <Text
-              style={{
-                color: mobileTheme.color.textPrimary,
-                fontSize: 22,
-                fontWeight: "800",
-                textAlign: "center",
-              }}
-            >
-              {dataDeletionScope === "activity"
-                ? "¿Borrar actividad y conversaciones?"
-                : "¿Borrar todos tus datos?"}
-            </Text>
-
-            <Text style={{ color: "#A1AAB8", fontSize: 13, lineHeight: 19, textAlign: "center" }}>
-              {dataDeletionScope === "activity"
-                ? "La app volverá a un historial vacío, pero conservará tu configuración personal."
-                : "Esta acción elimina los datos que Gymnasia controla en este dispositivo y no se puede deshacer."}
-            </Text>
-
-            <View style={{ gap: 8 }}>
-              <View
-                style={{
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,77,79,0.38)",
-                  backgroundColor: "rgba(255,77,79,0.10)",
-                  paddingHorizontal: 12,
-                  paddingVertical: 10,
-                  flexDirection: "row",
-                  alignItems: "flex-start",
-                  gap: 8,
-                }}
-              >
-                <Feather name="trash-2" size={14} color="#FF8585" style={{ marginTop: 2 }} />
-                <Text style={{ flex: 1, color: "#FFB0B0", fontSize: 12, lineHeight: 18 }}>
-                  {dataDeletionScope === "activity"
-                    ? "Se borran rutinas, historial, dieta, medidas, conversaciones y sesiones activas."
-                    : "Se borran además memoria, alimentos personales, preferencias, claves API, credenciales antiguas, cachés y trazas."}
-                </Text>
-              </View>
-              <View
-                style={{
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: "rgba(203,255,26,0.30)",
-                  backgroundColor: "rgba(203,255,26,0.07)",
-                  paddingHorizontal: 12,
-                  paddingVertical: 10,
-                  flexDirection: "row",
-                  alignItems: "flex-start",
-                  gap: 8,
-                }}
-              >
-                <Feather name="shield" size={14} color={mobileTheme.color.brandPrimary} style={{ marginTop: 2 }} />
-                <Text style={{ flex: 1, color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
-                  {dataDeletionScope === "activity"
-                    ? "Se conservan memoria, alimentos personales, preferencias, claves API, copias y diagnósticos."
-                    : "Se conserva únicamente el estado firmado que impide cargar una política de seguridad anterior."}
-                </Text>
-              </View>
-            </View>
-
-            {dataDeletionScope === "all-personal" ? (
-              <View style={{ gap: 6 }}>
-                <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
-                  Escribe BORRAR para confirmar
-                </Text>
-                <TextInput
-                  testID="data-deletion-confirmation-input"
-                  accessibilityLabel="Escribe BORRAR para confirmar el borrado total"
-                  value={dataDeletionConfirmation}
-                  onChangeText={setDataDeletionConfirmation}
-                  editable={!dataDeletionBusy}
-                  autoCapitalize="characters"
-                  autoCorrect={false}
-                  placeholder="BORRAR"
-                  placeholderTextColor="#697384"
-                  style={{
-                    minHeight: 46,
-                    borderRadius: mobileTheme.radius.md,
-                    borderWidth: 1,
-                    borderColor: dataDeletionConfirmation.trim() === "BORRAR"
-                      ? "rgba(255,77,79,0.8)"
-                      : mobileTheme.color.borderSubtle,
-                    backgroundColor: mobileTheme.color.bgApp,
-                    color: mobileTheme.color.textPrimary,
-                    paddingHorizontal: 12,
-                    fontSize: 15,
-                    fontWeight: "700",
-                    letterSpacing: 1,
-                  }}
-                />
-              </View>
-            ) : null}
-
-            <Pressable
-              testID="data-deletion-confirm"
-              accessibilityRole="button"
-              accessibilityLabel={dataDeletionScope === "activity"
-                ? "Confirmar borrado de actividad y conversaciones"
-                : "Confirmar borrado de todos mis datos"}
-              disabled={
-                dataDeletionBusy
-                || (dataDeletionScope === "all-personal" && dataDeletionConfirmation.trim() !== "BORRAR")
-              }
-              onPress={() => void performDataDeletion(dataDeletionScope)}
-              style={{
-                width: "100%",
-                minHeight: 48,
-                borderRadius: 14,
-                backgroundColor: "#FF4D4F",
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                gap: 8,
-                opacity:
-                  dataDeletionBusy
-                  || (dataDeletionScope === "all-personal" && dataDeletionConfirmation.trim() !== "BORRAR")
-                    ? 0.45
-                    : 1,
-              }}
-            >
-              {dataDeletionBusy ? (
-                <ActivityIndicator size="small" color="#FFE8EB" />
-              ) : (
-                <Feather name="trash-2" size={15} color="#FFE8EB" />
-              )}
-              <Text style={{ color: "#FFE8EB", fontWeight: "800", fontSize: 15 }}>
-                {dataDeletionBusy
-                  ? "Borrando y comprobando…"
-                  : dataDeletionScope === "activity"
-                    ? "Borrar actividad"
-                    : "Borrar todos mis datos"}
-              </Text>
-            </Pressable>
-
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Cancelar borrado de datos"
-              disabled={dataDeletionBusy}
-              onPress={closeDataDeletion}
-              style={{
-                width: "100%",
-                minHeight: 44,
-                borderRadius: 14,
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.06)",
-                backgroundColor: "#1B1F27",
-                alignItems: "center",
-                justifyContent: "center",
-                opacity: dataDeletionBusy ? 0.45 : 1,
-              }}
-            >
-              <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>Cancelar</Text>
-            </Pressable>
-          </View>
-        </View>
+        <DataDeletionConfirmation
+          scope={dataDeletionScope}
+          confirmation={dataDeletionConfirmation}
+          busy={dataDeletionBusy}
+          onChangeConfirmation={setDataDeletionConfirmation}
+          onConfirm={() => { void performDataDeletion(dataDeletionScope); }}
+          onCancel={closeDataDeletion}
+        />
       ) : null}
 
       {providerDeleteModal ? (
-        <View
-          testID={shellSurfaceTestId("provider-delete")}
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.78)",
-            paddingHorizontal: 24,
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 620,
-            elevation: 62,
-          }}
-        >
-          <View
-            style={{
-              width: "100%",
-              maxWidth: 360,
-              borderRadius: 24,
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.06)",
-              backgroundColor: "#12151C",
-              paddingHorizontal: 18,
-              paddingTop: 18,
-              paddingBottom: 16,
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <View
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: 14,
-                backgroundColor: "rgba(255,77,79,0.2)",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Feather name="alert-triangle" size={22} color="#FF4D4F" />
-            </View>
-
-            <Text
-              style={{
-                color: mobileTheme.color.textPrimary,
-                fontSize: 40,
-                fontWeight: "800",
-                textAlign: "center",
-              }}
-            >
-              ¿Eliminar API Key?
-            </Text>
-
-            <Text
-              style={{
-                color: "#A1AAB8",
-                fontSize: 14,
-                lineHeight: 21,
-                textAlign: "center",
-              }}
-            >
-              Estás a punto de eliminar la API Key de {PROVIDER_UI_META[providerDeleteModal.provider].label}. Esta
-              acción no se puede deshacer.
-            </Text>
-
-            <View
-              style={{
-                width: "100%",
-                borderWidth: 1,
-                borderColor: "rgba(255,77,79,0.45)",
-                borderRadius: 12,
-                backgroundColor: "rgba(255,77,79,0.14)",
-                paddingHorizontal: 12,
-                paddingVertical: 10,
-                flexDirection: "row",
-                alignItems: "flex-start",
-                gap: 8,
-              }}
-            >
-              <Feather name="alert-circle" size={14} color="#FF6E6E" style={{ marginTop: 2 }} />
-              <Text
-                style={{
-                  flex: 1,
-                  color: "#FF6E6E",
-                  fontSize: 12,
-                  lineHeight: 18,
-                }}
-              >
-                {providerDeleteWarningText(providerDeleteModal.provider)}
-              </Text>
-            </View>
-
-            <View
-              style={{
-                width: "100%",
-                minHeight: 38,
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: "rgba(61,70,82,0.9)",
-                backgroundColor: "#1A1E25",
-                paddingHorizontal: 10,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <Feather name="key" size={13} color="#778091" />
-              <Text style={{ color: "#9EA7B6", fontSize: 13, fontWeight: "600" }}>
-                {providerDeleteModal.maskedApiKey}
-              </Text>
-            </View>
-
-            <Pressable
-              testID="provider-delete-confirm"
-              onPress={confirmDeleteProviderApiKey}
-              style={{
-                width: "100%",
-                minHeight: 46,
-                borderRadius: 14,
-                backgroundColor: "#FF4D4F",
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                gap: 8,
-              }}
-            >
-              <Feather name="trash-2" size={14} color="#FFE8EB" />
-              <Text style={{ color: "#FFE8EB", fontWeight: "800", fontSize: 16 }}>
-                Sí, eliminar clave
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={closeProviderDeleteModal}
-              style={{
-                width: "100%",
-                minHeight: 44,
-                borderRadius: 14,
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.06)",
-                backgroundColor: "#1B1F27",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "#E7EBF3", fontSize: 16, fontWeight: "700" }}>Cancelar</Text>
-            </Pressable>
-          </View>
-        </View>
+        <ProviderDeleteConfirmation
+          providerLabel={PROVIDER_UI_META[providerDeleteModal.provider].label}
+          warning={providerDeleteWarningText(providerDeleteModal.provider)}
+          maskedApiKey={providerDeleteModal.maskedApiKey}
+          onConfirm={confirmDeleteProviderApiKey}
+          onCancel={closeProviderDeleteModal}
+        />
       ) : null}
 
       {confirmDiscardTemplateDraft ? (
