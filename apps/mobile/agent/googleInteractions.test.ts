@@ -208,4 +208,58 @@ describe("Google transport parity", () => {
     expect(() => googleInteractionEndpoint(18882, "development", "real-key")).toThrow();
     expect(googleInteractionEndpoint(18882, "development", "e2e-local-fake-key")).toContain("127.0.0.1");
   });
+
+  it("falls back to a buffered native response when Android streaming fails before content", async () => {
+    let requests = 0;
+    let bufferedListenedForProgress = false;
+    const sentBodies: unknown[] = [];
+    class FailingXHR {
+      DONE = 4; readyState = 1; status = 0; responseText = "";
+      onprogress: (() => void) | null = null; onreadystatechange: (() => void) | null = null;
+      onerror: (() => void) | null = null; ontimeout: (() => void) | null = null;
+      onload: (() => void) | null = null;
+      open() {} setRequestHeader() {} abort() {}
+      send(body: unknown) {
+        requests += 1;
+        sentBodies.push(body);
+        if (requests === 1) { this.onerror?.(); return; }
+        bufferedListenedForProgress = !!this.onprogress || !!this.onreadystatechange;
+        this.status = 200; this.responseText = finalRaw; this.onload?.();
+      }
+    }
+    vi.stubGlobal("XMLHttpRequest", FailingXHR);
+    try {
+      const result = await requestGoogleInteraction({
+        model: "gemini-3.8-flash", history: [], apiKey: "test", platform: "android",
+      });
+      expect(result).toEqual(parse(finalRaw));
+      expect(requests).toBe(2);
+      expect(bufferedListenedForProgress).toBe(false);
+      expect(sentBodies[1]).toBe(sentBodies[0]);
+    } finally { vi.unstubAllGlobals(); }
+  });
+
+  it("does not retry after Android XHR has already shown part of the answer", async () => {
+    const partial = created
+      + event("step.start", { index: 0, step: { type: "model_output", content: [] } })
+      + event("step.delta", { index: 0, delta: { type: "text", text: "Hola" } });
+    let requests = 0;
+    class PartiallyFailingXHR {
+      DONE = 4; readyState = 1; status = 200; responseText = "";
+      onprogress: (() => void) | null = null; onreadystatechange: (() => void) | null = null;
+      onerror: (() => void) | null = null; ontimeout: (() => void) | null = null;
+      onload: (() => void) | null = null;
+      open() {} setRequestHeader() {} abort() {}
+      send() { requests += 1; this.responseText = partial; this.onprogress?.(); this.onerror?.(); }
+    }
+    const onContentDelta = vi.fn();
+    vi.stubGlobal("XMLHttpRequest", PartiallyFailingXHR);
+    try {
+      await expect(requestGoogleInteraction({
+        model: "gemini-3.8-flash", history: [], apiKey: "test", platform: "android",
+      }, { onContentDelta })).rejects.toThrow("No se pudo conectar con Google AI.");
+      expect(onContentDelta).toHaveBeenCalledWith("Hola", "Hola");
+      expect(requests).toBe(1);
+    } finally { vi.unstubAllGlobals(); }
+  });
 });

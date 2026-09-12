@@ -630,6 +630,16 @@ esto hay que arreglarlo antes o el job pasará siempre.
   separado del checkout inmutable que produjo la app; así una corrección de la
   prueba puede reconciliar el mismo artefacto sin recompilarlo.
 
+### Fetch con `AbortSignal` también activa la ruta incremental de React Native
+- Gotcha: en React Native 0.81, `whatwg-fetch` instala `xhr.onreadystatechange`
+  cuando recibe un `AbortSignal`. El XHR nativo considera la mera presencia de ese
+  callback como una petición de actualizaciones incrementales. Por eso un Fetch
+  con `AbortController` no sirve como fallback almacenado si acaba de fallar la
+  ruta incremental de Android: vuelve a recorrerla.
+- Fix: para recuperar un SSE finito después de ese fallo, usar un XHR sin
+  `onreadystatechange` ni `onprogress`, esperar a `onload` y procesar entonces el
+  cuerpo completo. Mantener `ontimeout` no activa las actualizaciones incrementales.
+
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:
 ```bash

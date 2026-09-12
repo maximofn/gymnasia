@@ -28,8 +28,98 @@ export function requestGoogleInteraction(
   const headers = googleApiHeaders(options.apiKey, {
     "Content-Type": "application/json", Accept: "text/event-stream",
   });
-  const transport = options.platform === "web" ? streamGoogleRequestViaFetch : streamGoogleRequestViaXHR;
-  return transport(url, headers, buildGoogleInteractionRequest(options), handlers);
+  const body = buildGoogleInteractionRequest(options);
+  if (options.platform === "web") {
+    return streamGoogleRequestViaFetch(url, headers, body, handlers);
+  }
+
+  let emittedVisibleDelta = false;
+  const trackedHandlers: StreamingHandlers = {
+    onContentDelta: (delta, aggregate) => {
+      if (handlers?.onContentDelta) {
+        emittedVisibleDelta = true;
+        handlers.onContentDelta(delta, aggregate);
+      }
+    },
+    onThinkingDelta: (delta, aggregate) => {
+      if (handlers?.onThinkingDelta) {
+        emittedVisibleDelta = true;
+        handlers.onThinkingDelta(delta, aggregate);
+      }
+    },
+  };
+
+  return streamGoogleRequestViaXHR(url, headers, body, trackedHandlers).catch((error) => {
+    if (emittedVisibleDelta || !(error instanceof Error)
+      || error.message !== "No se pudo conectar con Google AI.") {
+      throw error;
+    }
+    // React Native usa una ruta nativa distinta al escuchar progreso en XHR.
+    // Si esa ruta falla antes de mostrar contenido, repetimos la generación sin
+    // progreso incremental y entregamos el SSE completo al mismo parser.
+    return streamGoogleRequestViaBufferedXHR(url, headers, body, handlers);
+  });
+}
+
+async function streamGoogleRequestViaBufferedXHR(
+  url: string,
+  headers: Record<string, string>,
+  body: Record<string, unknown>,
+  handlers?: StreamingHandlers,
+  networkFallbackMessage = "No se pudo conectar con Google AI.",
+  statusFallbackPrefix = "Google AI error",
+): Promise<GoogleStreamTurnResult> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    let settled = false;
+
+    const cleanup = () => {
+      xhr.onload = null;
+      xhr.onerror = null;
+      xhr.ontimeout = null;
+    };
+    const rejectOnce = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(error);
+    };
+
+    xhr.open("POST", url);
+    xhr.timeout = 120000;
+    Object.entries(headers).forEach(([key, value]) => {
+      xhr.setRequestHeader(key, value);
+    });
+
+    xhr.onload = () => {
+      if (settled) return;
+      const rawText = xhr.responseText ?? "";
+      if (xhr.status < 200 || xhr.status >= 300) {
+        const payload = parseJsonSafely<unknown>(rawText);
+        const fallbackMessage = xhr.status
+          ? `${statusFallbackPrefix} (${xhr.status})`
+          : networkFallbackMessage;
+        rejectOnce(new Error(extractErrorMessage(payload, rawText.trim() || fallbackMessage)));
+        return;
+      }
+
+      try {
+        const parser = createGoogleStreamParser(handlers);
+        parser.push(rawText);
+        const result = parser.finish();
+        settled = true;
+        cleanup();
+        resolve(result);
+      } catch (error) {
+        rejectOnce(error instanceof Error
+          ? error
+          : new Error("No se pudo finalizar el stream de Google AI."));
+      }
+    };
+    xhr.onerror = () => rejectOnce(new Error(networkFallbackMessage));
+    xhr.ontimeout = () => rejectOnce(new Error("Tiempo de espera agotado al conectar con Google AI."));
+    xhr.send(JSON.stringify(body));
+  });
 }
 
 export async function streamGoogleRequestViaXHR(
