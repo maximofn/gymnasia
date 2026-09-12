@@ -28,7 +28,7 @@ import {
   type PlatformAudioSound,
   type PlatformDocumentPickerAsset,
 } from "./platform";
-import { pushTrace, clearTraces, getTraces, formatTraces, type TraceEntry } from "./trace";
+import { pushTrace, clearTraces, getTraces } from "./trace";
 import { CHAT_TOOLS, agentToolEffect } from "./agent/toolDefinitions";
 import {
   sanitizePersonalDataFields,
@@ -108,7 +108,6 @@ import {
   type PolicyContext,
 } from "./agent/policyContext";
 import type { PolicyRuntimeStatus } from "./agent/signedPolicySelection";
-import { policyStatusPresentation } from "./agent/policyStatusPresentation";
 import {
   BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY,
   classifyHealthSafetyText,
@@ -362,6 +361,7 @@ import {
   usePersonalFoodsSettingsController,
   useProviderSettingsController,
   useSettingsTabsController,
+  useTraceSettingsController,
   useTrainingSettingsController,
   type SettingsTabKey,
 } from "./controllers/settingsController";
@@ -382,6 +382,8 @@ import {
   ProductsSettingsPanel,
   ProviderSettingsPanel,
   SettingsTabs,
+  SettingsRuntimeFooter,
+  TraceSettingsPanel,
   TrainingSettingsPanel,
   TrainingDetailScreen,
   TrainingEditorScreen,
@@ -4296,301 +4298,6 @@ function FoodThumbnail({ food, size = 36 }: { food: FoodRepoEntry; size?: number
   );
 }
 
-function TracePanel() {
-  const [traces, setTraces] = useState<TraceEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
-
-  const reload = useCallback(async () => {
-    setLoading(true);
-    try {
-      const entries = await getTraces();
-      setTraces(entries);
-    } catch (e) {
-      // ignore
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void reload();
-  }, [reload]);
-
-  const handleCopy = useCallback(async () => {
-    try {
-      const text = formatTraces(traces);
-      await Clipboard.setStringAsync(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
-      // ignore
-    }
-  }, [traces]);
-
-  const handleClear = useCallback(async () => {
-    await clearTraces();
-    setTraces([]);
-  }, []);
-
-  const displayText = formatTraces(traces);
-
-  return (
-    <View style={{ gap: 10 }}>
-      <View style={{ flexDirection: "row", gap: 8 }}>
-        <Pressable
-          onPress={handleCopy}
-          disabled={traces.length === 0}
-          style={{
-            flex: 1,
-            minHeight: 44,
-            borderRadius: mobileTheme.radius.md,
-            backgroundColor: mobileTheme.color.brandPrimary,
-            alignItems: "center",
-            justifyContent: "center",
-            opacity: traces.length === 0 ? 0.5 : 1,
-          }}
-        >
-          <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 14 }}>
-            {copied ? "Copiado ✓" : "Copiar trazas"}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleClear}
-          disabled={traces.length === 0}
-          style={{
-            flex: 1,
-            minHeight: 44,
-            borderRadius: mobileTheme.radius.md,
-            borderWidth: 1,
-            borderColor: mobileTheme.color.borderSubtle,
-            backgroundColor: mobileTheme.color.bgSurface,
-            alignItems: "center",
-            justifyContent: "center",
-            opacity: traces.length === 0 ? 0.5 : 1,
-          }}
-        >
-          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 14 }}>
-            Borrar
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={reload}
-          style={{
-            minHeight: 44,
-            paddingHorizontal: 14,
-            borderRadius: mobileTheme.radius.md,
-            borderWidth: 1,
-            borderColor: mobileTheme.color.borderSubtle,
-            backgroundColor: mobileTheme.color.bgSurface,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Feather name="refresh-cw" size={16} color={mobileTheme.color.textPrimary} />
-        </Pressable>
-      </View>
-
-      <View
-        style={{
-          borderWidth: 1,
-          borderColor: mobileTheme.color.borderSubtle,
-          backgroundColor: "#06090D",
-          borderRadius: mobileTheme.radius.md,
-          padding: 10,
-          minHeight: 200,
-          maxHeight: 420,
-        }}
-      >
-        {loading ? (
-          <Text style={{ color: "#888", fontSize: 12 }}>Cargando...</Text>
-        ) : traces.length === 0 ? (
-          <Text style={{ color: "#888", fontSize: 12 }}>Sin trazas todavía.</Text>
-        ) : (
-          <ScrollView style={{ flex: 1 }} nestedScrollEnabled>
-            <Text
-              style={{
-                color: "#c7ff1a",
-                fontSize: 11,
-                fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
-                lineHeight: 15,
-              }}
-            >
-              {displayText}
-            </Text>
-          </ScrollView>
-        )}
-      </View>
-
-      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-        {traces.length} entrada(s)
-      </Text>
-    </View>
-  );
-}
-
-function formatPolicyCheckTime(value: string | null): string {
-  if (!value) return "Aún no comprobada";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Fecha no disponible";
-  return date.toLocaleString("es-ES", {
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    month: "short",
-  });
-}
-
-function formatPolicyVersion(value: string): string {
-  return value.startsWith("sha256:") ? `${value.slice(0, 19)}…` : value;
-}
-
-function PolicyStatusCard({
-  busy,
-  onRefresh,
-  result,
-  status,
-}: {
-  busy: boolean;
-  onRefresh: () => void;
-  result: string | null;
-  status: PolicyRuntimeStatus | null;
-}) {
-  const presentation = status ? policyStatusPresentation(status) : null;
-  const isHealthy = presentation?.tone === "healthy";
-  const accent = isHealthy ? mobileTheme.color.brandPrimary : "#F3B95F";
-  return (
-    <View
-      testID="policy-status-card"
-      accessibilityLiveRegion="polite"
-      style={{
-        borderWidth: 1,
-        borderColor: status ? `${accent}66` : mobileTheme.color.borderSubtle,
-        backgroundColor: status ? `${accent}0F` : mobileTheme.color.bgSurface,
-        borderRadius: mobileTheme.radius.lg,
-        padding: 16,
-        gap: 14,
-      }}
-    >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-        <View
-          style={{
-            width: 34,
-            height: 34,
-            borderRadius: 17,
-            backgroundColor: status ? `${accent}1F` : mobileTheme.color.bgApp,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {status ? (
-            <Feather
-              name={status.state === "active" ? "shield" : "clock"}
-              size={17}
-              color={accent}
-            />
-          ) : (
-            <ActivityIndicator size="small" color={mobileTheme.color.textSecondary} />
-          )}
-        </View>
-        <View style={{ flex: 1, gap: 2 }}>
-          <Text style={{ color: status ? accent : mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "800", letterSpacing: 0.7, textTransform: "uppercase" }}>
-            {presentation?.title ?? "Comprobando política"}
-          </Text>
-          <Text numberOfLines={1} style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "700" }}>
-            {status?.active.candidate ?? RUNTIME_ENVIRONMENT.policyCandidate}
-          </Text>
-        </View>
-      </View>
-
-      {status ? (
-        <View style={{ gap: 8 }}>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Versión</Text>
-            <Text numberOfLines={1} style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700", flex: 1, textAlign: "right" }}>
-              {formatPolicyVersion(status.active.version)}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Hash</Text>
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace" }}>{status.active.bundleSha256.slice(0, 12)}</Text>
-          </View>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Origen · canal</Text>
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600", textAlign: "right" }}>{presentation?.sourceLabel} · {status.channel}</Text>
-          </View>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Última comprobación</Text>
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, textAlign: "right" }}>{formatPolicyCheckTime(status.lastCheckedAt)}</Text>
-          </View>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Propagación local</Text>
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12 }}>
-              {status.propagationMs === null ? "Sin dato" : `${Math.round(status.propagationMs / 1000)} s`}
-            </Text>
-          </View>
-        </View>
-      ) : null}
-
-      {status?.pending ? (
-        <View
-          testID="policy-pending-status"
-          style={{
-            borderTopWidth: 1,
-            borderTopColor: `${accent}4D`,
-            paddingTop: 12,
-            gap: 4,
-          }}
-        >
-          <Text style={{ color: accent, fontSize: 12, fontWeight: "800" }}>
-            {presentation?.pendingInstruction}
-          </Text>
-          <Text numberOfLines={1} style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-            {status.pending.candidate} · {status.pending.bundleSha256.slice(0, 12)}
-          </Text>
-        </View>
-      ) : null}
-      {status && status.degradation !== "none" ? (
-        <Text testID="policy-degraded-status" style={{ color: accent, fontSize: 12, lineHeight: 17 }}>
-          {presentation?.degradationMessage}
-        </Text>
-      ) : null}
-
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Comprobar actualización de política"
-        testID="policy-refresh-button"
-        disabled={busy}
-        onPress={onRefresh}
-        style={{
-          minHeight: 44,
-          borderRadius: mobileTheme.radius.md,
-          borderWidth: 1,
-          borderColor: mobileTheme.color.brandPrimary,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          gap: 8,
-          opacity: busy ? 0.6 : 1,
-        }}
-      >
-        {busy ? (
-          <ActivityIndicator size="small" color={mobileTheme.color.brandPrimary} />
-        ) : (
-          <Feather name="refresh-cw" size={15} color={mobileTheme.color.brandPrimary} />
-        )}
-        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "800" }}>
-          {busy ? "Comprobando…" : "Comprobar actualización"}
-        </Text>
-      </Pressable>
-      {result ? (
-        <Text testID="policy-refresh-result" style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
-          {result}
-        </Text>
-      ) : null}
-    </View>
-  );
-}
-
 type LocalDataDeletionOutcome = {
   report: LocalDataDeletionReport;
 };
@@ -5595,6 +5302,17 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     foods: personalFoods,
     updateFoods: setPersonalFoods,
     createFoodId: () => uid("food"),
+  });
+  const traceSettingsController = useTraceSettingsController({
+    policyBusy: policyRefreshBusy,
+    policyResult: policyRefreshResult,
+    policyStatus: policyRuntimeStatus,
+    defaultPolicyCandidate: RUNTIME_ENVIRONMENT.policyCandidate,
+    monospaceFontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
+    copyText: async (value) => {
+      await Clipboard.setStringAsync(value);
+    },
+    refreshPolicy: handlePolicyRefresh,
   });
   const settingsTabsController = useSettingsTabsController({
     activeTab: settingsTab,
@@ -13785,56 +13503,23 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               ) : null}
 
               {settingsTab === "traces" ? (
-                <View style={{ gap: 12 }}>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
-                    Trazas de depuración
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-                    Registro de notificaciones, descansos y selección de política del agente. Cada entrada lleva timestamp ISO. Las trazas del agente muestran solo metadatos técnicos allowlist; nunca el prompt ni datos personales.
-                  </Text>
-
-                  <PolicyStatusCard
-                    busy={policyRefreshBusy}
-                    onRefresh={handlePolicyRefresh}
-                    result={policyRefreshResult}
-                    status={policyRuntimeStatus}
-                  />
-
-                  <TracePanel />
-
-                  <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
-                    Las trazas se guardan en AsyncStorage y sobreviven a reinicios de la app.
-                  </Text>
-                </View>
+                <TraceSettingsPanel
+                  model={traceSettingsController.model}
+                  actions={traceSettingsController.actions}
+                />
               ) : null}
 
               {/* Exercise detail rendered as fullscreen overlay below */}
 
-              <View
-                style={{
-                  marginTop: 8,
-                  alignSelf: "center",
-                  maxWidth: 520,
-                  width: "100%",
-                  borderWidth: 1,
-                  borderColor: "rgba(203,255,26,0.32)",
-                  backgroundColor: "rgba(203,255,26,0.06)",
-                  borderRadius: mobileTheme.radius.md,
-                  paddingHorizontal: 12,
-                  paddingVertical: 9,
-                  gap: 3,
-                }}
-              >
-                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.8 }}>
-                  {RUNTIME_ENVIRONMENT.environment} · {activePolicySelection?.channel ?? RUNTIME_ENVIRONMENT.policyChannel} · {RUNTIME_ENVIRONMENT.providerMode}
-                </Text>
-                <Text numberOfLines={1} style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                  Política {activePolicySelection?.candidate ?? RUNTIME_ENVIRONMENT.policyCandidate} · {(activePolicySelection?.sha256 ?? RUNTIME_ENVIRONMENT.policySha256).slice(0, 12)}
-                </Text>
-                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, opacity: 0.72 }}>
-                  Gymnasia v{Constants.expoConfig?.version ?? "?"} · config v{RUNTIME_ENVIRONMENT.configurationVersion}
-                </Text>
-              </View>
+              <SettingsRuntimeFooter
+                appVersion={Constants.expoConfig?.version ?? "?"}
+                configurationVersion={RUNTIME_ENVIRONMENT.configurationVersion}
+                environment={RUNTIME_ENVIRONMENT.environment}
+                policyCandidate={activePolicySelection?.candidate ?? RUNTIME_ENVIRONMENT.policyCandidate}
+                policyChannel={activePolicySelection?.channel ?? RUNTIME_ENVIRONMENT.policyChannel}
+                policySha256={activePolicySelection?.sha256 ?? RUNTIME_ENVIRONMENT.policySha256}
+                providerMode={RUNTIME_ENVIRONMENT.providerMode}
+              />
 
               <LegalFooter />
             </View>

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { PersonalDataField } from "../agent/personalData";
 import type {
@@ -11,6 +11,11 @@ import type {
   ProviderConnectionStatus,
   ProviderStatusSeverity,
 } from "../agent/providerPresentation";
+import {
+  policyStatusPresentation,
+  type PolicyStatusPresentation,
+} from "../agent/policyStatusPresentation";
+import type { PolicyRuntimeStatus } from "../agent/signedPolicySelection";
 import type {
   ActivityLevel,
   DietGoal,
@@ -25,6 +30,7 @@ import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
 import type { NotificationSoundKey } from "../notifications/notificationSounds";
 import type { NotificationSettings } from "../storage/userPreferences";
 import type { ScreenController } from "./types";
+import { clearTraces, formatTraces, getTraces, type TraceEntry } from "../trace";
 
 export type ProviderModelOption = {
   id: string;
@@ -480,6 +486,106 @@ export function usePersonalFoodsSettingsController(
       "settings-personal-food-detail": () => { setSelectedFood(null); return true; },
     },
   }), [assistantVisible, formVisible, selectedFood]);
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
+
+export type TraceSettingsModel = {
+  traces: ReadonlyArray<TraceEntry>;
+  displayText: string;
+  loading: boolean;
+  copied: boolean;
+  policyBusy: boolean;
+  policyResult: string | null;
+  policyStatus: PolicyRuntimeStatus | null;
+  policyPresentation: PolicyStatusPresentation | null;
+  defaultPolicyCandidate: string;
+  monospaceFontFamily: string;
+};
+
+export type TraceSettingsActions = {
+  copy(): void;
+  clear(): void;
+  reload(): void;
+  refreshPolicy(): void;
+};
+
+export type TraceSettingsControllerInput = {
+  policyBusy: boolean;
+  policyResult: string | null;
+  policyStatus: PolicyRuntimeStatus | null;
+  defaultPolicyCandidate: string;
+  monospaceFontFamily: string;
+  copyText(value: string): Promise<void>;
+  refreshPolicy(): void;
+};
+
+export function useTraceSettingsController(
+  input: TraceSettingsControllerInput,
+): ScreenController<TraceSettingsModel, TraceSettingsActions> {
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const [traces, setTraces] = useState<TraceEntry[]>([]);
+  const tracesRef = useRef(traces);
+  tracesRef.current = traces;
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const actions = useMemo<TraceSettingsActions>(() => ({
+    copy: () => {
+      void (async () => {
+        try {
+          await inputRef.current.copyText(formatTraces(tracesRef.current));
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        } catch {
+          // Las trazas son diagnósticas; un fallo al copiar no afecta a la app.
+        }
+      })();
+    },
+    clear: () => {
+      void (async () => {
+        await clearTraces();
+        setTraces([]);
+      })();
+    },
+    reload: () => {
+      void (async () => {
+        setLoading(true);
+        try {
+          setTraces(await getTraces());
+        } catch {
+          // Las trazas son diagnósticas; un fallo de lectura se degrada en silencio.
+        } finally {
+          setLoading(false);
+        }
+      })();
+    },
+    refreshPolicy: () => inputRef.current.refreshPolicy(),
+  }), []);
+  useEffect(() => {
+    actions.reload();
+  }, [actions]);
+  const model = useMemo<TraceSettingsModel>(() => ({
+    traces,
+    displayText: formatTraces(traces),
+    loading,
+    copied,
+    policyBusy: input.policyBusy,
+    policyResult: input.policyResult,
+    policyStatus: input.policyStatus,
+    policyPresentation: input.policyStatus ? policyStatusPresentation(input.policyStatus) : null,
+    defaultPolicyCandidate: input.defaultPolicyCandidate,
+    monospaceFontFamily: input.monospaceFontFamily,
+  }), [
+    copied,
+    input.defaultPolicyCandidate,
+    input.monospaceFontFamily,
+    input.policyBusy,
+    input.policyResult,
+    input.policyStatus,
+    loading,
+    traces,
+  ]);
+  const back = useMemo(() => ({ layers: {}, handlers: {} }), []);
   return useMemo(() => ({ model, actions, back }), [actions, back, model]);
 }
 

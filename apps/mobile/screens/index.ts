@@ -14,6 +14,8 @@ export {
   ProductsSettingsPanel,
   ProviderSettingsPanel,
   SettingsTabs,
+  SettingsRuntimeFooter,
+  TraceSettingsPanel,
   TrainingSettingsPanel,
 } from "./SettingsScreen";
 export { TrainingDetailScreen, TrainingEditorScreen, TrainingHistoryScreen, TrainingListScreen, TrainingSessionScreen, WorkoutHistoryEntryCard } from "./TrainingScreen";
