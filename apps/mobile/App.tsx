@@ -334,6 +334,7 @@ import {
   useSettingsTabsController,
   useTraceSettingsController,
   useTrainingSettingsController,
+  useUserPreferencesRuntime,
   type SettingsTabKey,
 } from "./controllers/settingsController";
 import {
@@ -474,7 +475,6 @@ import {
   type LocalDataDeletionTask,
 } from "./storage/localDataDeletion";
 import {
-  createDefaultUserPreferences,
   normalizeStoredUserPreferences,
   normalizeUserPreferences,
   type NotificationSettings,
@@ -3525,7 +3525,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   // the structured-extraction LLM re-infers food_type. Reset on each new session.
   const foodEstimatorUsedBarcodeRef = useRef(false);
   const foodEstimatorScrollRef = useRef<ScrollView>(null);
-  const [userPrefs, setUserPrefs] = useState<UserPreferences>(() => createDefaultUserPreferences());
+  const userPreferencesRuntime = useUserPreferencesRuntime({
+    isHydrated,
+    storageKey: USER_PREFS_STORAGE_KEY,
+    services: APP_PLATFORM_SERVICES,
+    isRuntimeBlocked: () => dataDeletionBusyRef.current,
+  });
+  const userPrefs = userPreferencesRuntime.preferences;
+  const setUserPrefs = userPreferencesRuntime.update;
   const [alarmHealth, setAlarmHealth] = useState<AlarmHealth>({ ...DEFAULT_ALARM_HEALTH });
   // null = aún no comprobado. Diferenciarlo de false evita alarmar al usuario
   // antes de saber nada.
@@ -5516,7 +5523,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
       }
     }
-    setUserPrefs(parsedPrefs);
+    userPreferencesRuntime.replace(parsedPrefs);
     alarmHealthRef.current = parsedAlarmHealth;
     setAlarmHealth(parsedAlarmHealth);
     setHealthSafetyConsent(parsedHealthSafetyConsent);
@@ -5810,12 +5817,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }
     });
   }, [isHydrated, localStoreRuntimeHandle, store]);
-
-  useEffect(() => {
-    if (!isHydrated || dataDeletionBusyRef.current) return;
-    const canonicalPrefs = normalizeUserPreferences(userPrefs).preferences;
-    AsyncStorage.setItem(USER_PREFS_STORAGE_KEY, JSON.stringify(canonicalPrefs)).catch(() => {});
-  }, [isHydrated, userPrefs]);
 
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;

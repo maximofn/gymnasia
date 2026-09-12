@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 import type { PersonalDataField } from "../agent/personalData";
 import type {
@@ -30,10 +37,43 @@ import { normalizePersonalFood } from "../catalogs/sources";
 import type { CatalogSearchAvailability, FoodCatalogEntry } from "../catalogs/types";
 import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
 import type { NotificationSoundKey } from "../notifications/notificationSounds";
-import type { NotificationSettings } from "../storage/userPreferences";
+import {
+  createDefaultUserPreferences,
+  normalizeUserPreferences,
+  type NotificationSettings,
+  type UserPreferences,
+} from "../storage/userPreferences";
 import type { LocalStoreRuntime } from "../persistence/localStoreRuntime";
+import type { AppPlatformServices } from "../platform";
 import type { ScreenController } from "./types";
 import { clearTraces, formatTraces, getTraces, type TraceEntry } from "../trace";
+
+export function useUserPreferencesRuntime(input: {
+  isHydrated: boolean;
+  storageKey: string;
+  services: AppPlatformServices;
+  isRuntimeBlocked(): boolean;
+}): {
+  preferences: UserPreferences;
+  update: Dispatch<SetStateAction<UserPreferences>>;
+  replace(preferences: UserPreferences): void;
+} {
+  const [preferences, update] = useState<UserPreferences>(() => createDefaultUserPreferences());
+  const inputRef = useRef(input);
+  inputRef.current = input;
+
+  useEffect(() => {
+    if (!input.isHydrated || input.isRuntimeBlocked()) return;
+    const canonical = normalizeUserPreferences(preferences).preferences;
+    input.services.storage.setItem(input.storageKey, JSON.stringify(canonical)).catch(() => {});
+  }, [input.isHydrated, input.services.storage, input.storageKey, preferences]);
+
+  return useMemo(() => ({
+    preferences,
+    update,
+    replace: (nextPreferences: UserPreferences) => update(nextPreferences),
+  }), [preferences]);
+}
 
 export type ProviderModelOption = {
   id: string;
