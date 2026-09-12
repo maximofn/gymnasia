@@ -70,11 +70,23 @@ import {
   runAnthropicToolLoop,
   runGoogleToolLoop,
   runOpenAIToolLoop,
+  type AnthropicToolUseBlock,
 } from "./agent/providerToolLoop";
 import {
   createAnthropicStreamParser,
   createOpenAIStreamParser,
+  type AnthropicStreamTurnResult,
+  type OpenAIFunctionCallOutputItem,
+  type OpenAIStreamTurnResult,
+  type StreamingHandlers,
 } from "./agent/providerStreamParsers";
+import {
+  buildOpenAIReasoningConfig,
+  parseAnthropicContent,
+  parseJsonSafely,
+  parseOpenAIContent,
+  parseOpenAIResponseResult,
+} from "./agent/providerResponseModel";
 import {
   AI_DISCLOSURE_MESSAGE_KIND,
   composeAiSystemPrompt,
@@ -559,33 +571,6 @@ Notifications.setNotificationHandler({
 });
 
 type AnthropicChatResult = { content: string; thinking: string | null; googleTurn?: GoogleConversationTurn };
-type OpenAIReasoningSummaryPart = { type: "summary_text"; text: string };
-type OpenAIReasoningOutputItem = {
-  type: "reasoning";
-  id?: string;
-  summary?: OpenAIReasoningSummaryPart[];
-};
-type OpenAIMessageOutputItem = {
-  type: "message";
-  id?: string;
-  content?: Array<{ type: "output_text"; text: string }>;
-};
-type OpenAIFunctionCallOutputItem = {
-  type: "function_call";
-  id: string;
-  call_id: string;
-  name: string;
-  arguments: string;
-  status?: string;
-};
-type OpenAIResponseOutputItem =
-  | OpenAIReasoningOutputItem
-  | OpenAIMessageOutputItem
-  | OpenAIFunctionCallOutputItem;
-type OpenAIStreamTurnResult = AnthropicChatResult & {
-  responseId: string | null;
-  outputItems: OpenAIResponseOutputItem[];
-};
 type HealthSafetyConsentState = {
   consentVersion: string;
   providers: Record<Provider, boolean>;
@@ -593,10 +578,6 @@ type HealthSafetyConsentState = {
 };
 // `AnthropicModelOption` vive ahora en ./agent/anthropicModels, junto al
 // recorrido de la paginación, para poder probarse sin arrastrar App.tsx.
-type StreamingHandlers = {
-  onContentDelta?: (delta: string, aggregate: string) => void;
-  onThinkingDelta?: (delta: string, aggregate: string) => void;
-};
 type ChatProviderCallOptions = StreamingHandlers & {
   setStore?: LocalStoreRuntime["update"];
   commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>;
@@ -611,20 +592,6 @@ type ChatProviderCallOptions = StreamingHandlers & {
   executionId?: string;
   healthDecision?: HealthSafetyDecision;
   healthPolicy?: HealthSafetyRuntimePolicy;
-};
-type AnthropicTextBlock = { type: "text"; text: string };
-type AnthropicThinkingBlock = { type: "thinking"; thinking: string; signature?: string };
-type AnthropicToolUseBlock = {
-  type: "tool_use";
-  id: string;
-  name: string;
-  input: Record<string, unknown>;
-  partial_json?: string;
-};
-type AnthropicResponseBlock = AnthropicTextBlock | AnthropicThinkingBlock | AnthropicToolUseBlock;
-type AnthropicStreamTurnResult = AnthropicChatResult & {
-  contentBlocks: AnthropicResponseBlock[];
-  stopReason: string | null;
 };
 type ProviderDeleteModalState = { provider: Provider; maskedApiKey: string };
 type ChatInputMessage = {
@@ -809,7 +776,6 @@ const LEGACY_SECURE_STORE_PREFIXES = [
 ];
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
-const OPENAI_REASONING_SUMMARY = "detailed";
 const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
 
@@ -1558,186 +1524,6 @@ async function callAnthropicViaWebProxy(
       throw new Error(ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE);
     }
     throw new Error(rawMessage);
-  }
-}
-
-function parseOpenAIContent(payload: unknown): string | null {
-  const responseResult = parseOpenAIResponseResult(payload);
-  if (responseResult?.content) {
-    return responseResult.content;
-  }
-  if (!payload || typeof payload !== "object") return null;
-  const maybe = payload as {
-    choices?: Array<{ message?: { content?: string | Array<{ type?: string; text?: string }> } }>;
-  };
-  const content = maybe.choices?.[0]?.message?.content;
-  if (typeof content === "string") return content.trim();
-  if (Array.isArray(content)) {
-    const text = content
-      .filter((part) => part?.type === "text" && typeof part.text === "string")
-      .map((part) => part.text?.trim())
-      .filter(Boolean)
-      .join("\n");
-    return text || null;
-  }
-  return null;
-}
-
-function normalizeOpenAIFunctionCallArguments(rawArguments: unknown): string {
-  if (typeof rawArguments === "string") return rawArguments;
-  if (rawArguments && typeof rawArguments === "object") {
-    try {
-      return JSON.stringify(rawArguments);
-    } catch {
-      return "";
-    }
-  }
-  return "";
-}
-
-function normalizeOpenAIResponseOutputItem(rawItem: unknown): OpenAIResponseOutputItem | null {
-  if (!rawItem || typeof rawItem !== "object") return null;
-  const item = rawItem as {
-    type?: string;
-    id?: string;
-    summary?: Array<{ type?: string; text?: string }>;
-    content?: Array<{ type?: string; text?: string }>;
-    call_id?: string;
-    name?: string;
-    arguments?: unknown;
-    status?: string;
-  };
-
-  if (item.type === "reasoning") {
-    const summary = Array.isArray(item.summary)
-      ? item.summary
-          .filter(
-            (part): part is OpenAIReasoningSummaryPart =>
-              part?.type === "summary_text" && typeof part.text === "string",
-          )
-          .map((part) => ({ type: "summary_text" as const, text: part.text }))
-      : undefined;
-    return {
-      type: "reasoning",
-      id: typeof item.id === "string" ? item.id : undefined,
-      summary,
-    };
-  }
-
-  if (item.type === "message") {
-    const content = Array.isArray(item.content)
-      ? item.content
-          .filter(
-            (part): part is { type: "output_text"; text: string } =>
-              part?.type === "output_text" && typeof part.text === "string",
-          )
-          .map((part) => ({ type: "output_text" as const, text: part.text }))
-      : undefined;
-    return {
-      type: "message",
-      id: typeof item.id === "string" ? item.id : undefined,
-      content,
-    };
-  }
-
-  if (
-    item.type === "function_call"
-    && typeof item.id === "string"
-    && typeof item.call_id === "string"
-    && typeof item.name === "string"
-  ) {
-    return {
-      type: "function_call",
-      id: item.id,
-      call_id: item.call_id,
-      name: item.name,
-      arguments: normalizeOpenAIFunctionCallArguments(item.arguments),
-      status: typeof item.status === "string" ? item.status : undefined,
-    };
-  }
-
-  return null;
-}
-
-function parseOpenAIResponseOutputItems(payload: unknown): OpenAIResponseOutputItem[] {
-  if (!payload || typeof payload !== "object") return [];
-  const maybe = payload as { output?: unknown[] };
-  if (!Array.isArray(maybe.output)) return [];
-  return maybe.output
-    .map((item) => normalizeOpenAIResponseOutputItem(item))
-    .filter((item): item is OpenAIResponseOutputItem => Boolean(item));
-}
-
-function collectOpenAIOutputText(outputItems: OpenAIResponseOutputItem[]): string | null {
-  const text = outputItems
-    .filter((item): item is OpenAIMessageOutputItem => item.type === "message")
-    .flatMap((item) => item.content ?? [])
-    .filter((part) => part.type === "output_text")
-    .map((part) => part.text.trim())
-    .filter(Boolean)
-    .join("\n");
-  return text || null;
-}
-
-function collectOpenAIThinking(outputItems: OpenAIResponseOutputItem[]): string | null {
-  const thinking = outputItems
-    .filter((item): item is OpenAIReasoningOutputItem => item.type === "reasoning")
-    .flatMap((item) => item.summary ?? [])
-    .filter((part) => part.type === "summary_text")
-    .map((part) => part.text.trim())
-    .filter(Boolean)
-    .join("\n\n");
-  return thinking || null;
-}
-
-function buildOpenAIReasoningConfig(
-  provider: Pick<AIKey, "model" | "reasoning_effort">,
-): { effort: OpenAIReasoningEffort; summary: string } | null {
-  const effort = normalizeOpenAIReasoningEffort(provider.reasoning_effort, provider.model);
-  if (!effort) return null;
-  return {
-    effort,
-    summary: OPENAI_REASONING_SUMMARY,
-  };
-}
-
-function parseOpenAIResponseResult(payload: unknown): AnthropicChatResult | null {
-  if (!payload || typeof payload !== "object") return null;
-  const maybe = payload as { output_text?: string | null };
-  const outputItems = parseOpenAIResponseOutputItems(payload);
-  const content =
-    collectOpenAIOutputText(outputItems)
-    ?? (typeof maybe.output_text === "string" ? maybe.output_text.trim() : null);
-  const thinking = collectOpenAIThinking(outputItems);
-  if (!content && !thinking) return null;
-  return { content: content ?? "", thinking };
-}
-
-function parseAnthropicContent(payload: unknown): AnthropicChatResult | null {
-  if (!payload || typeof payload !== "object") return null;
-  const maybe = payload as {
-    content?: Array<{ type?: string; text?: string; thinking?: string }>;
-  };
-  const blocks = maybe.content ?? [];
-  const text = blocks
-    .filter((part) => part?.type === "text" && typeof part.text === "string")
-    .map((part) => part.text?.trim())
-    .filter(Boolean)
-    .join("\n");
-  const thinking = blocks
-    .filter((part) => part?.type === "thinking" && typeof part.thinking === "string")
-    .map((part) => part.thinking?.trim())
-    .filter(Boolean)
-    .join("\n");
-  if (!text) return null;
-  return { content: text, thinking: thinking || null };
-}
-
-function parseJsonSafely<T>(value: string): T | null {
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return null;
   }
 }
 
