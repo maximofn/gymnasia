@@ -333,6 +333,35 @@ import {
   type NutritionValidationIssue,
 } from "./diet/nutritionContract";
 import {
+  DIET_MONTH_LABELS_SHORT,
+  GKG_MACRO_KEYS,
+  createDefaultDietSettings,
+  createDietMealExpandedState,
+  dateFromISO,
+  formatDietDayContext,
+  formatDietDayHeader,
+  formatNutritionNumber,
+  gkgMacroCaloriesPerGram,
+  isoDateFromDate,
+  normalizeDietByDate,
+  normalizeDietNonNegativeNumber,
+  normalizeDietSettings,
+  parseNonNegativeNumberInput,
+  shiftISODateByDays,
+  sortDietMealsByCategory,
+  sumDayCalories,
+  sumDayMacroGrams,
+  todayISO,
+  type ActivityLevel,
+  type DietDay,
+  type DietGoal,
+  type DietItem,
+  type DietMeal,
+  type DietSettings,
+  type GkgMacroKey,
+  type UserSex,
+} from "./diet/model";
+import {
   MEASUREMENT_METRIC_KEYS,
   buildPreparedMeasurementChartPoints,
   deleteMeasurementById,
@@ -521,17 +550,6 @@ type WorkoutCompletionModalState = {
   draft_template: WorkoutTemplate | null;
   canonical_conflict: boolean;
 };
-type DietItem = {
-  id: string;
-  title: string;
-  grams: number;
-  calories_kcal: number;
-  protein_g: number;
-  carbs_g: number;
-  fat_g: number;
-  image_uri?: string | null;
-  catalog_link?: CatalogLink;
-};
 type PendingFoodResolution = {
   origin: "form" | "estimator";
   candidates: FoodRepoEntry[];
@@ -540,29 +558,6 @@ type PendingFoodResolution = {
   date: string;
   editing: DietItemMenuState;
   proposeManual: boolean;
-};
-type DietMeal = { id: string; title: string; items: DietItem[] };
-type DietDay = { day_date: string; meals: DietMeal[] };
-type GkgMacroKey = "protein" | "carbs" | "fat";
-type DietGoal = "bulk" | "cut" | "maintain";
-type ActivityLevel = "moderate" | "intermediate" | "high";
-type UserSex = "male" | "female";
-type DietSettings = {
-  goal: DietGoal;
-  activity_level?: ActivityLevel;
-  sex?: UserSex;
-  height_cm?: string;
-  birth_date?: string;
-  daily_calories: string;
-  macro_mode: DietMacroMode;
-  manual_macro_calories: {
-    carbs: string;
-    protein: string;
-    fat: string;
-  };
-  protein_grams_per_kg: string;
-  carbs_grams_per_kg: string;
-  fat_grams_per_kg: string;
 };
 type ChatThread = { id: string; title: string | null };
 type ChatMessageKind = AiDisclosureMessageKind | "health_safety_intervention" | "technical_error";
@@ -1633,30 +1628,6 @@ const DIET_MEAL_META: Record<
   Merienda: { icon: "coffee", accent: "#4D84FF", dot: "#4D84FF" },
   Cena: { icon: "moon", accent: "#7D6DFF", dot: "#7D6DFF" },
 };
-const DIET_WEEKDAY_LABELS = [
-  "Domingo",
-  "Lunes",
-  "Martes",
-  "Miércoles",
-  "Jueves",
-  "Viernes",
-  "Sábado",
-];
-const DIET_MONTH_LABELS_SHORT = [
-  "Ene",
-  "Feb",
-  "Mar",
-  "Abr",
-  "May",
-  "Jun",
-  "Jul",
-  "Ago",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dic",
-];
-const GKG_MACRO_KEYS: GkgMacroKey[] = ["protein", "carbs", "fat"];
 const SETTINGS_TAB_OPTIONS: Array<{ key: SettingsTabKey; label: string }> = [
   { key: "diet", label: "Dieta" },
   { key: "provider", label: "Proveedor IA" },
@@ -1683,46 +1654,6 @@ const ACTIVITY_LEVEL_OPTIONS: Array<{ key: ActivityLevel; label: string }> = [
   { key: "intermediate", label: "Intermedia" },
   { key: "high", label: "Alta" },
 ];
-
-function createDefaultDietSettings(): DietSettings {
-  return {
-    goal: "maintain",
-    daily_calories: "",
-    macro_mode: "manual_calories",
-    manual_macro_calories: {
-      carbs: "",
-      protein: "",
-      fat: "",
-    },
-    protein_grams_per_kg: "1.5",
-    carbs_grams_per_kg: "",
-    fat_grams_per_kg: "",
-  };
-}
-
-function isDietMealCategory(value: string): value is DietMealCategory {
-  return DIET_MEAL_CATEGORIES.includes(value as DietMealCategory);
-}
-
-function createDietMealExpandedState(): Record<DietMealCategory, boolean> {
-  return {
-    Desayuno: true,
-    Almuerzo: true,
-    Comida: true,
-    Merienda: true,
-    Cena: true,
-  };
-}
-
-function sortDietMealsByCategory(meals: DietMeal[]): DietMeal[] {
-  const order = new Map(DIET_MEAL_CATEGORIES.map((category, index) => [category, index]));
-  return [...meals].sort((a, b) => {
-    const aOrder = isDietMealCategory(a.title) ? (order.get(a.title) ?? 999) : 999;
-    const bOrder = isDietMealCategory(b.title) ? (order.get(b.title) ?? 999) : 999;
-    if (aOrder !== bOrder) return aOrder - bOrder;
-    return a.title.localeCompare(b.title);
-  });
-}
 
 function secureStoreKey(provider: Provider): string {
   return `${SECURE_STORE_API_KEY_PREFIX}.${provider}`;
@@ -3497,66 +3428,6 @@ function chatRoleLabel(role: ChatMessage["role"]): string {
   return "Sistema";
 }
 
-function isoDateFromDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = `${date.getMonth() + 1}`.padStart(2, "0");
-  const d = `${date.getDate()}`.padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-function todayISO(): string {
-  return isoDateFromDate(new Date());
-}
-
-function dateFromISO(isoDate: string): Date {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate);
-  if (!match) return measurementDateFromSelection(new Date());
-  return measurementDateFromSelection(
-    new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])),
-  );
-}
-
-function shiftISODateByDays(isoDate: string, days: number): string {
-  const next = dateFromISO(isoDate);
-  next.setDate(next.getDate() + days);
-  return isoDateFromDate(next);
-}
-
-function formatDietDayHeader(isoDate: string): string {
-  const parsed = dateFromISO(isoDate);
-  return `${DIET_WEEKDAY_LABELS[parsed.getDay()]}, ${parsed.getDate()} ${DIET_MONTH_LABELS_SHORT[parsed.getMonth()]}`;
-}
-
-function formatDietDayContext(isoDate: string, referenceIsoDate: string): string {
-  const selected = dateFromISO(isoDate);
-  const reference = dateFromISO(referenceIsoDate);
-  const diffInDays = Math.round((selected.getTime() - reference.getTime()) / 86400000);
-  if (diffInDays === 0) return "Hoy";
-  if (diffInDays === -1) return "Ayer";
-  if (diffInDays === 1) return "Mañana";
-  return selected
-    .toLocaleDateString("es-ES", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    })
-    .replace(/\./g, "");
-}
-
-function sumDayCalories(day: DietDay | null): number {
-  if (!day) return 0;
-  return day.meals.reduce((mealAcc, meal) => {
-    return mealAcc + meal.items.reduce((itemAcc, item) => itemAcc + item.calories_kcal, 0);
-  }, 0);
-}
-
-function sumDayMacroGrams(day: DietDay | null, macro: "protein_g" | "carbs_g" | "fat_g"): number {
-  if (!day) return 0;
-  return day.meals.reduce((mealAcc, meal) => {
-    return mealAcc + meal.items.reduce((itemAcc, item) => itemAcc + item[macro], 0);
-  }, 0);
-}
-
 function inferTrainingCategory(templateName: string): TrainingCategory {
   const normalized = templateName.trim().toLowerCase();
   if (
@@ -3614,24 +3485,6 @@ function inferDurationFromText(rawValue: string | undefined): number | null {
   const parsed = Number(rawValue);
   if (!Number.isFinite(parsed) || parsed <= 0) return null;
   return Math.round(parsed);
-}
-
-function normalizeNumberInputText(rawValue: unknown): string {
-  if (typeof rawValue === "number" && Number.isFinite(rawValue)) {
-    return `${rawValue}`;
-  }
-  if (typeof rawValue === "string") {
-    return rawValue.trim().replace(",", ".");
-  }
-  return "";
-}
-
-function parseNonNegativeNumberInput(rawValue: string): number | null {
-  const normalized = rawValue.trim().replace(",", ".");
-  if (!normalized) return null;
-  const parsed = Number(normalized);
-  if (!Number.isFinite(parsed) || parsed < 0) return null;
-  return parsed;
 }
 
 function parsePositiveNumberInput(rawValue: string): number | null {
@@ -3711,11 +3564,6 @@ function buildMeasurementHistorySummary(
   return summaryParts.join(" · ") || "Sin medidas numéricas";
 }
 
-function formatNutritionNumber(value: number): string {
-  const rounded = Math.round(Math.max(0, value) * 10) / 10;
-  return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
-}
-
 function parseFoodEstimatorNutritionJSON(rawValue: string): {
   dish_name: string;
   calories_kcal: number;
@@ -3770,10 +3618,6 @@ function parseFoodEstimatorNutritionJSON(rawValue: string): {
   }
 
   return null;
-}
-
-function gkgMacroCaloriesPerGram(macro: GkgMacroKey): number {
-  return macro === "fat" ? 9 : 4;
 }
 
 function defaultTemplateIcon(category: TrainingCategory, index: number): RoutineIconName {
@@ -4801,118 +4645,6 @@ function DesktopSidebar({ tab, onTabChange }: { tab: TabKey; onTabChange: (tab: 
   );
 }
 
-function normalizeDietSettings(rawValue: unknown): DietSettings {
-  const defaults = createDefaultDietSettings();
-  if (!rawValue || typeof rawValue !== "object") return defaults;
-
-  const maybe = rawValue as Partial<DietSettings>;
-  const maybeManual = maybe.manual_macro_calories as
-    | Partial<DietSettings["manual_macro_calories"]>
-    | undefined;
-  const mode: DietMacroMode =
-    maybe.macro_mode === "protein_by_weight" ? "protein_by_weight" : "manual_calories";
-
-  const normalizedProteinPerKg = normalizeNumberInputText(maybe.protein_grams_per_kg);
-  const normalizedCarbsPerKg = normalizeNumberInputText(maybe.carbs_grams_per_kg);
-  const normalizedFatPerKg = normalizeNumberInputText(maybe.fat_grams_per_kg);
-
-  const goal: DietGoal =
-    maybe.goal === "bulk" || maybe.goal === "cut" || maybe.goal === "maintain"
-      ? maybe.goal
-      : defaults.goal;
-
-  const activityLevel: ActivityLevel | undefined =
-    maybe.activity_level === "moderate" || maybe.activity_level === "intermediate" || maybe.activity_level === "high"
-      ? maybe.activity_level
-      : undefined;
-
-  const sex: UserSex | undefined =
-    maybe.sex === "male" || maybe.sex === "female" ? maybe.sex : undefined;
-
-  return {
-    goal,
-    activity_level: activityLevel,
-    sex,
-    height_cm: typeof maybe.height_cm === "string" ? maybe.height_cm : undefined,
-    birth_date: typeof maybe.birth_date === "string" ? maybe.birth_date : undefined,
-    daily_calories: normalizeNumberInputText(maybe.daily_calories),
-    macro_mode: mode,
-    manual_macro_calories: {
-      carbs: normalizeNumberInputText(maybeManual?.carbs),
-      protein: normalizeNumberInputText(maybeManual?.protein),
-      fat: normalizeNumberInputText(maybeManual?.fat),
-    },
-    protein_grams_per_kg: normalizedProteinPerKg || defaults.protein_grams_per_kg,
-    carbs_grams_per_kg: normalizedCarbsPerKg || defaults.carbs_grams_per_kg,
-    fat_grams_per_kg: normalizedFatPerKg || defaults.fat_grams_per_kg,
-  };
-}
-
-function normalizeDietNonNegativeNumber(rawValue: unknown): number {
-  if (typeof rawValue === "number" && Number.isFinite(rawValue)) {
-    return Math.max(0, Math.round(rawValue * 10) / 10);
-  }
-  if (typeof rawValue === "string") {
-    const parsed = parseNonNegativeNumberInput(rawValue);
-    return parsed === null ? 0 : Math.round(parsed * 10) / 10;
-  }
-  return 0;
-}
-
-function normalizeDietByDate(rawValue: unknown): Record<string, DietDay> {
-  if (!rawValue || typeof rawValue !== "object") return {};
-
-  const normalized: Record<string, DietDay> = {};
-  Object.entries(rawValue as Record<string, unknown>).forEach(([dayKey, dayValue], dayIndex) => {
-    const maybeDay = dayValue && typeof dayValue === "object" ? (dayValue as Partial<DietDay>) : {};
-    const dayDate =
-      typeof maybeDay.day_date === "string" && maybeDay.day_date.trim() ? maybeDay.day_date : dayKey;
-    const meals: DietMeal[] = (Array.isArray(maybeDay.meals) ? maybeDay.meals : []).map(
-      (mealRaw, mealIndex) => {
-        const maybeMeal = mealRaw && typeof mealRaw === "object" ? (mealRaw as Partial<DietMeal>) : {};
-        const items: DietItem[] = (Array.isArray(maybeMeal.items) ? maybeMeal.items : []).map(
-          (itemRaw, itemIndex) => {
-            const maybeItem = itemRaw && typeof itemRaw === "object" ? (itemRaw as Partial<DietItem>) : {};
-            return {
-              id:
-                typeof maybeItem.id === "string" && maybeItem.id
-                  ? maybeItem.id
-                  : uid(`food_${dayIndex}_${mealIndex}_${itemIndex}`),
-              title:
-                typeof maybeItem.title === "string" && maybeItem.title.trim()
-                  ? maybeItem.title.trim()
-                  : "Comida",
-              grams: normalizeDietNonNegativeNumber(maybeItem.grams),
-              calories_kcal: normalizeDietNonNegativeNumber(maybeItem.calories_kcal),
-              protein_g: normalizeDietNonNegativeNumber(maybeItem.protein_g),
-              carbs_g: normalizeDietNonNegativeNumber(maybeItem.carbs_g),
-              fat_g: normalizeDietNonNegativeNumber(maybeItem.fat_g),
-              image_uri: normalizeExerciseImageUri(maybeItem.image_uri),
-              catalog_link: normalizeCatalogLink(maybeItem.catalog_link, "legacy_unknown"),
-            };
-          },
-        );
-
-        return {
-          id:
-            typeof maybeMeal.id === "string" && maybeMeal.id
-              ? maybeMeal.id
-              : uid(`meal_${dayIndex}_${mealIndex}`),
-          title:
-            typeof maybeMeal.title === "string" && maybeMeal.title.trim()
-              ? maybeMeal.title.trim()
-              : `Comida ${mealIndex + 1}`,
-          items,
-        };
-      },
-    );
-
-    normalized[dayDate] = { day_date: dayDate, meals };
-  });
-
-  return normalized;
-}
-
 function createInitialStore(): LocalStore {
   const firstThreadId = uid("thread");
 
@@ -5125,7 +4857,7 @@ function normalizeStore(
   return {
     templates,
     workoutHistory: normalizedWorkoutHistory,
-    dietByDate: normalizeDietByDate(raw.dietByDate),
+    dietByDate: normalizeDietByDate(raw.dietByDate, uid),
     dietSettings: normalizedDietSettings,
     measurements: normalizedMeasurementsResult.value,
     threads: (raw.threads ?? []).map((thread, index) => ({
