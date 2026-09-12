@@ -1806,7 +1806,7 @@
         {
           "id": "GYM-160",
           "title": "Modularizar App.tsx por dominios y pantallas",
-          "state": "todo",
+          "state": "done",
           "summary": "Reducir el radio de impacto del componente monolítico extrayendo dominios, transportes y pantallas testeables.",
           "dependsOn": [],
           "related": [
