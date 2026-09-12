@@ -1,4 +1,5 @@
 export { DesktopSidebar, TabTitle } from "./AppShell";
+export { ExerciseCatalogDetailOverlay } from "./CatalogOverlays";
 export { ChatScreen } from "./ChatScreen";
 export { DietHeader, DietMealsScreen } from "./DietScreen";
 export { HomeScreen } from "./HomeScreen";
