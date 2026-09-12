@@ -22,6 +22,7 @@ import {
 } from "react-native";
 
 import { mobileTheme } from "./theme";
+import { DesktopSidebar, TabTitle } from "./screens";
 import {
   APP_PLATFORM_SERVICES,
   type PlatformAudioSound,
@@ -3331,59 +3332,6 @@ function parseFoodEstimatorNutritionJSON(rawValue: string): {
   return null;
 }
 
-function TabTitle({ children }: { children: string }) {
-  return (
-    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 30, fontWeight: "700" }}>
-      {children}
-    </Text>
-  );
-}
-
-function StatCard({ label, value, subtitle, subtitleColor, icon, subtitleIcon, onPress, testID }: {
-  label: string;
-  value: string;
-  subtitle?: string;
-  subtitleColor?: string;
-  icon?: React.ReactNode;
-  subtitleIcon?: React.ReactNode;
-  onPress?: () => void;
-  testID?: string;
-}) {
-  const content = (
-    <View
-      testID={testID}
-      style={{
-        flex: 1,
-        minHeight: 94,
-        borderWidth: 1,
-        borderColor: mobileTheme.color.borderSubtle,
-        backgroundColor: mobileTheme.color.bgSurface,
-        borderRadius: 18,
-        padding: 12,
-        gap: 4,
-      }}
-    >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-        {icon}
-        <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>{label}</Text>
-      </View>
-      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 17, fontWeight: "700" }}>{value}</Text>
-      {subtitle ? (
-        <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 5, marginTop: "auto" }}>
-          {subtitleIcon}
-          <Text style={{ color: subtitleColor ?? "#7F8896", fontSize: 11, fontWeight: subtitleColor ? "700" : "400", flex: 1 }}>
-            {subtitle}
-          </Text>
-        </View>
-      ) : null}
-    </View>
-  );
-  if (onPress) {
-    return <Pressable onPress={onPress} style={{ flex: 1 }}>{content}</Pressable>;
-  }
-  return content;
-}
-
 function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: string; onPress: () => void; disabled?: boolean; icon?: React.ReactNode; testID?: string }) {
   return (
     <Pressable
@@ -3406,99 +3354,6 @@ function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: stri
       {icon}
       <Text style={{ color: "#06090D", fontWeight: "700" }}>{label}</Text>
     </Pressable>
-  );
-}
-
-function DesktopSidebar({ tab, onTabChange }: { tab: TabKey; onTabChange: (tab: TabKey) => void }) {
-  return (
-    <View
-      style={{
-        width: 246,
-        flexShrink: 0,
-        paddingHorizontal: 18,
-        paddingVertical: 24,
-        gap: 26,
-        borderRightWidth: 1,
-        borderRightColor: mobileTheme.color.borderSubtle,
-        backgroundColor: "#0A0E14",
-      }}
-    >
-      <View style={{ paddingHorizontal: 10, gap: 5 }}>
-        <Text
-          style={{
-            color: mobileTheme.color.brandPrimary,
-            fontSize: 23,
-            fontWeight: "900",
-            letterSpacing: 3,
-          }}
-        >
-          GYMNASIA
-        </Text>
-        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, letterSpacing: 1.4 }}>
-          LOCAL-FIRST FITNESS
-        </Text>
-      </View>
-
-      <View style={{ gap: 8 }}>
-        {TAB_DESTINATIONS.map(({ key, desktopIcon, desktopTestId, label }) => {
-          const active = tab === key;
-          return (
-            <Pressable
-              key={key}
-              onPress={() => onTabChange(key)}
-              testID={desktopTestId}
-              accessibilityLabel={label}
-              accessibilityRole="button"
-              style={{
-                minHeight: 48,
-                borderRadius: 12,
-                paddingHorizontal: 12,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 12,
-                backgroundColor: active ? "rgba(203,255,26,0.12)" : "transparent",
-                borderWidth: 1,
-                borderColor: active ? "rgba(203,255,26,0.38)" : "transparent",
-              }}
-            >
-              <Ionicons
-                name={desktopIcon as keyof typeof Ionicons.glyphMap}
-                size={19}
-                color={active ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary}
-              />
-              <Text
-                style={{
-                  color: active ? mobileTheme.color.textPrimary : mobileTheme.color.textSecondary,
-                  fontSize: 14,
-                  fontWeight: active ? "800" : "600",
-                }}
-              >
-                {label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-
-      <View
-        style={{
-          marginTop: "auto",
-          borderWidth: 1,
-          borderColor: "rgba(203,255,26,0.22)",
-          borderRadius: 14,
-          backgroundColor: "rgba(203,255,26,0.06)",
-          padding: 12,
-          gap: 5,
-        }}
-      >
-        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "800", letterSpacing: 1 }}>
-          LOCAL-FIRST
-        </Text>
-        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 17 }}>
-          Tu progreso se queda en este navegador.
-        </Text>
-      </View>
-    </View>
   );
 }
 

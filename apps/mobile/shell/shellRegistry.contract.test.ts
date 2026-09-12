@@ -7,6 +7,7 @@ import {
 } from "./shellRegistry";
 
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const appShellSource = readFileSync(new URL("../screens/AppShell.tsx", import.meta.url), "utf8");
 const chatScreenSource = readFileSync(new URL("../screens/ChatScreen.tsx", import.meta.url), "utf8");
 const measurementsScreenSource = readFileSync(
   new URL("../screens/MeasurementsScreen.tsx", import.meta.url),
@@ -25,7 +26,7 @@ const trainingOverlaysSource = readFileSync(
   new URL("../screens/TrainingOverlays.tsx", import.meta.url),
   "utf8",
 );
-const shellUiSource = `${appSource}\n${chatScreenSource}\n${measurementsScreenSource}\n${dietScreenSource}\n${settingsScreenSource}\n${trainingScreenSource}\n${trainingOverlaysSource}`;
+const shellUiSource = `${appSource}\n${appShellSource}\n${chatScreenSource}\n${measurementsScreenSource}\n${dietScreenSource}\n${settingsScreenSource}\n${trainingScreenSource}\n${trainingOverlaysSource}`;
 const reportModalSource = readFileSync(new URL("../AiResponseReportModal.tsx", import.meta.url), "utf8");
 const recoverySource = readFileSync(new URL("../LocalStoreRecoveryScreen.tsx", import.meta.url), "utf8");
 
@@ -39,7 +40,7 @@ describe("contrato estático del shell", () => {
   });
 
   it("deriva las dos barras de TAB_DESTINATIONS", () => {
-    expect(appSource.match(/TAB_DESTINATIONS\.map/g)).toHaveLength(2);
+    expect(shellUiSource.match(/TAB_DESTINATIONS\.map/g)).toHaveLength(2);
     expect(appSource).not.toContain('["home", "training", "diet", "measures", "chat", "settings"]');
     expect(appSource).toContain("type TabKey,");
     expect(appSource).not.toContain('type TabKey = "home"');
