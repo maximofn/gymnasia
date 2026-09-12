@@ -3,7 +3,9 @@
 GYM-232 (ticket para migrar toda generación de Google a Interactions sin guardar
 conversaciones remotas) incluye chat, asistentes de alimentos, extracción JSON y
 evaluación sanitaria opcional. Las peticiones llevan `store: false` y nunca
-`previous_interaction_id`. El transporte es Fetch en web y XHR en Android/iOS.
+`previous_interaction_id`. El transporte es Fetch en web y XHR incremental en
+Android/iOS. Si el XHR nativo falla antes de entregar contenido visible, la app
+repite la petición una vez con XHR almacenado completo, sin eventos de progreso.
 
 ## Contrato y regresiones
 
@@ -45,8 +47,12 @@ siguiente antes de cerrar el ticket.
 - Inventario y política legal: comprobaciones y suites correctas; versión `2026-09-v2`.
 - Servidor de Android: comprobados por HTTP catálogo, SSE con replays y rechazo de
   `store: true`. Esta prueba no sustituye el recorrido de React Native.
-- Pendiente: XHR en Android real. `adb devices -l` no encontró dispositivos en esta
-  sesión. No se ejecutaron peticiones a un modelo real ni una build EAS.
+- Android real, APK v1.42.0: el XHR incremental falló antes de entregar contenido
+  y mostró «No se pudo conectar con Google AI». La clave, el endpoint y el cuerpo
+  completo del chat sí respondieron con SSE 200 en peticiones reales desde el host.
+  El dispositivo no estaba conectado por ADB, por lo que no se obtuvo la excepción
+  de OkHttp. Se añadió la recuperación almacenada y queda pendiente validarla en
+  una nueva build Android.
 - Antes de distribuir: completar Android y publicar los HTML de privacidad en
   `gymnasia-web`, siguiendo `docs/legal/privacy-change-checklist.md`.
 
