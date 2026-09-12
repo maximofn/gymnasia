@@ -9,6 +9,7 @@ export {
   MemorySettingsPanel,
   MeasurementsSettingsPanel,
   NotificationSettingsPanel,
+  PersonalFoodsSettingsPanel,
   PreferencesSettingsPanel,
   ProductsSettingsPanel,
   ProviderSettingsPanel,

@@ -17,6 +17,8 @@ import {
   SETTINGS_TAB_OPTIONS,
   type NotificationSettingsActions,
   type NotificationSettingsModel,
+  type PersonalFoodsSettingsActions,
+  type PersonalFoodsSettingsModel,
   type ProviderSettingsActions,
   type ProviderSettingsModel,
   type SettingsTabsActions,
@@ -149,6 +151,336 @@ export const SettingsTabs = memo(function SettingsTabs({
         >
           <Ionicons name="chevron-forward" size={20} color="rgba(244,247,251,0.85)" />
         </Pressable>
+      ) : null}
+    </View>
+  );
+});
+
+export const PersonalFoodsSettingsPanel = memo(function PersonalFoodsSettingsPanel({
+  model,
+  actions,
+  assistant,
+}: {
+  model: Readonly<PersonalFoodsSettingsModel>;
+  actions: Readonly<PersonalFoodsSettingsActions>;
+  assistant: ReactNode;
+}) {
+  return (
+    <View style={{ gap: 12 }}>
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        <Pressable
+          onPress={actions.openForm}
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            borderWidth: 1,
+            borderColor: "rgba(203,255,26,0.45)",
+            borderRadius: mobileTheme.radius.md,
+            paddingVertical: 10,
+            backgroundColor: "rgba(203,255,26,0.08)",
+          }}
+        >
+          <Feather name="edit-3" size={14} color={mobileTheme.color.brandPrimary} />
+          <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>
+            Añadir con formulario
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Añadir un alimento personal con Gymnasia Food Estimator"
+          testID="open-personal-food-assistant"
+          onPress={actions.openAssistant}
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            borderWidth: 1,
+            borderColor: "rgba(78,205,196,0.45)",
+            borderRadius: mobileTheme.radius.md,
+            paddingVertical: 10,
+            backgroundColor: "rgba(78,205,196,0.08)",
+          }}
+        >
+          <Feather name="cpu" size={14} color="#4ECDC4" />
+          <Text style={{ color: "#4ECDC4", fontSize: 13, fontWeight: "700" }}>
+            Añadir con IA
+          </Text>
+        </Pressable>
+      </View>
+
+      {assistant}
+
+      {model.formVisible ? (
+        <View
+          testID={shellSurfaceTestId("personal-food-form")}
+          style={{
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+            backgroundColor: mobileTheme.color.bgSurface,
+            borderRadius: mobileTheme.radius.lg,
+            padding: 12,
+            gap: 10,
+          }}
+        >
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>
+              {model.editingFoodId ? "Editar alimento" : "Nuevo alimento"}
+            </Text>
+            <Pressable onPress={actions.closeForm} style={{ padding: 4 }}>
+              <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
+            </Pressable>
+          </View>
+          {[
+            { key: "name", label: "Nombre", placeholder: "Ej: Batido de proteínas", keyboard: "default" as const },
+            { key: "category", label: "Categoría", placeholder: "Ej: proteína, receta, suplemento", keyboard: "default" as const },
+            { key: "calories_per_100g", label: "Calorías (por unidad base)", placeholder: "kcal", keyboard: "decimal-pad" as const },
+            { key: "protein_per_100g", label: "Proteína (g)", placeholder: "g", keyboard: "decimal-pad" as const },
+            { key: "carbs_per_100g", label: "Carbohidratos (g)", placeholder: "g", keyboard: "decimal-pad" as const },
+            { key: "fat_per_100g", label: "Grasa (g)", placeholder: "g", keyboard: "decimal-pad" as const },
+            { key: "fiber_per_100g", label: "Fibra (g)", placeholder: "g", keyboard: "decimal-pad" as const },
+            { key: "serving_size_g", label: "Tamaño de ración (g/ml)", placeholder: "Ej: 250", keyboard: "decimal-pad" as const },
+            { key: "serving_description", label: "Descripción de ración", placeholder: "Ej: 1 batido (250ml)", keyboard: "default" as const },
+          ].map((field) => (
+            <View key={field.key} style={{ gap: 2 }}>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600" }}>
+                {field.label}
+              </Text>
+              <TextInput
+                value={String(model.draft[field.key as keyof typeof model.draft] ?? "")}
+                onChangeText={(text) => actions.updateDraft(field.key as keyof typeof model.draft, text)}
+                placeholder={field.placeholder}
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                keyboardType={field.keyboard}
+                style={{
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  borderRadius: mobileTheme.radius.md,
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
+                  color: mobileTheme.color.textPrimary,
+                  fontSize: 14,
+                  backgroundColor: mobileTheme.color.cardBg,
+                }}
+              />
+            </View>
+          ))}
+          <Pressable
+            onPress={actions.saveDraft}
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              paddingVertical: 10,
+              borderRadius: mobileTheme.radius.md,
+              backgroundColor: mobileTheme.color.brandPrimary,
+              marginTop: 4,
+            }}
+          >
+            <Text style={{ color: "#000", fontSize: 14, fontWeight: "700" }}>
+              {model.editingFoodId ? "Guardar cambios" : "Añadir"}
+            </Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          borderWidth: 1,
+          borderColor: mobileTheme.color.borderSubtle,
+          borderRadius: mobileTheme.radius.md,
+          backgroundColor: mobileTheme.color.bgSurface,
+          paddingHorizontal: 10,
+          height: 40,
+        }}
+      >
+        <Feather name="search" size={16} color={mobileTheme.color.textSecondary} />
+        <TextInput
+          value={model.search}
+          onChangeText={actions.setSearch}
+          placeholder="Buscar alimento personal..."
+          placeholderTextColor={mobileTheme.color.textSecondary}
+          style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 14, marginLeft: 8 }}
+        />
+        {model.search ? (
+          <Pressable onPress={() => actions.setSearch("")} style={{ padding: 4 }}>
+            <Feather name="x" size={16} color={mobileTheme.color.textSecondary} />
+          </Pressable>
+        ) : null}
+      </View>
+
+      <View
+        style={{
+          borderWidth: 1,
+          borderColor: mobileTheme.color.borderSubtle,
+          backgroundColor: mobileTheme.color.bgSurface,
+          borderRadius: mobileTheme.radius.lg,
+          padding: 12,
+          gap: 10,
+        }}
+      >
+        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>
+          Mis alimentos ({model.foods.length})
+        </Text>
+        {model.filteredFoods.length === 0 ? (
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+            {model.foods.length === 0 ? "No has añadido alimentos personales." : "No se encontraron alimentos."}
+          </Text>
+        ) : model.filteredFoods.map((food) => (
+          <Pressable
+            key={food.id}
+            onPress={() => actions.selectFood(food)}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 10,
+              paddingVertical: 6,
+              borderBottomWidth: 1,
+              borderBottomColor: mobileTheme.color.borderSubtle,
+            }}
+          >
+            <View
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                backgroundColor: "rgba(78,205,196,0.1)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Feather name="user" size={16} color="#4ECDC4" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>
+                {food.name}
+              </Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                {food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g
+              </Text>
+            </View>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>
+              {food.category}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
+      {model.selectedFood ? (
+        <View
+          testID={shellSurfaceTestId("settings-personal-food-detail")}
+          style={{
+            backgroundColor: mobileTheme.color.cardBg,
+            borderRadius: 12,
+            padding: 16,
+            gap: 12,
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+          }}
+        >
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>
+              {model.selectedFood.name}
+            </Text>
+            <Pressable onPress={actions.closeDetail} style={{ padding: 4 }}>
+              <Feather name="x" size={20} color={mobileTheme.color.textSecondary} />
+            </Pressable>
+          </View>
+
+          <View style={{ flexDirection: "row", gap: 6 }}>
+            <View style={{ backgroundColor: mobileTheme.color.accent + "22", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+              <Text style={{ color: mobileTheme.color.accent, fontSize: 11, fontWeight: "600" }}>
+                {model.selectedFood.category}
+              </Text>
+            </View>
+          </View>
+
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>
+            Por unidad base
+          </Text>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            {[
+              { label: "Calorías", value: `${model.selectedFood.calories_per_100g}`, unit: "kcal", color: "#FF6B6B" },
+              { label: "Proteína", value: `${model.selectedFood.protein_per_100g}`, unit: "g", color: "#4ECDC4" },
+              { label: "Carbos", value: `${model.selectedFood.carbs_per_100g}`, unit: "g", color: "#FFE66D" },
+              { label: "Grasa", value: `${model.selectedFood.fat_per_100g}`, unit: "g", color: "#FF8A5C" },
+            ].map((macro) => (
+              <View
+                key={macro.label}
+                style={{
+                  flex: 1,
+                  backgroundColor: macro.color + "15",
+                  borderRadius: 8,
+                  padding: 8,
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>{macro.value}</Text>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.unit}</Text>
+                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.label}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{model.selectedFood.fiber_per_100g}g</Text>
+          </View>
+
+          {model.selectedFood.serving_description ? (
+            <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Ración típica</Text>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{model.selectedFood.serving_description}</Text>
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                {Math.round(model.selectedFood.calories_per_100g * model.selectedFood.serving_size_g / 100)} kcal · P:{(model.selectedFood.protein_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g · C:{(model.selectedFood.carbs_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g · G:{(model.selectedFood.fat_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g
+              </Text>
+            </View>
+          ) : null}
+
+          <View style={{ flexDirection: "row", gap: 8, marginTop: 4 }}>
+            <Pressable
+              onPress={actions.editSelectedFood}
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                paddingVertical: 10,
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+              }}
+            >
+              <Feather name="edit-2" size={14} color={mobileTheme.color.textSecondary} />
+              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Editar</Text>
+            </Pressable>
+            <Pressable
+              onPress={actions.deleteSelectedFood}
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                paddingVertical: 10,
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: "#FF6B6B44",
+                backgroundColor: "#FF6B6B10",
+              }}
+            >
+              <Feather name="trash-2" size={14} color="#FF6B6B" />
+              <Text style={{ color: "#FF6B6B", fontSize: 13, fontWeight: "600" }}>Eliminar</Text>
+            </Pressable>
+          </View>
+        </View>
       ) : null}
     </View>
   );

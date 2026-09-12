@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import type { PersonalDataField } from "../agent/personalData";
 import type {
@@ -19,6 +19,7 @@ import type {
 } from "../diet/model";
 import type { DietMacroMode, NutritionValidationIssue } from "../diet/nutritionContract";
 import type { Measurement } from "../measurements/measurementContract";
+import { normalizePersonalFood } from "../catalogs/sources";
 import type { CatalogSearchAvailability, FoodCatalogEntry } from "../catalogs/types";
 import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
 import type { NotificationSoundKey } from "../notifications/notificationSounds";
@@ -290,6 +291,195 @@ export function useSettingsTabsController(
   );
   const back = useMemo(() => ({ layers: {}, handlers: {} }), []);
 
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
+
+export type PersonalFoodsSettingsModel = {
+  foods: ReadonlyArray<FoodCatalogEntry>;
+  filteredFoods: ReadonlyArray<FoodCatalogEntry>;
+  search: string;
+  formVisible: boolean;
+  draft: Readonly<Partial<FoodCatalogEntry>>;
+  editingFoodId: string | null;
+  assistantVisible: boolean;
+  selectedFood: Readonly<FoodCatalogEntry> | null;
+};
+
+export type PersonalFoodsSettingsActions = {
+  openForm(): void;
+  openAssistant(): void;
+  closeAssistant(): void;
+  addFromAssistant(result: Record<string, unknown>): void;
+  closeForm(): void;
+  updateDraft(field: keyof FoodCatalogEntry, value: string): void;
+  saveDraft(): void;
+  setSearch(value: string): void;
+  selectFood(food: FoodCatalogEntry): void;
+  closeDetail(): void;
+  editSelectedFood(): void;
+  deleteSelectedFood(): void;
+  closeAll(): void;
+};
+
+export type PersonalFoodsSettingsControllerInput = {
+  foods: ReadonlyArray<FoodCatalogEntry>;
+  updateFoods(updater: (previous: FoodCatalogEntry[]) => FoodCatalogEntry[]): void;
+  createFoodId(): string;
+};
+
+export function usePersonalFoodsSettingsController(
+  input: PersonalFoodsSettingsControllerInput,
+): ScreenController<
+  PersonalFoodsSettingsModel,
+  PersonalFoodsSettingsActions,
+  "personal-food-ai-chat" | "personal-food-form" | "settings-personal-food-detail"
+> {
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const [search, setSearch] = useState("");
+  const [formVisible, setFormVisible] = useState(false);
+  const [draft, setDraft] = useState<Partial<FoodCatalogEntry>>({});
+  const [editingFoodId, setEditingFoodId] = useState<string | null>(null);
+  const [assistantVisible, setAssistantVisible] = useState(false);
+  const [selectedFood, setSelectedFood] = useState<FoodCatalogEntry | null>(null);
+  const selectedFoodRef = useRef(selectedFood);
+  selectedFoodRef.current = selectedFood;
+  const draftRef = useRef(draft);
+  draftRef.current = draft;
+  const editingFoodIdRef = useRef(editingFoodId);
+  editingFoodIdRef.current = editingFoodId;
+
+  const filteredFoods = useMemo(() => {
+    if (!search) return input.foods;
+    const normalizedSearch = search.toLowerCase();
+    return input.foods.filter((food) => (
+      food.name.toLowerCase().includes(normalizedSearch)
+      || food.category.toLowerCase().includes(normalizedSearch)
+    ));
+  }, [input.foods, search]);
+
+  const actions = useMemo<PersonalFoodsSettingsActions>(() => ({
+    openForm: () => {
+      setDraft({});
+      setEditingFoodId(null);
+      setFormVisible(true);
+      setSelectedFood(null);
+      setAssistantVisible(false);
+    },
+    openAssistant: () => {
+      setAssistantVisible(true);
+      setFormVisible(false);
+      setSelectedFood(null);
+    },
+    closeAssistant: () => setAssistantVisible(false),
+    addFromAssistant: (result) => {
+      const entry = normalizePersonalFood({
+        id: inputRef.current.createFoodId(),
+        name: String(result.name ?? ""),
+        category: String(result.category ?? "otro"),
+        calories_per_100g: Number(result.calories_per_100g) || 0,
+        protein_per_100g: Number(result.protein_per_100g) || 0,
+        carbs_per_100g: Number(result.carbs_per_100g) || 0,
+        fat_per_100g: Number(result.fat_per_100g) || 0,
+        fiber_per_100g: Number(result.fiber_per_100g) || 0,
+        serving_size_g: Number(result.serving_size_g) || 100,
+        serving_description: String(result.serving_description ?? ""),
+      });
+      inputRef.current.updateFoods((previous) => [...previous, entry]);
+      setAssistantVisible(false);
+    },
+    closeForm: () => setFormVisible(false),
+    updateDraft: (field, value) => setDraft((previous) => ({ ...previous, [field]: value })),
+    saveDraft: () => {
+      const currentDraft = draftRef.current;
+      if (!currentDraft.name?.trim()) return;
+      const currentEditingId = editingFoodIdRef.current;
+      const entry = normalizePersonalFood({
+        id: currentEditingId ?? inputRef.current.createFoodId(),
+        name: currentDraft.name.trim(),
+        category: currentDraft.category?.trim() ?? "otro",
+        calories_per_100g: Number(currentDraft.calories_per_100g) || 0,
+        protein_per_100g: Number(currentDraft.protein_per_100g) || 0,
+        carbs_per_100g: Number(currentDraft.carbs_per_100g) || 0,
+        fat_per_100g: Number(currentDraft.fat_per_100g) || 0,
+        fiber_per_100g: Number(currentDraft.fiber_per_100g) || 0,
+        serving_size_g: Number(currentDraft.serving_size_g) || 100,
+        serving_description: currentDraft.serving_description?.trim() ?? "",
+      });
+      inputRef.current.updateFoods((previous) => currentEditingId
+        ? previous.map((food) => (food.id === currentEditingId ? entry : food))
+        : [...previous, entry]);
+      setFormVisible(false);
+      setDraft({});
+      setEditingFoodId(null);
+    },
+    setSearch,
+    selectFood: (food) => {
+      setSelectedFood(food);
+      setFormVisible(false);
+    },
+    closeDetail: () => setSelectedFood(null),
+    editSelectedFood: () => {
+      const food = selectedFoodRef.current;
+      if (!food) return;
+      setDraft({
+        name: food.name,
+        category: food.category,
+        calories_per_100g: food.calories_per_100g,
+        protein_per_100g: food.protein_per_100g,
+        carbs_per_100g: food.carbs_per_100g,
+        fat_per_100g: food.fat_per_100g,
+        fiber_per_100g: food.fiber_per_100g,
+        serving_size_g: food.serving_size_g,
+        serving_description: food.serving_description,
+      });
+      setEditingFoodId(food.id);
+      setFormVisible(true);
+      setSelectedFood(null);
+    },
+    deleteSelectedFood: () => {
+      const food = selectedFoodRef.current;
+      if (!food) return;
+      inputRef.current.updateFoods((previous) => previous.filter((entry) => entry.id !== food.id));
+      setSelectedFood(null);
+    },
+    closeAll: () => {
+      setSelectedFood(null);
+      setFormVisible(false);
+      setAssistantVisible(false);
+    },
+  }), []);
+  const model = useMemo<PersonalFoodsSettingsModel>(() => ({
+    foods: input.foods,
+    filteredFoods,
+    search,
+    formVisible,
+    draft,
+    editingFoodId,
+    assistantVisible,
+    selectedFood,
+  }), [
+    assistantVisible,
+    draft,
+    editingFoodId,
+    filteredFoods,
+    formVisible,
+    input.foods,
+    search,
+    selectedFood,
+  ]);
+  const back = useMemo(() => ({
+    layers: {
+      "personal-food-ai-chat": assistantVisible,
+      "personal-food-form": formVisible,
+      "settings-personal-food-detail": selectedFood !== null,
+    },
+    handlers: {
+      "personal-food-ai-chat": () => { setAssistantVisible(false); return true; },
+      "personal-food-form": () => { setFormVisible(false); return true; },
+      "settings-personal-food-detail": () => { setSelectedFood(null); return true; },
+    },
+  }), [assistantVisible, formVisible, selectedFood]);
   return useMemo(() => ({ model, actions, back }), [actions, back, model]);
 }
 
