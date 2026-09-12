@@ -14,3 +14,4 @@ export {
   SettingsTabs,
   TrainingSettingsPanel,
 } from "./SettingsScreen";
+export { TrainingHistoryScreen, WorkoutHistoryEntryCard } from "./TrainingScreen";

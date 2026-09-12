@@ -17,7 +17,11 @@ const settingsScreenSource = readFileSync(
   new URL("../screens/SettingsScreen.tsx", import.meta.url),
   "utf8",
 );
-const shellUiSource = `${appSource}\n${chatScreenSource}\n${measurementsScreenSource}\n${dietScreenSource}\n${settingsScreenSource}`;
+const trainingScreenSource = readFileSync(
+  new URL("../screens/TrainingScreen.tsx", import.meta.url),
+  "utf8",
+);
+const shellUiSource = `${appSource}\n${chatScreenSource}\n${measurementsScreenSource}\n${dietScreenSource}\n${settingsScreenSource}\n${trainingScreenSource}`;
 const reportModalSource = readFileSync(new URL("../AiResponseReportModal.tsx", import.meta.url), "utf8");
 const recoverySource = readFileSync(new URL("../LocalStoreRecoveryScreen.tsx", import.meta.url), "utf8");
 
