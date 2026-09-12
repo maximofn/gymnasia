@@ -343,9 +343,10 @@ import {
   type LocalStoreRuntime,
 } from "./persistence/localStoreRuntime";
 import { useChatController } from "./controllers/chatController";
+import { useDietController } from "./controllers/dietController";
 import { useHomeController } from "./controllers/homeController";
 import { useMeasurementsController } from "./controllers/measurementsController";
-import { ChatScreen, HomeScreen, MeasurementsScreen } from "./screens";
+import { ChatScreen, DietHeader, HomeScreen, MeasurementsScreen } from "./screens";
 import {
   AiResponseReportAction,
   AiResponseReportModal,
@@ -5911,7 +5912,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     dietDailyCaloriesTarget > 0 ? dayCaloriesConsumed / dietDailyCaloriesTarget : 0;
   const dayCaloriesPercent =
     dietDailyCaloriesTarget > 0 ? Math.round(Math.min((dayCaloriesConsumed / dietDailyCaloriesTarget) * 100, 999)) : 0;
-  const dietMacroOverview = [
+  const dietMacroOverview = useMemo(() => [
     {
       key: "protein",
       label: "Proteína",
@@ -5933,7 +5934,59 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       total: fatDailyTargetGrams,
       accent: "#4D84FF",
     },
-  ];
+  ], [
+    carbsDailyTargetGrams,
+    dayCarbsConsumed,
+    dayFatConsumed,
+    dayProteinConsumed,
+    fatDailyTargetGrams,
+    proteinDailyTargetGrams,
+  ]);
+  const dietController = useDietController({
+    dateLabel: dietDateLabel,
+    dateContextLabel: dietDateContextLabel,
+    selectedDate: selectedDietDate,
+    datePickerOpen: showDietDatePicker,
+    isWeb: Platform.OS === "web",
+    isIos: Platform.OS === "ios",
+    caloriesConsumed: dayCaloriesConsumed,
+    caloriesTarget: dietDailyCaloriesTarget,
+    caloriesProgress: dayCaloriesProgress,
+    caloriesPercent: dayCaloriesPercent,
+    macroOverview: dietMacroOverview,
+    exceededBudgetCalories: savedDietPlanEvaluation.budgetStatus === "exceeded"
+      ? savedDietPlanEvaluation.excessCalories
+      : null,
+    foodCatalogAmbiguityOpen: pendingFoodResolution !== null,
+    foodEstimatorOpen: foodEstimatorModalOpen,
+    copyConfirmationOpen: dietCopyModal !== null,
+    copyDatePickerOpen: dietCopyPickCategory !== null,
+    itemMenuOpen: dietItemMenu !== null,
+    mealEditorOpen: dietMealEditorCategory !== null,
+    captureHeaderHeight: (height) => {
+      if (dietScrollYValueRef.current <= 1 && height > 0) setDietHeaderHeight(height);
+    },
+    changeDay: changeDietDateBy,
+    toggleDatePicker: () => setShowDietDatePicker((previous) => !previous),
+    changeWebDate: (value) => {
+      const parsed = new Date(`${value}T12:00:00`);
+      if (!Number.isNaN(parsed.getTime())) setSelectedDietDate(value);
+    },
+    changeNativeDate: (eventType, date) => {
+      if (Platform.OS === "android") setShowDietDatePicker(false);
+      if (eventType === "dismissed" || !date) return;
+      resetDietMealEditorState();
+      setSelectedDietDate(isoDateFromDate(date));
+      setError(null);
+    },
+    closeFoodCatalogAmbiguity: () => setPendingFoodResolution(null),
+    closeFoodEstimator: closeFoodEstimatorModal,
+    closeCopyConfirmation: () => setDietCopyModal(null),
+    closeCopyDatePicker: closeDietCopyPicker,
+    closeDatePicker: () => setShowDietDatePicker(false),
+    closeItemMenu: () => setDietItemMenu(null),
+    closeMealEditor: resetDietMealEditorState,
+  });
   const orderedDietMeals = DIET_MEAL_CATEGORIES.map((category) => {
     const existing = dietDay.meals.find((meal) => meal.title === category);
     return (
@@ -6397,8 +6450,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "training-partial-finish": confirmPartialSessionFinish,
     "workout-completion": workoutCompletionModal !== null,
     "workout-discard-confirmation": confirmDiscardSession,
-    "food-catalog-ambiguity": pendingFoodResolution !== null,
-    "food-estimator": foodEstimatorModalOpen,
+    "food-catalog-ambiguity": dietController.back.layers["food-catalog-ambiguity"],
+    "food-estimator": dietController.back.layers["food-estimator"],
     "body-fat-info": measurementsController.back.layers["body-fat-info"],
     "custom-exercise-form": customExerciseFormOpen,
     "exercise-picker": exercisePickerOpen,
@@ -6409,9 +6462,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "measurement-entry": measurementsController.back.layers["measurement-entry"],
     "byok-explanation": chatController.back.layers["byok-explanation"],
     "provider-delete": providerDeleteModal !== null,
-    "diet-copy-confirmation": dietCopyModal !== null,
-    "diet-copy-date-picker": dietCopyPickCategory !== null,
-    "diet-date-picker": showDietDatePicker,
+    "diet-copy-confirmation": dietController.back.layers["diet-copy-confirmation"],
+    "diet-copy-date-picker": dietController.back.layers["diet-copy-date-picker"],
+    "diet-date-picker": dietController.back.layers["diet-date-picker"],
     "birth-date-picker": showBirthDatePicker,
     "measurement-date-picker": measurementsController.back.layers["measurement-date-picker"],
     "measurements-history-expanded": measurementsController.back.layers["measurements-history-expanded"],
@@ -6429,14 +6482,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "measures-metric-dropdown": measurementsController.back.layers["measures-metric-dropdown"],
     "training-period-dropdown": trainingStatsPeriodDropdownOpen,
     "training-metric-dropdown": trainingStatsMetricDropdownOpen,
-    "diet-item-menu": dietItemMenu !== null,
+    "diet-item-menu": dietController.back.layers["diet-item-menu"],
     "training-template-menu": trainingMenuTemplateId !== null,
     "training-exercise-menu": activeExerciseMenuId !== null,
     "training-series-menu": activeSeriesMenuId !== null,
     "settings-food-detail": selectedFoodDetail !== null,
     "settings-product-detail": selectedProductDetail !== null,
     "settings-personal-food-detail": selectedPersonalFoodDetail !== null,
-    "diet-meal-editor": dietMealEditorCategory !== null,
+    "diet-meal-editor": dietController.back.layers["diet-meal-editor"],
   } satisfies ShellLayerState;
   const shellTrainingTemplateRoute: ShellTemplateRoute = !activeTrainingTemplateId
     ? "closed"
@@ -6453,8 +6506,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "training-partial-finish": () => { setConfirmPartialSessionFinish(false); return true; },
     "workout-completion": () => { closeWorkoutCompletionModal(); return true; },
     "workout-discard-confirmation": () => { setConfirmDiscardSession(false); return true; },
-    "food-catalog-ambiguity": () => { setPendingFoodResolution(null); return true; },
-    "food-estimator": () => { closeFoodEstimatorModal(); return true; },
+    "food-catalog-ambiguity": dietController.back.handlers["food-catalog-ambiguity"],
+    "food-estimator": dietController.back.handlers["food-estimator"],
     "body-fat-info": measurementsController.back.handlers["body-fat-info"],
     "custom-exercise-form": () => { setCustomExerciseFormOpen(false); return true; },
     "exercise-picker": () => { closeExercisePicker(); return true; },
@@ -6465,9 +6518,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "measurement-entry": measurementsController.back.handlers["measurement-entry"],
     "byok-explanation": chatController.back.handlers["byok-explanation"],
     "provider-delete": () => { closeProviderDeleteModal(); return true; },
-    "diet-copy-confirmation": () => { setDietCopyModal(null); return true; },
-    "diet-copy-date-picker": () => { closeDietCopyPicker(); return true; },
-    "diet-date-picker": () => { setShowDietDatePicker(false); return true; },
+    "diet-copy-confirmation": dietController.back.handlers["diet-copy-confirmation"],
+    "diet-copy-date-picker": dietController.back.handlers["diet-copy-date-picker"],
+    "diet-date-picker": dietController.back.handlers["diet-date-picker"],
     "birth-date-picker": () => { setShowBirthDatePicker(false); return true; },
     "measurement-date-picker": measurementsController.back.handlers["measurement-date-picker"],
     "measurements-history-expanded": measurementsController.back.handlers["measurements-history-expanded"],
@@ -6485,14 +6538,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "measures-metric-dropdown": measurementsController.back.handlers["measures-metric-dropdown"],
     "training-period-dropdown": () => { setTrainingStatsPeriodDropdownOpen(false); return true; },
     "training-metric-dropdown": () => { setTrainingStatsMetricDropdownOpen(false); return true; },
-    "diet-item-menu": () => { setDietItemMenu(null); return true; },
+    "diet-item-menu": dietController.back.handlers["diet-item-menu"],
     "training-template-menu": () => { setTrainingMenuTemplateId(null); return true; },
     "training-exercise-menu": () => { setActiveExerciseMenuId(null); return true; },
     "training-series-menu": () => { setActiveSeriesMenuId(null); return true; },
     "settings-food-detail": () => { setSelectedFoodDetail(null); return true; },
     "settings-product-detail": () => { setSelectedProductDetail(null); return true; },
     "settings-personal-food-detail": () => { setSelectedPersonalFoodDetail(null); return true; },
-    "diet-meal-editor": () => { resetDietMealEditorState(); return true; },
+    "diet-meal-editor": dietController.back.handlers["diet-meal-editor"],
     "request-template-discard": () => { setConfirmDiscardTemplateDraft(true); return true; },
     "close-training-template": () => {
       if (activeTrainingTemplateMode === "edit") closeTrainingTemplateEditor();
@@ -13303,185 +13356,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         ) : (
         <View style={{ flex: 1 }}>
         {tab === "diet" ? (
-          <View
-            onLayout={(e) => {
-              // Only capture the height while expanded (pinned at top); collapsed
-              // measurements during scroll must not shrink the content's paddingTop.
-              if (dietScrollYValueRef.current <= 1) {
-                const h = e.nativeEvent.layout.height;
-                if (h > 0) setDietHeaderHeight(h);
-              }
-            }}
-            style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 20, paddingHorizontal: mobileTheme.spacing[4], paddingTop: 4, paddingBottom: 8, backgroundColor: mobileTheme.color.bgApp, overflow: "hidden" }}
-          >
-            {/* Date selector — slides up and fades out */}
-            <Animated.View style={{
-              opacity: dietScrollY.interpolate({ inputRange: [0, 50], outputRange: [1, 0], extrapolate: "clamp" }),
-              maxHeight: dietScrollY.interpolate({ inputRange: [0, 70], outputRange: [200, 0], extrapolate: "clamp" }),
-              transform: [{ translateY: dietScrollY.interpolate({ inputRange: [0, 70], outputRange: [0, -20], extrapolate: "clamp" }) }],
-            }}>
-              <View style={{ gap: 8 }}>
-                <View style={{ minHeight: 56, flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <Pressable
-                    onPress={() => changeDietDateBy(-1)}
-                    style={{ width: 34, height: 34, borderRadius: 999, alignItems: "center", justifyContent: "center" }}
-                  >
-                    <Feather name="chevron-left" size={20} color={mobileTheme.color.textSecondary} />
-                  </Pressable>
-                  <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 15, fontWeight: "700" }}>{dietDateLabel}</Text>
-                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "700" }}>{dietDateContextLabel}</Text>
-                  </View>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                    <Pressable
-                      onPress={() => changeDietDateBy(1)}
-                      style={{ width: 34, height: 34, borderRadius: 999, alignItems: "center", justifyContent: "center" }}
-                    >
-                      <Feather name="chevron-right" size={20} color={mobileTheme.color.textSecondary} />
-                    </Pressable>
-                    <Pressable
-                      testID="diet-date-picker-toggle"
-                      onPress={() => setShowDietDatePicker((prev) => !prev)}
-                      style={{ width: 34, height: 34, borderRadius: 999, alignItems: "center", justifyContent: "center" }}
-                    >
-                      <Ionicons name="calendar-outline" size={18} color={mobileTheme.color.textSecondary} />
-                    </Pressable>
-                  </View>
-                </View>
-                {showDietDatePicker ? (
-                  Platform.OS === "web" ? (
-                    <TextInput
-                      testID={shellSurfaceTestId("diet-date-picker")}
-                      value={selectedDietDate}
-                      onChangeText={(text) => {
-                        const parsed = new Date(text + "T12:00:00");
-                        if (!isNaN(parsed.getTime())) setSelectedDietDate(text);
-                      }}
-                      placeholder="AAAA-MM-DD"
-                      placeholderTextColor={mobileTheme.color.textSecondary}
-                      style={{
-                        minHeight: 44, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle,
-                        borderRadius: 12, backgroundColor: mobileTheme.color.bgApp,
-                        color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 14,
-                      }}
-                    />
-                  ) : (
-                    <View
-                      testID={shellSurfaceTestId("diet-date-picker")}
-                      style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgSurface, padding: 8, gap: 8 }}
-                    >
-                      <DateTimePicker value={dateFromISO(selectedDietDate)} mode="date" display={Platform.OS === "ios" ? "inline" : "default"} onChange={onDietDateChange} />
-                      {Platform.OS === "ios" ? (
-                        <Pressable
-                          onPress={() => setShowDietDatePicker(false)}
-                          style={{ height: 38, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center" }}
-                        >
-                          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>Cerrar calendario</Text>
-                        </Pressable>
-                      ) : null}
-                    </View>
-                  )
-                ) : null}
-              </View>
-            </Animated.View>
-
-            {/* Macros card — compacts to bars only */}
-            <Animated.View style={{
-              borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: 18,
-              paddingHorizontal: 14,
-              paddingVertical: dietScrollY.interpolate({ inputRange: [0, 120], outputRange: [14, 8], extrapolate: "clamp" }),
-              gap: dietScrollY.interpolate({ inputRange: [0, 120], outputRange: [10, 6], extrapolate: "clamp" }),
-              marginTop: dietScrollY.interpolate({ inputRange: [0, 70], outputRange: [8, 0], extrapolate: "clamp" }),
-            }}>
-              {/* Calories text + percentage circle — fades out */}
-              <Animated.View style={{
-                flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start",
-                opacity: dietScrollY.interpolate({ inputRange: [40, 100], outputRange: [1, 0], extrapolate: "clamp" }),
-                maxHeight: dietScrollY.interpolate({ inputRange: [40, 120], outputRange: [60, 0], extrapolate: "clamp" }),
-                overflow: "hidden",
-              }}>
-                <View>
-                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "800" }}>
-                    {formatNutritionNumber(dayCaloriesConsumed)}/{formatNutritionNumber(dietDailyCaloriesTarget)}
-                  </Text>
-                  <Text style={{ color: mobileTheme.color.textSecondary, marginTop: -2 }}>kcal consumidas</Text>
-                </View>
-                <View style={{ width: 56, height: 56, borderRadius: 999, backgroundColor: "rgba(203,255,26,0.2)", alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ color: mobileTheme.color.brandPrimary, fontWeight: "800", fontSize: 14 }}>{dayCaloriesPercent}%</Text>
-                </View>
-              </Animated.View>
-              {/* Calories bar — always visible, overflow shown in red */}
-              <View style={{ height: 8, borderRadius: mobileTheme.radius.pill, backgroundColor: "rgba(255,255,255,0.09)", overflow: "hidden", flexDirection: "row" }}>
-                {dayCaloriesProgress > 1 ? (
-                  <>
-                    <View style={{ height: "100%", width: `${(1 / dayCaloriesProgress) * 100}%`, backgroundColor: mobileTheme.color.brandPrimary }} />
-                    <View style={{ height: "100%", flex: 1, backgroundColor: "#FF4444" }} />
-                  </>
-                ) : (
-                  <View style={{ height: "100%", width: `${Math.max(0, dayCaloriesProgress * 100)}%`, backgroundColor: mobileTheme.color.brandPrimary, borderRadius: mobileTheme.radius.pill }} />
-                )}
-              </View>
-              {/* Macro bars */}
-              <View style={{ flexDirection: "row", gap: 10 }}>
-                {dietMacroOverview.map((macro) => {
-                  const progress = macro.total > 0 ? Math.max(0, macro.consumed / macro.total) : 0;
-                  return (
-                    <View key={macro.key} style={{ flex: 1, gap: 3 }}>
-                      {/* Macro text — fades out */}
-                      <Animated.View style={{
-                        opacity: dietScrollY.interpolate({ inputRange: [40, 100], outputRange: [1, 0], extrapolate: "clamp" }),
-                        maxHeight: dietScrollY.interpolate({ inputRange: [40, 120], outputRange: [50, 0], extrapolate: "clamp" }),
-                        overflow: "hidden",
-                        gap: 1,
-                      }}>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "800" }}>
-                          {formatNutritionNumber(macro.consumed)}/{formatNutritionNumber(macro.total)}g
-                        </Text>
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{macro.label}</Text>
-                          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                            {macro.total > 0 ? Math.round((macro.consumed / macro.total) * 100) : 0}%
-                          </Text>
-                        </View>
-                      </Animated.View>
-                      {/* Macro bar — always visible, uses accent color, overflow in red */}
-                      <View style={{ height: 5, borderRadius: mobileTheme.radius.pill, backgroundColor: "rgba(255,255,255,0.09)", overflow: "hidden", flexDirection: "row" }}>
-                        {progress > 1 ? (
-                          <>
-                            <View style={{ height: "100%", width: `${(1 / progress) * 100}%`, backgroundColor: macro.accent }} />
-                            <View style={{ height: "100%", flex: 1, backgroundColor: "#FF4444" }} />
-                          </>
-                        ) : (
-                          <View style={{ height: "100%", width: `${Math.max(0, progress * 100)}%`, backgroundColor: macro.accent, borderRadius: mobileTheme.radius.pill }} />
-                        )}
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
-              {savedDietPlanEvaluation.budgetStatus === "exceeded" ? (
-                <Animated.View
-                  testID="diet-saved-plan-budget-warning"
-                  accessibilityLiveRegion="polite"
-                  style={{
-                    opacity: dietScrollY.interpolate({ inputRange: [40, 100], outputRange: [1, 0], extrapolate: "clamp" }),
-                    maxHeight: dietScrollY.interpolate({ inputRange: [40, 120], outputRange: [48, 0], extrapolate: "clamp" }),
-                    overflow: "hidden",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,90,95,0.55)",
-                    backgroundColor: "rgba(255,90,95,0.08)",
-                    borderRadius: mobileTheme.radius.md,
-                    paddingHorizontal: 10,
-                    paddingVertical: 7,
-                  }}
-                >
-                  <Text style={{ color: "#FF8D8D", fontSize: 11, lineHeight: 16 }}>
-                    El plan de macros supera el objetivo diario en {savedDietPlanEvaluation.excessCalories.toFixed(0)} kcal.
-                  </Text>
-                </Animated.View>
-              ) : null}
-            </Animated.View>
-          </View>
+          <DietHeader
+            model={dietController.model}
+            actions={dietController.actions}
+            scrollY={dietScrollY}
+          />
         ) : null}
         <Animated.ScrollView
           ref={mainScrollRef as React.RefObject<ScrollView>}
