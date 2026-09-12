@@ -15,7 +15,11 @@ const sharedChatPanelSource = readFileSync(
   new URL("../screens/SharedChatPanel.tsx", import.meta.url),
   "utf8",
 );
-const conversationalUiSource = `${appSource}\n${chatScreenSource}\n${dietOverlaysSource}\n${sharedChatPanelSource}`;
+const personalFoodAssistantSource = readFileSync(
+  new URL("../screens/PersonalFoodAssistantScreen.tsx", import.meta.url),
+  "utf8",
+);
+const conversationalUiSource = `${appSource}\n${chatScreenSource}\n${dietOverlaysSource}\n${sharedChatPanelSource}\n${personalFoodAssistantSource}`;
 const disclosureSource = readFileSync(
   new URL("../AiIdentityDisclosure.tsx", import.meta.url),
   "utf8",

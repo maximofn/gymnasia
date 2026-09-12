@@ -387,6 +387,7 @@ import {
   NotificationSettingsPanel,
   NewRoutineButton,
   PersonalFoodsSettingsPanel,
+  PersonalFoodAssistantScreen,
   PreferencesSettingsPanel,
   ProductsSettingsPanel,
   ProviderSettingsPanel,
@@ -3487,155 +3488,35 @@ function MiniChat({
   const detectedJson = lastAssistantMsg ? extractJson(lastAssistantMsg.content) : null;
 
   return (
-    <View
+    <PersonalFoodAssistantScreen
       testID={testID}
-      style={{
-        borderWidth: 1,
-        borderColor: mobileTheme.color.borderSubtle,
-        backgroundColor: mobileTheme.color.bgSurface,
-        borderRadius: mobileTheme.radius.lg,
-        padding: 12,
-        gap: 10,
+      scrollRef={mcScrollRef}
+      model={{
+        providerLabel,
+        title,
+        contextLabel,
+        messages: mcMessages,
+        sending: mcSending,
+        input: mcInput,
+        detectedJson,
+        canAddResult: onJsonResult !== undefined,
       }}
-    >
-      <View>
-        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10, marginBottom: 2 }}>{providerLabel}</Text>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <View style={{ flex: 1, minWidth: 0 }}>
-            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>{title}</Text>
-            {contextLabel ? (
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 2 }}>{contextLabel}</Text>
-            ) : null}
-          </View>
-          <Pressable
-            onPress={() => { setMcMessages([createAiIdentityChatMessage("msg", "personal-food-assistant")]); setMcInput(""); onClose(); }}
-            accessibilityLabel="Cerrar Gymnasia Food Estimator"
-            accessibilityRole="button"
-            style={{ padding: 4 }}
-          >
-            <Feather name="x" size={18} color={mobileTheme.color.textSecondary} />
-          </Pressable>
-        </View>
-      </View>
-
-      <ScrollView
-        ref={mcScrollRef}
-        testID="chat-message-list-personal-food-assistant"
-        style={{ maxHeight: 320 }}
-        onContentSizeChange={() => mcScrollRef.current?.scrollToEnd({ animated: true })}
-      >
-        <View style={{ marginBottom: 8 }}>
-          <AiIdentityDisclosure surface="personal-food-assistant" />
-        </View>
-        {mcMessages.map((msg) => (
-          msg.kind === "health_safety_intervention" ? (
-            <View key={msg.id} style={{ marginBottom: 8, gap: 6 }}>
-              <HealthSafetyNotice content={msg.content} metadata={msg.health_safety} compact />
-              <AiResponseReportAction
-                message={msg}
-                onPress={() => onReportMessage(msg, mcMessages)}
-              />
-            </View>
-          ) : (
-            <View
-              key={msg.id}
-              testID={msg.kind === AI_DISCLOSURE_MESSAGE_KIND ? "ai-intro-message-personal-food-assistant" : undefined}
-              style={{
-                alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-                maxWidth: "85%",
-                marginBottom: 8,
-                borderRadius: 10,
-                padding: 10,
-                backgroundColor: msg.role === "user" ? "rgba(203,255,26,0.1)" : mobileTheme.color.cardBg,
-                borderWidth: 1,
-                borderColor: msg.kind === "technical_error"
-                  ? "rgba(255,122,122,0.55)"
-                  : msg.role === "user" ? "rgba(203,255,26,0.25)" : mobileTheme.color.borderSubtle,
-              }}
-            >
-              <Text style={{ color: msg.kind === "technical_error" ? "#FF8A8A" : mobileTheme.color.textPrimary, fontSize: 13, lineHeight: 19 }}>
-                {msg.content}
-              </Text>
-              {isReportableAssistantMessage(msg) ? (
-                <View style={{ marginTop: 7 }}>
-                  <AiResponseReportAction
-                    message={msg}
-                    onPress={() => onReportMessage(msg, mcMessages)}
-                  />
-                </View>
-              ) : null}
-            </View>
-          )
-        ))}
-        {mcSending ? (
-          <View style={{ alignSelf: "flex-start", marginBottom: 8 }}>
-            <ActivityIndicator size="small" color={mobileTheme.color.brandPrimary} />
-          </View>
-        ) : null}
-      </ScrollView>
-
-      {detectedJson && onJsonResult ? (
-        <Pressable
-          onPress={() => { onJsonResult(detectedJson); setMcMessages([createAiIdentityChatMessage("msg", "personal-food-assistant")]); setMcInput(""); }}
-          accessibilityLabel="Añadir resultado a mis alimentos"
-          accessibilityRole="button"
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-            paddingVertical: 10,
-            borderRadius: mobileTheme.radius.md,
-            backgroundColor: mobileTheme.color.brandPrimary,
-          }}
-        >
-          <Feather name="plus-circle" size={16} color="#000" />
-          <Text style={{ color: "#000", fontSize: 14, fontWeight: "700" }}>Añadir a mis alimentos</Text>
-        </Pressable>
-      ) : null}
-
-      <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
-        <TextInput
-          testID="personal-food-assistant-input"
-          value={mcInput}
-          onChangeText={setMcInput}
-          placeholder="Ej: tortilla de patatas..."
-          accessibilityLabel="Pregunta a Gymnasia Food Estimator sobre un alimento"
-          placeholderTextColor={mobileTheme.color.textSecondary}
-          onSubmitEditing={sendMcMessage}
-          multiline
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderColor: mobileTheme.color.borderSubtle,
-            borderRadius: mobileTheme.radius.md,
-            paddingHorizontal: 10,
-            paddingVertical: 8,
-            color: mobileTheme.color.textPrimary,
-            fontSize: 14,
-            backgroundColor: mobileTheme.color.cardBg,
-            maxHeight: 120,
-          }}
-        />
-        <Pressable
-          testID="personal-food-assistant-send"
-          onPress={sendMcMessage}
-          disabled={mcSending || !mcInput.trim()}
-          accessibilityLabel="Enviar mensaje a Gymnasia Food Estimator"
-          accessibilityRole="button"
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: 14,
-            borderRadius: mobileTheme.radius.md,
-            backgroundColor: mcSending || !mcInput.trim() ? "#333" : mobileTheme.color.brandPrimary,
-          }}
-        >
-          <Feather name="send" size={16} color={mcSending || !mcInput.trim() ? "#666" : "#000"} />
-        </Pressable>
-      </View>
-      <AiIdentityPersistentDisclosure surface="personal-food-assistant" />
-    </View>
+      actions={{
+        close: () => {
+          setMcMessages([createAiIdentityChatMessage("msg", "personal-food-assistant")]);
+          setMcInput("");
+          onClose();
+        },
+        reportMessage: onReportMessage,
+        addResult: (result) => {
+          onJsonResult?.(result);
+          setMcMessages([createAiIdentityChatMessage("msg", "personal-food-assistant")]);
+          setMcInput("");
+        },
+        changeInput: setMcInput,
+        send: () => { void sendMcMessage(); },
+      }}
+    />
   );
 }
 

@@ -5,6 +5,7 @@ export { DietHeader, DietMealsScreen } from "./DietScreen";
 export { DietResolutionOverlays, FoodEstimatorOverlay } from "./DietOverlays";
 export { HomeScreen } from "./HomeScreen";
 export { MeasurementsOverlays, MeasurementsScreen } from "./MeasurementsScreen";
+export { PersonalFoodAssistantScreen } from "./PersonalFoodAssistantScreen";
 export { SharedChatPanel } from "./SharedChatPanel";
 export {
   BackupImportConfirmation,
