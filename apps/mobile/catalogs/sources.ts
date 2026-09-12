@@ -11,6 +11,7 @@ import type { CatalogDefinition } from "./runtime";
 
 const REPOSITORY_URL = "https://github.com/maximofn/gymnasia";
 const RAW_BASE_URL = "https://raw.githubusercontent.com/maximofn/gymnasia/main";
+export const EXERCISE_CATALOG_IMAGE_BASE_URL = `${RAW_BASE_URL}/ejercicios`;
 
 export const LEGACY_FOOD_SOURCE_IDS = {
   alimento: "gymnasia_foods",
@@ -130,5 +131,5 @@ export function exerciseCatalogImageUri(
   gender: "male" | "female",
 ): string {
   const imagePath = gender === "female" ? entry.image_female : entry.image_male;
-  return `${RAW_BASE_URL}/ejercicios/${imagePath}`;
+  return `${EXERCISE_CATALOG_IMAGE_BASE_URL}/${imagePath}`;
 }
