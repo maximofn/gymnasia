@@ -24,4 +24,4 @@ export {
   TrainingSettingsPanel,
 } from "./SettingsScreen";
 export { TrainingDetailScreen, TrainingEditorScreen, TrainingHistoryScreen, TrainingListScreen, TrainingSessionScreen, WorkoutHistoryEntryCard } from "./TrainingScreen";
-export { TrainingCatalogOverlays, TrainingExerciseDetailOverlay, TrainingResolutionOverlays } from "./TrainingOverlays";
+export { ActiveSessionMiniBar, TrainingCatalogOverlays, TrainingExerciseDetailOverlay, TrainingResolutionOverlays } from "./TrainingOverlays";
