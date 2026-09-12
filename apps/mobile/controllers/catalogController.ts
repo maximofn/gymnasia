@@ -9,7 +9,11 @@ import {
   readCatalogCache,
   refreshCatalog,
 } from "../catalogs/runtime";
-import { FOOD_CATALOG_DEFINITIONS } from "../catalogs/sources";
+import {
+  FOOD_CATALOG_DEFINITIONS,
+  PERSONAL_FOODS_SOURCE_DEFINITION,
+  normalizePersonalFood,
+} from "../catalogs/sources";
 import type {
   CatalogSearchAvailability,
   CatalogSnapshot,
@@ -109,4 +113,70 @@ export function useFoodCatalogRuntime(input: {
   }), [snapshots]);
 
   return useMemo(() => ({ foods, availability, retry }), [availability, foods, retry]);
+}
+
+export function usePersonalFoodsRuntime(input: {
+  isHydrated: boolean;
+  services: AppPlatformServices;
+  isRuntimeBlocked(): boolean;
+}): {
+  foods: FoodCatalogEntry[];
+  update(updater: (previous: FoodCatalogEntry[]) => FoodCatalogEntry[]): void;
+  replace(foods: FoodCatalogEntry[]): void;
+} {
+  const [foods, setFoods] = useState<FoodCatalogEntry[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+  const inputRef = useRef(input);
+  inputRef.current = input;
+
+  useEffect(() => {
+    if (!input.isHydrated || input.isRuntimeBlocked()) return;
+    let cancelled = false;
+    void input.services.storage.getItem(PERSONAL_FOODS_SOURCE_DEFINITION.cacheKey)
+      .then((raw) => {
+        if (cancelled) return;
+        if (!raw) {
+          setFoods([]);
+          setHydrated(true);
+          return;
+        }
+        const value: unknown = JSON.parse(raw);
+        const loaded = Array.isArray(value)
+          ? value.flatMap((entry) => {
+              if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
+              const {
+                sourceId: _sourceId,
+                source: _source,
+                ...rawEntry
+              } = entry as Record<string, unknown>;
+              return normalizePersonalFood(rawEntry as unknown as FoodCatalogEntry);
+            })
+          : [];
+        setFoods(loaded);
+        setHydrated(true);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setFoods([]);
+        setHydrated(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [input.isHydrated, input.services.storage]);
+
+  useEffect(() => {
+    if (!input.isHydrated || !hydrated || input.isRuntimeBlocked()) return;
+    input.services.storage.setItem(
+      PERSONAL_FOODS_SOURCE_DEFINITION.cacheKey,
+      JSON.stringify(foods),
+    ).catch(() => {});
+  }, [foods, hydrated, input.isHydrated, input.services.storage]);
+
+  const update = useCallback(
+    (updater: (previous: FoodCatalogEntry[]) => FoodCatalogEntry[]) => setFoods(updater),
+    [],
+  );
+  const replace = useCallback((nextFoods: FoodCatalogEntry[]) => setFoods(nextFoods), []);
+  return useMemo(() => ({ foods, update, replace }), [foods, replace, update]);
 }

@@ -131,7 +131,6 @@ import {
 } from "./catalogs/runtime";
 import {
   EXERCISE_CATALOG_SOURCE,
-  PERSONAL_FOODS_SOURCE_DEFINITION,
   exerciseCatalogImageUri,
   foodCatalogImageUri,
   normalizePersonalFood,
@@ -310,7 +309,10 @@ import {
   useLocalStoreRuntime,
   type LocalStoreRuntime,
 } from "./persistence/localStoreRuntime";
-import { useFoodCatalogRuntime } from "./controllers/catalogController";
+import {
+  useFoodCatalogRuntime,
+  usePersonalFoodsRuntime,
+} from "./controllers/catalogController";
 import { useAiReportController, useChatController } from "./controllers/chatController";
 import { useDietController, useDietResolutionController } from "./controllers/dietController";
 import { useHomeController } from "./controllers/homeController";
@@ -864,7 +866,6 @@ const FOOD_ESTIMATOR_MAX_IMAGES = 6;
 
 const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
-const PERSONAL_FOODS_STORAGE_KEY = PERSONAL_FOODS_SOURCE_DEFINITION.cacheKey;
 const HEALTH_SAFETY_CONSENT_KEY = scopedStorageKey("gymnasia.mobile.health_safety.consent.v1");
 
 function createHealthSafetyConsentState(): HealthSafetyConsentState {
@@ -1048,28 +1049,6 @@ type FoodRepoEntry = FoodCatalogEntry;
 
 function foodRepoImageUri(entry: FoodRepoEntry | null | undefined): string | null {
   return foodCatalogImageUri(entry);
-}
-
-async function loadPersonalFoods(): Promise<FoodRepoEntry[]> {
-  try {
-    const raw = await AsyncStorage.getItem(PERSONAL_FOODS_STORAGE_KEY);
-    if (raw) {
-      const value: unknown = JSON.parse(raw);
-      if (!Array.isArray(value)) return [];
-      return value.flatMap((entry) => {
-        if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
-        const { sourceId: _sourceId, source: _source, ...rawEntry } = entry as Record<string, unknown>;
-        return normalizePersonalFood(rawEntry as unknown as FoodRepoEntry);
-      });
-    }
-    return [];
-  } catch {
-    return [];
-  }
-}
-
-async function savePersonalFoods(foods: FoodRepoEntry[]): Promise<void> {
-  await AsyncStorage.setItem(PERSONAL_FOODS_STORAGE_KEY, JSON.stringify(foods));
 }
 
 function findFoodInRepo(
@@ -3706,8 +3685,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [foodCategoryFilter, setFoodCategoryFilter] = useState("all");
   const [productSearch, setProductSearch] = useState("");
   const [selectedProductDetail, setSelectedProductDetail] = useState<FoodRepoEntry | null>(null);
-  const [personalFoods, setPersonalFoods] = useState<FoodRepoEntry[]>([]);
-  const [personalFoodsHydrated, setPersonalFoodsHydrated] = useState(false);
+  const personalFoodsRuntime = usePersonalFoodsRuntime({
+    isHydrated,
+    services: APP_PLATFORM_SERVICES,
+    isRuntimeBlocked: () => dataDeletionBusyRef.current,
+  });
+  const personalFoods = personalFoodsRuntime.foods;
   const foodCatalogRuntime = useFoodCatalogRuntime({
     isHydrated,
     services: APP_PLATFORM_SERVICES,
@@ -4199,7 +4182,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   });
   const personalFoodsSettingsController = usePersonalFoodsSettingsController({
     foods: personalFoods,
-    updateFoods: setPersonalFoods,
+    updateFoods: personalFoodsRuntime.update,
     createFoodId: () => uid("food"),
   });
   const traceSettingsController = useTraceSettingsController({
@@ -5970,11 +5953,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }).catch((catalogError) => {
       console.error("[Catalogs] exercise runtime failed:", catalogError);
     });
-    loadPersonalFoods().then((loadedPersonalFoods) => {
-      if (cancelled) return;
-      setPersonalFoods(loadedPersonalFoods);
-      setPersonalFoodsHydrated(true);
-    });
     readBackupMeta().then((meta) => setLastBackupAt(meta.lastBackupAt));
     return () => { cancelled = true; };
   }, [isHydrated]);
@@ -6135,11 +6113,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const canonicalPrefs = normalizeUserPreferences(userPrefs).preferences;
     AsyncStorage.setItem(USER_PREFS_STORAGE_KEY, JSON.stringify(canonicalPrefs)).catch(() => {});
   }, [isHydrated, userPrefs]);
-
-  useEffect(() => {
-    if (!isHydrated || !personalFoodsHydrated || dataDeletionBusyRef.current) return;
-    savePersonalFoods(personalFoods).catch(() => {});
-  }, [isHydrated, personalFoods, personalFoodsHydrated]);
 
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;
@@ -7715,7 +7688,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }
       setUserPrefs(importedPrefs);
 
-      setPersonalFoods(Array.isArray(data.personalFoods)
+      personalFoodsRuntime.replace(Array.isArray(data.personalFoods)
         ? data.personalFoods.flatMap((entry) => {
             if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
             const { sourceId: _sourceId, source: _source, ...rawEntry } = entry as Record<string, unknown>;
