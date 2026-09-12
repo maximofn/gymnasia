@@ -338,7 +338,7 @@ import {
 import { useChatController } from "./controllers/chatController";
 import { useDietController, useDietResolutionController } from "./controllers/dietController";
 import { useHomeController } from "./controllers/homeController";
-import { useMeasurementsController } from "./controllers/measurementsController";
+import { useMeasurementsRuntime } from "./controllers/measurementsController";
 import {
   useTrainingDetailController,
   useTrainingCatalogController,
@@ -469,42 +469,11 @@ import {
   type DietMeal,
   type DietSettings,
   type GkgMacroKey,
-  type UserSex,
 } from "./diet/model";
 import {
-  MEASUREMENT_METRIC_KEYS,
-  buildPreparedMeasurementChartPoints,
-  deleteMeasurementById,
-  estimateMeasurementBodyFatPercentage,
-  formatMeasurementIssues,
-  localDateKey,
-  measurementDateAtLocalNoon,
-  measurementDuplicateDates,
   normalizeMeasurements as normalizeMeasurementCollection,
-  replaceMeasurementById,
-  prepareMeasurementHistory,
-  resolveMeasurementSummary,
-  upsertMeasurementByDate,
-  validateMeasurementDate,
-  validateMeasurementMetric,
   type Measurement,
-  type MeasurementMetricKey,
-  type MeasurementPatch,
-  type MeasurementValues,
 } from "./measurements/measurementContract";
-import { measurementPerformanceCounters } from "./measurements/measurementPerformance";
-import {
-  BODY_FAT_ZONES_FEMALE,
-  BODY_FAT_ZONES_MALE,
-  buildMeasurementHistorySummary,
-  buildMeasurementStatCard,
-  formatMeasurementDate,
-  formatMeasurementHistoryDate,
-  formatMeasurementNumber,
-  measurementDateFromSelection,
-  parseOptionalPositiveMetricInput,
-  parsePositiveNumberInput,
-} from "./measurements/presentationModel";
 import { verifyProviderConfiguration } from "./agent/providerVerification";
 import {
   DEFAULT_MODELS,
@@ -569,8 +538,6 @@ import {
   createDefaultUserPreferences,
   normalizeStoredUserPreferences,
   normalizeUserPreferences,
-  type MeasuresChartMetricKey,
-  type MeasuresDashboardPeriodKey,
   type NotificationSettings,
   type UserPreferences,
 } from "./storage/userPreferences";
@@ -603,9 +570,7 @@ import {
 } from "./backup/backupFormat";
 import {
   clearMeasurementMedia,
-  deleteOwnedMeasurementPhotoIfUnreferenced,
   isMeasurementMediaEmpty,
-  isOwnedMeasurementPhotoUri,
   measurementPhotoSha256,
   normalizeAndStoreMeasurementPhoto,
   readMeasurementPhotoForBackup,
@@ -1498,32 +1463,6 @@ const TRAINING_STATS_PERIOD_OPTIONS: Array<{ key: TrainingStatsPeriodKey; label:
   { key: "6m", label: "6 meses" },
   { key: "12m", label: "1 año" },
   { key: "all", label: "Todo" },
-];
-const MEASURES_DASHBOARD_PERIOD_OPTIONS: Array<{
-  key: MeasuresDashboardPeriodKey;
-  label: string;
-  days: number | null;
-}> = [
-  { key: "1m", label: "1 mes", days: 30 },
-  { key: "3m", label: "3 meses", days: 90 },
-  { key: "6m", label: "6 meses", days: 180 },
-  { key: "all", label: "Todo", days: null },
-];
-const MEASURES_CHART_METRIC_OPTIONS: Array<{
-  key: MeasuresChartMetricKey;
-  label: string;
-  unit: string;
-  field: keyof Measurement | null;
-}> = [
-  { key: "weight", label: "Peso", unit: "kg", field: "weight_kg" },
-  { key: "bodyFat", label: "% Grasa", unit: "%", field: "body_fat_pct" },
-  { key: "chest", label: "Pecho", unit: "cm", field: "chest_cm" },
-  { key: "waist", label: "Cintura", unit: "cm", field: "waist_cm" },
-  { key: "hips", label: "Cadera", unit: "cm", field: "hips_cm" },
-  { key: "biceps", label: "Brazo", unit: "cm", field: "biceps_cm" },
-  { key: "neck", label: "Cuello", unit: "cm", field: "neck_cm" },
-  { key: "quadriceps", label: "Cuádriceps", unit: "cm", field: "quadriceps_cm" },
-  { key: "calf", label: "Gemelo", unit: "cm", field: "calf_cm" },
 ];
 const TRAINING_STATS_METRIC_OPTIONS: Array<{
   key: TrainingStatsMetricKey;
@@ -3802,7 +3741,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [foodEstimatorMessages, setFoodEstimatorMessages] = useState<ChatMessage[]>([]);
   const [foodEstimatorInput, setFoodEstimatorInput] = useState("");
   const [foodEstimatorSending, setFoodEstimatorSending] = useState(false);
-  const [bodyFatInfoModalOpen, setBodyFatInfoModalOpen] = useState(false);
   const [foodEstimatorStatus, setFoodEstimatorStatus] = useState("");
   const foodThinkingLabel = useThinkingLabel(foodEstimatorSending);
   const [foodEstimatorExpandedThinking, setFoodEstimatorExpandedThinking] = useState<Record<string, boolean>>({});
@@ -3812,37 +3750,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   // the structured-extraction LLM re-infers food_type. Reset on each new session.
   const foodEstimatorUsedBarcodeRef = useRef(false);
   const foodEstimatorScrollRef = useRef<ScrollView>(null);
-  const [weightInput, setWeightInput] = useState("");
-  const [measurementPhotoUri, setMeasurementPhotoUri] = useState<string | null>(null);
-  const [measurementSaveBusy, setMeasurementSaveBusy] = useState(false);
-  const [measurementMediaNotice, setMeasurementMediaNotice] = useState<string | null>(null);
-  const [measurementDate, setMeasurementDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
-  const [showMeasurementDatePicker, setShowMeasurementDatePicker] = useState(false);
-  const [measurementDateTextInput, setMeasurementDateTextInput] = useState("");
-  const [measurementEntryScreenOpen, setMeasurementEntryScreenOpen] = useState(false);
-  const [editingMeasurementId, setEditingMeasurementId] = useState<string | null>(null);
   const [userPrefs, setUserPrefs] = useState<UserPreferences>(() => createDefaultUserPreferences());
   const [alarmHealth, setAlarmHealth] = useState<AlarmHealth>({ ...DEFAULT_ALARM_HEALTH });
   // null = aún no comprobado. Diferenciarlo de false evita alarmar al usuario
   // antes de saber nada.
   const [notifPermissionGranted, setNotifPermissionGranted] = useState<boolean | null>(null);
   const [restChannelImportance, setRestChannelImportance] = useState<number | null>(null);
-  const [measuresDashboardPeriod, setMeasuresDashboardPeriod] =
-    useState<MeasuresDashboardPeriodKey>("3m");
-  const [measuresDashboardPeriodDropdownOpen, setMeasuresDashboardPeriodDropdownOpen] = useState(false);
-  const [measuresChartMetric, setMeasuresChartMetric] = useState<MeasuresChartMetricKey>("weight");
-  const [measuresChartMetricDropdownOpen, setMeasuresChartMetricDropdownOpen] = useState(false);
-  const [showAllMeasurementsHistory, setShowAllMeasurementsHistory] = useState(false);
-  const [expandedPhotoUri, setExpandedPhotoUri] = useState<string | null>(null);
-  const [heightInput, setHeightInput] = useState("");
-  const [bodyFatInput, setBodyFatInput] = useState("");
-  const [neckInput, setNeckInput] = useState("");
-  const [chestInput, setChestInput] = useState("");
-  const [waistInput, setWaistInput] = useState("");
-  const [hipsInput, setHipsInput] = useState("");
-  const [bicepsInput, setBicepsInput] = useState("");
-  const [quadricepsInput, setQuadricepsInput] = useState("");
-  const [calfInput, setCalfInput] = useState("");
   const [settingsTab, setSettingsTab] = useState<SettingsTabKey>(
     deletionOutcome?.report.status === "incomplete" ? "data" : "diet",
   );
@@ -4197,119 +4110,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     selectOpenAIModel,
     selectGoogleModel,
   });
-  const measurementWork = measurementPerformanceCounters(RUNTIME_ENVIRONMENT.environment, Platform.OS);
-  const preparedMeasurements = useMemo(
-    () => prepareMeasurementHistory(store.measurements, measurementWork),
-    [store.measurements],
-  );
-  const { latestWeightMeasurement, latestHeightMeasurement } = preparedMeasurements;
-  const measurementDateConflicts = useMemo(
-    () => measurementDuplicateDates(store.measurements),
-    [store.measurements],
-  );
-  const latestBodyWeightKg = latestWeightMeasurement?.weight_kg ?? null;
-  const dietHeightCm = store.dietSettings.height_cm ? parseFloat(store.dietSettings.height_cm) : null;
-  const latestBodyHeightCm = latestHeightMeasurement?.height_cm ?? (Number.isFinite(dietHeightCm) && dietHeightCm! > 0 ? dietHeightCm : null);
-  const dietSettings = store.dietSettings;
-  const userSex: UserSex = store.dietSettings.sex ?? "male";
-  const measurementSummary = useMemo(
-    () => resolveMeasurementSummary(preparedMeasurements, latestBodyHeightCm, userSex, measurementWork),
-    [preparedMeasurements, latestBodyHeightCm, userSex],
-  );
-  const weightMeasurementPair = measurementSummary.weight_kg;
-  const measurementEntryFields = useMemo(() => ({
-    weight: weightInput,
-    bodyFat: bodyFatInput,
-    neck: neckInput,
-    chest: chestInput,
-    waist: waistInput,
-    hips: hipsInput,
-    biceps: bicepsInput,
-    quadriceps: quadricepsInput,
-    calf: calfInput,
-    height: heightInput,
-  }), [
-    bicepsInput,
-    bodyFatInput,
-    calfInput,
-    chestInput,
-    heightInput,
-    hipsInput,
-    neckInput,
-    quadricepsInput,
-    waistInput,
-    weightInput,
-  ]);
-  const measurementsController = useMeasurementsController({
-    measurements: store.measurements,
-    preparedMeasurements,
-    summary: measurementSummary,
-    effectiveHeightCm: latestBodyHeightCm,
-    sex: userSex,
-    measurementWork: measurementWork ?? undefined,
-    mediaNotice: measurementMediaNotice,
-    period: measuresDashboardPeriod,
-    metric: measuresChartMetric,
-    periodDropdownOpen: measuresDashboardPeriodDropdownOpen,
-    metricDropdownOpen: measuresChartMetricDropdownOpen,
-    showAllHistory: showAllMeasurementsHistory,
-    bodyFatInfoOpen: bodyFatInfoModalOpen,
-    expandedPhotoUri,
-    entryOpen: measurementEntryScreenOpen,
-    datePickerOpen: showMeasurementDatePicker,
-    editingMeasurementId,
-    saveBusy: measurementSaveBusy,
+  const measurementsRuntime = useMeasurementsRuntime({
+    localStore: localStoreRuntime,
+    services: APP_PLATFORM_SERVICES,
+    environment: RUNTIME_ENVIRONMENT.environment,
+    isHydrated,
     error,
-    latestWeightKg: latestBodyWeightKg,
-    latestHeightCm: latestBodyHeightCm,
-    latestWeightMeasuredOn: latestWeightMeasurement?.measured_on ?? null,
-    date: measurementDate,
-    dateTextInput: measurementDateTextInput,
-    isWeb: Platform.OS === "web",
-    isIos: Platform.OS === "ios",
-    photoUri: measurementPhotoUri,
-    entryFields: measurementEntryFields,
-    openEntry: openMeasurementEntryScreen,
-    setPeriodDropdownOpen: setMeasuresDashboardPeriodDropdownOpen,
-    selectPeriod: selectMeasuresDashboardPeriod,
-    setMetricDropdownOpen: setMeasuresChartMetricDropdownOpen,
-    selectMetric: selectMeasuresChartMetric,
-    setBodyFatInfoOpen: setBodyFatInfoModalOpen,
-    setShowAllHistory: setShowAllMeasurementsHistory,
-    editMeasurement: openMeasurementForEdit,
-    setExpandedPhotoUri,
-    closeEntry: closeMeasurementEntryScreen,
-    setDatePickerOpen: setShowMeasurementDatePicker,
-    saveEntry: () => { void addMeasurementFromSettings(); },
-    changeDateText: (value) => {
-      setMeasurementDateTextInput(value);
-      const validation = validateMeasurementDate(value);
-      if (validation.ok) setMeasurementDate(measurementDateAtLocalNoon(validation.value)!);
-    },
-    changeNativeDate: (eventType, selectedDate) => {
-      if (Platform.OS === "android") setShowMeasurementDatePicker(false);
-      if (eventType === "dismissed" || !selectedDate) return;
-      setMeasurementDate(measurementDateFromSelection(selectedDate));
-    },
-    pickPhoto: () => { void pickMeasurementPhoto(); },
-    takePhoto: () => { void takeMeasurementPhoto(); },
-    clearPhoto: () => setMeasurementPhotoUri(null),
-    changeEntryField: (field, value) => {
-      const setters = {
-        weight: setWeightInput,
-        bodyFat: setBodyFatInput,
-        neck: setNeckInput,
-        chest: setChestInput,
-        waist: setWaistInput,
-        hips: setHipsInput,
-        biceps: setBicepsInput,
-        quadriceps: setQuadricepsInput,
-        calf: setCalfInput,
-        height: setHeightInput,
-      };
-      setters[field](value);
-    },
+    setError,
+    preferences: userPrefs,
+    updatePreferences: setUserPrefs,
+    createId: () => uid("measurement"),
   });
+  const measurementsController = measurementsRuntime.controller;
+  const latestBodyWeightKg = measurementsRuntime.latestWeightKg;
+  const latestBodyHeightCm = measurementsRuntime.latestHeightCm;
+  const weightMeasurementPair = measurementsRuntime.weightSummary;
+  const dietSettings = store.dietSettings;
   const savedDietPlanEvaluation = useMemo(
     () => evaluateDietPlan(dietSettings, latestBodyWeightKg),
     [dietSettings, latestBodyWeightKg],
@@ -4745,10 +4561,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   });
   const measurementsSettingsController = useMeasurementsSettingsController({
     measurements: store.measurements,
-    duplicateDateCount: measurementDateConflicts.length,
-    addMeasurement: openMeasurementEntryScreen,
-    editMeasurement: openMeasurementForEdit,
-    deleteMeasurement: (id) => void deleteMeasurement(id),
+    duplicateDateCount: measurementsRuntime.duplicateDateCount,
+    addMeasurement: measurementsController.actions.openEntry,
+    editMeasurement: measurementsController.actions.editMeasurement,
+    deleteMeasurement: (id) => { void measurementsRuntime.deleteMeasurement(id); },
   });
   const foodCatalogSettingsController = useFoodCatalogSettingsController({
     foods: foodsRepo,
@@ -5644,12 +5460,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       loadMemoryFields();
     }
   }, [settingsTab, memoryLoaded]);
-
-  useEffect(() => {
-    if (heightInput.trim()) return;
-    if (!latestHeightMeasurement || latestHeightMeasurement.height_cm === null) return;
-    setHeightInput(formatMeasurementNumber(latestHeightMeasurement.height_cm));
-  }, [heightInput, latestHeightMeasurement]);
 
   useEffect(() => {
     if (tab !== "diet") return;
@@ -6574,8 +6384,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }
     }
     setUserPrefs(parsedPrefs);
-    setMeasuresDashboardPeriod(parsedPrefs.chartPeriod);
-    setMeasuresChartMetric(parsedPrefs.chartMetric);
     alarmHealthRef.current = parsedAlarmHealth;
     setAlarmHealth(parsedAlarmHealth);
     setHealthSafetyConsent(parsedHealthSafetyConsent);
@@ -6870,63 +6678,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setExerciseCatalogLoadingMore(false);
     }
   }
-
-  useEffect(() => {
-    if (!isHydrated) return;
-    let cancelled = false;
-
-    void (async () => {
-      const legacyPhotos = store.measurements.filter(
-        (measurement) => measurement.photo_uri && !isOwnedMeasurementPhotoUri(measurement.photo_uri),
-      );
-      if (legacyPhotos.length === 0) {
-        sweepOrphanedMeasurementPhotos(store.measurements.map((measurement) => measurement.photo_uri));
-        return;
-      }
-      if (Platform.OS === "web") {
-        setMeasurementMediaNotice(
-          "La vista web no puede garantizar que las fotos sigan disponibles después de cerrar el navegador. Exporta una copia para conservar los datos.",
-        );
-        return;
-      }
-
-      const migratedUris = new Map<string, string>();
-      let failedCount = 0;
-      for (const measurement of legacyPhotos) {
-        if (cancelled || !measurement.photo_uri) return;
-        try {
-          const photo = await normalizeAndStoreMeasurementPhoto(measurement.photo_uri);
-          if (photo.owned) migratedUris.set(measurement.id, photo.uri);
-          else failedCount += 1;
-        } catch {
-          failedCount += 1;
-        }
-      }
-      if (cancelled) return;
-      if (migratedUris.size > 0) {
-        setStore((previous) => {
-          const measurements = previous.measurements.map((measurement) => ({
-            ...measurement,
-            photo_uri: migratedUris.get(measurement.id) ?? measurement.photo_uri,
-          }));
-          setTimeout(
-            () => sweepOrphanedMeasurementPhotos(measurements.map((measurement) => measurement.photo_uri)),
-            0,
-          );
-          return { ...previous, measurements };
-        });
-      }
-      if (failedCount > 0) {
-        setMeasurementMediaNotice(
-          `No se pudieron copiar ${failedCount} foto(s) antigua(s). Las mediciones siguen intactas; revisa las fotos antes de exportar.`,
-        );
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isHydrated]);
 
   useEffect(() => {
     if (!isHydrated || providerSettingsInitializedRef.current) return;
@@ -7366,8 +7117,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   useEffect(() => {
     if (tab === "measures") return;
-    setMeasuresDashboardPeriodDropdownOpen(false);
-  }, [tab]);
+    if (measurementsController.back.layers["measures-period-dropdown"]) {
+      measurementsController.back.handlers["measures-period-dropdown"]();
+    }
+  }, [measurementsController.back, tab]);
 
   async function loadMemoryFields() {
     const fields = await loadPersonalData();
@@ -8593,8 +8346,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         });
       }
       setUserPrefs(importedPrefs);
-      setMeasuresDashboardPeriod(importedPrefs.chartPeriod);
-      setMeasuresChartMetric(importedPrefs.chartMetric);
 
       setPersonalFoods(Array.isArray(data.personalFoods)
         ? data.personalFoods.flatMap((entry) => {
@@ -9222,264 +8973,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ]);
     } finally {
       setFoodEstimatorSending(false); setFoodEstimatorStatus("");
-    }
-  }
-
-  function openMeasurementEntryScreen() {
-    setShowMeasurementDatePicker(false);
-    setMeasuresDashboardPeriodDropdownOpen(false);
-    setMeasurementEntryScreenOpen(true);
-    setMeasurementDateTextInput(localDateKey(new Date()));
-    setError(null);
-  }
-
-  function closeMeasurementEntryScreen() {
-    setShowMeasurementDatePicker(false);
-    setMeasurementEntryScreenOpen(false);
-    resetMeasurementForm();
-    setError(null);
-  }
-
-  function toggleMeasuresDashboardPeriodDropdown() {
-    setMeasuresDashboardPeriodDropdownOpen((current) => !current);
-  }
-
-  function selectMeasuresDashboardPeriod(periodKey: MeasuresDashboardPeriodKey) {
-    setMeasuresDashboardPeriod(periodKey);
-    setMeasuresDashboardPeriodDropdownOpen(false);
-    setUserPrefs((prev) => ({ ...prev, chartPeriod: periodKey }));
-  }
-
-  function toggleMeasuresChartMetricDropdown() {
-    setMeasuresChartMetricDropdownOpen((c) => !c);
-  }
-
-  function selectMeasuresChartMetric(key: MeasuresChartMetricKey) {
-    setMeasuresChartMetric(key);
-    setMeasuresChartMetricDropdownOpen(false);
-    setUserPrefs((prev) => ({ ...prev, chartMetric: key }));
-  }
-
-  async function pickMeasurementPhoto() {
-    try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permission.granted) {
-        setError("Necesitas permitir acceso a fotos para adjuntar una imagen.");
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-        exif: false,
-      });
-      if (result.canceled) return;
-
-      const asset = result.assets?.[0];
-      if (!asset?.uri) {
-        setError("No se pudo leer la foto seleccionada.");
-        return;
-      }
-      setMeasurementPhotoUri(asset.uri);
-      setError(null);
-    } catch {
-      setError("No se pudo abrir la galería para seleccionar foto.");
-    }
-  }
-
-  async function takeMeasurementPhoto() {
-    try {
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
-      if (!permission.granted) {
-        setError("Necesitas permitir acceso a la cámara para capturar fotos.");
-        return;
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.8,
-        exif: false,
-      });
-      if (result.canceled) return;
-
-      const asset = result.assets?.[0];
-      if (!asset?.uri) {
-        setError("No se pudo leer la foto capturada.");
-        return;
-      }
-      setMeasurementPhotoUri(asset.uri);
-      setError(null);
-    } catch {
-      setError("No se pudo abrir la cámara para capturar foto.");
-    }
-  }
-
-  function resetMeasurementForm() {
-    setWeightInput("");
-    setBodyFatInput("");
-    setMeasurementPhotoUri(null);
-    setHeightInput("");
-    setNeckInput("");
-    setChestInput("");
-    setWaistInput("");
-    setHipsInput("");
-    setBicepsInput("");
-    setQuadricepsInput("");
-    setCalfInput("");
-    setMeasurementDate(measurementDateFromSelection(new Date()));
-    setEditingMeasurementId(null);
-  }
-
-  function openMeasurementForEdit(m: Measurement) {
-    setWeightInput(m.weight_kg !== null ? String(m.weight_kg) : "");
-    setBodyFatInput(m.body_fat_pct !== null ? String(m.body_fat_pct) : "");
-    setHeightInput(m.height_cm !== null ? String(m.height_cm) : "");
-    setNeckInput(m.neck_cm !== null ? String(m.neck_cm) : "");
-    setChestInput(m.chest_cm !== null ? String(m.chest_cm) : "");
-    setWaistInput(m.waist_cm !== null ? String(m.waist_cm) : "");
-    setHipsInput(m.hips_cm !== null ? String(m.hips_cm) : "");
-    setBicepsInput(m.biceps_cm !== null ? String(m.biceps_cm) : "");
-    setQuadricepsInput(m.quadriceps_cm !== null ? String(m.quadriceps_cm) : "");
-    setCalfInput(m.calf_cm !== null ? String(m.calf_cm) : "");
-    setMeasurementPhotoUri(m.photo_uri ?? null);
-    const editDate = measurementDateAtLocalNoon(m.measured_on) ?? new Date(m.measured_at);
-    setMeasurementDate(editDate);
-    setMeasurementDateTextInput(m.measured_on);
-    setEditingMeasurementId(m.id);
-    setMeasurementEntryScreenOpen(true);
-    setError(null);
-  }
-
-  async function deleteMeasurement(id: string) {
-    let removedPhotoUri: string | null = null;
-    let referencedPhotoUris: Array<string | null> = [];
-    let mutationError: string | null = null;
-    try {
-      await commitLocalStoreMutation((previous) => {
-        const result = deleteMeasurementById(previous.measurements, id);
-        if (!result.ok) {
-          mutationError = formatMeasurementIssues(result.issues);
-          return previous;
-        }
-        removedPhotoUri = result.removed[0]?.photo_uri ?? null;
-        referencedPhotoUris = result.measurements.map((measurement) => measurement.photo_uri);
-        return { ...previous, measurements: result.measurements };
-      });
-      if (mutationError) {
-        setError(mutationError);
-        return;
-      }
-      deleteOwnedMeasurementPhotoIfUnreferenced(removedPhotoUri, referencedPhotoUris);
-      setError(null);
-    } catch (deleteError) {
-      setError(
-        deleteError instanceof Error
-          ? `No se ha eliminado la medición. ${deleteError.message}`
-          : "No se ha eliminado la medición.",
-      );
-    }
-  }
-
-  async function addMeasurementFromSettings() {
-    const metricInputs: Array<{
-      field: MeasurementMetricKey;
-      rawValue: string;
-      label: string;
-    }> = [
-      { field: "weight_kg", rawValue: weightInput, label: "peso" },
-      { field: "body_fat_pct", rawValue: bodyFatInput, label: "% grasa corporal" },
-      { field: "neck_cm", rawValue: neckInput, label: "contorno de cuello" },
-      { field: "chest_cm", rawValue: chestInput, label: "contorno de pecho" },
-      { field: "waist_cm", rawValue: waistInput, label: "contorno de cintura" },
-      { field: "hips_cm", rawValue: hipsInput, label: "contorno de cadera" },
-      { field: "biceps_cm", rawValue: bicepsInput, label: "bíceps" },
-      { field: "quadriceps_cm", rawValue: quadricepsInput, label: "cuádriceps" },
-      { field: "calf_cm", rawValue: calfInput, label: "gemelo" },
-      { field: "height_cm", rawValue: heightInput, label: "altura" },
-    ];
-    const values = {} as MeasurementValues;
-    const patch: MeasurementPatch = {};
-    for (const input of metricInputs) {
-      const result = parseOptionalPositiveMetricInput(input.field, input.rawValue);
-      if (result.invalid) {
-        setError(`Introduce un valor válido para ${input.label}.`);
-        return;
-      }
-      values[input.field] = result.value;
-      if (input.rawValue.trim()) patch[input.field] = result.value;
-    }
-
-    const hasAnyMetric =
-      MEASUREMENT_METRIC_KEYS.some((field) => values[field] !== null) ||
-      !!measurementPhotoUri;
-
-    if (!hasAnyMetric) {
-      setError("Añade al menos un dato de medida o una foto.");
-      return;
-    }
-
-    setMeasurementSaveBusy(true);
-    let portablePhotoUri = measurementPhotoUri;
-    let newlyOwnedPhotoUri: string | null = null;
-    try {
-      if (measurementPhotoUri) {
-        const currentPhotoUri = editingMeasurementId
-          ? store.measurements.find((measurement) => measurement.id === editingMeasurementId)?.photo_uri
-          : null;
-        if (measurementPhotoUri !== currentPhotoUri || !isOwnedMeasurementPhotoUri(measurementPhotoUri)) {
-          const photo = await normalizeAndStoreMeasurementPhoto(measurementPhotoUri);
-          portablePhotoUri = photo.uri;
-          if (photo.owned && photo.uri !== currentPhotoUri) newlyOwnedPhotoUri = photo.uri;
-        }
-      }
-
-      const dateKey = Platform.OS === "web"
-        ? measurementDateTextInput.trim()
-        : localDateKey(measurementDate);
-      const createdId = uid("measurement");
-      let mutationError: string | null = null;
-      let previousPhotoUris: Array<string | null> = [];
-      let referencedPhotoUris: Array<string | null> = [];
-      await commitLocalStoreMutation((previous) => {
-        const result = editingMeasurementId
-          ? replaceMeasurementById(previous.measurements, {
-              id: editingMeasurementId,
-              date: dateKey,
-              values,
-              photoUri: portablePhotoUri,
-            })
-          : upsertMeasurementByDate(previous.measurements, {
-              date: dateKey,
-              patch,
-              photoUri: portablePhotoUri ?? undefined,
-              createId: () => createdId,
-            });
-        if (!result.ok) {
-          mutationError = formatMeasurementIssues(result.issues);
-          return previous;
-        }
-        previousPhotoUris = previous.measurements.map((item) => item.photo_uri);
-        referencedPhotoUris = result.measurements.map((item) => item.photo_uri);
-        return { ...previous, measurements: result.measurements };
-      });
-      if (mutationError) {
-        deleteOwnedMeasurementPhotoIfUnreferenced(newlyOwnedPhotoUri, storeRef.current.measurements.map((item) => item.photo_uri));
-        setError(mutationError);
-        return;
-      }
-      for (const uri of previousPhotoUris) {
-        deleteOwnedMeasurementPhotoIfUnreferenced(uri, referencedPhotoUris);
-      }
-      closeMeasurementEntryScreen();
-    } catch (photoError) {
-      deleteOwnedMeasurementPhotoIfUnreferenced(newlyOwnedPhotoUri, storeRef.current.measurements.map((item) => item.photo_uri));
-      setError(
-        photoError instanceof Error
-          ? `No se ha guardado la medición. ${photoError.message}`
-          : "No se ha guardado la medición.",
-      );
-    } finally {
-      setMeasurementSaveBusy(false);
     }
   }
 

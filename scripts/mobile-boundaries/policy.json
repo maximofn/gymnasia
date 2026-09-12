@@ -48,7 +48,7 @@
     "controllers": ["controllers/chatController.ts", "controllers/dietController.ts", "controllers/homeController.ts", "controllers/measurementsController.ts", "controllers/settingsController.ts", "controllers/trainingController.ts", "controllers/types.ts"],
     "diet": ["diet/model.ts", "diet/nutritionContract.ts"],
     "measurements": ["measurements/measurementContract.ts", "measurements/measurementPerformance.ts", "measurements/presentationModel.ts"],
-    "persistence": ["persistence/localStoreModel.ts", "persistence/localStoreRecovery.ts", "persistence/localStoreRuntime.ts", "storage/userPreferences.ts"],
+    "persistence": ["backup/measurementMedia.ts", "persistence/localStoreModel.ts", "persistence/localStoreRecovery.ts", "persistence/localStoreRuntime.ts", "storage/userPreferences.ts"],
     "platform": ["platform/index.ts"],
     "screens": ["screens/index.ts"],
     "shell": ["shell/shellRegistry.ts"],

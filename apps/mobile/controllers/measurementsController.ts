@@ -1,28 +1,52 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import {
+  deleteOwnedMeasurementPhotoIfUnreferenced,
+  isOwnedMeasurementPhotoUri,
+  normalizeAndStoreMeasurementPhoto,
+  sweepOrphanedMeasurementPhotos,
+} from "../backup/measurementMedia";
 import { DIET_MONTH_LABELS_SHORT } from "../diet/model";
 import {
+  MEASUREMENT_METRIC_KEYS,
   buildPreparedMeasurementChartPoints,
+  deleteMeasurementById,
   estimateMeasurementBodyFatPercentage,
+  formatMeasurementIssues,
+  localDateKey,
   measurementDateAtLocalNoon,
   measurementDuplicateDates,
+  prepareMeasurementHistory,
+  replaceMeasurementById,
+  resolveMeasurementSummary,
+  upsertMeasurementByDate,
+  validateMeasurementDate,
   type Measurement,
   type MeasurementChartPoint,
+  type MeasurementMetricKey,
+  type MeasurementPatch,
   type MeasurementSex,
   type MeasurementSummary,
+  type MeasurementValues,
   type MeasurementWorkCounters,
   type PreparedMeasurementHistory,
 } from "../measurements/measurementContract";
+import { measurementPerformanceCounters } from "../measurements/measurementPerformance";
 import {
   buildMeasurementHistorySummary,
   buildMeasurementStatCard,
   formatMeasurementHistoryDate,
   formatMeasurementNumber,
+  measurementDateFromSelection,
+  parseOptionalPositiveMetricInput,
   type MeasurementStatCard,
 } from "../measurements/presentationModel";
+import type { LocalStoreRuntime } from "../persistence/localStoreRuntime";
+import type { AppPlatformServices } from "../platform";
 import type {
   MeasuresChartMetricKey,
   MeasuresDashboardPeriodKey,
+  UserPreferences,
 } from "../storage/userPreferences";
 import type { ScreenController } from "./types";
 
@@ -453,4 +477,484 @@ export function useMeasurementsController(
   const back = useMemo(() => ({ layers, handlers }), [handlers, layers]);
 
   return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
+
+export type MeasurementsRuntime = {
+  controller: ReturnType<typeof useMeasurementsController>;
+  latestWeightKg: number | null;
+  latestHeightCm: number | null;
+  weightSummary: MeasurementSummary["weight_kg"];
+  duplicateDateCount: number;
+  deleteMeasurement(id: string): Promise<void>;
+};
+
+type MeasurementsRuntimeInput = {
+  localStore: LocalStoreRuntime;
+  services: AppPlatformServices;
+  environment: string;
+  isHydrated: boolean;
+  error: string | null;
+  setError(message: string | null): void;
+  preferences: UserPreferences;
+  updatePreferences(mutator: (previous: UserPreferences) => UserPreferences): void;
+  createId(): string;
+};
+
+export function useMeasurementsRuntime(input: MeasurementsRuntimeInput): MeasurementsRuntime {
+  const store = input.localStore.store;
+  const platformOS = input.services.native.Platform.OS;
+  const [weightInput, setWeightInput] = useState("");
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [saveBusy, setSaveBusy] = useState(false);
+  const [mediaNotice, setMediaNotice] = useState<string | null>(null);
+  const [date, setDate] = useState<Date>(() => measurementDateFromSelection(new Date()));
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [dateTextInput, setDateTextInput] = useState("");
+  const [entryOpen, setEntryOpen] = useState(false);
+  const [editingMeasurementId, setEditingMeasurementId] = useState<string | null>(null);
+  const [periodDropdownOpen, setPeriodDropdownOpen] = useState(false);
+  const [metricDropdownOpen, setMetricDropdownOpen] = useState(false);
+  const [showAllHistory, setShowAllHistory] = useState(false);
+  const [expandedPhotoUri, setExpandedPhotoUri] = useState<string | null>(null);
+  const [bodyFatInfoOpen, setBodyFatInfoOpen] = useState(false);
+  const [heightInput, setHeightInput] = useState("");
+  const [bodyFatInput, setBodyFatInput] = useState("");
+  const [neckInput, setNeckInput] = useState("");
+  const [chestInput, setChestInput] = useState("");
+  const [waistInput, setWaistInput] = useState("");
+  const [hipsInput, setHipsInput] = useState("");
+  const [bicepsInput, setBicepsInput] = useState("");
+  const [quadricepsInput, setQuadricepsInput] = useState("");
+  const [calfInput, setCalfInput] = useState("");
+  const storeRef = useRef(store);
+  storeRef.current = store;
+
+  const measurementWork = measurementPerformanceCounters(input.environment, platformOS);
+  const preparedMeasurements = useMemo(
+    () => prepareMeasurementHistory(store.measurements, measurementWork),
+    [store.measurements],
+  );
+  const { latestWeightMeasurement, latestHeightMeasurement } = preparedMeasurements;
+  const duplicateDateCount = useMemo(
+    () => measurementDuplicateDates(store.measurements).length,
+    [store.measurements],
+  );
+  const latestWeightKg = latestWeightMeasurement?.weight_kg ?? null;
+  const dietHeightCm = store.dietSettings.height_cm
+    ? parseFloat(store.dietSettings.height_cm)
+    : null;
+  const latestHeightCm = latestHeightMeasurement?.height_cm
+    ?? (Number.isFinite(dietHeightCm) && dietHeightCm! > 0 ? dietHeightCm : null);
+  const sex: MeasurementSex = store.dietSettings.sex ?? "male";
+  const summary = useMemo(
+    () => resolveMeasurementSummary(preparedMeasurements, latestHeightCm, sex, measurementWork),
+    [preparedMeasurements, latestHeightCm, sex],
+  );
+
+  const resetForm = useCallback(() => {
+    setWeightInput("");
+    setBodyFatInput("");
+    setPhotoUri(null);
+    setHeightInput("");
+    setNeckInput("");
+    setChestInput("");
+    setWaistInput("");
+    setHipsInput("");
+    setBicepsInput("");
+    setQuadricepsInput("");
+    setCalfInput("");
+    setDate(measurementDateFromSelection(new Date()));
+    setEditingMeasurementId(null);
+  }, []);
+
+  const closeEntry = useCallback(() => {
+    setDatePickerOpen(false);
+    setEntryOpen(false);
+    resetForm();
+    input.setError(null);
+  }, [input.setError, resetForm]);
+
+  const openEntry = useCallback(() => {
+    setDatePickerOpen(false);
+    setPeriodDropdownOpen(false);
+    setEntryOpen(true);
+    setDateTextInput(localDateKey(new Date()));
+    input.setError(null);
+  }, [input.setError]);
+
+  const editMeasurement = useCallback((measurement: Measurement) => {
+    setWeightInput(measurement.weight_kg !== null ? String(measurement.weight_kg) : "");
+    setBodyFatInput(measurement.body_fat_pct !== null ? String(measurement.body_fat_pct) : "");
+    setHeightInput(measurement.height_cm !== null ? String(measurement.height_cm) : "");
+    setNeckInput(measurement.neck_cm !== null ? String(measurement.neck_cm) : "");
+    setChestInput(measurement.chest_cm !== null ? String(measurement.chest_cm) : "");
+    setWaistInput(measurement.waist_cm !== null ? String(measurement.waist_cm) : "");
+    setHipsInput(measurement.hips_cm !== null ? String(measurement.hips_cm) : "");
+    setBicepsInput(measurement.biceps_cm !== null ? String(measurement.biceps_cm) : "");
+    setQuadricepsInput(measurement.quadriceps_cm !== null ? String(measurement.quadriceps_cm) : "");
+    setCalfInput(measurement.calf_cm !== null ? String(measurement.calf_cm) : "");
+    setPhotoUri(measurement.photo_uri ?? null);
+    setDate(measurementDateAtLocalNoon(measurement.measured_on) ?? new Date(measurement.measured_at));
+    setDateTextInput(measurement.measured_on);
+    setEditingMeasurementId(measurement.id);
+    setEntryOpen(true);
+    input.setError(null);
+  }, [input.setError]);
+
+  const deleteMeasurement = useCallback(async (id: string) => {
+    let removedPhotoUri: string | null = null;
+    let referencedPhotoUris: Array<string | null> = [];
+    let mutationError: string | null = null;
+    try {
+      await input.localStore.commit((previous) => {
+        const result = deleteMeasurementById(previous.measurements, id);
+        if (!result.ok) {
+          mutationError = formatMeasurementIssues(result.issues);
+          return previous;
+        }
+        removedPhotoUri = result.removed[0]?.photo_uri ?? null;
+        referencedPhotoUris = result.measurements.map((measurement) => measurement.photo_uri);
+        return { ...previous, measurements: result.measurements };
+      });
+      if (mutationError) {
+        input.setError(mutationError);
+        return;
+      }
+      deleteOwnedMeasurementPhotoIfUnreferenced(removedPhotoUri, referencedPhotoUris);
+      input.setError(null);
+    } catch (error) {
+      input.setError(
+        error instanceof Error
+          ? `No se ha eliminado la medición. ${error.message}`
+          : "No se ha eliminado la medición.",
+      );
+    }
+  }, [input.localStore, input.setError]);
+
+  const pickPhoto = useCallback(async (source: "library" | "camera") => {
+    try {
+      const permission = source === "library"
+        ? await input.services.imagePicker.requestMediaLibraryPermissionsAsync()
+        : await input.services.imagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        input.setError(source === "library"
+          ? "Necesitas permitir acceso a fotos para adjuntar una imagen."
+          : "Necesitas permitir acceso a la cámara para capturar fotos.");
+        return;
+      }
+      const result = source === "library"
+        ? await input.services.imagePicker.launchImageLibraryAsync({
+            mediaTypes: input.services.imagePicker.MediaTypeOptions.Images,
+            quality: 0.8,
+            exif: false,
+          })
+        : await input.services.imagePicker.launchCameraAsync({
+            mediaTypes: input.services.imagePicker.MediaTypeOptions.Images,
+            quality: 0.8,
+            exif: false,
+          });
+      if (result.canceled) return;
+      const selectedUri = result.assets?.[0]?.uri;
+      if (!selectedUri) {
+        input.setError(source === "library"
+          ? "No se pudo leer la foto seleccionada."
+          : "No se pudo leer la foto capturada.");
+        return;
+      }
+      setPhotoUri(selectedUri);
+      input.setError(null);
+    } catch {
+      input.setError(source === "library"
+        ? "No se pudo abrir la galería para seleccionar foto."
+        : "No se pudo abrir la cámara para capturar foto.");
+    }
+  }, [input.services.imagePicker, input.setError]);
+
+  const saveEntry = useCallback(async () => {
+    const metricInputs: Array<{ field: MeasurementMetricKey; rawValue: string; label: string }> = [
+      { field: "weight_kg", rawValue: weightInput, label: "peso" },
+      { field: "body_fat_pct", rawValue: bodyFatInput, label: "% grasa corporal" },
+      { field: "neck_cm", rawValue: neckInput, label: "contorno de cuello" },
+      { field: "chest_cm", rawValue: chestInput, label: "contorno de pecho" },
+      { field: "waist_cm", rawValue: waistInput, label: "contorno de cintura" },
+      { field: "hips_cm", rawValue: hipsInput, label: "contorno de cadera" },
+      { field: "biceps_cm", rawValue: bicepsInput, label: "bíceps" },
+      { field: "quadriceps_cm", rawValue: quadricepsInput, label: "cuádriceps" },
+      { field: "calf_cm", rawValue: calfInput, label: "gemelo" },
+      { field: "height_cm", rawValue: heightInput, label: "altura" },
+    ];
+    const values = {} as MeasurementValues;
+    const patch: MeasurementPatch = {};
+    for (const metricInput of metricInputs) {
+      const result = parseOptionalPositiveMetricInput(metricInput.field, metricInput.rawValue);
+      if (result.invalid) {
+        input.setError(`Introduce un valor válido para ${metricInput.label}.`);
+        return;
+      }
+      values[metricInput.field] = result.value;
+      if (metricInput.rawValue.trim()) patch[metricInput.field] = result.value;
+    }
+    if (!MEASUREMENT_METRIC_KEYS.some((field) => values[field] !== null) && !photoUri) {
+      input.setError("Añade al menos un dato de medida o una foto.");
+      return;
+    }
+
+    setSaveBusy(true);
+    let portablePhotoUri = photoUri;
+    let newlyOwnedPhotoUri: string | null = null;
+    try {
+      if (photoUri) {
+        const currentPhotoUri = editingMeasurementId
+          ? storeRef.current.measurements.find((measurement) => measurement.id === editingMeasurementId)?.photo_uri
+          : null;
+        if (photoUri !== currentPhotoUri || !isOwnedMeasurementPhotoUri(photoUri)) {
+          const photo = await normalizeAndStoreMeasurementPhoto(photoUri);
+          portablePhotoUri = photo.uri;
+          if (photo.owned && photo.uri !== currentPhotoUri) newlyOwnedPhotoUri = photo.uri;
+        }
+      }
+
+      const dateKey = platformOS === "web" ? dateTextInput.trim() : localDateKey(date);
+      const createdId = input.createId();
+      let mutationError: string | null = null;
+      let previousPhotoUris: Array<string | null> = [];
+      let referencedPhotoUris: Array<string | null> = [];
+      await input.localStore.commit((previous) => {
+        const result = editingMeasurementId
+          ? replaceMeasurementById(previous.measurements, {
+              id: editingMeasurementId,
+              date: dateKey,
+              values,
+              photoUri: portablePhotoUri,
+            })
+          : upsertMeasurementByDate(previous.measurements, {
+              date: dateKey,
+              patch,
+              photoUri: portablePhotoUri ?? undefined,
+              createId: () => createdId,
+            });
+        if (!result.ok) {
+          mutationError = formatMeasurementIssues(result.issues);
+          return previous;
+        }
+        previousPhotoUris = previous.measurements.map((measurement) => measurement.photo_uri);
+        referencedPhotoUris = result.measurements.map((measurement) => measurement.photo_uri);
+        return { ...previous, measurements: result.measurements };
+      });
+      if (mutationError) {
+        deleteOwnedMeasurementPhotoIfUnreferenced(
+          newlyOwnedPhotoUri,
+          storeRef.current.measurements.map((measurement) => measurement.photo_uri),
+        );
+        input.setError(mutationError);
+        return;
+      }
+      for (const previousPhotoUri of previousPhotoUris) {
+        deleteOwnedMeasurementPhotoIfUnreferenced(previousPhotoUri, referencedPhotoUris);
+      }
+      closeEntry();
+    } catch (error) {
+      deleteOwnedMeasurementPhotoIfUnreferenced(
+        newlyOwnedPhotoUri,
+        storeRef.current.measurements.map((measurement) => measurement.photo_uri),
+      );
+      input.setError(
+        error instanceof Error
+          ? `No se ha guardado la medición. ${error.message}`
+          : "No se ha guardado la medición.",
+      );
+    } finally {
+      setSaveBusy(false);
+    }
+  }, [
+    bicepsInput,
+    bodyFatInput,
+    calfInput,
+    chestInput,
+    closeEntry,
+    date,
+    dateTextInput,
+    editingMeasurementId,
+    heightInput,
+    hipsInput,
+    input.createId,
+    input.localStore,
+    input.setError,
+    neckInput,
+    photoUri,
+    platformOS,
+    quadricepsInput,
+    waistInput,
+    weightInput,
+  ]);
+
+  useEffect(() => {
+    if (heightInput.trim()) return;
+    if (!latestHeightMeasurement || latestHeightMeasurement.height_cm === null) return;
+    setHeightInput(formatMeasurementNumber(latestHeightMeasurement.height_cm));
+  }, [heightInput, latestHeightMeasurement]);
+
+  useEffect(() => {
+    if (!input.isHydrated) return;
+    let cancelled = false;
+    void (async () => {
+      const legacyPhotos = storeRef.current.measurements.filter(
+        (measurement) => measurement.photo_uri && !isOwnedMeasurementPhotoUri(measurement.photo_uri),
+      );
+      if (legacyPhotos.length === 0) {
+        sweepOrphanedMeasurementPhotos(
+          storeRef.current.measurements.map((measurement) => measurement.photo_uri),
+        );
+        return;
+      }
+      if (platformOS === "web") {
+        setMediaNotice(
+          "La vista web no puede garantizar que las fotos sigan disponibles después de cerrar el navegador. Exporta una copia para conservar los datos.",
+        );
+        return;
+      }
+      const migratedUris = new Map<string, string>();
+      let failedCount = 0;
+      for (const measurement of legacyPhotos) {
+        if (cancelled || !measurement.photo_uri) return;
+        try {
+          const photo = await normalizeAndStoreMeasurementPhoto(measurement.photo_uri);
+          if (photo.owned) migratedUris.set(measurement.id, photo.uri);
+          else failedCount += 1;
+        } catch {
+          failedCount += 1;
+        }
+      }
+      if (cancelled) return;
+      if (migratedUris.size > 0) {
+        input.localStore.update((previous) => {
+          const measurements = previous.measurements.map((measurement) => ({
+            ...measurement,
+            photo_uri: migratedUris.get(measurement.id) ?? measurement.photo_uri,
+          }));
+          setTimeout(
+            () => sweepOrphanedMeasurementPhotos(measurements.map((measurement) => measurement.photo_uri)),
+            0,
+          );
+          return { ...previous, measurements };
+        });
+      }
+      if (failedCount > 0) {
+        setMediaNotice(
+          `No se pudieron copiar ${failedCount} foto(s) antigua(s). Las mediciones siguen intactas; revisa las fotos antes de exportar.`,
+        );
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [input.isHydrated]);
+
+  const entryFields = useMemo(() => ({
+    weight: weightInput,
+    bodyFat: bodyFatInput,
+    neck: neckInput,
+    chest: chestInput,
+    waist: waistInput,
+    hips: hipsInput,
+    biceps: bicepsInput,
+    quadriceps: quadricepsInput,
+    calf: calfInput,
+    height: heightInput,
+  }), [
+    bicepsInput,
+    bodyFatInput,
+    calfInput,
+    chestInput,
+    heightInput,
+    hipsInput,
+    neckInput,
+    quadricepsInput,
+    waistInput,
+    weightInput,
+  ]);
+
+  const controller = useMeasurementsController({
+    measurements: store.measurements,
+    preparedMeasurements,
+    summary,
+    effectiveHeightCm: latestHeightCm,
+    sex,
+    measurementWork: measurementWork ?? undefined,
+    mediaNotice,
+    period: input.preferences.chartPeriod,
+    metric: input.preferences.chartMetric,
+    periodDropdownOpen,
+    metricDropdownOpen,
+    showAllHistory,
+    bodyFatInfoOpen,
+    expandedPhotoUri,
+    entryOpen,
+    datePickerOpen,
+    editingMeasurementId,
+    saveBusy,
+    error: input.error,
+    latestWeightKg,
+    latestHeightCm,
+    latestWeightMeasuredOn: latestWeightMeasurement?.measured_on ?? null,
+    date,
+    dateTextInput,
+    isWeb: platformOS === "web",
+    isIos: platformOS === "ios",
+    photoUri,
+    entryFields,
+    openEntry,
+    setPeriodDropdownOpen,
+    selectPeriod: (period) => {
+      setPeriodDropdownOpen(false);
+      input.updatePreferences((previous) => ({ ...previous, chartPeriod: period }));
+    },
+    setMetricDropdownOpen,
+    selectMetric: (metric) => {
+      setMetricDropdownOpen(false);
+      input.updatePreferences((previous) => ({ ...previous, chartMetric: metric }));
+    },
+    setBodyFatInfoOpen,
+    setShowAllHistory,
+    editMeasurement,
+    setExpandedPhotoUri,
+    closeEntry,
+    setDatePickerOpen,
+    saveEntry: () => { void saveEntry(); },
+    changeDateText: (value) => {
+      setDateTextInput(value);
+      const validation = validateMeasurementDate(value);
+      if (validation.ok) setDate(measurementDateAtLocalNoon(validation.value)!);
+    },
+    changeNativeDate: (eventType, selectedDate) => {
+      if (platformOS === "android") setDatePickerOpen(false);
+      if (eventType === "dismissed" || !selectedDate) return;
+      setDate(measurementDateFromSelection(selectedDate));
+    },
+    pickPhoto: () => { void pickPhoto("library"); },
+    takePhoto: () => { void pickPhoto("camera"); },
+    clearPhoto: () => setPhotoUri(null),
+    changeEntryField: (field, value) => {
+      const setters: Record<MeasurementEntryFieldKey, (next: string) => void> = {
+        weight: setWeightInput,
+        bodyFat: setBodyFatInput,
+        neck: setNeckInput,
+        chest: setChestInput,
+        waist: setWaistInput,
+        hips: setHipsInput,
+        biceps: setBicepsInput,
+        quadriceps: setQuadricepsInput,
+        calf: setCalfInput,
+        height: setHeightInput,
+      };
+      setters[field](value);
+    },
+  });
+
+  return useMemo(() => ({
+    controller,
+    latestWeightKg,
+    latestHeightCm,
+    weightSummary: summary.weight_kg,
+    duplicateDateCount,
+    deleteMeasurement,
+  }), [controller, deleteMeasurement, duplicateDateCount, latestHeightCm, latestWeightKg, summary.weight_kg]);
 }

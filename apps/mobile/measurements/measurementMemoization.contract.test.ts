@@ -30,19 +30,19 @@ function enclosingMemo(call: ts.CallExpression, target = source): ts.CallExpress
   return undefined;
 }
 
-describe("frontera de recálculo de medidas en el componente raíz", () => {
+describe("frontera de recálculo de medidas en el controlador del dominio", () => {
   it.each([
     ["prepareMeasurementHistory", ["store.measurements"]],
-    ["resolveMeasurementSummary", ["preparedMeasurements", "latestBodyHeightCm", "userSex"]],
+    ["resolveMeasurementSummary", ["preparedMeasurements", "latestHeightCm", "sex"]],
   ] as const)("%s solo se ejecuta dentro de un memo con sus dependencias reales", (name, dependencies) => {
-    const calls = callsTo(name);
+    const calls = callsTo(name, controllerSource);
     expect(calls).toHaveLength(1);
-    const memo = enclosingMemo(calls[0]);
+    const memo = enclosingMemo(calls[0], controllerSource);
     expect(memo).toBeDefined();
     const array = memo!.arguments[1];
     expect(ts.isArrayLiteralExpression(array)).toBe(true);
     if (ts.isArrayLiteralExpression(array)) {
-      expect(array.elements.map((entry) => entry.getText(source))).toEqual(dependencies);
+      expect(array.elements.map((entry) => entry.getText(controllerSource))).toEqual(dependencies);
     }
   });
 
