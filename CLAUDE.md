@@ -640,6 +640,16 @@ esto hay que arreglarlo antes o el job pasará siempre.
   `onreadystatechange` ni `onprogress`, esperar a `onload` y procesar entonces el
   cuerpo completo. Mantener `ontimeout` no activa las actualizaciones incrementales.
 
+### Google Interactions devuelve un ID vacío con `store: false`
+- Gotcha: una interacción de Google no guardada abre, actualiza y cierra el stream
+  con `id: ""`/`interaction_id: ""`. El evento y su estado siguen siendo válidos;
+  exigir un ID no vacío rechaza respuestas SSE 200 con `invalid_created`. El ID vacío
+  tampoco puede usarse para reconocer replays entre rondas de herramientas.
+- Fix: representar por separado «aún no llegó `interaction.created`» y el ID recibido.
+  Correlacionar los eventos dentro del stream incluso si el ID está vacío, y deduplicar
+  rondas por ID solo cuando Google entrega uno no vacío. El ledger local sigue evitando
+  repetir efectos durante reintentos completos.
+
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:
 ```bash

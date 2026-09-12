@@ -23,6 +23,7 @@ const done = "event: done\ndata: [DONE]\n\n";
 const raw = created + start + args + stop + terminal() + done;
 const parse = (value: string) => { const parser = createGoogleStreamParser(); parser.push(value); return parser.finish(); };
 const finalRaw = readFileSync(new URL("__fixtures__/raw/google-final.sse", import.meta.url), "utf8");
+const withoutStoredId = (value: string) => value.replaceAll("test-1", "");
 
 describe("Google Interactions lifecycle", () => {
   it("assembles opaque thoughts, initial content, repeated text and usage without rewriting fields", () => {
@@ -51,6 +52,21 @@ describe("Google Interactions lifecycle", () => {
     expect(executeTool).toHaveBeenCalledTimes(1);
     expect(result.history.filter((step) => step.type === "function_call")).toHaveLength(1);
     expect(request.mock.calls[0][0]).toEqual(request.mock.calls[1][0]);
+  });
+
+  it("accepts the empty interaction ID returned by Google with store:false", () => {
+    const stream = withoutStoredId(created + event("interaction.status_update", {
+      interaction_id: "", status: "in_progress",
+    }) + event("step.start", { index: 0, step: { type: "model_output" } })
+      + event("step.delta", { index: 0, delta: { type: "text", text: "OK" } })
+      + stop + terminal("completed") + done);
+
+    expect(parse(stream)).toMatchObject({ interactionId: "", status: "completed", content: "OK" });
+  });
+
+  it("still rejects a repeated creation event when the stateless ID is empty", () => {
+    const emptyCreated = withoutStoredId(created);
+    expect(() => parse(emptyCreated + emptyCreated)).toThrow(/invalid_created/);
   });
 
   it.each([
@@ -130,6 +146,18 @@ describe("Google stateless continuation", () => {
     await expect(runGoogleToolLoop({ initialTurn: parse(raw), initialMessages: [], executeTool,
       requestNextTurn: async () => parse(raw.replaceAll("test-1", "test-2")) })).rejects.toThrow(/ID de herramienta repetido/);
     expect(executeTool).toHaveBeenCalledTimes(1);
+  });
+
+  it("continues tool rounds whose stateless interaction IDs are all empty", async () => {
+    const executeTool = vi.fn(async () => "saved");
+    const first = parse(withoutStoredId(raw));
+    const second = parse(finalRaw.replaceAll("fixture_google-final", ""));
+    const result = await runGoogleToolLoop({ initialTurn: first, initialMessages: [], executeTool,
+      requestNextTurn: async () => second });
+
+    expect(executeTool).toHaveBeenCalledTimes(1);
+    expect(result.status).toBe("completed");
+    expect(result.interactions.map((interaction) => interaction.id)).toEqual(["", ""]);
   });
 
   it("replays full local history, keeps legacy text and isolates each snapshot", async () => {

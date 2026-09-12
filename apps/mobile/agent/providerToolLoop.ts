@@ -27,7 +27,9 @@ export async function runGoogleToolLoop(input: {
   const occurrences = new Map<string, number>();
   for (let round = 0; ; round += 1) {
     const identity = canonicalToolJson({ status: turn.status, steps: turn.steps });
-    const previous = seenInteractions.get(turn.interactionId);
+    // Con store:false Google usa "" como ID, así que solo los IDs no vacíos
+    // pueden identificar un replay entre rondas.
+    const previous = turn.interactionId ? seenInteractions.get(turn.interactionId) : undefined;
     if (previous !== undefined && previous !== identity) {
       throw new Error("Google Interactions: identidad de interacción contradictoria.");
     }
@@ -40,7 +42,7 @@ export async function runGoogleToolLoop(input: {
         }
         seenCallIds.add(step.id);
       }
-      seenInteractions.set(turn.interactionId, identity);
+      if (turn.interactionId) seenInteractions.set(turn.interactionId, identity);
       interactions.push({ id: turn.interactionId, usage: turn.usage });
       history.push(...turn.steps);
       messages.push(...turn.steps);
