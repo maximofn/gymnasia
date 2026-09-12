@@ -216,7 +216,6 @@ import {
   WORKOUT_SUMMARY_CALCULATION_VERSION,
   expandLegacyCompletedSeriesKeys,
   listWorkoutExecutionUnits,
-  primaryWorkoutExecutionKey,
   resolveWorkoutExecutionCurrentKey,
   resolveWorkoutExecutionRest,
   summarizeWorkoutExecution,
@@ -255,6 +254,7 @@ import {
   type WorkoutSession,
   type WorkoutSessionResolutionKind,
 } from "./training/workoutSessionModel";
+import { buildActiveSessionPresentation } from "./training/sessionPresentationModel";
 import {
   defaultTemplateIcon,
   defaultTemplateName,
@@ -4927,146 +4927,23 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     updateExerciseName: updateExerciseNameInActiveTemplate,
     closeSeriesTypePicker: () => setSeriesTypePickerTarget(null),
   });
-  const activeSessionTemplate = useMemo(() => {
-    if (!activeWorkoutSession) return null;
-    if (workoutSessionTemplateDraft?.session_id === activeWorkoutSession.id) {
-      return workoutSessionTemplateDraft.draft;
-    }
-    return store.templates.find((template) => template.id === activeWorkoutSession.template_id) ?? null;
-  }, [activeWorkoutSession, store.templates, workoutSessionTemplateDraft]);
-  const activeSessionUnits = useMemo(
-    () => (activeSessionTemplate ? listWorkoutExecutionUnits(activeSessionTemplate) : []),
-    [activeSessionTemplate],
-  );
-  const activeSessionPerformance = useMemo(
-    () => summarizeWorkoutExecution(
-      activeSessionUnits,
-      activeWorkoutSession?.completed_unit_keys ?? [],
+  const activeSessionPresentation = useMemo(
+    () => buildActiveSessionPresentation(
+      activeWorkoutSession,
+      workoutSessionTemplateDraft,
+      store.templates,
     ),
-    [activeSessionUnits, activeWorkoutSession?.completed_unit_keys],
+    [activeWorkoutSession, store.templates, workoutSessionTemplateDraft],
   );
-  const activeSessionCurrentUnitIndex = useMemo(() => {
-    if (!activeWorkoutSession) return -1;
-    return activeSessionUnits.findIndex((unit) => unit.key === activeWorkoutSession.current_unit_key);
-  }, [activeWorkoutSession, activeSessionUnits]);
-  const activeSessionCurrentUnit = useMemo(() => {
-    if (activeSessionUnits.length === 0) return null;
-    if (activeSessionCurrentUnitIndex < 0) return activeSessionUnits[0];
-    return activeSessionUnits[activeSessionCurrentUnitIndex];
-  }, [activeSessionCurrentUnitIndex, activeSessionUnits]);
-  const activeSessionProgressRatio = useMemo(() => {
-    if (!activeWorkoutSession) return 0;
-    if (activeWorkoutSession.total_effort_count <= 0) return 0;
-    return Math.max(
-      0,
-      Math.min(
-        1,
-        activeWorkoutSession.completed_effort_count / activeWorkoutSession.total_effort_count,
-      ),
-    );
-  }, [activeWorkoutSession]);
-  const activeSessionCategoryMeta = useMemo(
-    () => (activeWorkoutSession ? trainingCategoryMeta(activeWorkoutSession.category) : null),
-    [activeWorkoutSession],
-  );
-  const activeSessionProgressPercent = useMemo(
-    () => Math.max(0, Math.min(100, Math.round(activeSessionProgressRatio * 100))),
-    [activeSessionProgressRatio],
-  );
-  const activeSessionCompletedKeySet = useMemo(
-    () => new Set(activeWorkoutSession?.completed_unit_keys ?? []),
-    [activeWorkoutSession?.completed_unit_keys],
-  );
-  const activeSessionExercises = useMemo(() => {
-    if (!activeWorkoutSession || !activeSessionTemplate) return [];
-    return activeSessionTemplate.exercises.map((exercise, exerciseIndex) => {
-      const seriesStates = (exercise.series ?? []).map((series, seriesIndex) => {
-        const key = primaryWorkoutExecutionKey(exercise.id, series.id);
-        const subSeriesStates = activeSessionUnits
-          .filter((candidate) => candidate.blockKey === key && candidate.kind === "sub_series")
-          .map((subUnit) => ({
-            key: subUnit.key,
-            unit: subUnit,
-            subSeries: subUnit.subSeries!,
-            subSeriesIndex: subUnit.subSeriesIndex!,
-            isCompleted: activeSessionCompletedKeySet.has(subUnit.key),
-            isCurrent: activeSessionCurrentUnit?.key === subUnit.key,
-          }));
-        const isCompleted = activeSessionCompletedKeySet.has(key);
-        const isCurrent = activeSessionCurrentUnit?.key === key;
-        return {
-          key,
-          series,
-          seriesIndex,
-          subSeriesStates,
-          isCompleted,
-          isCurrent,
-        };
-      });
-      const exerciseUnits = activeSessionUnits.filter((unit) => unit.exerciseId === exercise.id);
-      const completedEffortCount = exerciseUnits.filter((unit) =>
-        activeSessionCompletedKeySet.has(unit.key)
-      ).length;
-      const totalEffortCount = exerciseUnits.length;
-      const isCurrentExercise = activeSessionCurrentUnit?.exerciseId === exercise.id;
-      const isCompletedExercise = totalEffortCount > 0 && completedEffortCount === totalEffortCount;
-      const muscle =
-        exercise.muscle?.trim() ||
-        inferExerciseMuscle(exercise.name ?? "", activeWorkoutSession.category);
-      return {
-        exercise,
-        exerciseIndex,
-        seriesStates,
-        completedEffortCount,
-        totalEffortCount,
-        isCurrentExercise,
-        isCompletedExercise,
-        muscle,
-      };
-    });
-  }, [
-    activeSessionCompletedKeySet,
-    activeSessionCurrentUnit?.exerciseId,
-    activeSessionCurrentUnit?.key,
-    activeSessionUnits,
-    activeSessionTemplate,
-    activeWorkoutSession,
-  ]);
-  const activeSessionRestTargetSeconds = useMemo(() => {
-    if (activeWorkoutSession?.is_resting) {
-      return activeWorkoutSession.rest_seconds_total ?? 0;
-    }
-    if (!activeSessionCurrentUnit) return 0;
-    return resolveWorkoutExecutionRest(
-      activeSessionCurrentUnit,
-      activeSessionUnits[activeSessionCurrentUnitIndex + 1] ?? null,
-    );
-  }, [
-    activeSessionCurrentUnit,
-    activeSessionCurrentUnitIndex,
-    activeSessionUnits,
-    activeWorkoutSession?.is_resting,
-    activeWorkoutSession?.rest_seconds_total,
-  ]);
-  const activeSessionRestProgressRatio = useMemo(() => {
-    if (!activeWorkoutSession?.is_resting) return 0;
-    const total = Math.max(1, activeSessionRestTargetSeconds);
-    return Math.max(
-      0,
-      Math.min(1, (total - activeWorkoutSession.rest_seconds_left) / total),
-    );
-  }, [
-    activeSessionRestTargetSeconds,
-    activeWorkoutSession?.is_resting,
-    activeWorkoutSession?.rest_seconds_left,
-  ]);
+  const activeSessionPerformance = activeSessionPresentation.performance;
+  const activeSessionCurrentUnit = activeSessionPresentation.currentUnit;
   const trainingSessionController = useTrainingSessionController({
     session: activeWorkoutSession,
-    exercises: activeSessionExercises,
-    progressPercent: activeSessionProgressPercent,
+    exercises: activeSessionPresentation.exercises,
+    progressPercent: activeSessionPresentation.progressPercent,
     currentUnit: activeSessionCurrentUnit,
-    restTargetSeconds: activeSessionRestTargetSeconds,
-    restProgressRatio: activeSessionRestProgressRatio,
+    restTargetSeconds: activeSessionPresentation.restTargetSeconds,
+    restProgressRatio: activeSessionPresentation.restProgressRatio,
     discardConfirmationOpen: confirmDiscardSession,
     activeSeriesMenuId,
     seriesTypePickerOpen: seriesTypePickerTarget !== null,
