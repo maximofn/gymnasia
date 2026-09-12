@@ -4,6 +4,7 @@ export { ChatScreen } from "./ChatScreen";
 export { DietHeader, DietMealsScreen } from "./DietScreen";
 export { HomeScreen } from "./HomeScreen";
 export { MeasurementsOverlays, MeasurementsScreen } from "./MeasurementsScreen";
+export { SharedChatPanel } from "./SharedChatPanel";
 export {
   BackupImportConfirmation,
   DataSettingsPanel,
