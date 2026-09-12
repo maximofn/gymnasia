@@ -338,7 +338,7 @@ import {
   useDataSettingsController,
   useDietSettingsController,
   useFoodCatalogSettingsController,
-  useMemorySettingsController,
+  useMemorySettingsRuntime,
   useMeasurementsSettingsController,
   useNotificationSettingsController,
   usePersonalFoodsSettingsController,
@@ -3770,11 +3770,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     sources: catalogStatuses([exerciseCatalogSnapshot]),
     warnings: catalogWarnings([exerciseCatalogSnapshot]),
   }), [exerciseCatalogSnapshot]);
-  const [memoryFields, setMemoryFields] = useState<PersonalDataField[]>([]);
-  const [memoryNewKey, setMemoryNewKey] = useState("");
-  const [memoryNewDesc, setMemoryNewDesc] = useState("");
-  const [memoryNewValue, setMemoryNewValue] = useState("");
-  const [memoryLoaded, setMemoryLoaded] = useState(false);
   const [providerKeyVisibility, setProviderKeyVisibility] = useState<Record<Provider, boolean>>(() =>
     createProviderBooleanMap(false),
   );
@@ -4347,29 +4342,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     },
     save: saveDietPlan,
   });
-  const memorySettingsController = useMemorySettingsController({
-    fields: memoryFields,
-    newKey: memoryNewKey,
-    newDescription: memoryNewDesc,
-    newValue: memoryNewValue,
-    updateField: updateMemoryField,
-    commitField: () => void commitMemoryField(),
-    deleteField: (index) => void deleteMemoryField(index),
-    changeNewKey: setMemoryNewKey,
-    changeNewDescription: setMemoryNewDesc,
-    changeNewValue: setMemoryNewValue,
-    addField: () => void addMemoryField(),
-    clearAll: () => {
+  const memorySettingsRuntime = useMemorySettingsRuntime({
+    active: settingsTab === "memory",
+    load: loadPersonalData,
+    save: savePersonalData,
+    confirmClear: (onConfirm) => {
       Alert.alert("Borrar memoria", "¿Seguro que quieres eliminar todos los datos personales?", [
         { text: "Cancelar", style: "cancel" },
         {
           text: "Eliminar todo",
           style: "destructive",
-          onPress: () => void saveMemoryFields([]),
+          onPress: onConfirm,
         },
       ]);
     },
   });
+  const memorySettingsController = memorySettingsRuntime.controller;
   const measurementsSettingsController = useMeasurementsSettingsController({
     measurements: store.measurements,
     duplicateDateCount: measurementsRuntime.duplicateDateCount,
@@ -4967,12 +4955,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   useEffect(() => {
     void pushTrace("app", "App mounted", { platform: Platform.OS, version: Constants.expoConfig?.version });
   }, []);
-
-  useEffect(() => {
-    if (settingsTab === "memory" && !memoryLoaded) {
-      loadMemoryFields();
-    }
-  }, [settingsTab, memoryLoaded]);
 
   useEffect(() => {
     if (tab !== "diet") return;
@@ -6635,41 +6617,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
   }, [measurementsController.back, tab]);
 
-  async function loadMemoryFields() {
-    const fields = await loadPersonalData();
-    setMemoryFields(fields);
-    setMemoryLoaded(true);
-  }
-
-  async function saveMemoryFields(fields: PersonalDataField[]) {
-    setMemoryFields(fields);
-    await savePersonalData(fields);
-  }
-
-  function updateMemoryField(index: number, field: "key" | "description" | "value", text: string) {
-    const updated = [...memoryFields];
-    updated[index] = { ...updated[index], [field]: text };
-    setMemoryFields(updated);
-  }
-
-  async function commitMemoryField() {
-    await savePersonalData(memoryFields);
-  }
-
-  async function deleteMemoryField(index: number) {
-    const updated = memoryFields.filter((_, i) => i !== index);
-    await saveMemoryFields(updated);
-  }
-
-  async function addMemoryField() {
-    if (!memoryNewKey.trim()) return;
-    const updated = [...memoryFields, { key: memoryNewKey.trim(), description: memoryNewDesc.trim(), value: memoryNewValue.trim() }];
-    await saveMemoryFields(updated);
-    setMemoryNewKey("");
-    setMemoryNewDesc("");
-    setMemoryNewValue("");
-  }
-
   function appendMessagesToThread(threadId: string, nextMessages: ChatMessage[]) {
     setStore((prev) => {
       const current = prev.messagesByThread[threadId] ?? [];
@@ -7871,8 +7818,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       // La pestaña Memoria solo lee del disco si aún no ha cargado, y persiste su
       // array entero en cada onBlur. Sin este reset, un estado cargado antes de
       // importar volcaría los campos previos encima de los restaurados.
-      setMemoryFields([]);
-      setMemoryLoaded(false);
+      memorySettingsRuntime.invalidate();
 
       // El snapshot de sesión activa no se incluye en el backup; cerramos cualquier
       // sesión en curso para no dejar un estado inconsistente con los datos nuevos.

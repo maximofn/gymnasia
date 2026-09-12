@@ -763,6 +763,87 @@ export function useMemorySettingsController(
   return useMemo(() => ({ model, actions, back }), [actions, back, model]);
 }
 
+export function useMemorySettingsRuntime(input: {
+  active: boolean;
+  load(): Promise<PersonalDataField[]>;
+  save(fields: readonly PersonalDataField[]): Promise<void>;
+  confirmClear(onConfirm: () => void): void;
+}): {
+  controller: ScreenController<MemorySettingsModel, MemorySettingsActions>;
+  invalidate(): void;
+} {
+  const [fields, setFields] = useState<PersonalDataField[]>([]);
+  const [newKey, setNewKey] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+  const [newValue, setNewValue] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const inputRef = useRef(input);
+  inputRef.current = input;
+
+  useEffect(() => {
+    if (!input.active || loaded) return;
+    void input.load().then((loadedFields) => {
+      setFields(loadedFields);
+      setLoaded(true);
+    });
+  }, [input.active, input.load, loaded]);
+
+  async function saveFields(nextFields: PersonalDataField[]): Promise<void> {
+    setFields(nextFields);
+    await inputRef.current.save(nextFields);
+  }
+
+  const controller = useMemorySettingsController({
+    fields,
+    newKey,
+    newDescription,
+    newValue,
+    updateField: (index, field, value) => {
+      setFields((previous) => previous.map((item, itemIndex) => (
+        itemIndex === index ? { ...item, [field]: value } : item
+      )));
+    },
+    commitField: () => {
+      void inputRef.current.save(fields);
+    },
+    deleteField: (index) => {
+      void saveFields(fields.filter((_, itemIndex) => itemIndex !== index));
+    },
+    changeNewKey: setNewKey,
+    changeNewDescription: setNewDescription,
+    changeNewValue: setNewValue,
+    addField: () => {
+      if (!newKey.trim()) return;
+      void (async () => {
+        await saveFields([
+          ...fields,
+          {
+            key: newKey.trim(),
+            description: newDescription.trim(),
+            value: newValue.trim(),
+          },
+        ]);
+        setNewKey("");
+        setNewDescription("");
+        setNewValue("");
+      })();
+    },
+    clearAll: () => {
+      inputRef.current.confirmClear(() => {
+        void saveFields([]);
+      });
+    },
+  });
+
+  return useMemo(() => ({
+    controller,
+    invalidate: () => {
+      setFields([]);
+      setLoaded(false);
+    },
+  }), [controller]);
+}
+
 export type DietSettingsModel = {
   draft: DietSettings;
   issues: ReadonlyMap<string, NutritionValidationIssue>;
