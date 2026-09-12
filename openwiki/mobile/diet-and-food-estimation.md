@@ -3,9 +3,6 @@ type: concepto
 title: Dieta y estimación de alimentos
 description: Modelo local de comidas y objetivos nutricionales, vinculación explícita con catálogos y alimentos personales, y flujo opcional de estimación asistida por IA. Distingue la nutrición validada que se persiste de datos externos o estimados que requieren confirmación y validación.
 tags: [mobile, diet, nutrition, food-estimation, catalogs, agent]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-165cffcff462003cd11223e2
     resource: repo://apps/mobile/agent/toolExecutor.test.ts
@@ -17,6 +14,8 @@ sources:
     resource: repo://apps/mobile/catalogs/matching.test.ts
   - id: openwiki-source-dea65c4d04c08cc781bd2cda
     resource: repo://apps/mobile/catalogs/matching.ts
+  - id: openwiki-source-10afa4ec1c37f1f581a11096
+    resource: repo://apps/mobile/catalogs/runtime.ts
   - id: openwiki-source-38c56531000e6ccc59045ff7
     resource: repo://apps/mobile/catalogs/sources.ts
   - id: openwiki-source-36ac1d1b6a1d97f5db056148
@@ -29,7 +28,10 @@ sources:
     resource: repo://apps/mobile/scripts/diet-validation.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-12T11:47:11.882Z
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
 ---
 
 # Dieta y estimación de alimentos
@@ -149,7 +151,7 @@ Al editar cantidad de un elemento existente, `mealPerGramRef` guarda temporalmen
 
 El modal del estimador es una conversación distinta del agente general. Requiere una API key utilizable: prioriza `store.foodAIProvider` si está configurado, después el proveedor ya elegido por el modal y, finalmente, la prioridad del estimador. Si no existe proveedor, muestra un error y no intenta la red. Las credenciales BYOK y las particularidades de transporte se documentan en [Configuración BYOK de proveedores](../agent/provider-configuration.md).
 
-Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; se solicita el permiso correspondiente y se necesita base64 para adjuntarlas. Las imágenes se mandan solo con el último mensaje de usuario y dejan de reenviarse después de una respuesta válida del modelo. OpenAI, Anthropic y Google transmiten texto y razonamiento y pueden ejecutar hasta cinco rondas de la tool `scan_barcode`. En web, Anthropic rechaza explícitamente imágenes en este flujo; la estimación solo textual sigue sus reglas de transporte normales. Las solicitudes de estimación se reintentan hasta tres veces únicamente ante fallos transitorios identificados.
+Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; se solicita el permiso correspondiente y se necesita base64 para adjuntarlas. Las imágenes se mandan solo con el último mensaje de usuario y dejan de reenviarse después de una respuesta válida del modelo. OpenAI, Anthropic y Google transmiten texto y razonamiento y el flujo del estimador limita a cinco rondas el bucle de tools que puede invocar `scan_barcode`. En web, Anthropic rechaza explícitamente imágenes en este flujo; la estimación solo textual sigue sus reglas de transporte normales. Las solicitudes de estimación se reintentan hasta tres veces únicamente ante fallos transitorios identificados.
 
 `scan_barcode` elimina espacios del código y consulta `https://world.openfoodfacts.org/api/v2/product/{barcode}.json`. Devuelve al modelo un JSON con identidad, porción, nutrientes por 100 g y por porción, ingredientes y Nutri-Score. Un HTTP fallido o producto inexistente se devuelve como resultado textual controlado para que el modelo pueda continuar o estimar visualmente; no escribe esos datos directamente en la dieta. La sesión recuerda si se usó la herramienta para clasificar una propuesta no encontrada como producto comercial, pero ese indicador no es procedencia persistida.
 

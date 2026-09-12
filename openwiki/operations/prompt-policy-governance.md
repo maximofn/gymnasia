@@ -1,7 +1,7 @@
 ---
 type: guía de gobernanza de políticas
-title: Gobernanza de prompts y política sanitaria
-description: Explica cómo se validan, firman y promocionan las instrucciones del agente y la política sanitaria, y qué aprobación humana es obligatoria antes de fusionarlas o activarlas.
+title: Gobierno de prompt y política
+description: Explica cómo se generan, validan, firman y promocionan las instrucciones del agente y la política sanitaria, incluida la aprobación humana obligatoria antes de fusionarlas o activarlas.
 tags: [security, policy, prompt, health-safety, signed-policy, github-actions]
 openwiki:
   roles: [operations, workflow]
@@ -10,7 +10,7 @@ openwiki:
   validation_commands: [npm run check:health-safety, npm run test:health-safety, npm run policy:bundle:check, npm run test:prompt-policy]
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+    at: 2026-09-12T11:47:11.882Z
 sources:
   - id: openwiki-source-3badd8a08db3c41b38b437ed
     resource: repo://.github/prompt-policy.json
@@ -46,10 +46,10 @@ sources:
     resource: repo://scripts/policy-promotion/signing.test.mjs
   - id: openwiki-source-cf7c9acb7f23cfca2b8f4fcd
     resource: repo://scripts/prompt-policy/policy.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
 ---
 
-# Gobernanza de prompts y política sanitaria
+# Gobierno de prompt y política
 
 Las instrucciones que el modelo lee no se tratan como texto de aplicación ordinario. El prompt canónico `prompts/AGENTS.md`, la política declarativa de `policy/health-safety/`, las herramientas requeridas y la configuración de firma forman una superficie de seguridad. Esta página explica el mecanismo **vigente** para cambiarla, revisar su contenido, crear un bundle firmado y hacerlo disponible en los canales de política. Para el consumo del bundle en el cliente, véase [Entrega y activación de políticas firmadas](../architecture/policy-delivery.md); para el uso del lease en un turno de chat, [Runtime del agente](../agent/runtime.md).
 

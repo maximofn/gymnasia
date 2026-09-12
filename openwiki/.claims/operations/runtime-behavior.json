@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:ce0d10bb8f2a6d0b7037461f1c46bb3744ec2a580889634a3de25aa5f1f1a1c0",
+  "pageVersion": "sha256:df3a9b032fafdb2b87b3e524a4bc76821e0393f3d2d923a5444a9129a3b24414",
   "claims": [
     {
       "id": "claim_a8dd6b11f73f42699e878fa2a707fa0d",
@@ -115,22 +115,80 @@
       ]
     },
     {
-      "id": "claim_00feb6de50194e00b8c519425ac165c6",
-      "statement": "La actualización elimina logs privados y estados OAuth en claro antes de persistir, sube solamente artefactos cifrados y condiciona el commit de documentación al éxito de OpenWiki y del cifrado OAuth.",
+      "id": "claim_f5063bb630fd426ba5b27ff2b427f6f0",
+      "statement": "Los bucles de herramientas de OpenAI, Anthropic y Google limitan la continuación a diez rondas y ejecutan las llamadas de cada ronda secuencialmente; sus envelopes conservan proveedor, ejecución, argumentos y ocurrencia para el ejecutor.",
       "evidence": [
         {
-          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L414-L460",
-          "version": "repo-lines-v1:sha256:6d680690f260abef7a2e74c7a3742bce525db3bfe87de74826e150dc0b43d6af:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjMjdhYzJmOTkzZjNlMDVmM2FlODZiYTVlNzllZWE2ZjIxNDZkNWFjMzFhYjhhYWFmMWEyOTc4ODRmYWNhYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkMzJhYzIwODBhMTM0NWM2NDY4ZDBlMGUwOWE0OTMyMDE1MTc2NzQzZjkyYTUyNTM1NWNmZGZkNTg5N2NmZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxZmMxZjBhYzBmODlhNjRlZDgyOWMwNTZiZmYyZDM1OGRkMGU4ZTg3NzNlZDBjZGMyOWIyMWI1NzI1M2VjNjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0ZDA0NjIwYWRjMmNkZGM1ZTNmMzJhNTEyNWY3OTMxNzc5MTNmMjdmMzdjNjBkYzI3NzgxNTg5MGVlNWRkMGQifQ"
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L117-L162",
+          "version": "repo-lines-v1:sha256:444798338affe11db7f424ac5f74859f0414b9f382620bbcbe161103f2c98dcd:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3NmJjNjQwOGM5MDgyYzNjNmRjOGQwOTYyZjVmMWE2NDQ0NGU0ZjRlMTM2ODk1YWJiMDQ4Yzc5ZThlNThkYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0YmVmMTcyZjlmNmY0N2VlZGI2ODYxYzAzMzNhYjdmOTZlZWNiNzUwMjQ4MTNjZDRjM2FkOWI1MjUxZTJkYmEifQ"
         },
         {
-          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L462-L481",
-          "version": "repo-lines-v1:sha256:2a0a2c348fe9378ab8f32a6081016f09a4ee6b3fcfc6ab3d871bc57aaf858b6c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzYjEwNzE2NzU4MmIxODA5N2E5ODlkMmNjYWQ1YWI4Mjc0M2YyOGE2M2NjNDEyMDI3YWQwZDhmMDcwNTA3NjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwNGZjMmFiMTdjMzZhMmI5MzMzMGZkODMwYjg1ZjNkY2I2ZDQ1ODdjOWM4NTQ2MjVkOWEwZjNkZDgyNWYyZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYTBmZWRhNzQ2MTdlMjExNTk3MDY1OTJhMjUyYmYzMWYzNjJiMjcwMThmOGVkMjVlMzBkZWYxYzcxNWVkOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5ODJhNzk2YWVjZjRlZWM0Zjg2NmIwZWNhZDdlZTY1NTRjNGY0NGJlMGYwNDZmZGVhNjY5ZjAwZTg1ZmZkYTYifQ"
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L186-L227",
+          "version": "repo-lines-v1:sha256:50216fee6b13a33495ac3444419ffbecb416c1a7101261684fd158216f07b65e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmNzZkYmY5NjFlMjgwNzg2OTg2MzQyYWRkZTg2NmJhYzE3OGRjMDAwOTE0YzgyMWNmMjY5NWY4MzgxZjIwNjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzYWU1M2RjMzQ5MzcxYTE2MzUzMGE2ODRlNzkxMTMyYzIzN2JlNWY3OTkyNzkyNjM2NzQxM2ZjMzc1OWZjZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0ZTEwYzVjNjliNjQwMjU0YjMxNzc0YjgwZDVhOGMwYzUzOGI0NzA5ZmRhM2FkMzRkNDE4YmQ2NDRlYTNmNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L8-L78",
+          "version": "repo-lines-v1:sha256:558b1036b18159b7f771274d73be91574872c9e072305a1740ff0a2ebeaedee5:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1OTZlNzdhZDBjZjM5YWMzY2ZhMGZhZWEzNWEyNzg1NGEzYzk1ZjljZjE3NDk2MDUzZDMzNGY3MTM0ODMxM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiZWM1NWU3OGFjZmI0M2E3OWRmMjlmZmU0Yzk4ZmQzZjUwMzcxYjBjODFkNzY1ZWMxNjliZjVkODYyNjk0MzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4MTYxZDNkMDU1ZGRkOWZkOGQ4MWExYmQzMzhjZTE2NGQ1Mjc0MDE2ZmRjOWRkMjRjYzNkY2VmM2E5MDlhNzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMGZkM2RhMWM3YjEyOTI4NDY0YjhjMDA5ZWYyNzM3M2FlMjQ3ZmJhMzBlZWUwYmEwNzZkYWU2MjUwZTI3MTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5a5c2ab5c75a4788be721b7658bfb33e",
+      "statement": "Las escrituras coordinadas se identifican por ejecución, proveedor, nombre, argumentos canónicos y ocurrencia —sin usar el ID de llamada del proveedor—; el coordinador une trabajo simultáneo, reproduce solo efectos comprometidos y rechaza colisiones de identidad.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.test.ts#L45-L152",
+          "version": "repo-lines-v1:sha256:f205588a477539eb2b7a2982970bb66b2691a86a881cafc4a1357e9bec30af87:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0OWQzNmE3MjJjYzVkYTNiMzg4OWQ2YjcyN2NmODc3YjdiN2U3ODhmNTdlYzQ1MmJlMGVlN2E2NTZiOTc5NDY2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiOGQ3NzM0MjY3Y2Q0OWMzMTMzZWVhYTA5OTNjMjRjNzNhZmVlMTVkNDg0MjZmNjQyNGMwZjZjOTFhNzA2MWQ1In0"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L265-L357",
+          "version": "repo-lines-v1:sha256:bde93b9a8999f9af1b0bd6777eb42a39ef5a083e24921b4f3a4cb12cd6f1f69d:eyJzZWxlY3RlZExpbmVDb3VudCI6OTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5MGZiNDkzMDdhZmFiOGQ2ZGU5NTczMGI4OTEyNDg0OWMzZTdiN2UzNTQyMmQ5MWJiODFkODc5OTk1MWFjZGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2MGQ5ZDQ1NjhiZDMyNzZmNjczODg5MTM2NmI4NGQ4ZmE2MmRlMjM4ZGI3YjJhOGIyNGIzMzFiM2NiZmQxOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0ZGRlODJkMjA2NjFkMjdkZDcyMDE3NmQ1OWE2ZTU2ZGNmNzE0Zjk0MTVlOTZiYTI0NGM1YzFkMmE1ZjVmZjkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L95-L115",
+          "version": "repo-lines-v1:sha256:cb0f875e39d2ca838d64b57bf2f9e438b06c327c9478c090c6cf7fb6985c0474:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyYTI5ZWUzMzg3NzNkY2Q0MjljZDQwZGEzMzVjZmJkMDM5MWMxYmM5N2VmMzQ4NmU5NjI0MjIzMjJmMzkzNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkN2NlNmQ2ZjhkMGE4MWQ3ODUxZDViNTQ5ZTJiM2JlMGI2N2YxZWIwYjAyNmRmNWU4OTRhNjU0MDRhZDM0YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjZTc1OTI1ZjFjZTgwNTY3ODExZTBlN2JiMGU0MjA1MTY4NzljZmU3YTQxYmNjOWZmZjNmMDVlMDM5Mzk1NzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliYTMyODkwZDU0ODQ1N2M4NDk4YjY3N2U3YzBhMDkxN2M3NGFmZmEzNzlhYjU2MWJhMWQzODYzNTQ3MWRkNmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_efcc7a0d6513483fa5c2742d8ccbf960",
+      "statement": "El ledger persistente de operaciones retiene únicamente resultados comprometidos, expira entradas a los siete días y limita su tamaño a 256; una lectura de storage fallida impide ejecutar una escritura para evitar duplicados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.test.ts#L154-L216",
+          "version": "repo-lines-v1:sha256:23c33460a2f447d7e4b4336c2cb1e13e6ac20e96c8cd125e9a203fa4f1f55c1f:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkNjE3YjJjY2M0ZWQ1YzE0NDkzNmNhY2Y3ZmUyMDk3ZjMyMmQwYWFmZjgwMTIzNjMxZmRhYTNjZjkwMWM4NzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhmZGM0MTg5ZmVhNWFiNjUwMzAxZmRlZmU2ZDQ1MDIwNzcyYTgxOTBkMWQxMDJjMmI1YTMyYjBhYTZlMTI3MDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlZTQzMDI4YWUxYzUxZjQ3NjY0YWQxMTNhOGFlOWRkMzY4MGE4YzlkYzMyYTE4MTc4YzBlY2M5NDQyNzZlNzUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L185-L191",
+          "version": "repo-lines-v1:sha256:3873ef5b61a7eec83ea27bbd10a4a8b6c3e9b693d32d1ecde67b27c62790e1c1:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTc1OGJiNGE1ZTBlYTM3YWQwNDgxNmY4MjIyMWRiNDRkMzNlOTBkMWFiNmJhNDRlMzlkZGI1NjAzZjg4N2RmNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2I3ODM3NmIyYTA4M2NhZDliMDFkMzc4Y2I0NjJjNGYzZTZlNjAzYTE5NTkzMDFkNTIzMTY4NDljZmEyOGIzOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDQ2MTM0YmE3ZjA1MmFiMjk4MGRlZDFmZmEyYzE2MDQ3YjA1ZjA5OGZjOGM5ZDNhMDAzYzQ5YjFjZTU3NWUwNyJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L320-L357",
+          "version": "repo-lines-v1:sha256:d903b1b25964c4db687bb2587515c325bd4d7eb92b78a61f58048ac01b9e9e9e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiMjhhZjQ4NmI5Y2NhMDhlYTBhN2ZiYzFkNDg1NjE0OGVlNWEyZDJmNWE5Y2NhODMxZWQ1ZmFhMWNiZWE4MzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2MGQ5ZDQ1NjhiZDMyNzZmNjczODg5MTM2NmI4NGQ4ZmE2MmRlMjM4ZGI3YjJhOGIyNGIzMzFiM2NiZmQxOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzYjNlNzAzOGQ1NmJhNGQxMTgxMjZkZWEzZDc4YWJjYzY0NGNiYjMzYTYwZjkwNzA2NmE4ZjQ5MWQ3NGQwZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0ZGRlODJkMjA2NjFkMjdkZDcyMDE3NmQ1OWE2ZTU2ZGNmNzE0Zjk0MTVlOTZiYTI0NGM1YzFkMmE1ZjVmZjkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L47-L48",
+          "version": "repo-lines-v1:sha256:54053dc7a0cd832ebe996b26fa5360a550f2a97ae5ec1073115ad0466534664d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2M1YmQxYjAzMGIwODZmM2YzNzMwYjcxYzVkN2ZjYWZlNGMxYzg3YzAzMTE1MmU2YTc5OGFkZTA3OWRlMjIzOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGYyY2FhZDFiNTU3NTMwODdiYmYwNzMwNzcwOGY4ZmEwZDljMDVmMDg3YmFlMjhkZmM1MDExMzUzMjdiMjZiOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjg5MWI4MDU2ZjkyMzA5YTEzNzJhNjNkMjYwOTU2MjAyNjdjYWE5NDU4ZDVmOTJkNDE4ODZhODk5ZjBlZDg3MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDM4MDU4ZjA4MGMxODE2YjFiZTJhZTMwYWNkYTZmNmFiMWNhMWVhZmZjMjhiYjIxZjM0ZDk5YzMwZmM3YTkyMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_120a0167501a4b9ab3bfb040dab4af9b",
+      "statement": "La automatización borra logs temporales y OAuth en claro en limpieza `always()`, sube estados únicamente cifrados y solo entra al paso de commit si el paso OpenWiki y el cifrado OAuth terminaron correctamente; el propio paso de commit puede publicar progreso parcial cuando la salida capturada de OpenWiki fue `failure`.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L178-L211",
+          "version": "repo-lines-v1:sha256:4494f5d0def0253e9588bca6e08a5a60d4a9dfa95c4d9f5b5f0d0b94757fcfe4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjZThiODJlMzgwNWEzYTE4MDAzZjJmZTQ1ZDRmNWRiYjQ3YWZkZThjMmRkZjU1OWNlZDJiNGZkYzRmNDA2MzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0Mzk5NDc4OWM4MWE2ZGFlY2IyMWQzOWU2NGZmYTliODA2ZjczYWFiNjQzMTQ4MGFmZmY4MzE3MTExNTA5ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYxN2I5YjgzODA0YzIwZDc1Mjc2YjFjNjk4NmY4N2IzMzVjODJkNWYzMDMzOGMyNDFlNjVkNjc3MzQ4YmM1MDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIyZTg2ZWY4MDYwZTliNmM0Y2Q3NDkwM2YxZDlhNjBjMzhhMzFmNDFmMjhlZTI3Y2YzMTdhMmMzYmM5ZGMwZGIifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L414-L490",
+          "version": "repo-lines-v1:sha256:d896c43f8189e01d2e634369dbdc5accb5a5fdc6f622101edf182749d9c22596:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjMjdhYzJmOTkzZjNlMDVmM2FlODZiYTVlNzllZWE2ZjIxNDZkNWFjMzFhYjhhYWFmMWEyOTc4ODRmYWNhYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwNGZjMmFiMTdjMzZhMmI5MzMzMGZkODMwYjg1ZjNkY2I2ZDQ1ODdjOWM4NTQ2MjVkOWEwZjNkZDgyNWYyZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxZmMxZjBhYzBmODlhNjRlZDgyOWMwNTZiZmYyZDM1OGRkMGU4ZTg3NzNlZDBjZGMyOWIyMWI1NzI1M2VjNjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ2NGQxZjQwN2MwMGJhNzYxMzcyOWZiY2NiNDg4OWJkZWNmNWE4OTU0MWRhZGFiNzk3MmY3NzI0NzVjM2JkZjkifQ"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.4.3",
-    "at": "2026-09-06T11:56:49.315Z"
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-12T11:47:11.882Z"
   }
 }

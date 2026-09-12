@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:3ce731cd27b02bf97b8f0d0ce17140a8a8a838d9a2af84e0a363147be63fe0c5",
+  "pageVersion": "sha256:978e5c7d4cdd12848f8e1ff93d95a1374e76957333c1fdcf412a729d585b661a",
   "claims": [
     {
       "id": "claim_3b5430eb28124974972b79daa0da7be0",
@@ -96,7 +96,7 @@
       "evidence": [
         {
           "resource": "repo://apps/mobile/App.tsx#L10150-L10160",
-          "version": "repo-lines-v1:sha256:ff3f7b4be7fb5b47c10fc6174c223f5690b203918ef0f7602a6ec5ce75527b51:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhYmE1ZDNlMzk1MzFlYjBlN2MyZGUzN2NjNWRmZjYyZTM3ODVjOGQxMmI2NjIwNjhkOWQ4N2IxY2Q1NzY2OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3ZDRiZTkxOTM3MzQ5M2IyYzhiZWI2ZDQ0MjhlZjgyMGE2ZTU2ZjgwNDYzOGU2ZjA0MGRkZDU0YTkxYWNmYWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkNTNiMTkwMTJiODM3OTI1NTgxMmRjOTJjYWNmNzI2M2JhNjgxZDQxZWMxYTJhZDExM2NjOWRhY2E5NWM4ZGEifQ"
+          "version": "repo-lines-v1:sha256:cf49aba607f0f617ff99c6256bfc1f4eea9447274b8ea83e756a96283a1e104b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhYmE1ZDNlMzk1MzFlYjBlN2MyZGUzN2NjNWRmZjYyZTM3ODVjOGQxMmI2NjIwNjhkOWQ4N2IxY2Q1NzY2OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3ZDRiZTkxOTM3MzQ5M2IyYzhiZWI2ZDQ0MjhlZjgyMGE2ZTU2ZjgwNDYzOGU2ZjA0MGRkZDU0YTkxYWNmYWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkNTNiMTkwMTJiODM3OTI1NTgxMmRjOTJjYWNmNzI2M2JhNjgxZDQxZWMxYTJhZDExM2NjOWRhY2E5NWM4ZGEifQ"
         },
         {
           "resource": "repo://apps/mobile/App.tsx#L10910-L10930",
@@ -122,7 +122,7 @@
         },
         {
           "resource": "repo://apps/mobile/backup/backupFormat.ts#L3-L13",
-          "version": "repo-lines-v1:sha256:74ce69f23ceeac71fc9c089e2ff01347a63c844e092bac49a10dd6842a3b0d3a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYjA0NjdiZjk3NGIxNmZjNzZiMmZlYzY4ZTM1YTljMzk2MTkyMzdiZjcxMGRkY2M0ODdiNGU4MjhjOGI0YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4OGFlZTJhOTg5ZmNhNzI0ZTIwMzE2NDczOGIwZmY2M2YzYmVmOWIwYTM4MjgzYWYyZDExZGI4ODk0Zjg4ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjZDU2MWU2YTNkYWJkMTAwYmQ0YTRmMjc3MzU5NDEwYjBkYjAzYzU4NWJjZTI2Njc2YTMyYTBhYzZhOWFjZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3NTQxZDI4YTVjMDk1YmZjOGM2OGYyOGRmMDU0YTU3NTY1OWE0YWYwYzZmOGIzZTUxNTc4ZWZlM2M1MThmZTIifQ"
+          "version": "repo-lines-v1:sha256:c45fa98004c0f602dbcc391ba9e0e21d5083e900c29832a436fd45dfd01c96b5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYjA0NjdiZjk3NGIxNmZjNzZiMmZlYzY4ZTM1YTljMzk2MTkyMzdiZjcxMGRkY2M0ODdiNGU4MjhjOGI0YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmZGQ3NzgxYWUxYjUyYjg0YWI2YWIyYzlhYmQzNmM5ODU5OTk3MWQ3ODllNGY1NzliNzJiZWRiZTEzYzhhMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjZDU2MWU2YTNkYWJkMTAwYmQ0YTRmMjc3MzU5NDEwYjBkYjAzYzU4NWJjZTI2Njc2YTMyYTBhYzZhOWFjZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3NTQxZDI4YTVjMDk1YmZjOGM2OGYyOGRmMDU0YTU3NTY1OWE0YWYwYzZmOGIzZTUxNTc4ZWZlM2M1MThmZTIifQ"
         },
         {
           "resource": "repo://apps/mobile/backup/backupFormat.ts#L44-L81",
@@ -151,10 +151,94 @@
           "version": "repo-lines-v1:sha256:7bac30dfe717f28327dae58ce5a6f0882f2a17955cb9e1efa1ab2165382171c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwZTIwYmNiODBmNGM0ODdhNDE0YmM3OTY0NDE4YzQ4M2E4NmViYzg5YTMxOWY1ZmU2NzEzYjE3MWE3M2UyODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5M2IxN2IxMWM3MzY1ZTllYWY0NDA5ZWU0YjU3ZjE0NThlMzE3YWE2MjhhNjM3NmEyMWE2NTgzMWJkYTEzNmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzZmE4MjQ0MWZkNjczZmNiN2FmNzYyMTIzNzgxN2FhZTA4OTQyYjE2Mzg1ODM2OTVjNWM3OWY5ODRjZjMxYWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3N2E2NWY3ZThiYTdmZTk5OGFhNjI4MDc5YjRkZTQzYmU0ZmVjYzhmZDUzMTZjZmMxOTA1YWYzNTQyMTM4OWEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_c2de73aaa6254fe99e3ee3af09e5a0db",
+      "statement": "`prepareMeasurementHistory` ordena una copia de las mediciones y, en el mismo recorrido, identifica las entradas más recientes con peso y altura finitos; `resolveMeasurementSummary` reutiliza ese historial preparado para producir los pares actual/anterior de las nueve métricas de presentación.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.ts#L583-L659",
+          "version": "repo-lines-v1:sha256:e485e0f1b923ab2750be2133cf4eb2da9d360adea786da9645205e19073b3e30:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwNzlhZTA5MDU1ODc2YmM3ODY3NGZiYjVmMjE1YWQ3ZjlhZGRjYjE0Zjg4ZGQxNmI5NmQ5ODE2NDYxNWI1NjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVkNjdjYzBhMGQ2NGQxMGEzOWYwZWNhYmVmOTUzOWJmNTU2ZjdlNzEyMjM1MzU2YWI1ZGU0ODdlM2FlOTQ3MGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b3f9c580efde4298ac5f7e1cf0650bf5",
+      "statement": "En el componente raíz, la preparación del historial está memoizada exclusivamente por `store.measurements`; el resumen depende del historial preparado, la altura efectiva y el sexo, y las tarjetas se memoizan a partir del resumen.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L6948-L6996",
+          "version": "repo-lines-v1:sha256:1b8477f02e8c6789d3debce661bfbf3be4599f7de5182c2fe5972a7e2c84af9f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhOTI2YmQ0Mjk1NGFhYjk0MzRlNTVhMGVhNTdlZGJlZTVhMjVkZTlmZmVmMGYyZjIyMmEwZTRjZDBkNWQ3Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMmY5M2M5MmQzNDBjZDI3MTQ1MWRlZGM4YThkYjFlZTk3NjdiMzFmYTg5NDA3MGY3OWZjODlmYTJlM2Q2MWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzZWZhNjRmODMyMDRlNzQzZjI0MWMxMzc0NmI2ZDY0NWZmNWVmODlhMjNhMTQ5OGE0Y2IzMmNmZDk2NWU1NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxOWQxMTliNjQxNzk0MDgxZGM2Y2MwZjFhNTA3ZmU0YjM4MjMxNWQwMTk2NWMxODAxYzdjNmZhYzVjY2IwM2YifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/measurements/measurementMemoization.contract.test.ts#L26-L50",
+          "version": "repo-lines-v1:sha256:57ce73df17ddd3d4aaae9a2691cc50dca66724e69e8c1c1093af0289b8330216:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlN2UyNDY4Zjc4MWZlMmMyNGRiMWFmOTE3YzVhMGRhNjBhYjFlYjczN2YxYWYzZGRjYTc1ZWQzYmU4YWM0YTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2Yjg1ZGI4ZTI4YjI4ODZlMzExMmRjZDJhZjgzNzA5NjYzNjEwOWFkNjdkNzQyZDhlZDY5ZDg1MDVmM2JhYmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ4MTdmYmI3M2M5MmIzNmQ1ZTQ4OTZmZjUxYzFiNThlZWMzMzBiYmU5NjFiYTA1ZmM2MjA1Zjg2N2VhMWJjZjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d42c333304524e788468b35d8c4aec71",
+      "statement": "Los puntos de gráficos usan el historial preparado, deduplican por día, aplican un límite inclusivo de días de calendario y se devuelven en orden cronológico.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L7016-L7046",
+          "version": "repo-lines-v1:sha256:2271a2c2948eda9e513b9c1df0ffbc303c5b2e2b1a555f61dffc7ccfb9237f99:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4MDcwYjVhMDQ5NzYxOWJhZTBjMmZkNTk2MDk4YjhjZTBlYTZhYjI0ODk5MzQ2OGE4ZjM0MjQ5MWJiMzVjYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViZjVhNGI3NjUzYjNkNjExYWM1ZTVlZGIwZGU4NDczNTdjZjI3N2Q5Mjk2MzhjMDAwNjk2ZDk0MmYzMzkwNjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjczMDg4OGY4MTc5NTE4YmUwYmJiMjFlMTk0Y2FkODI3MDA4NjZmOWYzN2UyZWU3NTcxMGM3OWMyODA4NzgwZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjZDY3MTkzMTFlYjRiNzE3NmNmNTcwOTc1NjIxOWRmNGEyMDllMThjZDhmMzdhNWNlNjU5NWFjNWMwNGVhYjgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.ts#L661-L727",
+          "version": "repo-lines-v1:sha256:42e5a4d4f984f29ebcc902e1ff951a746333c5dd7e49be8bade89dffff6c1f51:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyZDNjOTExOTc3MmU1NGNkOTcxYTllNDVjZWEzZDIxMjg0N2E3Y2UyNWVhOGJlZDcxZWZjZTZlMDlkNmI2ZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1NTRjMzU4MTYwYTFlNzY0ZjM3OTkyMzYyYzk3NTcxM2Y2ZmUxNWQ4OTcyNzYxZjBlNDdkYmE2MzYyMjAzMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmM2E3YjM0YTRhMTdhMDg4NDNjM2YyOWMxNjNjZjU5MGYzYjJkODQzNGQwYjEyZTM5M2FkZTViZDA3YTk2MWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2c2e3bfe5a0c4e73a3f25d395cc2d075",
+      "statement": "La sonda de trabajo de mediciones solo se activa en web de desarrollo con `EXPO_PUBLIC_MEASUREMENT_PERF_TEST=1`; crea contadores sin valores de medición y los expone en `globalThis.__GYMNASIA_MEASUREMENT_WORK__` únicamente en ese caso.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/measurements/measurementPerformance.ts#L1-L26",
+          "version": "repo-lines-v1:sha256:4c6461034dcf941de2a31008740bef2c50ee3faaf2aa9d770a9aa083566079ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxODEwMzEzZjNlNDgwZDlmYzE1NmEzMDAzMzAyOTNlYzJiNTEyMTVjMzIwMzY4ZDA5MWU3YTM2MGQwYmY2YTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/measurements/measurementSummary.test.ts#L193-L206",
+          "version": "repo-lines-v1:sha256:ada7189b3c3beb392775a4eb8901726e6c63d7dba517ea863a4c84853c22d8ce:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZWJjNTNmNzZjNWExYmVmNDU2NmIyYzBjZDRkOWMwYjUxMTcxYjM2ZGQ0ODZlZDc2NjMyNTcwZGIwOWIxMGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_71692e805488408e89b07d64fab43b30",
+      "statement": "La E2E de rendimiento siembra 1.826 mediciones, verifica que interacciones no relacionadas no incrementen los contadores de preparación/resumen y comprueba las invalidaciones correctas tras cambios de mediciones, importación, recuperación y borrado.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/measurement-performance.e2e.mjs#L124-L245",
+          "version": "repo-lines-v1:sha256:03734d02fffeb2b794d9bbebcd001aa5f402f3af556715be83a2aee20500d697:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIwZDRmYjFlMzM1YzgzZjU3MjAxNmRlYTNjMjBiNDA5ZGEyZWY2NmIwNWQ2ZTAyYzNiODk0Zjg5OTQ1ZmJiMDgxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwMDQwNzA1MzJkMGI0OTFkOWZkYmI2ZGFiZTY2YjE2YzllNDgxMWYyOTMzNDJjODRmZmY1ZWE1N2EyYjQ0ZmY3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyNDE2NWM4YTM1ODI2NDZkOTUyNTUwMGEwODk4YzJkZjM1MmIyNjIxYTI3NzExNzcxMmVjOTBmYmJhNGUzZjE5IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2MDcwOTE5ZmJhYmYxMDEyMzEyZjJmMjRmZWYwZWZkOTQ2NTg3OWRlNzFiOGU5MDcxMjBkMGI5N2Y3NTkxY2Y2In0"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/measurement-performance.e2e.mjs#L34-L80",
+          "version": "repo-lines-v1:sha256:8e3ef5af43af272ab2c7d713e1c8fb9c86bb32edb3a9e5e08a0df631c9050c51:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjMjg5MzVlZWZlMTNjZWIyZTMzNDg5NDYzMTE4ZDFiYzA0MzJkODdmMzZkZGMwZmFmNGI0NTZiZmMwY2U2YTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxNDU4MDQ5MDBjZTNkMGM1NGNkMGY3MDA2ZjBlYzcyZWNiNWYxMGUyYmU1MzQ5MTM4MjQ0NDkzYTE2ZTcxNDIifQ"
+        },
+        {
+          "resource": "repo://package.json#L62-L71",
+          "version": "repo-lines-v1:sha256:a28fa6d095a2ac3ceed4a7d5d9a082ac561339f49c7051f78e4974e9efae1e3d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmN2NhYjc2NjNjMDlmYmEzNTAzOTIwODAxYWI2ZWU4ZTU3ZDBkMmE2YzVkZWY4OTk3NzI1NTFkMjIxZjg3NGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMGQ0ZmY3NTAyNmU3Yzg3MGRjNDI3ZTUyNjJjMzc4YTU1OGViNmUyMjQwMDA2NzU1YWFhNmMyMWI4Y2RmNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5MTFkMGI5ZmQzYWM5YzQxNjY5Yjc0ZGM3Y2JhODUzMGZiMzcxOWQwYTE2MmNhOGJiNzc1NjY4M2YzMTQ2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4NmY3NjFmMzVmNjVhZDNkOTA1OGQ3ZTY0MmMwMGZhYTgzNmYyNWFiZGIxYTA0MWY5YzZlYjc0Y2JhMDJkNGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1d4c9d3be54e480f9278892e8f49b5f6",
+      "statement": "El resumen preparado conserva la semántica de la referencia previa con duplicados y valores no finitos, realiza un único ordenamiento y mantiene un trabajo lineal acotado hasta `MAX_MEASUREMENTS`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/measurements/measurementSummary.test.ts#L147-L190",
+          "version": "repo-lines-v1:sha256:f692b6002cc90d56ca9b59dc6d8bd30888bc4155359a6c3d5c8f53425daa3328:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzZTk0ZTEyYTBkMjRlNDhiYWE5ODQ0YWM3N2VkYzQwMjlmMzlmNWNkMmJmZDMzNWNmYzFlMWUxMDkwNGFlNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyNmQ2ZTcyOGEwNWU2YmE4NDUwOTUxMzhjZGVlYTBmMmJiYjU2ZjA2M2NhZjFjMjM4ZjFjYjA0YWY5YTA5YTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4NWUwMWFkODUzZjg2ZjYzMzAwNDFhZGQ5ZGJjOGRiZmZmZjk1ZjQ3NDJlY2E4MjVhYTlkZThiZTQ2YTQ1OWEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/measurements/measurementSummary.test.ts#L32-L85",
+          "version": "repo-lines-v1:sha256:4f0e1c793a5b0cfad0344a27ca50358d6ccbfee734341b3c59c8d741c3f70214:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZDYyN2Q3MTMyOGE0ZTQzYzVjODNhNjliMTIzNzA1MTI3ZmY5OWIzNjc4ZDc0YTc3ZjNkYTY2Yzg2YTBiZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjZTJhYmVmMjE4MzM3MDI1MjRhODE2MGQ1ZTc0YWY3NmViNTRiZTQzZjMwOTU5MzMxZWE3Y2QyOWE5MjQ2ZmUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-07T11:37:28.236Z"
+    "at": "2026-09-12T11:47:11.882Z"
   }
 }

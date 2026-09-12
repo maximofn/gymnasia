@@ -10,7 +10,7 @@ description: Orientación para arrancar Gymnasia, elegir el dominio responsable 
 tags: [quickstart, architecture, mobile, agent, operations]
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+    at: 2026-09-12T11:47:11.882Z
 sources:
   - id: openwiki-source-8037e2358a2c4f9b2c722a11
     resource: repo://AGENTS.md
@@ -24,6 +24,8 @@ sources:
     resource: repo://apps/feedback-worker/src/index.ts
   - id: openwiki-source-0c30fc96b9e7c8b57c35473c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
+  - id: openwiki-source-b14a4ecd65e83b5561f88e2a
+    resource: repo://apps/mobile/agent/providerToolLoop.ts
   - id: openwiki-source-0c63120d58188f63614c7f7c
     resource: repo://apps/mobile/agent/signedPolicy.ts
   - id: openwiki-source-a6ba9053969a3e00cd971742
@@ -42,18 +44,18 @@ sources:
     resource: repo://README.md
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
 ---
 
 # Inicio rápido y mapa de cambios
 
-Gymnasia tiene una única superficie de producto: el cliente Expo de `apps/mobile`, que se ejecuta en Android, iOS y web. Entrenamiento, dieta, mediciones, conversaciones, preferencias y configuración BYOK pertenecen al dispositivo o navegador: no hay cuentas, API de producto ni sincronización central obligatoria. La red puede enriquecer una función concreta, pero su ausencia no debe impedir usar los dominios locales.
+Gymnasia tiene una única superficie de producto: el cliente Expo de `apps/mobile`, ejecutable en Android, iOS y web. Entrenamiento, dieta, mediciones, conversaciones, preferencias y configuración BYOK pertenecen al dispositivo o navegador: no hay cuentas, API de producto ni sincronización central obligatoria. La red puede enriquecer una función concreta, pero su ausencia no debe impedir usar los dominios locales.
 
 Empiece por [Arquitectura local-first](architecture/overview.md) para conocer los límites y use esta página para encaminar una tarea. El código ejecutable, sus contratos y sus pruebas prevalecen sobre esta wiki y sobre propuestas o tableros de planificación.
 
 ## Arranque local
 
-El repositorio usa workspaces npm. Para una instalación reproducible, CI usa el lockfile con `npm ci`; para trabajar localmente puede usar `npm install`.
+El repositorio usa workspaces npm. Para una instalación reproducible, use `npm ci`; para trabajar localmente también puede usar `npm install`.
 
 ```bash
 npm ci
@@ -70,7 +72,7 @@ npm --workspace apps/mobile run build:web
 npm --workspace apps/mobile exec tsc --noEmit
 ```
 
-`APP_ENV` es obligatorio y `app.config.ts` separa `development`, `staging` y `production` por nombre, identificador de aplicación, espacio de nombres de almacenamiento y canal de política. Development usa por defecto el proveedor `fake` y admite `DEV_PROVIDER_MODE=byok`; Staging y Production usan BYOK. No mezcle datos o expectativas de una variante con otra.
+`APP_ENV` es obligatorio. `app.config.ts` separa `development`, `staging` y `production` por nombre, identificador de aplicación, espacio de nombres de almacenamiento y canal de política. Development usa por defecto el proveedor `fake` y admite `DEV_PROVIDER_MODE=byok`; Staging y Production usan BYOK. No mezcle datos ni expectativas entre variantes.
 
 Para Expo Go físico a través de un túnel, use el separador de argumentos del workspace:
 
@@ -95,26 +97,27 @@ flowchart TD
 
 ## Mapa de tareas
 
-Elija primero el dominio que posee el contrato, no el archivo que parezca más cercano. La última columna da la primera señal de validación; amplíela cuando una tarea cruce otra frontera.
+Elija el dominio que posee el contrato, no el archivo que parezca más cercano. La última columna da la primera señal de validación; amplíela cuando una tarea cruce otra frontera.
 
 | Si va a modificar… | Lea primero | Primeros controles |
 | --- | --- | --- |
 | Límites local-first, variantes, persistencia general o una nueva dependencia remota | [Arquitectura local-first](architecture/overview.md) | `npm test`, typecheck y el check del límite afectado. No haga que guardar datos personales dependa de red. |
-| Arranque, shell, navegación, configuración Expo o comportamiento por plataforma | [Shell de aplicación, plataformas y navegación](mobile/application-shell.md) | typecheck, `build:web`, `npm run test:shell:e2e` y la E2E del flujo afectado; pruebe nativo si toca capacidades nativas. |
-| Almacenes locales, recuperación, secretos BYOK, borrado o importación/exportación | [Estado local, recuperación, borrado y copias](mobile/local-state-and-backup.md) | `npm test`, `npm run test:storage-recovery:e2e` o `npm run test:data-deletion:e2e` según corresponda. |
-| Plantillas, series, sesiones, descansos o alertas de entrenamiento | [Plantillas, series y ejecución de entrenamientos](mobile/training.md) | La E2E concreta: `npm run test:train:e2e`, `test:train:series:e2e`, `test:train:series-operations:e2e` o `test:train:compound:e2e`. |
+| Arranque, shell, navegación, configuración Expo o comportamiento por plataforma | [Shell de aplicación y navegación](mobile/application-shell.md) | typecheck, `build:web`, `npm run test:shell:e2e` y la E2E del flujo afectado; pruebe nativo si toca capacidades nativas. |
+| Almacenes locales, recuperación, secretos BYOK, borrado o importación/exportación | [Estado local, recuperación y backup](mobile/local-state-and-backup.md) | `npm test`, `npm run test:storage-recovery:e2e` o `npm run test:data-deletion:e2e` según corresponda. |
+| Plantillas, series, sesiones, descansos o alertas de entrenamiento | [Entrenamiento, plantillas e historial](mobile/training.md) | La E2E concreta: `npm run test:train:e2e`, `test:train:series:e2e`, `test:train:series-operations:e2e` o `test:train:compound:e2e`. |
 | Dieta, objetivos, alimentos personales, búsqueda o estimación asistida | [Dieta y estimación de alimentos](mobile/diet-and-food-estimation.md) | `npm run test:diet:e2e`; añada pruebas del agente si una tool lee o escribe el dominio. |
-| Mediciones, fotos de progreso, gráficos o su backup | [Mediciones, fotos de progreso y respaldo](mobile/measurements.md) | Pruebas de dominio y de backup/borrado que cubran los datos cambiados. |
-| Chat, policy lease, tools, confirmación, reintentos o idempotencia | [Runtime del agente y herramientas](agent/runtime.md) | Vitest focalizado de `apps/mobile/agent/`, `npm test` y `npm run test:agent:e2e` si cambia el recorrido visible. |
-| Claves, proveedores, modelos, conectividad o SSE | [Configuración BYOK de proveedores](agent/provider-configuration.md) y [Transporte, streaming y compatibilidad de modelos](agent/provider-streaming.md) | typecheck, pruebas deterministas del adaptador y E2E de agente cuando cambie el flujo del usuario. |
-| Prompt, reglas sanitarias, firma, activación o fallback de política | [Entrega y activación de políticas firmadas](architecture/policy-delivery.md) y [Gobernanza de prompts y política sanitaria](operations/prompt-policy-governance.md) | `npm run check:health-safety`, `npm run test:health-safety`, `npm run check:prompt-policy`, `npm run test:prompt-policy`, `npm run policy:bundle:check` y `npm run check:policy-trust`. |
-| Fichas, imágenes, schemas o agregados de alimentos, productos, recetas o ejercicios | [Catálogos nutricionales y de ejercicios](content/repositories.md) y [Generación y validación de imágenes de catálogo](content/image-generation.md) | `npm run sync:catalogs`, `npm run check:catalogs`, `npm run test:catalogs` y `npm run test:catalogs:e2e`. |
-| Permisos Android, alarmas, plugins Expo, build o release | [Permisos Android y fiabilidad de avisos](operations/android-permissions.md) y [Build, release y estrategia de validación](operations/build-release-and-testing.md) | `npm run check:android-permissions`, `npm run test:android-permissions`, controles de privacidad y build/prueba nativa. |
-| Texto legal, datos tratados, hosts remotos o borrado publicable | [Build, release y estrategia de validación](operations/build-release-and-testing.md) | `npm run check:data-inventory`, `npm run test:data-inventory`, `npm run check:legal`, `npm run test:legal` y la E2E aplicable. |
-| Proxy CORS de Anthropic | [Proxy Anthropic de depuración local](services/anthropic-proxy.md) | `npm run test:proxy` y `npm run check:anthropic-proxy`; no lo despliegue. |
-| Propuestas o denuncias que crean incidencias | [Worker de feedback e incidencias](services/feedback-worker.md) | `npm --workspace apps/feedback-worker run test` y pruebas de contrato cliente afectadas. |
-| VivaGym, comprobación o retirada de actualizaciones | [Integraciones VivaGym y actualizaciones](integrations/vivagym-and-updates.md) | Pruebas del adaptador y degradación cuando la integración no responda. |
-| El espejo de tickets, épicas o dependencias | [Tablero de arquitectura y seguimiento](services/architecture-board.md) | `npm run test:board` y `npm run test:board:e2e`; es un sitio estático separado. |
+| Mediciones, fotos de progreso, gráficos o su backup | [Mediciones y rendimiento del historial](mobile/measurements.md) | Pruebas de dominio y de backup/borrado que cubran los datos cambiados. |
+| Chat, policy lease, tools, confirmación, reintentos o idempotencia | [Runtime del agente y herramientas](agent/runtime.md) y [Evidencia de comportamiento en ejecución](operations/runtime-behavior.md) | Vitest focalizado de `apps/mobile/agent/`, `npm test` y `npm run test:agent:e2e` si cambia el recorrido visible. La evidencia de runtime es observacional, no sustituye las pruebas. |
+| Claves, proveedores, modelos, conectividad o SSE | [Configuración de proveedores](agent/provider-configuration.md) y [Transporte, streaming y compatibilidad de modelos](agent/provider-streaming.md) | typecheck, pruebas deterministas del adaptador y E2E de agente cuando cambie el flujo del usuario. |
+| Prompt, reglas sanitarias, firma, activación o fallback de política | [Entrega y verificación de política](architecture/policy-delivery.md) y [Gobierno de prompt y política](operations/prompt-policy-governance.md) | `npm run check:health-safety`, `npm run test:health-safety`, `npm run check:prompt-policy`, `npm run test:prompt-policy`, `npm run policy:bundle:check` y `npm run check:policy-trust`. |
+| Fichas, imágenes, schemas o agregados de alimentos, productos, recetas o ejercicios | [Repositorios de contenido y consumo de catálogos](content/repositories.md) y [Generación y validación de imágenes](content/image-generation.md) | `npm run sync:catalogs`, `npm run check:catalogs`, `npm run test:catalogs` y `npm run test:catalogs:e2e`. |
+| Permisos Android, alarmas, plugins Expo, build o release | [Permisos Android y configuración nativa](operations/android-permissions.md) y [Compilación, publicación y pruebas](operations/build-release-and-testing.md) | `npm run check:android-permissions`, `npm run test:android-permissions`, controles de privacidad y build/prueba nativa. |
+| Texto legal, datos tratados, hosts remotos o borrado publicable | [Compilación, publicación y pruebas](operations/build-release-and-testing.md) | `npm run check:data-inventory`, `npm run test:data-inventory`, `npm run check:legal`, `npm run test:legal` y la E2E aplicable. |
+| Proxy CORS de Anthropic | [Proxy local de Anthropic](services/anthropic-proxy.md) | `npm run test:proxy` y `npm run check:anthropic-proxy`; no lo despliegue. |
+| Propuestas o denuncias que crean incidencias | [Worker de feedback](services/feedback-worker.md) | `npm --workspace apps/feedback-worker run test` y pruebas de contrato cliente afectadas. |
+| VivaGym, comprobación o retirada de actualizaciones | [VivaGym y actualizaciones](integrations/vivagym-and-updates.md) | Pruebas del adaptador y degradación cuando la integración no responda. |
+| El espejo de tickets, épicas o dependencias | [Tablero de arquitectura](services/architecture-board.md) | `npm run test:board` y `npm run test:board:e2e`; es un sitio estático separado. |
+| Automatización de esta wiki, OAuth, saneamiento o informes | [Automatización privada de OpenWiki](operations/openwiki-automation.md) y [Evidencia de comportamiento en ejecución](operations/runtime-behavior.md) | `npm --workspace ops/openwiki-automation-template test`; no añada contenido de trazas o logs a informes. |
 
 ## Fronteras que deben conservarse
 
@@ -122,9 +125,9 @@ Elija primero el dominio que posee el contrato, no el archivo que parezca más c
 
 `App` integra dominios locales. El almacenamiento general y las copias son responsabilidad del cliente; una copia manual no es sincronización ni recuperación desde un servidor. Las claves API BYOK tienen una frontera distinta del estado general: en nativo se usa el almacenamiento seguro disponible; en web no adquieren garantías de secreto de servidor.
 
-Los catálogos de `alimentos/`, `productos_comerciales/`, `recetas/` y `ejercicios/` son contenido de referencia. Se editan fichas JSON e imágenes; `all.json`, índices y schemas móviles se generan. La app valida el agregado remoto y retiene una copia local aceptada, de modo que un fallo de GitHub Raw, red o schema no borra datos personales ni convierte el arranque en dependiente de la descarga.
+Los catálogos de `alimentos/`, `productos_comerciales/`, `recetas/` y `ejercicios/` son contenido de referencia. Se editan fichas JSON e imágenes y el generador produce los agregados, índices y schemas derivados; no los edite a mano. Para alimentos, productos y recetas el consumidor usa agregados validados y cacheados. Ejercicios usa `ejercicios/catalog-v1/`: manifiesto, páginas de 30 fichas, fragmentos de búsqueda e índices por ID. El cliente activa una versión de ejercicios solo tras validar el manifiesto y su primera página, y conserva la instantánea previa offline. Un fallo de red, GitHub Raw o esquema no debe borrar datos personales ni convertir el arranque en dependiente de una descarga.
 
-El agente también se ejecuta en el cliente. Para cada límite de conversación adquiere un `AgentPolicyLease` inmutable: el canal `Local` usa el snapshot integrado y los canales remotos verifican política firmada contra raíces públicas incluidas en la build. Prompt, guardrail sanitario y `PolicyContext` deben proceder del mismo lease durante el turno. Las tools leen o escriben el estado local bajo validación y commit explícito; una respuesta del proveedor no autoriza por sí sola un efecto.
+El agente también se ejecuta en el cliente. Para cada límite de conversación adquiere un `AgentPolicyLease` inmutable: el canal `Local` usa el snapshot integrado y los canales remotos verifican política firmada contra raíces públicas incluidas en la build. Prompt, guardrail sanitario y `PolicyContext` deben proceder del mismo lease durante el turno. Las tools leen o escriben el estado local bajo validación y commit explícito; una respuesta del proveedor no autoriza por sí sola un efecto. Para modificar ese flujo, contraste los contratos en [Runtime del agente](agent/runtime.md) con las observaciones saneadas y limitadas de [Evidencia de comportamiento en ejecución](operations/runtime-behavior.md); estas últimas no son telemetría del chat móvil.
 
 Editar `prompts/` o `policy/health-safety/` no es una modificación documental. Cambia lo que el agente puede recomendar o hacer: explique en lenguaje natural el efecto para la persona usuaria y espere la aprobación explícita del mantenedor antes de promoción o merge. Los checks verifican consistencia técnica, pero no sustituyen esa autorización.
 
@@ -140,7 +143,7 @@ curl -sS http://127.0.0.1:8000/health
 
 El proxy escucha en loopback, rechaza clientes remotos y no se despliega. No lo levante para probar normalmente Anthropic en navegador; úselo solo para diagnosticar la pasarela.
 
-`apps/feedback-worker` es la excepción remota autorizada: custodia el token de GitHub para crear incidencias privadas a partir de feedback voluntario. Su contrato valida y sanea el payload, reserva una clave de idempotencia antes de crear la incidencia y solo comunica éxito con una referencia verificable. Si el endpoint no está configurado, el worker está apagado o la solicitud falla, el envío queda indisponible y la aplicación sigue funcionando. No convierta este Worker en autenticación, base de datos o sincronización de producto.
+`apps/feedback-worker` es la excepción remota autorizada: custodia el token de GitHub para crear incidencias privadas a partir de feedback voluntario. En desarrollo el endpoint está vacío; Staging y Production configuran el mismo endpoint de feedback, y un override es solo para desarrollo. Si el endpoint no está configurado, el worker está apagado o la solicitud falla, el envío queda indisponible y la aplicación sigue funcionando. No convierta este Worker en autenticación, base de datos o sincronización de producto.
 
 ## Validación proporcional
 
@@ -166,9 +169,9 @@ npm run check:catalogs
 npm run check:android-permissions
 ```
 
-`npm test` reúne la suite determinista y los controles del espejo de desarrollo; no implica que se hayan ejecutado todas las E2E ni pruebas de cada workspace. La exportación `build:web` genera `apps/mobile/dist` y es una buena señal de empaquetado web. Las E2E usan navegador y dependencias controladas: prueban una proyección web, no la disponibilidad de proveedores reales ni el hardware.
+`npm test` encadena la suite determinista y el dev store; no implica que se hayan ejecutado todas las E2E ni pruebas de cada workspace. La exportación `build:web` genera `apps/mobile/dist` y es una buena señal de empaquetado web. Las E2E usan navegador y dependencias controladas: prueban una proyección web, no la disponibilidad de proveedores reales ni el hardware.
 
-Por tanto, pruebas deterministas y exportación web **no** demuestran SecureStore nativo, permisos fusionados, instalación, notificaciones, alarmas, audio o ejecución en segundo plano. Un cambio de plugin Expo, permiso, recurso nativo, notificación o distribución requiere el guard rail aplicable y una build/prueba nativa representativa, preferiblemente en dispositivo. La guía de release explica los gates de candidato y la verificación del artefacto; tampoco una build verde sustituye la comprobación manual de las capacidades críticas.
+Por tanto, pruebas deterministas y exportación web **no** demuestran SecureStore nativo, permisos fusionados, instalación, notificaciones, alarmas, audio o ejecución en segundo plano. Un cambio de plugin Expo, permiso, recurso nativo, notificación o distribución requiere el guard rail aplicable y una build/prueba nativa representativa, preferiblemente en dispositivo. La guía de release explica los gates de candidato; tampoco una build verde sustituye la comprobación manual de las capacidades críticas.
 
 ## Ejecutable frente a planificación histórica
 

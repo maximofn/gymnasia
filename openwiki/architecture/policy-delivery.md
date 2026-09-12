@@ -1,11 +1,11 @@
 ---
 type: arquitectura de entrega de políticas
-title: Entrega y activación de políticas firmadas
-description: Describe cómo se construyen, firman, promocionan y verifican localmente los bundles de prompt y salud-seguridad. Cubre el snapshot integrado, la selección por canal, la caché anti-rollback y el fallback seguro del cliente móvil.
+title: Entrega y verificación de política
+description: Describe cómo se construyen, firman, promocionan y verifican localmente los bundles de prompt y salud-seguridad. Cubre el snapshot integrado, la selección por entorno, la caché anti-rollback y el fallback seguro del cliente móvil.
 tags: [agent-policy, signed-policy, mobile, security, deployment, health-safety]
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+    at: 2026-09-12T11:47:11.882Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -43,10 +43,10 @@ sources:
     resource: repo://scripts/policy-promotion/prepare-policy-snapshot.mjs
   - id: openwiki-source-d89cdda8746df6dbfedfcf69
     resource: repo://scripts/policy-promotion/sign-policy.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
 ---
 
-# Entrega y activación de políticas firmadas
+# Entrega y verificación de política
 
 La política ejecutable no es un prompt remoto arbitrario: es un **bundle canónico firmado** que reúne el prompt, el runtime de salud-seguridad, las herramientas requeridas y metadatos de compatibilidad. Una activación firmada lo asocia con un canal (`Staging` o `Production`) y una secuencia. La aplicación solo puede usar un paquete cuya cadena verifique contra raíces públicas integradas en la build.
 

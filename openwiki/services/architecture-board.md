@@ -1,11 +1,10 @@
 ---
-type: tablero de seguimiento estático
-title: Tablero de arquitectura y seguimiento
-description: El sitio estático `arquitectura-agente/` refleja manualmente tickets de Linear mediante un único JSON, con vistas de épicas, estado y dependencias. No forma parte del runtime actual de Gymnasia ni sincroniza datos del producto.
-tags: [architecture-board, static-site, linear, testing]
+type: "Referencia"
+title: "Tablero de arquitectura"
+openwiki_generated: true
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+    at: 2026-09-12T11:47:11.882Z
 sources:
   - id: openwiki-source-95db82d22801961ce58f4a00
     resource: repo://.claude/skills/linear-tickets/scripts/linear.py
@@ -27,10 +26,11 @@ sources:
     resource: repo://arquitectura-agente/vercel.json
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
 ---
 
-# Tablero de arquitectura y seguimiento
+
+# Tablero de arquitectura
 
 ## Alcance y frontera arquitectónica
 

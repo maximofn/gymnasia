@@ -1,11 +1,8 @@
 ---
 type: guía operativa
-title: Build, release y estrategia de validación
-description: Selecciona los comandos de desarrollo, comprobaciones deterministas, E2E controladas y gates de release según el contrato que cambia. Distingue la validación local de las operaciones remotas protegidas de políticas y APK Android.
-tags: [operations, ci, testing, release, android, policy, privacy]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+title: Compilación, publicación y pruebas
+description: Selección de comprobaciones locales, E2E, CI y gates de publicación para cambios de Gymnasia. Describe cómo la release Android vincula un APK verificable con su fuente, política y transacción durable.
+tags: [operations, ci, testing, release, android, privacy]
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
@@ -47,147 +44,140 @@ sources:
     resource: repo://scripts/production-release/production-release.mjs
   - id: openwiki-source-eca432bcfe70b04e1d09e3d3
     resource: repo://scripts/production-release/release-transaction.mjs
+  - id: openwiki-source-a43fcdd54439cd4258ab69e4
+    resource: repo://scripts/production-release/verify-artifact.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-12T11:47:11.882Z
+generated: { by: "openwiki/0.5.0", at: "2026-09-12T11:47:11.882Z" }
 ---
 
-# Build, release y estrategia de validación
+# Compilación, publicación y pruebas
 
 ## Principio operativo
 
-La validación debe ser proporcional al cambio y al contrato que podría romperse. Este repositorio separa cuatro señales que no son intercambiables:
-
-1. **Checks locales deterministas:** tipos, contratos, artefactos generados y regresiones con fixtures. Son la señal inicial reproducible tras `npm ci`.
-2. **E2E web controlada:** exporta React Native Web, sirve `apps/mobile/dist` y usa Playwright. Comprueba interfaz, estado y recuperación bajo respuestas simuladas; no valida Android ni iOS.
-3. **Gates de release:** combinan checks locales con controles de identidad, estado de GitHub y evidencia del binario. Se ejecutan para un candidato exacto, no como sustituto de una revisión ordinaria.
-4. **Actos remotos protegidos:** EAS, environments de GitHub, releases y promoción de política requieren credenciales y aprobación. No son necesarios para desarrollar ni para que la app funcione localmente.
+La puerta debe ser proporcional al contrato afectado. No equivalen una suite determinista, una E2E web, un build nativo y una publicación: las primeras dan señal reproducible del checkout; la E2E cubre la aplicación exportada en navegador; y la release añade identidad remota, políticas y evidencia criptográfica del binario.
 
 ```mermaid
 flowchart TD
-    Change["Cambio propuesto"] --> Local["Checks locales y tipado"]
-    Local --> Scope{"¿Cambia contrato web o consumidor?"}
-    Scope -->|"Sí"| Web["E2E web con fixtures"]
-    Scope -->|"No"| Review["Revisión del cambio"]
-    Web --> Review
-    Review --> Sensitive{"¿Política o release Android?"}
-    Sensitive -->|"Política"| Signed["Promoción firmada y aprobada"]
-    Sensitive -->|"Android"| Release["Gates Production y EAS"]
-    Sensitive -->|"No"| Done["Validación terminada"]
+    Change["Cambio"] --> Local["Checks locales y tipos"]
+    Local --> Web{"¿Cambia consumidor web?"}
+    Web -->|"Sí"| E2E["E2E Playwright con fixtures"]
+    Web -->|"No"| Native{"¿Cambia Android?"}
+    E2E --> Native
+    Native -->|"Sí"| Android["Permisos y configuración nativa"]
+    Native -->|"No"| Review["Revisión"]
+    Android --> Review
+    Review --> Release{"¿Release Production?"}
+    Release -->|"Sí"| Gates["Fuente exacta, EAS y artefacto"]
+    Release -->|"No"| Done["Validación terminada"]
+    Gates --> Done
 ```
 
-*El diagrama separa cobertura local y web de decisiones remotas; una E2E web verde no acredita capacidades nativas.*
+*El flujo separa cobertura web y nativa de los controles remotos requeridos para publicar.*
 
-## Preparar y ejecutar la aplicación
+## Entorno y entradas locales
 
-El proyecto npm declara `apps/*` como workspaces y CI usa el lockfile con `npm ci`. Empiece desde una instalación limpia:
+El repositorio usa workspaces `apps/*`; instale desde el raíz con `npm ci`. Los scripts de Expo de la app móvil fijan `APP_ENV=development`; `build:web` conserva `APP_ENV` ya definido o usa development. `app.config.ts` rechaza una configuración sin `APP_ENV` válido, por lo que no conviene invocar `expo config` o EAS sin declararlo.
 
 ```bash
 npm ci
 npm run dev:mobile
-```
-
-Los scripts móviles fijan `APP_ENV=development` para iniciar Expo, Android, iOS y web. `build:web` conserva `APP_ENV` si ya está definido y, si no, exporta development:
-
-```bash
-npm --workspace apps/mobile run web
 npm --workspace apps/mobile run android
 npm --workspace apps/mobile run ios
 npm --workspace apps/mobile run build:web
 npm --workspace apps/mobile exec tsc --noEmit
 ```
 
-Asocie cada uno a su riesgo: `expo start` sirve para iterar; `expo run:android` y `expo run:ios` ejercitan un runtime nativo de desarrollo; `build:web` detecta fallos de empaquetado web; y `tsc --noEmit` detecta incompatibilidades estáticas sin ejecutar la app. La exportación genera `apps/mobile/dist`, que reutilizan varias E2E, pero no prueba permisos fusionados, SecureStore, alarmas, notificaciones, intents, audio de fondo ni instalación en un teléfono.
+Los entornos `development`, `staging` y `production` cambian nombre, identificadores iOS/Android, canal de política y namespace de almacenamiento. Development usa proveedor `fake` por defecto y puede elegir `byok`; staging y production siempre usan `byok`. `GOOGLE_FIXTURE_PORT` solo es admisible en development BYOK. Así se evitan tanto la mezcla de datos locales entre variantes como un proveedor de desarrollo accidental en un binario no local.
 
-`app.json` define el paquete Android/iOS y la política declarativa de permisos. Permite `FOREGROUND_SERVICE`, `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea permisos como `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. Para cambios en plugins Expo, dependencias nativas o permisos, ejecute además los controles de permisos y una compilación/prueba nativa representativa. Véase [Validación de permisos Android publicables](android-permissions.md).
+`build:web` y las E2E no prueban permisos fusionados, SecureStore ni alarmas y notificaciones en hardware. Para cambios de plugin, manifest o dependencia nativa, añada una compilación/prueba representativa en dispositivo además de los guard rails descritos en [Validación de permisos Android publicables](android-permissions.md).
 
-## Matriz de validación mínima
+## Seleccionar la validación mínima
 
-| Cambio | Comando focalizado | Contrato que valida y límite |
+| Cambio | Ejecutar | Alcance y límite |
 | --- | --- | --- |
-| Lógica móvil determinista, agente o almacenamiento de desarrollo | `npm test` | Ejecuta `test:deterministic` y el check/tests del dev store; no agrega todas las suites del repositorio. |
-| Prompt integrado | `npm run check:chat-prompt` | Detecta que el snapshot generado usado por la app deriva del prompt fuente; `test:deterministic` lo invoca como precheck. |
-| Salud, seguridad o prompt de política | `npm run check:health-safety && npm run test:health-safety` y/o `npm run check:prompt-policy && npm run test:prompt-policy` | Comprueba la política canónica, sus generados, contratos y regresiones; requiere además la autorización indicada en [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md). |
-| Tipos de la app móvil | `npm --workspace apps/mobile exec tsc --noEmit` | Análisis estático del workspace móvil, no una prueba de runtime. |
-| Configuración, plugin o dependencia Android | `npm run check:android-permissions && npm run test:android-permissions` | El check contrasta configuración y manifests de dependencias instaladas con la política; los tests prueban que el guard rail detecte fallos. Requiere `node_modules` y no sustituye un dispositivo. |
-| Claves locales, destinos HTTPS o impacto de permisos en privacidad | `npm run check:data-inventory && npm run test:data-inventory` | Impide que el inventario publicable deje de describir las claves, hosts y permisos declarados por la app. |
-| Texto legal o política de privacidad publicada | `npm run check:legal && npm run test:legal` | Comprueba los artefactos legales generados y sus contratos. Para el sitio publicado, añada `npm run test:privacy:e2e`. |
-| Catálogos y sus salidas | `npm run check:catalogs && npm run test:catalogs` | Verifica contratos de todos los dominios y que los generados estén actualizados. |
-| Consumidores de catálogos | `npm run test:catalogs:e2e` | Prueba la proyección web con fixtures e indisponibilidad simulada, sin consultar servicios externos. |
-| Chat/agente web | `npm run test:agent:e2e` | Ejecuta las E2E de chat y proveedor de desarrollo contra navegador y dependencias interceptadas; no acredita proveedores reales ni funcionalidades nativas. |
-| Entrenamiento, dieta, recuperación o preferencias web | La E2E específica: por ejemplo `npm run test:train:e2e`, `npm run test:diet:e2e` o `npm run test:storage-recovery:e2e` | Seleccione el script que cubra el flujo afectado; son pruebas web explícitas, no un requisito para iniciar Expo localmente. |
-| Eliminación local de datos | `npm run test:data-deletion:e2e` | Siembra datos y cachés en el almacenamiento web para comprobar el borrado visible; no demuestra el borrado de un dispositivo nativo. |
-| Proxy Anthropic | `npm run test:proxy` | Delega en el workspace Python aislado; no instala ni transforma sus dependencias en dependencias npm. |
-| Release Android | `npm run verify:production-source -- --profile production-apk --artifact-type apk --output /tmp/production-source-evidence.json` | Verificador de candidato Production que necesita checkout, GitHub y gates; el workflow es la entrada normal, no un comando local autosuficiente. |
+| Lógica móvil determinista | `npm test` | Encadena `test:deterministic` y `test:dev-store`; no ejecuta todas las suites del repositorio. |
+| Prompt integrado | `npm run check:chat-prompt` | Comprueba que el snapshot usado por la app deriva de su fuente; es precheck de la suite determinista. |
+| Tipos móviles | `npm --workspace apps/mobile exec tsc --noEmit` | Detecta incompatibilidades estáticas, no comportamiento de runtime. |
+| Política de salud o prompt | `npm run check:health-safety && npm run test:health-safety` y/o `npm run check:prompt-policy && npm run test:prompt-policy` | Valida fuente, generados y regresiones; los cambios sensibles también requieren el flujo de autorización de [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md). |
+| Permiso, plugin o dependencia Android | `npm run check:android-permissions && npm run test:android-permissions` y `npm run check:android-native-config && npm run test:android-native-config` | Contrasta política/configuración y comprueba los detectores. No reemplaza artefacto ni dispositivo. |
+| Almacenamiento, host HTTPS o permiso con impacto de privacidad | `npm run check:data-inventory && npm run test:data-inventory` | Obliga a que el inventario describa claves, hosts y permisos; revise además el texto legal si cambia la declaración pública. |
+| Texto legal publicado | `npm run check:legal && npm run test:legal` | Comprueba los generados y contratos legales; añada `npm run test:privacy:e2e` para la experiencia web publicada. |
+| Catálogo | `npm run check:catalogs && npm run test:catalogs && npm run test:catalogs:e2e` | Cubre fuentes, artefactos generados y consumidores web aislados. |
+| UI o flujo web | La E2E focalizada, por ejemplo `npm run test:train:e2e`, `npm run test:diet:e2e` o `npm run test:storage-recovery:e2e` | Es evidencia de navegador, no de capacidades nativas ni de proveedores reales. |
+| Borrado visible de datos locales | `npm run test:data-deletion:e2e` | Siembra almacenamiento web y verifica el flujo de borrado; no demuestra el borrado en un teléfono. |
+| Proxy Anthropic | `npm run test:proxy` | Ejecuta el workspace Python mediante `uv`, separado de las dependencias npm. |
 
-## Checks de privacidad, catálogos y permisos
+El inventario de datos no usa red: recorre TypeScript no-test de sus roots, detecta literales de claves y hosts HTTPS y los compara con el inventario declarado. También debe encontrar fuentes; un escaneo vacío falla para no convertir una configuración rota en un verde vacío.
 
-El inventario de datos es un guard rail sin red: escanea fuentes TypeScript no-test bajo los roots configurados, compara literales de claves de almacenamiento y hosts HTTPS con `scripts/data-inventory/inventory.json`, y toma los permisos permitidos y extras esperados de la política de permisos. También falla si no pudo escanear ningún archivo, para evitar un verde vacío. Cuando añade o retira almacenamiento, un endpoint o un permiso, actualice el inventario y revise la lista de cambios de privacidad; no trate una política legal estática como evidencia de que el código sigue cumpliéndola.
-
-Los generadores de catálogo separan comprobar de escribir:
+Para catálogos, comprobar y materializar son operaciones deliberadamente distintas:
 
 ```bash
 npm run check:catalogs
 npm run test:catalogs
 npm run sync:catalogs
-# escritura limitada a un dominio
 node scripts/catalogs/generate.mjs --write --domain alimentos
 ```
 
-`check:catalogs` no modifica el checkout y verifica todos los catálogos y sus artefactos; no acepta `--domain`. `sync:catalogs` o `--write --domain` materializan salidas que deben revisarse y confirmarse junto con su fuente. Después, los tests y la E2E de consumidores comprueban que una salida correcta sea usable; escribir no reemplaza esa validación.
+`--check` siempre inspecciona todos los dominios y sus salidas sin escribir; por diseño rechaza `--domain`. `--write` puede limitarse a un dominio, pero sus cambios generados se revisan y confirman junto a la fuente. Escribir artefactos no sustituye pruebas de contrato ni de consumidores.
 
-De modo equivalente, `check:android-permissions` revisa `app.json` y los manifests de dependencias instaladas, mientras `test:android-permissions` valida la capacidad del escáner para detectar las clases de infracción. Un check verde valida el contrato del checkout instalado, no la aceptación por Google Play ni el comportamiento de una alarma en hardware.
+## Permisos y E2E controladas
 
-## E2E: qué representan
+La configuración Android permite exactamente `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. El escáner revisa `app.json` y manifests de dependencias instaladas; sus pruebas verifican el contrato real, cada tipo de infracción y la vivacidad del recorrido de manifests. En particular, una directiva `tools:node="remove"` no cuenta como permiso declarado: el contrato relevante para publicar es el manifest fusionado del artefacto.
 
-Las E2E son scripts Playwright que normalmente exportan web y sirven `dist`; aceptan variables de entorno para reutilizar una exportación o mostrar el navegador en algunos casos. Están diseñadas para ser deterministas: la E2E de privacidad abre cada página en un contexto limpio, sin cookies, almacenamiento ni claves, y compara el contenido y metadatos con la copia legal generada. La de borrado local siembra claves scoped y verifica que el flujo las elimine. Las E2E del agente y catálogos inyectan o interceptan respuestas de proveedores para cubrir estados de éxito, error y recuperación.
+Las E2E de catálogos exportan explícitamente una variante web development con BYOK y sirven `apps/mobile/dist`. Playwright intercepta `https://api.github.com/**` y `https://raw.githubusercontent.com/**`, entrega fixtures locales o fallos 503 y siembra el almacenamiento del navegador. Cubren consumidores, caché y recuperación sin consultar GitHub; no son una prueba de disponibilidad externa.
 
-Por ello, use una E2E cuando cambie la interfaz, el contrato de almacenamiento o la integración cliente que cubre, pero no la presente como requisito de arranque local ni como prueba de disponibilidad de OpenAI, Anthropic, Google, GitHub u otros servicios. Tampoco sustituye una prueba Android/iOS cuando el cambio toca una capacidad nativa. Para la estrategia del agente y el uso reservado de evals LLM, consulte `docs/testing/agent-testing.md` y [Entrenamiento móvil](../mobile/training.md).
+El resto de E2E sigue el mismo límite: usa export web y navegador para verificar interfaz, estado y recuperación bajo dependencias controladas. Una E2E verde no acredita integración real de OpenAI, Anthropic, Google o GitHub ni comportamiento Android/iOS.
 
-## Integración continua
+## CI ordinaria
 
-`agent-tests.yml` se activa en PR y `main` solo para sus rutas declaradas. Su job Node usa Node 22, `npm ci`, permiso `contents: read` y diez minutos para verificar prompt integrado, política sanitaria, sus tests, `npm test`, la E2E Metro del dev store, feedback worker, automatización OpenWiki y TypeScript. El proxy corre en otro job con `uv`, de modo que no forma parte del entorno Node. Un cambio fuera de esos filtros no recibe este workflow.
+`agent-tests.yml` se ejecuta en PR y `main` únicamente cuando coinciden sus filtros de rutas. El job Node 22 instala con `npm ci`, comprueba prompt y política de salud, ejecuta `npm test`, la E2E Metro del dev store, tests del feedback worker, automatización OpenWiki y typecheck. El proxy Anthropic es un job Python independiente con `uv`.
 
-`catalog-tests.yml` también usa Node 22 y `npm ci`, instala Chromium y ejecuta `check:catalogs`, `test:catalogs` y `test:catalogs:e2e` para rutas de fuentes, generador y consumidores declaradas. Sus resultados no cubren por sí mismos permisos Android ni una release.
+`catalog-tests.yml` también está filtrado por rutas y, tras `npm ci` e instalación de Chromium, ejecuta `check:catalogs`, `test:catalogs` y `test:catalogs:e2e`. Ninguno de los dos workflows sustituye la validación del artefacto Android de Production.
 
-## Política firmada y release Android
+## Release Android: fuente, transacción y APK
 
-La promoción de política es una operación manual protegida, distinta del merge. Requiere el workflow de promoción, una operación y motivo, una activación firmada y los controles remotos de candidato; para el modelo de autorización, staging, producción y rollback consulte [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md). Ningún test local autoriza una promoción.
-
-El perfil EAS `production` tiene `APP_ENV=production` e incremento remoto de versión y produce el formato por defecto de EAS; `production-apk` lo extiende y fuerza `android.buildType: apk`. El workflow Android publica con `production-apk`; no confunda ese destino con el perfil `production` que la política de release clasifica como AAB. La versión visible procede de `apps/mobile/app.json` y un cambio en una ruta empaquetada exige el incremento semántico calculado desde la base o la versión publicada más alta.
+EAS usa versión remota. El perfil `production` declara `APP_ENV=production`; `production-apk` lo extiende y fija `android.buildType: apk`. La release de GitHub usa exclusivamente `production-apk`, mientras la política clasifica `production` como AAB. Cuando cambian rutas de producción bajo `apps/mobile/`, el verificador de versión exige en `app.json` el incremento semántico calculado a partir de la versión base o publicada y los asuntos convencionales de commits.
 
 ```mermaid
 stateDiagram-v2
     [*] --> prepared
-    prepared --> build_submitted: submit EAS build ID
-    build_submitted --> build_running: observe IN_PROGRESS
-    build_submitted --> build_finished: observe FINISHED
-    build_running --> build_finished: observe FINISHED
-    build_submitted --> failed: observe ERRORED or CANCELED
-    build_running --> failed: observe ERRORED or CANCELED
+    prepared --> build_submitted: submit EAS build
+    build_submitted --> build_running: EAS IN_PROGRESS
+    build_submitted --> build_finished: EAS FINISHED
+    build_running --> build_finished: EAS FINISHED
+    build_submitted --> failed: EAS ERRORED or CANCELED
+    build_running --> failed: EAS ERRORED or CANCELED
     failed --> prepared: retry with reason
     failed --> superseded: supersede with reason
-    build_finished --> validated: verify artifact
+    build_finished --> validated: verify APK
     validated --> [*]
     superseded --> [*]
 ```
 
-*La transacción durable permite reconciliar un timeout sin recompilar; un fallo terminal exige una decisión manual motivada.*
+*La transacción durable conserva el intento EAS y permite reconciliar una espera agotada sin volver a compilar.*
 
-`build-apk.yml` se activa por push a `main` en rutas empaquetadas o manualmente con `reconcile`, `retry-failed` o `supersede-failed`; su concurrencia no cancela una ejecución en curso. Antes de usar `EXPO_TOKEN`, valida el SHA exacto y ejecuta todos los `PRODUCTION_GATES`: políticas, permisos, inventario de datos, legal, prompt, pruebas, OpenWiki, tipos, export Android de desarrollo y E2E de agente/entrenamiento. Si un gate falla o ensucia el checkout, el candidato no es publicable.
+`build-apk.yml` se activa al hacer push a `main` en rutas de producción o manualmente para `reconcile`, `retry-failed` y `supersede-failed`; su grupo de concurrencia no cancela la ejecución ya en curso. Primero selecciona la transacción durable más antigua y, para construir, hace checkout del SHA inmutable. Antes de configurar EAS ejecuta `verify:production-source` con perfil, tipo, SHA y versión esperados. El verificador confirma checkout limpio, pertenencia a `main`, repositorio y controles remotos de reglas, PR/statuses y environment; después ejecuta en orden todos los gates de Production. Si falla un gate o alguno modifica el checkout, la evidencia resulta no publicable.
 
-Después crea o recupera una transacción durable en un draft de GitHub, adopta como máximo un build EAS que coincida con perfil, versión, SHA y mensaje, y observa EAS hasta terminar. El APK se descarga a cuarentena y `verify:production-artifact` inspecciona su estructura, manifest, firma, tamaño, MIME, paquete, SDK, permisos, configuración y snapshot de política antes de adjuntarlo como `gymnasia.apk` y publicar el draft. La operación exige el environment `Production` y sus controles remotos; una comprobación local no puede reemplazarlos.
+La lista canónica incluye política de prompt, permisos Android y configuración nativa, salud y seguridad, inventario de datos, legal, snapshot de chat, pruebas ordinarias y de release, OpenWiki, typecheck, export Android development y E2E de agente y entrenamiento. No reemplace esta puerta por una selección informal de comandos locales.
 
-Incluso con todos los gates verdes, instale el APK en un dispositivo representativo antes de distribuirlo y compruebe versión, migración/conservación de datos, notificaciones, alarmas y ejecución en segundo plano. La app no implementa un actualizador desde GitHub; la instalación directa es manual y distinta de Play.
+Para una transacción nueva se crea un borrador de GitHub antes de EAS y se adjuntan el JSON de transacción, evidencia de fuente y snapshot/bundle de política. El workflow adopta como máximo un build EAS que coincida en perfil, versión, SHA y mensaje; de otro modo envía uno y persiste su ID. Solo un estado terminal `ERRORED` o `CANCELED` lleva a `failed`; reintentar o sustituir exige una operación manual y un motivo. `FINISHED` necesita una URL HTTPS antes de pasar a verificación.
+
+El APK se descarga a cuarentena. `verify:production-artifact` calcula SHA-256 y tamaño, inspecciona archivo, manifest, paquete, versión, SDK, permisos, configuración, firma, MIME y sonidos de notificación, y enlaza la evidencia de fuente y el snapshot de política. Para un AAB exige además `bundletool` 1.18.3, validación y firma; para APK usa `apkanalyzer`, `apksigner` y `aapt2`. Solo tras una evidencia pasada se marca `validated`, se adjunta `gymnasia.apk` y se comprueba en el borrador el MIME, límites, digests y cadena de evidencias antes de publicarlo como release inmutable.
+
+Aun con esa cadena verde, instale el APK en un dispositivo representativo antes de distribuirlo y compruebe versión, preservación o migración de datos, alarmas, notificaciones y segundo plano. Una exportación web y una release de GitHub no sustituyen esa validación nativa.
 
 ## Selección rápida
 
-- **Cambio aislado de lógica:** añada/ejecute el test determinista responsable, `npm test` y typecheck si modifica el workspace móvil.
-- **Cambio de UI, persistencia o flujo web:** añada `build:web` y la E2E concreta; amplíe a flujos vecinos cuando comparten el contrato.
-- **Cambio de catálogo:** `check:catalogs`, `test:catalogs` y `test:catalogs:e2e`; ejecute escritura solo si debe actualizar salidas.
-- **Cambio de privacidad o datos:** `check:data-inventory`, sus tests, checks legales y la E2E de privacidad o borrado cuando modifique la experiencia publicada o de eliminación.
-- **Cambio de permiso, plugin o dependencia nativa:** guard rail de permisos, tipado, export y build/prueba nativa; una E2E web no basta.
-- **Cambio sensible de prompt o salud:** gates de política más autorización explícita antes de merge; promoción firmada posterior si corresponde.
-- **Release Android:** deje que el workflow aplique `verify:production-source`, el environment y la verificación del artefacto; complete con prueba manual en dispositivo.
+- **Cambio de lógica:** prueba responsable, `npm test` y typecheck si toca TypeScript móvil.
+- **Cambio de UI, persistencia o flujo web:** `build:web` y la E2E focalizada.
+- **Cambio de catálogo:** check, regresiones y E2E; escriba salidas solo cuando deban actualizarse.
+- **Cambio de privacidad:** inventario y tests; legal y E2E de privacidad/borrado cuando cambie la declaración o experiencia.
+- **Cambio nativo:** permisos y configuración nativa, más build y prueba en dispositivo.
+- **Cambio sensible de política:** gates y autorización explícita; la promoción firmada es una operación distinta del merge.
+- **Release Android:** deje que el workflow vincule candidato, gates, EAS y evidencia; complete con prueba manual del APK.
 
-Para el inventario de repositorios y fuentes de contenido, consulte [Repositorios y fuentes de contenido](../content/repositories.md); para preparar un entorno local, [Inicio rápido](../quickstart.md).
+Para las fuentes de contenido consulte [Repositorios y fuentes de contenido](../content/repositories.md), y para la preparación local [Inicio rápido](../quickstart.md).
