@@ -9,13 +9,16 @@ import type {
   TrainingEditorModel,
   TrainingHistoryActions,
   TrainingHistoryModel,
+  TrainingListActions,
+  TrainingListModel,
+  TrainingFilter,
 } from "../controllers/trainingController";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import { isCompoundSeriesType, type ExerciseSeries } from "../training/seriesContract";
 import { SERIES_TYPE_META } from "../training/seriesPresentation";
 import { isCompletedWorkoutSummary, type WorkoutSessionSummary, type WorkoutSummaryRecalculation } from "../training/workoutHistory";
-import { ROUTINE_ICON_OPTIONS, formatClock, formatPrescriptionNumber, formatTrainingHistoryDate, formatWorkoutHistoryVolume, inferExerciseMuscle, normalizeExerciseImageUri, workoutPrescriptionSeriesDetail, type TrainingStatsMetricKey, type TrainingStatsPeriodKey } from "../training/presentationModel";
-import { templateHasRunnableSeries } from "../training/workoutSessionModel";
+import { ROUTINE_ICON_OPTIONS, formatClock, formatPrescriptionNumber, formatTrainingHistoryDate, formatWorkoutHistoryVolume, inferExerciseMuscle, inferTemplateDurationMinutes, normalizeExerciseImageUri, normalizeTemplateIcon, trainingCategoryMeta, workoutPrescriptionSeriesDetail, type TrainingStatsMetricKey, type TrainingStatsPeriodKey } from "../training/presentationModel";
+import { resolveTrainingCategory, templateHasRunnableSeries } from "../training/workoutSessionModel";
 import type { TrainingCategory } from "../training/workoutTemplateOperations";
 import { mobileTheme } from "../theme";
 
@@ -2053,3 +2056,535 @@ function SwipeableSetRow({
     </View>
   );
 }
+
+export const TrainingListScreen = memo(function TrainingListScreen({
+  model,
+  actions,
+}: {
+  model: Readonly<TrainingListModel>;
+  actions: Readonly<TrainingListActions>;
+}) {
+  return (
+                <View style={{ gap: 14 }}>
+                  {model.lastWorkoutSummary ? (
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.35)",
+                        backgroundColor: "#171B23",
+                        borderRadius: 16,
+                        padding: 12,
+                        gap: 6,
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "800" }}>
+                        Último entrenamiento completado
+                      </Text>
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 17, fontWeight: "700" }}>
+                        {model.lastWorkoutSummary.template_name}
+                      </Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 13 }}>
+                        {model.lastWorkoutSummary.completed_effort_count}/
+                        {model.lastWorkoutSummary.total_effort_count} esfuerzos ·{" "}
+                        {formatClock(model.lastWorkoutSummary.elapsed_seconds)}
+                      </Text>
+                      <Pressable
+                        onPress={() => actions.closeLastWorkoutSummary()}
+                        style={{
+                          marginTop: 4,
+                          minHeight: 32,
+                          borderRadius: 10,
+                          borderWidth: 1,
+                          borderColor: "rgba(255,255,255,0.14)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={{ color: "#D7DEE8", fontSize: 13, fontWeight: "700" }}>
+                          Cerrar resumen
+                        </Text>
+                      </Pressable>
+                    </View>
+                  ) : null}
+  
+                  <View
+                    style={{
+                      minHeight: 48,
+                      borderRadius: mobileTheme.radius.pill,
+                      borderWidth: 1,
+                      borderColor: "rgba(255,255,255,0.06)",
+                      backgroundColor: "#12151C",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      paddingHorizontal: 14,
+                    }}
+                  >
+                    <View style={{ width: 18, height: 18, alignItems: "center", justifyContent: "center" }}>
+                      <View
+                        style={{
+                          width: 11,
+                          height: 11,
+                          borderRadius: 999,
+                          borderWidth: 1.8,
+                          borderColor: mobileTheme.color.textSecondary,
+                        }}
+                      />
+                      <View
+                        style={{
+                          position: "absolute",
+                          right: 0.5,
+                          bottom: 2,
+                          width: 6,
+                          height: 1.8,
+                          borderRadius: 999,
+                          backgroundColor: mobileTheme.color.textSecondary,
+                          transform: [{ rotate: "45deg" }],
+                        }}
+                      />
+                    </View>
+                    <TextInput
+                      style={{
+                        flex: 1,
+                        marginLeft: 8,
+                        color: mobileTheme.color.textPrimary,
+                        paddingVertical: 0,
+                      }}
+                      value={model.search}
+                      onChangeText={actions.updateSearch}
+                      placeholder="Buscar rutinas..."
+                      placeholderTextColor="#717985"
+                    />
+                  </View>
+  
+                  <View
+                    style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                  >
+                    {TRAINING_FILTER_OPTIONS.map((option) => {
+                      const isActive = model.filter === option.key;
+                      return (
+                        <Pressable
+                          key={option.key}
+                          onPress={() => actions.updateFilter(option.key)}
+                          style={{
+                            height: 38,
+                            borderRadius: mobileTheme.radius.pill,
+                            borderWidth: 1,
+                            borderColor: isActive ? "rgba(203,255,26,0.85)" : mobileTheme.color.borderSubtle,
+                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                            paddingHorizontal: 16,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            {option.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+  
+                  {model.templates.length === 0 ? (
+                    <View
+                      style={{
+                        minHeight: 430,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingHorizontal: 18,
+                        paddingTop: 16,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 74,
+                          height: 74,
+                          borderRadius: 22,
+                          backgroundColor: "rgba(133,170,6,0.24)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <View style={{ width: 32, gap: 5 }}>
+                          {[0, 1, 2].map((row) => (
+                            <View
+                              key={row}
+                              style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+                            >
+                              <View
+                                style={{
+                                  width: 4,
+                                  height: 4,
+                                  borderRadius: 2,
+                                  backgroundColor: mobileTheme.color.brandPrimary,
+                                }}
+                              />
+                              <View
+                                style={{
+                                  flex: 1,
+                                  height: 3,
+                                  borderRadius: 2,
+                                  backgroundColor: mobileTheme.color.brandPrimary,
+                                }}
+                              />
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                      <Text
+                        style={{
+                          marginTop: 24,
+                          color: mobileTheme.color.textPrimary,
+                          fontSize: 32,
+                          fontWeight: "700",
+                          textAlign: "center",
+                        }}
+                      >
+                        {model.totalTemplateCount === 0 ? "Sin rutinas aún" : "Sin resultados"}
+                      </Text>
+                      <Text
+                        style={{
+                          marginTop: 10,
+                          color: "#8B94A3",
+                          fontSize: 20,
+                          textAlign: "center",
+                          lineHeight: 26,
+                        }}
+                      >
+                        {model.totalTemplateCount === 0
+                          ? "Crea tu primera rutina personalizada\ny empieza a entrenar"
+                          : "Prueba con otro texto de búsqueda\no cambia los filtros"}
+                      </Text>
+  
+                      <Pressable
+                        onPress={actions.createTemplate}
+                        testID="training-create-first"
+                        style={{
+                          marginTop: 30,
+                          minHeight: 58,
+                          borderRadius: 16,
+                          backgroundColor: mobileTheme.color.brandPrimary,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 10,
+                          paddingHorizontal: 24,
+                        }}
+                      >
+                        <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "700", lineHeight: 24 }}>
+                          +
+                        </Text>
+                        <Text style={{ color: "#06090D", fontSize: 19, fontWeight: "800" }}>
+                          CREAR RUTINA
+                        </Text>
+                      </Pressable>
+                    </View>
+                  ) : (
+                    <View style={{ gap: 10, paddingBottom: 110 }}>
+                      {model.templates.map((tpl, tplIndex) => {
+                        const category = resolveTrainingCategory(tpl);
+                        const categoryMeta = trainingCategoryMeta(category);
+                        const routineIcon = normalizeTemplateIcon(tpl.icon, category, tplIndex);
+                        const durationMinutes = inferTemplateDurationMinutes(tpl);
+                        const canStartTemplate = templateHasRunnableSeries(tpl);
+                        const isMenuOpen = model.menuTemplateId === tpl.id;
+                        return (
+                          <View
+                            key={tpl.id}
+                            style={{
+                              position: "relative",
+                              zIndex: isMenuOpen ? 140 : 1,
+                              elevation: isMenuOpen ? 22 : 0,
+                            }}
+                          >
+                            <View
+                              style={{
+                                borderWidth: 1,
+                                borderColor: isMenuOpen
+                                  ? "rgba(203,255,26,0.8)"
+                                  : mobileTheme.color.borderSubtle,
+                                backgroundColor: "#171B23",
+                                borderRadius: 18,
+                              }}
+                            >
+                              <Pressable
+                                onPress={() => actions.openTemplate(tpl.id)}
+                                testID={`training-template-open-${tpl.id}`}
+                                style={{
+                                  minHeight: 92,
+                                  paddingLeft: 14,
+                                  paddingRight: 56,
+                                  paddingTop: 14,
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  gap: 12,
+                                }}
+                              >
+                                <View style={{ width: 10, alignItems: "center", justifyContent: "center", gap: 2 }}>
+                                  {Array.from({ length: 3 }).map((_, rowIndex) => (
+                                    <View
+                                      key={`${tpl.id}_dot_row_${rowIndex}`}
+                                      style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+                                    >
+                                      <View
+                                        style={{
+                                          width: 2,
+                                          height: 2,
+                                          borderRadius: 999,
+                                          backgroundColor: "#707887",
+                                        }}
+                                      />
+                                      <View
+                                        style={{
+                                          width: 2,
+                                          height: 2,
+                                          borderRadius: 999,
+                                          backgroundColor: "#707887",
+                                        }}
+                                      />
+                                    </View>
+                                  ))}
+                                </View>
+                                <View
+                                  style={{
+                                    width: 48,
+                                    height: 48,
+                                    borderRadius: 12,
+                                    backgroundColor: categoryMeta.iconBg,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <Feather name={routineIcon} size={20} color={mobileTheme.color.brandPrimary} />
+                                </View>
+                                <View style={{ flex: 1, gap: 4 }}>
+                                  <Text
+                                    style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}
+                                    numberOfLines={1}
+                                  >
+                                    {tpl.name}
+                                  </Text>
+                                  <View
+                                    style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}
+                                  >
+                                    <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+                                      <View
+                                        style={{
+                                          width: 7,
+                                          height: 7,
+                                          borderRadius: 999,
+                                          backgroundColor: categoryMeta.color,
+                                        }}
+                                      />
+                                      <Text style={{ color: categoryMeta.color, fontSize: 12, fontWeight: "700" }}>
+                                        {categoryMeta.label}
+                                      </Text>
+                                    </View>
+                                    <Text style={{ color: "#8892A2", fontSize: 12 }}>
+                                      {durationMinutes > 0 ? `${durationMinutes} min` : "-- min"}
+                                    </Text>
+                                    <Text style={{ color: "#8892A2", fontSize: 12 }}>
+                                      {tpl.exercises.length} ejercicios
+                                    </Text>
+                                  </View>
+                                </View>
+                              </Pressable>
+  
+                              <View style={{ paddingHorizontal: 14, paddingTop: 12, paddingBottom: 14 }}>
+                                <Pressable
+                                  onPress={() => actions.startTemplate(tpl.id)}
+                                  disabled={!canStartTemplate}
+                                  testID={`training-template-inline-start-${tpl.id}`}
+                                  style={{
+                                    minHeight: 44,
+                                    borderRadius: 14,
+                                    borderWidth: 1,
+                                    borderColor: canStartTemplate
+                                      ? "rgba(203,255,26,0.55)"
+                                      : "rgba(255,255,255,0.1)",
+                                    backgroundColor: canStartTemplate
+                                      ? "rgba(203,255,26,0.1)"
+                                      : "rgba(255,255,255,0.04)",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      color: canStartTemplate
+                                        ? mobileTheme.color.brandPrimary
+                                        : "#7F8896",
+                                      fontSize: 16,
+                                      fontWeight: "800",
+                                    }}
+                                  >
+                                    Empezar rutina
+                                  </Text>
+                                </Pressable>
+                              </View>
+                            </View>
+  
+                            <Pressable
+                              onPress={() => actions.toggleTemplateMenu(tpl.id)}
+                              testID={`training-template-menu-${tpl.id}`}
+                              style={{
+                                position: "absolute",
+                                right: 14,
+                                top: 14,
+                                width: 30,
+                                height: 30,
+                                borderRadius: 10,
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <View style={{ alignItems: "center", gap: 3 }}>
+                                {Array.from({ length: 3 }).map((_, dotIndex) => (
+                                  <View
+                                    key={`${tpl.id}_kebab_${dotIndex}`}
+                                    style={{
+                                      width: 3,
+                                      height: 3,
+                                      borderRadius: 999,
+                                      backgroundColor: "#98A2B3",
+                                    }}
+                                  />
+                                ))}
+                              </View>
+                            </Pressable>
+  
+                            {isMenuOpen ? (
+                              <View
+                                testID={shellSurfaceTestId("training-template-menu")}
+                                style={{
+                                  position: "absolute",
+                                  top: 56,
+                                  right: 10,
+                                  width: 192,
+                                  borderRadius: 16,
+                                  borderWidth: 1,
+                                  borderColor: "rgba(255,255,255,0.1)",
+                                  backgroundColor: "rgba(12,14,19,0.98)",
+                                  paddingVertical: 8,
+                                  zIndex: 280,
+                                  elevation: 28,
+                                  shadowColor: "#000",
+                                  shadowOpacity: 0.36,
+                                  shadowRadius: 10,
+                                  shadowOffset: { width: 0, height: 6 },
+                                }}
+                              >
+                                <Pressable
+                                  onPress={() => actions.startTemplate(tpl.id)}
+                                  testID={`training-template-start-${tpl.id}`}
+                                  style={{
+                                    minHeight: 40,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <Feather name="play" size={14} color={mobileTheme.color.brandPrimary} />
+                                  <Text
+                                    style={{
+                                      color: mobileTheme.color.brandPrimary,
+                                      fontSize: 17,
+                                      fontWeight: "700",
+                                    }}
+                                  >
+                                    Iniciar entrenamiento
+                                  </Text>
+                                </Pressable>
+                                <Pressable
+                                  onPress={() => actions.editTemplate(tpl.id)}
+                                  testID={`training-template-edit-${tpl.id}`}
+                                  style={{
+                                    minHeight: 40,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <Feather name="edit-2" size={14} color={mobileTheme.color.textSecondary} />
+                                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 17 }}>
+                                    Editar rutina
+                                  </Text>
+                                </Pressable>
+                                <Pressable
+                                  onPress={() => actions.cloneTemplate(tpl.id)}
+                                  testID={`training-template-clone-${tpl.id}`}
+                                  style={{
+                                    minHeight: 40,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <Feather name="copy" size={14} color={mobileTheme.color.textSecondary} />
+                                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 17 }}>
+                                    Clonar rutina
+                                  </Text>
+                                </Pressable>
+                                <Pressable
+                                  onPress={() => actions.moveTemplate(tpl.id)}
+                                  testID={`training-template-move-${tpl.id}`}
+                                  style={{
+                                    minHeight: 40,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <Feather name="move" size={14} color={mobileTheme.color.textSecondary} />
+                                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 17 }}>
+                                    Mover posición
+                                  </Text>
+                                </Pressable>
+                                <Pressable
+                                  onPress={() => actions.deleteTemplate(tpl.id)}
+                                  testID={`training-template-delete-${tpl.id}`}
+                                  style={{
+                                    minHeight: 40,
+                                    borderTopWidth: 1,
+                                    borderTopColor: "rgba(255,255,255,0.2)",
+                                    marginTop: 6,
+                                    paddingTop: 10,
+                                    paddingHorizontal: 12,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 10,
+                                  }}
+                                >
+                                  <Feather name="trash-2" size={14} color="#FF4A4A" />
+                                  <Text style={{ color: "#FF4A4A", fontSize: 17, fontWeight: "600" }}>
+                                    Eliminar rutina
+                                  </Text>
+                                </Pressable>
+                              </View>
+                            ) : null}
+                          </View>
+                        );
+                      })}
+                    </View>
+                  )}
+                </View>
+  
+  );
+});
+
+const TRAINING_FILTER_OPTIONS: Array<{ key: TrainingFilter; label: string }> = [
+  { key: "all", label: "Todos" },
+  { key: "strength", label: "Fuerza" },
+  { key: "hypertrophy", label: "Hipertrofia" },
+  { key: "cardio", label: "Cardio" },
+  { key: "flexibility", label: "Flexibilidad" },
+];

@@ -8,9 +8,11 @@ import type { ExerciseSeries } from "../training/seriesContract";
 import type { WorkoutEffortBreakdown } from "../training/workoutExecution";
 import type {
   RoutineIconName,
+  TrainingCategory,
   WorkoutExercise,
   WorkoutTemplate,
 } from "../training/workoutTemplateOperations";
+import { resolveTrainingCategory } from "../training/workoutSessionModel";
 import type {
   TrainingStatsMetricKey,
   TrainingStatsPeriodKey,
@@ -18,6 +20,86 @@ import type {
 import type { CatalogLink } from "../catalogs/types";
 import type { WorkoutTemplateValidation } from "../training/workoutTemplateTransactions";
 import type { ScreenController } from "./types";
+
+export type TrainingFilter = "all" | TrainingCategory;
+
+export type TrainingListModel = {
+  search: string;
+  filter: TrainingFilter;
+  totalTemplateCount: number;
+  templates: ReadonlyArray<WorkoutTemplate>;
+  menuTemplateId: string | null;
+  lastWorkoutSummary: WorkoutSessionSummary | null;
+};
+
+export type TrainingListActions = {
+  updateSearch(value: string): void;
+  updateFilter(value: TrainingFilter): void;
+  createTemplate(): void;
+  openTemplate(id: string): void;
+  editTemplate(id: string): void;
+  cloneTemplate(id: string): void;
+  moveTemplate(id: string): void;
+  deleteTemplate(id: string): void;
+  startTemplate(id: string): void;
+  toggleTemplateMenu(id: string): void;
+  closeTemplateMenu(): void;
+  closeLastWorkoutSummary(): void;
+};
+
+export type TrainingListControllerInput = Omit<TrainingListModel, "templates" | "totalTemplateCount"> &
+  TrainingListActions & {
+    allTemplates: ReadonlyArray<WorkoutTemplate>;
+  };
+
+export function useTrainingListController(
+  input: TrainingListControllerInput,
+): ScreenController<TrainingListModel, TrainingListActions, "training-template-menu"> {
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const templates = useMemo(() => {
+    const normalize = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const search = normalize(input.search.trim());
+    return input.allTemplates.filter((template) => {
+      const matchesSearch = !search || normalize(template.name).includes(search);
+      const matchesFilter = input.filter === "all" || resolveTrainingCategory(template) === input.filter;
+      return matchesSearch && matchesFilter;
+    });
+  }, [input.allTemplates, input.filter, input.search]);
+  const model = useMemo<TrainingListModel>(() => ({
+    search: input.search,
+    filter: input.filter,
+    totalTemplateCount: input.allTemplates.length,
+    templates,
+    menuTemplateId: input.menuTemplateId,
+    lastWorkoutSummary: input.lastWorkoutSummary,
+  }), [input.allTemplates.length, input.filter, input.lastWorkoutSummary, input.menuTemplateId, input.search, templates]);
+  const actions = useMemo<TrainingListActions>(() => ({
+    updateSearch: (value) => inputRef.current.updateSearch(value),
+    updateFilter: (value) => inputRef.current.updateFilter(value),
+    createTemplate: () => inputRef.current.createTemplate(),
+    openTemplate: (id) => inputRef.current.openTemplate(id),
+    editTemplate: (id) => inputRef.current.editTemplate(id),
+    cloneTemplate: (id) => inputRef.current.cloneTemplate(id),
+    moveTemplate: (id) => inputRef.current.moveTemplate(id),
+    deleteTemplate: (id) => inputRef.current.deleteTemplate(id),
+    startTemplate: (id) => inputRef.current.startTemplate(id),
+    toggleTemplateMenu: (id) => inputRef.current.toggleTemplateMenu(id),
+    closeTemplateMenu: () => inputRef.current.closeTemplateMenu(),
+    closeLastWorkoutSummary: () => inputRef.current.closeLastWorkoutSummary(),
+  }), []);
+  const back = useMemo(() => ({
+    layers: { "training-template-menu": input.menuTemplateId !== null },
+    handlers: {
+      "training-template-menu": () => {
+        if (inputRef.current.menuTemplateId === null) return false;
+        inputRef.current.closeTemplateMenu();
+        return true;
+      },
+    },
+  }), [input.menuTemplateId]);
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
 
 export type TrainingEditorModel = {
   template: WorkoutTemplate | null;
