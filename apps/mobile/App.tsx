@@ -370,33 +370,22 @@ import {
   AppHeader,
   ChatScreen,
   DataDeletionConfirmation,
-  DataSettingsPanel,
   DietHeader,
   DietMealsScreen,
   FoodEstimatorOverlay,
   GlobalScreenSkeleton,
   DietResolutionOverlays,
-  DietSettingsPanel,
-  FoodsSettingsPanel,
   HomeScreen,
-  MemorySettingsPanel,
   MeasurementsScreen,
   MeasurementsOverlays,
-  MeasurementsSettingsPanel,
   InitialAppLoading,
-  NotificationSettingsPanel,
   NewRoutineButton,
-  PersonalFoodsSettingsPanel,
   PersonalFoodAssistantScreen,
-  PreferencesSettingsPanel,
-  ProductsSettingsPanel,
-  ProviderSettingsPanel,
   ProviderDeleteConfirmation,
+  SettingsScreen,
   SettingsTabs,
   SettingsRuntimeFooter,
   SharedChatPanel,
-  TraceSettingsPanel,
-  TrainingSettingsPanel,
   TrainingDetailScreen,
   TrainingEditorScreen,
   TrainingHistoryScreen,
@@ -11822,121 +11811,51 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           ) : null}
 
           {tab === "settings" ? (
-            <View style={{ gap: 12 }}>
-              {settingsTab === "diet" ? (
-                <DietSettingsPanel
-                  model={dietSettingsController.model}
-                  actions={dietSettingsController.actions}
+            <SettingsScreen
+              activeTab={settingsTab}
+              diet={dietSettingsController}
+              provider={providerSettingsController}
+              memory={memorySettingsController}
+              training={trainingSettingsController}
+              foodCatalog={foodCatalogSettingsController}
+              personalFoods={personalFoodsSettingsController}
+              measurements={measurementsSettingsController}
+              preferences={userPrefs}
+              notifications={notificationSettingsController}
+              data={dataSettingsController}
+              traces={traceSettingsController}
+              personalFoodAssistant={(
+                <MiniChat
+                  visible={personalFoodsSettingsController.model.assistantVisible}
+                  testID={shellSurfaceTestId("personal-food-ai-chat")}
+                  title="Gymnasia Food Estimator"
+                  contextLabel="Alimentos personales"
+                  systemPrompt={FOOD_AI_SYSTEM_PROMPT}
+                  providerKeys={store.keys}
+                  preferredProvider={store.foodAIProvider}
+                  providerPriority={FOOD_ESTIMATOR_PROVIDER_PRIORITY}
+                  healthSafetyEvaluatorConsent={healthSafetyConsent.providers}
+                  onHealthSafetyConsentPrompt={offerHealthSafetyEvaluatorConsent}
+                  onReportMessage={(message, conversation) => {
+                    handleOpenAiReport("personal-food-assistant", message, conversation);
+                  }}
+                  onJsonResult={personalFoodsSettingsController.actions.addFromAssistant}
+                  onClose={personalFoodsSettingsController.actions.closeAssistant}
                 />
-              ) : null}
-
-              {settingsTab === "provider" ? (
-                <ProviderSettingsPanel
-                  model={providerSettingsController.model}
-                  actions={providerSettingsController.actions}
+              )}
+              runtimeFooter={(
+                <SettingsRuntimeFooter
+                  appVersion={Constants.expoConfig?.version ?? "?"}
+                  configurationVersion={RUNTIME_ENVIRONMENT.configurationVersion}
+                  environment={RUNTIME_ENVIRONMENT.environment}
+                  policyCandidate={activePolicySelection?.candidate ?? RUNTIME_ENVIRONMENT.policyCandidate}
+                  policyChannel={activePolicySelection?.channel ?? RUNTIME_ENVIRONMENT.policyChannel}
+                  policySha256={activePolicySelection?.sha256 ?? RUNTIME_ENVIRONMENT.policySha256}
+                  providerMode={RUNTIME_ENVIRONMENT.providerMode}
                 />
-              ) : null}
-
-              {settingsTab === "memory" ? (
-                <MemorySettingsPanel
-                  model={memorySettingsController.model}
-                  actions={memorySettingsController.actions}
-                />
-              ) : null}
-
-              {settingsTab === "training" ? (
-                <TrainingSettingsPanel
-                  model={trainingSettingsController.model}
-                  actions={trainingSettingsController.actions}
-                />
-              ) : null}
-
-              {settingsTab === "foods" ? (
-                <FoodsSettingsPanel
-                  model={foodCatalogSettingsController.model}
-                  actions={foodCatalogSettingsController.actions}
-                />
-              ) : null}
-
-              {settingsTab === "products" ? (
-                <ProductsSettingsPanel
-                  model={foodCatalogSettingsController.model}
-                  actions={foodCatalogSettingsController.actions}
-                />
-              ) : null}
-
-              {settingsTab === "personalFoods" ? (
-                <PersonalFoodsSettingsPanel
-                  model={personalFoodsSettingsController.model}
-                  actions={personalFoodsSettingsController.actions}
-                  assistant={(
-                    <MiniChat
-                      visible={personalFoodsSettingsController.model.assistantVisible}
-                      testID={shellSurfaceTestId("personal-food-ai-chat")}
-                      title="Gymnasia Food Estimator"
-                      contextLabel="Alimentos personales"
-                      systemPrompt={FOOD_AI_SYSTEM_PROMPT}
-                      providerKeys={store.keys}
-                      preferredProvider={store.foodAIProvider}
-                      providerPriority={FOOD_ESTIMATOR_PROVIDER_PRIORITY}
-                      healthSafetyEvaluatorConsent={healthSafetyConsent.providers}
-                      onHealthSafetyConsentPrompt={offerHealthSafetyEvaluatorConsent}
-                      onReportMessage={(message, conversation) => {
-                        handleOpenAiReport("personal-food-assistant", message, conversation);
-                      }}
-                      onJsonResult={personalFoodsSettingsController.actions.addFromAssistant}
-                      onClose={personalFoodsSettingsController.actions.closeAssistant}
-                    />
-                  )}
-                />
-              ) : null}
-
-              {settingsTab === "measures" ? (
-                <MeasurementsSettingsPanel
-                  model={measurementsSettingsController.model}
-                  actions={measurementsSettingsController.actions}
-                />
-              ) : null}
-
-              {settingsTab === "preferences" ? (
-                <PreferencesSettingsPanel preferences={userPrefs} />
-              ) : null}
-
-              {settingsTab === "notifications" ? (
-                <NotificationSettingsPanel
-                  model={notificationSettingsController.model}
-                  actions={notificationSettingsController.actions}
-                />
-              ) : null}
-
-              {settingsTab === "data" ? (
-                <DataSettingsPanel
-                  model={dataSettingsController.model}
-                  actions={dataSettingsController.actions}
-                />
-              ) : null}
-
-              {settingsTab === "traces" ? (
-                <TraceSettingsPanel
-                  model={traceSettingsController.model}
-                  actions={traceSettingsController.actions}
-                />
-              ) : null}
-
-              {/* Exercise detail rendered as fullscreen overlay below */}
-
-              <SettingsRuntimeFooter
-                appVersion={Constants.expoConfig?.version ?? "?"}
-                configurationVersion={RUNTIME_ENVIRONMENT.configurationVersion}
-                environment={RUNTIME_ENVIRONMENT.environment}
-                policyCandidate={activePolicySelection?.candidate ?? RUNTIME_ENVIRONMENT.policyCandidate}
-                policyChannel={activePolicySelection?.channel ?? RUNTIME_ENVIRONMENT.policyChannel}
-                policySha256={activePolicySelection?.sha256 ?? RUNTIME_ENVIRONMENT.policySha256}
-                providerMode={RUNTIME_ENVIRONMENT.providerMode}
-              />
-
-              <LegalFooter />
-            </View>
+              )}
+              legalFooter={<LegalFooter />}
+            />
           ) : null}
         </Animated.ScrollView>
         </View>

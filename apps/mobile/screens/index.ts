@@ -23,6 +23,7 @@ export {
   ProviderDeleteConfirmation,
   SettingsTabs,
   SettingsRuntimeFooter,
+  SettingsScreen,
   TraceSettingsPanel,
   TrainingSettingsPanel,
 } from "./SettingsScreen";

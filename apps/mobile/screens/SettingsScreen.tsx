@@ -22,6 +22,7 @@ import {
   type PersonalFoodsSettingsModel,
   type ProviderSettingsActions,
   type ProviderSettingsModel,
+  type SettingsTabKey,
   type SettingsTabsActions,
   type SettingsTabsModel,
   type TrainingSettingsActions,
@@ -3265,5 +3266,71 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
   
                   </View>
   
+  );
+});
+
+type ControllerSlice<Model, Actions> = {
+  model: Readonly<Model>;
+  actions: Readonly<Actions>;
+};
+
+export type SettingsScreenProps = {
+  activeTab: SettingsTabKey;
+  diet: ControllerSlice<DietSettingsModel, DietSettingsActions>;
+  provider: ControllerSlice<ProviderSettingsModel, ProviderSettingsActions>;
+  memory: ControllerSlice<MemorySettingsModel, MemorySettingsActions>;
+  training: ControllerSlice<TrainingSettingsModel, TrainingSettingsActions>;
+  foodCatalog: ControllerSlice<FoodCatalogSettingsModel, FoodCatalogSettingsActions>;
+  personalFoods: ControllerSlice<PersonalFoodsSettingsModel, PersonalFoodsSettingsActions>;
+  measurements: ControllerSlice<MeasurementsSettingsModel, MeasurementsSettingsActions>;
+  preferences: UserPreferences;
+  notifications: ControllerSlice<NotificationSettingsModel, NotificationSettingsActions>;
+  data: ControllerSlice<DataSettingsModel, DataSettingsActions>;
+  traces: ControllerSlice<TraceSettingsModel, TraceSettingsActions>;
+  personalFoodAssistant: ReactNode;
+  runtimeFooter: ReactNode;
+  legalFooter: ReactNode;
+};
+
+export const SettingsScreen = memo(function SettingsScreen({
+  activeTab,
+  diet,
+  provider,
+  memory,
+  training,
+  foodCatalog,
+  personalFoods,
+  measurements,
+  preferences,
+  notifications,
+  data,
+  traces,
+  personalFoodAssistant,
+  runtimeFooter,
+  legalFooter,
+}: SettingsScreenProps) {
+  return (
+    <View style={{ gap: 12 }}>
+      {activeTab === "diet" ? <DietSettingsPanel model={diet.model} actions={diet.actions} /> : null}
+      {activeTab === "provider" ? <ProviderSettingsPanel model={provider.model} actions={provider.actions} /> : null}
+      {activeTab === "memory" ? <MemorySettingsPanel model={memory.model} actions={memory.actions} /> : null}
+      {activeTab === "training" ? <TrainingSettingsPanel model={training.model} actions={training.actions} /> : null}
+      {activeTab === "foods" ? <FoodsSettingsPanel model={foodCatalog.model} actions={foodCatalog.actions} /> : null}
+      {activeTab === "products" ? <ProductsSettingsPanel model={foodCatalog.model} actions={foodCatalog.actions} /> : null}
+      {activeTab === "personalFoods" ? (
+        <PersonalFoodsSettingsPanel
+          model={personalFoods.model}
+          actions={personalFoods.actions}
+          assistant={personalFoodAssistant}
+        />
+      ) : null}
+      {activeTab === "measures" ? <MeasurementsSettingsPanel model={measurements.model} actions={measurements.actions} /> : null}
+      {activeTab === "preferences" ? <PreferencesSettingsPanel preferences={preferences} /> : null}
+      {activeTab === "notifications" ? <NotificationSettingsPanel model={notifications.model} actions={notifications.actions} /> : null}
+      {activeTab === "data" ? <DataSettingsPanel model={data.model} actions={data.actions} /> : null}
+      {activeTab === "traces" ? <TraceSettingsPanel model={traces.model} actions={traces.actions} /> : null}
+      {runtimeFooter}
+      {legalFooter}
+    </View>
   );
 });
