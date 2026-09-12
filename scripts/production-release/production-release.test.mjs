@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import fc from "fast-check";
 
@@ -8,6 +9,7 @@ import {
   evaluateProductionVersionChange,
   evaluateSourceCandidate,
   extractCertificateDigest,
+  extractNotificationSoundsFromArchiveListing,
   loadReleasePolicy,
   normalizeCertificateDigest,
   parseManifestXml,
@@ -21,6 +23,11 @@ import {
 
 const policy = loadReleasePolicy();
 const commit = "a".repeat(40);
+const permissionPolicy = JSON.parse(readFileSync(
+  new URL("../android-permissions/policy.json", import.meta.url),
+  "utf8",
+));
+const notificationSounds = ["ascending.wav", "beep.wav", "bell.wav", "buzzer.wav", "rest_finished.wav"];
 
 function validRuleset() {
   return {
@@ -163,6 +170,7 @@ test("la lista canónica incluye los gates críticos y los dos E2E", () => {
     "npm run check:prompt-policy",
     "npm run check:health-safety",
     "npm run check:android-permissions",
+    "npm run check:android-native-config",
     "npm test",
     "npm --workspace apps/mobile exec tsc --noEmit",
     "APP_ENV=production npm --workspace apps/mobile exec -- expo export --platform android --dev",
@@ -227,7 +235,7 @@ const validManifest = {
   versionName: "1.29.0",
   minSdk: policy.android.minSdk,
   targetSdk: policy.android.targetSdk,
-  permissions: ["CAMERA", "POST_NOTIFICATIONS"],
+  permissions: [...permissionPolicy.expectedArtifactPermissions],
 };
 const validSnapshot = {
   schemaVersion: 2,
@@ -291,7 +299,10 @@ function artifactInput(overrides = {}) {
     appConfig: validAppConfig,
     snapshot: validSnapshot,
     certificateSha256: policy.android.uploadCertificateSha256,
-    archiveListing: "BUNDLE-METADATA/ base/manifest/AndroidManifest.xml",
+    archiveListing: [
+      "BUNDLE-METADATA/ base/manifest/AndroidManifest.xml",
+      ...notificationSounds.map((sound) => `base/res/raw/${sound}`),
+    ].join("\n"),
     size: policy.artifacts.aab.minBytes,
     sha256: "e".repeat(64),
     httpMimeType: "application/zip",
@@ -315,6 +326,45 @@ test("rechaza AAB vacío, permiso prohibido, snapshot ausente y firma distinta",
   for (const code of ["artifact-empty", "snapshot", "permission", "certificate"]) {
     assert.ok(violations.some((violation) => violation.code === code), code);
   }
+});
+
+test("rechaza cualquier deriva en permisos o sonidos empaquetados", () => {
+  const violations = evaluateArtifactCandidate(artifactInput({
+    manifest: {
+      ...validManifest,
+      permissions: validManifest.permissions.filter((permission) => permission !== "CAMERA"),
+    },
+    archiveListing: [
+      "BUNDLE-METADATA/ base/manifest/AndroidManifest.xml",
+      ...notificationSounds.slice(1).map((sound) => `base/res/raw/${sound}`),
+      "base/res/raw/unexpected.wav",
+    ].join("\n"),
+  })).violations;
+  assert.ok(violations.some(({ code }) => code === "artifact-permissions"));
+  assert.ok(violations.some(({ code }) => code === "artifact-notification-sounds"));
+});
+
+test("extrae los sonidos nativos tanto de APK como de AAB", () => {
+  assert.deepEqual(
+    extractNotificationSoundsFromArchiveListing("res/raw/beep.wav\nbase/res/raw/bell.wav\nassets/ignored.wav"),
+    ["beep.wav", "bell.wav"],
+  );
+});
+
+test("propiedad: cualquier permiso fusionado no aprobado invalida el artefacto", () => {
+  fc.assert(fc.property(
+    fc.stringMatching(/^[A-Z][A-Z0-9_]{0,40}$/)
+      .filter((permission) => !validManifest.permissions.includes(permission)),
+    (permission) => {
+      const violations = evaluateArtifactCandidate(artifactInput({
+        manifest: {
+          ...validManifest,
+          permissions: [...validManifest.permissions, permission],
+        },
+      })).violations;
+      assert.ok(violations.some(({ code }) => code === "artifact-permissions"));
+    },
+  ));
 });
 
 test("rechaza límites, MIME, nombre publicado y versión fuente incoherentes", () => {

@@ -24,7 +24,6 @@
   ],
   "permissionsSource": "scripts/android-permissions/policy.json",
   "permissionDataSafetyImpact": {
-    "FOREGROUND_SERVICE": "none",
     "WAKE_LOCK": "none",
     "VIBRATE": "none",
     "RECEIVE_BOOT_COMPLETED": "none",

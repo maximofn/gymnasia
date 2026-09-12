@@ -26,6 +26,11 @@ function expoConfig(environment, developmentProviderMode) {
 
 test("Expo publica las tres variantes exactas y aisladas", () => {
   const currentAppVersion = JSON.parse(readFileSync(join(mobileRoot, "app.json"), "utf8")).expo.version;
+  const soundCatalog = JSON.parse(readFileSync(
+    join(mobileRoot, "notifications", "notificationSounds.json"),
+    "utf8",
+  ));
+  const expectedSounds = Object.values(soundCatalog).map(({ file }) => `./assets/${file}`);
   const expected = [
     ["development", "Gymnasia Dev", "com.maximofn.gymnasia.dev", "Local", "gymnasia.development", "fake"],
     ["staging", "Gymnasia Staging", "com.maximofn.gymnasia.staging", "Staging", "gymnasia.staging", "byok"],
@@ -40,6 +45,9 @@ test("Expo publica las tres variantes exactas y aisladas", () => {
     assert.equal(config.version, currentAppVersion);
     assert.equal(config.android.package, applicationId);
     assert.equal(config.ios.bundleIdentifier, applicationId);
+    const notificationsPlugin = config.plugins.find((plugin) =>
+      Array.isArray(plugin) && plugin[0] === "expo-notifications");
+    assert.deepEqual(notificationsPlugin?.[1]?.sounds, expectedSounds);
     assert.deepEqual(
       {
         environment: config.extra.environment,

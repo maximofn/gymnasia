@@ -94,6 +94,16 @@
       "reason": "Remote agent policy source"
     },
     {
+      "path": "scripts/android-native-config/",
+      "kind": "directory",
+      "reason": "Contrato reproducible de la configuración Android generada por Expo"
+    },
+    {
+      "path": "scripts/android-permissions/",
+      "kind": "directory",
+      "reason": "Permisos Android declarados y conjunto exacto permitido en los artefactos de Production"
+    },
+    {
       "path": "scripts/health-safety/",
       "kind": "directory",
       "reason": "Health policy generator, blocking validator, fixtures and reports"

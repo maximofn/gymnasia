@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import baseConfig from "./app.json";
+import notificationSounds from "./notifications/notificationSounds.json";
 
 type BuildEnvironment = "development" | "staging" | "production";
 
@@ -127,6 +128,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   }
   const bundledPolicy = readBundledPolicyMetadata(variant.environment);
   const base = baseConfig.expo;
+  const plugins = (base.plugins ?? []).filter((plugin) =>
+    (typeof plugin === "string" ? plugin : plugin[0]) !== "expo-notifications");
   const policyCandidate = process.env.POLICY_CANDIDATE
     || bundledPolicy.candidate;
   const policySha256 = process.env.POLICY_SHA256
@@ -144,6 +147,15 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ...base.android,
       package: variant.applicationId,
     },
+    plugins: [
+      ...plugins,
+      [
+        "expo-notifications",
+        {
+          sounds: Object.values(notificationSounds).map(({ file }) => `./assets/${file}`),
+        },
+      ],
+    ] as ExpoConfig["plugins"],
     extra: {
       ...base.extra,
       environment: variant.environment,

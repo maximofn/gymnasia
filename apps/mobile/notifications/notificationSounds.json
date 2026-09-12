@@ -1,0 +1,23 @@
+{
+  "rest_finished": {
+    "label": "Descanso terminado (default)",
+    "file": "rest_finished.wav"
+  },
+  "beep": {
+    "label": "Beep electrónico",
+    "file": "beep.wav"
+  },
+  "bell": {
+    "label": "Campana",
+    "file": "bell.wav"
+  },
+  "ascending": {
+    "label": "Ascendente (do-mi-sol)",
+    "file": "ascending.wav"
+  },
+  "buzzer": {
+    "label": "Buzzer grave",
+    "file": "buzzer.wav"
+  }
+}
+

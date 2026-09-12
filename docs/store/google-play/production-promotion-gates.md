@@ -107,13 +107,19 @@ reconciliación no puede sustituir el APK ya validado.
 
 1. política de prompt, promoción firmada y sus pruebas;
 2. política sanitaria y pruebas;
-3. permisos Android, inventario de datos y política legal;
+3. permisos Android, prebuild nativo reproducible, inventario de datos y política legal;
 4. paridad del prompt, suite determinista, OpenWiki y TypeScript;
 5. E2E del agente con proveedor falso y E2E de entrenamiento.
 
 La validación sucede en un job sin secrets ni environment. Solo después puede
 comenzar el job `build-and-release`, solicitar aprobación de `Production` y leer
 `EXPO_TOKEN`.
+
+El prebuild temporal comprueba manifest fuente, directivas de retirada,
+`MainActivity` y sonidos. El verificador posterior del APK/AAB exige además el
+conjunto exacto de permisos del manifest fusionado y confirma que los cinco
+sonidos están empaquetados. El procedimiento y la política de excepciones están
+en `docs/architecture/android-native-config.md`.
 
 ## Versiones y transacciones duraderas
 

@@ -67,6 +67,14 @@ jobs:
         id: android_permissions_tests
         run: npm run test:android-permissions
 
+      - name: Verify generated Android native configuration
+        id: android_native_config
+        run: npm run check:android-native-config
+
+      - name: Run Android native configuration tests
+        id: android_native_config_tests
+        run: npm run test:android-native-config
+
       - name: Verify canonical health safety policy and bundled prompt
         id: health_safety
         run: npm run check:health-safety
@@ -129,6 +137,8 @@ jobs:
             echo "| Unit, contract and property tests | ${{ steps.policy_tests.outcome }} |"
             echo "| Publishable Android permissions | ${{ steps.android_permissions.outcome }} |"
             echo "| Android permission policy tests | ${{ steps.android_permissions_tests.outcome }} |"
+            echo "| Generated Android native configuration | ${{ steps.android_native_config.outcome }} |"
+            echo "| Android native configuration tests | ${{ steps.android_native_config_tests.outcome }} |"
             echo "| Health safety policy and prompt | ${{ steps.health_safety.outcome }} |"
             echo "| Health safety deterministic tests | ${{ steps.health_safety_tests.outcome }} |"
             echo "| Published data inventory | ${{ steps.data_inventory.outcome }} |"

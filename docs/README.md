@@ -21,6 +21,7 @@ Este directorio centraliza toda la documentacion funcional y tecnica del proyect
 - `docs/architecture/offline-and-sync.md`: estrategia offline y sincronizacion.
 - `docs/architecture/security-and-privacy.md`: privacidad, seguridad y ciclo de vida de datos.
 - `docs/architecture/measurement-photo-backups.md`: almacenamiento de fotos de progreso, formato `.gymnasia`, límites y compatibilidad.
+- `docs/architecture/android-native-config.md`: contrato reproducible entre la configuración Expo, el Android generado y el artefacto final.
 - `docs/legal/privacy-policy.es.md` y `.en.md`: fuente unica de la politica de privacidad publicada. No editar el HTML generado; ejecutar `npm run sync:legal`.
 - `docs/legal/play-declarations.md`: respuestas preparadas de Data safety, salud e IA para Google Play.
 - `docs/legal/privacy-change-checklist.md`: que revisar cuando un cambio afecta a los datos tratados.

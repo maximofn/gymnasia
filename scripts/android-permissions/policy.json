@@ -2,7 +2,6 @@
   "$comment": "Fuente única de verdad de los permisos Android publicables. Se creó en GYM-191 (ticket para retirar USE_EXACT_ALARM y proteger el manifest). Consumido por scripts/android-permissions/check.mjs y, mediante --json, por la validación del AAB de GYM-198 (ticket para generar y validar el Android App Bundle de producción).",
   "configPath": "apps/mobile/app.json",
   "allowedPermissions": [
-    "FOREGROUND_SERVICE",
     "WAKE_LOCK",
     "VIBRATE",
     "RECEIVE_BOOT_COMPLETED",
@@ -15,7 +14,6 @@
     "SYSTEM_ALERT_WINDOW"
   ],
   "rationale": {
-    "FOREGROUND_SERVICE": "Declarado sin uso: no hay servicio ni foregroundServiceType. Retirada trazada en GYM-186; no se toca aquí para no cambiar comportamiento.",
     "WAKE_LOCK": "Permite que el aviso de fin de descanso despierte el dispositivo.",
     "VIBRATE": "Vibración configurable al terminar el descanso.",
     "RECEIVE_BOOT_COMPLETED": "Reprogramación de avisos tras reiniciar el dispositivo.",
@@ -47,11 +45,45 @@
     "WRITE_EXTERNAL_STORAGE",
     "MODIFY_AUDIO_SETTINGS"
   ],
+  "expectedArtifactPermissions": [
+    "ACCESS_NETWORK_STATE",
+    "CAMERA",
+    "INTERNET",
+    "MODIFY_AUDIO_SETTINGS",
+    "POST_NOTIFICATIONS",
+    "READ_APP_BADGE",
+    "READ_EXTERNAL_STORAGE",
+    "RECEIVE_BOOT_COMPLETED",
+    "SCHEDULE_EXACT_ALARM",
+    "USE_BIOMETRIC",
+    "USE_FINGERPRINT",
+    "VIBRATE",
+    "WAKE_LOCK",
+    "WRITE_EXTERNAL_STORAGE",
+    "com.anddoes.launcher.permission.UPDATE_COUNT",
+    "com.google.android.c2dm.permission.RECEIVE",
+    "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE",
+    "com.htc.launcher.permission.READ_SETTINGS",
+    "com.htc.launcher.permission.UPDATE_SHORTCUT",
+    "com.huawei.android.launcher.permission.CHANGE_BADGE",
+    "com.huawei.android.launcher.permission.READ_SETTINGS",
+    "com.huawei.android.launcher.permission.WRITE_SETTINGS",
+    "com.majeur.launcher.permission.UPDATE_BADGE",
+    "com.maximofn.gymnasia.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+    "com.oppo.launcher.permission.READ_SETTINGS",
+    "com.oppo.launcher.permission.WRITE_SETTINGS",
+    "com.sec.android.provider.badge.permission.READ",
+    "com.sec.android.provider.badge.permission.WRITE",
+    "com.sonyericsson.home.permission.BROADCAST_BADGE",
+    "com.sonymobile.home.permission.PROVIDER_INSERT_BADGE",
+    "me.everything.badger.permission.BADGE_COUNT_READ",
+    "me.everything.badger.permission.BADGE_COUNT_WRITE"
+  ],
   "notes": [
     "El manifest de origen que genera 'expo prebuild' SÍ contiene una línea USE_EXACT_ALARM con tools:node=\"remove\". Eso es correcto: es la directiva que ordena al manifest merger eliminarlo. La ausencia real se verifica en el manifest FUSIONADO del artefacto, donde los atributos tools: ya no existen. Un grep ingenuo sobre el manifest de origen da un falso positivo.",
     "apps/mobile/android/ está en .gitignore y su contenido puede estar obsoleto. No es fuente de verdad para los permisos; la configuración de apps/mobile/app.json sí lo es.",
     "expo-av añade RECORD_AUDIO por defecto aunque solo se use reproducción. La configuración explícita microphonePermission=false expresa la intención y blockedPermissions actúa como defensa adicional.",
     "react-native declara SYSTEM_ALERT_WINDOW en src/debug/AndroidManifest.xml. acknowledgedContributors reconoce el origen, pero solo porque blockedPermissions debe neutralizarlo; su presencia en un AAB de Producción sigue siendo un fallo.",
-    "expectedMergedExtras no se comprueba aquí: son los permisos con impacto relevante que las dependencias pueden aportar legítimamente vía manifest merger. GYM-198 (ticket para generar y validar el Android App Bundle de producción) debe verificar el manifest fusionado real."
+    "expectedMergedExtras documenta los permisos con impacto relevante que las dependencias pueden aportar legítimamente vía manifest merger. expectedArtifactPermissions fija el conjunto completo observado y revisado en la release 1.42.0, retirando FOREGROUND_SERVICE como parte de GYM-186 (ticket para conciliar la configuración Expo con Android). El verificador de GYM-198 (ticket para generar y validar el Android App Bundle de producción) exige ese conjunto exacto sobre el manifest fusionado real."
   ]
 }

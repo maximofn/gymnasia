@@ -161,7 +161,10 @@ en Data safety, que el guard rail verifica en `permissionDataSafetyImpact`.
 | `WAKE_LOCK` | Ninguno | Despertar la pantalla para ese aviso |
 | `VIBRATE` | Ninguno | Vibración configurable del aviso |
 | `RECEIVE_BOOT_COMPLETED` | Ninguno | Reprogramar avisos tras reiniciar |
-| `FOREGROUND_SERVICE` | Ninguno | Declarado sin uso; retirada trazada en GYM-186 (ticket para conciliar la configuración Expo con Android) |
+
+`FOREGROUND_SERVICE` se retiró en GYM-186 (ticket para conciliar la configuración
+Expo con Android): la aplicación no ejecuta ningún servicio en primer plano y el
+permiso no sostenía ninguna función ni tratamiento de datos.
 
 `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y
 `SYSTEM_ALERT_WINDOW` están bloqueados expresamente. Gymnasia no instala APK externos,
