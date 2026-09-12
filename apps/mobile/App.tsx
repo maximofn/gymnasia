@@ -22,7 +22,7 @@ import {
 } from "react-native";
 
 import { mobileTheme } from "./theme";
-import { DesktopSidebar, ExerciseCatalogDetailOverlay, TabTitle } from "./screens";
+import { DesktopSidebar, ExerciseCatalogDetailOverlay } from "./screens";
 import {
   APP_PLATFORM_SERVICES,
   type PlatformAudioSound,
@@ -367,12 +367,14 @@ import {
 import {
   BackupImportConfirmation,
   ActiveSessionMiniBar,
+  AppHeader,
   ChatScreen,
   DataDeletionConfirmation,
   DataSettingsPanel,
   DietHeader,
   DietMealsScreen,
   FoodEstimatorOverlay,
+  GlobalScreenSkeleton,
   DietResolutionOverlays,
   DietSettingsPanel,
   FoodsSettingsPanel,
@@ -381,7 +383,9 @@ import {
   MeasurementsScreen,
   MeasurementsOverlays,
   MeasurementsSettingsPanel,
+  InitialAppLoading,
   NotificationSettingsPanel,
+  NewRoutineButton,
   PersonalFoodsSettingsPanel,
   PreferencesSettingsPanel,
   ProductsSettingsPanel,
@@ -400,6 +404,7 @@ import {
   TrainingResolutionOverlays,
   TrainingExerciseDetailOverlay,
   TrainingSessionScreen,
+  TrainingScreenSkeleton,
   WorkoutHistoryEntryCard,
 } from "./screens";
 import {
@@ -607,8 +612,6 @@ import {
   sweepOrphanedMeasurementPhotos,
 } from "./backup/measurementMedia";
 import {
-  TAB_DESTINATIONS,
-  compactTabLabel,
   createHardwareBackPressCallback,
   resolveShellBackCommand,
   shellSurfaceTestId,
@@ -1532,8 +1535,6 @@ const TRAINING_STATS_METRIC_OPTIONS: Array<{
 ];
 const ENABLE_GLOBAL_SCREEN_LOAD_DELAY = false;
 const GLOBAL_SCREEN_LOAD_DELAY_MS = 1200;
-const TRAINING_LOADING_SKELETON_ROWS = 4;
-const TRAINING_EDITOR_LOADING_SKELETON_ROWS = 2;
 const DIET_MACRO_MODE_OPTIONS: Array<{ key: DietMacroMode; label: string }> = [
   { key: "manual_calories", label: "kcal" },
   { key: "protein_by_weight", label: "g/kg" },
@@ -12439,167 +12440,21 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           </Pressable>
         </View>
       ) : null}
-      <View
-        style={{
-          paddingHorizontal: isDesktopWeb ? 32 : mobileTheme.spacing[4],
-          paddingTop: mobileTheme.spacing[4],
-          paddingBottom: 10,
-          gap: 12,
-        }}
-      >
-        {tab === "home" ? (
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-            <View style={{ flex: 1, gap: 2 }}>
-              <TabTitle>Gymnasia</TabTitle>
-            </View>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            </View>
-          </View>
-        ) : tab === "training" && (isTrainingTemplateScreenOpen || activeWorkoutSession || trainingHistoryScreenOpen) ? null : tab === "training" ? (
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-            <TabTitle>{headerTitle}</TabTitle>
-            {!showTrainingListSkeleton ? (
-              <Pressable
-                onPress={() => openTrainingHistory()}
-                testID="training-open-global-history"
-                accessibilityRole="button"
-                accessibilityLabel="Abrir historial de entrenamientos"
-                style={{
-                  minHeight: 32,
-                  borderRadius: mobileTheme.radius.pill,
-                  borderWidth: 1,
-                  borderColor: "rgba(203,255,26,0.3)",
-                  backgroundColor: "rgba(203,255,26,0.08)",
-                  paddingHorizontal: 11,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 6,
-                }}
-              >
-                <Feather name="clock" size={14} color={mobileTheme.color.brandPrimary} />
-                <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>
-                  Historial{store.workoutHistory.length > 0 ? ` · ${store.workoutHistory.length}` : ""}
-                </Text>
-              </Pressable>
-            ) : null}
-          </View>
-        ) : (
-          <TabTitle>{headerTitle}</TabTitle>
-        )}
-        {!isDesktopWeb ? (
-          <View
-            style={{
-              minHeight: 54,
-              borderRadius: 14,
-              borderWidth: 1,
-              borderColor: mobileTheme.color.borderSubtle,
-              backgroundColor: mobileTheme.color.bgSurface,
-              flexDirection: "row",
-              padding: 4,
-              gap: 4,
-            }}
-          >
-            {TAB_DESTINATIONS.map(({ key, compactIcon, compactTestId, label }) => {
-              const isActiveTab = tab === key;
-              const tabTextColor = isActiveTab
-                ? mobileTheme.color.brandPrimary
-                : mobileTheme.color.textSecondary;
-              return (
-                <Pressable
-                  key={key}
-                  onPress={() => setTab(key)}
-                  testID={compactTestId}
-                  accessibilityLabel={label}
-                  accessibilityRole="button"
-                  style={{
-                    flex: 1,
-                    minHeight: 44,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: isActiveTab ? "rgba(203,255,26,0.14)" : "transparent",
-                    borderWidth: isActiveTab ? 1 : 0,
-                    borderColor: isActiveTab ? "rgba(203,255,26,0.5)" : "transparent",
-                  }}
-                >
-                  {compactIcon ? (
-                    <Ionicons
-                      color={tabTextColor}
-                      name={compactIcon as keyof typeof Ionicons.glyphMap}
-                      size={18}
-                    />
-                  ) : (
-                    <Text
-                      numberOfLines={1}
-                      style={{
-                        color: tabTextColor,
-                        fontWeight: "700",
-                        fontSize: 11,
-                      }}
-                    >
-                      {compactTabLabel(key)}
-                    </Text>
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : null}
-      </View>
+      <AppHeader
+        tab={tab}
+        title={headerTitle}
+        isDesktop={isDesktopWeb}
+        trainingNested={isTrainingTemplateScreenOpen || activeWorkoutSession !== null || trainingHistoryScreenOpen}
+        trainingListLoading={showTrainingListSkeleton}
+        workoutHistoryCount={store.workoutHistory.length}
+        onTabChange={setTab}
+        onOpenTrainingHistory={() => openTrainingHistory()}
+      />
 
       {loading ? (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-          <ActivityIndicator color={mobileTheme.color.brandPrimary} />
-        </View>
+        <InitialAppLoading />
       ) : showGlobalScreenLoading && tab !== "training" ? (
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: mobileTheme.spacing[4], paddingBottom: 90 }}>
-          <View testID={`screen-loading-skeleton-${tab}`} style={{ gap: 12, paddingBottom: 110 }}>
-            <View
-              style={{
-                minHeight: 44,
-                borderRadius: 14,
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.04)",
-                backgroundColor: "#131923",
-                width: tab === "chat" ? "72%" : "48%",
-              }}
-            />
-            {Array.from({ length: tab === "chat" ? 5 : tab === "home" ? 5 : 4 }).map((_, index) => (
-              <View
-                key={`screen_skeleton_${tab}_${index}`}
-                style={{
-                  minHeight: tab === "chat" ? 72 : tab === "home" ? 116 : 92,
-                  borderRadius: 18,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,255,255,0.04)",
-                  backgroundColor: "#131923",
-                  paddingHorizontal: 14,
-                  paddingVertical: 14,
-                  gap: 10,
-                  opacity: index === 3 ? 0.66 : 1,
-                }}
-              >
-                <View
-                  style={{
-                    height: 12,
-                    width: index % 2 === 0 ? "74%" : "62%",
-                    borderRadius: 999,
-                    backgroundColor: "#242D3A",
-                  }}
-                />
-                <View
-                  style={{
-                    height: 10,
-                    width: index % 2 === 0 ? "52%" : "70%",
-                    borderRadius: 999,
-                    backgroundColor: "#202837",
-                  }}
-                />
-              </View>
-            ))}
-          </View>
-        </ScrollView>
+        <GlobalScreenSkeleton tab={tab} />
       ) : (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
         {tab === "settings" ? (
@@ -12633,234 +12488,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
           {tab === "training" ? (
             showTrainingListSkeleton ? (
-              <View testID="training-list-loading-skeleton" style={{ gap: 12, paddingBottom: 110 }}>
-                <View
-                  style={{
-                    minHeight: 48,
-                    borderRadius: mobileTheme.radius.pill,
-                    backgroundColor: "#131923",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.04)",
-                  }}
-                />
-
-                <View style={{ flexDirection: "row", gap: 8 }}>
-                  {[74, 78, 88].map((chipWidth, index) => (
-                    <View
-                      key={`skeleton_chip_${index}`}
-                      style={{
-                        height: 38,
-                        width: chipWidth,
-                        borderRadius: mobileTheme.radius.pill,
-                        backgroundColor: "#131923",
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.04)",
-                      }}
-                    />
-                  ))}
-                </View>
-
-                <View style={{ gap: 10, paddingTop: 4 }}>
-                  {Array.from({ length: TRAINING_LOADING_SKELETON_ROWS }).map((_, index) => (
-                    <View
-                      key={`skeleton_card_${index}`}
-                      style={{
-                        minHeight: 92,
-                        borderRadius: 18,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.04)",
-                        backgroundColor: "#131923",
-                        paddingHorizontal: 14,
-                        paddingVertical: 14,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 12,
-                        opacity: index === TRAINING_LOADING_SKELETON_ROWS - 1 ? 0.64 : 1,
-                      }}
-                    >
-                      <View
-                        style={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: 4,
-                          backgroundColor: "#1C2330",
-                        }}
-                      />
-                      <View
-                        style={{
-                          width: 46,
-                          height: 46,
-                          borderRadius: 12,
-                          backgroundColor: "#202837",
-                        }}
-                      />
-                      <View style={{ flex: 1, gap: 10 }}>
-                        <View
-                          style={{
-                            height: 12,
-                            width: "88%",
-                            borderRadius: 999,
-                            backgroundColor: "#242D3A",
-                          }}
-                        />
-                        <View
-                          style={{
-                            height: 10,
-                            width: "62%",
-                            borderRadius: 999,
-                            backgroundColor: "#202837",
-                          }}
-                        />
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              </View>
+              <TrainingScreenSkeleton mode="list" />
             ) : showTrainingEditorSkeleton ? (
-              <View testID="training-editor-loading-skeleton" style={{ gap: 12, paddingBottom: 110 }}>
-                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                  <View
-                    style={{
-                      width: 96,
-                      height: 28,
-                      borderRadius: 999,
-                      backgroundColor: "#131923",
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.04)",
-                    }}
-                  />
-                  <View
-                    style={{
-                      width: 116,
-                      height: 42,
-                      borderRadius: 14,
-                      backgroundColor: "#202837",
-                      borderWidth: 1,
-                      borderColor: "rgba(255,255,255,0.05)",
-                    }}
-                  />
-                </View>
-
-                <View
-                  style={{
-                    height: 48,
-                    width: "82%",
-                    borderRadius: 12,
-                    backgroundColor: "#1C2330",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.04)",
-                  }}
-                />
-
-                <View style={{ flexDirection: "row", gap: 8 }}>
-                  {[88, 74, 104].map((chipWidth, index) => (
-                    <View
-                      key={`editor_skeleton_chip_${index}`}
-                      style={{
-                        height: 36,
-                        width: chipWidth,
-                        borderRadius: mobileTheme.radius.pill,
-                        backgroundColor: "#131923",
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.04)",
-                      }}
-                    />
-                  ))}
-                </View>
-
-                <View
-                  style={{
-                    minHeight: 54,
-                    borderRadius: 16,
-                    backgroundColor: "#1A2B08",
-                    borderWidth: 1,
-                    borderColor: "rgba(203,255,26,0.15)",
-                  }}
-                />
-                <View
-                  style={{
-                    minHeight: 54,
-                    borderRadius: 16,
-                    backgroundColor: "#1A2B08",
-                    borderWidth: 1,
-                    borderColor: "rgba(203,255,26,0.15)",
-                  }}
-                />
-
-                <View style={{ gap: 10 }}>
-                  {Array.from({ length: TRAINING_EDITOR_LOADING_SKELETON_ROWS }).map((_, index) => (
-                    <View
-                      key={`editor_skeleton_card_${index}`}
-                      style={{
-                        minHeight: 128,
-                        borderRadius: 20,
-                        borderWidth: 1,
-                        borderColor: "rgba(255,255,255,0.04)",
-                        backgroundColor: "#131923",
-                        padding: 14,
-                        gap: 10,
-                      }}
-                    >
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                        <View
-                          style={{
-                            width: 30,
-                            height: 30,
-                            borderRadius: 10,
-                            backgroundColor: "#202837",
-                          }}
-                        />
-                        <View style={{ flex: 1, gap: 8 }}>
-                          <View
-                            style={{
-                              height: 12,
-                              width: "72%",
-                              borderRadius: 999,
-                              backgroundColor: "#242D3A",
-                            }}
-                          />
-                          <View
-                            style={{
-                              height: 10,
-                              width: "54%",
-                              borderRadius: 999,
-                              backgroundColor: "#202837",
-                            }}
-                          />
-                        </View>
-                      </View>
-                      <View
-                        style={{
-                          height: 36,
-                          borderRadius: 10,
-                          backgroundColor: "#202630",
-                          borderWidth: 1,
-                          borderColor: "rgba(255,255,255,0.04)",
-                        }}
-                      />
-                      <View
-                        style={{
-                          height: 40,
-                          borderRadius: 12,
-                          backgroundColor: "#171B23",
-                          borderWidth: 1,
-                          borderColor: "rgba(255,255,255,0.05)",
-                        }}
-                      />
-                    </View>
-                  ))}
-                </View>
-
-                <View
-                  style={{
-                    minHeight: 58,
-                    borderRadius: 16,
-                    backgroundColor: "#1A2B08",
-                    borderWidth: 1,
-                    borderColor: "rgba(203,255,26,0.15)",
-                  }}
-                />
-              </View>
+              <TrainingScreenSkeleton mode="editor" />
             ) : activeWorkoutSession ? (
               <TrainingSessionScreen
                 model={trainingSessionController.model}
@@ -13024,44 +12654,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       )}
 
 
-      {tab === "training" &&
-      !activeTrainingTemplate &&
-      !activeWorkoutSession &&
-      !trainingHistoryScreenOpen &&
-      !showTrainingListSkeleton &&
-      !showTrainingEditorSkeleton &&
-      store.templates.length > 0 ? (
-        <View
-          style={{
-            position: "absolute",
-            right: mobileTheme.spacing[4],
-            bottom: 74,
-          }}
-        >
-          <Pressable
-            onPress={createTrainingTemplate}
-            testID="training-create"
-            style={{
-              minHeight: 56,
-              borderRadius: mobileTheme.radius.pill,
-              backgroundColor: mobileTheme.color.brandPrimary,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              paddingHorizontal: 24,
-              gap: 8,
-              shadowColor: mobileTheme.color.brandPrimary,
-              shadowOpacity: 0.35,
-              shadowRadius: 10,
-              shadowOffset: { width: 0, height: 4 },
-              elevation: 8,
-            }}
-          >
-            <Text style={{ color: "#06090D", fontSize: 24, fontWeight: "700", lineHeight: 26 }}>+</Text>
-            <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>Nueva rutina</Text>
-          </Pressable>
-        </View>
-      ) : null}
+      <NewRoutineButton
+        visible={
+          tab === "training"
+          && !activeTrainingTemplate
+          && !activeWorkoutSession
+          && !trainingHistoryScreenOpen
+          && !showTrainingListSkeleton
+          && !showTrainingEditorSkeleton
+          && store.templates.length > 0
+        }
+        onPress={createTrainingTemplate}
+      />
 
       <ExerciseCatalogDetailOverlay
         exercise={selectedExerciseDetail}

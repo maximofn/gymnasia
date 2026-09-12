@@ -1,4 +1,4 @@
-export { DesktopSidebar, TabTitle } from "./AppShell";
+export { AppHeader, DesktopSidebar, GlobalScreenSkeleton, InitialAppLoading, NewRoutineButton, TabTitle, TrainingScreenSkeleton } from "./AppShell";
 export { ExerciseCatalogDetailOverlay } from "./CatalogOverlays";
 export { ChatScreen } from "./ChatScreen";
 export { DietHeader, DietMealsScreen } from "./DietScreen";
