@@ -77,6 +77,7 @@ npm run check:mobile-boundaries
 npm run test:mobile-boundaries
 ```
 
-Toda excepción temporal debe aparecer en `legacyImports`, tener un origen
-concreto y eliminarse cuando ese bloque se extraiga. Un import nuevo entre capas
-no puede ampliar la excepción existente.
+La raíz de composición solo puede importar las entradas públicas enumeradas por
+capa. `legacyImports` está vacío: no queda deuda heredada que permita saltarse
+la dirección de dependencias. Cualquier ciclo o import privado nuevo rompe el
+check.

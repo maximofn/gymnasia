@@ -28,7 +28,7 @@
   ],
   "allowedDependencies": {
     "bootstrap": ["app"],
-    "app": ["controllers", "screens", "platform", "shell", "shared", "ui"],
+    "app": ["agent", "catalogs", "controllers", "diet", "measurements", "persistence", "platform", "screens", "shell", "shared", "training", "ui"],
     "controllers": ["agent", "catalogs", "diet", "measurements", "persistence", "platform", "shell", "shared", "training"],
     "screens": ["agent", "catalogs", "controllers", "diet", "measurements", "persistence", "shell", "shared", "training", "ui"],
     "platform": ["shared"],
@@ -43,12 +43,12 @@
     "shared": ["agent"]
   },
   "publicEntries": {
-    "agent": ["agent/aiTransparency.ts", "agent/chatModel.ts", "agent/externalLinks.ts", "agent/feedbackIssues.ts", "agent/feedbackProposals.ts", "agent/foodEstimatorClient.ts", "agent/generated/legalCopy.generated.ts", "agent/healthSafety.ts", "agent/googleInteractions.ts", "agent/personalData.ts", "agent/policyContext.ts", "agent/policyStatusPresentation.ts", "agent/providerCatalog.ts", "agent/providerChatClient.ts", "agent/providerConfiguration.ts", "agent/providerCredentials.ts", "agent/providerPresentation.ts", "agent/providerResponseModel.ts", "agent/providerStreamTransport.ts", "agent/providerToolClient.ts", "agent/signedPolicySelection.ts"],
+    "agent": ["agent/agentPolicyRuntime.ts", "agent/aiTransparency.ts", "agent/anthropicModels.ts", "agent/chatModel.ts", "agent/chatSystemPrompt.ts", "agent/devStore.ts", "agent/externalLinks.ts", "agent/feedbackClient.ts", "agent/feedbackIssues.ts", "agent/feedbackProposals.ts", "agent/foodEstimatorClient.ts", "agent/generated/legalCopy.generated.ts", "agent/healthSafety.ts", "agent/googleInteractions.ts", "agent/personalData.ts", "agent/policyContext.ts", "agent/policyStatusPresentation.ts", "agent/providerCatalog.ts", "agent/providerChatClient.ts", "agent/providerConfiguration.ts", "agent/providerConfigurationPersistence.ts", "agent/providerCredentials.ts", "agent/providerPresentation.ts", "agent/providerResponseModel.ts", "agent/providerStreamParsers.ts", "agent/providerStreamTransport.ts", "agent/providerToolClient.ts", "agent/signedPolicySelection.ts", "agent/toolDefinitions.ts", "agent/toolExecutor.ts", "agent/toolOperationLedger.ts"],
     "catalogs": ["catalogs/ExerciseCatalogBrowser.tsx", "catalogs/CatalogStatusNotice.tsx", "catalogs/exerciseCatalogRuntime.ts", "catalogs/imageUris.ts", "catalogs/matching.ts", "catalogs/migrations.ts", "catalogs/runtime.ts", "catalogs/sources.ts", "catalogs/types.ts"],
     "controllers": ["controllers/catalogController.ts", "controllers/chatController.ts", "controllers/dietController.ts", "controllers/homeController.ts", "controllers/measurementsController.ts", "controllers/settingsController.ts", "controllers/trainingController.ts", "controllers/types.ts"],
     "diet": ["diet/catalogModel.ts", "diet/dailyPresentationModel.ts", "diet/model.ts", "diet/nutritionContract.ts", "diet/planningModel.ts"],
     "measurements": ["measurements/measurementContract.ts", "measurements/measurementPerformance.ts", "measurements/presentationModel.ts"],
-    "persistence": ["backup/measurementMedia.ts", "persistence/localStoreModel.ts", "persistence/localStoreRecovery.ts", "persistence/localStoreRuntime.ts", "storage/userPreferences.ts"],
+    "persistence": ["backup/backupFormat.ts", "backup/measurementMedia.ts", "persistence/localStoreModel.ts", "persistence/localStoreRecovery.ts", "persistence/localStoreRuntime.ts", "storage/localDataDeletion.ts", "storage/userPreferences.ts"],
     "platform": ["platform/index.ts"],
     "screens": ["screens/index.ts"],
     "shell": ["shell/shellRegistry.ts"],
@@ -62,15 +62,5 @@
     "diet": ["react", "react-native", "expo"],
     "measurements": ["react", "react-native", "expo"]
   },
-  "legacyImports": [
-    { "from": "App.tsx", "to": "agent/" },
-    { "from": "App.tsx", "to": "backup/" },
-    { "from": "App.tsx", "to": "catalogs/" },
-    { "from": "App.tsx", "to": "diet/" },
-    { "from": "App.tsx", "to": "measurements/" },
-    { "from": "App.tsx", "to": "notifications/" },
-    { "from": "App.tsx", "to": "persistence/" },
-    { "from": "App.tsx", "to": "storage/" },
-    { "from": "App.tsx", "to": "training/" }
-  ]
+  "legacyImports": []
 }
