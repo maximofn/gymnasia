@@ -27,7 +27,7 @@ import {
   type PlatformDocumentPickerAsset,
 } from "./platform";
 import { pushTrace, clearTraces, getTraces } from "./trace";
-import { CHAT_TOOLS, agentToolEffect } from "./agent/toolDefinitions";
+import { agentToolEffect } from "./agent/toolDefinitions";
 import {
   sanitizePersonalDataFields,
   type PersonalDataField,
@@ -66,9 +66,7 @@ import {
 } from "./agent/googleInteractions";
 import {
   parseOpenAIFunctionArguments,
-  runAnthropicToolLoop,
   runGoogleToolLoop,
-  runOpenAIToolLoop,
   type AnthropicToolUseBlock,
 } from "./agent/providerToolLoop";
 import {
@@ -90,6 +88,7 @@ import {
   streamOpenAIRequestViaFetch,
   streamOpenAIRequestViaXHR,
 } from "./agent/providerStreamTransport";
+import { requestProviderToolChat } from "./agent/providerToolClient";
 import {
   AI_DISCLOSURE_MESSAGE_KIND,
   composeAiSystemPrompt,
@@ -1545,7 +1544,6 @@ async function evaluateHealthSafetyWithProvider(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function callProviderChatAPIWithTools(
   provider: AIKey,
   messages: ChatInputMessage[],
@@ -1558,24 +1556,6 @@ async function callProviderChatAPIWithTools(
   if (isBlockingHealthRisk(healthDecision.level)) {
     throw new Error("health-safety-provider-blocked");
   }
-  if (IS_FAKE_PROVIDER_MODE) {
-    const fixture = createFakeProviderResult("main-chat", latestUserInput);
-    options?.onContentDelta?.(fixture.content, fixture.content);
-    return fixture;
-  }
-  const systemPrompt = composeAiSystemPrompt(
-    messages
-      .filter((msg) => msg.role === "system")
-      .map((msg) => msg.content)
-      .join("\n\n"),
-  );
-  const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
-    .filter((msg) => msg.role !== "system")
-    .map((msg) => ({
-      role: msg.role === "assistant" ? "assistant" : "user",
-      content: msg.content,
-    }));
-
   const toolStoreSetter = options?.setStore;
   const toolStoreCommitter = options?.commitStore;
   const toolStore = options?.store;
@@ -1625,181 +1605,23 @@ async function callProviderChatAPIWithTools(
       ),
     );
   };
-  // --- OPENAI ---
-  if (provider.provider === "openai") {
-    let streamedContent = "";
-    let streamedThinking = "";
-    const model = normalizeProviderModel("openai", provider.model);
-    const reasoning = buildOpenAIReasoningConfig(provider);
-    const streamHandlers: StreamingHandlers = {
-      onContentDelta: (delta) => {
-        streamedContent += delta;
-        options?.onContentDelta?.(delta, streamedContent);
-      },
-      onThinkingDelta: (delta) => {
-        streamedThinking += delta;
-        options?.onThinkingDelta?.(delta, streamedThinking);
-      },
-    };
-
-    const makeOpenAIRequest = async (
-      input: Array<Record<string, unknown>>,
-      previousResponseId: string | null,
-      includeTools: boolean,
-    ) => {
-      const body: Record<string, unknown> = {
-        model,
-        instructions: systemPrompt,
-        input,
-      };
-      if (reasoning) {
-        body.reasoning = reasoning;
-      }
-      if (previousResponseId) {
-        body.previous_response_id = previousResponseId;
-      }
-      if (includeTools) {
-        body.tools = CHAT_TOOLS.openai;
-      }
-      if (Platform.OS === "web") {
-        return streamOpenAIRequestViaFetch(
-          "https://api.openai.com/v1/responses",
-          {
-            "Content-Type": "application/json",
-            Accept: "text/event-stream",
-            Authorization: `Bearer ${provider.api_key}`,
-          },
-          body,
-          streamHandlers,
-          "No se pudo conectar con OpenAI.",
-          "OpenAI error",
-        );
-      }
-      return streamOpenAIRequestViaXHR(
-        "https://api.openai.com/v1/responses",
-        {
-          "Content-Type": "application/json",
-          Accept: "text/event-stream",
-          Authorization: `Bearer ${provider.api_key}`,
-        },
-        body,
-        streamHandlers,
-        "No se pudo conectar con OpenAI.",
-        "OpenAI error",
-      );
-    };
-
-    const payload = await runOpenAIToolLoop({
-      initialTurn: await makeOpenAIRequest(nonSystemMessages, null, true),
-      requestNextTurn: (outputs, previousResponseId) => (
-        makeOpenAIRequest(outputs, previousResponseId, true)
-      ),
-      executeTool: executeGuardedTool,
+  return requestProviderToolChat(
+    provider,
+    messages,
+    {
+      fakeMode: IS_FAKE_PROVIDER_MODE,
+      platform: Platform.OS,
+      environment: Constants.expoConfig?.extra?.environment,
+      googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
+      anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+    },
+    {
       executionId: options?.executionId,
-    });
-
-    const content = streamedContent.trim() || payload.content;
-    const thinking = streamedThinking.trim() || payload.thinking || null;
-    if (!content) throw new Error("OpenAI no devolvio contenido.");
-    return { content, thinking };
-  }
-
-  // --- ANTHROPIC ---
-  if (provider.provider === "anthropic") {
-    let streamedContent = "";
-    let streamedThinking = "";
-    const streamHandlers: StreamingHandlers = {
-      onContentDelta: (delta) => {
-        streamedContent += delta;
-        options?.onContentDelta?.(delta, streamedContent);
-      },
-      onThinkingDelta: (delta) => {
-        streamedThinking += delta;
-        options?.onThinkingDelta?.(delta, streamedThinking);
-      },
-    };
-
-    const makeAnthropicRequest = async (msgs: any[], includeTools: boolean) => {
-      const body: any = {
-        model: provider.model || DEFAULT_MODELS.anthropic,
-        max_tokens: 2048 + ANTHROPIC_THINKING_BUDGET,
-        thinking: anthropicThinkingConfig(
-          provider.model || DEFAULT_MODELS.anthropic,
-          ANTHROPIC_THINKING_BUDGET,
-        ),
-        system: systemPrompt,
-        messages: msgs,
-      };
-      if (includeTools) body.tools = CHAT_TOOLS.anthropic;
-      if (shouldUseAnthropicWebProxy()) {
-        return streamAnthropicRequestViaXHR(
-          buildWebProxyUrl("/chat/providers/anthropic/messages"),
-          {
-            "Content-Type": "application/json",
-            Accept: "text/event-stream",
-          },
-          {
-            ...anthropicProxyCredentials(provider.api_key, provider.workspace_id),
-            ...body,
-          },
-          streamHandlers,
-          ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE,
-          "Proxy Anthropic error",
-        );
-      }
-
-      return streamAnthropicRequestViaXHR(
-        "https://api.anthropic.com/v1/messages",
-        anthropicApiHeaders(
-          provider.api_key,
-          ANTHROPIC_API_VERSION,
-          provider.workspace_id,
-          {
-            "Content-Type": "application/json",
-            Accept: "text/event-stream",
-          },
-          { directBrowserAccess: ANTHROPIC_DIRECT_BROWSER_ACCESS },
-        ),
-        body,
-        streamHandlers,
-        "No se pudo conectar con Anthropic.",
-        "Anthropic error",
-      );
-    };
-
-    const payload = await runAnthropicToolLoop({
-      initialTurn: await makeAnthropicRequest([...nonSystemMessages], true),
-      initialMessages: nonSystemMessages,
-      requestNextTurn: (currentMessages) => makeAnthropicRequest(currentMessages, true),
+      onContentDelta: options?.onContentDelta,
+      onThinkingDelta: options?.onThinkingDelta,
       executeTool: executeGuardedTool,
-      executionId: options?.executionId,
-    });
-
-    const content = streamedContent.trim() || payload.content;
-    const thinking = streamedThinking.trim() || payload.thinking || null;
-    if (!content) throw new Error("Anthropic no devolvio contenido.");
-    return { content, thinking };
-  }
-
-  // Google keeps the complete local transcript, including opaque thought signatures.
-  const googleMessages = buildGoogleHistory(messages);
-  let streamedContent = "";
-  let streamedThinking = "";
-  const streamHandlers: StreamingHandlers = {
-    onContentDelta: (delta) => { streamedContent += delta; options?.onContentDelta?.(delta, streamedContent); },
-    onThinkingDelta: (delta) => { streamedThinking += delta; options?.onThinkingDelta?.(delta, streamedThinking); },
-  };
-  const makeRequest = (history: GoogleStep[]) => callGoogleInteraction(provider, {
-    history, systemInstruction: systemPrompt, tools: CHAT_TOOLS.google, thinking: true,
-  }, streamHandlers);
-  const payload = await runGoogleToolLoop({ initialTurn: await makeRequest(googleMessages),
-    initialMessages: googleMessages, requestNextTurn: makeRequest,
-    executeTool: executeGuardedTool, executionId: options?.executionId });
-  const content = streamedContent.trim() || payload.content;
-  if (!content) throw new Error("Google AI no devolvió contenido.");
-  return { content, thinking: streamedThinking.trim() || payload.thinking,
-    googleTurn: { version: 1, model: normalizeProviderModel("google", provider.model),
-      steps: payload.history, interactions: payload.interactions } };
+    },
+  );
 }
 
 const foodEstimatorTools = {

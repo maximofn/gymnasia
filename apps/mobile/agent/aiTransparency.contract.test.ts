@@ -7,6 +7,10 @@ const providerChatClientSource = readFileSync(
   new URL("./providerChatClient.ts", import.meta.url),
   "utf8",
 );
+const providerToolClientSource = readFileSync(
+  new URL("./providerToolClient.ts", import.meta.url),
+  "utf8",
+);
 const chatScreenSource = readFileSync(
   new URL("../screens/ChatScreen.tsx", import.meta.url),
   "utf8",
@@ -43,7 +47,7 @@ describe("contrato estático de superficies conversacionales", () => {
   });
 
   it("protege las tres fronteras de system prompt", () => {
-    const promptBoundarySource = `${appSource}\n${providerChatClientSource}`;
+    const promptBoundarySource = `${appSource}\n${providerChatClientSource}\n${providerToolClientSource}`;
     expect(promptBoundarySource.match(/composeAiSystemPrompt\(/g)?.length).toBeGreaterThanOrEqual(3);
     expect(promptBoundarySource).not.toContain("system: FOOD_ESTIMATOR_SYSTEM_PROMPT");
     expect(promptBoundarySource).not.toContain("systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }]");
