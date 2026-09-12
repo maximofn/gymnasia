@@ -2,9 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import Svg, { Path, Circle, Rect, Defs, LinearGradient, Stop, Text as SvgText } from "react-native-svg";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {
   ActivityIndicator,
   Alert,
@@ -310,7 +308,7 @@ import {
   usePersonalFoodsRuntime,
 } from "./controllers/catalogController";
 import { useAiReportController, useChatController } from "./controllers/chatController";
-import { useDietController, useDietResolutionController } from "./controllers/dietController";
+import { useDietRuntime } from "./controllers/dietController";
 import { useHomeController } from "./controllers/homeController";
 import { useMeasurementsRuntime } from "./controllers/measurementsController";
 import {
@@ -393,40 +391,27 @@ import {
   type AnthropicModelOption,
 } from "./agent/anthropicModels";
 import {
-  DIET_MEAL_CATEGORIES,
   NUTRITION_FOOD_TYPES,
   formatNutritionValidationIssues,
-  validateNutritionFormInput,
   validateNutritionItem,
   validateStructuredNutrition,
   type DietMacroMode,
-  type DietMealCategory,
-  type NutritionValidationIssue,
 } from "./diet/nutritionContract";
 import {
   DIET_MONTH_LABELS_SHORT,
   createDefaultDietSettings,
-  createDietMealExpandedState,
-  dateFromISO,
-  formatDietDayHeader,
   formatNutritionNumber,
-  isoDateFromDate,
   normalizeDietByDate,
   normalizeDietNonNegativeNumber,
   normalizeDietSettings,
   parseNonNegativeNumberInput,
-  shiftISODateByDays,
-  sortDietMealsByCategory,
   sumDayCalories,
   todayISO,
   type ActivityLevel,
-  type DietDay,
   type DietGoal,
   type DietItem,
-  type DietMeal,
   type DietSettings,
 } from "./diet/model";
-import { buildDietDailyPresentationModel } from "./diet/dailyPresentationModel";
 import { dietItemFromCatalog, findDietFoodInCatalog } from "./diet/catalogModel";
 import { buildDietPlanningModel } from "./diet/planningModel";
 import {
@@ -588,15 +573,6 @@ Notifications.setNotificationHandler({
   },
 });
 
-type PendingFoodResolution = {
-  origin: "form" | "estimator";
-  candidates: FoodRepoEntry[];
-  manualItem: DietItem;
-  category: DietMealCategory;
-  date: string;
-  editing: DietItemMenuState;
-  proposeManual: boolean;
-};
 type AnthropicChatResult = { content: string; thinking: string | null; googleTurn?: GoogleConversationTurn };
 type OpenAIReasoningSummaryPart = { type: "summary_text"; text: string };
 type OpenAIReasoningOutputItem = {
@@ -715,8 +691,6 @@ type FoodEstimatorImage = {
   base64: string;
   mime_type: string;
 };
-type DietItemMenuState = { meal_id: string; item_id: string } | null;
-type DietEditingItemState = { meal_id: string; item_id: string } | null;
 type TrainingTemplateScreenMode = "detail" | "edit";
 
 const NOTIFICATION_SOUND_ASSETS = {
@@ -3553,36 +3527,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return () => dietScrollY.removeListener(id);
   }, [dietScrollY]);
 
-  const [mealTitleInput, setMealTitleInput] = useState("");
-  const [mealCaloriesInput, setMealCaloriesInput] = useState("");
-  const [mealProteinInput, setMealProteinInput] = useState("");
-  const [mealCarbsInput, setMealCarbsInput] = useState("");
-  const [mealFatInput, setMealFatInput] = useState("");
-  const [mealGramsInput, setMealGramsInput] = useState("");
-  const [mealNutritionIssues, setMealNutritionIssues] = useState<NutritionValidationIssue[]>([]);
-  const mealPerGramRef = useRef<{ cal: number; prot: number; carbs: number; fat: number } | null>(null);
-  const [selectedDietDate, setSelectedDietDate] = useState<string>(() => todayISO());
-  const [showDietDatePicker, setShowDietDatePicker] = useState(false);
-  const [dietCopyPickCategory, setDietCopyPickCategory] = useState<DietMealCategory | null>(null);
-  const [dietCopyPickDate, setDietCopyPickDate] = useState<Date>(() => new Date());
-  const [dietCopyPickDateText, setDietCopyPickDateText] = useState("");
-  const [dietCopyModal, setDietCopyModal] = useState<{
-    category: DietMealCategory;
-    sourceDate: string;
-    items: DietItem[];
-  } | null>(null);
-  const [pendingFoodResolution, setPendingFoodResolution] = useState<PendingFoodResolution | null>(null);
-  const [dietMealEditorCategory, setDietMealEditorCategory] = useState<DietMealCategory | null>(null);
-  const [dietAddMode, setDietAddMode] = useState<"search" | "form" | "ai" | "selected" | null>(null);
   const [showBirthDatePicker, setShowBirthDatePicker] = useState(false);
-  const [dietFoodSearch, setDietFoodSearch] = useState("");
-  const [dietSelectedFood, setDietSelectedFood] = useState<FoodRepoEntry | null>(null);
-  const [dietSelectedGrams, setDietSelectedGrams] = useState("");
-  const [dietItemMenu, setDietItemMenu] = useState<DietItemMenuState>(null);
-  const [dietEditingItem, setDietEditingItem] = useState<DietEditingItemState>(null);
-  const [dietMealExpanded, setDietMealExpanded] = useState<Record<DietMealCategory, boolean>>(
-    () => createDietMealExpandedState(),
-  );
   const [foodEstimatorModalOpen, setFoodEstimatorModalOpen] = useState(false);
   const [foodEstimatorProvider, setFoodEstimatorProvider] = useState<AIKey | null>(null);
   const [foodEstimatorImages, setFoodEstimatorImages] = useState<FoodEstimatorImage[]>([]);
@@ -3812,7 +3757,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   const today = todayISO();
   const todayDietDay = store.dietByDate[today] ?? { day_date: today, meals: [] };
-  const dietDay = store.dietByDate[selectedDietDate] ?? { day_date: selectedDietDate, meals: [] };
   const activeProvider = useMemo(
     () => {
       if (store.chatProvider) {
@@ -3978,160 +3922,60 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const canAutocompleteGkgMacro = dietPlanningModel.autocomplete.enabled;
   const autocompleteGkgMacroKey = dietPlanningModel.autocomplete.macro;
   const autocompleteGkgMacroPerKgText = dietPlanningModel.autocomplete.gramsPerKgText;
-  const proteinDailyTargetGrams = savedDietPlanEvaluation.macroGrams.protein;
-  const carbsDailyTargetGrams = savedDietPlanEvaluation.macroGrams.carbs;
-  const fatDailyTargetGrams = savedDietPlanEvaluation.macroGrams.fat;
-  const dietDailyPresentation = useMemo(() => buildDietDailyPresentationModel({
-    selectedDate: selectedDietDate,
+  const dietRuntime = useDietRuntime({
+    active: tab === "diet",
+    localStore: localStoreRuntime,
     referenceDate: today,
-    day: dietDay,
     dailyCaloriesTarget: dietDailyCaloriesTarget,
-    macroTargets: {
-      protein: proteinDailyTargetGrams,
-      carbs: carbsDailyTargetGrams,
-      fat: fatDailyTargetGrams,
-    },
-    foods: foodsRepo,
-    personalFoods,
-    foodSearch: dietFoodSearch,
-    selectedFood: dietSelectedFood,
-    selectedGrams: dietSelectedGrams,
-    nutritionIssues: mealNutritionIssues,
-    manualFields: {
-      name: mealTitleInput,
-      grams: mealGramsInput,
-      calories_kcal: mealCaloriesInput,
-      protein_g: mealProteinInput,
-      carbs_g: mealCarbsInput,
-      fat_g: mealFatInput,
-    },
-  }), [
-    carbsDailyTargetGrams,
-    dietDailyCaloriesTarget,
-    dietDay,
-    dietFoodSearch,
-    dietSelectedFood,
-    dietSelectedGrams,
-    fatDailyTargetGrams,
-    foodsRepo,
-    mealCaloriesInput,
-    mealCarbsInput,
-    mealFatInput,
-    mealGramsInput,
-    mealNutritionIssues,
-    mealProteinInput,
-    mealTitleInput,
-    personalFoods,
-    proteinDailyTargetGrams,
-    selectedDietDate,
-    today,
-  ]);
-  const dietController = useDietController({
-    dateLabel: dietDailyPresentation.dateLabel,
-    dateContextLabel: dietDailyPresentation.dateContextLabel,
-    selectedDate: selectedDietDate,
-    datePickerOpen: showDietDatePicker,
-    isWeb: Platform.OS === "web",
-    isIos: Platform.OS === "ios",
-    caloriesConsumed: dietDailyPresentation.caloriesConsumed,
-    caloriesTarget: dietDailyCaloriesTarget,
-    caloriesProgress: dietDailyPresentation.caloriesProgress,
-    caloriesPercent: dietDailyPresentation.caloriesPercent,
-    macroOverview: dietDailyPresentation.macroOverview,
+    macroTargets: savedDietPlanEvaluation.macroGrams,
     exceededBudgetCalories: savedDietPlanEvaluation.budgetStatus === "exceeded"
       ? savedDietPlanEvaluation.excessCalories
       : null,
-    meals: dietDailyPresentation.meals,
-    expandedMeals: dietMealExpanded,
-    editorCategory: dietMealEditorCategory,
-    editingItem: dietEditingItem,
-    itemMenu: dietItemMenu,
+    foods: foodsRepo,
+    personalFoods,
     catalogAvailability: foodCatalogAvailability,
-    foodSearch: dietFoodSearch,
-    foodSearchResults: dietDailyPresentation.foodSearchResults,
-    addMode: dietAddMode,
-    selectedFood: dietSelectedFood,
-    selectedGrams: dietSelectedGrams,
-    selectedFoodPreview: dietDailyPresentation.selectedFoodPreview,
-    nutritionIssues: dietDailyPresentation.nutritionIssues,
-    manualFields: dietDailyPresentation.manualFields,
-    foodCatalogAmbiguityOpen: pendingFoodResolution !== null,
     foodEstimatorOpen: foodEstimatorModalOpen,
-    copyConfirmationOpen: dietCopyModal !== null,
-    copyDatePickerOpen: dietCopyPickCategory !== null,
-    itemMenuOpen: dietItemMenu !== null,
-    mealEditorOpen: dietMealEditorCategory !== null,
+    isWeb: Platform.OS === "web",
+    isIos: Platform.OS === "ios",
+    isAndroid: Platform.OS === "android",
     captureHeaderHeight: (height) => {
       if (dietScrollYValueRef.current <= 1 && height > 0) setDietHeaderHeight(height);
     },
-    changeDay: changeDietDateBy,
-    toggleDatePicker: () => setShowDietDatePicker((previous) => !previous),
-    changeWebDate: (value) => {
-      const parsed = new Date(`${value}T12:00:00`);
-      if (!Number.isNaN(parsed.getTime())) setSelectedDietDate(value);
-    },
-    changeNativeDate: (eventType, date) => {
-      if (Platform.OS === "android") setShowDietDatePicker(false);
-      if (eventType === "dismissed" || !date) return;
-      resetDietMealEditorState();
-      setSelectedDietDate(isoDateFromDate(date));
-      setError(null);
-    },
-    closeFoodCatalogAmbiguity: () => setPendingFoodResolution(null),
-    closeFoodEstimator: closeFoodEstimatorModal,
-    closeCopyConfirmation: () => setDietCopyModal(null),
-    closeCopyDatePicker: closeDietCopyPicker,
-    closeDatePicker: () => setShowDietDatePicker(false),
-    closeItemMenu: () => setDietItemMenu(null),
-    closeMealEditor: resetDietMealEditorState,
-    toggleMeal: toggleDietMealCategory,
-    toggleItemMenu: toggleDietItemMenu,
-    editItem: startEditDietItem,
-    editItemWithAi: startEditDietItemWithAI,
-    deleteItem: deleteDietItem,
     retryCatalog: () => { void foodCatalogRuntime.retry(); },
-    changeFoodSearch: changeDietFoodSearch,
-    focusFoodSearch: () => setDietFoodSearch(""),
-    clearFoodSearch: clearDietFoodSearch,
-    selectFood: selectDietFood,
-    changeSelectedGrams: changeSelectedDietFoodGrams,
-    saveSelectedFood: saveSelectedDietFood,
-    returnToFoodSearch: returnToDietFoodSearch,
-    changeManualField: changeManualDietField,
-    saveManualFood: addMeal,
-    cancelMealEditor: cancelDietMealEditor,
-    openManualFood: (category) => {
-      setDietAddMode("form");
-      openDietMealEditor(category);
-      setDietAddMode("form");
-    },
-    openFoodEstimator: (category) => {
-      setDietAddMode("ai");
-      openDietMealEditor(category);
-      setDietAddMode("ai");
+    openFoodEstimator: (item) => {
       openFoodEstimatorModal();
+      if (!item) return;
+      const gramsInfo = item.grams > 0 ? `${formatNutritionNumber(item.grams)}g, ` : "";
+      setFoodEstimatorMessages([
+        createAiIdentityChatMessage("food_est_msg", "food-estimator"),
+        {
+          id: uid("food_est_msg"),
+          role: "assistant" as const,
+          content: `Alimento actual: ${item.title}, ${gramsInfo}${formatNutritionNumber(item.calories_kcal)} kcal, P:${formatNutritionNumber(item.protein_g)}g C:${formatNutritionNumber(item.carbs_g)}g G:${formatNutritionNumber(item.fat_g)}g.\n\nDime qué cambios quieres hacer.`,
+          created_at: new Date().toISOString(),
+        },
+      ]);
     },
-    repeatPreviousDay: openRepeatPreviousDayMeal,
-    repeatFromDate: openRepeatPickDateMeal,
+    closeFoodEstimator: closeFoodEstimatorModal,
+    proposeManualFood: (item) => {
+      feedbackProposalStore.propose({
+        kind: "food",
+        title: item.title,
+        summary: formatFoodSummary({
+          name: item.title,
+          grams: item.grams,
+          calories_kcal: item.calories_kcal,
+          protein_g: item.protein_g,
+          carbs_g: item.carbs_g,
+          fat_g: item.fat_g,
+        }),
+      });
+    },
+    setError,
+    createId: (prefix) => uid(prefix),
   });
-  const dietResolutionController = useDietResolutionController({
-    isAndroid: Platform.OS === "android",
-    isWeb: Platform.OS === "web",
-    copyDateCategory: dietCopyPickCategory,
-    copyDate: dietCopyPickDate,
-    copyDateText: dietCopyPickDateText,
-    ambiguityCandidates: pendingFoodResolution?.candidates ?? null,
-    copyConfirmation: dietCopyModal,
-    selectedDate: selectedDietDate,
-    changeCopyDate: onDietCopyDateChange,
-    changeCopyDateText: setDietCopyPickDateText,
-    continueCopyDate: previewRepeatMealFromDate,
-    closeCopyDate: closeDietCopyPicker,
-    chooseFood: commitPendingFoodResolution,
-    closeAmbiguity: () => setPendingFoodResolution(null),
-    confirmCopy: confirmRepeatMeal,
-    closeCopyConfirmation: () => setDietCopyModal(null),
-  });
+  const dietController = dietRuntime.controller;
+  const dietResolutionController = dietRuntime.resolutionController;
   const todayCaloriesConsumed = sumDayCalories(todayDietDay);
   const homeController = useHomeController({
     templates: store.templates,
@@ -4855,13 +4699,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   useEffect(() => {
     void pushTrace("app", "App mounted", { platform: Platform.OS, version: Constants.expoConfig?.version });
   }, []);
-
-  useEffect(() => {
-    if (tab !== "diet") return;
-    setSelectedDietDate(todayISO());
-    setShowDietDatePicker(false);
-    resetDietMealEditorState();
-  }, [tab]);
 
   const playRestFinishedAlert = useCallback(async () => {
     if (restAlertLockRef.current) return;
@@ -6790,539 +6627,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
   }
 
-  function resetDietMealEditorState() {
-    setDietMealEditorCategory(null);
-    setDietEditingItem(null);
-    setDietItemMenu(null);
-    setMealTitleInput("");
-    setMealCaloriesInput("");
-    setMealProteinInput("");
-    setMealCarbsInput("");
-    setMealFatInput("");
-    setMealGramsInput("");
-    mealPerGramRef.current = null;
-  }
-
-  function changeDietDateBy(days: number) {
-    setShowDietDatePicker(false);
-    resetDietMealEditorState();
-    setSelectedDietDate((prev) => shiftISODateByDays(prev, days));
-    setError(null);
-  }
-
-  function onDietDateChange(event: DateTimePickerEvent, selectedDate?: Date) {
-    if (Platform.OS === "android") {
-      setShowDietDatePicker(false);
-    }
-    if (event.type === "dismissed" || !selectedDate) return;
-    resetDietMealEditorState();
-    setSelectedDietDate(isoDateFromDate(selectedDate));
-    setError(null);
-  }
-
-  function mealItemsForDate(category: DietMealCategory, isoDate: string): DietItem[] {
-    const day = store.dietByDate[isoDate];
-    if (!day) return [];
-    const meal = day.meals.find((m) => m.title === category);
-    return meal ? meal.items : [];
-  }
-
-  function openRepeatPreviousDayMeal(category: DietMealCategory) {
-    const sourceDate = shiftISODateByDays(selectedDietDate, -1);
-    const items = mealItemsForDate(category, sourceDate);
-    if (items.length === 0) {
-      setError(`No hay alimentos en ${category} del día anterior (${formatDietDayHeader(sourceDate)}).`);
-      return;
-    }
-    setError(null);
-    setDietCopyModal({ category, sourceDate, items });
-  }
-
-  function openRepeatPickDateMeal(category: DietMealCategory) {
-    const defaultDate = dateFromISO(shiftISODateByDays(selectedDietDate, -1));
-    setDietCopyPickDate(defaultDate);
-    setDietCopyPickDateText(isoDateFromDate(defaultDate));
-    setDietCopyPickCategory(category);
-  }
-
-  function closeDietCopyPicker() {
-    setDietCopyPickCategory(null);
-  }
-
-  function previewRepeatMealFromDate(category: DietMealCategory, sourceDate: string) {
-    setDietCopyPickCategory(null);
-    if (sourceDate === selectedDietDate) {
-      setError("Selecciona una fecha distinta a la actual.");
-      return;
-    }
-    const items = mealItemsForDate(category, sourceDate);
-    if (items.length === 0) {
-      setError(`No hay alimentos en ${category} del ${formatDietDayHeader(sourceDate)}.`);
-      return;
-    }
-    setError(null);
-    setDietCopyModal({ category, sourceDate, items });
-  }
-
-  function onDietCopyDateChange(eventType: string, selectedDate?: Date) {
-    if (Platform.OS === "android") {
-      const category = dietCopyPickCategory;
-      setDietCopyPickCategory(null);
-      if (eventType === "dismissed" || !selectedDate || !category) return;
-      previewRepeatMealFromDate(category, isoDateFromDate(selectedDate));
-      return;
-    }
-    if (eventType === "dismissed" || !selectedDate) return;
-    setDietCopyPickDate(selectedDate);
-    setDietCopyPickDateText(isoDateFromDate(selectedDate));
-  }
-
-  function confirmRepeatMeal() {
-    if (!dietCopyModal) return;
-    const { category, items } = dietCopyModal;
-    const activeDietDate = selectedDietDate;
-    const clonedItems: DietItem[] = items.map((item) => ({ ...item, id: uid("food") }));
-    setStore((prev) => {
-      const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
-      const existingMeal = currentDay.meals.find((m) => m.title === category);
-      const updatedMeals = existingMeal
-        ? currentDay.meals.map((m) =>
-            m.id === existingMeal.id ? { ...m, items: [...m.items, ...clonedItems] } : m,
-          )
-        : [...currentDay.meals, { id: uid("meal"), title: category, items: clonedItems }].sort(
-            (a, b) =>
-              DIET_MEAL_CATEGORIES.indexOf(a.title as DietMealCategory) -
-              DIET_MEAL_CATEGORIES.indexOf(b.title as DietMealCategory),
-          );
-      return {
-        ...prev,
-        dietByDate: { ...prev.dietByDate, [activeDietDate]: { ...currentDay, meals: updatedMeals } },
-      };
-    });
-    setDietCopyModal(null);
-  }
-
-  function persistDietItem(
-    item: DietItem,
-    category: DietMealCategory,
-    activeDietDate: string,
-    editing: DietItemMenuState,
-  ): void {
-    setStore((previous) => {
-      const currentDay = previous.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
-      if (editing) {
-        const meals = currentDay.meals
-          .map((meal) => meal.id !== editing.meal_id ? meal : ({
-            ...meal,
-            items: meal.items.map((current) => current.id === editing.item_id
-              ? { ...item, id: current.id }
-              : current),
-          }))
-          .filter((meal) => meal.items.length > 0);
-        return {
-          ...previous,
-          dietByDate: {
-            ...previous.dietByDate,
-            [activeDietDate]: { ...currentDay, meals: sortDietMealsByCategory(meals) },
-          },
-        };
-      }
-      const existingMealIndex = currentDay.meals.findIndex((meal) => meal.title === category);
-      const meals = existingMealIndex >= 0
-        ? currentDay.meals.map((meal, index) => index === existingMealIndex
-          ? { ...meal, items: [...meal.items, item] }
-          : meal)
-        : [...currentDay.meals, { id: uid("meal"), title: category, items: [item] }];
-      return {
-        ...previous,
-        dietByDate: {
-          ...previous.dietByDate,
-          [activeDietDate]: { ...currentDay, meals: sortDietMealsByCategory(meals) },
-        },
-      };
-    });
-  }
-
-  function finishDietItemResolution(origin: PendingFoodResolution["origin"]): void {
-    setPendingFoodResolution(null);
-    setDietEditingItem(null);
-    setDietItemMenu(null);
-    setDietMealEditorCategory(null);
-    setDietAddMode(null);
-    setMealNutritionIssues([]);
-    setError(null);
-    if (origin === "form") {
-      setMealTitleInput("");
-      setMealCaloriesInput("");
-      setMealProteinInput("");
-      setMealCarbsInput("");
-      setMealFatInput("");
-      setMealGramsInput("");
-      mealPerGramRef.current = null;
-    } else {
-      closeFoodEstimatorModal();
-    }
-  }
-
-  function commitPendingFoodResolution(candidate: FoodRepoEntry | null): void {
-    if (!pendingFoodResolution) return;
-    const pending = pendingFoodResolution;
-    const item = candidate
-      ? dietItemFromCatalog(candidate, pending.manualItem.grams, pending.manualItem.id, "selection")
-      : pending.manualItem;
-    persistDietItem(item, pending.category, pending.date, pending.editing);
-    if (!candidate && pending.proposeManual) {
-      feedbackProposalStore.propose({
-        kind: "food",
-        title: item.title,
-        summary: formatFoodSummary({
-          name: item.title,
-          grams: item.grams,
-          calories_kcal: item.calories_kcal,
-          protein_g: item.protein_g,
-          carbs_g: item.carbs_g,
-          fat_g: item.fat_g,
-        }),
-      });
-    }
-    finishDietItemResolution(pending.origin);
-  }
-
-  function addMeal() {
-    if (!dietMealEditorCategory) {
-      setError("Selecciona una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).");
-      return;
-    }
-    const formResult = validateNutritionFormInput({
-      name: mealTitleInput,
-      grams: mealGramsInput,
-      calories_kcal: mealCaloriesInput,
-      protein_g: mealProteinInput,
-      carbs_g: mealCarbsInput,
-      fat_g: mealFatInput,
-    });
-    if (!formResult.ok) {
-      setMealNutritionIssues(formResult.issues);
-      setError(formatNutritionValidationIssues(formResult.issues));
-      return;
-    }
-    setMealNutritionIssues([]);
-    const {
-      name: title,
-      grams,
-      calories_kcal: calories,
-      protein_g: protein,
-      carbs_g: carbs,
-      fat_g: fat,
-    } = formResult.value;
-
-    const repoMatch = findDietFoodInCatalog(title, foodsRepo, personalFoods);
-    const manualItem: DietItem = {
-      id: uid("food"),
-      title,
-      grams,
-      calories_kcal: calories,
-      protein_g: protein,
-      carbs_g: carbs,
-      fat_g: fat,
-      catalog_link: unresolvedCatalog("manual"),
-    };
-    if (repoMatch.kind === "alias" || repoMatch.kind === "ambiguous") {
-      setPendingFoodResolution({
-        origin: "form",
-        candidates: repoMatch.kind === "alias" ? [repoMatch.candidate] : repoMatch.candidates,
-        manualItem,
-        category: dietMealEditorCategory,
-        date: selectedDietDate,
-        editing: dietEditingItem,
-        proposeManual: true,
-      });
-      return;
-    }
-    const newItem = repoMatch.kind === "exact"
-      ? dietItemFromCatalog(repoMatch.candidate, grams, manualItem.id, "selection")
-      : manualItem;
-
-    const finalValidation = validateNutritionItem({
-      name: newItem.title,
-      grams: newItem.grams,
-      calories_kcal: newItem.calories_kcal,
-      protein_g: newItem.protein_g,
-      carbs_g: newItem.carbs_g,
-      fat_g: newItem.fat_g,
-    });
-    if (!finalValidation.ok) {
-      setMealNutritionIssues(finalValidation.issues);
-      setError(formatNutritionValidationIssues(finalValidation.issues));
-      return;
-    }
-    if (repoMatch.kind === "not_found") {
-      feedbackProposalStore.propose({
-        kind: "food",
-        title,
-        summary: formatFoodSummary({
-          name: title,
-          grams,
-          calories_kcal: calories,
-          protein_g: protein,
-          carbs_g: carbs,
-          fat_g: fat,
-        }),
-      });
-    }
-
-    persistDietItem(newItem, dietMealEditorCategory, selectedDietDate, dietEditingItem);
-    finishDietItemResolution("form");
-  }
-
-  function toggleDietMealCategory(category: DietMealCategory) {
-    setDietMealExpanded((prev) => ({
-      ...prev,
-      [category]: !prev[category],
-    }));
-    setDietMealEditorCategory((prev) => (prev === category ? null : prev));
-    setDietEditingItem(null);
-    setDietItemMenu(null);
-  }
-
-  function openDietMealEditor(category: DietMealCategory) {
-    setDietMealExpanded((prev) => ({ ...prev, [category]: true }));
-    setDietMealEditorCategory(category);
-    setDietEditingItem(null);
-    setDietItemMenu(null);
-    setMealTitleInput("");
-    setMealCaloriesInput("");
-    setMealProteinInput("");
-    setMealCarbsInput("");
-    setMealFatInput("");
-    setMealGramsInput("");
-    mealPerGramRef.current = null;
-    setMealNutritionIssues([]);
-    setError(null);
-  }
-
-  function startEditDietItem(
-    category: DietMealCategory,
-    meal: DietMeal,
-    item: DietItem,
-  ) {
-    setDietMealExpanded((prev) => ({ ...prev, [category]: true }));
-    setDietMealEditorCategory(category);
-    setDietEditingItem({ meal_id: meal.id, item_id: item.id });
-    setDietAddMode("form");
-    setDietItemMenu(null);
-    setMealTitleInput(item.title);
-    setMealCaloriesInput(formatNutritionNumber(item.calories_kcal));
-    setMealProteinInput(formatNutritionNumber(item.protein_g));
-    setMealCarbsInput(formatNutritionNumber(item.carbs_g));
-    setMealFatInput(formatNutritionNumber(item.fat_g));
-    setMealGramsInput(item.grams > 0 ? formatNutritionNumber(item.grams) : "");
-    mealPerGramRef.current = item.grams > 0
-      ? { cal: item.calories_kcal / item.grams, prot: item.protein_g / item.grams, carbs: item.carbs_g / item.grams, fat: item.fat_g / item.grams }
-      : null;
-    setMealNutritionIssues([]);
-    setError(null);
-  }
-
-  function startEditDietItemWithAI(
-    category: DietMealCategory,
-    meal: DietMeal,
-    item: DietItem,
-  ) {
-    setDietItemMenu(null);
-    setDietMealEditorCategory(category);
-    setDietEditingItem({ meal_id: meal.id, item_id: item.id });
-    setDietAddMode("ai");
-    openFoodEstimatorModal();
-    // Override the initial message with the item's current data
-    const gramsInfo = item.grams > 0 ? `${formatNutritionNumber(item.grams)}g, ` : "";
-    setFoodEstimatorMessages([
-      createAiIdentityChatMessage("food_est_msg", "food-estimator"),
-      {
-        id: uid("food_est_msg"),
-        role: "assistant" as const,
-        content: `Alimento actual: ${item.title}, ${gramsInfo}${formatNutritionNumber(item.calories_kcal)} kcal, P:${formatNutritionNumber(item.protein_g)}g C:${formatNutritionNumber(item.carbs_g)}g G:${formatNutritionNumber(item.fat_g)}g.\n\nDime qué cambios quieres hacer.`,
-        created_at: new Date().toISOString(),
-      },
-    ]);
-  }
-
-  function deleteDietItem(meal: DietMeal, item: DietItem) {
-    const activeDietDate = selectedDietDate;
-    setStore((prev) => {
-      const currentDay = prev.dietByDate[activeDietDate] ?? { day_date: activeDietDate, meals: [] };
-      const meals = currentDay.meals
-        .map((currentMeal) => {
-          if (currentMeal.id !== meal.id) return currentMeal;
-          return {
-            ...currentMeal,
-            items: currentMeal.items.filter((currentItem) => currentItem.id !== item.id),
-          };
-        })
-        .filter((currentMeal) => currentMeal.items.length > 0);
-      return {
-        ...prev,
-        dietByDate: {
-          ...prev.dietByDate,
-          [activeDietDate]: {
-            ...currentDay,
-            meals: sortDietMealsByCategory(meals),
-          },
-        },
-      };
-    });
-    if (dietEditingItem?.meal_id === meal.id && dietEditingItem?.item_id === item.id) {
-      setDietEditingItem(null);
-      setMealTitleInput("");
-      setMealCaloriesInput("");
-      setMealProteinInput("");
-      setMealCarbsInput("");
-      setMealFatInput("");
-    setMealGramsInput("");
-    mealPerGramRef.current = null;
-    }
-    setDietItemMenu(null);
-    setError(null);
-  }
-
-  function toggleDietItemMenu(mealId: string, itemId: string): void {
-    setDietItemMenu((previous) => (
-      previous?.meal_id === mealId && previous.item_id === itemId
-        ? null
-        : { meal_id: mealId, item_id: itemId }
-    ));
-  }
-
-  function changeDietFoodSearch(category: DietMealCategory, value: string): void {
-    setDietFoodSearch(value);
-    if (value.trim()) {
-      setDietAddMode("search");
-      openDietMealEditor(category);
-      setDietFoodSearch(value);
-      return;
-    }
-    setDietAddMode(null);
-    setDietMealEditorCategory(null);
-  }
-
-  function clearDietFoodSearch(): void {
-    setDietFoodSearch("");
-    setDietAddMode(null);
-    setDietMealEditorCategory(null);
-  }
-
-  function selectDietFood(category: DietMealCategory, entry: FoodRepoEntry): void {
-    setDietSelectedFood(entry);
-    setDietSelectedGrams(String(entry.serving_size_g));
-    setDietAddMode("selected");
-    setDietFoodSearch("");
-    openDietMealEditor(category);
-    setDietSelectedFood(entry);
-    setDietSelectedGrams(String(entry.serving_size_g));
-    setDietAddMode("selected");
-  }
-
-  function changeSelectedDietFoodGrams(value: string): void {
-    setDietSelectedGrams(value);
-    setMealNutritionIssues((previous) => previous.filter((issue) => issue.field !== "grams"));
-    setError(null);
-  }
-
-  function saveSelectedDietFood(): void {
-    if (!dietMealEditorCategory || !dietSelectedFood) return;
-    const selectedGramsValidation = validateNutritionFormInput({
-      name: dietSelectedFood.name,
-      grams: dietSelectedGrams,
-      calories_kcal: 0,
-      protein_g: 0,
-      carbs_g: 0,
-      fat_g: 0,
-    });
-    if (!selectedGramsValidation.ok) {
-      setMealNutritionIssues(selectedGramsValidation.issues);
-      setError(formatNutritionValidationIssues(selectedGramsValidation.issues));
-      return;
-    }
-    const grams = selectedGramsValidation.value.grams;
-    const item = dietItemFromCatalog(dietSelectedFood, grams, uid("food"), "selection");
-    const finalValidation = validateNutritionItem({
-      name: item.title,
-      grams: item.grams,
-      calories_kcal: item.calories_kcal,
-      protein_g: item.protein_g,
-      carbs_g: item.carbs_g,
-      fat_g: item.fat_g,
-    });
-    if (!finalValidation.ok) {
-      setMealNutritionIssues(finalValidation.issues);
-      setError(formatNutritionValidationIssues(finalValidation.issues));
-      return;
-    }
-    const activeDietDate = selectedDietDate;
-    const category = dietMealEditorCategory;
-    setStore((previous) => {
-      const currentDay = previous.dietByDate[activeDietDate]
-        ?? { day_date: activeDietDate, meals: [] };
-      const existingMeal = currentDay.meals.find((meal) => meal.title === category);
-      const meals = existingMeal
-        ? currentDay.meals.map((meal) => meal.id === existingMeal.id
-            ? { ...meal, items: [...meal.items, item] }
-            : meal)
-        : sortDietMealsByCategory([
-            ...currentDay.meals,
-            { id: uid("meal"), title: category, items: [item] },
-          ]);
-      return {
-        ...previous,
-        dietByDate: {
-          ...previous.dietByDate,
-          [activeDietDate]: { ...currentDay, meals },
-        },
-      };
-    });
-    setDietAddMode(null);
-    setDietSelectedFood(null);
-    setDietMealEditorCategory(null);
-    setMealNutritionIssues([]);
-    setError(null);
-  }
-
-  function returnToDietFoodSearch(): void {
-    setDietAddMode("search");
-    setDietSelectedFood(null);
-    setDietSelectedGrams("");
-  }
-
-  function changeManualDietField(
-    field: "name" | "grams" | "calories_kcal" | "protein_g" | "carbs_g" | "fat_g",
-    value: string,
-  ): void {
-    if (field === "name") setMealTitleInput(value);
-    if (field === "grams") setMealGramsInput(value);
-    if (field === "calories_kcal") setMealCaloriesInput(value);
-    if (field === "protein_g") setMealProteinInput(value);
-    if (field === "carbs_g") setMealCarbsInput(value);
-    if (field === "fat_g") setMealFatInput(value);
-    setMealNutritionIssues((previous) => previous.filter((issue) => issue.field !== field));
-    setError(null);
-    if (field !== "grams" || !mealPerGramRef.current) return;
-    const grams = parseFloat(value) || 0;
-    if (grams <= 0) return;
-    const perGram = mealPerGramRef.current;
-    setMealCaloriesInput(formatNutritionNumber(Math.round(perGram.cal * grams)));
-    setMealProteinInput(formatNutritionNumber(Math.round(perGram.prot * grams * 10) / 10));
-    setMealCarbsInput(formatNutritionNumber(Math.round(perGram.carbs * grams * 10) / 10));
-    setMealFatInput(formatNutritionNumber(Math.round(perGram.fat * grams * 10) / 10));
-  }
-
-  function cancelDietMealEditor(): void {
-    resetDietMealEditorState();
-    setDietAddMode(null);
-    setDietFoodSearch("");
-    setMealNutritionIssues([]);
-    setError(null);
-  }
-
   function resolveFoodEstimatorProviderFromState(): AIKey | null {
     // Use store.foodAIProvider if set
     if (store.foodAIProvider) {
@@ -8183,7 +7487,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
   async function addFoodFromEstimatorJSON() {
     if (foodEstimatorSending) return;
-    if (!dietMealEditorCategory) {
+    const persistTarget = dietRuntime.persistTarget;
+    if (!persistTarget) {
       setError("Selecciona una comida antes de guardar la estimación.");
       return;
     }
@@ -8207,7 +7512,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       const parsed = await requestStructuredNutritionJSON(resolvedProvider, conversationSummary);
 
       // Search food in repository before adding
-      const cat = dietMealEditorCategory;
       const aiName = parsed.dish_name || "Alimento estimado IA";
       const aiGrams = parsed.grams ?? 0;
       const repoMatch = findDietFoodInCatalog(aiName, foodsRepo, personalFoods);
@@ -8225,15 +7529,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         catalog_link: unresolvedCatalog("external_estimate"),
       };
       if (repoMatch.kind === "alias" || repoMatch.kind === "ambiguous") {
-        setPendingFoodResolution({
-          origin: "estimator",
-          candidates: repoMatch.kind === "alias" ? [repoMatch.candidate] : repoMatch.candidates,
+        dietRuntime.stageEstimatedResolution(
+          persistTarget,
           manualItem,
-          category: cat,
-          date: selectedDietDate,
-          editing: dietEditingItem,
-          proposeManual: effectiveFoodType !== "alimento",
-        });
+          repoMatch.kind === "alias" ? [repoMatch.candidate] : repoMatch.candidates,
+          effectiveFoodType !== "alimento",
+        );
         return;
       }
       const updatedItem = repoMatch.kind === "exact"
@@ -8257,8 +7558,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           summary: formatFoodSummary(finalValidation.value),
         });
       }
-      persistDietItem(updatedItem, cat, selectedDietDate, dietEditingItem);
-      finishDietItemResolution("estimator");
+      dietRuntime.saveEstimatedItem(persistTarget, updatedItem);
     } catch (err) {
       const message =
         err instanceof Error
@@ -11299,7 +10599,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         expandedThinking={foodEstimatorExpandedThinking}
         scrollRef={foodEstimatorScrollRef}
         hasResponse={foodEstimatorHasLLMResponse}
-        hasMealTarget={dietMealEditorCategory !== null}
+        hasMealTarget={dietRuntime.persistTarget !== null}
         onClose={closeFoodEstimatorModal}
         onAddImageFromLibrary={() => { void addFoodEstimatorImageFromLibrary(); }}
         onAddImageFromCamera={() => { void addFoodEstimatorImageFromCamera(); }}
