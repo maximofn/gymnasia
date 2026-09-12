@@ -4,8 +4,8 @@ import type {
   WorkoutSessionSummary,
   WorkoutSummaryRecalculation,
 } from "../training/workoutHistory";
-import type { ExerciseSeries } from "../training/seriesContract";
-import type { WorkoutEffortBreakdown } from "../training/workoutExecution";
+import type { ExerciseSeries, SubSeries } from "../training/seriesContract";
+import type { WorkoutEffortBreakdown, WorkoutExecutionUnit } from "../training/workoutExecution";
 import type {
   RoutineIconName,
   TrainingCategory,
@@ -19,7 +19,177 @@ import type {
 } from "../training/presentationModel";
 import type { CatalogLink } from "../catalogs/types";
 import type { WorkoutTemplateValidation } from "../training/workoutTemplateTransactions";
+import type { WorkoutSession } from "../training/workoutSessionModel";
 import type { ScreenController } from "./types";
+
+export type TrainingSessionSubSeriesState = {
+  key: string;
+  unit: WorkoutExecutionUnit;
+  subSeries: SubSeries;
+  subSeriesIndex: number;
+  isCompleted: boolean;
+  isCurrent: boolean;
+};
+
+export type TrainingSessionSeriesState = {
+  key: string;
+  series: ExerciseSeries;
+  seriesIndex: number;
+  subSeriesStates: TrainingSessionSubSeriesState[];
+  isCompleted: boolean;
+  isCurrent: boolean;
+};
+
+export type TrainingSessionExercise = {
+  exercise: WorkoutExercise;
+  exerciseIndex: number;
+  seriesStates: TrainingSessionSeriesState[];
+  completedEffortCount: number;
+  totalEffortCount: number;
+  isCurrentExercise: boolean;
+  isCompletedExercise: boolean;
+  muscle: string;
+};
+
+export type TrainingSessionModel = {
+  session: WorkoutSession | null;
+  exercises: ReadonlyArray<TrainingSessionExercise>;
+  progressPercent: number;
+  currentUnit: WorkoutExecutionUnit | null;
+  restTargetSeconds: number;
+  restProgressRatio: number;
+  discardConfirmationOpen: boolean;
+  activeSeriesMenuId: string | null;
+};
+
+export type TrainingSessionActions = {
+  openExercisePicker(): void;
+  finish(): void;
+  discard(): void;
+  closeDiscardConfirmation(): void;
+  focusExercise(exerciseId: string): void;
+  moveExercise(exerciseId: string, direction: "up" | "down"): void;
+  removeExercise(exerciseId: string): void;
+  markUnitDone(key: string): void;
+  markUnitNotDone(key: string): void;
+  openSeriesTypePicker(exerciseId: string, seriesId: string): void;
+  closeSeriesTypePicker(): void;
+  updateSeriesField(exerciseId: string, seriesId: string, field: ExerciseSeriesField, value: string): void;
+  toggleSeriesMenu(key: string): void;
+  closeSeriesMenu(): void;
+  moveSeries(exerciseId: string, seriesId: string, direction: "up" | "down"): void;
+  deleteSeries(exerciseId: string, seriesId: string): void;
+  addSeries(exerciseId: string): void;
+  pause(): void;
+  resume(): void;
+  skipRest(): void;
+  closePartialFinish(): void;
+  closeCompletion(): void;
+};
+
+export type TrainingSessionControllerInput = TrainingSessionModel & TrainingSessionActions & {
+  seriesTypePickerOpen: boolean;
+  partialFinishOpen: boolean;
+  completionOpen: boolean;
+};
+
+export function useTrainingSessionController(
+  input: TrainingSessionControllerInput,
+): ScreenController<
+  TrainingSessionModel,
+  TrainingSessionActions,
+  "training-partial-finish" | "workout-completion" | "workout-discard-confirmation" | "training-series-menu" | "series-type-picker"
+> {
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const model = useMemo<TrainingSessionModel>(() => ({
+    session: input.session,
+    exercises: input.exercises,
+    progressPercent: input.progressPercent,
+    currentUnit: input.currentUnit,
+    restTargetSeconds: input.restTargetSeconds,
+    restProgressRatio: input.restProgressRatio,
+    discardConfirmationOpen: input.discardConfirmationOpen,
+    activeSeriesMenuId: input.activeSeriesMenuId,
+  }), [
+    input.activeSeriesMenuId,
+    input.currentUnit,
+    input.discardConfirmationOpen,
+    input.exercises,
+    input.progressPercent,
+    input.restProgressRatio,
+    input.restTargetSeconds,
+    input.session,
+  ]);
+  const actions = useMemo<TrainingSessionActions>(() => ({
+    openExercisePicker: () => inputRef.current.openExercisePicker(),
+    finish: () => inputRef.current.finish(),
+    discard: () => inputRef.current.discard(),
+    closeDiscardConfirmation: () => inputRef.current.closeDiscardConfirmation(),
+    focusExercise: (exerciseId) => inputRef.current.focusExercise(exerciseId),
+    moveExercise: (exerciseId, direction) => inputRef.current.moveExercise(exerciseId, direction),
+    removeExercise: (exerciseId) => inputRef.current.removeExercise(exerciseId),
+    markUnitDone: (key) => inputRef.current.markUnitDone(key),
+    markUnitNotDone: (key) => inputRef.current.markUnitNotDone(key),
+    openSeriesTypePicker: (exerciseId, seriesId) => inputRef.current.openSeriesTypePicker(exerciseId, seriesId),
+    closeSeriesTypePicker: () => inputRef.current.closeSeriesTypePicker(),
+    updateSeriesField: (exerciseId, seriesId, field, value) => inputRef.current.updateSeriesField(exerciseId, seriesId, field, value),
+    toggleSeriesMenu: (key) => inputRef.current.toggleSeriesMenu(key),
+    closeSeriesMenu: () => inputRef.current.closeSeriesMenu(),
+    moveSeries: (exerciseId, seriesId, direction) => inputRef.current.moveSeries(exerciseId, seriesId, direction),
+    deleteSeries: (exerciseId, seriesId) => inputRef.current.deleteSeries(exerciseId, seriesId),
+    addSeries: (exerciseId) => inputRef.current.addSeries(exerciseId),
+    pause: () => inputRef.current.pause(),
+    resume: () => inputRef.current.resume(),
+    skipRest: () => inputRef.current.skipRest(),
+    closePartialFinish: () => inputRef.current.closePartialFinish(),
+    closeCompletion: () => inputRef.current.closeCompletion(),
+  }), []);
+  const back = useMemo(() => ({
+    layers: {
+      "training-partial-finish": input.partialFinishOpen,
+      "workout-completion": input.completionOpen,
+      "workout-discard-confirmation": input.discardConfirmationOpen,
+      "training-series-menu": input.session !== null && input.activeSeriesMenuId !== null,
+      "series-type-picker": input.session !== null && input.seriesTypePickerOpen,
+    },
+    handlers: {
+      "training-partial-finish": () => {
+        if (!inputRef.current.partialFinishOpen) return false;
+        inputRef.current.closePartialFinish();
+        return true;
+      },
+      "workout-completion": () => {
+        if (!inputRef.current.completionOpen) return false;
+        inputRef.current.closeCompletion();
+        return true;
+      },
+      "workout-discard-confirmation": () => {
+        if (!inputRef.current.discardConfirmationOpen) return false;
+        inputRef.current.closeDiscardConfirmation();
+        return true;
+      },
+      "training-series-menu": () => {
+        if (inputRef.current.session === null || inputRef.current.activeSeriesMenuId === null) return false;
+        inputRef.current.closeSeriesMenu();
+        return true;
+      },
+      "series-type-picker": () => {
+        if (inputRef.current.session === null || !inputRef.current.seriesTypePickerOpen) return false;
+        inputRef.current.closeSeriesTypePicker();
+        return true;
+      },
+    },
+  }), [
+    input.activeSeriesMenuId,
+    input.completionOpen,
+    input.discardConfirmationOpen,
+    input.partialFinishOpen,
+    input.seriesTypePickerOpen,
+    input.session,
+  ]);
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
 
 export type TrainingFilter = "all" | TrainingCategory;
 

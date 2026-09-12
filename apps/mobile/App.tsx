@@ -349,6 +349,7 @@ import {
   useTrainingEditorController,
   useTrainingHistoryController,
   useTrainingListController,
+  useTrainingSessionController,
   type TrainingFilter,
 } from "./controllers/trainingController";
 import {
@@ -382,6 +383,7 @@ import {
   TrainingEditorScreen,
   TrainingHistoryScreen,
   TrainingListScreen,
+  TrainingSessionScreen,
   WorkoutHistoryEntryCard,
 } from "./screens";
 import {
@@ -6326,6 +6328,49 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     activeWorkoutSession?.is_resting,
     activeWorkoutSession?.rest_seconds_left,
   ]);
+  const trainingSessionController = useTrainingSessionController({
+    session: activeWorkoutSession,
+    exercises: activeSessionExercises,
+    progressPercent: activeSessionProgressPercent,
+    currentUnit: activeSessionCurrentUnit,
+    restTargetSeconds: activeSessionRestTargetSeconds,
+    restProgressRatio: activeSessionRestProgressRatio,
+    discardConfirmationOpen: confirmDiscardSession,
+    activeSeriesMenuId,
+    seriesTypePickerOpen: seriesTypePickerTarget !== null,
+    partialFinishOpen: confirmPartialSessionFinish,
+    completionOpen: workoutCompletionModal !== null,
+    openExercisePicker,
+    finish: finishActiveWorkoutSession,
+    discard: discardWorkoutSession,
+    closeDiscardConfirmation: () => setConfirmDiscardSession(false),
+    focusExercise: focusWorkoutSessionExercise,
+    moveExercise: moveExerciseInSession,
+    removeExercise: removeExerciseFromSession,
+    markUnitDone: markSessionUnitAsDone,
+    markUnitNotDone: markSessionUnitAsNotDone,
+    openSeriesTypePicker: (exerciseId, seriesId) => {
+      setSeriesTypePickerTarget({ exerciseId, seriesId, source: "session" });
+    },
+    closeSeriesTypePicker: () => setSeriesTypePickerTarget(null),
+    updateSeriesField: updateExerciseSeriesFieldInActiveSession,
+    toggleSeriesMenu: (key) => {
+      setActiveSeriesMenuId((previous) => previous === key ? null : key);
+    },
+    closeSeriesMenu: () => setActiveSeriesMenuId(null),
+    moveSeries: moveSeriesInActiveSession,
+    deleteSeries: (exerciseId, seriesId) => {
+      setActiveSeriesMenuId(null);
+      Vibration.vibrate(50);
+      removeSeriesFromExerciseInActiveSession(exerciseId, seriesId);
+    },
+    addSeries: addSeriesToExerciseInActiveSession,
+    pause: pauseWorkoutSession,
+    resume: resumeWorkoutSession,
+    skipRest: skipSessionRest,
+    closePartialFinish: () => setConfirmPartialSessionFinish(false),
+    closeCompletion: closeWorkoutCompletionModal,
+  });
   const headerTitle =
     tab === "training"
       ? activeWorkoutSession
@@ -6373,9 +6418,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "training-template-discard": confirmDiscardTemplateDraft,
     "backup-import-confirmation": pendingImport !== null,
     "data-deletion": dataDeletionScope !== null,
-    "training-partial-finish": confirmPartialSessionFinish,
-    "workout-completion": workoutCompletionModal !== null,
-    "workout-discard-confirmation": confirmDiscardSession,
+    "training-partial-finish": trainingSessionController.back.layers["training-partial-finish"],
+    "workout-completion": trainingSessionController.back.layers["workout-completion"],
+    "workout-discard-confirmation": trainingSessionController.back.layers["workout-discard-confirmation"],
     "food-catalog-ambiguity": dietController.back.layers["food-catalog-ambiguity"],
     "food-estimator": dietController.back.layers["food-estimator"],
     "body-fat-info": measurementsController.back.layers["body-fat-info"],
@@ -6398,7 +6443,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "workout-history-detail": trainingHistoryController.back.layers["workout-history-detail"],
     "training-history": trainingHistoryController.back.layers["training-history"],
     "training-exercise-detail": trainingDetailController.back.layers["training-exercise-detail"],
-    "series-type-picker": trainingEditorController.back.layers["series-type-picker"],
+    "series-type-picker": activeWorkoutSession
+      ? trainingSessionController.back.layers["series-type-picker"]
+      : trainingEditorController.back.layers["series-type-picker"],
     "chat-provider-dropdown": chatProviderDropdownOpen,
     "food-provider-dropdown": foodAIProviderDropdownOpen,
     "anthropic-model-dropdown": anthropicModelDropdownOpen,
@@ -6411,7 +6458,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "diet-item-menu": dietController.back.layers["diet-item-menu"],
     "training-template-menu": trainingListController.back.layers["training-template-menu"],
     "training-exercise-menu": trainingEditorController.back.layers["training-exercise-menu"],
-    "training-series-menu": trainingEditorController.back.layers["training-series-menu"],
+    "training-series-menu": activeWorkoutSession
+      ? trainingSessionController.back.layers["training-series-menu"]
+      : trainingEditorController.back.layers["training-series-menu"],
     "settings-food-detail": foodCatalogSettingsController.back.layers["settings-food-detail"],
     "settings-product-detail": foodCatalogSettingsController.back.layers["settings-product-detail"],
     "settings-personal-food-detail": selectedPersonalFoodDetail !== null,
@@ -6429,9 +6478,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "training-template-discard": () => { setConfirmDiscardTemplateDraft(false); return true; },
     "backup-import-confirmation": () => { setPendingImport(null); return true; },
     "data-deletion": () => { if (!dataDeletionBusyRef.current) closeDataDeletion(); return true; },
-    "training-partial-finish": () => { setConfirmPartialSessionFinish(false); return true; },
-    "workout-completion": () => { closeWorkoutCompletionModal(); return true; },
-    "workout-discard-confirmation": () => { setConfirmDiscardSession(false); return true; },
+    "training-partial-finish": trainingSessionController.back.handlers["training-partial-finish"],
+    "workout-completion": trainingSessionController.back.handlers["workout-completion"],
+    "workout-discard-confirmation": trainingSessionController.back.handlers["workout-discard-confirmation"],
     "food-catalog-ambiguity": dietController.back.handlers["food-catalog-ambiguity"],
     "food-estimator": dietController.back.handlers["food-estimator"],
     "body-fat-info": measurementsController.back.handlers["body-fat-info"],
@@ -6454,7 +6503,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "workout-history-detail": trainingHistoryController.back.handlers["workout-history-detail"],
     "training-history": trainingHistoryController.back.handlers["training-history"],
     "training-exercise-detail": trainingDetailController.back.handlers["training-exercise-detail"],
-    "series-type-picker": trainingEditorController.back.handlers["series-type-picker"],
+    "series-type-picker": activeWorkoutSession
+      ? trainingSessionController.back.handlers["series-type-picker"]
+      : trainingEditorController.back.handlers["series-type-picker"],
     "chat-provider-dropdown": () => { setChatProviderDropdownOpen(false); return true; },
     "food-provider-dropdown": () => { setFoodAIProviderDropdownOpen(false); return true; },
     "anthropic-model-dropdown": () => { setAnthropicModelDropdownOpen(false); return true; },
@@ -6467,7 +6518,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "diet-item-menu": dietController.back.handlers["diet-item-menu"],
     "training-template-menu": trainingListController.back.handlers["training-template-menu"],
     "training-exercise-menu": trainingEditorController.back.handlers["training-exercise-menu"],
-    "training-series-menu": trainingEditorController.back.handlers["training-series-menu"],
+    "training-series-menu": activeWorkoutSession
+      ? trainingSessionController.back.handlers["training-series-menu"]
+      : trainingEditorController.back.handlers["training-series-menu"],
     "settings-food-detail": foodCatalogSettingsController.back.handlers["settings-food-detail"],
     "settings-product-detail": foodCatalogSettingsController.back.handlers["settings-product-detail"],
     "settings-personal-food-detail": () => { setSelectedPersonalFoodDetail(null); return true; },
@@ -13632,968 +13685,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 />
               </View>
             ) : activeWorkoutSession ? (
-              <View style={{ gap: 12, paddingBottom: 110 }}>
-                <View style={{ gap: 10 }}>
-                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                      <View
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: 999,
-                          backgroundColor: "#00C66B",
-                        }}
-                      />
-                      <Text
-                        style={{
-                          color: "#00C66B",
-                          fontSize: 14,
-                          fontWeight: "800",
-                          letterSpacing: 0.8,
-                        }}
-                      >
-                        Sesión activa
-                      </Text>
-                    </View>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                      <Ionicons name="timer-outline" size={20} color="#F2F5FA" />
-                      <Text style={{ color: "#F2F5FA", fontSize: 26, fontWeight: "700" }}>
-                        {formatClock(activeWorkoutSession.elapsed_seconds)}
-                      </Text>
-                    </View>
-                  </View>
-                  <Text
-                    style={{ color: mobileTheme.color.textPrimary, fontSize: 26, fontWeight: "700" }}
-                    numberOfLines={2}
-                  >
-                    {activeWorkoutSession.template_name}
-                  </Text>
-                  <View style={{ flexDirection: "row", gap: 8 }}>
-                    <Pressable
-                      onPress={openExercisePicker}
-                      style={{
-                        flex: 1,
-                        minHeight: 44,
-                        borderRadius: 14,
-                        backgroundColor: "rgba(203,255,26,0.15)",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 6,
-                      }}
-                    >
-                      <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
-                      <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "800" }}>Añadir ejercicio</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={finishActiveWorkoutSession}
-                      testID="training-session-finish"
-                      style={{
-                        flex: 1,
-                        minHeight: 44,
-                        borderRadius: 14,
-                        backgroundColor: "#FF4B4B",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 6,
-                      }}
-                    >
-                      <Feather name="flag" size={14} color="#FFFFFF" />
-                      <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
-                    </Pressable>
-                  </View>
-
-                  <Pressable
-                    onPress={discardWorkoutSession}
-                    testID="training-session-discard"
-                    style={{
-                      minHeight: 38,
-                      borderRadius: 12,
-                      borderWidth: 1,
-                      borderColor: confirmDiscardSession ? "rgba(255,138,138,0.72)" : "rgba(255,255,255,0.08)",
-                      backgroundColor: confirmDiscardSession ? "rgba(255,75,75,0.14)" : "transparent",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text style={{ color: confirmDiscardSession ? "#FF8A8A" : "#8B94A3", fontSize: 13, fontWeight: "700" }}>
-                      {confirmDiscardSession ? "Abandonar sesión definitivamente" : "Abandonar sesión"}
-                    </Text>
-                  </Pressable>
-	                </View>
-
-                <View style={{ gap: 6 }}>
-                  <View
-                    style={{
-                      height: 8,
-                      borderRadius: 999,
-                      backgroundColor: "rgba(255,255,255,0.08)",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: `${activeSessionProgressPercent}%`,
-                        height: "100%",
-                        backgroundColor: mobileTheme.color.brandPrimary,
-                      }}
-                    />
-                  </View>
-                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                    <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
-                      {activeWorkoutSession.completed_effort_count}/{activeWorkoutSession.total_effort_count} esfuerzos
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>
-                      {activeSessionProgressPercent}%
-                    </Text>
-                  </View>
-                </View>
-
-                {activeSessionExercises.length === 0 ? (
-                  <View
-                    style={{
-                      minHeight: 140,
-                      borderRadius: 18,
-                      borderWidth: 1,
-                      borderColor: mobileTheme.color.borderSubtle,
-                      backgroundColor: "#171B23",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      paddingHorizontal: 18,
-                    }}
-                  >
-                    <Text style={{ color: "#8B94A3", fontSize: 16, textAlign: "center" }}>
-                      No hay una serie activa disponible.
-                    </Text>
-                  </View>
-                ) : (
-                  activeSessionExercises.map((sessionExercise) => {
-                    const isExpanded = true;
-                    const isCurrent = sessionExercise.isCurrentExercise;
-                    const exercisePreview = resolveExercisePreviewMeta(
-                      sessionExercise.exercise.name ?? "",
-                      sessionExercise.muscle,
-                      activeWorkoutSession.category,
-                    );
-                    return (
-                      <Pressable
-                        key={sessionExercise.exercise.id}
-                        onPress={() => focusWorkoutSessionExercise(sessionExercise.exercise.id)}
-                        disabled={activeWorkoutSession.is_resting}
-                        style={{
-                          borderWidth: isCurrent ? 1.5 : 1,
-                          borderColor: isCurrent
-                            ? "rgba(203,255,26,0.78)"
-                            : mobileTheme.color.borderSubtle,
-                          backgroundColor: "#171B23",
-                          borderRadius: 20,
-                          padding: 12,
-                          gap: 10,
-                        }}
-                      >
-                        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                          <View
-                            style={{
-                              width: 58,
-                              height: 58,
-                              borderRadius: 16,
-                              overflow: "hidden",
-                              borderWidth: 1,
-                              borderColor: sessionExercise.isCompletedExercise
-                                ? "rgba(0,198,107,0.3)"
-                                : "rgba(255,255,255,0.08)",
-                              backgroundColor: exercisePreview.backgroundColor,
-                              position: "relative",
-                              flexShrink: 0,
-                            }}
-                          >
-                            {sessionExercise.exercise.image_uri ? (
-                              <Image
-                                source={{ uri: sessionExercise.exercise.image_uri }}
-                                style={{ width: "100%", height: "100%" }}
-                                resizeMode="cover"
-                              />
-                            ) : (
-                              <View
-                                style={{
-                                  flex: 1,
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  gap: 4,
-                                  paddingHorizontal: 4,
-                                  backgroundColor: exercisePreview.backgroundColor,
-                                }}
-                              >
-                                <Feather name={exercisePreview.icon} size={18} color={exercisePreview.accentColor} />
-                                <Text
-                                  style={{
-                                    color: "#E8EDF5",
-                                    fontSize: 9,
-                                    fontWeight: "700",
-                                    textAlign: "center",
-                                  }}
-                                  numberOfLines={1}
-                                >
-                                  {exercisePreview.label}
-                                </Text>
-                              </View>
-                            )}
-                            <View
-                              style={{
-                                position: "absolute",
-                                top: 5,
-                                right: 5,
-                                width: 20,
-                                height: 20,
-                                borderRadius: 999,
-                                borderWidth: sessionExercise.isCompletedExercise ? 0 : 1,
-                                borderColor: "rgba(255,255,255,0.12)",
-                                backgroundColor: sessionExercise.isCompletedExercise
-                                  ? "#00A75A"
-                                  : isCurrent
-                                    ? mobileTheme.color.brandPrimary
-                                    : "#222834",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  color: sessionExercise.isCompletedExercise
-                                    ? "#FFFFFF"
-                                    : isCurrent
-                                      ? "#06090D"
-                                      : "#9FA7B5",
-                                  fontSize: 10,
-                                  fontWeight: "800",
-                                }}
-                              >
-                                {sessionExercise.isCompletedExercise
-                                  ? "✓"
-                                  : `${sessionExercise.exerciseIndex + 1}`}
-                              </Text>
-                            </View>
-                          </View>
-                          <View style={{ flex: 1, gap: 2 }}>
-                            <Text
-                              style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "700" }}
-                              numberOfLines={1}
-                            >
-                              {sessionExercise.exercise.name || `Ejercicio ${sessionExercise.exerciseIndex + 1}`}
-                            </Text>
-                            <Text
-                              style={{
-                                color: sessionExercise.isCompletedExercise ? "#00C66B" : "#8B94A3",
-                                fontSize: 14,
-                              }}
-                            >
-                              {sessionExercise.muscle} • {sessionExercise.completedEffortCount}/
-                              {sessionExercise.totalEffortCount} esfuerzos
-                            </Text>
-                          </View>
-                          <View style={{ flexDirection: "column", alignItems: "center", gap: 2, marginLeft: 4 }}>
-                            <Pressable
-                              onPress={() => moveExerciseInSession(sessionExercise.exercise.id, "up")}
-                              disabled={sessionExercise.exerciseIndex === 0}
-                              hitSlop={6}
-                              style={{ opacity: sessionExercise.exerciseIndex === 0 ? 0.25 : 1 }}
-                            >
-                              <Feather name="chevron-up" size={18} color="#8C94A5" />
-                            </Pressable>
-                            <Pressable
-                              onPress={() => moveExerciseInSession(sessionExercise.exercise.id, "down")}
-                              disabled={sessionExercise.exerciseIndex === activeSessionExercises.length - 1}
-                              hitSlop={6}
-                              style={{ opacity: sessionExercise.exerciseIndex === activeSessionExercises.length - 1 ? 0.25 : 1 }}
-                            >
-                              <Feather name="chevron-down" size={18} color="#8C94A5" />
-                            </Pressable>
-                          </View>
-                          {activeSessionExercises.length > 1 && (
-                            <Pressable
-                              onPress={() => removeExerciseFromSession(sessionExercise.exercise.id)}
-                              hitSlop={6}
-                              style={{ marginLeft: 2 }}
-                            >
-                              <Feather name="trash-2" size={16} color="#FF4B4B" />
-                            </Pressable>
-                          )}
-                        </View>
-
-                        {isExpanded ? (
-                          <View style={{ gap: 8 }}>
-                            <View
-                              style={{
-                                minHeight: 30,
-                                borderRadius: 10,
-                                backgroundColor: "#202630",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                paddingHorizontal: 12,
-                              }}
-                            >
-                              <Text style={{ width: 42, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
-                                Serie
-                              </Text>
-                              <Text style={{ width: 32, color: "#7D8798", fontSize: 10, fontWeight: "700", textAlign: "center" }}>
-                                Tipo
-                              </Text>
-                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
-                                Repeticiones
-                              </Text>
-                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
-                                Peso (kg)
-                              </Text>
-                              <Text style={{ flex: 1, color: "#7D8798", fontSize: 10, fontWeight: "700" }}>
-                                Fin bloque
-                              </Text>
-                            </View>
-
-                            {sessionExercise.seriesStates.map((seriesState) => {
-                              const seriesMenuKey = `session:${sessionExercise.exercise.id}:${seriesState.series.id}`;
-                              const isSeriesMenuOpen = activeSeriesMenuId === seriesMenuKey;
-                              const canMoveUp = seriesState.seriesIndex > 0;
-                              const canMoveDown =
-                                seriesState.seriesIndex < sessionExercise.seriesStates.length - 1;
-                              const canDeleteSeries = sessionExercise.seriesStates.length > 1;
-                              return (
-                              <View
-                                key={seriesState.key}
-                                style={{ position: "relative", zIndex: isSeriesMenuOpen ? 100 : 0 }}
-                              >
-                              <View
-                                style={{
-                                  minHeight: 42,
-                                  borderRadius: 10,
-                                  backgroundColor: seriesState.isCompleted
-                                    ? "rgba(203,255,26,0.16)"
-                                    : seriesState.isCurrent
-                                      ? "rgba(203,255,26,0.08)"
-                                    : (seriesState.series.type ?? "normal") === "warmup"
-                                      ? "rgba(255,74,74,0.06)"
-                                      : "transparent",
-                                  borderWidth: seriesState.isCompleted || seriesState.isCurrent ? 1 : 0,
-                                  borderColor: seriesState.isCurrent
-                                    ? "rgba(203,255,26,0.82)"
-                                    : seriesState.isCompleted
-                                      ? "rgba(203,255,26,0.6)"
-                                      : "transparent",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  paddingHorizontal: 10,
-                                }}
-                              >
-                                <Pressable
-                                  onPress={(event) => {
-                                    event.stopPropagation();
-                                    if (seriesState.isCompleted) {
-                                      markSessionUnitAsNotDone(seriesState.key);
-                                      return;
-                                    }
-                                    markSessionUnitAsDone(seriesState.key);
-                                  }}
-                                  disabled={false}
-                                  testID={`training-session-complete-series-${seriesState.key}`}
-                                  hitSlop={6}
-                                  style={{
-                                    width: 22,
-                                    height: 22,
-                                    borderRadius: 999,
-                                    backgroundColor: seriesState.isCompleted
-                                      ? "#0AAE63"
-                                      : "#2A3240",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    marginRight: 10,
-                                    opacity: seriesState.isCompleted ? 1 : 0.9,
-                                  }}
-                                >
-                                  <Text
-                                    style={{
-                                      color: seriesState.isCompleted
-                                        ? "#FFFFFF"
-                                        : "#9AA4B4",
-                                      fontSize: 12,
-                                      fontWeight: "800",
-                                    }}
-                                  >
-                                    {seriesState.isCompleted ? "✓" : `${seriesState.seriesIndex + 1}`}
-                                  </Text>
-                                </Pressable>
-                                <Pressable
-                                  onPress={() => setSeriesTypePickerTarget({
-                                    exerciseId: sessionExercise.exercise.id,
-                                    seriesId: seriesState.series.id,
-                                    source: "session",
-                                  })}
-                                  testID={`training-session-series-type-${sessionExercise.exercise.id}-${seriesState.series.id}`}
-                                  style={{
-                                    width: 32,
-                                    height: 24,
-                                    borderRadius: 6,
-                                    backgroundColor: (seriesState.series.type ?? "normal") === "warmup" ? "rgba(255,74,74,0.2)" : "#202630",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    marginRight: 6,
-                                  }}
-                                >
-                                  <Text style={{
-                                    color: (seriesState.series.type ?? "normal") === "warmup" ? "#FF4A4A" : "#8C95A4",
-                                    fontSize: 10,
-                                    fontWeight: "700",
-                                  }}>
-                                    {SERIES_TYPE_META[seriesState.series.type ?? "normal"].short}
-                                  </Text>
-                                </Pressable>
-                                <>
-                                  {(seriesState.series.type ?? "normal") === "tempo" ? (
-                                    <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 2 }}>
-                                      {(["tempo_contraction", "tempo_pause", "tempo_relaxation"] as const).map((tf, ti) => (
-                                        <View key={tf} style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-                                          {ti > 0 && <Text style={{ color: "#7D8798", fontSize: 10 }}>-</Text>}
-                                          <TextInput
-                                            value={seriesState.series[tf] ?? ""}
-                                            onChangeText={(v) => updateExerciseSeriesFieldInActiveSession(sessionExercise.exercise.id, seriesState.series.id, tf, v)}
-                                            placeholder={["C","P","R"][ti]}
-                                            placeholderTextColor="#8C95A4"
-                                            keyboardType="number-pad"
-                                            style={{
-                                              flex: 1, minHeight: 34, borderRadius: 8, borderWidth: 1,
-                                              borderColor: seriesState.isCompleted ? "rgba(203,255,26,0.8)" : "rgba(255,255,255,0.16)",
-                                              backgroundColor: seriesState.isCompleted ? "rgba(6,9,13,0.32)" : "rgba(10,13,18,0.5)",
-                                              color: seriesState.isCompleted ? mobileTheme.color.brandPrimary : "#C7CED9",
-                                              fontSize: 13, fontWeight: "700", textAlign: "center",
-                                            }}
-                                          />
-                                        </View>
-                                      ))}
-                                    </View>
-                                  ) : (
-                                    <TextInput
-                                      value={seriesState.series.reps}
-                                      onChangeText={(value) =>
-                                        updateExerciseSeriesFieldInActiveSession(
-                                          sessionExercise.exercise.id,
-                                          seriesState.series.id,
-                                          "reps",
-                                          value,
-                                        )
-                                      }
-                                      placeholder={(seriesState.series.type ?? "normal") === "isometric" ? "(s)" : "-"}
-                                      placeholderTextColor="#8C95A4"
-                                      keyboardType="number-pad"
-                                      style={{
-                                        flex: 1,
-                                        minWidth: 0,
-                                        minHeight: 34,
-                                        borderRadius: 8,
-                                        borderWidth: 1,
-                                        borderColor: seriesState.isCompleted
-                                          ? "rgba(203,255,26,0.8)"
-                                          : "rgba(255,255,255,0.16)",
-                                        backgroundColor: seriesState.isCompleted
-                                          ? "rgba(6,9,13,0.32)"
-                                          : "rgba(10,13,18,0.5)",
-                                        color: seriesState.isCompleted
-                                          ? mobileTheme.color.brandPrimary
-                                          : "#C7CED9",
-                                        fontSize: 16,
-                                        fontWeight: "700",
-                                        textAlign: "center",
-                                      }}
-                                    />
-                                  )}
-                                  <TextInput
-                                    value={seriesState.series.weight_kg}
-                                    onChangeText={(value) =>
-                                      updateExerciseSeriesFieldInActiveSession(
-                                        sessionExercise.exercise.id,
-                                        seriesState.series.id,
-                                        "weight_kg",
-                                        value,
-                                      )
-                                    }
-                                    placeholder="-"
-                                    placeholderTextColor="#8C95A4"
-                                    keyboardType="numbers-and-punctuation"
-                                    style={{
-                                      flex: 1,
-                                      minWidth: 0,
-                                      minHeight: 34,
-                                      borderRadius: 8,
-                                      borderWidth: 1,
-                                      borderColor: "rgba(255,255,255,0.16)",
-                                      backgroundColor: "rgba(10,13,18,0.5)",
-                                      color: "#C7CED9",
-                                      fontSize: 16,
-                                      fontWeight: "600",
-                                      textAlign: "center",
-                                    }}
-                                  />
-                                  <TextInput
-                                    value={seriesState.series.rest_seconds}
-                                    onChangeText={(value) =>
-                                      updateExerciseSeriesFieldInActiveSession(
-                                        sessionExercise.exercise.id,
-                                        seriesState.series.id,
-                                        "rest_seconds",
-                                        value,
-                                      )
-                                    }
-                                    placeholder="-"
-                                    placeholderTextColor="#8C95A4"
-                                    keyboardType="numbers-and-punctuation"
-                                    style={{
-                                      flex: 1,
-                                      minWidth: 0,
-                                      minHeight: 34,
-                                      borderRadius: 8,
-                                      borderWidth: 1,
-                                      borderColor: "rgba(255,255,255,0.16)",
-                                      backgroundColor: "rgba(10,13,18,0.5)",
-                                      color: "#C7CED9",
-                                      fontSize: 16,
-                                      fontWeight: "600",
-                                      textAlign: "center",
-                                    }}
-                                  />
-                                </>
-                                <Pressable
-                                  onPress={(event) => {
-                                    event.stopPropagation();
-                                    if (seriesState.isCompleted) {
-                                      markSessionUnitAsNotDone(seriesState.key);
-                                      return;
-                                    }
-                                    markSessionUnitAsDone(seriesState.key);
-                                  }}
-                                  disabled={false}
-                                  style={{
-                                    width: 30,
-                                    height: 30,
-                                    borderRadius: 999,
-                                    backgroundColor: seriesState.isCompleted ? mobileTheme.color.brandPrimary : "#202630",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    marginLeft: 10,
-                                  }}
-                                >
-                                  <Text
-                                    style={{
-                                      color: seriesState.isCompleted ? "#06090D" : "#C7CED9",
-                                      fontSize: 15,
-                                      fontWeight: "800",
-                                    }}
-                                  >
-                                    ✓
-                                  </Text>
-                                </Pressable>
-                                <Pressable
-                                  onPress={(event) => {
-                                    event.stopPropagation();
-                                    setActiveSeriesMenuId(isSeriesMenuOpen ? null : seriesMenuKey);
-                                  }}
-                                  hitSlop={{ top: 8, bottom: 8, right: 8, left: 0 }}
-                                  style={{
-                                    width: 26,
-                                    height: 30,
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    marginLeft: 10,
-                                    gap: 2,
-                                  }}
-                                >
-                                  {Array.from({ length: 3 }).map((_, dotRowIndex) => (
-                                    <View
-                                      key={`session_${sessionExercise.exercise.id}_${seriesState.series.id}_dot_${dotRowIndex}`}
-                                      style={{ flexDirection: "row", gap: 2 }}
-                                    >
-                                      <View style={{ width: 3, height: 3, borderRadius: 999, backgroundColor: "#9AA4B4" }} />
-                                      <View style={{ width: 3, height: 3, borderRadius: 999, backgroundColor: "#9AA4B4" }} />
-                                    </View>
-                                  ))}
-                                </Pressable>
-                              </View>
-                              {seriesState.subSeriesStates.length > 0 ? (
-                                <View
-                                  testID={`training-session-sub-series-${seriesState.key}`}
-                                  style={{
-                                    marginTop: 5,
-                                    marginLeft: 26,
-                                    borderLeftWidth: 2,
-                                    borderLeftColor: "rgba(203,255,26,0.28)",
-                                    paddingLeft: 8,
-                                    gap: 5,
-                                  }}
-                                >
-                                  {seriesState.subSeriesStates.map((subState) => {
-                                    const pauseSeconds = parseRestSecondsInput(subState.subSeries.rest_seconds);
-                                    const subLabel = subState.unit.seriesType === "superset"
-                                      ? subState.unit.exerciseName
-                                      : `Mini-serie ${subState.subSeriesIndex + 1}`;
-                                    return (
-                                      <Pressable
-                                        key={subState.key}
-                                        testID={`training-session-complete-sub-series-${subState.key}`}
-                                        accessibilityRole="checkbox"
-                                        accessibilityState={{ checked: subState.isCompleted }}
-                                        accessibilityLabel={`${subLabel}, ${subState.subSeries.reps || "0"} repeticiones`}
-                                        onPress={(event) => {
-                                          event.stopPropagation();
-                                          if (subState.isCompleted) {
-                                            markSessionUnitAsNotDone(subState.key);
-                                          } else {
-                                            markSessionUnitAsDone(subState.key);
-                                          }
-                                        }}
-                                        style={{
-                                          minHeight: 48,
-                                          borderRadius: 10,
-                                          borderWidth: 1,
-                                          borderColor: subState.isCurrent
-                                            ? "rgba(203,255,26,0.82)"
-                                            : subState.isCompleted
-                                              ? "rgba(0,198,107,0.48)"
-                                              : "rgba(255,255,255,0.07)",
-                                          backgroundColor: subState.isCurrent
-                                            ? "rgba(203,255,26,0.08)"
-                                            : subState.isCompleted
-                                              ? "rgba(0,198,107,0.1)"
-                                              : "#141922",
-                                          paddingHorizontal: 9,
-                                          paddingVertical: 6,
-                                          flexDirection: "row",
-                                          alignItems: "center",
-                                          gap: 8,
-                                        }}
-                                      >
-                                        <View
-                                          style={{
-                                            width: 22,
-                                            height: 22,
-                                            borderRadius: 999,
-                                            backgroundColor: subState.isCompleted ? "#0AAE63" : "#2A3240",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                          }}
-                                        >
-                                          <Text style={{ color: subState.isCompleted ? "#FFFFFF" : "#9AA4B4", fontSize: 11, fontWeight: "800" }}>
-                                            {subState.isCompleted ? "✓" : subState.subSeriesIndex + 1}
-                                          </Text>
-                                        </View>
-                                        <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
-                                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                                            <Text
-                                              numberOfLines={1}
-                                              style={{ flex: 1, color: subState.isCurrent ? mobileTheme.color.brandPrimary : "#D6DCE6", fontSize: 13, fontWeight: "700" }}
-                                            >
-                                              {subLabel}
-                                            </Text>
-                                            {subState.isCurrent ? (
-                                              <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 10, fontWeight: "800" }}>
-                                                AHORA
-                                              </Text>
-                                            ) : null}
-                                          </View>
-                                          <Text style={{ color: "#8C95A4", fontSize: 11 }}>
-                                            {subState.subSeries.reps || "0"} reps · {subState.subSeries.weight_kg || "0"} kg · {pauseSeconds > 0 ? `Pausa antes ${formatClock(pauseSeconds)}` : "Sin pausa previa"}
-                                          </Text>
-                                        </View>
-                                      </Pressable>
-                                    );
-                                  })}
-                                </View>
-                              ) : null}
-                              {isSeriesMenuOpen && (
-                                <>
-                                <Pressable
-                                  onPress={() => setActiveSeriesMenuId(null)}
-                                  style={{
-                                    position: "absolute",
-                                    top: -1000,
-                                    left: -1000,
-                                    right: -1000,
-                                    bottom: -1000,
-                                    zIndex: 200,
-                                  }}
-                                />
-                                <View
-                                  testID={shellSurfaceTestId("training-series-menu")}
-                                  style={{
-                                    position: "absolute",
-                                    top: 40,
-                                    right: 4,
-                                    width: 190,
-                                    borderRadius: 16,
-                                    borderWidth: 1,
-                                    borderColor: "rgba(255,255,255,0.1)",
-                                    backgroundColor: "rgba(12,14,19,0.98)",
-                                    paddingVertical: 8,
-                                    zIndex: 240,
-                                    elevation: 24,
-                                    shadowColor: "#000",
-                                    shadowOpacity: 0.36,
-                                    shadowRadius: 10,
-                                    shadowOffset: { width: 0, height: 6 },
-                                  }}
-                                >
-                                  <Pressable
-                                    onPress={() => {
-                                      setActiveSeriesMenuId(null);
-                                      if (!canMoveUp) return;
-                                      moveSeriesInActiveSession(
-                                        sessionExercise.exercise.id,
-                                        seriesState.series.id,
-                                        "up",
-                                      );
-                                    }}
-                                    disabled={!canMoveUp}
-                                    style={{
-                                      minHeight: 40,
-                                      paddingHorizontal: 12,
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      gap: 10,
-                                      opacity: canMoveUp ? 1 : 0.35,
-                                    }}
-                                  >
-                                    <Feather name="arrow-up" size={14} color={mobileTheme.color.textSecondary} />
-                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16 }}>
-                                      Subir serie
-                                    </Text>
-                                  </Pressable>
-                                  <Pressable
-                                    onPress={() => {
-                                      setActiveSeriesMenuId(null);
-                                      if (!canMoveDown) return;
-                                      moveSeriesInActiveSession(
-                                        sessionExercise.exercise.id,
-                                        seriesState.series.id,
-                                        "down",
-                                      );
-                                    }}
-                                    disabled={!canMoveDown}
-                                    style={{
-                                      minHeight: 40,
-                                      paddingHorizontal: 12,
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      gap: 10,
-                                      opacity: canMoveDown ? 1 : 0.35,
-                                    }}
-                                  >
-                                    <Feather name="arrow-down" size={14} color={mobileTheme.color.textSecondary} />
-                                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16 }}>
-                                      Bajar serie
-                                    </Text>
-                                  </Pressable>
-                                  <Pressable
-                                    onPress={() => {
-                                      setActiveSeriesMenuId(null);
-                                      if (!canDeleteSeries) return;
-                                      Vibration.vibrate(50);
-                                      removeSeriesFromExerciseInActiveSession(
-                                        sessionExercise.exercise.id,
-                                        seriesState.series.id,
-                                      );
-                                    }}
-                                    disabled={!canDeleteSeries}
-                                    style={{
-                                      minHeight: 40,
-                                      borderTopWidth: 1,
-                                      borderTopColor: "rgba(255,255,255,0.2)",
-                                      marginTop: 4,
-                                      paddingTop: 8,
-                                      paddingHorizontal: 12,
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      gap: 10,
-                                      opacity: canDeleteSeries ? 1 : 0.35,
-                                    }}
-                                  >
-                                    <Feather name="trash-2" size={14} color="#FF4A4A" />
-                                    <Text style={{ color: "#FF4A4A", fontSize: 16, fontWeight: "600" }}>
-                                      Eliminar serie
-                                    </Text>
-                                  </Pressable>
-                                </View>
-                                </>
-                              )}
-                              </View>
-                              );
-                            })}
-
-                            <Pressable
-                              onPress={(event) => {
-                                event.stopPropagation();
-                                addSeriesToExerciseInActiveSession(sessionExercise.exercise.id);
-                              }}
-                              style={{
-                                marginTop: 4,
-                                minHeight: 32,
-                                borderRadius: 10,
-                                borderWidth: 1,
-                                borderColor: "rgba(255,255,255,0.08)",
-                                backgroundColor: "#171B23",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: 6,
-                              }}
-                            >
-                              <Feather name="plus" size={12} color="#7F8896" />
-                              <Text style={{ color: "#7F8896", fontSize: 13, fontWeight: "700" }}>
-                                Añadir serie
-                              </Text>
-                            </Pressable>
-
-                            {activeWorkoutSession.is_resting && sessionExercise.isCurrentExercise ? (
-                              <View
-                                testID="training-session-rest-timer"
-                                style={{
-                                  borderRadius: 12,
-                                  borderWidth: 1,
-                                  borderColor: "rgba(72,144,255,0.45)",
-                                  backgroundColor: "rgba(45,78,130,0.18)",
-                                  paddingHorizontal: 12,
-                                  paddingVertical: 8,
-                                  gap: 6,
-                                }}
-                              >
-                                <View
-                                  style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    gap: 10,
-                                    width: "100%",
-                                  }}
-                                >
-                                  <Text
-                                    style={{
-                                      color: "#76A9FF",
-                                      fontSize: 14,
-                                      fontWeight: "700",
-                                      flex: 1,
-                                      minWidth: 0,
-                                    }}
-                                  >
-                                    {activeSessionCurrentUnit?.kind === "sub_series"
-                                      ? `Pausa antes de ${activeSessionCurrentUnit.exerciseName}`
-                                      : "Descanso tras el bloque"}{" "}
-                                    {formatClock(activeWorkoutSession.rest_seconds_left)}/
-                                    {formatClock(activeSessionRestTargetSeconds)}
-                                  </Text>
-                                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 0 }}>
-                                    <Pressable
-                                      onPress={
-                                        activeWorkoutSession.status === "running"
-                                          ? pauseWorkoutSession
-                                          : resumeWorkoutSession
-                                      }
-                                      testID="training-session-rest-toggle-pause"
-                                      style={{
-                                        width: 34,
-                                        height: 34,
-                                        borderRadius: 999,
-                                        borderWidth: 1,
-                                        borderColor: "rgba(118,169,255,0.65)",
-                                        backgroundColor: "rgba(15,36,66,0.45)",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                      }}
-                                    >
-                                      <Feather
-                                        name={activeWorkoutSession.status === "running" ? "pause" : "play"}
-                                        size={16}
-                                        color="#76A9FF"
-                                      />
-                                    </Pressable>
-                                    <Pressable
-                                      onPress={skipSessionRest}
-                                      testID="training-session-skip-rest"
-                                      style={{
-                                        width: 34,
-                                        height: 34,
-                                        borderRadius: 999,
-                                        borderWidth: 1,
-                                        borderColor: "rgba(118,169,255,0.65)",
-                                        backgroundColor: "rgba(15,36,66,0.45)",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                      }}
-                                    >
-                                      <Ionicons
-                                        name="arrow-redo-circle-outline"
-                                        size={18}
-                                        color="#76A9FF"
-                                      />
-                                    </Pressable>
-                                  </View>
-                                </View>
-                                <View
-                                  style={{
-                                    height: 4,
-                                    borderRadius: 999,
-                                    backgroundColor: "rgba(118,169,255,0.28)",
-                                    overflow: "hidden",
-                                  }}
-                                >
-                                  <View
-                                    style={{
-                                      width: `${Math.round(activeSessionRestProgressRatio * 100)}%`,
-                                      height: "100%",
-                                      backgroundColor: "#4A90FF",
-                                    }}
-                                  />
-                                </View>
-                              </View>
-                            ) : null}
-
-                          </View>
-                        ) : null}
-                      </Pressable>
-                    );
-                  })
-                )}
-
-                <View style={{ flexDirection: "row", gap: 8 }}>
-                  <Pressable
-                    onPress={openExercisePicker}
-                    style={{
-                      flex: 1,
-                      minHeight: 44,
-                      borderRadius: 14,
-                      backgroundColor: "rgba(203,255,26,0.15)",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 6,
-                    }}
-                  >
-                    <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
-                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 14, fontWeight: "800" }}>Añadir ejercicio</Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={finishActiveWorkoutSession}
-                    testID="training-session-finish-bottom"
-                    style={{
-                      flex: 1,
-                      minHeight: 44,
-                      borderRadius: 14,
-                      backgroundColor: "#FF4B4B",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 6,
-                    }}
-                  >
-                    <Feather name="flag" size={14} color="#FFFFFF" />
-                    <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>Finalizar</Text>
-                  </Pressable>
-                </View>
-              </View>
+              <TrainingSessionScreen
+                model={trainingSessionController.model}
+                actions={trainingSessionController.actions}
+              />
             ) : trainingHistoryScreenOpen ? (
               <TrainingHistoryScreen
                 model={trainingHistoryController.model}
