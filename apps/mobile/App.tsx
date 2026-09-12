@@ -48,12 +48,8 @@ import { resolveFeedbackEndpoint } from "./environment";
 import { createFeedbackIssueClient } from "./agent/feedbackClient";
 import {
   describeOutcomeForUser,
-  findPreviousUserMessage,
   formatExerciseSummary,
   formatFoodSummary,
-  isReportableAssistantMessage,
-  type AiReportResponseOrigin,
-  type AiReportSurface,
   type FeedbackIssueDraft,
   type FeedbackIssueOutcome,
 } from "./agent/feedbackIssues";
@@ -319,7 +315,7 @@ import {
   useLocalStoreRuntime,
   type LocalStoreRuntime,
 } from "./persistence/localStoreRuntime";
-import { useChatController } from "./controllers/chatController";
+import { useAiReportController, useChatController } from "./controllers/chatController";
 import { useDietController, useDietResolutionController } from "./controllers/dietController";
 import { useHomeController } from "./controllers/homeController";
 import { useMeasurementsRuntime } from "./controllers/measurementsController";
@@ -384,7 +380,6 @@ import {
 import {
   AiResponseReportAction,
   AiResponseReportModal,
-  type AiResponseReportContext,
 } from "./AiResponseReportModal";
 import {
   anthropicApiHeaders,
@@ -3450,36 +3445,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     feedbackProposalStore.dismiss(proposal.id);
   }, []);
 
-  const [pendingAiReport, setPendingAiReport] = useState<AiResponseReportContext | null>(null);
-  const handleOpenAiReport = useCallback((
-    surface: AiReportSurface,
-    message: ChatMessage,
-    conversation: ChatMessage[],
-  ) => {
-    if (!isReportableAssistantMessage(message)) return;
-    const previousUserMessage = findPreviousUserMessage(conversation, message.id);
-    if (!previousUserMessage) return;
-
-    setPendingAiReport({
-      reportKey: `${surface}:${message.id}`,
-      surface,
-      question: previousUserMessage.content,
-      response: message.content,
-      appVersion: Constants.expoConfig?.version ?? "Desconocida",
-      provider: message.report_context?.provider,
-      model: message.report_context?.model,
-      origin: message.kind === "health_safety_intervention"
-        ? "health_safety"
-        : message.report_context?.origin ?? "unknown",
-      healthSafety: message.health_safety
-        ? {
-            level: message.health_safety.level,
-            policyVersion: message.health_safety.policyVersion,
-            ruleIds: message.health_safety.ruleIds,
-          }
-        : null,
-    });
-  }, []);
+  const aiReportController = useAiReportController(
+    Constants.expoConfig?.version ?? "Desconocida",
+  );
+  const handleOpenAiReport = aiReportController.actions.open;
 
   const { width: viewportWidth } = useWindowDimensions();
   const isDesktopWeb = usesDesktopNavigation(Platform.OS, viewportWidth);
@@ -11536,8 +11505,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       />
 
       <AiResponseReportModal
-        context={pendingAiReport}
-        onClose={() => setPendingAiReport(null)}
+        context={aiReportController.model.context}
+        onClose={aiReportController.actions.close}
         onSubmit={submitFeedbackIssue}
       />
 

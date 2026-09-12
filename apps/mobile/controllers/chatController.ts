@@ -1,7 +1,12 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import type { ChatMessage } from "../agent/chatModel";
-import type { AiReportSurface } from "../agent/feedbackIssues";
+import {
+  findPreviousUserMessage,
+  isReportableAssistantMessage,
+  type AiReportSurface,
+  type AiResponseReportContext,
+} from "../agent/feedbackIssues";
 import type { ScreenController } from "./types";
 
 export type ChatScreenModel = {
@@ -109,5 +114,49 @@ export function useChatController(
   );
   const back = useMemo(() => ({ layers, handlers }), [handlers, layers]);
 
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
+
+export function useAiReportController(appVersion: string): ScreenController<
+  { context: AiResponseReportContext | null },
+  {
+    open(surface: AiReportSurface, message: ChatMessage, conversation: ChatMessage[]): void;
+    close(): void;
+  }
+> {
+  const [context, setContext] = useState<AiResponseReportContext | null>(null);
+  const appVersionRef = useRef(appVersion);
+  appVersionRef.current = appVersion;
+  const model = useMemo(() => ({ context }), [context]);
+  const actions = useMemo(() => ({
+    open(surface: AiReportSurface, message: ChatMessage, conversation: ChatMessage[]) {
+      if (!isReportableAssistantMessage(message)) return;
+      const previousUserMessage = findPreviousUserMessage(conversation, message.id);
+      if (!previousUserMessage) return;
+      setContext({
+        reportKey: `${surface}:${message.id}`,
+        surface,
+        question: previousUserMessage.content,
+        response: message.content,
+        appVersion: appVersionRef.current,
+        provider: message.report_context?.provider,
+        model: message.report_context?.model,
+        origin: message.kind === "health_safety_intervention"
+          ? "health_safety"
+          : message.report_context?.origin ?? "unknown",
+        healthSafety: message.health_safety
+          ? {
+              level: message.health_safety.level,
+              policyVersion: message.health_safety.policyVersion,
+              ruleIds: message.health_safety.ruleIds,
+            }
+          : null,
+      });
+    },
+    close() {
+      setContext(null);
+    },
+  }), []);
+  const back = useMemo(() => ({ layers: {}, handlers: {} }), []);
   return useMemo(() => ({ model, actions, back }), [actions, back, model]);
 }

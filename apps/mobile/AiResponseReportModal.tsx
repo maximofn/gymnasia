@@ -18,16 +18,12 @@ import {
   isReportableAssistantMessage,
   REPORT_DETAILS_MAX_LENGTH,
   type AiReportReasonId,
-  type AiResponseReportInput,
+  type AiResponseReportContext,
   type FeedbackIssueDraft,
   type FeedbackIssueOutcome,
   type ReportableChatMessage,
 } from "./agent/feedbackIssues";
 import { mobileTheme } from "./theme";
-
-export type AiResponseReportContext = Omit<AiResponseReportInput, "reason" | "details"> & {
-  reportKey: string;
-};
 
 type AiResponseReportActionProps = {
   message: ReportableChatMessage;

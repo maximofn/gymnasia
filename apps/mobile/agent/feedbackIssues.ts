@@ -51,6 +51,10 @@ export type AiResponseReportInput = {
   } | null;
 };
 
+export type AiResponseReportContext = Omit<AiResponseReportInput, "reason" | "details"> & {
+  reportKey: string;
+};
+
 export type ReportableChatMessage = {
   id: string;
   role: "user" | "assistant" | "system";
