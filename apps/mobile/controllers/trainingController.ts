@@ -15,7 +15,169 @@ import type {
   TrainingStatsMetricKey,
   TrainingStatsPeriodKey,
 } from "../training/presentationModel";
+import type { CatalogLink } from "../catalogs/types";
+import type { WorkoutTemplateValidation } from "../training/workoutTemplateTransactions";
 import type { ScreenController } from "./types";
+
+export type TrainingEditorModel = {
+  template: WorkoutTemplate | null;
+  category: import("../training/workoutTemplateOperations").TrainingCategory | null;
+  categoryMeta: { label: string; color: string; iconBg: string } | null;
+  icon: RoutineIconName | null;
+  durationMinutes: number;
+  seriesTotal: number;
+  draftDirty: boolean;
+  draftValidation: WorkoutTemplateValidation | null;
+  saveBusy: boolean;
+  activeExerciseMenuId: string | null;
+  activeSeriesMenuId: string | null;
+  expandedCompoundSeriesId: string | null;
+};
+
+type ExerciseSeriesField =
+  | "reps"
+  | "weight_kg"
+  | "rest_seconds"
+  | "type"
+  | "tempo_contraction"
+  | "tempo_pause"
+  | "tempo_relaxation";
+
+type SubSeriesField =
+  | "reps"
+  | "weight_kg"
+  | "rest_seconds"
+  | "exercise_name"
+  | "exercise_id"
+  | "catalog_link";
+
+export type TrainingEditorActions = {
+  requestClose(): void;
+  save(): void;
+  updateName(value: string): void;
+  updateDuration(value: string): void;
+  updateCategory(value: import("../training/workoutTemplateOperations").TrainingCategory): void;
+  updateIcon(value: RoutineIconName): void;
+  start(): void;
+  openExercisePicker(): void;
+  toggleExerciseMenu(exerciseId: string): void;
+  closeExerciseMenu(): void;
+  editExercise(exerciseId: string): void;
+  cloneExercise(exerciseId: string): void;
+  moveExercise(exerciseId: string): void;
+  deleteExercise(exerciseId: string): void;
+  addSeries(exerciseId: string): void;
+  openSeriesTypePicker(exerciseId: string, seriesId: string): void;
+  updateSeriesField(exerciseId: string, seriesId: string, field: ExerciseSeriesField, value: string): void;
+  toggleSeriesMenu(key: string): void;
+  closeSeriesMenu(): void;
+  duplicateSeries(exerciseId: string, seriesId: string): void;
+  deleteSeries(exerciseId: string, seriesId: string): void;
+  toggleCompoundSeries(seriesId: string): void;
+  openSupersetPicker(exerciseId: string, seriesId: string, subSeriesId: string): void;
+  updateSubSeriesField(exerciseId: string, seriesId: string, subSeriesId: string, field: SubSeriesField, value: string | CatalogLink): void;
+  removeSubSeries(exerciseId: string, seriesId: string, subSeriesId: string): void;
+  addSubSeries(exerciseId: string, seriesId: string): void;
+  updateExerciseName(exerciseId: string, value: string): void;
+  closeSeriesTypePicker(): void;
+};
+
+export type TrainingEditorControllerInput = TrainingEditorModel & TrainingEditorActions & {
+  seriesTypePickerOpen: boolean;
+};
+
+export function useTrainingEditorController(
+  input: TrainingEditorControllerInput,
+): ScreenController<
+  TrainingEditorModel,
+  TrainingEditorActions,
+  "training-exercise-menu" | "training-series-menu" | "series-type-picker"
+> {
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const model = useMemo<TrainingEditorModel>(() => ({
+    template: input.template,
+    category: input.category,
+    categoryMeta: input.categoryMeta,
+    icon: input.icon,
+    durationMinutes: input.durationMinutes,
+    seriesTotal: input.seriesTotal,
+    draftDirty: input.draftDirty,
+    draftValidation: input.draftValidation,
+    saveBusy: input.saveBusy,
+    activeExerciseMenuId: input.activeExerciseMenuId,
+    activeSeriesMenuId: input.activeSeriesMenuId,
+    expandedCompoundSeriesId: input.expandedCompoundSeriesId,
+  }), [
+    input.activeExerciseMenuId,
+    input.activeSeriesMenuId,
+    input.category,
+    input.categoryMeta,
+    input.draftDirty,
+    input.draftValidation,
+    input.durationMinutes,
+    input.expandedCompoundSeriesId,
+    input.icon,
+    input.saveBusy,
+    input.seriesTotal,
+    input.template,
+  ]);
+  const actions = useMemo<TrainingEditorActions>(() => ({
+    requestClose: () => inputRef.current.requestClose(),
+    save: () => inputRef.current.save(),
+    updateName: (value) => inputRef.current.updateName(value),
+    updateDuration: (value) => inputRef.current.updateDuration(value),
+    updateCategory: (value) => inputRef.current.updateCategory(value),
+    updateIcon: (value) => inputRef.current.updateIcon(value),
+    start: () => inputRef.current.start(),
+    openExercisePicker: () => inputRef.current.openExercisePicker(),
+    toggleExerciseMenu: (exerciseId) => inputRef.current.toggleExerciseMenu(exerciseId),
+    closeExerciseMenu: () => inputRef.current.closeExerciseMenu(),
+    editExercise: (exerciseId) => inputRef.current.editExercise(exerciseId),
+    cloneExercise: (exerciseId) => inputRef.current.cloneExercise(exerciseId),
+    moveExercise: (exerciseId) => inputRef.current.moveExercise(exerciseId),
+    deleteExercise: (exerciseId) => inputRef.current.deleteExercise(exerciseId),
+    addSeries: (exerciseId) => inputRef.current.addSeries(exerciseId),
+    openSeriesTypePicker: (exerciseId, seriesId) => inputRef.current.openSeriesTypePicker(exerciseId, seriesId),
+    updateSeriesField: (exerciseId, seriesId, field, value) => inputRef.current.updateSeriesField(exerciseId, seriesId, field, value),
+    toggleSeriesMenu: (key) => inputRef.current.toggleSeriesMenu(key),
+    closeSeriesMenu: () => inputRef.current.closeSeriesMenu(),
+    duplicateSeries: (exerciseId, seriesId) => inputRef.current.duplicateSeries(exerciseId, seriesId),
+    deleteSeries: (exerciseId, seriesId) => inputRef.current.deleteSeries(exerciseId, seriesId),
+    toggleCompoundSeries: (seriesId) => inputRef.current.toggleCompoundSeries(seriesId),
+    openSupersetPicker: (exerciseId, seriesId, subSeriesId) => inputRef.current.openSupersetPicker(exerciseId, seriesId, subSeriesId),
+    updateSubSeriesField: (exerciseId, seriesId, subSeriesId, field, value) => inputRef.current.updateSubSeriesField(exerciseId, seriesId, subSeriesId, field, value),
+    removeSubSeries: (exerciseId, seriesId, subSeriesId) => inputRef.current.removeSubSeries(exerciseId, seriesId, subSeriesId),
+    addSubSeries: (exerciseId, seriesId) => inputRef.current.addSubSeries(exerciseId, seriesId),
+    updateExerciseName: (exerciseId, value) => inputRef.current.updateExerciseName(exerciseId, value),
+    closeSeriesTypePicker: () => inputRef.current.closeSeriesTypePicker(),
+  }), []);
+  const back = useMemo(() => ({
+    layers: {
+      "training-exercise-menu": input.activeExerciseMenuId !== null,
+      "training-series-menu": input.activeSeriesMenuId !== null,
+      "series-type-picker": input.seriesTypePickerOpen,
+    },
+    handlers: {
+      "training-exercise-menu": () => {
+        if (inputRef.current.activeExerciseMenuId === null) return false;
+        inputRef.current.closeExerciseMenu();
+        return true;
+      },
+      "training-series-menu": () => {
+        if (inputRef.current.activeSeriesMenuId === null) return false;
+        inputRef.current.closeSeriesMenu();
+        return true;
+      },
+      "series-type-picker": () => {
+        if (!inputRef.current.seriesTypePickerOpen) return false;
+        inputRef.current.closeSeriesTypePicker();
+        return true;
+      },
+    },
+  }), [input.activeExerciseMenuId, input.activeSeriesMenuId, input.seriesTypePickerOpen]);
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
 
 export type TrainingDetailExercise = {
   exercise: WorkoutExercise;

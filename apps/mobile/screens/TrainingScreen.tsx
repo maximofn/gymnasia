@@ -1,19 +1,22 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { memo } from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { memo, useRef } from "react";
+import { Animated, Image, PanResponder, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import type {
   TrainingDetailActions,
   TrainingDetailModel,
+  TrainingEditorActions,
+  TrainingEditorModel,
   TrainingHistoryActions,
   TrainingHistoryModel,
 } from "../controllers/trainingController";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
-import type { ExerciseSeries } from "../training/seriesContract";
+import { isCompoundSeriesType, type ExerciseSeries } from "../training/seriesContract";
 import { SERIES_TYPE_META } from "../training/seriesPresentation";
 import { isCompletedWorkoutSummary, type WorkoutSessionSummary, type WorkoutSummaryRecalculation } from "../training/workoutHistory";
-import { formatClock, formatPrescriptionNumber, formatTrainingHistoryDate, formatWorkoutHistoryVolume, workoutPrescriptionSeriesDetail, type TrainingStatsMetricKey, type TrainingStatsPeriodKey } from "../training/presentationModel";
+import { ROUTINE_ICON_OPTIONS, formatClock, formatPrescriptionNumber, formatTrainingHistoryDate, formatWorkoutHistoryVolume, inferExerciseMuscle, normalizeExerciseImageUri, workoutPrescriptionSeriesDetail, type TrainingStatsMetricKey, type TrainingStatsPeriodKey } from "../training/presentationModel";
 import { templateHasRunnableSeries } from "../training/workoutSessionModel";
+import type { TrainingCategory } from "../training/workoutTemplateOperations";
 import { mobileTheme } from "../theme";
 
 export const TrainingHistoryScreen = memo(function TrainingHistoryScreen({ model, actions }: { model: Readonly<TrainingHistoryModel>; actions: Readonly<TrainingHistoryActions> }) {
@@ -1015,5 +1018,1038 @@ function TrainingPrimaryButton({
       {icon}
       <Text style={{ color: "#06090D", fontWeight: "700" }}>{label}</Text>
     </Pressable>
+  );
+}
+
+export const TrainingEditorScreen = memo(function TrainingEditorScreen({
+  model,
+  actions,
+}: {
+  model: Readonly<TrainingEditorModel>;
+  actions: Readonly<TrainingEditorActions>;
+}) {
+  const {
+    template: activeTrainingTemplate,
+    category: activeTrainingCategory,
+    categoryMeta: activeTrainingCategoryMeta,
+    icon: activeTrainingIcon,
+    durationMinutes: activeTrainingDurationMinutes,
+    seriesTotal: activeTrainingSeriesTotal,
+    draftDirty: trainingTemplateDraftDirty,
+    draftValidation: trainingTemplateDraftValidation,
+    saveBusy: trainingTemplateSaveBusy,
+    activeExerciseMenuId,
+    activeSeriesMenuId,
+    expandedCompoundSeriesId,
+  } = model;
+  if (!activeTrainingTemplate) return null;
+  return (
+                <View style={{ gap: 12, paddingBottom: 110 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                    <Pressable
+                      onPress={actions.requestClose}
+                      testID="training-editor-cancel"
+                      style={{
+                        minHeight: 36,
+                        paddingHorizontal: 2,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 22, fontWeight: "600" }}>
+                        Cancelar
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={actions.save}
+                      disabled={trainingTemplateSaveBusy}
+                      style={{
+                        minHeight: 46,
+                        borderRadius: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.75)",
+                        backgroundColor: trainingTemplateDraftValidation?.valid
+                          ? mobileTheme.color.brandPrimary
+                          : "#303641",
+                        paddingHorizontal: 18,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <Feather name="check" size={14} color={trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3"} />
+                      <Text style={{ color: trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3", fontSize: 16, fontWeight: "800" }}>
+                        {trainingTemplateSaveBusy ? "Guardando…" : "Guardar"}
+                      </Text>
+                    </Pressable>
+                  </View>
+  
+                  {trainingTemplateDraftDirty ? (
+                    <View
+                      testID="training-editor-dirty-banner"
+                      style={{
+                        borderRadius: 12,
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.28)",
+                        backgroundColor: "rgba(203,255,26,0.08)",
+                        paddingHorizontal: 12,
+                        paddingVertical: 9,
+                      }}
+                    >
+                      <Text style={{ color: "#DDFE70", fontSize: 13, fontWeight: "700" }}>
+                        Cambios sin guardar. La rutina original sigue intacta.
+                      </Text>
+                    </View>
+                  ) : null}
+  
+                  <TextInput
+                    testID="training-editor-name"
+                    value={activeTrainingTemplate.name}
+                    onChangeText={actions.updateName}
+                    placeholder="Nombre de rutina"
+                    placeholderTextColor="#7D8798"
+                    style={{
+                      marginTop: 4,
+                      color: mobileTheme.color.textPrimary,
+                      fontSize: 28,
+                      fontWeight: "700",
+                      minHeight: 42,
+                      borderBottomWidth: 1,
+                      borderBottomColor: "rgba(255,255,255,0.12)",
+                      paddingBottom: 6,
+                    }}
+                  />
+  
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                    {activeTrainingIcon ? (
+                      <View
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 8,
+                          backgroundColor: activeTrainingCategoryMeta?.iconBg ?? "rgba(203,255,26,0.2)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Feather name={activeTrainingIcon} size={16} color={mobileTheme.color.brandPrimary} />
+                      </View>
+                    ) : null}
+                    {activeTrainingCategoryMeta ? (
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                        <View
+                          style={{
+                            width: 7,
+                            height: 7,
+                            borderRadius: 999,
+                            backgroundColor: activeTrainingCategoryMeta.color,
+                          }}
+                        />
+                        <Text
+                          style={{
+                            color: activeTrainingCategoryMeta.color,
+                            fontSize: 17,
+                            fontWeight: "700",
+                          }}
+                        >
+                          {activeTrainingCategoryMeta.label}
+                        </Text>
+                      </View>
+                    ) : null}
+                    <Text style={{ color: "#8B94A3", fontSize: 15 }}>
+                      {activeTrainingTemplate.exercises.length} ejercicios
+                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                      <TextInput
+                        value={activeTrainingTemplate.duration_minutes ?? ""}
+                        onChangeText={actions.updateDuration}
+                        placeholder={activeTrainingDurationMinutes > 0 ? `${activeTrainingDurationMinutes}` : "min"}
+                        placeholderTextColor="#8B94A3"
+                        keyboardType="number-pad"
+                        style={{
+                          minWidth: 44,
+                          minHeight: 30,
+                          borderRadius: 8,
+                          borderWidth: 1,
+                          borderColor: "rgba(255,255,255,0.14)",
+                          paddingHorizontal: 10,
+                          color: mobileTheme.color.textPrimary,
+                          fontSize: 15,
+                          fontWeight: "600",
+                          textAlign: "center",
+                        }}
+                      />
+                      <Text style={{ color: "#8B94A3", fontSize: 15 }}>min</Text>
+                    </View>
+                    <Text style={{ color: "#8B94A3", fontSize: 15 }}>
+                      {activeTrainingSeriesTotal} series
+                    </Text>
+                  </View>
+  
+                  <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                    {TRAINING_CATEGORY_EDIT_OPTIONS.map((option) => {
+                      const isActive = activeTrainingCategory === option.key;
+                      return (
+                        <Pressable
+                          key={option.key}
+                          onPress={() => actions.updateCategory(option.key)}
+                          style={{
+                            minHeight: 38,
+                            borderRadius: mobileTheme.radius.pill,
+                            borderWidth: 1,
+                            borderColor: isActive ? "rgba(203,255,26,0.85)" : mobileTheme.color.borderSubtle,
+                            backgroundColor: isActive ? "rgba(160,204,0,0.12)" : "#0D1117",
+                            paddingHorizontal: 14,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: isActive ? mobileTheme.color.brandPrimary : "#9EA6B3",
+                              fontSize: 14,
+                              fontWeight: "700",
+                            }}
+                          >
+                            {option.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+  
+                  <View style={{ gap: 8 }}>
+                    <Text style={{ color: "#8B94A3", fontSize: 13, fontWeight: "700" }}>Icono de la rutina</Text>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ gap: 8, paddingRight: 12 }}
+                      testID="training-icon-picker"
+                    >
+                      {ROUTINE_ICON_OPTIONS.map((iconName) => {
+                        const isActive = activeTrainingIcon === iconName;
+                        return (
+                          <Pressable
+                            key={iconName}
+                            onPress={() => actions.updateIcon(iconName)}
+                            testID={`training-icon-option-${iconName}`}
+                            style={{
+                              width: 42,
+                              height: 42,
+                              borderRadius: 12,
+                              borderWidth: 1,
+                              borderColor: isActive ? "rgba(203,255,26,0.85)" : mobileTheme.color.borderSubtle,
+                              backgroundColor: isActive ? "rgba(160,204,0,0.14)" : "#0D1117",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Feather
+                              name={iconName}
+                              size={16}
+                              color={isActive ? mobileTheme.color.brandPrimary : "#96A0B0"}
+                            />
+                          </Pressable>
+                        );
+                      })}
+                    </ScrollView>
+                  </View>
+  
+                  <TrainingPrimaryButton
+                    label={trainingTemplateDraftDirty ? "Guarda para empezar" : "Empezar rutina"}
+                    onPress={actions.start}
+                    disabled={trainingTemplateDraftDirty || !templateHasRunnableSeries(activeTrainingTemplate)}
+                    icon={<Feather name="play" size={14} color="#06090D" />}
+                    testID="training-editor-start-session"
+                  />
+  
+                  <Pressable
+                    onPress={actions.openExercisePicker}
+                    testID="training-editor-add-exercise"
+                    style={{
+                      minHeight: 46,
+                      borderRadius: 14,
+                      borderWidth: 1,
+                      borderColor: "rgba(203,255,26,0.75)",
+                      backgroundColor: "transparent",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 10,
+                    }}
+                  >
+                    <Feather name="plus" size={14} color={mobileTheme.color.brandPrimary} />
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 16, fontWeight: "800" }}>
+                      Agregar ejercicio
+                    </Text>
+                  </Pressable>
+  
+                  {activeTrainingTemplate.exercises.length === 0 ? (
+                    <View
+                      style={{
+                        minHeight: 140,
+                        borderRadius: 18,
+                        borderWidth: 1,
+                        borderColor: mobileTheme.color.borderSubtle,
+                        backgroundColor: "#171B23",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingHorizontal: 18,
+                      }}
+                    >
+                      <Text style={{ color: "#8B94A3", fontSize: 22, textAlign: "center", lineHeight: 28 }}>
+                        Esta rutina aún no tiene ejercicios.
+                      </Text>
+                      <Text style={{ color: "#8B94A3", fontSize: 22, textAlign: "center", lineHeight: 28 }}>
+                        Pulsa en "Agregar ejercicio" para empezar.
+                      </Text>
+                    </View>
+                  ) : (
+                    activeTrainingTemplate.exercises.map((exercise, index) => {
+                    const isMenuOpen = activeExerciseMenuId === exercise.id;
+                    const exerciseSeries = exercise.series ?? [];
+                    const firstWeight = exerciseSeries.find((seriesItem) => seriesItem.weight_kg.trim())
+                      ?.weight_kg;
+                    const exerciseMuscle = exercise.muscle?.trim()
+                      ? exercise.muscle
+                      : inferExerciseMuscle(exercise.name ?? "", activeTrainingCategory ?? "strength");
+                    return (
+                      <View
+                        key={exercise.id}
+                        style={{
+                          position: "relative",
+                          zIndex: isMenuOpen ? 120 : 1,
+                          elevation: isMenuOpen ? 20 : 0,
+                        }}
+                      >
+                        <View
+                          style={{
+                            borderWidth: 1,
+                            borderColor: mobileTheme.color.borderSubtle,
+                            backgroundColor: "#171B23",
+                            borderRadius: 20,
+                            paddingHorizontal: 12,
+                            paddingTop: 12,
+                            paddingBottom: 10,
+                            gap: 10,
+                            overflow: "visible",
+                          }}
+                        >
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                            <View style={{ width: 8, alignItems: "center", gap: 3 }}>
+                              {Array.from({ length: 6 }).map((_, dotIndex) => (
+                                <View
+                                  key={`${exercise.id}_drag_${dotIndex}`}
+                                  style={{
+                                    width: 2,
+                                    height: 2,
+                                    borderRadius: 999,
+                                    backgroundColor: "#6F7786",
+                                  }}
+                                />
+                              ))}
+                            </View>
+                            <View
+                              style={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: 8,
+                                backgroundColor: mobileTheme.color.brandPrimary,
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Text style={{ color: "#06090D", fontSize: 14, fontWeight: "800" }}>
+                                {index + 1}
+                              </Text>
+                            </View>
+                            {exercise.image_uri ? (
+                              <Image
+                                source={{ uri: normalizeExerciseImageUri(exercise.image_uri) ?? undefined }}
+                                style={{
+                                  width: 44,
+                                  height: 44,
+                                  borderRadius: 12,
+                                  borderWidth: 1,
+                                  borderColor: "rgba(255,255,255,0.08)",
+                                }}
+                                resizeMode="cover"
+                              />
+                            ) : null}
+                            <View style={{ flex: 1, gap: 1 }}>
+                              <TextInput
+                                value={exercise.name ?? ""}
+                                onChangeText={(value) => actions.updateExerciseName(exercise.id, value)}
+                                placeholder={`Ejercicio ${index + 1}`}
+                                placeholderTextColor="#8B94A3"
+                                multiline
+                                style={{
+                                  color: mobileTheme.color.textPrimary,
+                                  fontSize: 18,
+                                  fontWeight: "700",
+                                  minHeight: 30,
+                                  paddingVertical: 0,
+                                  textAlignVertical: "center",
+                                }}
+                              />
+                              <Text style={{ color: "#8B94A3", fontSize: 13 }}>
+                                {exerciseMuscle} • {exerciseSeries.length} series
+                                {firstWeight ? ` • ${firstWeight} kg` : ""}
+                              </Text>
+                            </View>
+                            <Pressable
+                              onPress={() => actions.toggleExerciseMenu(exercise.id)}
+                              testID={`training-exercise-menu-${exercise.id}`}
+                              style={{
+                                width: 28,
+                                height: 28,
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <View style={{ alignItems: "center", gap: 3 }}>
+                                {Array.from({ length: 3 }).map((_, dotIndex) => (
+                                  <View
+                                    key={`${exercise.id}_menu_${dotIndex}`}
+                                    style={{
+                                      width: 3,
+                                      height: 3,
+                                      borderRadius: 999,
+                                      backgroundColor: "#98A2B3",
+                                    }}
+                                  />
+                                ))}
+                              </View>
+                            </Pressable>
+                          </View>
+  
+                          <View style={{ gap: 0 }}>
+                              <View
+                                style={{
+                                  minHeight: 28,
+                                  borderRadius: 8,
+                                  backgroundColor: "#202630",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  paddingHorizontal: 10,
+                                  gap: 6,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    width: 24,
+                                    color: "#7D8798",
+                                    fontSize: 11,
+                                    fontWeight: "700",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  #
+                                </Text>
+                                <Text
+                                  style={{
+                                    width: 32,
+                                    color: "#7D8798",
+                                    fontSize: 10,
+                                    fontWeight: "700",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Tipo
+                                </Text>
+                                <Text
+                                  style={{
+                                    flex: 1,
+                                    minWidth: 0,
+                                    color: "#7D8798",
+                                    fontSize: 10,
+                                    fontWeight: "700",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Repeticiones
+                                </Text>
+                                <Text
+                                  style={{
+                                    flex: 1,
+                                    minWidth: 0,
+                                    color: "#7D8798",
+                                    fontSize: 10,
+                                    fontWeight: "700",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Peso (kg)
+                                </Text>
+                                <Text
+                                  style={{
+                                    flex: 1,
+                                    minWidth: 0,
+                                    color: "#7D8798",
+                                    fontSize: 10,
+                                    fontWeight: "700",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Fin bloque
+                                </Text>
+                                <View style={{ width: 16 }} />
+                              </View>
+  
+                              {exerciseSeries.map((seriesItem, setIndex) => {
+                                const canDelete = exerciseSeries.length > 1;
+                                const seriesMenuKey = `${exercise.id}:${seriesItem.id}`;
+                                const isSeriesMenuOpen = activeSeriesMenuId === seriesMenuKey;
+                                const handleDelete = () => {
+                                  if (!canDelete) return;
+                                  actions.deleteSeries(exercise.id, seriesItem.id);
+                                };
+                                return (
+                                  <View key={seriesItem.id} style={{ position: "relative", zIndex: isSeriesMenuOpen ? 100 : 0 }}>
+                                  <SwipeableSetRow
+                                    onDelete={handleDelete}
+                                    enabled={canDelete}
+                                  >
+                                  <View
+                                    style={{
+                                      minHeight: 36,
+                                      borderBottomWidth:
+                                        setIndex === exerciseSeries.length - 1 ? 0 : 1,
+                                      borderBottomColor: "rgba(255,255,255,0.08)",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      paddingHorizontal: 10,
+                                      backgroundColor: (seriesItem.type ?? "normal") === "warmup" ? "rgba(255,74,74,0.06)" : "transparent",
+                                      gap: 6,
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        width: 24,
+                                        color: "#8C95A4",
+                                        fontSize: 13,
+                                        fontWeight: "700",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {setIndex + 1}
+                                    </Text>
+                                    <Pressable
+                                      onPress={() => actions.openSeriesTypePicker(exercise.id, seriesItem.id)}
+                                      testID={`training-editor-series-type-${exercise.id}-${seriesItem.id}`}
+                                      style={{
+                                        width: 32,
+                                        height: 24,
+                                        borderRadius: 6,
+                                        backgroundColor: (seriesItem.type ?? "normal") === "warmup" ? "rgba(255,74,74,0.2)" : "#202630",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      <Text style={{
+                                        color: (seriesItem.type ?? "normal") === "warmup" ? "#FF4A4A" : "#8C95A4",
+                                        fontSize: 10,
+                                        fontWeight: "700",
+                                      }}>
+                                        {SERIES_TYPE_META[seriesItem.type ?? "normal"].short}
+                                      </Text>
+                                    </Pressable>
+                                    {(seriesItem.type ?? "normal") === "tempo" ? (
+                                      <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 1 }}>
+                                        <TextInput
+                                          value={seriesItem.tempo_contraction ?? ""}
+                                          onChangeText={(v) => actions.updateSeriesField(exercise.id, seriesItem.id, "tempo_contraction", v)}
+                                          placeholder="C"
+                                          placeholderTextColor="#8C95A4"
+                                          keyboardType="number-pad"
+                                          style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "700", textAlign: "center", paddingVertical: 0, paddingHorizontal: 0 }}
+                                        />
+                                        <Text style={{ color: "#7D8798", fontSize: 10 }}>-</Text>
+                                        <TextInput
+                                          value={seriesItem.tempo_pause ?? ""}
+                                          onChangeText={(v) => actions.updateSeriesField(exercise.id, seriesItem.id, "tempo_pause", v)}
+                                          placeholder="P"
+                                          placeholderTextColor="#8C95A4"
+                                          keyboardType="number-pad"
+                                          style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "700", textAlign: "center", paddingVertical: 0, paddingHorizontal: 0 }}
+                                        />
+                                        <Text style={{ color: "#7D8798", fontSize: 10 }}>-</Text>
+                                        <TextInput
+                                          value={seriesItem.tempo_relaxation ?? ""}
+                                          onChangeText={(v) => actions.updateSeriesField(exercise.id, seriesItem.id, "tempo_relaxation", v)}
+                                          placeholder="R"
+                                          placeholderTextColor="#8C95A4"
+                                          keyboardType="number-pad"
+                                          style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 11, fontWeight: "700", textAlign: "center", paddingVertical: 0, paddingHorizontal: 0 }}
+                                        />
+                                      </View>
+                                    ) : (
+                                      <TextInput
+                                        value={seriesItem.reps}
+                                        onChangeText={(value) =>
+                                          actions.updateSeriesField(
+                                            exercise.id,
+                                            seriesItem.id,
+                                            "reps",
+                                            value,
+                                          )
+                                        }
+                                        placeholder={(seriesItem.type ?? "normal") === "isometric" ? "(s)" : "-"}
+                                        placeholderTextColor="#8C95A4"
+                                        style={{
+                                          flex: 1,
+                                          minWidth: 0,
+                                          color: mobileTheme.color.textPrimary,
+                                          fontSize: 13,
+                                          fontWeight: "700",
+                                          paddingVertical: 0,
+                                          paddingHorizontal: 0,
+                                          textAlign: "center",
+                                        }}
+                                      />
+                                    )}
+                                    <TextInput
+                                      value={seriesItem.weight_kg}
+                                      onChangeText={(value) =>
+                                        actions.updateSeriesField(
+                                          exercise.id,
+                                          seriesItem.id,
+                                          "weight_kg",
+                                          value,
+                                        )
+                                      }
+                                      placeholder="-"
+                                      placeholderTextColor="#8C95A4"
+                                      keyboardType="numbers-and-punctuation"
+                                      style={{
+                                        flex: 1,
+                                        minWidth: 0,
+                                        color: mobileTheme.color.textPrimary,
+                                        fontSize: 13,
+                                        fontWeight: "600",
+                                        paddingVertical: 0,
+                                        paddingHorizontal: 0,
+                                        textAlign: "center",
+                                      }}
+                                    />
+                                    <TextInput
+                                      value={seriesItem.rest_seconds}
+                                      onChangeText={(value) =>
+                                        actions.updateSeriesField(
+                                          exercise.id,
+                                          seriesItem.id,
+                                          "rest_seconds",
+                                          value,
+                                        )
+                                      }
+                                      placeholder="-"
+                                      placeholderTextColor="#8C95A4"
+                                      keyboardType="number-pad"
+                                      style={{
+                                        flex: 1,
+                                        minWidth: 0,
+                                        color: "#8C95A4",
+                                        fontSize: 13,
+                                        fontWeight: "600",
+                                        paddingVertical: 0,
+                                        paddingHorizontal: 0,
+                                        textAlign: "center",
+                                      }}
+                                    />
+                                    <Pressable
+                                      onPress={() => actions.toggleSeriesMenu(seriesMenuKey)}
+                                      testID={`training-editor-series-menu-${exercise.id}-${seriesItem.id}`}
+                                      hitSlop={8}
+                                      style={{ width: 16, alignItems: "center", justifyContent: "center", gap: 2 }}
+                                    >
+                                      {Array.from({ length: 3 }).map((_, rowIndex) => (
+                                        <View
+                                          key={`${seriesItem.id}_drag_row_${rowIndex}`}
+                                          style={{ flexDirection: "row", gap: 2 }}
+                                        >
+                                          <View
+                                            style={{
+                                              width: 3,
+                                              height: 3,
+                                              borderRadius: 999,
+                                              backgroundColor: "#7D8798",
+                                            }}
+                                          />
+                                          <View
+                                            style={{
+                                              width: 3,
+                                              height: 3,
+                                              borderRadius: 999,
+                                              backgroundColor: "#7D8798",
+                                            }}
+                                          />
+                                        </View>
+                                      ))}
+                                    </Pressable>
+                                  </View>
+                                  </SwipeableSetRow>
+                                  {isSeriesMenuOpen && (
+                                    <View
+                                      testID={shellSurfaceTestId("training-series-menu")}
+                                      style={{
+                                        position: "absolute",
+                                        top: 36,
+                                        right: 4,
+                                        width: 190,
+                                        borderRadius: 16,
+                                        borderWidth: 1,
+                                        borderColor: "rgba(255,255,255,0.1)",
+                                        backgroundColor: "rgba(12,14,19,0.98)",
+                                        paddingVertical: 8,
+                                        zIndex: 240,
+                                        elevation: 24,
+                                        shadowColor: "#000",
+                                        shadowOpacity: 0.36,
+                                        shadowRadius: 10,
+                                        shadowOffset: { width: 0, height: 6 },
+                                      }}
+                                    >
+                                      <Pressable
+                                        onPress={() => {
+                                          actions.closeSeriesMenu();
+                                          actions.duplicateSeries(exercise.id, seriesItem.id);
+                                        }}
+                                        testID={`training-editor-series-duplicate-${exercise.id}-${seriesItem.id}`}
+                                        style={{
+                                          minHeight: 40,
+                                          paddingHorizontal: 12,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 10,
+                                        }}
+                                      >
+                                        <Feather name="copy" size={14} color={mobileTheme.color.textSecondary} />
+                                        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16 }}>
+                                          Duplicar serie
+                                        </Text>
+                                      </Pressable>
+                                      <Pressable
+                                        onPress={handleDelete}
+                                        style={{
+                                          minHeight: 40,
+                                          borderTopWidth: 1,
+                                          borderTopColor: "rgba(255,255,255,0.2)",
+                                          marginTop: 4,
+                                          paddingTop: 8,
+                                          paddingHorizontal: 12,
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                          gap: 10,
+                                          opacity: canDelete ? 1 : 0.35,
+                                        }}
+                                        disabled={!canDelete}
+                                      >
+                                        <Feather name="trash-2" size={14} color="#FF4A4A" />
+                                        <Text style={{ color: "#FF4A4A", fontSize: 16, fontWeight: "600" }}>
+                                          Eliminar serie
+                                        </Text>
+                                      </Pressable>
+                                    </View>
+                                  )}
+                                  {isCompoundSeriesType(seriesItem.type ?? "normal") && (
+                                    <View style={{ marginLeft: 24, borderLeftWidth: 2, borderLeftColor: "#2A3240", paddingLeft: 8, paddingVertical: 4 }}>
+                                      <Pressable
+                                        onPress={() => actions.toggleCompoundSeries(seriesItem.id)}
+                                        style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 4 }}
+                                      >
+                                        <Feather
+                                          name={expandedCompoundSeriesId === seriesItem.id ? "chevron-down" : "chevron-right"}
+                                          size={12}
+                                          color="#7D8798"
+                                        />
+                                        <Text style={{ color: "#7D8798", fontSize: 11, fontWeight: "600" }}>
+                                          {(seriesItem.sub_series ?? []).length} mini-series · pausa antes
+                                        </Text>
+                                      </Pressable>
+                                      {expandedCompoundSeriesId === seriesItem.id && (
+                                        <>
+                                          {(seriesItem.sub_series ?? []).map((sub, subIdx) => (
+                                            <View key={sub.id} style={{ flexDirection: "row", alignItems: "center", minHeight: 30, gap: 4, paddingRight: 4 }}>
+                                              <Text style={{ width: 18, color: "#7D8798", fontSize: 10, textAlign: "center" }}>
+                                                {subIdx + 1}
+                                              </Text>
+                                              {(seriesItem.type ?? "normal") === "superset" && (
+                                                <Pressable
+                                                  onPress={() => actions.openSupersetPicker(exercise.id, seriesItem.id, sub.id)}
+                                                  style={{ flex: 1, minHeight: 26, borderRadius: 6, backgroundColor: "#202630", justifyContent: "center", paddingHorizontal: 6 }}
+                                                >
+                                                  <Text style={{ color: sub.exercise_name ? "#C7CED9" : "#7D8798", fontSize: 11 }} numberOfLines={1}>
+                                                    {sub.exercise_name || "Ejercicio..."}
+                                                  </Text>
+                                                </Pressable>
+                                              )}
+                                              <TextInput
+                                                value={sub.reps}
+                                                onChangeText={(v) => actions.updateSubSeriesField(exercise.id, seriesItem.id, sub.id, "reps", v)}
+                                                placeholder="reps"
+                                                placeholderTextColor="#7D8798"
+                                                keyboardType="number-pad"
+                                                style={{ flex: 1, color: "#C7CED9", fontSize: 12, fontWeight: "600", textAlign: "center", paddingVertical: 0 }}
+                                              />
+                                              <TextInput
+                                                value={sub.weight_kg}
+                                                onChangeText={(v) => actions.updateSubSeriesField(exercise.id, seriesItem.id, sub.id, "weight_kg", v)}
+                                                placeholder="kg"
+                                                placeholderTextColor="#7D8798"
+                                                keyboardType="numbers-and-punctuation"
+                                                style={{ flex: 1, color: "#C7CED9", fontSize: 12, fontWeight: "600", textAlign: "center", paddingVertical: 0 }}
+                                              />
+                                              {(seriesItem.type ?? "normal") !== "dropset" && (
+                                                <TextInput
+                                                  value={sub.rest_seconds}
+                                                  onChangeText={(v) => actions.updateSubSeriesField(exercise.id, seriesItem.id, sub.id, "rest_seconds", v)}
+                                                  placeholder="Pausa"
+                                                  placeholderTextColor="#7D8798"
+                                                  keyboardType="number-pad"
+                                                  style={{ flex: 1, color: "#8C95A4", fontSize: 12, fontWeight: "600", textAlign: "center", paddingVertical: 0 }}
+                                                />
+                                              )}
+                                              {(seriesItem.sub_series ?? []).length > 1 && (
+                                                <Pressable
+                                                  onPress={() => actions.removeSubSeries(exercise.id, seriesItem.id, sub.id)}
+                                                  hitSlop={6}
+                                                >
+                                                  <Feather name="x" size={12} color="#7D8798" />
+                                                </Pressable>
+                                              )}
+                                            </View>
+                                          ))}
+                                          <Pressable
+                                            onPress={() => actions.addSubSeries(exercise.id, seriesItem.id)}
+                                            style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 4 }}
+                                          >
+                                            <Feather name="plus" size={11} color="#7D8798" />
+                                            <Text style={{ color: "#7D8798", fontSize: 11, fontWeight: "600" }}>Mini-serie</Text>
+                                          </Pressable>
+                                        </>
+                                      )}
+                                    </View>
+                                  )}
+                                  </View>
+                                );
+                              })}
+  
+                              <Pressable
+                                onPress={() => actions.addSeries(exercise.id)}
+                                testID={`training-editor-series-add-${exercise.id}`}
+                                style={{
+                                  marginTop: 6,
+                                  minHeight: 36,
+                                  borderRadius: 14,
+                                  borderWidth: 1,
+                                  borderColor: "rgba(255,255,255,0.08)",
+                                  backgroundColor: "#171B23",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  gap: 8,
+                                }}
+                              >
+                                <Feather name="plus" size={13} color="#7F8896" />
+                                <Text style={{ color: "#7F8896", fontSize: 14, fontWeight: "700" }}>
+                                  Añadir serie
+                                </Text>
+                              </Pressable>
+                            </View>
+                        </View>
+  
+                        {isMenuOpen ? (
+                          <View
+                            testID={shellSurfaceTestId("training-exercise-menu")}
+                            style={{
+                              position: "absolute",
+                              top: 56,
+                              right: 12,
+                              width: 216,
+                              borderRadius: 16,
+                              borderWidth: 1,
+                              borderColor: "rgba(255,255,255,0.1)",
+                              backgroundColor: "rgba(12,14,19,0.98)",
+                              paddingVertical: 8,
+                              zIndex: 240,
+                              elevation: 24,
+                              shadowColor: "#000",
+                              shadowOpacity: 0.36,
+                              shadowRadius: 10,
+                              shadowOffset: { width: 0, height: 6 },
+                            }}
+                          >
+                            <Pressable
+                              onPress={() => actions.editExercise(exercise.id)}
+                              testID={`training-exercise-edit-${exercise.id}`}
+                              style={{
+                                minHeight: 40,
+                                paddingHorizontal: 12,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 10,
+                              }}
+                            >
+                              <Feather name="edit-2" size={14} color={mobileTheme.color.textSecondary} />
+                              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18 }}>
+                                Editar ejercicio
+                              </Text>
+                            </Pressable>
+                            <Pressable
+                              onPress={() => actions.cloneExercise(exercise.id)}
+                              testID={`training-exercise-clone-${exercise.id}`}
+                              style={{
+                                minHeight: 40,
+                                paddingHorizontal: 12,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 10,
+                              }}
+                            >
+                              <Feather name="copy" size={14} color={mobileTheme.color.textSecondary} />
+                              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18 }}>
+                                Clonar ejercicio
+                              </Text>
+                            </Pressable>
+                            <Pressable
+                              onPress={() => actions.moveExercise(exercise.id)}
+                              testID={`training-exercise-move-${exercise.id}`}
+                              style={{
+                                minHeight: 40,
+                                paddingHorizontal: 12,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 10,
+                              }}
+                            >
+                              <Feather name="move" size={14} color={mobileTheme.color.textSecondary} />
+                              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18 }}>
+                                Mover posición
+                              </Text>
+                            </Pressable>
+                            <Pressable
+                              onPress={() => actions.deleteExercise(exercise.id)}
+                              testID={`training-exercise-delete-${exercise.id}`}
+                              style={{
+                                minHeight: 40,
+                                borderTopWidth: 1,
+                                borderTopColor: "rgba(255,255,255,0.2)",
+                                marginTop: 6,
+                                paddingTop: 10,
+                                paddingHorizontal: 12,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 10,
+                              }}
+                            >
+                              <Feather name="trash-2" size={14} color="#FF4A4A" />
+                              <Text style={{ color: "#FF4A4A", fontSize: 18, fontWeight: "600" }}>
+                                Eliminar ejercicio
+                              </Text>
+                            </Pressable>
+                          </View>
+                        ) : null}
+                      </View>
+                    );
+                  }))} 
+  
+                  <Pressable
+                    onPress={actions.openExercisePicker}
+                    testID="training-editor-add-exercise-bottom"
+                    style={{
+                      marginTop: 6,
+                      minHeight: 54,
+                      borderRadius: 16,
+                      borderWidth: 1.5,
+                      borderColor: "rgba(203,255,26,0.75)",
+                      backgroundColor: "rgba(203,255,26,0.1)",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 25, fontWeight: "800" }}>
+                      + Agregar ejercicio
+                    </Text>
+                  </Pressable>
+  
+                  <Pressable
+                    onPress={actions.save}
+                    disabled={trainingTemplateSaveBusy}
+                    testID="training-editor-save"
+                    style={{
+                      marginTop: 6,
+                      minHeight: 46,
+                      borderRadius: 14,
+                      borderWidth: 1,
+                      borderColor: "rgba(203,255,26,0.75)",
+                      backgroundColor: trainingTemplateDraftValidation?.valid
+                        ? mobileTheme.color.brandPrimary
+                        : "#303641",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <Feather name="check" size={14} color={trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3"} />
+                    <Text style={{ color: trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3", fontSize: 16, fontWeight: "800" }}>
+                      {trainingTemplateSaveBusy ? "Guardando…" : "Guardar cambios"}
+                    </Text>
+                  </Pressable>
+                </View>
+  
+  );
+});
+
+const TRAINING_CATEGORY_EDIT_OPTIONS: Array<{ key: TrainingCategory; label: string }> = [
+  { key: "strength", label: "Fuerza" },
+  { key: "hypertrophy", label: "Hipertrofia" },
+  { key: "cardio", label: "Cardio" },
+  { key: "flexibility", label: "Flexibilidad" },
+];
+
+function SwipeableSetRow({
+  children,
+  onDelete,
+  enabled,
+}: {
+  children: React.ReactNode;
+  onDelete(): void;
+  enabled: boolean;
+}) {
+  const translateX = useRef(new Animated.Value(0)).current;
+  const deleteThreshold = -80;
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gesture) =>
+        enabled && Math.abs(gesture.dx) > 10 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+      onPanResponderMove: (_, gesture) => {
+        if (gesture.dx < 0) translateX.setValue(gesture.dx);
+      },
+      onPanResponderRelease: (_, gesture) => {
+        if (gesture.dx < deleteThreshold) {
+          Animated.timing(translateX, {
+            toValue: -300,
+            duration: 200,
+            useNativeDriver: true,
+          }).start(onDelete);
+        } else {
+          Animated.spring(translateX, {
+            toValue: 0,
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+    }),
+  ).current;
+  return (
+    <View style={{ overflow: "hidden" }}>
+      <View style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 80, backgroundColor: "#E53935", justifyContent: "center", alignItems: "center" }}>
+        <Feather name="trash-2" size={18} color="#fff" />
+      </View>
+      <Animated.View style={{ transform: [{ translateX }], backgroundColor: "#171B23" }} {...panResponder.panHandlers}>
+        {children}
+      </Animated.View>
+    </View>
   );
 }
