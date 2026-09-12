@@ -339,6 +339,10 @@ import {
   type LocalStore,
 } from "./persistence/localStoreModel";
 import {
+  useLocalStoreRuntime,
+  type LocalStoreRuntime,
+} from "./persistence/localStoreRuntime";
+import {
   AiResponseReportAction,
   AiResponseReportModal,
   type AiResponseReportContext,
@@ -645,7 +649,7 @@ type StreamingHandlers = {
   onThinkingDelta?: (delta: string, aggregate: string) => void;
 };
 type ChatProviderCallOptions = StreamingHandlers & {
-  setStore?: React.Dispatch<React.SetStateAction<LocalStore>>;
+  setStore?: LocalStoreRuntime["update"];
   commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>;
   store?: LocalStore;
   foodsRepo?: FoodRepoEntry[];
@@ -786,6 +790,11 @@ const localStoreRecoveryRepository = new LocalStoreRecoveryRepository({
   },
   sha256: (value) => Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value),
 });
+async function persistLocalStore(next: LocalStore): Promise<void> {
+  await localStoreRecoveryRepository.commit(
+    JSON.stringify(serializeStoreForAsyncStorage(next)),
+  );
+}
 const traceToolOperation = (
   message: string,
   data?: Record<string, unknown>,
@@ -1324,7 +1333,7 @@ const executeAgentTool = createDetailedAgentToolExecutor({
 });
 
 function createToolExecutionContext(
-  setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
+  setStore?: LocalStoreRuntime["update"],
   commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>,
   store?: LocalStore,
   foodsRepo?: FoodRepoEntry[],
@@ -1358,7 +1367,7 @@ function createToolExecutionContext(
 async function executeChatTool(
   name: string,
   args: Record<string, unknown>,
-  setStore?: React.Dispatch<React.SetStateAction<LocalStore>>,
+  setStore?: LocalStoreRuntime["update"],
   commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>,
   store?: LocalStore,
   foodsRepo?: FoodRepoEntry[],
@@ -5231,7 +5240,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     deletionOutcome?.report.status === "complete",
   );
 
-  const [store, setStore] = useState<LocalStore>(() => createInitialStore());
+  const localStoreRuntimeHandle = useLocalStoreRuntime({
+    initialStore: createInitialStore,
+    isHydrated,
+    persist: persistLocalStore,
+  });
+  const localStoreRuntime = localStoreRuntimeHandle.runtime;
+  const store = localStoreRuntime.store;
+  const setStore = localStoreRuntime.update;
   const storeRef = useRef(store);
   storeRef.current = store;
   const [dietSettingsDraft, setDietSettingsDraft] = useState<DietSettings>(
@@ -5246,27 +5262,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       manual_macro_calories: { ...store.dietSettings.manual_macro_calories },
     });
   }, [dietSettingsDraftDirty, store.dietSettings]);
-  const toolStoreCommitQueueRef = useRef<Promise<void>>(Promise.resolve());
-  const commitLocalStoreMutation = useCallback(
-    async (updater: (previous: LocalStore) => LocalStore): Promise<void> => {
-      const run = toolStoreCommitQueueRef.current.then(async () => {
-        const previous = storeRef.current;
-        const next = updater(previous);
-        if (next === previous) return;
-        await localStoreRecoveryRepository.commit(
-          JSON.stringify(serializeStoreForAsyncStorage(next)),
-        );
-        storeRef.current = next;
-        setStore((current) => {
-          if (current === previous) return next;
-          return updater(current);
-        });
-      });
-      toolStoreCommitQueueRef.current = run.catch(() => undefined);
-      await run;
-    },
-    [],
-  );
+  const commitLocalStoreMutation = localStoreRuntime.commit;
   const commitToolStoreMutation = useCallback(
     (updater: (previous: ToolStore) => ToolStore): Promise<void> =>
       commitLocalStoreMutation((previous) =>
@@ -7523,7 +7519,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       });
     }
     setSecureStoreAvailable(secureAvailable);
-    setStore(hydratedStore);
+    localStoreRuntimeHandle.replace(hydratedStore);
     activeWorkoutSessionRef.current = hydratedSession;
     setActiveWorkoutSession(hydratedSession);
     setWorkoutSessionTemplateDraft(hydratedSession ? hydratedSessionDraft : null);
@@ -7926,7 +7922,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     if (!isHydrated || dataDeletionBusyRef.current) return;
 
     const serialized = JSON.stringify(serializeStoreForAsyncStorage(store));
-    const persist = toolStoreCommitQueueRef.current.then(async () => {
+    void localStoreRuntimeHandle.enqueuePersistence(async () => {
       if (storeRef.current !== store || dataDeletionBusyRef.current) return;
       try {
         await localStoreRecoveryRepository.commit(serialized);
@@ -7961,8 +7957,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           );
       }
     });
-    toolStoreCommitQueueRef.current = persist.catch(() => undefined);
-  }, [isHydrated, store]);
+  }, [isHydrated, localStoreRuntimeHandle, store]);
 
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;
@@ -9427,7 +9422,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           providerCommit.snapshot.keys.find((item) => item.is_active)?.provider
           ?? importedStore.chatProvider,
       };
-      setStore(mergedStore);
+      localStoreRuntimeHandle.replace(mergedStore);
       setProviderDraftByProvider(createProviderDraftMap(mergedStore.keys));
       setProviderConnectionStatus(createProviderConnectionStatusMap(mergedStore.keys));
       const importedProviderOperations = createProviderOperationMap();
