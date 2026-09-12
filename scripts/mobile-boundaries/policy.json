@@ -1,0 +1,76 @@
+{
+  "codeRoot": "apps/mobile",
+  "exclude": [
+    "assets/",
+    "dist/",
+    "node_modules/",
+    "public/",
+    "scripts/",
+    "*.test.ts",
+    "*.test.tsx",
+    "vitest.config.mts"
+  ],
+  "layers": [
+    { "id": "bootstrap", "paths": ["index.js"] },
+    { "id": "app", "paths": ["App.tsx"] },
+    { "id": "controllers", "paths": ["controllers/"] },
+    { "id": "screens", "paths": ["screens/"] },
+    { "id": "platform", "paths": ["platform/"] },
+    { "id": "shell", "paths": ["shell/"] },
+    { "id": "ui", "paths": ["AiIdentityDisclosure.tsx", "AiResponseReportModal.tsx", "FeedbackProposalBanner.tsx", "HealthSafetyNotice.tsx", "LegalFooter.tsx", "LocalStoreRecoveryScreen.tsx"] },
+    { "id": "agent", "paths": ["agent/"] },
+    { "id": "training", "paths": ["training/"] },
+    { "id": "diet", "paths": ["diet/"] },
+    { "id": "measurements", "paths": ["measurements/"] },
+    { "id": "persistence", "paths": ["persistence/", "storage/", "backup/"] },
+    { "id": "catalogs", "paths": ["catalogs/"] },
+    { "id": "shared", "paths": ["notifications/", "app.config.ts", "babel.config.js", "environment.ts", "legacySecureStorage.ts", "metro.config.js", "openExternalUrl.ts", "runtimeEnvironment.ts", "theme.ts", "trace.ts"] }
+  ],
+  "allowedDependencies": {
+    "bootstrap": ["app"],
+    "app": ["controllers", "screens", "platform", "shell", "shared", "ui"],
+    "controllers": ["agent", "catalogs", "diet", "measurements", "persistence", "platform", "shell", "shared", "training"],
+    "screens": ["agent", "catalogs", "controllers", "diet", "measurements", "shell", "shared", "training"],
+    "platform": ["shared"],
+    "shell": ["shared"],
+    "ui": ["agent", "catalogs", "persistence", "shared"],
+    "agent": ["catalogs", "diet", "measurements", "shared", "training"],
+    "training": ["catalogs", "shared"],
+    "diet": ["catalogs", "shared"],
+    "measurements": ["shared"],
+    "persistence": ["agent", "shared"],
+    "catalogs": ["shared"],
+    "shared": ["agent"]
+  },
+  "publicEntries": {
+    "agent": ["agent/aiTransparency.ts", "agent/externalLinks.ts", "agent/feedbackIssues.ts", "agent/feedbackProposals.ts", "agent/generated/legalCopy.generated.ts", "agent/healthSafety.ts", "agent/googleInteractions.ts", "agent/policyContext.ts", "agent/providerConfiguration.ts", "agent/signedPolicySelection.ts"],
+    "catalogs": ["catalogs/ExerciseCatalogBrowser.tsx", "catalogs/CatalogStatusNotice.tsx", "catalogs/exerciseCatalogRuntime.ts", "catalogs/matching.ts", "catalogs/migrations.ts", "catalogs/runtime.ts", "catalogs/sources.ts", "catalogs/types.ts"],
+    "controllers": ["controllers/types.ts"],
+    "diet": ["diet/nutritionContract.ts"],
+    "measurements": ["measurements/measurementContract.ts", "measurements/measurementPerformance.ts"],
+    "persistence": ["persistence/localStoreModel.ts", "persistence/localStoreRecovery.ts", "persistence/localStoreRuntime.ts"],
+    "platform": ["platform/index.ts"],
+    "screens": ["screens/index.ts"],
+    "shell": ["shell/shellRegistry.ts"],
+    "training": ["training/restNotificationContract.ts", "training/seriesContract.ts", "training/workoutExecution.ts", "training/workoutHistory.ts", "training/workoutSessionClock.ts", "training/workoutTemplateContract.ts", "training/workoutTemplateOperations.ts", "training/workoutTemplateTransactions.ts"]
+  },
+  "forbiddenExternalImports": {
+    "controllers": ["react-native", "expo", "expo-av", "expo-clipboard", "expo-constants", "expo-crypto", "expo-document-picker", "expo-file-system", "expo-image-picker", "expo-intent-launcher", "expo-notifications", "expo-secure-store", "expo-sharing"],
+    "screens": ["@react-native-async-storage/async-storage", "expo-av", "expo-clipboard", "expo-crypto", "expo-document-picker", "expo-file-system", "expo-image-picker", "expo-intent-launcher", "expo-notifications", "expo-secure-store", "expo-sharing"],
+    "platform": ["react"],
+    "training": ["react", "react-native", "expo"],
+    "diet": ["react", "react-native", "expo"],
+    "measurements": ["react", "react-native", "expo"]
+  },
+  "legacyImports": [
+    { "from": "App.tsx", "to": "agent/" },
+    { "from": "App.tsx", "to": "backup/" },
+    { "from": "App.tsx", "to": "catalogs/" },
+    { "from": "App.tsx", "to": "diet/" },
+    { "from": "App.tsx", "to": "measurements/" },
+    { "from": "App.tsx", "to": "notifications/" },
+    { "from": "App.tsx", "to": "persistence/" },
+    { "from": "App.tsx", "to": "storage/" },
+    { "from": "App.tsx", "to": "training/" }
+  ]
+}
