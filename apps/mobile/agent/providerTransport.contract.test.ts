@@ -10,6 +10,10 @@ const providerToolClientSource = readFileSync(
   new URL("./providerToolClient.ts", import.meta.url),
   "utf8",
 );
+const foodEstimatorClientSource = readFileSync(
+  new URL("./foodEstimatorClient.ts", import.meta.url),
+  "utf8",
+);
 
 describe("provider transport contract", () => {
   it("short-circuits every AI conversation surface in fake mode", () => {
@@ -21,13 +25,16 @@ describe("provider transport contract", () => {
     );
     expect(toolChatStart).toBeGreaterThanOrEqual(0);
     const toolChat = providerToolClientSource.slice(toolChatStart);
-    const estimatorStart = appSource.indexOf("async function callFoodEstimatorAPI");
-    const estimator = appSource.slice(estimatorStart, appSource.indexOf("function ", estimatorStart + 30));
+    const estimatorStart = foodEstimatorClientSource.indexOf(
+      "export async function requestFoodEstimate",
+    );
+    expect(estimatorStart).toBeGreaterThanOrEqual(0);
+    const estimator = foodEstimatorClientSource.slice(estimatorStart);
 
     for (const [source, guardNeedle] of [
       [chat, "if (runtime.fakeMode)"],
       [toolChat, "if (runtime.fakeMode)"],
-      [estimator, "if (IS_FAKE_PROVIDER_MODE)"],
+      [estimator, "if (runtime.fakeMode)"],
     ] as const) {
       const guard = source.indexOf(guardNeedle);
       expect(guard).toBeGreaterThanOrEqual(0);

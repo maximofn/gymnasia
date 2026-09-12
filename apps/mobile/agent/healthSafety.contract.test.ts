@@ -33,7 +33,10 @@ describe("contrato de integración del guardrail sanitario", () => {
   });
 
   it("protege streaming, tools y errores técnicos por rutas distintas", () => {
-    const provider = sourceBetween("async function callProviderChatAPIWithTools", "const foodEstimatorTools");
+    const provider = sourceBetween(
+      "async function callProviderChatAPIWithTools",
+      "async function callFoodEstimatorAPI",
+    );
     expect(provider).toContain("healthSafetyToolAllowed");
     expect(provider).toContain("agentToolEffect");
     expect(provider).toContain("tool_blocked_by_health_safety");

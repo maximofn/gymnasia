@@ -11,6 +11,10 @@ const providerToolClientSource = readFileSync(
   new URL("./providerToolClient.ts", import.meta.url),
   "utf8",
 );
+const foodEstimatorClientSource = readFileSync(
+  new URL("./foodEstimatorClient.ts", import.meta.url),
+  "utf8",
+);
 const chatScreenSource = readFileSync(
   new URL("../screens/ChatScreen.tsx", import.meta.url),
   "utf8",
@@ -47,7 +51,12 @@ describe("contrato estático de superficies conversacionales", () => {
   });
 
   it("protege las tres fronteras de system prompt", () => {
-    const promptBoundarySource = `${appSource}\n${providerChatClientSource}\n${providerToolClientSource}`;
+    const promptBoundarySource = [
+      appSource,
+      providerChatClientSource,
+      providerToolClientSource,
+      foodEstimatorClientSource,
+    ].join("\n");
     expect(promptBoundarySource.match(/composeAiSystemPrompt\(/g)?.length).toBeGreaterThanOrEqual(3);
     expect(promptBoundarySource).not.toContain("system: FOOD_ESTIMATOR_SYSTEM_PROMPT");
     expect(promptBoundarySource).not.toContain("systemInstruction: { parts: [{ text: FOOD_ESTIMATOR_SYSTEM_PROMPT }]");
@@ -74,6 +83,7 @@ describe("contrato estático de superficies conversacionales", () => {
       expect(conversationalSources).not.toContain(prohibited);
     }
     expect(promptSource).toContain("Eres Gymnasia Coach, el sistema de inteligencia artificial");
-    expect(appSource).toContain("Eres Gymnasia Food Estimator, el sistema de inteligencia artificial");
+    expect(foodEstimatorClientSource)
+      .toContain("Eres Gymnasia Food Estimator, el sistema de inteligencia artificial");
   });
 });
