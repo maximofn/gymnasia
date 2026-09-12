@@ -336,7 +336,7 @@ import {
   type LocalStoreRuntime,
 } from "./persistence/localStoreRuntime";
 import { useChatController } from "./controllers/chatController";
-import { useDietController } from "./controllers/dietController";
+import { useDietController, useDietResolutionController } from "./controllers/dietController";
 import { useHomeController } from "./controllers/homeController";
 import { useMeasurementsController } from "./controllers/measurementsController";
 import {
@@ -373,6 +373,7 @@ import {
   DietHeader,
   DietMealsScreen,
   FoodEstimatorOverlay,
+  DietResolutionOverlays,
   DietSettingsPanel,
   FoodsSettingsPanel,
   HomeScreen,
@@ -1537,16 +1538,6 @@ const DIET_MACRO_MODE_OPTIONS: Array<{ key: DietMacroMode; label: string }> = [
   { key: "manual_calories", label: "kcal" },
   { key: "protein_by_weight", label: "g/kg" },
 ];
-const DIET_MEAL_META: Record<
-  DietMealCategory,
-  { icon: keyof typeof Feather.glyphMap; accent: string; dot: string }
-> = {
-  Desayuno: { icon: "sunrise", accent: "#F7A547", dot: "#F7A547" },
-  Almuerzo: { icon: "sun", accent: "#FFD84D", dot: "#FFD84D" },
-  Comida: { icon: "sun", accent: "#CBFF1A", dot: "#CBFF1A" },
-  Merienda: { icon: "coffee", accent: "#4D84FF", dot: "#4D84FF" },
-  Cena: { icon: "moon", accent: "#7D6DFF", dot: "#7D6DFF" },
-};
 const DIET_GOAL_OPTIONS: Array<{ key: DietGoal; label: string }> = [
   { key: "bulk", label: "Volumen" },
   { key: "cut", label: "Definición" },
@@ -3668,62 +3659,6 @@ function useThinkingLabel(active: boolean): string {
   return THINKING_VERBS[index];
 }
 
-function DietItemThumbnail({ uri, dotColor, size = 36 }: { uri?: string | null; dotColor: string; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  if (uri && !failed) {
-    return (
-      <Image
-        source={{ uri }}
-        onError={() => setFailed(true)}
-        style={{
-          width: size,
-          height: size,
-          borderRadius: 8,
-          backgroundColor: mobileTheme.color.bgSurface,
-        }}
-      />
-    );
-  }
-  return (
-    <View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />
-  );
-}
-
-function FoodThumbnail({ food, size = 36 }: { food: FoodRepoEntry; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  const uri = foodRepoImageUri(food);
-  if (uri && !failed) {
-    return (
-      <Image
-        source={{ uri }}
-        onError={() => setFailed(true)}
-        style={{
-          width: size,
-          height: size,
-          borderRadius: 8,
-          backgroundColor: mobileTheme.color.bgSurface,
-        }}
-      />
-    );
-  }
-  return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        borderRadius: 8,
-        backgroundColor: "rgba(203,255,26,0.1)",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Text style={{ fontSize: size * 0.44 }}>
-        {food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️"}
-      </Text>
-    </View>
-  );
-}
-
 type LocalDataDeletionOutcome = {
   report: LocalDataDeletionReport;
 };
@@ -4775,6 +4710,24 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     repeatPreviousDay: openRepeatPreviousDayMeal,
     repeatFromDate: openRepeatPickDateMeal,
   });
+  const dietResolutionController = useDietResolutionController({
+    isAndroid: Platform.OS === "android",
+    isWeb: Platform.OS === "web",
+    copyDateCategory: dietCopyPickCategory,
+    copyDate: dietCopyPickDate,
+    copyDateText: dietCopyPickDateText,
+    ambiguityCandidates: pendingFoodResolution?.candidates ?? null,
+    copyConfirmation: dietCopyModal,
+    selectedDate: selectedDietDate,
+    changeCopyDate: onDietCopyDateChange,
+    changeCopyDateText: setDietCopyPickDateText,
+    continueCopyDate: previewRepeatMealFromDate,
+    closeCopyDate: closeDietCopyPicker,
+    chooseFood: commitPendingFoodResolution,
+    closeAmbiguity: () => setPendingFoodResolution(null),
+    confirmCopy: confirmRepeatMeal,
+    closeCopyConfirmation: () => setDietCopyModal(null),
+  });
   const todayCaloriesConsumed = sumDayCalories(todayDietDay);
   const homeController = useHomeController({
     templates: store.templates,
@@ -5657,7 +5610,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "training-partial-finish": trainingSessionController.back.layers["training-partial-finish"],
     "workout-completion": trainingSessionController.back.layers["workout-completion"],
     "workout-discard-confirmation": trainingSessionController.back.layers["workout-discard-confirmation"],
-    "food-catalog-ambiguity": dietController.back.layers["food-catalog-ambiguity"],
+    "food-catalog-ambiguity": dietResolutionController.back.layers["food-catalog-ambiguity"],
     "food-estimator": dietController.back.layers["food-estimator"],
     "body-fat-info": measurementsController.back.layers["body-fat-info"],
     "custom-exercise-form": trainingCatalogController.back.layers["custom-exercise-form"],
@@ -5669,8 +5622,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "measurement-entry": measurementsController.back.layers["measurement-entry"],
     "byok-explanation": chatController.back.layers["byok-explanation"],
     "provider-delete": providerDeleteModal !== null,
-    "diet-copy-confirmation": dietController.back.layers["diet-copy-confirmation"],
-    "diet-copy-date-picker": dietController.back.layers["diet-copy-date-picker"],
+    "diet-copy-confirmation": dietResolutionController.back.layers["diet-copy-confirmation"],
+    "diet-copy-date-picker": dietResolutionController.back.layers["diet-copy-date-picker"],
     "diet-date-picker": dietController.back.layers["diet-date-picker"],
     "birth-date-picker": dietSettingsController.back.layers["birth-date-picker"],
     "measurement-date-picker": measurementsController.back.layers["measurement-date-picker"],
@@ -5715,7 +5668,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "training-partial-finish": trainingSessionController.back.handlers["training-partial-finish"],
     "workout-completion": trainingSessionController.back.handlers["workout-completion"],
     "workout-discard-confirmation": trainingSessionController.back.handlers["workout-discard-confirmation"],
-    "food-catalog-ambiguity": dietController.back.handlers["food-catalog-ambiguity"],
+    "food-catalog-ambiguity": dietResolutionController.back.handlers["food-catalog-ambiguity"],
     "food-estimator": dietController.back.handlers["food-estimator"],
     "body-fat-info": measurementsController.back.handlers["body-fat-info"],
     "custom-exercise-form": trainingCatalogController.back.handlers["custom-exercise-form"],
@@ -5727,8 +5680,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     "measurement-entry": measurementsController.back.handlers["measurement-entry"],
     "byok-explanation": chatController.back.handlers["byok-explanation"],
     "provider-delete": () => { closeProviderDeleteModal(); return true; },
-    "diet-copy-confirmation": dietController.back.handlers["diet-copy-confirmation"],
-    "diet-copy-date-picker": dietController.back.handlers["diet-copy-date-picker"],
+    "diet-copy-confirmation": dietResolutionController.back.handlers["diet-copy-confirmation"],
+    "diet-copy-date-picker": dietResolutionController.back.handlers["diet-copy-date-picker"],
     "diet-date-picker": dietController.back.handlers["diet-date-picker"],
     "birth-date-picker": dietSettingsController.back.handlers["birth-date-picker"],
     "measurement-date-picker": measurementsController.back.handlers["measurement-date-picker"],
@@ -7970,15 +7923,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setDietCopyModal({ category, sourceDate, items });
   }
 
-  function onDietCopyDateChange(event: DateTimePickerEvent, selectedDate?: Date) {
+  function onDietCopyDateChange(eventType: string, selectedDate?: Date) {
     if (Platform.OS === "android") {
       const category = dietCopyPickCategory;
       setDietCopyPickCategory(null);
-      if (event.type === "dismissed" || !selectedDate || !category) return;
+      if (eventType === "dismissed" || !selectedDate || !category) return;
       previewRepeatMealFromDate(category, isoDateFromDate(selectedDate));
       return;
     }
-    if (event.type === "dismissed" || !selectedDate) return;
+    if (eventType === "dismissed" || !selectedDate) return;
     setDietCopyPickDate(selectedDate);
     setDietCopyPickDateText(isoDateFromDate(selectedDate));
   }
@@ -13168,342 +13121,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         />
       ) : null}
 
-      {dietCopyPickCategory ? (
-        Platform.OS === "android" ? (
-          <DateTimePicker
-            testID={shellSurfaceTestId("diet-copy-date-picker")}
-            value={dietCopyPickDate}
-            mode="date"
-            display="default"
-            onChange={onDietCopyDateChange}
-          />
-        ) : (
-          <View
-            testID={shellSurfaceTestId("diet-copy-date-picker")}
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              backgroundColor: "rgba(0,0,0,0.78)",
-              paddingHorizontal: 24,
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 620,
-              elevation: 62,
-            }}
-          >
-            <View
-              style={{
-                width: "100%",
-                maxWidth: 360,
-                borderRadius: 24,
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.06)",
-                backgroundColor: "#12151C",
-                paddingHorizontal: 18,
-                paddingTop: 18,
-                paddingBottom: 16,
-                gap: 12,
-              }}
-            >
-              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800", textAlign: "center" }}>
-                Repetir {dietCopyPickCategory}
-              </Text>
-              <Text style={{ color: "#A1AAB8", fontSize: 13, lineHeight: 19, textAlign: "center" }}>
-                Elige el día del que quieres copiar los alimentos.
-              </Text>
-              {Platform.OS === "web" ? (
-                <TextInput
-                  value={dietCopyPickDateText}
-                  onChangeText={setDietCopyPickDateText}
-                  placeholder="AAAA-MM-DD"
-                  placeholderTextColor={mobileTheme.color.textSecondary}
-                  style={{
-                    minHeight: 44,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    borderRadius: 12,
-                    backgroundColor: mobileTheme.color.bgApp,
-                    color: mobileTheme.color.textPrimary,
-                    paddingHorizontal: 12,
-                    fontSize: 14,
-                  }}
-                />
-              ) : (
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    borderRadius: mobileTheme.radius.md,
-                    backgroundColor: mobileTheme.color.bgApp,
-                    padding: 8,
-                  }}
-                >
-                  <DateTimePicker
-                    value={dietCopyPickDate}
-                    mode="date"
-                    display="inline"
-                    onChange={onDietCopyDateChange}
-                  />
-                </View>
-              )}
-              <Pressable
-                onPress={() => {
-                  const category = dietCopyPickCategory;
-                  if (!category) return;
-                  const src =
-                    Platform.OS === "web" && /^\d{4}-\d{2}-\d{2}$/.test(dietCopyPickDateText.trim())
-                      ? dietCopyPickDateText.trim()
-                      : isoDateFromDate(dietCopyPickDate);
-                  previewRepeatMealFromDate(category, src);
-                }}
-                style={{
-                  width: "100%",
-                  minHeight: 46,
-                  borderRadius: 14,
-                  backgroundColor: mobileTheme.color.brandPrimary,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 15 }}>Continuar</Text>
-              </Pressable>
-              <Pressable
-                onPress={closeDietCopyPicker}
-                style={{
-                  width: "100%",
-                  minHeight: 44,
-                  borderRadius: 14,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,255,255,0.06)",
-                  backgroundColor: "#1B1F27",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>Cancelar</Text>
-              </Pressable>
-            </View>
-          </View>
-        )
-      ) : null}
-
-      {pendingFoodResolution ? (
-        <View
-          testID={shellSurfaceTestId("food-catalog-ambiguity")}
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.8)",
-            paddingHorizontal: 22,
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 740,
-            elevation: 74,
-          }}
-        >
-          <View
-            style={{
-              width: "100%",
-              maxWidth: 390,
-              maxHeight: "80%",
-              borderRadius: 22,
-              borderWidth: 1,
-              borderColor: mobileTheme.color.borderSubtle,
-              backgroundColor: mobileTheme.color.bgSurface,
-              padding: 16,
-              gap: 12,
-            }}
-          >
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>
-              Elige el alimento correcto
-            </Text>
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>
-              Necesitamos que confirmes a qué entrada te refieres. No guardaremos nada hasta que elijas una opción.
-            </Text>
-            <ScrollView style={{ maxHeight: 320 }} contentContainerStyle={{ gap: 8 }}>
-              {pendingFoodResolution.candidates.map((candidate) => (
-                <Pressable
-                  key={`${candidate.sourceId}/${candidate.id}`}
-                  testID={`food-catalog-candidate-${candidate.sourceId}-${candidate.id}`}
-                  onPress={() => commitPendingFoodResolution(candidate)}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 10,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    borderRadius: mobileTheme.radius.md,
-                    backgroundColor: mobileTheme.color.bgApp,
-                    padding: 10,
-                  }}
-                >
-                  <FoodThumbnail food={candidate} size={42} />
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>
-                      {candidate.name}
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>
-                      {candidate.sourceId} · {candidate.id} · {candidate.calories_per_100g} kcal/100g
-                    </Text>
-                  </View>
-                  <Feather name="chevron-right" size={17} color={mobileTheme.color.brandPrimary} />
-                </Pressable>
-              ))}
-            </ScrollView>
-            <Pressable
-              testID="food-catalog-keep-manual"
-              onPress={() => commitPendingFoodResolution(null)}
-              style={{
-                minHeight: 44,
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: mobileTheme.radius.md,
-                borderWidth: 1,
-                borderColor: mobileTheme.color.borderSubtle,
-                backgroundColor: "#1B1F27",
-              }}
-            >
-              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>
-                Conservar como manual
-              </Text>
-            </Pressable>
-            <Pressable onPress={() => setPendingFoodResolution(null)} style={{ alignItems: "center", paddingVertical: 6 }}>
-              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Cancelar</Text>
-            </Pressable>
-          </View>
-        </View>
-      ) : null}
-
-      {dietCopyModal ? (
-        <View
-          testID={shellSurfaceTestId("diet-copy-confirmation")}
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: "rgba(0,0,0,0.78)",
-            paddingHorizontal: 24,
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 625,
-            elevation: 63,
-          }}
-        >
-          <View
-            style={{
-              width: "100%",
-              maxWidth: 360,
-              borderRadius: 24,
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.06)",
-              backgroundColor: "#12151C",
-              paddingHorizontal: 18,
-              paddingTop: 18,
-              paddingBottom: 16,
-              gap: 12,
-            }}
-          >
-            <View
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: 14,
-                backgroundColor: `${DIET_MEAL_META[dietCopyModal.category].accent}22`,
-                alignItems: "center",
-                justifyContent: "center",
-                alignSelf: "center",
-              }}
-            >
-              <Feather name="copy" size={22} color={DIET_MEAL_META[dietCopyModal.category].accent} />
-            </View>
-
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800", textAlign: "center" }}>
-              Repetir {dietCopyModal.category}
-            </Text>
-            <Text style={{ color: "#A1AAB8", fontSize: 13, lineHeight: 19, textAlign: "center" }}>
-              Se añadirán estos alimentos del {formatDietDayHeader(dietCopyModal.sourceDate)} a {dietCopyModal.category} del {formatDietDayHeader(selectedDietDate)}.
-            </Text>
-
-            <ScrollView
-              style={{ maxHeight: 240, width: "100%" }}
-              contentContainerStyle={{ gap: 8 }}
-            >
-              {dietCopyModal.items.map((item) => (
-                <View
-                  key={item.id}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 10,
-                    borderWidth: 1,
-                    borderColor: mobileTheme.color.borderSubtle,
-                    borderRadius: 12,
-                    backgroundColor: mobileTheme.color.bgApp,
-                    paddingHorizontal: 10,
-                    paddingVertical: 8,
-                  }}
-                >
-                  <DietItemThumbnail uri={item.image_uri} dotColor={DIET_MEAL_META[dietCopyModal.category].dot} />
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }} numberOfLines={1}>
-                      {item.title}
-                    </Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 1 }}>
-                      {item.grams > 0 ? `${formatNutritionNumber(item.grams)} g · ` : ""}
-                      {formatNutritionNumber(item.calories_kcal)} kcal
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </ScrollView>
-
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, textAlign: "center" }}>
-              {dietCopyModal.items.length} {dietCopyModal.items.length === 1 ? "alimento" : "alimentos"} ·{" "}
-              {formatNutritionNumber(dietCopyModal.items.reduce((acc, it) => acc + it.calories_kcal, 0))} kcal
-            </Text>
-
-            <Pressable
-              onPress={confirmRepeatMeal}
-              style={{
-                width: "100%",
-                minHeight: 46,
-                borderRadius: 14,
-                backgroundColor: mobileTheme.color.brandPrimary,
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                gap: 8,
-              }}
-            >
-              <Feather name="check" size={15} color="#06090D" />
-              <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 15 }}>Confirmar</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setDietCopyModal(null)}
-              style={{
-                width: "100%",
-                minHeight: 44,
-                borderRadius: 14,
-                borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.06)",
-                backgroundColor: "#1B1F27",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>Cancelar</Text>
-            </Pressable>
-          </View>
-        </View>
-      ) : null}
+      <DietResolutionOverlays
+        model={dietResolutionController.model}
+        actions={dietResolutionController.actions}
+      />
 
       {dataDeletionScope ? (
         <DataDeletionConfirmation

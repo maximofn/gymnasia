@@ -5,6 +5,97 @@ import type { DietItem, DietMeal } from "../diet/model";
 import type { DietMealCategory, NutritionValidationIssue } from "../diet/nutritionContract";
 import type { ScreenController } from "./types";
 
+export type DietResolutionModel = {
+  isAndroid: boolean;
+  isWeb: boolean;
+  copyDateCategory: DietMealCategory | null;
+  copyDate: Date;
+  copyDateText: string;
+  ambiguityCandidates: FoodCatalogEntry[] | null;
+  copyConfirmation: {
+    category: DietMealCategory;
+    sourceDate: string;
+    items: DietItem[];
+  } | null;
+  selectedDate: string;
+};
+
+export type DietResolutionActions = {
+  changeCopyDate(eventType: string, date?: Date): void;
+  changeCopyDateText(value: string): void;
+  continueCopyDate(category: DietMealCategory, sourceDate: string): void;
+  closeCopyDate(): void;
+  chooseFood(candidate: FoodCatalogEntry | null): void;
+  closeAmbiguity(): void;
+  confirmCopy(): void;
+  closeCopyConfirmation(): void;
+};
+
+export function useDietResolutionController(
+  input: DietResolutionModel & DietResolutionActions,
+): ScreenController<
+  DietResolutionModel,
+  DietResolutionActions,
+  "food-catalog-ambiguity" | "diet-copy-confirmation" | "diet-copy-date-picker"
+> {
+  const inputRef = useRef(input);
+  inputRef.current = input;
+  const model = useMemo<DietResolutionModel>(() => ({
+    isAndroid: input.isAndroid,
+    isWeb: input.isWeb,
+    copyDateCategory: input.copyDateCategory,
+    copyDate: input.copyDate,
+    copyDateText: input.copyDateText,
+    ambiguityCandidates: input.ambiguityCandidates,
+    copyConfirmation: input.copyConfirmation,
+    selectedDate: input.selectedDate,
+  }), [
+    input.ambiguityCandidates,
+    input.copyConfirmation,
+    input.copyDate,
+    input.copyDateCategory,
+    input.copyDateText,
+    input.isAndroid,
+    input.isWeb,
+    input.selectedDate,
+  ]);
+  const actions = useMemo<DietResolutionActions>(() => ({
+    changeCopyDate: (eventType, date) => inputRef.current.changeCopyDate(eventType, date),
+    changeCopyDateText: (value) => inputRef.current.changeCopyDateText(value),
+    continueCopyDate: (category, sourceDate) => inputRef.current.continueCopyDate(category, sourceDate),
+    closeCopyDate: () => inputRef.current.closeCopyDate(),
+    chooseFood: (candidate) => inputRef.current.chooseFood(candidate),
+    closeAmbiguity: () => inputRef.current.closeAmbiguity(),
+    confirmCopy: () => inputRef.current.confirmCopy(),
+    closeCopyConfirmation: () => inputRef.current.closeCopyConfirmation(),
+  }), []);
+  const back = useMemo(() => ({
+    layers: {
+      "food-catalog-ambiguity": input.ambiguityCandidates !== null,
+      "diet-copy-confirmation": input.copyConfirmation !== null,
+      "diet-copy-date-picker": input.copyDateCategory !== null,
+    },
+    handlers: {
+      "food-catalog-ambiguity": () => {
+        if (!inputRef.current.ambiguityCandidates) return false;
+        inputRef.current.closeAmbiguity();
+        return true;
+      },
+      "diet-copy-confirmation": () => {
+        if (!inputRef.current.copyConfirmation) return false;
+        inputRef.current.closeCopyConfirmation();
+        return true;
+      },
+      "diet-copy-date-picker": () => {
+        if (!inputRef.current.copyDateCategory) return false;
+        inputRef.current.closeCopyDate();
+        return true;
+      },
+    },
+  }), [input.ambiguityCandidates, input.copyConfirmation, input.copyDateCategory]);
+  return useMemo(() => ({ model, actions, back }), [actions, back, model]);
+}
+
 export type DietMacroOverviewItem = {
   key: string;
   label: string;
