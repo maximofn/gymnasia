@@ -2160,7 +2160,7 @@
         {
           "id": "GYM-186",
           "title": "Conciliar la configuración Expo con el proyecto Android generado",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Detectar deriva de permisos, assets y ciclo de vida entre app.json y apps/mobile/android.",
           "dependsOn": [],
           "related": [
