@@ -6,6 +6,7 @@ import ipaddress
 import json
 import os
 import pathlib
+import pwd
 import re
 import shutil
 import signal
@@ -177,8 +178,27 @@ try:
         denied = property_value(unit, "IPAddressDeny")
         for network in ["127.0.0.0/8", "10.0.0.0/8", "100.64.0.0/10", "172.16.0.0/12", "192.168.0.0/16", "::/0"]:
             assert network in denied, network
-        process_status = pathlib.Path(f'/proc/{property_value(unit, "ExecMainPID")}/status').read_text()
+        # Type=simple returns before systemd's privileged setup helper execs
+        # QEMU. Inspect the actual hypervisor after that transition, not the
+        # short-lived helper that is still setting up the sandbox.
+        process = pathlib.Path(f'/proc/{property_value(unit, "ExecMainPID")}')
+        startup_deadline = time.monotonic() + 15
+        startup_names = []
+        while True:
+            executable = os.readlink(process / "exe")
+            if executable.endswith("/qemu-system-x86_64"):
+                break
+            if executable not in startup_names:
+                startup_names.append(executable)
+            assert time.monotonic() < startup_deadline, "QEMU no completó el arranque"
+            time.sleep(0.1)
+        (evidence / f"{mode}-startup.json").write_text(json.dumps(startup_names))
+        process_status = (process / "status").read_text()
+        (evidence / f"{mode}-process.txt").write_text(process_status)
         assert re.search(r"^CapEff:\s+0+$", process_status, re.M)
+        assert re.search(r"^NoNewPrivs:\s+1$", process_status, re.M)
+        uids = re.search(r"^Uid:\s+(.+)$", process_status, re.M)[1].split()
+        assert set(uids) == {str(pwd.getpwnam("gymnasia-vm").pw_uid)}
         deadline = time.monotonic() + 300
         marker = ("GYMNASIA_AUDIT_PASS " if mode == "success" else "GYMNASIA_AUDIT_HOLD ") + nonce
         while True:
